@@ -53,7 +53,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -66,9 +68,11 @@ public abstract class EncryptGeneratorBaseTest {
     
     protected static EncryptRule createEncryptRule() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "test_encryptor", false);
-        return new EncryptRule(new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration(TABLE_NAME, Collections.singletonList(pwdColumnConfig), null)),
-                Collections.singletonMap("test_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()))));
+                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "like_encryptor", false);
+        Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>();
+        encryptors.put("test_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()));
+        encryptors.put("like_encryptor", new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties()));
+        return new EncryptRule(new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration(TABLE_NAME, Collections.singletonList(pwdColumnConfig), null)), encryptors));
     }
     
     protected InsertStatementContext createInsertStatementContext(final List<Object> params) {

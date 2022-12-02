@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Con
 import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.VertxLocalTransactionManager;
 import org.apache.shardingsphere.proxy.backend.reactive.context.ReactiveProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.util.ArrayList;
 import java.util.Collection;

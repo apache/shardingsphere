@@ -175,7 +175,7 @@ rules:
           shardingColumn: user_id
           shardingAlgorithmName: table_inline_user_id
   bindingTables:
-    - t_user,t_user_item,t_user_details
+    - ref_0:t_user,t_user_item,t_user_details
 
   shardingAlgorithms:
     it_standard_fixture:

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 public final class BaseLoggingPluginBootService implements PluginBootService {
     
     @Override
-    public void start(final PluginConfiguration pluginConfig) {
+    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
     }
     
     @Override

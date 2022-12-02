@@ -19,7 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.engine.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.sql.parser.SQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 /**
@@ -27,16 +28,16 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCase
  */
 @RequiredArgsConstructor
 @Getter
-public final class InternalSQLParserParameterizedArray implements ParameterizedArray {
+public final class InternalSQLParserParameterizedArray implements SQLParserParameterizedArray {
     
     private final String sqlCaseId;
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     private final SQLCaseType sqlCaseType;
     
     @Override
     public String toString() {
-        return String.format("%s (%s) -> %s", sqlCaseId, sqlCaseType, databaseType);
+        return String.format("%s (%s) -> %s", sqlCaseId, sqlCaseType, databaseType.getType());
     }
 }

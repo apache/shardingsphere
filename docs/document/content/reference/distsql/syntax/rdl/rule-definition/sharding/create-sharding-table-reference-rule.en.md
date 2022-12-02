@@ -5,8 +5,7 @@ weight = 13
 
 ## Description
 
-The `CREATE SHARDING TABLE REFERENCE RULE` syntax is used to add reference relationships and create reference table rules for
-tables with sharding table rules
+The `CREATE SHARDING TABLE REFERENCE RULE` syntax is used to create reference rule for sharding tables
 
 ### Syntax
 
@@ -15,7 +14,7 @@ CreateShardingTableReferenceRule ::=
   'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition )*
 
 referenceRelationshipDefinition ::=
-  '(' tableName (',' tableName)* ')'
+   ruleName '(' tableName (',' tableName)* ')'
 
 tableName ::=
   identifier
@@ -23,31 +22,26 @@ tableName ::=
 
 ### Supplement
 
-- Creating reference relationships rules can only use sharding tables;
-- A sharding table can only have one reference relationships;
-- The sharding table for creating reference relationships needs to use the same storage unit and the same actual tables. For
-  example `su_${0..1}.t_order_${0..1}` 与 `su_${0..1}.t_order_item_${0..1}`;
-- The sharding table for creating reference relationships needs to use the same sharding algorithm for the sharding
-  column. For example `t_order_{order_id % 2}` and `t_order_item_{order_item_id % 2}`;
-- Only one reference rule can exist, but can contain multiple reference relationships, so can not
-  execute `CREATE SHARDING TABLE REFERENCE RULE` more than one time. When a reference table rule already exists but a
-  reference relationship needs to be added, you need to use `ALTER SHARDING TABLE REFERENCE RULE` to modify the reference
-  table.
+- Sharding table reference rule can only be created for sharding tables;
+- A sharding table can only be associated with one sharding table reference rule;
+- The referenced sharding tables should be sharded in the same storage units and have the same number of sharding nodes. For
+  example `ds_${0..1}.t_order_${0..1}` and `ds_${0..1}.t_order_item_${0..1}`;
+- The referenced sharding tables should use consistent sharding algorithms. For example `t_order_{order_id % 2}` and `t_order_item_{order_item_id % 2}`;
 
 ### Example
 
-#### 1.Create a reference table rule
+#### 1.Create a sharding table reference rule
 
 ```sql
--- Before creating a reference table rule, you need to create sharding table rules t_order, t_order_item
-CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
+-- Before creating a sharding table reference rule, you need to create sharding table rules t_order, t_order_item
+CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item);
 ```
 
-#### 2.Create multiple reference table rules
+#### 2.Create multiple sharding table reference rules
 
 ```sql
--- Before creating reference table rules, you need to create sharding table rules t_order, t_order_item, t_product, t_product_item
-CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item),(t_product,t_product_item);
+-- Before creating sharding table reference rules, you need to create sharding table rules t_order, t_order_item, t_product, t_product_item
+CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
 ```
 
 ### Reserved word

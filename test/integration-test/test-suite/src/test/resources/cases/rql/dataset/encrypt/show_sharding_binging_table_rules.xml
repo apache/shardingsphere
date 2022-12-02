@@ -17,6 +17,7 @@
 
 <dataset>
     <metadata>
+        <column name="name" />
         <column name="sharding_table_reference" />
     </metadata>
 </dataset>

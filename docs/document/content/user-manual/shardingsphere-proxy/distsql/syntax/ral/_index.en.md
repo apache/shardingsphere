@@ -33,6 +33,7 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | SHOW MIGRATION CHECK STATUS jobId                       | Query data consistency check status            | SHOW MIGRATION CHECK STATUS 1234                |
 | STOP MIGRATION CHECK jobId                              | Stop data consistency check                    | STOP MIGRATION CHECK 1234                       |
 | START MIGRATION CHECK jobId                             | Start data consistency check                   | START MIGRATION CHECK 1234                      |
+| DROP MIGRATION CHECK jobId                              | Drop data consistency check                    | DROP MIGRATION CHECK 1234                       |
 | ROLLBACK MIGRATION jobId                                | Rollback migration                             | ROLLBACK MIGRATION 1234                         |
 | COMMIT MIGRATION jobId                                  | Commit migration                               | COMMIT MIGRATION 1234                           |
 

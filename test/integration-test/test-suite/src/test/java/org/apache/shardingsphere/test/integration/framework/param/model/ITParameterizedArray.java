@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.param.model;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
@@ -46,13 +45,6 @@ public interface ITParameterizedArray extends ParameterizedArray {
      * @return adapter
      */
     String getAdapter();
-    
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
     
     /**
      * Get mode.

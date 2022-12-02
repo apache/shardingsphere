@@ -28,6 +28,7 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.util.Litmus;
+import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -53,6 +54,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 
@@ -125,6 +127,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset_fetch");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_with_null_keyword_in_projection");
         SUPPORTED_SQL_CASE_IDS.add("select_union");
         SUPPORTED_SQL_CASE_IDS.add("select_union_all");
         SUPPORTED_SQL_CASE_IDS.add("select_union_all_order_by");
@@ -138,7 +141,8 @@ public final class SQLNodeConverterEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_minus");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by_limit");
-        SUPPORTED_SQL_CASE_IDS.add("select_projections_with_only_expr_for_postgres");
+        SUPPORTED_SQL_CASE_IDS.add("select_projections_with_expr");
+        SUPPORTED_SQL_CASE_IDS.add("select_projections_with_only_expr");
         SUPPORTED_SQL_CASE_IDS.add("select_natural_join");
         SUPPORTED_SQL_CASE_IDS.add("select_natural_inner_join");
         SUPPORTED_SQL_CASE_IDS.add("select_natural_left_join");
@@ -149,7 +153,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private final String sqlCaseId;
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     private final SQLCaseType sqlCaseType;
     
@@ -166,7 +170,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String... databaseTypes) {
         Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
-        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.asList(databaseTypes))) {
+        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).map(DatabaseTypeFactory::getInstance).collect(Collectors.toSet()))) {
             if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
                 result.add(each);
             }
@@ -184,7 +188,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     @Test
     public void assertConvert() {
-        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
+        String databaseType = (this.databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) this.databaseType).getTrunkDatabaseType() : this.databaseType).getType();
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
         SqlNode actual = SQLNodeConverterEngine.convert(sqlStatement);

@@ -51,9 +51,9 @@ public final class YamlAuthorityConfiguration implements YamlRuleConfiguration {
     }
     
     /**
-     * Convert to yaml authority rule configuration.
+     * Convert to YAML authority rule configuration.
      *
-     * @return yaml authority rule configuration
+     * @return YAML authority rule configuration
      */
     public YamlAuthorityRuleConfiguration convertToYamlAuthorityRuleConfiguration() {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();

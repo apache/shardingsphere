@@ -43,9 +43,9 @@ If the following information is displayed, binlog is enabled.
 
 2. Grant Replication-related permissions for MySQL account.
 
-Run the following command and see whether the user has migration permission.
+Run the following command to check whether the user has migration permission.
 ```
-SHOW GRANTS FOR 'user';
+SHOW GRANTS FOR 'migration_user';
 ```
 
 Result sample: 
@@ -58,13 +58,21 @@ Result sample:
 +------------------------------------------------------------------------------+
 ```
 
+3. Grant insert, select, update and delete permissions to the physical library used in the migration
+
+If you use a non-super admin account for migration, you need to make sure that the account has the permission to insert, select, update and delete on the physical library used for migration.
+
+```sql
+GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `migration_user`@`%`;
+```
+
+Please refer to [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
+
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in MySQL.
-
-Sample: 
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
@@ -78,8 +86,6 @@ INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,
 ```
 
 2. Prepare the target database in MySQL.
-
-Sample: 
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_10;
@@ -158,7 +164,6 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                    | tables  | job_item_count       | active | create_time         | stop_time |
@@ -169,8 +174,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -180,15 +189,18 @@ SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 
 6. Verify data consistency.
 
-```
+```sql
 CHECK MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6' BY TYPE (NAME='CRC32_MATCH');
-Query OK, 0 rows affected (0.09 sec)
 ```
 
 Data consistency check algorithm list:
 
-```
+```sql
 SHOW MIGRATION CHECK ALGORITHMS;
+```
+
+Result example:
+```
 +-------------+--------------------------------------------------------------+----------------------------+
 | type        | supported_database_types                                     | description                |
 +-------------+--------------------------------------------------------------+----------------------------+
@@ -204,6 +216,10 @@ If you are migrating to a heterogeneous database, then `DATA_MATCH` could be use
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
@@ -257,9 +273,30 @@ host replication repl_acct 0.0.0.0/0 md5
 
 Please refer to [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-pg-hba-conf.html) for details.
 
+4. Grant access to databases and tables 
+
+If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
+
+```sql
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
+```
+
+The account also needs to have access to the migrated tables and schema. Take the t_order table under test schema as an example. 
+
+```sql
+\c migration_ds_0
+
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
+```
+
+PostgreSQL has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
+
+Please refer to [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html)
+
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in PostgreSQL.
 
@@ -359,7 +396,6 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                    | tables  | job_item_count       | active | create_time         | stop_time |
@@ -370,8 +406,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -389,6 +429,10 @@ Query OK, 0 rows affected (0.09 sec)
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
@@ -440,9 +484,36 @@ host replication repl_acct 0.0.0.0/0 md5
 
 Please refer to [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) and [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html) for details.
 
+3. Grant access to databases and tables 
+
+If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
+
+```sql
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
+```
+
+The account also needs to have access to the migrated tables and schema. Take the t_order table under test schema as an example. 
+
+```sql
+\c migration_ds_0
+
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
+```
+
+openGauss has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
+
+openGauss does not allow normal accounts to operate in public schema, so if the migrated table is in public schema, you need to authorize additional.
+
+Please refer to [openGauss GRANT](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/grant.html)
+
+```sql
+GRANT ALL PRIVILEGES TO migration_user;
+```
+
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in openGauss.
 
@@ -542,7 +613,6 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                    | tables  | job_item_count       | active | create_time         | stop_time |
@@ -553,8 +623,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -572,6 +646,10 @@ Query OK, 0 rows affected (0.09 sec)
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+

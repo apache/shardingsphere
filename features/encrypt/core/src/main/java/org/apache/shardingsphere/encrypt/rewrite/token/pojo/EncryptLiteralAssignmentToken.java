@@ -62,6 +62,9 @@ public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken 
         }
         
         private String toString(final Object value) {
+            if (null == value) {
+                return "NULL";
+            }
             return value instanceof String ? "'" + value + "'" : value.toString();
         }
     }

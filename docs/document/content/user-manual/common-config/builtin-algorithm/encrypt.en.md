@@ -4,16 +4,20 @@ weight = 5
 +++
 
 ## Background
+
 Encryption algorithms are by the encryption features of Apache ShardingSphere. A variety of algorithms are built-in to make it easy for users to fully leverage the feature.
 
 ## Parameters
-### MD5 Encrypt Algorithm
+
+### Standard Encrypt Algorithm
+
+#### MD5 Encrypt Algorithm
 
 Type: MD5
 
 Attributes: None
 
-### AES Encrypt Algorithm
+#### AES Encrypt Algorithm
 
 Type: AES
 
@@ -23,7 +27,7 @@ Attributes:
 | ------------- | ---------- | ------------- |
 | aes-key-value | String     | AES KEY       |
 
-### RC4 Encrypt Algorithm
+#### RC4 Encrypt Algorithm
 
 Type: RC4
 
@@ -33,7 +37,7 @@ Attributes:
 | ------------- | ---------- | ------------- |
 | rc4-key-value | String     | RC4 KEY       |
 
-### SM3 Encrypt Algorithm
+#### SM3 Encrypt Algorithm
 
 Type: SM3
 
@@ -43,7 +47,7 @@ Attributes:
 | ------------- | ---------- | ------------- |
 | sm3-salt      | String     | SM3 SALT (should be blank or 8 bytes long)      |
 
-### SM4 Encrypt Algorithm
+#### SM4 Encrypt Algorithm
 
 Type: SM4
 
@@ -56,7 +60,9 @@ Attributes:
 | sm4-iv        | String     | SM4 IV (should be specified on CBC, 16 bytes long)|
 | sm4-padding   | String     | SM4 PADDING (should be PKCS5Padding or PKCS7Padding, NoPadding excepted)|
 
-### CharDigestLike Encrypt Algorithm
+### Like Encrypt Algorithm
+
+#### CharDigestLike Encrypt Algorithm
 
 Type：CHAR_DIGEST_LIKE
 

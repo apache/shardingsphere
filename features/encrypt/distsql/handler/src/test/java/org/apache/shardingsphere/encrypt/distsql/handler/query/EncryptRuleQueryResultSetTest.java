@@ -48,7 +48,7 @@ public final class EncryptRuleQueryResultSetTest {
         DatabaseDistSQLResultSet resultSet = new EncryptRuleQueryResultSet();
         resultSet.init(database, mock(ShowEncryptRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(12));
+        assertThat(actual.size(), is(16));
         assertTrue(actual.contains("t_encrypt"));
         assertTrue(actual.contains("user_id"));
         assertTrue(actual.contains("user_cipher"));

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.external.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.SQLCaseLoadStrategy;
@@ -54,7 +55,7 @@ public final class SQLCaseLoader {
      *
      * @return loaded SQL cases
      */
-    public Collection<ExternalSQLParserParameterizedArray> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
+    public Collection<ExternalSQLParserParameterizedArray> load(final URI sqlCaseURI, final URI resultURI, final DatabaseType databaseType, final String reportType) {
         if (!SQLParserExternalITEnvironment.getInstance().isSqlParserITEnabled()) {
             return Collections.emptyList();
         }
@@ -68,7 +69,7 @@ public final class SQLCaseLoader {
             result.addAll(createSQLCases(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
         }
         if (result.isEmpty()) {
-            result.add(new ExternalSQLParserParameterizedArray("", "", databaseType, reportType));
+            result.add(new ExternalSQLParserParameterizedArray("", databaseType, "", reportType));
         }
         return result;
     }
@@ -85,7 +86,7 @@ public final class SQLCaseLoader {
     }
     
     private Collection<ExternalSQLParserParameterizedArray> createSQLCases(final String sqlCaseFileName,
-                                                                           final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
+                                                                           final String sqlCaseFileContent, final String resultFileContent, final DatabaseType databaseType, final String reportType) {
         Collection<ExternalSQLParserParameterizedArray> result = new LinkedList<>();
         String[] rawCaseLines = sqlCaseFileContent.split("\n");
         String[] rawResultLines = resultFileContent.split("\n");
@@ -102,7 +103,7 @@ public final class SQLCaseLoader {
                 resultIndex = searchInResultContent(resultIndex, rawResultLines, completedSQL, statementLines);
                 if (resultIndex >= rawResultLines.length || !rawResultLines[resultIndex].contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                    result.add(new ExternalSQLParserParameterizedArray(sqlCaseId, completedSQL, databaseType, reportType));
+                    result.add(new ExternalSQLParserParameterizedArray(sqlCaseId, databaseType, completedSQL, reportType));
                     sqlCaseEnum++;
                 }
                 completedSQL = "";

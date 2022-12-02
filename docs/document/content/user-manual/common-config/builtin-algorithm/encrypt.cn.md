@@ -4,17 +4,20 @@ weight = 5
 +++
 
 ## 背景信息
+
 加密算法是 Apache ShardingSphere 的加密功能使用的算法，ShardingSphere 内置了多种算法，可以让用户方便使用。
 
 ## 参数解释
 
-### MD5 加密算法
+### 标准加密算法
+
+#### MD5 加密算法
 
 类型：MD5
 
 可配置属性：无
 
-### AES 加密算法
+#### AES 加密算法
 
 类型：AES
 
@@ -24,7 +27,7 @@ weight = 5
 | ------------- | --------- | ------------- |
 | aes-key-value | String    | AES 使用的 KEY |
 
-### RC4 加密算法
+#### RC4 加密算法
 
 类型：RC4
 
@@ -34,7 +37,7 @@ weight = 5
 | ------------- | --------- | ------------- |
 | rc4-key-value | String    | RC4 使用的 KEY |
 
-### SM3 加密算法
+#### SM3 加密算法
 
 类型：SM3
 
@@ -44,7 +47,7 @@ weight = 5
 | ------------- | --------- | ------------- |
 | sm3-salt      | String    | SM3 使用的 SALT（空或 8 Bytes） |
 
-### SM4 加密算法
+#### SM4 加密算法
 
 类型：SM4
 
@@ -57,7 +60,9 @@ weight = 5
 | sm4-iv        | String    | SM4 使用的 IV （MODE 为 CBC 时需指定，16 Bytes）|
 | sm4-padding   | String    | SM4 使用的 PADDING （PKCS5Padding 或 PKCS7Padding，暂不支持 NoPadding）|
 
-### 单字符摘要模糊算法
+### 模糊加密算法
+
+#### 单字符摘要模糊加密算法
 
 类型：CHAR_DIGEST_LIKE
 

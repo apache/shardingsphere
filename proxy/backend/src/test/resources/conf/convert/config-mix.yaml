@@ -146,6 +146,8 @@ rules:
           aes-key-value: 123456abc
       md5_encryptor:
         type: MD5
+      like_encryptor:
+        type: CHAR_DIGEST_LIKE
     tables:
       t_encrypt:
         columns:
@@ -153,6 +155,10 @@ rules:
             plainColumn: user_plain
             cipherColumn: user_cipher
             encryptorName: aes_encryptor
+            assistedQueryColumn: user_assisted
+            assistedQueryEncryptorName: md5_encryptor
+            likeQueryColumn: user_like
+            likeQueryEncryptorName: like_encryptor
           order_id:
             cipherColumn: order_cipher
             encryptorName: md5_encryptor

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -48,8 +47,8 @@ public final class PgNamespaceTableCollector implements ShardingSphereDataCollec
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtil.collectRowData(shardingSphereDatabases.get(databaseName).getResourceMetaData().getDataSources().values(),
                 SELECT_SQL, table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()));
-        ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE, new ArrayList<>(table.getColumns().values()));
-        result.getRows().addAll(rows.stream().distinct().collect(Collectors.toList()));
+        ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE);
+        result.getRows().addAll(rows);
         return Optional.of(result);
     }
     

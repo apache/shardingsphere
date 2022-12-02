@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedExceptio
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableRuleStatementUpdater;
@@ -115,7 +116,7 @@ public final class DropShardingTableRuleStatementUpdaterTest {
         tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
         result.getTables().add(tableRuleConfig);
         result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
-        result.setBindingTableGroups(Collections.singleton("t_order_item"));
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order_item"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "default_table_strategy"));
         result.getShardingAlgorithms().put("unused_algorithm", null);
         result.getShardingAlgorithms().put("t_order_item_algorithm", null);
@@ -134,7 +135,7 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     
     private Collection<String> getBindingTables(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        currentRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").splitToList(each)));
+        currentRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").splitToList(each.getReference())));
         return result;
     }
 }

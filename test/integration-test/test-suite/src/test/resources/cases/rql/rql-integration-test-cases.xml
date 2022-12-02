@@ -81,11 +81,11 @@
         <assertion expected-data-file="show_sharding_table_nodes.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING TABLE REFERENCE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
+    <test-case sql="SHOW SHARDING TABLE REFERENCE RULES" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="show_sharding_binging_table_rules.xml" />
     </test-case>
     
-    <test-case sql="SHOW BROADCAST TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
+    <test-case sql="SHOW BROADCAST TABLE RULES" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="show_broadcast_rules.xml" />
     </test-case>
     
@@ -93,15 +93,15 @@
         <assertion expected-data-file="show_single_table_rules.xml" />
     </test-case>
     
-    <test-case sql="SHOW SINGLE TABLE t_single_table" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="SHOW SINGLE TABLE t_single_table" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_single_table.xml" />
     </test-case>
     
-    <test-case sql="SHOW SINGLE TABLES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="SHOW SINGLE TABLES" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_single_tables.xml" />
     </test-case>
     
-    <test-case sql="COUNT SINGLE_TABLE RULE" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="COUNT SINGLE_TABLE RULE" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="count_single_table_rule.xml" />
     </test-case>
     

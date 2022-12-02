@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
@@ -59,6 +60,6 @@ public final class ConsistencyCheckJobTest {
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob();
         ReflectionUtil.invokeMethodInParentClass(consistencyCheckJob, "setJobId", new Class[]{String.class}, new Object[]{checkJobId});
         ConsistencyCheckJobItemContext actualItemContext = consistencyCheckJob.buildPipelineJobItemContext(shardingContext);
-        assertThat(actualItemContext.getTableCheckPositions(), is(expectTableCheckPosition));
+        assertThat(actualItemContext.getProgressContext().getTableCheckPositions(), is(expectTableCheckPosition));
     }
 }

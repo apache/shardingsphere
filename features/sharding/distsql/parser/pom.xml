@@ -63,18 +63,6 @@
                             <visitor>true</visitor>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>antlr-migration</id>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirectory>src/main/antlr4/migration/</sourceDirectory>
-                            <libDirectory>src/main/antlr4/imports/migration/</libDirectory>
-                            <listener>false</listener>
-                            <visitor>true</visitor>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>

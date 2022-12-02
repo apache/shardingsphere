@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.rule.builder;
 
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 
 import java.util.Properties;

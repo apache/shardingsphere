@@ -112,7 +112,7 @@
         <!--&lt;!&ndash;<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />&ndash;&gt;-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />
     </test-case>
     
@@ -158,7 +158,7 @@
     </test-case>
     
     <!-- TODO FIXED ME PostgreSQL return 0 -->
-    <test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-file="update_broadcast_table.xml" />
     </test-case>
     

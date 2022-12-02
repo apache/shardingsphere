@@ -25,6 +25,6 @@ public final class BuildInfoCollectorTest {
     
     @Test
     public void assertCollect() {
-        assertFalse(new BuildInfoCollector().collect().isEmpty());
+        assertFalse(new BuildInfoCollector(true).collect().isEmpty());
     }
 }

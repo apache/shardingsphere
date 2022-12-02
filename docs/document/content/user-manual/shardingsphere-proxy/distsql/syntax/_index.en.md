@@ -36,3 +36,9 @@ Types of literals include:
 Note: some DistSQL syntax allows negative values. In this case, a negative sign (-) can be added before the number, such as -1.
 
 - boolean, containing only true & false. Case insensitive.
+
+### Special Instructions
+
+- The `""` must be used to mark the algorithm type name when specifying a user-defined algorithm type name, for example, `NAME="AlgorithmTypeName"`
+
+- The `""` is not necessary when specifying a ShardingSphere [Built-in algorithm](/en/user-manual/common-config/props/) type name, for example, `NAME=HASH_MOD`
