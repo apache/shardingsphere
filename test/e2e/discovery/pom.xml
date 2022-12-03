@@ -21,22 +21,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-integration-test</artifactId>
+        <artifactId>shardingsphere-test-e2e</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-integration-test-showprocesslist</artifactId>
+    <artifactId>shardingsphere-test-e2e-discovery</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-integration-test-env</artifactId>
+            <artifactId>shardingsphere-test-e2e-env</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-integration-test-fixture</artifactId>
+            <artifactId>shardingsphere-test-e2e-fixture</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>

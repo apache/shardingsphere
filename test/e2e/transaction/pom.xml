@@ -21,14 +21,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-integration-test</artifactId>
+        <artifactId>shardingsphere-test-e2e</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-integration-test-transaction</artifactId>
+    <artifactId>shardingsphere-test-e2e-transaction</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        
         <atomikos.version>5.0.9</atomikos.version>
         <narayana.version>5.12.4.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
@@ -57,14 +58,14 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-integration-test-env</artifactId>
+            <artifactId>shardingsphere-test-e2e-env</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-integration-test-fixture</artifactId>
+            <artifactId>shardingsphere-test-e2e-fixture</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
