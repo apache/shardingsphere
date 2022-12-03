@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 /**
- * Internal SQL parser parameterized array.
+ * Internal SQL parser test parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InternalSQLParserParameterizedArray {
+public final class InternalSQLParserTestParameter {
     
     private final String sqlCaseId;
     

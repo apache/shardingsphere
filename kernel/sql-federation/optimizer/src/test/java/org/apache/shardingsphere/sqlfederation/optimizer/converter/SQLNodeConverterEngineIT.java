@@ -39,7 +39,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserTestParameter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -154,20 +154,20 @@ public final class SQLNodeConverterEngineIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public SQLNodeConverterEngineIT(final InternalSQLParserParameterizedArray parameterizedArray) {
-        sqlCaseId = parameterizedArray.getSqlCaseId();
-        databaseType = parameterizedArray.getDatabaseType();
-        sqlCaseType = parameterizedArray.getSqlCaseType();
+    public SQLNodeConverterEngineIT(final InternalSQLParserTestParameter testParameter) {
+        sqlCaseId = testParameter.getSqlCaseId();
+        databaseType = testParameter.getDatabaseType();
+        sqlCaseType = testParameter.getSqlCaseType();
     }
     
     @Parameters(name = "{0}")
-    public static Collection<InternalSQLParserParameterizedArray> getTestParameters() {
+    public static Collection<InternalSQLParserTestParameter> getTestParameters() {
         return getTestParameters("MySQL", "PostgreSQL", "openGauss");
     }
     
-    private static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String... databaseTypes) {
-        Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
-        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).collect(Collectors.toSet()))) {
+    private static Collection<InternalSQLParserTestParameter> getTestParameters(final String... databaseTypes) {
+        Collection<InternalSQLParserTestParameter> result = new LinkedList<>();
+        for (InternalSQLParserTestParameter each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).collect(Collectors.toSet()))) {
             if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
                 result.add(each);
             }
@@ -175,12 +175,12 @@ public final class SQLNodeConverterEngineIT {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserParameterizedArray parameterizedArray) {
-        return SQLCaseType.Placeholder == parameterizedArray.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(parameterizedArray.getSqlCaseId()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParameter) {
+        return SQLCaseType.Placeholder == testParameter.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParameter.getSqlCaseId()).getParameters().isEmpty();
     }
     
-    private static boolean isSupportedSQLCase(final InternalSQLParserParameterizedArray parameterizedArray) {
-        return parameterizedArray.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(parameterizedArray.getSqlCaseId());
+    private static boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParameter) {
+        return testParameter.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(testParameter.getSqlCaseId());
     }
     
     @Test
