@@ -23,9 +23,10 @@ databaseName ::=
 
 ### Return value description
 
-| Columns                 | Descriptions                  |
-| ------------------------| ------------------------------|
-| sharding_table_reference| sharding reference table list |
+| Columns                 | Descriptions                        |
+| ------------------------| ------------------------------------|
+| name                     | Sharding table reference rule name |
+| sharding_table_reference| sharding reference table list       |
 
 ### Example
 
@@ -37,12 +38,13 @@ SHOW SHARDING TABLE REFERENCE RULES FROM test1;
 
 ```sql
 mysql> SHOW SHARDING TABLE REFERENCE RULES FROM test1;
-+--------------------------+
-| sharding_table_reference |
-+--------------------------+
-| t_order,t_order_item     |
-+--------------------------+
-1 row in set (0.00 sec)
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
+| ref_1 | t_c,t_d                  |
++-------+--------------------------+
+2 rows in set (0.00 sec)
 ```
 
 - Query sharding tables with reference relationships for the current logical database
@@ -53,12 +55,13 @@ SHOW SHARDING TABLE REFERENCE RULES;
 
 ```sql
 mysql> SHOW SHARDING TABLE REFERENCE RULES;
-+--------------------------+
-| sharding_table_reference |
-+--------------------------+
-| t_order,t_order_item     |
-+--------------------------+
-1 row in set (0.00 sec)
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
+| ref_1 | t_c,t_d                  |
++-------+--------------------------+
+2 rows in set (0.00 sec)
 ```
 
 ### Reserved word
