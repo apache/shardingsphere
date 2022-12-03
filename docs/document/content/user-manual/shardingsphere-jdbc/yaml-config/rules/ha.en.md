@@ -19,7 +19,7 @@ rules:
 
 - !DB_DISCOVERY
   dataSources:
-    <data-source-name> (+): # Logic data source name
+    <data_source_name> (+): # Logic data source name
       dataSourceNames: # Data source names
         - <data_source>
         - <data_source>
@@ -28,13 +28,13 @@ rules:
   
   # Heartbeat Configuration
   discoveryHeartbeats:
-    <discovery-heartbeat-name> (+): # heartbeat name
+    <discovery_heartbeat_name> (+): # heartbeat name
       props:
         keep-alive-cron: # This is cron expression, such as：'0/5 * * * * ?'
   
   # Database Discovery Configuration
   discoveryTypes:
-    <discovery-type-name> (+): # Database discovery type name
+    <discovery_type_name> (+): # Database discovery type name
       type: # Database discovery type, such as: MySQL.MGR, MySQL.NORMAL_REPLICATION, openGauss.NORMAL_REPLICATION
       props (?):
         group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # Required parameters for database discovery types, such as MGR's group-name

@@ -34,15 +34,15 @@ rules:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    <data-source-name> (+): # Logic data source name of readwrite-splitting
-      dynamic-strategy: # Readwrite-splitting type
-        auto-aware-data-source-name: # Database discovery logic data source name
-        write-data-source-query-enabled: # All read data source are offline, write data source whether the data source is responsible for read traffic
+    <data_source_name> (+): # Logic data source name of readwrite-splitting
+      dynamic_strategy: # Readwrite-splitting type
+        auto_aware_data_source_name: # Database discovery logic data source name
+        write_data_source_query_enabled: # All read data source are offline, write data source whether the data source is responsible for read traffic
       loadBalancerName: # Load balance algorithm name
   
   # Load balance algorithm configuration
   loadBalancers:
-    <load-balancer-name> (+): # Load balance algorithm name
+    <load_balancer_name> (+): # Load balance algorithm name
       type: # Load balance algorithm type
       props: # Load balance algorithm properties
         # ...

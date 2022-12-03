@@ -72,13 +72,13 @@ rules:
         - user_id_insert_match_algorithm
         - simple_hint_algorithm
   shadowAlgorithms:
-    user-id-insert-match-algorithm:
+    user_id_insert_match_algorithm:
       type: REGEX_MATCH
       props:
         operation: insert
         column: user_id
         regex: "[1]"
-    simple-hint-algorithm:
+    simple_hint_algorithm:
       type: SIMPLE_HINT
       props:
         foo: bar
