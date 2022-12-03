@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.XmlElement;
 /**
  * JAXB definition of test case.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class TestCase {
     
     @XmlAttribute(name = "sql")
@@ -38,4 +38,9 @@ public final class TestCase {
     
     @XmlElement(name = "assertion")
     private TestCaseAssertion assertion;
+    
+    @Override
+    public String toString() {
+        return sql;
+    }
 }

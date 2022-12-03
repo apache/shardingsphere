@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -57,36 +57,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
-public final class SQLOptimizeEngineTest {
+@RequiredArgsConstructor
+public final class SQLOptimizeEngineIT {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
+    private final TestCase testcase;
+    
     private SQLOptimizeEngine optimizeEngine;
     
-    private final String sql;
-    
-    private final String expectedResult;
-    
-    public SQLOptimizeEngineTest(final TestCase testcase) {
-        sql = testcase.getSql();
-        expectedResult = testcase.getAssertion().getExpectedResult();
-    }
-    
     @SneakyThrows({IOException.class, JAXBException.class})
-    @Parameters
+    @Parameters(name = "{0}")
     public static Collection<TestCase> data() {
         return TestCasesLoader.getInstance().generate();
     }
     
     @Before
     public void init() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        Map<String, ShardingSphereTable> tables = new HashMap<>();
         tables.put("t_order_federate", createOrderFederationTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
         tables.put("t_order", createTOrderTableMetaData());
@@ -94,9 +89,7 @@ public final class SQLOptimizeEngineTest {
         tables.put("t_single_table", createTSingleTableMetaData());
         tables.put("t_order_federate_sharding", createTOrderFederateShardingMetaData());
         tables.put("t_order_item_federate_sharding", createTOrderItemFederateShardingMetaData());
-        ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
-        SqlToRelConverter converter = createSqlToRelConverter(schema);
-        optimizeEngine = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
+        optimizeEngine = new SQLOptimizeEngine(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtil.createHepPlanner());
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -170,14 +163,9 @@ public final class SQLOptimizeEngineTest {
     }
     
     @Test
-    public void test() {
-        assertEquals(expectedResult, execute(sql));
-    }
-    
-    private String execute(final String sql) {
-        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
-        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
-        String result = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
-        return result.replaceAll("\r|\n", "");
+    public void assertOptimize() {
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
+        String expected = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
+        assertThat(testcase.getAssertion().getExpectedResult(), is(expected));
     }
 }
