@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl;
 
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.SQLCaseLoadStrategy;
+import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.sql.parser.external.loader.summary.FileSummary;
 
 import java.io.BufferedReader;
@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * SQL case loader with GitHub.
+ * Test parameter load strategy with GitHub.
  */
 @Slf4j
-public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
+public final class GitHubTestParameterLoadStrategy implements TestParameterLoadStrategy {
     
     @Override
     public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {

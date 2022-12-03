@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.external.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
+import org.apache.shardingsphere.test.sql.parser.external.ExternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.sql.parser.external.env.SQLParserExternalITEnvironment;
-import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.SQLCaseLoadStrategy;
+import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.sql.parser.external.loader.summary.FileSummary;
 
 import java.io.BufferedReader;
@@ -36,39 +36,38 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * SQL case loader.
+ * External SQL parser test parameter loader.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class SQLCaseLoader {
+public final class ExternalSQLParserTestParameterLoader {
     
-    private final SQLCaseLoadStrategy loadStrategy;
+    private final TestParameterLoadStrategy loadStrategy;
     
     /**
-     * Load SQL cases.
+     * Load SQL parser test parameters.
      *
      * @param sqlCaseURI SQL case URI
      * @param resultURI result URI
      * @param databaseType database type
      * @param reportType report type
-     *
-     * @return loaded SQL cases
+     * @return loaded test parameters
      */
-    public Collection<ExternalSQLParserParameterizedArray> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
+    public Collection<ExternalSQLParserTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
         if (!SQLParserExternalITEnvironment.getInstance().isSqlParserITEnabled()) {
             return Collections.emptyList();
         }
-        Collection<ExternalSQLParserParameterizedArray> result = new LinkedList<>();
+        Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         Map<String, FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         Map<String, FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         for (Entry<String, FileSummary> entry : sqlCaseFileSummaries.entrySet()) {
             String fileName = entry.getKey();
             String sqlCaseFileContent = loadContent(URI.create(entry.getValue().getAccessURI()));
             String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURI())) : "";
-            result.addAll(createSQLCases(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
+            result.addAll(createTestParameters(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
         }
         if (result.isEmpty()) {
-            result.add(new ExternalSQLParserParameterizedArray("", databaseType, "", reportType));
+            result.add(new ExternalSQLParserTestParameter("", databaseType, "", reportType));
         }
         return result;
     }
@@ -84,9 +83,9 @@ public final class SQLCaseLoader {
         }
     }
     
-    private Collection<ExternalSQLParserParameterizedArray> createSQLCases(final String sqlCaseFileName,
-                                                                           final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
-        Collection<ExternalSQLParserParameterizedArray> result = new LinkedList<>();
+    private Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName,
+                                                                            final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
+        Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         String[] rawCaseLines = sqlCaseFileContent.split("\n");
         String[] rawResultLines = resultFileContent.split("\n");
         String completedSQL = "";
@@ -102,7 +101,7 @@ public final class SQLCaseLoader {
                 resultIndex = searchInResultContent(resultIndex, rawResultLines, completedSQL, statementLines);
                 if (resultIndex >= rawResultLines.length || !rawResultLines[resultIndex].contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                    result.add(new ExternalSQLParserParameterizedArray(sqlCaseId, databaseType, completedSQL, reportType));
+                    result.add(new ExternalSQLParserTestParameter(sqlCaseId, databaseType, completedSQL, reportType));
                     sqlCaseEnum++;
                 }
                 completedSQL = "";

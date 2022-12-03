@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.external.engine;
+package org.apache.shardingsphere.test.sql.parser.external;
 
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporterCreatorFactory;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Properties;
 
-public abstract class ExternalSQLParserParameterizedIT {
+@RunWith(Parameterized.class)
+public abstract class ExternalSQLParserIT {
     
     private final String sqlCaseId;
     
@@ -39,11 +41,11 @@ public abstract class ExternalSQLParserParameterizedIT {
     
     private final SQLParseResultReporter resultReporter;
     
-    protected ExternalSQLParserParameterizedIT(final ExternalSQLParserParameterizedArray parameterizedArray) {
-        sqlCaseId = parameterizedArray.getSqlCaseId();
-        sql = parameterizedArray.getSql();
-        databaseType = parameterizedArray.getDatabaseType();
-        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(parameterizedArray.getReportType()).create(databaseType);
+    protected ExternalSQLParserIT(final ExternalSQLParserTestParameter testParameter) {
+        sqlCaseId = testParameter.getSqlCaseId();
+        sql = testParameter.getSql();
+        databaseType = testParameter.getDatabaseType();
+        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(testParameter.getReportType()).create(databaseType);
     }
     
     @Test

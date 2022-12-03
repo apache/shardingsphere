@@ -17,28 +17,25 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.external;
 
-import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
-import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
-import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.apache.shardingsphere.test.sql.parser.external.ExternalSQLParserIT;
+import org.apache.shardingsphere.test.sql.parser.external.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.sql.parser.external.loader.ExternalSQLParserTestParameterLoader;
+import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.net.URI;
 import java.util.Collection;
 
-@RunWith(Parameterized.class)
-public final class ExternalMySQLParserParameterizedIT extends ExternalSQLParserParameterizedIT {
+public final class ExternalMySQLParserIT extends ExternalSQLParserIT {
     
-    public ExternalMySQLParserParameterizedIT(final ExternalSQLParserParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public ExternalMySQLParserIT(final ExternalSQLParserTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ExternalSQLParserParameterizedArray> getTestParameters() {
+    public static Collection<ExternalSQLParserTestParameter> getTestParameters() {
         String caseURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
         String resultURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
-        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "MySQL", "CSV");
+        return new ExternalSQLParserTestParameterLoader(new GitHubTestParameterLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "MySQL", "CSV");
     }
 }

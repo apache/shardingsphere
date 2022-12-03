@@ -17,28 +17,25 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.external;
 
-import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
-import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
-import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.apache.shardingsphere.test.sql.parser.external.ExternalSQLParserIT;
+import org.apache.shardingsphere.test.sql.parser.external.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.sql.parser.external.loader.ExternalSQLParserTestParameterLoader;
+import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.net.URI;
 import java.util.Collection;
 
-@RunWith(Parameterized.class)
-public final class ExternalPostgreSQLParserParameterizedIT extends ExternalSQLParserParameterizedIT {
+public final class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
     
-    public ExternalPostgreSQLParserParameterizedIT(final ExternalSQLParserParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public ExternalPostgreSQLParserIT(final ExternalSQLParserTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
-    public static Collection<ExternalSQLParserParameterizedArray> getTestParameters() {
+    public static Collection<ExternalSQLParserTestParameter> getTestParameters() {
         String caseURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
         String resultURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
-        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "PostgreSQL", "CSV");
+        return new ExternalSQLParserTestParameterLoader(new GitHubTestParameterLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "PostgreSQL", "CSV");
     }
 }
