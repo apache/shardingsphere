@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-test</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-parser-test</artifactId>
+    <artifactId>shardingsphere-test-parser</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
