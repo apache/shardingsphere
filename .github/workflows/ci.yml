@@ -26,8 +26,9 @@ on:
       - '**/src/main/**'
       - '**/src/test/**'
       - '!distribution/**'
-      - '!test/integration-*/**'
-      - 'test/integration-driver-test/**'
+      - '!test/it/**'
+      - '!test/e2e/**'
+      - 'test/e2e/driver/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -37,8 +38,9 @@ on:
       - '**/src/main/**'
       - '**/src/test/**'
       - '!distribution/**'
-      - '!test/integration-*/**'
-      - 'test/integration-driver-test/**'
+      - '!test/it/**'
+      - '!test/e2e/**'
+      - 'test/e2e/driver/**'
       - '!*.md'
   repository_dispatch:
     types: [ci-completed]

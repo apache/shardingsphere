@@ -21,48 +21,68 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-parser</artifactId>
+        <artifactId>shardingsphere-test-e2e</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-parser-dialect</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-test-e2e-suite</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>sql92</module>
-        <module>postgresql</module>
-        <module>mysql</module>
-        <module>oracle</module>
-        <module>sqlserver</module>
-        <module>opengauss</module>
-    </modules>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-engine</artifactId>
+            <artifactId>shardingsphere-test-e2e-env</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
         </dependency>
         
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-it-parser</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
         </dependency>
     </dependencies>
     
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
+                <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>integration-tests</id>
+                        <id>copy-resources</id>
                         <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
+                            <goal>copy-resources</goal>
                         </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <outputDirectory>target/test-classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/test/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

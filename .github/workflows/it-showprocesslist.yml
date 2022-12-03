@@ -28,9 +28,9 @@ on:
       - 'jdbc/core/src/main/**'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/showprocesslist/**'
+      - 'test/e2e/fixture/**'
+      - 'test/e2e/env/**'
+      - 'test/e2e/showprocesslist/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -42,9 +42,9 @@ on:
       - 'jdbc/core/src/main/**'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/showprocesslist/**'
+      - 'test/e2e/fixture/**'
+      - 'test/e2e/env/**'
+      - 'test/e2e/showprocesslist/**'
       - '!*.md'
   workflow_dispatch:
 
@@ -81,6 +81,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build ShowProcesslist IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/showprocesslist -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/showprocesslist -Pit.env.docker -DskipTests
       - name: Run MySQL ShowProcesslist Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/showprocesslist/pom.xml -Dit.env.type=docker -Dit.scenarios=cluster_jdbc_proxy -Dit.run.modes=${{ matrix.mode }}
+        run: ./mvnw -nsu -B install -f test/e2e/showprocesslist/pom.xml -Dit.env.type=docker -Dit.scenarios=cluster_jdbc_proxy -Dit.run.modes=${{ matrix.mode }}

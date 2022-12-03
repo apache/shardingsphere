@@ -21,52 +21,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-test-e2e-agent</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test</artifactId>
+    <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>fixture</module>
-        <module>it</module>
-        <module>e2e</module>
+        <module>common</module>
+        <module>metrics</module>
+        <module>opentelemetry</module>
+        <module>zipkin</module>
+        <module>jaeger</module>
     </modules>
-    
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-        
-        <testcontainers.version>1.17.3</testcontainers.version>
-    </properties>
-    
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers</artifactId>
-                <version>${testcontainers.version}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    
-    <dependencies>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-        </dependency>
-    </dependencies>
 </project>

@@ -34,9 +34,9 @@ on:
       - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/scaling/**'
+      - 'test/e2e/fixture/**'
+      - 'test/e2e/env/**'
+      - 'test/e2e/scaling/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -54,9 +54,9 @@ on:
       - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/scaling/**'
+      - 'test/e2e/fixture/**'
+      - 'test/e2e/env/**'
+      - 'test/e2e/scaling/**'
       - '!*.md'
   schedule:
     - cron: '0 22 */1 * *'  # once a day. UTC time
@@ -95,13 +95,13 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Scaling IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/scaling -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/scaling -Pit.env.docker -DskipTests
       - name: Run Scaling MySQL Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
       - name: Run Scaling PostgreSQL Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
       - name: Run Scaling openGauss Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}
 
   scaling-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
@@ -128,10 +128,10 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Scaling IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/scaling -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/scaling -Pit.env.docker -DskipTests
       - name: Run Scaling Daily MySQL Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
       - name: Run Scaling Daily PostgreSQL Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
       - name: Run Scaling Daily openGauss Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}
