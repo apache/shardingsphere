@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.external.engine.param;
+package org.apache.shardingsphere.test.sql.parser.external;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * External SQL parser parameterized array.
+ * External SQL parser test parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExternalSQLParserParameterizedArray {
+public final class ExternalSQLParserTestParameter {
     
     private final String sqlCaseId;
     

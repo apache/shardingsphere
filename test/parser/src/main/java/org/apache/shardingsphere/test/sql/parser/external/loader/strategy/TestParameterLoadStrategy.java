@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl;
+package org.apache.shardingsphere.test.sql.parser.external.loader.strategy;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.SQLCaseLoadStrategy;
 import org.apache.shardingsphere.test.sql.parser.external.loader.summary.FileSummary;
 
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.stream.Stream;
 
 /**
- * SQL case loader with local file.
+ * Test parameter load strategy.
  */
-public final class LocalFileSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
+public interface TestParameterLoadStrategy {
     
-    @SneakyThrows
-    @Override
-    public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
-        final Collection<FileSummary> result = new LinkedList<>();
-        try (Stream<Path> stream = Files.walk(Paths.get(uri))) {
-            stream.filter(each -> each.toString().endsWith(".sql"))
-                    .forEach(each -> result.add(new FileSummary(each.getFileName().toString(), each.toUri().toString())));
-        }
-        return result;
-    }
+    /**
+     * Load SQL case file summaries.
+     * 
+     * @param uri URL to be loaded
+     * @return loaded SQL file summaries
+     */
+    Collection<FileSummary> loadSQLCaseFileSummaries(URI uri);
 }
