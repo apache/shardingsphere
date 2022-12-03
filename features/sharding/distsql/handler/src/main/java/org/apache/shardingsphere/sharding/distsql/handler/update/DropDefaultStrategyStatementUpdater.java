@@ -80,7 +80,8 @@ public final class DropDefaultStrategyStatementUpdater extends AbstractDropShard
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
         dropUnusedAlgorithm(currentRuleConfig);
-        return false;
+        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty() && currentRuleConfig.getBroadcastTables().isEmpty()
+                && null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
     }
     
     @Override
