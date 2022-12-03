@@ -68,7 +68,8 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
     @Override
     public boolean updateCurrentRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBroadcastTables().removeIf(each -> containsIgnoreCase(sqlStatement.getTables(), each));
-        return false;
+        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty() && currentRuleConfig.getBroadcastTables().isEmpty()
+                && null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
     }
     
     @Override

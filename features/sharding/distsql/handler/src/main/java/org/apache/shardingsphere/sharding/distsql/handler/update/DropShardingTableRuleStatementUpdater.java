@@ -115,7 +115,8 @@ public final class DropShardingTableRuleStatementUpdater extends AbstractDropSha
         dropUnusedAlgorithm(currentRuleConfig);
         dropUnusedKeyGenerator(currentRuleConfig);
         dropUnusedAuditor(currentRuleConfig);
-        return false;
+        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty() && currentRuleConfig.getBroadcastTables().isEmpty()
+                && null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
     }
     
     private void dropUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {

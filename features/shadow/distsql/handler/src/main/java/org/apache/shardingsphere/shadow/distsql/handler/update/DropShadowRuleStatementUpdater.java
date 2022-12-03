@@ -68,11 +68,11 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
         currentRuleConfig.getDataSources().removeIf(each -> sqlStatement.getNames().contains(each.getName()));
         currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
         currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
-        removeUnusedAlgorithm(currentRuleConfig);
+        dropUnusedAlgorithm(currentRuleConfig);
         return currentRuleConfig.getDataSources().isEmpty() || currentRuleConfig.getTables().isEmpty();
     }
     
-    private void removeUnusedAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
+    private void dropUnusedAlgorithm(final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().entrySet().stream().flatMap(entry -> entry.getValue().getShadowAlgorithmNames().stream()).collect(Collectors.toSet());
         if (null != currentRuleConfig.getDefaultShadowAlgorithmName()) {
             inUsedAlgorithms.add(currentRuleConfig.getDefaultShadowAlgorithmName());

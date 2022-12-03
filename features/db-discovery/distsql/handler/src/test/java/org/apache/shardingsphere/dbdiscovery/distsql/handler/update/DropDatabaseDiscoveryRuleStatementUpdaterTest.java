@@ -105,7 +105,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig);
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig));
         assertTrue(databaseDiscoveryRuleConfig.getDataSources().isEmpty());
         assertTrue(databaseDiscoveryRuleConfig.getDiscoveryTypes().isEmpty());
         assertTrue(databaseDiscoveryRuleConfig.getDiscoveryHeartbeats().isEmpty());

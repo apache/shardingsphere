@@ -84,7 +84,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         sqlStatement.getNames().forEach(each -> dropRule(currentRuleConfig, each));
         dropUnusedType(currentRuleConfig);
         dropUnusedHeartbeat(currentRuleConfig);
-        return false;
+        return currentRuleConfig.getDataSources().isEmpty();
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
