@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner;
+package org.apache.shardingsphere.test.integration.framework.runner.executor.key;
 
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
-import org.junit.runners.Parameterized;
+import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.integration.framework.runner.param.ParameterizedArray;
 
 /**
- * Parallel parameterized.
+ * Case parallel runner executor key provider.
  */
-public final class ParallelParameterized extends Parameterized {
+public final class CaseParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
     
-    // CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> clazz) throws Throwable {
-        // CHECKSTYLE:ON
-        super(clazz);
-        ParallelRunningStrategy runningStrategy = clazz.getAnnotation(ParallelRunningStrategy.class);
-        if (null != runningStrategy) {
-            setScheduler(new ParallelRunnerScheduler(runningStrategy.value(), new ParallelRunnerExecutor()));
-        }
+    @Override
+    public String getKey(final ParameterizedArray parameterizedArray) {
+        return parameterizedArray.getDatabaseType().getType();
+    }
+    
+    @Override
+    public ParallelLevel getParallelLevel() {
+        return ParallelLevel.CASE;
     }
 }

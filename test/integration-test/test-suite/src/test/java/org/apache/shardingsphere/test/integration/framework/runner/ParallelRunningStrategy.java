@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.executor.key;
+package org.apache.shardingsphere.test.integration.framework.runner;
 
-import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Parallel runner executor key provider.
+ * Parallel running strategy.
  */
-public interface ParallelRunnerExecutorKeyProvider {
-    
-    /**
-     * Get key.
-     * 
-     * @param parameterizedArray parameterized array
-     * @return parallel runner executor key
-     */
-    String getKey(ParameterizedArray parameterizedArray);
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface ParallelRunningStrategy {
     
     /**
      * Get parallel level.
      * 
      * @return parallel level
      */
-    ParallelLevel getParallelLevel();
+    ParallelLevel value();
+    
+    /**
+     * Parallel level.
+     */
+    enum ParallelLevel {
+        
+        CASE, SCENARIO
+    }
 }

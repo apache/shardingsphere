@@ -19,18 +19,17 @@ package org.apache.shardingsphere.test.integration.framework.runner;
 
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.runtime.cluster.ClusterEnvironment;
-import org.apache.shardingsphere.test.runner.ParallelRunningStrategy;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
+import org.apache.shardingsphere.test.integration.framework.runner.executor.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.framework.runner.scheduler.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
 
 /**
- * ShardingSphere integration test parameterized.
+ * Parallel parameterized.
  */
-public final class ShardingSphereIntegrationTestParameterized extends Parameterized {
+public final class ParallelParameterized extends Parameterized {
     
     // CHECKSTYLE:OFF
-    public ShardingSphereIntegrationTestParameterized(final Class<?> clazz) throws Throwable {
+    public ParallelParameterized(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
         super(clazz);
         if (ClusterEnvironment.Type.DOCKER != IntegrationTestEnvironment.getInstance().getClusterEnvironment().getType()) {

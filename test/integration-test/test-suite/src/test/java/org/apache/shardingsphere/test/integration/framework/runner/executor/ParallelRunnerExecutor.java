@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.executor;
+package org.apache.shardingsphere.test.integration.framework.runner.executor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

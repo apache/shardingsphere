@@ -30,7 +30,6 @@
     
     <modules>
         <module>fixture</module>
-        <module>runner</module>
         <module>integration-test</module>
         <module>integration-driver-test</module>
         <module>integration-agent-test</module>

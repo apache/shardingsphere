@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.param;
+package org.apache.shardingsphere.test.integration.framework.runner.param;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
