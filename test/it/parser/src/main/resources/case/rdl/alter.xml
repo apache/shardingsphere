@@ -268,12 +268,6 @@
         </shadow-algorithm>
     </alter-default-shadow-algorithm>
     
-    <alter-sharding-auditor sql-case-id="alter-sharding-auditor">
-        <sharding-auditor auditor-name="sharding_key_required_auditor">
-            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
-        </sharding-auditor>
-    </alter-sharding-auditor>
-    
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
         <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
             <algorithm-segment algorithm-name="INLINE">
