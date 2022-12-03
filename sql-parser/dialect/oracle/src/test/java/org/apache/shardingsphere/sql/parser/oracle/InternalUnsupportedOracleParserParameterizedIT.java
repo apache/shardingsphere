@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.oracle;
 
-import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalUnsupportedSQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalUnsupportedSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;

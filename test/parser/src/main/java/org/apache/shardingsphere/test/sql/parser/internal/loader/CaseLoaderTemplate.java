@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.engine.loader;
+package org.apache.shardingsphere.test.sql.parser.internal.loader;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -23,29 +27,22 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Case loader callback.
- * 
- * @param <T> type of test case
+ * Case loader template.
  */
-public interface CaseLoaderCallback<T> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CaseLoaderTemplate {
     
     /**
-     * Load test cases from jar.
+     * Load test cases.
      * 
-     * @param jarFile jar file
-     * @param rootDirectory root directory of test cases
-     * @return loaded test cases
-     * @throws JAXBException JAXB exception
+     * @param rootDirectory root directory
+     * @param callback callback of cases loader
+     * @param <T> type of test case
+     * @return loaded cases
      */
-    Map<String, T> loadFromJar(File jarFile, String rootDirectory) throws JAXBException;
-    
-    /**
-     * Load test cases from directory.
-     * 
-     * @param rootDirectory root directory of test cases
-     * @return loaded test cases
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
-     */
-    Map<String, T> loadFromDirectory(String rootDirectory) throws IOException, JAXBException;
+    @SneakyThrows({JAXBException.class, IOException.class})
+    public static <T> Map<String, T> load(final String rootDirectory, final CaseLoaderCallback<T> callback) {
+        File file = new File(CaseLoaderTemplate.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        return file.isFile() ? callback.loadFromJar(file, rootDirectory) : callback.loadFromDirectory(rootDirectory);
+    }
 }

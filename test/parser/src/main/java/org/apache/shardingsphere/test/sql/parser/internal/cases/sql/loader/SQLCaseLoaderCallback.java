@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.RootSQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseLoaderCallback;
+import org.apache.shardingsphere.test.sql.parser.internal.loader.CaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.loader.CaseLoaderCallback;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
