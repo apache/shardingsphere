@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.executor.key;
 
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.integration.framework.runner.param.ParameterizedArray;
 
 /**
  * Parallel runner executor key provider.
@@ -31,7 +31,7 @@ public interface ParallelRunnerExecutorKeyProvider {
      * @param parameterizedArray parameterized array
      * @return parallel runner executor key
      */
-    String getKey(ParameterizedArray parameterizedArray);
+    String getKey(ITParameterizedArray parameterizedArray);
     
     /**
      * Get parallel level.

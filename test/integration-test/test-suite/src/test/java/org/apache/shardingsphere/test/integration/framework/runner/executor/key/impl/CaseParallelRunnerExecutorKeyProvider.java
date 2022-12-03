@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.runner.param;
+package org.apache.shardingsphere.test.integration.framework.runner.executor.key.impl;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.integration.framework.runner.executor.key.ParallelRunnerExecutorKeyProvider;
 
 /**
- * Parameterized array.
+ * Case parallel runner executor key provider.
  */
-public interface ParameterizedArray {
+public final class CaseParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
     
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    @Override
+    public String getKey(final ITParameterizedArray parameterizedArray) {
+        return parameterizedArray.getDatabaseType().getType();
+    }
+    
+    @Override
+    public ParallelLevel getParallelLevel() {
+        return ParallelLevel.CASE;
+    }
 }

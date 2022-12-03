@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.runner.executor.key;
+package org.apache.shardingsphere.test.integration.framework.runner.executor.key.impl;
 
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.integration.framework.runner.param.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.runner.executor.key.ParallelRunnerExecutorKeyProvider;
 
 /**
- * Case parallel runner executor key provider.
+ * Scenario parallel runner executor key provider.
  */
-public final class CaseParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
+public final class ScenarioParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
     
     @Override
-    public String getKey(final ParameterizedArray parameterizedArray) {
-        return parameterizedArray.getDatabaseType().getType();
+    public String getKey(final ITParameterizedArray parameterizedArray) {
+        return String.join("-", parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getType());
     }
     
     @Override
     public ParallelLevel getParallelLevel() {
-        return ParallelLevel.CASE;
+        return ParallelLevel.SCENARIO;
     }
 }
