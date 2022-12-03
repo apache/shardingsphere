@@ -28,10 +28,6 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
-    
     <modules>
         <module>fixture</module>
         <module>env</module>
@@ -43,6 +39,10 @@
         <module>driver</module>
         <module>agent</module>
     </modules>
+    
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
     
     <build>
         <plugins>
