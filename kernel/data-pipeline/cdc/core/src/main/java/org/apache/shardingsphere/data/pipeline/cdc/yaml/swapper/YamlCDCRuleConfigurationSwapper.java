@@ -19,25 +19,25 @@ package org.apache.shardingsphere.data.pipeline.cdc.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCOrder;
-import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCdcRuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCDCRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
 /**
  * YAML CDC rule configuration swapper.
  */
-public final class YamlCdcRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlCdcRuleConfiguration, CDCRuleConfiguration> {
+public final class YamlCDCRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlCDCRuleConfiguration, CDCRuleConfiguration> {
     
     @Override
-    public YamlCdcRuleConfiguration swapToYamlConfiguration(final CDCRuleConfiguration data) {
-        YamlCdcRuleConfiguration result = new YamlCdcRuleConfiguration();
+    public YamlCDCRuleConfiguration swapToYamlConfiguration(final CDCRuleConfiguration data) {
+        YamlCDCRuleConfiguration result = new YamlCDCRuleConfiguration();
         result.setPort(null == data ? 33071 : data.getPort());
-        result.setEnable(null != data && data.isEnable());
+        result.setEnabled(null != data && data.isEnabled());
         return result;
     }
     
     @Override
-    public CDCRuleConfiguration swapToObject(final YamlCdcRuleConfiguration yamlConfig) {
-        return new CDCRuleConfiguration(yamlConfig.isEnable(), yamlConfig.getPort());
+    public CDCRuleConfiguration swapToObject(final YamlCDCRuleConfiguration yamlConfig) {
+        return new CDCRuleConfiguration(yamlConfig.isEnabled(), yamlConfig.getPort());
     }
     
     @Override

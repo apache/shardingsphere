@@ -28,12 +28,11 @@ import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.LoginRequest.BasicBody;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse.Builder;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CreateSubscriptionResult;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.ServerGreetingResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CreateSubscriptionResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -46,6 +45,9 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * CDC channel inbound handler.
+ */
 @Slf4j
 public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
@@ -56,13 +58,13 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         CDCConnectionContext context = new CDCConnectionContext();
         context.setStatus(CDCConnectionStatus.NOT_LOGGED_IN);
         ctx.channel().attr(CONNECTION_CONTEXT_KEY).setIfAbsent(context);
-        Builder builder = CDCResponse.newBuilder();
-        builder.setServerGreetingResult(ServerGreetingResult.newBuilder().setServerVersion(ShardingSphereVersion.VERSION).setMaxProtocolVersion("1").setMinProtocolVersion("1").build());
-        ctx.writeAndFlush(builder.build());
+        CDCResponse response = CDCResponse.newBuilder().setServerGreetingResult(ServerGreetingResult.newBuilder().setServerVersion(ShardingSphereVersion.VERSION).setCurrenProtocolVersion("1")
+                .build()).build();
+        ctx.writeAndFlush(response);
     }
     
     @Override
-    public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
+    public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
         CDCConnectionStatus status = connectionContext.getStatus();
         CDCRequest request = (CDCRequest) msg;
@@ -83,7 +85,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             case DROP_SUBSCRIPTION:
                 dropStartSubscription(ctx, request);
                 break;
-            case FETCH_RECORD_ACK:
+            case ACK_REQUEST:
                 break;
             default:
                 log.warn("Cannot handle this type of request {}", request);
@@ -104,9 +106,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         }
         Optional<ShardingSphereUser> user = authorityRule.get().findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
         if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString(), body.getPassword())) {
-            CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
-            connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
-            ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(connectionContext);
+            ctx.channel().attr(CONNECTION_CONTEXT_KEY).get().setStatus(CDCConnectionStatus.LOGGED_IN);
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
             return;
         }

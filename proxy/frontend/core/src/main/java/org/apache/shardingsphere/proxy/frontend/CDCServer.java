@@ -30,6 +30,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.frontend.netty.CDCServerHandlerInitializer;
@@ -38,28 +39,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ShardingSphere CDC server.
+ * CDC server.
  */
 @Slf4j
-public final class ShardingSphereCDCServer {
+@RequiredArgsConstructor
+public final class CDCServer extends Thread {
+    
+    private final List<String> addressed;
+    
+    private final int port;
     
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
     
-    /**
-     * Start ShardingSphere CDC server.
-     *
-     * @param port port
-     * @param addresses addresses
-     * @return futures
-     */
+    @Override
     @SneakyThrows(InterruptedException.class)
-    public List<ChannelFuture> startAsync(final int port, final List<String> addresses) {
-        return startInternal(port, addresses);
+    public void run() {
+        try {
+            List<ChannelFuture> futures = startInternal(addressed, port);
+            for (ChannelFuture each : futures) {
+                each.channel().closeFuture().sync();
+            }
+        } finally {
+            close();
+        }
     }
     
-    private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
+    private List<ChannelFuture> startInternal(final List<String> addresses, final int port) throws InterruptedException {
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
@@ -81,5 +88,13 @@ public final class ShardingSphereCDCServer {
     private void createEventLoopGroup() {
         bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
         workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+    }
+    
+    /**
+     * CDC server close.
+     */
+    public void close() {
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
     }
 }

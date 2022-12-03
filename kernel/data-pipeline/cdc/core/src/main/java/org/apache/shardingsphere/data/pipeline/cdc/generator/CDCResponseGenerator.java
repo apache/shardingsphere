@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.cdc.generator;
 
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse.Builder;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse.Status;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Builder;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 
 /**
  * CDC response message generator.
@@ -31,13 +31,10 @@ public final class CDCResponseGenerator {
      * Succeed response builder.
      *
      * @param requestId request id
-     * @return success message
+     * @return succeed response builder
      */
     public static Builder succeedBuilder(final String requestId) {
-        Builder builder = CDCResponse.newBuilder();
-        builder.setStatus(Status.SUCCEED);
-        builder.setRequestId(requestId);
-        return builder;
+        return CDCResponse.newBuilder().setStatus(Status.SUCCEED).setRequestId(requestId);
     }
     
     /**
@@ -49,11 +46,6 @@ public final class CDCResponseGenerator {
      * @return failed response
      */
     public static CDCResponse failed(final String requestId, final CDCResponseErrorCode errorCode, final String errorMessage) {
-        Builder builder = CDCResponse.newBuilder();
-        builder.setStatus(Status.FAILED);
-        builder.setRequestId(requestId);
-        builder.setErrorCode(errorCode.getCode());
-        builder.setErrorMessage(errorMessage);
-        return builder.build();
+        return CDCResponse.newBuilder().setStatus(Status.FAILED).setRequestId(requestId).setErrorCode(errorCode.getCode()).setErrorMessage(errorMessage).build();
     }
 }

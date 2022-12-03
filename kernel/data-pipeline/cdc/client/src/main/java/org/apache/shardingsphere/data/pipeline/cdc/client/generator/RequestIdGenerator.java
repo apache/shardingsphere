@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.common;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.data.pipeline.cdc.client.generator;
 
 /**
- * CDC response error code.
+ * Request id generator.
  */
-@RequiredArgsConstructor
-public enum CDCResponseErrorCode {
+public interface RequestIdGenerator {
     
-    SERVER_ERROR("1"),
-    
-    ILLEGAL_REQUEST_ERROR("2");
-    
-    @Getter
-    private final String code;
+    /**
+     * Generate request id.
+     *
+     * @return request id
+     */
+    String generateRequestId();
 }

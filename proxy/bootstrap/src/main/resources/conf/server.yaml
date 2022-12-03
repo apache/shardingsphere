@@ -42,10 +42,6 @@
 #  privilege:
 #    type: ALL_PERMITTED
 #
-#cdc:
-#  enable: false
-#  port: 33071
-#
 #transaction:
 #  defaultType: XA
 #  providerType: Atomikos
@@ -58,6 +54,10 @@
 #  parseTreeCache:
 #    initialCapacity: 128
 #    maximumSize: 1024
+#
+#cdc:
+#  enabled: false
+#  port: 33071
 #
 #props:
 #  max-connections-size-per-query: 1

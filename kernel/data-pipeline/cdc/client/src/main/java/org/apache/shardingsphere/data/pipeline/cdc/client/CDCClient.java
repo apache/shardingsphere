@@ -32,7 +32,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.SubscriptionRequestHandler;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 
 /**
  * CDC client.
@@ -47,11 +47,11 @@ public final class CDCClient {
      * @param address addresses
      */
     @SneakyThrows(InterruptedException.class)
-    public void start(final int port, final String address) {
-        startInternal(port, address);
+    public void start(final String address, final int port) {
+        startInternal(address, port);
     }
     
-    private void startInternal(final int port, final String address) throws InterruptedException {
+    private void startInternal(final String address, final int port) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class)
                 .group(new NioEventLoopGroup())
@@ -65,6 +65,7 @@ public final class CDCClient {
                         channel.pipeline().addLast(new ProtobufDecoder(CDCResponse.getDefaultInstance()));
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
+                        // TODO username and password are read from the configuration file or args
                         channel.pipeline().addLast(new LoginRequestHandler("root", "root"));
                         channel.pipeline().addLast(new SubscriptionRequestHandler());
                     }

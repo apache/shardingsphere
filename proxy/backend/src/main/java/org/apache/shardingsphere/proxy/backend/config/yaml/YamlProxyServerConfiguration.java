@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.config.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCdcRuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCDCRuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -52,7 +52,7 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
     private YamlTrafficRuleConfiguration traffic;
     
-    private YamlCdcRuleConfiguration cdc;
+    private YamlCDCRuleConfiguration cdc;
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     

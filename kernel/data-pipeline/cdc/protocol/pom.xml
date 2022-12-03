@@ -27,21 +27,14 @@
     <artifactId>shardingsphere-data-pipeline-cdc-protocol</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <protobuf-java-util.version>3.17.1</protobuf-java-util.version>
-        <protobuf-java.version>3.17.1</protobuf-java.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>${protobuf-java.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-            <version>${protobuf-java.version}</version>
         </dependency>
     </dependencies>
     
@@ -50,13 +43,12 @@
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
-                <extensions>true</extensions>
+                <version>${protobuf-maven-plugin.version}</version>
                 <configuration>
                     <additionalProtoPathElements>
                         <additionalProtoPathElement>${project.basedir}/src/main/resources</additionalProtoPathElement>
                     </additionalProtoPathElements>
-                    <protocArtifact>com.google.protobuf:protoc:3.17.1:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}</protocArtifact>
                 </configuration>
                 <executions>
                     <execution>
@@ -72,7 +64,7 @@
             <extension>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>${os-maven-plugin.version}</version>
             </extension>
         </extensions>
     </build>

@@ -23,7 +23,7 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 
 /**
  * CDC server handler initializer.

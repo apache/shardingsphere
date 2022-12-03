@@ -24,17 +24,18 @@ import io.netty.util.AttributeKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest.Type;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.LoginRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.LoginRequest.BasicBody;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.LoginRequest.LoginType;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse.Status;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.ServerGreetingResult;
+import org.apache.shardingsphere.data.pipeline.cdc.client.generator.RequestIdGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.client.generator.impl.UUIDRequestIdGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.LoginType;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Login request handler.
@@ -44,6 +45,8 @@ import java.util.UUID;
 public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     
     private static final AttributeKey<String> LOGIN_REQUEST_ID_KEY = AttributeKey.valueOf("login.request.id");
+    
+    private final RequestIdGenerator requestIdGenerator = new UUIDRequestIdGenerator();
     
     private final String username;
     
@@ -65,7 +68,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         CDCResponse response = (CDCResponse) msg;
         if (response.hasServerGreetingResult()) {
             ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
-            log.info("Server greeting result, server version: {}, min protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getMinProtocolVersion());
+            log.info("Server greeting result, server version: {}, min protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getCurrenProtocolVersion());
             sendLoginRequest(ctx);
             return;
         }
@@ -83,9 +86,14 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     private void sendLoginRequest(final ChannelHandlerContext ctx) {
         String encryptPassword = Hashing.sha256().hashBytes(password.getBytes()).toString();
         LoginRequest loginRequest = LoginRequest.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(username).setPassword(encryptPassword).build()).build();
-        String loginRequestId = UUID.randomUUID().toString();
+        String loginRequestId = requestIdGenerator.generateRequestId();
         ctx.channel().attr(LOGIN_REQUEST_ID_KEY).setIfAbsent(loginRequestId);
         CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(loginRequestId).setLogin(loginRequest).build();
         ctx.writeAndFlush(data);
+    }
+    
+    @Override
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
+        log.error("login handler error", cause);
     }
 }

@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.common;
+package org.apache.shardingsphere.data.pipeline.cdc.client.generator.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.cdc.client.generator.RequestIdGenerator;
+
+import java.util.UUID;
 
 /**
- * CDC response error code.
+ * UUID request id generator.
  */
-@RequiredArgsConstructor
-public enum CDCResponseErrorCode {
+public final class UUIDRequestIdGenerator implements RequestIdGenerator {
     
-    SERVER_ERROR("1"),
-    
-    ILLEGAL_REQUEST_ERROR("2");
-    
-    @Getter
-    private final String code;
+    @Override
+    public String generateRequestId() {
+        return UUID.randomUUID().toString();
+    }
 }

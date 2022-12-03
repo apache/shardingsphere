@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 @Getter
 public final class CDCRuleConfiguration implements GlobalRuleConfiguration {
     
-    private final boolean enable;
+    private final boolean enabled;
     
     private final int port;
 }

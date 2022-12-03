@@ -20,8 +20,8 @@ syntax = "proto3";
 import "google/protobuf/any.proto";
 
 option java_multiple_files = true;
-option java_outer_classname = "CDCResponseProto";
-option java_package = "org.apache.shardingsphere.data.pipeline.cdc.proto.response";
+option java_outer_classname = "CDCResponseProtocol";
+option java_package = "org.apache.shardingsphere.data.pipeline.cdc.protocol.response";
 
 message CDCResponse {
   string request_id = 1;
@@ -37,19 +37,18 @@ message CDCResponse {
     FetchRecordResult fetch_record_result = 5;
   }
 
-  optional string error_code = 100;
-  optional string error_message = 101;
+  optional string error_code = 14;
+  optional string error_message = 15;
 }
 
 message ServerGreetingResult {
   string server_version = 1;
-  string max_protocol_version = 2;
-  string min_protocol_version = 3;
+  string curren_protocol_version = 2;
 }
 
 message CreateSubscriptionResult {
   string subscriptionName = 1;
-  bool already_exists = 2;
+  bool existing = 2;
 }
 
 message FetchRecordResult {
@@ -57,23 +56,26 @@ message FetchRecordResult {
     map<string, google.protobuf.Any> before = 1;
     map<string, google.protobuf.Any> after = 2;
     message TableMetaData {
-      string databaseName = 1;
+      string database = 1;
       optional string schema = 2;
       string tableName = 3;
     }
     TableMetaData tableMetaData = 3;
-    int64 ts_ms = 4;  // Transaction Commit Time
+    int64 transaction_commit_millis = 4;
     enum DataChangeType {
       UNKNOWN = 0;
       INSERT = 1;
       UPDATE = 2;
       DELETE = 3;
-      CREATE = 4;
-      ALTER = 5;
-      DROP = 6;
+      CREATE_TABLE = 4;
+      ALTER_TABLE = 5;
+      DROP_TABLE = 6;
+      CREATE_INDEX = 7;
+      ALTER_INDEX = 8;
+      DROP_INDEX = 9;
     }
-    bool isDdl = 6; // When isDdl is true, the message contains a DDL sql.
-    optional string sql = 7; // This field has a value only when isDdl is true
+    bool isDDL = 6;
+    optional string ddlSQL = 7;
   }
   repeated Record records = 1;
   bool hasNext = 2;

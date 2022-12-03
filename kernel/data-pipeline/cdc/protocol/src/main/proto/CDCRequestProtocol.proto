@@ -18,28 +18,28 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_outer_classname = "CDCRequestProto";
-option java_package = "org.apache.shardingsphere.data.pipeline.cdc.proto.request";
+option java_outer_classname = "CDCRequestProtocol";
+option java_package = "org.apache.shardingsphere.data.pipeline.cdc.protocol.request";
 
 message CDCRequest {
-  int32 version = 1; // proto version
-  string request_id = 2; // request id
+  int32 version = 1;
+  string request_id = 2;
   enum Type {
     UNKNOWN = 0;
     LOGIN = 1;
-    CREATE_SUBSCRIPTION = 2; 
-    START_SUBSCRIPTION = 3; 
-    STOP_SUBSCRIPTION = 4; 
+    CREATE_SUBSCRIPTION = 2;
+    START_SUBSCRIPTION = 3;
+    STOP_SUBSCRIPTION = 4;
     DROP_SUBSCRIPTION = 5;
     FETCH_RECORDS = 6;
-    FETCH_RECORDS_ACK = 7; // The ack of fetch records
+    FETCH_RECORDS_ACK = 7;
   }
   Type type = 3;
   oneof request {
     LoginRequest login = 4;
     CreateSubscriptionRequest create_subscription = 5;
     StartSubscriptionRequest start_subscription = 6;
-    FetchRecordAck fetch_record_ack = 7;
+    AckRequest ack_request = 7;
     StopSubscriptionRequest stop_subscription = 8;
     DropSubscriptionRequest drop_subscription = 9;
   }
@@ -52,18 +52,22 @@ message LoginRequest {
   }
   LoginType type = 1;
   oneof body {
-    BasicBody basic_body = 2; // Username and password body
+    BasicBody basic_body = 2;
   }
 
   message BasicBody {
     string username = 1;
-    string password = 2; // Encrypted password
+    string password = 2;
   }
 }
 
 message CreateSubscriptionRequest {
   string database = 1;
-  repeated string tableNames = 2; // If a schema exists use . separates，eg. public.t_order
+  message TableName {
+    string schema = 1;
+    string name = 2;
+  }
+  repeated TableName tableNames = 2;
   string subscriptionName = 3;
   SubscriptionMode subscriptionMode = 4;
 
@@ -86,7 +90,7 @@ message DropSubscriptionRequest {
   string subscriptionName = 1;
 }
 
-message FetchRecordAck {
+message AckRequest {
   string subscriptionName = 1;
-  string lastReceivePosition = 2;
+  string lastReceivedPosition = 2;
 }

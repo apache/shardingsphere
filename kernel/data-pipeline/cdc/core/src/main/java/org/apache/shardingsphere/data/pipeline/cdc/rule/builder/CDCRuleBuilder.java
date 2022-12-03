@@ -35,7 +35,7 @@ public final class CDCRuleBuilder implements GlobalRuleBuilder<CDCRuleConfigurat
     @Override
     public CDCRule build(final CDCRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext,
                          final ConfigurationProperties props) {
-        return new CDCRule(ruleConfig.isEnable(), ruleConfig.getPort());
+        return new CDCRule(ruleConfig.isEnabled(), ruleConfig.getPort());
     }
     
     @Override

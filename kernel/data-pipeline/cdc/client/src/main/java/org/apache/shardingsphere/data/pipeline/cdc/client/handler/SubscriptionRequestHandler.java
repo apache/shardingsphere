@@ -21,16 +21,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest.Builder;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CreateSubscriptionRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CreateSubscriptionRequest.SubscriptionMode;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.StartSubscriptionRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse.Status;
-
-import java.util.Arrays;
-import java.util.UUID;
+import org.apache.shardingsphere.data.pipeline.cdc.client.generator.RequestIdGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.client.generator.impl.UUIDRequestIdGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.TableName;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 
 /**
  * Subscription request handler.
@@ -38,19 +38,21 @@ import java.util.UUID;
 @Slf4j
 public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapter {
     
+    private final RequestIdGenerator requestIdGenerator = new UUIDRequestIdGenerator();
+    
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof CreateSubscriptionEvent) {
-            Builder builder = CDCRequest.newBuilder();
-            builder.setCreateSubscription(buildCreateSubscriptionRequest());
-            builder.setRequestId(UUID.randomUUID().toString());
-            ctx.writeAndFlush(builder.build());
+            CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(buildCreateSubscriptionRequest()).setRequestId(requestIdGenerator.generateRequestId()).build();
+            ctx.writeAndFlush(request);
         }
     }
     
     private CreateSubscriptionRequest buildCreateSubscriptionRequest() {
+        // TODO the parameter shouldn't hard code, will be fixed when completed
+        TableName tableName = TableName.newBuilder().build();
         return CreateSubscriptionRequest.newBuilder().setSubscriptionMode(SubscriptionMode.INCREMENTAL).setSubscriptionName("sharding_db").setDatabase("sharding_db")
-                .addAllTableNames(Arrays.asList("t_order", "t_order_item")).build();
+                .addTableNames(tableName).build();
     }
     
     @Override
@@ -68,7 +70,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
             log.info("create subscription succeed, subcrption name {}", response.getCreateSubscriptionResult().getSubscriptionName());
             Builder builder = CDCRequest.newBuilder();
             builder.setStartSubscription(buildStartSubscriptionRequest(response.getCreateSubscriptionResult().getSubscriptionName()));
-            builder.setRequestId(UUID.randomUUID().toString());
+            builder.setRequestId(requestIdGenerator.generateRequestId());
             ctx.writeAndFlush(builder.build());
         }
         // TODO waiting for pipeline refactoring finished
@@ -76,5 +78,10 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     private StartSubscriptionRequest buildStartSubscriptionRequest(final String subscriptionName) {
         return StartSubscriptionRequest.newBuilder().setSubscriptionName(subscriptionName).build();
+    }
+    
+    @Override
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
+        log.error("subscription handler error", cause);
     }
 }

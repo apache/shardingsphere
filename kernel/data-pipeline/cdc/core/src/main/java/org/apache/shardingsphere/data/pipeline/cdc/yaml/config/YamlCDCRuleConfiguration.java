@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc;
+package org.apache.shardingsphere.data.pipeline.cdc.yaml.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.cdc.config.CDCRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 /**
- * Client bootstrap.
+ * CDC configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Bootstrap {
+@Getter
+@Setter
+public final class YamlCDCRuleConfiguration implements YamlRuleConfiguration {
     
-    /**
-     * Main entrance.
-     *
-     * @param args args
-     */
-    public static void main(final String[] args) {
-        int port = args.length > 0 ? Integer.parseInt(args[0]) : 33071;
-        String address = args.length > 1 ? args[1] : "127.0.0.1";
-        new CDCClient().start(port, address);
+    private boolean enabled;
+    
+    private int port = 33071;
+    
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return CDCRuleConfiguration.class;
     }
 }

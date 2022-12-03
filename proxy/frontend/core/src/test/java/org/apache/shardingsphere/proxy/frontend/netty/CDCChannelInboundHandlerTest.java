@@ -21,12 +21,13 @@ import com.google.common.hash.Hashing;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.logging.LoggingHandler;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.CDCRequest.Builder;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.LoginRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.request.LoginRequest.BasicBody;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse.Status;
+import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -98,7 +99,7 @@ public final class CDCChannelInboundHandlerTest {
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
         assertThat(expectedLoginResult.getStatus(), is(Status.FAILED));
-        assertThat(expectedLoginResult.getErrorCode(), is("1"));
+        assertThat(expectedLoginResult.getErrorCode(), is(CDCResponseErrorCode.SERVER_ERROR.getCode()));
         assertFalse(channel.isOpen());
     }
     
@@ -110,7 +111,7 @@ public final class CDCChannelInboundHandlerTest {
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
         assertThat(expectedLoginResult.getStatus(), is(Status.FAILED));
-        assertThat(expectedLoginResult.getErrorCode(), is("-1"));
+        assertThat(expectedLoginResult.getErrorCode(), is(CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR.getCode()));
         assertFalse(channel.isOpen());
     }
     
