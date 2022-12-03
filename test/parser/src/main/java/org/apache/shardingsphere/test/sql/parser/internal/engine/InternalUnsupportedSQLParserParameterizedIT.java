@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserTestParameter;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -42,13 +42,13 @@ public abstract class InternalUnsupportedSQLParserParameterizedIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public InternalUnsupportedSQLParserParameterizedIT(final InternalSQLParserParameterizedArray parameterizedArray) {
-        sqlCaseId = parameterizedArray.getSqlCaseId();
-        databaseType = parameterizedArray.getDatabaseType();
-        sqlCaseType = parameterizedArray.getSqlCaseType();
+    public InternalUnsupportedSQLParserParameterizedIT(final InternalSQLParserTestParameter testParameter) {
+        sqlCaseId = testParameter.getSqlCaseId();
+        databaseType = testParameter.getDatabaseType();
+        sqlCaseType = testParameter.getSqlCaseType();
     }
     
-    protected static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String databaseType) {
+    protected static Collection<InternalSQLParserTestParameter> getTestParameters(final String databaseType) {
         return SQL_CASES.generateTestParameters(Collections.singleton(databaseType));
     }
     
