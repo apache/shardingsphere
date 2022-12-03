@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.container.compose.mode.Cluster
 import org.apache.shardingsphere.test.integration.container.compose.mode.StandaloneContainerComposer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
-import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -39,29 +39,29 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     /**
      * Get container composer.
      *
-     * @param parameterizedArray parameterized array
+     * @param testParameter test parameter
      * @return composed container
      */
-    public ContainerComposer getContainerComposer(final ITParameterizedArray parameterizedArray) {
-        String key = parameterizedArray.getKey();
+    public ContainerComposer getContainerComposer(final ITTestParameter testParameter) {
+        String key = testParameter.getKey();
         if (containerComposers.containsKey(key)) {
             return containerComposers.get(key);
         }
         synchronized (containerComposers) {
             if (!containerComposers.containsKey(key)) {
-                containerComposers.put(key, createContainerComposer(parameterizedArray));
+                containerComposers.put(key, createContainerComposer(testParameter));
             }
             return containerComposers.get(key);
         }
     }
     
-    private ContainerComposer createContainerComposer(final ITParameterizedArray parameterizedArray) {
-        return isClusterMode(parameterizedArray) ? new ClusterContainerComposer(parameterizedArray) : new StandaloneContainerComposer(parameterizedArray);
+    private ContainerComposer createContainerComposer(final ITTestParameter testParameter) {
+        return isClusterMode(testParameter) ? new ClusterContainerComposer(testParameter) : new StandaloneContainerComposer(testParameter);
     }
     
-    private boolean isClusterMode(final ITParameterizedArray parameterizedArray) {
+    private boolean isClusterMode(final ITTestParameter testParameter) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(parameterizedArray.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterizedArray.getAdapter());
+        return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(testParameter.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(testParameter.getAdapter());
     }
     
     @Override

@@ -21,9 +21,9 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchITCase;
-import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.integration.framework.param.model.CaseTestParameter;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -41,13 +41,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
-    public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public BatchDMLIT(final CaseTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ITParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML);
+    public static Collection<ITTestParameter> getTestParameters() {
+        return ITTestParameterFactory.getCaseTestParameters(SQLCommandType.DML);
     }
     
     @Test

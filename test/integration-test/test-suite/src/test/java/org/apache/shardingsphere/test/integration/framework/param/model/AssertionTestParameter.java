@@ -21,15 +21,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 
 /**
- * Parameterized array of case based integration test.
+ * Assertion test parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CaseParameterizedArray implements ITParameterizedArray {
+public final class AssertionTestParameter implements ITTestParameter {
     
     private final IntegrationTestCaseContext testCaseContext;
+    
+    private final IntegrationTestCaseAssertion assertion;
     
     private final String adapter;
     
@@ -39,8 +43,10 @@ public final class CaseParameterizedArray implements ITParameterizedArray {
     
     private final DatabaseType databaseType;
     
+    private final SQLExecuteType sqlExecuteType;
+    
     @Override
     public String toString() {
-        return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getType(), testCaseContext.getTestCase().getSql());
+        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getType(), sqlExecuteType, testCaseContext.getTestCase().getSql());
     }
 }

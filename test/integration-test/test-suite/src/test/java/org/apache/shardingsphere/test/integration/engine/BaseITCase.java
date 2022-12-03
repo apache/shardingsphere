@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelParameterized;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
@@ -76,13 +76,13 @@ public abstract class BaseITCase {
     
     private Map<String, DataSource> expectedDataSourceMap;
     
-    public BaseITCase(final ITParameterizedArray parameterizedArray) {
-        mode = parameterizedArray.getMode();
-        scenario = parameterizedArray.getScenario();
-        databaseType = parameterizedArray.getDatabaseType();
-        itKey = parameterizedArray.getKey();
-        itCase = parameterizedArray.getTestCaseContext().getTestCase();
-        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(parameterizedArray);
+    public BaseITCase(final ITTestParameter testParameter) {
+        mode = testParameter.getMode();
+        scenario = testParameter.getScenario();
+        databaseType = testParameter.getDatabaseType();
+        itKey = testParameter.getKey();
+        itCase = testParameter.getTestCaseContext().getTestCase();
+        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(testParameter);
     }
     
     @Before

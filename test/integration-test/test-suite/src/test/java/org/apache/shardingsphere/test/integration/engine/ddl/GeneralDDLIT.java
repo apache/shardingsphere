@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -38,13 +38,13 @@ import static org.junit.Assert.assertFalse;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public GeneralDDLIT(final AssertionTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DDL);
+    public static Collection<AssertionTestParameter> getTestParameters() {
+        return ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.DDL);
     }
     
     @Test

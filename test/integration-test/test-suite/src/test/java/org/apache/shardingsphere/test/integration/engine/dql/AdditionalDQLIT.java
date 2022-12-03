@@ -21,8 +21,8 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -42,13 +42,13 @@ import static org.junit.Assert.assertTrue;
 @ParallelRunningStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
-    public AdditionalDQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public AdditionalDQLIT(final AssertionTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<AssertionParameterizedArray> getParameters() {
-        return IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases() ? ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL) : Collections.emptyList();
+    public static Collection<AssertionTestParameter> getTestParameters() {
+        return IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases() ? ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.DQL) : Collections.emptyList();
     }
     
     @Test

@@ -36,7 +36,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     @Override
     public void schedule(final Runnable childStatement) {
-        executor.execute(ParallelRunnerExecutorKeyProviderFactory.newInstance(parallelLevel).getKey(new RunnerParameters(childStatement).getParameterizedArray()), childStatement);
+        executor.execute(ParallelRunnerExecutorKeyProviderFactory.newInstance(parallelLevel).getKey(new RunnerParameters(childStatement).getTestParameter()), childStatement);
     }
     
     @Override

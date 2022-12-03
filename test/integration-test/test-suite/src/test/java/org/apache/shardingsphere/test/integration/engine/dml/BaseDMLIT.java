@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.Scen
 import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaDataFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.junit.After;
 import org.junit.Before;
 
@@ -51,8 +51,8 @@ public abstract class BaseDMLIT extends SingleITCase {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BaseDMLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public BaseDMLIT(final AssertionTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Before

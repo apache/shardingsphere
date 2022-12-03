@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.dql;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -40,13 +40,13 @@ import static org.junit.Assert.assertTrue;
 @ParallelRunningStrategy(ParallelLevel.CASE)
 public final class GeneralDQLIT extends BaseDQLIT {
     
-    public GeneralDQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public GeneralDQLIT(final AssertionTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL);
+    public static Collection<AssertionTestParameter> getTestParameters() {
+        return ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.DQL);
     }
     
     @Test
