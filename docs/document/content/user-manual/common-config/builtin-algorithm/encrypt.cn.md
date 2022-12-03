@@ -89,13 +89,13 @@ rules:
         username:
           plainColumn: username_plain
           cipherColumn: username
-          encryptorName: name-encryptor
+          encryptorName: name_encryptor
           likeQueryColumn: name_like
-          likeQueryEncryptorName: like-encryptor
+          likeQueryEncryptorName: like_encryptor
   encryptors:
-    like-encryptor:
+    like_encryptor:
       type: CHAR_DIGEST_LIKE
-    name-encryptor:
+    name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc

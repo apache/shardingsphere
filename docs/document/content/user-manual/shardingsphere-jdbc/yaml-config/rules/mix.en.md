@@ -14,7 +14,7 @@ Below, you will find the parameters' explanation and configuration samples based
 rules:
   - !SHARDING
     tables:
-      <logic-table-name>: # Logical table name:
+      <logic_table_name>: # Logical table name:
         actualDataNodes: # consists of logical data source name plus table name (refer to Inline syntax rules)
         tableStrategy: # Table shards strategy. The same as database shards strategy
           standard:
@@ -28,7 +28,7 @@ rules:
         shardingColumn: # Sharding column name
         shardingAlgorithmName: # Sharding algorithm name
     shardingAlgorithms:
-      <sharding-algorithm-name>: # Sharding algorithm name
+      <sharding_algorithm_name>: # Sharding algorithm name
         type: INLINE
         props:
           algorithm-expression: # INLINE expression
@@ -37,27 +37,27 @@ rules:
         props:
           algorithm-expression: # INLINE expression
     keyGenerators:
-      <key-generate-algorithm-name> (+): # Distributed sequence algorithm name
+      <key_generate_algorithm_name> (+): # Distributed sequence algorithm name
         type: # Distributed sequence algorithm type
         props: # Property configuration of distributed sequence algorithm
   - !READWRITE_SPLITTING
     dataSources:
-      <data-source-name>: # Read/write splitting logical data source name
+      <data_source_name>: # Read/write splitting logical data source name
         dynamicStrategy: # Read/write splitting type
           autoAwareDataSourceName: # Database discovery logical data source name
-      <data-source-name>: # Read/write splitting logical data source name
+      <data_source_name>: # Read/write splitting logical data source name
         dynamicStrategy: # Read/write splitting type
           autoAwareDataSourceName: # Database discovery logical data source name
   - !DB_DISCOVERY
     dataSources:
-      <data-source-name>:
+      <data_source_name>:
         dataSourceNames: # Data source name list
           - ds_0
           - ds_1
           - ds_2
         discoveryHeartbeatName: # Detect heartbeat name
         discoveryTypeName: # Database discovery type name
-      <data-source-name>:
+      <data_source_name>:
         dataSourceNames: # Data source name list
           - ds_3
           - ds_4
@@ -65,25 +65,25 @@ rules:
         discoveryHeartbeatName: # Detect heartbeat name
         discoveryTypeName: # Database discovery type name
     discoveryHeartbeats:
-      <discovery-heartbeat-name>: # Heartbeat name
+      <discovery_heartbeat_name>: # Heartbeat name
         props:
           keep-alive-cron: # cron expression, such as '0/5 * * * * ?'
     discoveryTypes:
-      <discovery-type-name>: # Database discovery type name
+      <discovery_type_name>: # Database discovery type name
         type: # Database discovery type, such as MySQL.MGR. 
         props:
           group-name:  # Required parameter of database discovery type, such as MGR's group-name.
   - !ENCRYPT
     encryptors:
-      <encrypt-algorithm-name> (+): # Encryption and decryption algorithm name
+      <encrypt_algorithm_name> (+): # Encryption and decryption algorithm name
         type: # Encryption and decryption algorithm type
         props: # Encryption and decryption algorithm property configuration
-      <encrypt-algorithm-name> (+): # Encryption and decryption algorithm name
+      <encrypt_algorithm_name> (+): # Encryption and decryption algorithm name
         type: # Encryption and decryption algorithm type
     tables:
-      <table-name>: # Encryption table name
+      <table_name>: # Encryption table name
         columns:
-          <column-name> (+): # Encrypt logic column name
+          <column_name> (+): # Encrypt logic column name
             plainColumn (?): # Plain column name
             cipherColumn: # Cipher column name
             encryptorName: # Cipher encrypt algorithm name
@@ -144,17 +144,17 @@ rules:
           - ds_0
           - ds_1
           - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
+        discoveryHeartbeatName: mgr_heartbeat
         discoveryTypeName: mgr
       readwrite_ds_1:
         dataSourceNames:
           - ds_3
           - ds_4
           - ds_5
-        discoveryHeartbeatName: mgr-heartbeat
+        discoveryHeartbeatName: mgr_heartbeat
         discoveryTypeName: mgr
     discoveryHeartbeats:
-      mgr-heartbeat:
+      mgr_heartbeat:
         props:
           keep-alive-cron: '0/5 * * * * ?'
     discoveryTypes:

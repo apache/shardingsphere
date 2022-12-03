@@ -16,14 +16,14 @@ rules:
       productionDataSourceName: # production data source name
       shadowDataSourceName: # shadow data source name
   tables:
-    <table-name>:
+    <table_name>:
       dataSourceNames: # shadow table associates shadow data source name list
-        - <shadow-data-source>
+        - <shadow_data_source>
       shadowAlgorithmNames: # shadow table associates shadow algorithm name list
-        - <shadow-algorithm-name>
+        - <shadow_algorithm_name>
   defaultShadowAlgorithmName: # default shadow algorithm name (option)
   shadowAlgorithms:
-    <shadow-algorithm-name> (+): # shadow algorithm name
+    <shadow_algorithm_name> (+): # shadow algorithm name
       type: # shadow algorithm type
       props: # shadow algorithm attribute configuration
 ```
@@ -71,16 +71,16 @@ rules:
       dataSourceNames: 
         - shadowDataSource
       shadowAlgorithmNames: 
-        - user-id-insert-match-algorithm
-        - simple-hint-algorithm
+        - user_id_insert_match_algorithm
+        - simple_hint_algorithm
   shadowAlgorithms:
-    user-id-insert-match-algorithm:
+    user_id_insert_match_algorithm:
       type: REGEX_MATCH
       props:
         operation: insert
         column: user_id
         regex: "[1]"
-    simple-hint-algorithm:
+    simple_hint_algorithm:
       type: SIMPLE_HINT
       props:
         foo: bar
