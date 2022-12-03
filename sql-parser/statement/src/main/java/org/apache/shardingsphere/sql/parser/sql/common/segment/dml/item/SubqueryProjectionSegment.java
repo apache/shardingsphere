@@ -20,10 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 
 import java.util.Optional;
 
@@ -32,7 +31,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class SubqueryProjectionSegment implements ProjectionSegment, AliasAvailable {
     
     private final SubquerySegment subquery;

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.Collection;
 
@@ -28,7 +27,6 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class CaseWhenExpression implements ExpressionSegment {
     
     private final int startIndex;

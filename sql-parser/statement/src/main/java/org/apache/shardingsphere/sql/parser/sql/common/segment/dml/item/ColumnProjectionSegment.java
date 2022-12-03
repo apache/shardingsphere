@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -29,7 +28,6 @@ import java.util.Optional;
 /**
  * Column projection segment.
  */
-@ToString
 public final class ColumnProjectionSegment implements ProjectionSegment, AliasAvailable {
     
     @Getter
