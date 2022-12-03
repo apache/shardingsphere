@@ -37,8 +37,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.common.TestCase;
-import org.apache.shardingsphere.sqlfederation.optimizer.common.TestCasesLoader;
+import org.apache.shardingsphere.sqlfederation.optimizer.it.TestCase;
+import org.apache.shardingsphere.sqlfederation.optimizer.it.TestCasesLoader;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.junit.Before;
