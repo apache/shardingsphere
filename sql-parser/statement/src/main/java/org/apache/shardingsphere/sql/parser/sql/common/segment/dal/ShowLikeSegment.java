@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class ShowLikeSegment implements SQLSegment {
     
     private final int startIndex;

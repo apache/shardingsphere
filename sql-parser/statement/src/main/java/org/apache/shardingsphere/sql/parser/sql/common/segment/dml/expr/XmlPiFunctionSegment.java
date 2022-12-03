@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 /**
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
  */
 @Getter
 @Setter
-@ToString
 public final class XmlPiFunctionSegment implements ExpressionSegment, ProjectionSegment {
     
     private final int startIndex;

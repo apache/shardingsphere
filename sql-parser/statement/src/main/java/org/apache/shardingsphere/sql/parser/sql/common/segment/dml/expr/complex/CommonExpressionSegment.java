@@ -19,14 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
  * Common expression segment.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class CommonExpressionSegment implements ComplexExpressionSegment {
     
     private final int startIndex;

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
  */
 @Getter
 @Setter
-@ToString
 public final class DatetimeProjectionSegment implements ProjectionSegment {
     
     private final int startIndex;

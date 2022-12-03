@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -34,7 +33,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private final int startIndex;
