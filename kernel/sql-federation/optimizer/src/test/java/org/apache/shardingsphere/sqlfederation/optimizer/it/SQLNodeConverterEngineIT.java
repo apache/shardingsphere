@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.converter.parameterized.engine;
+package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
 import lombok.SneakyThrows;
 import org.apache.calcite.avatica.util.Casing;
@@ -28,7 +28,6 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.util.Litmus;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -58,7 +57,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public final class SQLNodeConverterEngineParameterizedTest {
+public final class SQLNodeConverterEngineIT {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
@@ -156,7 +155,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private final SQLCaseType sqlCaseType;
     
-    public SQLNodeConverterEngineParameterizedTest(final InternalSQLParserParameterizedArray parameterizedArray) {
+    public SQLNodeConverterEngineIT(final InternalSQLParserParameterizedArray parameterizedArray) {
         sqlCaseId = parameterizedArray.getSqlCaseId();
         databaseType = parameterizedArray.getDatabaseType();
         sqlCaseType = parameterizedArray.getSqlCaseType();
@@ -189,32 +188,30 @@ public final class SQLNodeConverterEngineParameterizedTest {
     public void assertConvert() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
-        SqlNode actual = SQLNodeConverterEngine.convert(sqlStatement);
-        SqlNode expected = parseSqlNode(databaseType, sql);
+        SqlNode actual = SQLNodeConverterEngine.convert(parseSQLStatement(databaseType, sql));
+        SqlNode expected = parseSQLNode(databaseType, sql);
         assertTrue(actual.equalsDeep(expected, Litmus.THROW));
     }
     
-    @SneakyThrows(SqlParseException.class)
-    private SqlNode parseSqlNode(final String databaseType, final String sql) {
-        return SqlParser.create(sql, createConfig(DatabaseTypeFactory.getInstance(databaseType))).parseQuery();
+    private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
+        return new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
-    private Config createConfig(final DatabaseType databaseType) {
+    @SneakyThrows(SqlParseException.class)
+    private SqlNode parseSQLNode(final String databaseType, final String sql) {
+        return SqlParser.create(sql, createConfiguration(databaseType)).parseQuery();
+    }
+    
+    private Config createConfiguration(final String databaseType) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createSQLDialectProperties(databaseType));
         return SqlParser.config().withLex(connectionConfig.lex()).withUnquotedCasing(Casing.UNCHANGED)
                 .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH).withConformance(connectionConfig.conformance()).withParserFactory(SqlParserImpl.FACTORY);
     }
     
-    private Properties createSQLDialectProperties(final DatabaseType databaseType) {
+    private Properties createSQLDialectProperties(final String databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(OptimizerSQLDialectBuilderFactory.build(databaseType));
+        result.putAll(OptimizerSQLDialectBuilderFactory.build(DatabaseTypeFactory.getInstance(databaseType)));
         return result;
-    }
-    
-    private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        CacheOption cacheOption = new CacheOption(128, 1024L);
-        return new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, cacheOption).parse(sql, false));
     }
 }

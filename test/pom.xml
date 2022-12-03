@@ -35,7 +35,6 @@
         <module>integration-agent-test</module>
         <module>rewrite</module>
         <module>parser</module>
-        <module>optimize</module>
         <module>pipeline</module>
     </modules>
     
