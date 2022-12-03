@@ -314,3 +314,7 @@ STANDARD
 COMPLEX
     : C O M P L E X
     ;
+
+DML_SHARDING_CONDITIONS
+    : D M L UL_ S H A R D I N G UL_ C O N D I T I O N S
+    ;

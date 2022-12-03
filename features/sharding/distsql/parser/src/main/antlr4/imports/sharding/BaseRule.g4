@@ -28,7 +28,7 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING | buildInShardingAlgorithmType | buildInkeyGeneratorType
+    : STRING | buildInShardingAlgorithmType | buildInkeyGeneratorType | buildInAuditAlgorithmType
     ;
 
 buildInShardingAlgorithmType
@@ -44,6 +44,10 @@ buildInShardingAlgorithmType
     | COSID_INTERVAL_SNOWFLAKE
     | COMPLEX_INLINE
     | HINT_INLINE
+    ;
+
+buildInAuditAlgorithmType
+    : DML_SHARDING_CONDITIONS
     ;
 
 propertiesDefinition
