@@ -71,14 +71,6 @@ dropShardingKeyGenerator
     : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA keyGeneratorName)*
     ;
 
-createShardingAuditor
-    : CREATE SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
-    ;
-
-alterShardingAuditor
-    : ALTER SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
-    ;
-
 dropShardingAuditor
     : DROP SHARDING AUDITOR ifExists? auditorName (COMMA auditorName)*
     ;

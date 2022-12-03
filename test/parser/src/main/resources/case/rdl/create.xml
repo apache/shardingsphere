@@ -467,12 +467,6 @@
     
     <set-default-single-table-storage-unit sql-case-id="set-default-single-table-storage-unit" default-storage-unit="ds_0" />
     <set-default-single-table-storage-unit-random sql-case-id="set-default-single-table-storage-unit-random" />
-    
-    <create-sharding-auditor sql-case-id="create-sharding-auditor">
-        <sharding-auditor auditor-name="sharding_key_required_auditor">
-            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
-        </sharding-auditor>
-    </create-sharding-auditor>
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-without-quote-on-keyword">
         <rule name="t_order_item" key-generate-strategy-column="another_id">

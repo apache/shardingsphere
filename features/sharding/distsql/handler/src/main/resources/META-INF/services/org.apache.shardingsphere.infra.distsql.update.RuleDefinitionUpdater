@@ -27,7 +27,5 @@ org.apache.shardingsphere.sharding.distsql.handler.update.DropBroadcastTableRule
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateDefaultShardingStrategyStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGeneratorStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAuditorStatementUpdater
-org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingAuditorStatementUpdater
-org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAuditorStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultShardingStrategyStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultStrategyStatementUpdater
