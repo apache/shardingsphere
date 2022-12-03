@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.common;
+package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * JAXB definition of test cases.
+ * JAXB definition of test case assertion.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@XmlRootElement(name = "test-cases")
-public final class TestCases {
+@Setter
+public final class TestCaseAssertion {
     
-    @XmlElement(name = "test-case")
-    private final Collection<TestCase> testCases = new LinkedList<>();
+    @XmlAttribute(name = "expected-result")
+    private String expectedResult;
 }

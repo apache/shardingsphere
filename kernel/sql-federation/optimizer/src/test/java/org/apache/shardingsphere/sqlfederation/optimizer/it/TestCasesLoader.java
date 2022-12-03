@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.common;
+package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
