@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry;
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader.SQLCaseLoaderCallback;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseLoaderTemplate;
+import org.apache.shardingsphere.test.sql.parser.internal.loader.CaseLoaderTemplate;
 
 /**
  * Unsupported SQL cases registry.

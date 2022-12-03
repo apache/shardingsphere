@@ -39,7 +39,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

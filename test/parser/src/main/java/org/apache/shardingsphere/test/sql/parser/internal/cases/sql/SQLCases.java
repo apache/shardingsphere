@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.CaseTypedSQLBuilderFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserTestParameter;
 
 import java.util.Arrays;
 import java.util.Collection;
