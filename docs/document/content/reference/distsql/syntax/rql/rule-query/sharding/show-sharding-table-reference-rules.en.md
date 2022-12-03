@@ -23,10 +23,10 @@ databaseName ::=
 
 ### Return value description
 
-| Columns                 | Descriptions                        |
-| ------------------------| ------------------------------------|
-| name                    | Sharding table reference rule name  |
-| sharding_table_reference| sharding reference table list       |
+| Columns                 | Descriptions                       |
+| ------------------------|------------------------------------|
+| name                    | Sharding table reference rule name |
+| sharding_table_reference| sharding table reference           |
 
 ### Example
 
