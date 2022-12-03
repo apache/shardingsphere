@@ -17,36 +17,55 @@
 
 package org.apache.shardingsphere.test.integration.framework.param.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 
 /**
- * Parameterized array of assertion based integration test.
+ * IT test parameter.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AssertionParameterizedArray implements ITParameterizedArray {
+public interface ITTestParameter {
     
-    private final IntegrationTestCaseContext testCaseContext;
+    /**
+     * Get test case context.
+     * 
+     * @return test case context
+     */
+    IntegrationTestCaseContext getTestCaseContext();
     
-    private final IntegrationTestCaseAssertion assertion;
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
     
-    private final String adapter;
+    /**
+     * Get scenario.
+     *
+     * @return scenario
+     */
+    String getScenario();
     
-    private final String scenario;
+    /**
+     * Get adapter.
+     * 
+     * @return adapter
+     */
+    String getAdapter();
     
-    private final String mode;
+    /**
+     * Get mode.
+     *
+     * @return mode
+     */
+    String getMode();
     
-    private final DatabaseType databaseType;
-    
-    private final SQLExecuteType sqlExecuteType;
-    
-    @Override
-    public String toString() {
-        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getType(), sqlExecuteType, testCaseContext.getTestCase().getSql());
+    /**
+     * Get key.
+     * 
+     * @return key of test parameter
+     */
+    default String getKey() {
+        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getType());
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.integration.engine.dal;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -35,13 +35,13 @@ import java.util.Collection;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
     
-    public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public GeneralDALIT(final AssertionTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<AssertionParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DAL);
+    public static Collection<AssertionTestParameter> getTestParameters() {
+        return ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.DAL);
     }
     
     @Test

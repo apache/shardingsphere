@@ -22,55 +22,55 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Parameterized array factory.
+ * IT test parameter factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParameterizedArrayFactory {
+public final class ITTestParameterFactory {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
     /**
-     * Get assertion parameterized array.
+     * Get assertion test parameters.
      *
      * @param sqlCommandType SQL command type
-     * @return assertion parameterized array
+     * @return assertion test parameters
      */
-    public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        Collection<AssertionParameterizedArray> result = new LinkedList<>();
+    public static Collection<AssertionTestParameter> getAssertionTestParameters(final SQLCommandType sqlCommandType) {
+        Collection<AssertionTestParameter> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
-                        ? ProxyStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType)
-                        : JdbcStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                        ? ProxyStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType)
+                        : JdbcStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType));
             } else if (EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(each)) {
-                result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                result.addAll(ClusterTestParameterArrayGenerator.getAssertionTestParameter(sqlCommandType));
             }
         }
         return result;
     }
     
     /**
-     * Get case parameterized array.
+     * Get case test parameters.
      *
      * @param sqlCommandType SQL command type
-     * @return case parameterized array
+     * @return case test parameters
      */
-    public static Collection<ITParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        Collection<ITParameterizedArray> result = new LinkedList<>();
+    public static Collection<ITTestParameter> getCaseTestParameters(final SQLCommandType sqlCommandType) {
+        Collection<ITTestParameter> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
-                        ? ProxyStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType)
-                        : JdbcStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+                        ? ProxyStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType)
+                        : JdbcStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType));
             } else if (EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(each)) {
-                result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+                result.addAll(ClusterTestParameterArrayGenerator.getCaseTestParameter(sqlCommandType));
             }
         }
         return result;

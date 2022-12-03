@@ -22,38 +22,38 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 
 import java.util.Collection;
 
 /**
- * PROXY Parameterized array generator for standalone mode.
+ * PROXY test parameter generator for standalone mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyStandaloneParameterizedArrayGenerator {
+public final class ProxyStandaloneTestParameterGenerator {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
     /**
-     * Get assertion parameterized array.
+     * Get assertion test parameters.
      *
      * @param sqlCommandType SQL command type
-     * @return assertion parameterized array
+     * @return assertion test parameters
      */
-    public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(),
-                ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionParameterized(sqlCommandType);
+    public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
+        return new ITTestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
+                ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionTestParameter(sqlCommandType);
     }
     
     /**
-     * Get case parameterized array.
+     * Get case test parameters.
      *
      * @param sqlCommandType SQL command type
-     * @return case parameterized array
+     * @return assertion test parameters
      */
-    public static Collection<ITParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(),
-                ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, ENV.getClusterEnvironment().getDatabaseTypes()).getCaseParameterized(sqlCommandType);
+    public static Collection<ITTestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
+        return new ITTestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
+                ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, ENV.getClusterEnvironment().getDatabaseTypes()).getCaseTestParameter(sqlCommandType);
     }
 }

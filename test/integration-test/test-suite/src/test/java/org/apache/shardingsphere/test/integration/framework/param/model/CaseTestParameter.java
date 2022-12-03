@@ -17,55 +17,30 @@
 
 package org.apache.shardingsphere.test.integration.framework.param.model;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 
 /**
- * IT parameterized array.
+ * Case test parameter.
  */
-public interface ITParameterizedArray {
+@RequiredArgsConstructor
+@Getter
+public final class CaseTestParameter implements ITTestParameter {
     
-    /**
-     * Get test case context.
-     * 
-     * @return test case context
-     */
-    IntegrationTestCaseContext getTestCaseContext();
+    private final IntegrationTestCaseContext testCaseContext;
     
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    private final String adapter;
     
-    /**
-     * Get scenario.
-     *
-     * @return scenario
-     */
-    String getScenario();
+    private final String scenario;
     
-    /**
-     * Get adapter.
-     * 
-     * @return adapter
-     */
-    String getAdapter();
+    private final String mode;
     
-    /**
-     * Get mode.
-     *
-     * @return mode
-     */
-    String getMode();
+    private final DatabaseType databaseType;
     
-    /**
-     * Get key.
-     * 
-     * @return key of parameterized array
-     */
-    default String getKey() {
-        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getType());
+    @Override
+    public String toString() {
+        return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getType(), testCaseContext.getTestCase().getSql());
     }
 }

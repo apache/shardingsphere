@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.watcher.ITWatcher;
 import org.junit.Rule;
 
@@ -46,13 +46,13 @@ public abstract class SingleITCase extends BaseITCase {
     
     private final DataSet dataSet;
     
-    public SingleITCase(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
-        sqlExecuteType = parameterizedArray.getSqlExecuteType();
-        assertion = parameterizedArray.getAssertion();
+    public SingleITCase(final AssertionTestParameter testParameter) {
+        super(testParameter);
+        sqlExecuteType = testParameter.getSqlExecuteType();
+        assertion = testParameter.getAssertion();
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
                 ? null
-                : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), getMode(), assertion.getExpectedDataFile());
+                : DataSetLoader.load(testParameter.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), getMode(), assertion.getExpectedDataFile());
     }
     
     protected final String getSQL() throws ParseException {

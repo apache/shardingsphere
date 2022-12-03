@@ -21,8 +21,8 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -41,14 +41,14 @@ import static org.junit.Assert.assertFalse;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class AdditionalDMLIT extends BaseDMLIT {
     
-    public AdditionalDMLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public AdditionalDMLIT(final AssertionTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<AssertionParameterizedArray> getParameters() {
+    public static Collection<AssertionTestParameter> getTestParameters() {
         if (IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases()) {
-            return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML);
+            return ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.DML);
         }
         return Collections.emptyList();
     }

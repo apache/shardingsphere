@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.executor.key.impl;
 
-import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.integration.framework.runner.executor.key.ParallelRunnerExecutorKeyProvider;
 
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.integration.framework.runner.executor.key.
 public final class CaseParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
     
     @Override
-    public String getKey(final ITParameterizedArray parameterizedArray) {
-        return parameterizedArray.getDatabaseType().getType();
+    public String getKey(final ITTestParameter testParameter) {
+        return testParameter.getDatabaseType().getType();
     }
     
     @Override

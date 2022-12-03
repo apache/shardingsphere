@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -49,8 +49,8 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private DataSource expectedDataSource;
     
-    public BaseDQLIT(final AssertionParameterizedArray parameterizedArray) {
-        super(parameterizedArray);
+    public BaseDQLIT(final AssertionTestParameter testParameter) {
+        super(testParameter);
     }
     
     @Before
