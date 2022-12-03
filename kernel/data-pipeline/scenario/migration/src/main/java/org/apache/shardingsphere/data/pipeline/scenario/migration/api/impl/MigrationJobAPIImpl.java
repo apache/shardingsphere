@@ -40,7 +40,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
@@ -59,16 +58,20 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
+import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtractorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
@@ -256,7 +259,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         super.startDisabledJob(jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                PipelineAPIFactory.getPipelineJobAPI(JobType.CONSISTENCY_CHECK).startDisabledJob(optional);
+                PipelineAPIFactory.getPipelineJobAPI(new ConsistencyCheckJobType()).startDisabledJob(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -269,7 +272,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     public void stop(final String jobId) {
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                PipelineAPIFactory.getPipelineJobAPI(JobType.CONSISTENCY_CHECK).stop(optional);
+                PipelineAPIFactory.getPipelineJobAPI(new ConsistencyCheckJobType()).stop(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -399,7 +402,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     @Override
     public String createJobAndStart(final CreateMigrationJobParameter param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
         Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(param.getSourceResourceName()));
         YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfig = createYamlPipelineDataSourceConfiguration(
                 StandardPipelineDataSourceConfiguration.TYPE, YamlEngine.marshal(sourceDataSourceProps));
@@ -458,7 +461,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     
     @Override
     public JobType getJobType() {
-        return JobType.MIGRATION;
+        return JobTypeFactory.getInstance(MigrationJobType.TYPE_CODE);
     }
     
     @Override

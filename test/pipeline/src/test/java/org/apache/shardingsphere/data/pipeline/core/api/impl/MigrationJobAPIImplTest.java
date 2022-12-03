@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineD
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
@@ -243,7 +243,7 @@ public final class MigrationJobAPIImplTest {
     @Test
     public void assertAddMigrationSourceResources() {
         PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
-        Map<String, DataSourceProperties> actual = persistService.load(JobType.MIGRATION);
+        Map<String, DataSourceProperties> actual = persistService.load(new MigrationJobType());
         assertTrue(actual.containsKey("ds_0"));
     }
     
@@ -259,7 +259,7 @@ public final class MigrationJobAPIImplTest {
     }
     
     private void initIntPrimaryEnvironment() throws SQLException {
-        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(JobType.MIGRATION);
+        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(new MigrationJobType());
         DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
         DataSource dataSource = DataSourcePoolCreator.create(dataSourceProps);
         try (

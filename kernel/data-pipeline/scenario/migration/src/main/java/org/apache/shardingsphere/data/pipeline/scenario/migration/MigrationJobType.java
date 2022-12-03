@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.type.AbstractJobType;
 
 /**
- * Pipeline meta data persist service.
- *
- * @param <T> type of configuration
+ * Migration job type.
  */
-public interface PipelineMetaDataPersistService<T> {
+public final class MigrationJobType extends AbstractJobType {
     
-    /**
-     * Load meta data.
-     *
-     * @param jobType job type, nullable
-     * @return configurations
-     */
-    T load(JobType jobType);
+    public static final String TYPE_CODE = "01";
     
-    /**
-     * Persist meta data.
-     *
-     * @param jobType job type, nullable
-     * @param configs configurations
-     */
-    void persist(JobType jobType, T configs);
+    public MigrationJobType() {
+        super("MIGRATION", TYPE_CODE);
+    }
 }

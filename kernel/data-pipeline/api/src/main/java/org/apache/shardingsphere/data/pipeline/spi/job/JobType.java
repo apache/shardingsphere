@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api;
+package org.apache.shardingsphere.data.pipeline.spi.job;
 
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * Pipeline meta data persist service.
- *
- * @param <T> type of configuration
+ * Job type.
  */
-public interface PipelineMetaDataPersistService<T> {
+@SingletonSPI
+public interface JobType {
     
     /**
-     * Load meta data.
+     * Get type name.
      *
-     * @param jobType job type, nullable
-     * @return configurations
+     * @return type name
      */
-    T load(JobType jobType);
+    String getTypeName();
     
     /**
-     * Persist meta data.
+     * Get type code.
      *
-     * @param jobType job type, nullable
-     * @param configs configurations
+     * @return type code
      */
-    void persist(JobType jobType, T configs);
+    String getTypeCode();
 }

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,7 +35,7 @@ public final class PipelineJobPublicAPIFactoryTest {
     @Test
     public void assertGetInventoryIncrementalJobPublicAPI() {
         Collection<Pair<JobType, Class<? extends InventoryIncrementalJobPublicAPI>>> paramResult = new LinkedList<>();
-        paramResult.add(Pair.of(JobType.MIGRATION, MigrationJobAPIImpl.class));
+        paramResult.add(Pair.of(new MigrationJobType(), MigrationJobAPIImpl.class));
         for (Pair<JobType, Class<? extends InventoryIncrementalJobPublicAPI>> each : paramResult) {
             assertThat(PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(each.getKey().getTypeName()), instanceOf(each.getValue()));
         }
