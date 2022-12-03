@@ -27,7 +27,7 @@ databaseName ::=
 | 列                       | 说明             |
 | -------------------------| ----------------|
 | name                     | 分片表关联规则名称 |
-| sharding_table_reference | 关联表名称        |
+| sharding_table_reference | 分片表关联关系    |
 
 ### 示例
 
@@ -48,7 +48,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULES FROM test1;
 2 rows in set (0.00 sec)
 ```
 
-- 查询当前逻辑库中具有绑定关系的分片表
+- 查询当前逻辑库中具有关联关系的分片表
 
 ```sql
 SHOW SHARDING TABLE REFERENCE RULES;

@@ -141,9 +141,9 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 ### Sharding Table Reference Rule
 
 | 列                       | 说明             |
-|--------------------------|---------------- |
+|--------------------------|---------------  |
 | name                     | 分片表关联规则名称 |
-| sharding_table_reference | 分片表表关联关系   |
+| sharding_table_reference | 分片表关联关系    |
 
 ### Broadcast Table Rule
 

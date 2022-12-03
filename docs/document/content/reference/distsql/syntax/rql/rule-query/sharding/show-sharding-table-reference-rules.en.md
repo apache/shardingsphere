@@ -25,7 +25,7 @@ databaseName ::=
 
 | Columns                 | Descriptions                        |
 | ------------------------| ------------------------------------|
-| name                     | Sharding table reference rule name |
+| name                    | Sharding table reference rule name  |
 | sharding_table_reference| sharding reference table list       |
 
 ### Example
