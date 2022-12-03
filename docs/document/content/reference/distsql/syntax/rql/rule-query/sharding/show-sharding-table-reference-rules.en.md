@@ -30,7 +30,7 @@ databaseName ::=
 
 ### Example
 
-- Query sharding tables with reference relationships for the spicified logical database
+- Query sharding table reference rules for the specified logical database
 
 ```sql
 SHOW SHARDING TABLE REFERENCE RULES FROM test1;
@@ -47,7 +47,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULES FROM test1;
 2 rows in set (0.00 sec)
 ```
 
-- Query sharding tables with reference relationships for the current logical database
+- Query sharding table reference rules for the current logical database
 
 ```sql
 SHOW SHARDING TABLE REFERENCE RULES;
