@@ -20,24 +20,14 @@ package org.apache.shardingsphere.test.integration.framework.runner.executor.key
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import org.apache.shardingsphere.test.integration.framework.runner.executor.key.impl.CaseParallelRunnerExecutorKeyProvider;
+import org.apache.shardingsphere.test.integration.framework.runner.executor.key.impl.ScenarioParallelRunnerExecutorKeyProvider;
 
 /**
  * Parallel runner executor key provider factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParallelRunnerExecutorKeyProviderFactory {
-    
-    private static final Map<ParallelLevel, ParallelRunnerExecutorKeyProvider> PROVIDERS = new HashMap<>();
-    
-    static {
-        for (ParallelRunnerExecutorKeyProvider each : ServiceLoader.load(ParallelRunnerExecutorKeyProvider.class)) {
-            PROVIDERS.put(each.getParallelLevel(), each);
-        }
-    }
     
     /**
      * Create new instance of parallel runner executor key provider.
@@ -46,6 +36,13 @@ public final class ParallelRunnerExecutorKeyProviderFactory {
      * @return created instance
      */
     public static ParallelRunnerExecutorKeyProvider newInstance(final ParallelLevel parallelLevel) {
-        return PROVIDERS.get(parallelLevel);
+        switch (parallelLevel) {
+            case CASE:
+                return new CaseParallelRunnerExecutorKeyProvider();
+            case SCENARIO:
+                return new ScenarioParallelRunnerExecutorKeyProvider();
+            default:
+                throw new UnsupportedOperationException(parallelLevel.name());
+        }
     }
 }

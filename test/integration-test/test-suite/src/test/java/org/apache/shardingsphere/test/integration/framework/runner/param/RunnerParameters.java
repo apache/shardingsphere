@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.runner.param;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 
 import java.lang.reflect.Field;
@@ -37,11 +38,11 @@ public final class RunnerParameters {
      * @return parameterized array
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public ParameterizedArray getParameterizedArray() {
+    public ITParameterizedArray getParameterizedArray() {
         Field paramsField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
         paramsField.setAccessible(true);
         Object[] params = (Object[]) paramsField.get(getRunner());
-        return (ParameterizedArray) params[0];
+        return (ITParameterizedArray) params[0];
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

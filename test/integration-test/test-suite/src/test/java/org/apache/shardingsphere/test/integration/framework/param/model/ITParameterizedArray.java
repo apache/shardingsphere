@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.framework.param.model;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.framework.runner.param.ParameterizedArray;
 
 /**
  * IT parameterized array.
  */
-public interface ITParameterizedArray extends ParameterizedArray {
+public interface ITParameterizedArray {
     
     /**
      * Get test case context.
@@ -31,6 +31,13 @@ public interface ITParameterizedArray extends ParameterizedArray {
      * @return test case context
      */
     IntegrationTestCaseContext getTestCaseContext();
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
     
     /**
      * Get scenario.
