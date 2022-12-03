@@ -29,9 +29,9 @@ on:
       - 'jdbc/core/src/main/**'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/discovery/**'
+      - 'test/e2e/fixture/**'
+      - 'test/e2e/env/**'
+      - 'test/e2e/discovery/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -44,9 +44,9 @@ on:
       - 'jdbc/core/src/main/**'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/discovery/**'
+      - 'test/e2e/fixture/**'
+      - 'test/e2e/env/**'
+      - 'test/e2e/discovery/**'
       - '!*.md'
   workflow_dispatch:
 
@@ -83,6 +83,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Discovery IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/discovery -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/discovery -Pit.env.docker -DskipTests
       - name: Run MySQL Discovery Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=mysql:5.7
+        run: ./mvnw -nsu -B install -f test/e2e/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=mysql:5.7

@@ -18,7 +18,7 @@ Currently, you can use MySQL, PostgreSQL and openGuass databases.
 
 ## User guide
 
-Module path: `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling`.
+Module path: `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling`.
 
 ### Environment setup
 
@@ -72,7 +72,7 @@ Find the appropriate test case and start it with Junit under the IDE.
 Step 1: Package mirror.
 
 ```
-./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
+./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling -Pit.env.docker -DskipTests
 ```
 
 Running the above command will build a Docker mirror apache/shardingsphere-proxy-test:latest used for integration testing. 
@@ -85,7 +85,7 @@ The output log of ShardingSphere-Proxy has the prefix Scaling-Proxy.
 Use Maven to run the test cases. Take MySQL as an example:
 
 ```
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 You can also use IDE to run test cases. `it-env.properties` can be configured as follows: 
