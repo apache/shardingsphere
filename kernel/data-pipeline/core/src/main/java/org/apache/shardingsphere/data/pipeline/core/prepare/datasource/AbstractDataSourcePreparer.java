@@ -97,7 +97,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
      * @param sql SQL
      * @throws SQLException SQL exception
      */
-    public final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+    protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
         log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
@@ -118,7 +118,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
      * @param createTableSQL create table SQL
      * @return create table if not existed SQL
      */
-    public final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
+    protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }
