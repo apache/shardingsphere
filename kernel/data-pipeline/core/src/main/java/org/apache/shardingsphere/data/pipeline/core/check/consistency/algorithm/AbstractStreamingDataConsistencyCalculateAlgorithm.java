@@ -45,7 +45,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
      * @param param data consistency calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<DataConsistencyCalculatedResult> calculateChunk(DataConsistencyCalculateParameter param);
+    public abstract Optional<DataConsistencyCalculatedResult> calculateChunk(DataConsistencyCalculateParameter param);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.

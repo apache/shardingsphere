@@ -29,7 +29,13 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 @Slf4j
 public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob implements SimpleJob {
     
-    protected abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
+    /**
+     * Build pipeline job item context.
+     * 
+     * @param shardingContext sharding context
+     * @return pipeline job item context
+     */
+    public abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
     
     protected abstract PipelineTasksRunner buildPipelineTasksRunner(PipelineJobItemContext pipelineJobItemContext);
     

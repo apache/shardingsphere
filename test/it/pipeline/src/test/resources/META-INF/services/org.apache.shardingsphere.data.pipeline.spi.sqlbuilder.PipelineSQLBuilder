@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineSQLBuilder
+org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixturePipelineSQLBuilder

@@ -32,4 +32,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineDistributedBarrier
+org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixturePipelineDistributedBarrier
