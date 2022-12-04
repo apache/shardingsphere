@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.sql92;
+package org.apache.shardingsphere.test.it.sql.parser.it.opengauss.internal;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class InternalSQL92ParserIT extends InternalSQLParserIT {
+public final class InternalOpenGaussParserIT extends InternalSQLParserIT {
     
-    public InternalSQL92ParserIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalOpenGaussParserIT(final InternalSQLParserTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return getTestParameters("SQL92");
+        return getTestParameters("openGauss");
     }
 }

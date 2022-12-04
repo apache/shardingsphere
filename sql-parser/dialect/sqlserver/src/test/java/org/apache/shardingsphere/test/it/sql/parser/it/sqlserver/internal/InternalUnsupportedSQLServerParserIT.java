@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.sqlserver;
+package org.apache.shardingsphere.test.it.sql.parser.it.sqlserver.internal;
 
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalUnsupportedSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,9 +26,9 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class InternalSQLServerParserIT extends InternalSQLParserIT {
+public final class InternalUnsupportedSQLServerParserIT extends InternalUnsupportedSQLParserIT {
     
-    public InternalSQLServerParserIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalUnsupportedSQLServerParserIT(final InternalSQLParserTestParameter testParameter) {
         super(testParameter);
     }
     
