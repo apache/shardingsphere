@@ -39,8 +39,7 @@ public final class LocalFileTestParameterLoadStrategy implements TestParameterLo
     public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
         final Collection<FileSummary> result = new LinkedList<>();
         try (Stream<Path> stream = Files.walk(Paths.get(uri))) {
-            stream.filter(each -> each.toString().endsWith(".sql"))
-                    .forEach(each -> result.add(new FileSummary(each.getFileName().toString(), each.toUri().toString())));
+            stream.filter(each -> each.toString().endsWith(".sql")).forEach(each -> result.add(new FileSummary(each.getFileName().toString(), each.toUri().toString())));
         }
         return result;
     }

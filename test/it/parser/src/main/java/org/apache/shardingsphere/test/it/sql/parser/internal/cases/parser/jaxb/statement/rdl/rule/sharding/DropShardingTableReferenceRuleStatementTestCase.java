@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DropRuleStatementTestCase;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,8 +30,12 @@ import java.util.List;
  * Drop sharding table reference rule statement test case.
  */
 @Getter
-public final class DropShardingTableReferenceRuleStatementTestCase extends DropRuleStatementTestCase {
+@Setter
+public final class DropShardingTableReferenceRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "name")
     private final List<String> names = new LinkedList<>();
+    
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
 }
