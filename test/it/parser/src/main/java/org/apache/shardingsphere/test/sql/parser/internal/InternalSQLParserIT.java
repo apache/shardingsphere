@@ -38,7 +38,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public abstract class InternalSQLParserParameterizedIT {
+public abstract class InternalSQLParserIT {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
@@ -50,7 +50,7 @@ public abstract class InternalSQLParserParameterizedIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public InternalSQLParserParameterizedIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalSQLParserIT(final InternalSQLParserTestParameter testParameter) {
         sqlCaseId = testParameter.getSqlCaseId();
         databaseType = testParameter.getDatabaseType();
         sqlCaseType = testParameter.getSqlCaseType();

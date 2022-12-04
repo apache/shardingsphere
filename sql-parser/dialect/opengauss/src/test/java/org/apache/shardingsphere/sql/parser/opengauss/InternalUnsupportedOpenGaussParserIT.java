@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss;
 
-import org.apache.shardingsphere.test.sql.parser.internal.InternalUnsupportedSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalUnsupportedSQLParserIT;
 import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class InternalUnsupportedOpenGaussParserParameterizedIT extends InternalUnsupportedSQLParserParameterizedIT {
+public final class InternalUnsupportedOpenGaussParserIT extends InternalUnsupportedSQLParserIT {
     
-    public InternalUnsupportedOpenGaussParserParameterizedIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalUnsupportedOpenGaussParserIT(final InternalSQLParserTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return InternalUnsupportedSQLParserParameterizedIT.getTestParameters("openGauss");
+        return InternalUnsupportedSQLParserIT.getTestParameters("openGauss");
     }
 }

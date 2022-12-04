@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
-public abstract class InternalUnsupportedSQLParserParameterizedIT {
+public abstract class InternalUnsupportedSQLParserIT {
     
     private static final SQLCases SQL_CASES = UnsupportedSQLCasesRegistry.getInstance().getCases();
     
@@ -41,7 +41,7 @@ public abstract class InternalUnsupportedSQLParserParameterizedIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public InternalUnsupportedSQLParserParameterizedIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalUnsupportedSQLParserIT(final InternalSQLParserTestParameter testParameter) {
         sqlCaseId = testParameter.getSqlCaseId();
         databaseType = testParameter.getDatabaseType();
         sqlCaseType = testParameter.getSqlCaseType();
