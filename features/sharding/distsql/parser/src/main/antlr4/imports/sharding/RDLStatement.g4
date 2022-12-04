@@ -20,47 +20,47 @@ grammar RDLStatement;
 import BaseRule;
 
 createShardingTableRule
-    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 alterShardingTableRule
-    : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)*
+    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA_ tableName)*
     ;
 
 createShardingTableReferenceRule
-    : CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*
+    : CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
 alterShardingTableReferenceRule
-    : ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*
+    : ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
 dropShardingTableReferenceRule
-    : DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName (COMMA ruleName)*
+    : DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
 createBroadcastTableRule
-    : CREATE BROADCAST TABLE RULE tableName (COMMA tableName)*
+    : CREATE BROADCAST TABLE RULE tableName (COMMA_ tableName)*
     ;
 
 dropBroadcastTableRule
-    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA tableName)*
+    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA_ tableName)*
     ;
 
 dropShardingAlgorithm
-    : DROP SHARDING ALGORITHM ifExists? shardingAlgorithmName (COMMA shardingAlgorithmName)*
+    : DROP SHARDING ALGORITHM ifExists? shardingAlgorithmName (COMMA_ shardingAlgorithmName)*
     ;
 
 createDefaultShardingStrategy
-    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP_ shardingStrategy RP_
     ;
 
 alterDefaultShardingStrategy
-    : ALTER DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    : ALTER DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP_ shardingStrategy RP_
     ;
 
 dropDefaultShardingStrategy
@@ -68,11 +68,11 @@ dropDefaultShardingStrategy
     ;
 
 dropShardingKeyGenerator
-    : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA keyGeneratorName)*
+    : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA_ keyGeneratorName)*
     ;
 
 dropShardingAuditor
-    : DROP SHARDING AUDITOR ifExists? auditorName (COMMA auditorName)*
+    : DROP SHARDING AUDITOR ifExists? auditorName (COMMA_ auditorName)*
     ;
 
 shardingTableRuleDefinition
@@ -80,39 +80,39 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP storageUnits COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? (COMMA auditDefinition)? RP
+    : tableName LP_ storageUnits COMMA_ autoShardingColumnDefinition COMMA_ algorithmDefinition (COMMA_ keyGenerateDefinition)? (COMMA_ auditDefinition)? RP_
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDefinition)? (COMMA auditDefinition)? RP
+    : tableName LP_ dataNodes (COMMA_ databaseStrategy)? (COMMA_ tableStrategy)? (COMMA_ keyGenerateDefinition)? (COMMA_ auditDefinition)? RP_
     ;
 
 keyGeneratorName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 auditorDefinition
-    : auditorName LP algorithmDefinition RP
+    : auditorName LP_ algorithmDefinition RP_
     ;
 
 auditorName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 storageUnits
-    : STORAGE_UNITS LP storageUnit (COMMA storageUnit)* RP
+    : STORAGE_UNITS LP_ storageUnit (COMMA_ storageUnit)* RP_
     ;
 
 storageUnit
-    : IDENTIFIER | STRING
+    : IDENTIFIER_ | STRING_
     ;
 
 dataNodes
-    : DATANODES LP dataNode (COMMA dataNode)* RP
+    : DATANODES LP_ dataNode (COMMA_ dataNode)* RP_
     ;
 
 dataNode
-    : STRING
+    : STRING_
     ;
 
 autoShardingColumnDefinition
@@ -124,43 +124,43 @@ shardingColumnDefinition
     ;
 
 shardingColumn
-    : SHARDING_COLUMN EQ columnName
+    : SHARDING_COLUMN EQ_ columnName
     ;
 
 shardingColumns
-    : SHARDING_COLUMNS EQ columnName COMMA columnName (COMMA columnName)*
+    : SHARDING_COLUMNS EQ_ columnName COMMA_ columnName (COMMA_ columnName)*
     ;
 
 shardingAlgorithm
-    : SHARDING_ALGORITHM LP algorithmDefinition RP
+    : SHARDING_ALGORITHM LP_ algorithmDefinition RP_
     ;
 
 shardingStrategy
-    : TYPE EQ strategyType COMMA shardingColumnDefinition COMMA shardingAlgorithm 
+    : TYPE EQ_ strategyType COMMA_ shardingColumnDefinition COMMA_ shardingAlgorithm
     ;
 
 databaseStrategy
-    : DATABASE_STRATEGY LP shardingStrategy RP
+    : DATABASE_STRATEGY LP_ shardingStrategy RP_
     ;
 
 tableStrategy
-    : TABLE_STRATEGY LP shardingStrategy RP
+    : TABLE_STRATEGY LP_ shardingStrategy RP_
     ;
 
 keyGenerateDefinition
-    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA algorithmDefinition RP
+    : KEY_GENERATE_STRATEGY LP_ COLUMN EQ_ columnName COMMA_ algorithmDefinition RP_
     ;
 
 auditDefinition
-    : AUDIT_STRATEGY LP multiAuditDefinition COMMA ALLOW_HINT_DISABLE EQ auditAllowHintDisable RP
+    : AUDIT_STRATEGY LP_ multiAuditDefinition COMMA_ ALLOW_HINT_DISABLE EQ_ auditAllowHintDisable RP_
     ;
 
 multiAuditDefinition
-    : singleAuditDefinition (COMMA singleAuditDefinition)*
+    : singleAuditDefinition (COMMA_ singleAuditDefinition)*
     ;
 
 singleAuditDefinition
-    : LP algorithmDefinition RP
+    : LP_ algorithmDefinition RP_
     ;
 
 auditAllowHintDisable
@@ -168,15 +168,15 @@ auditAllowHintDisable
     ;
 
 columnName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 tableReferenceRuleDefinition
-    : ruleName LP tableName (COMMA tableName)* RP
+    : ruleName LP_ tableName (COMMA_ tableName)* RP_
     ;
 
 strategyType
-    : STRING | buildInStrategyType
+    : STRING_ | buildInStrategyType
     ;
 
 buildInStrategyType
