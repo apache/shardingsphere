@@ -239,6 +239,10 @@ FALSE
     : F A L S E
     ;
 
+MOD
+    : M O D
+    ;
+
 COSID_MOD
     : C O S I D UL_ M O D
     ;

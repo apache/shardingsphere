@@ -84,5 +84,5 @@ tableRule
     ;
 
 databaseName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
