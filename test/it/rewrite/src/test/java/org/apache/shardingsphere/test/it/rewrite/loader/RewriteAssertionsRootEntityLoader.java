@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameterized.loader;
+package org.apache.shardingsphere.test.it.rewrite.loader;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sharding.rewrite.parameterized.entity.RewriteAssertionsRootEntity;
+import org.apache.shardingsphere.test.it.rewrite.entity.RewriteAssertionsRootEntity;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

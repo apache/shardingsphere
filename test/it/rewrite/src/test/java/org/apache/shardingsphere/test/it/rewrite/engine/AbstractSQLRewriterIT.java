@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameterized.engine;
+package org.apache.shardingsphere.test.it.rewrite.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
+import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -82,7 +82,7 @@ import static org.mockito.Mockito.when;
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractSQLRewriterParameterizedTest {
+public abstract class AbstractSQLRewriterIT {
     
     private final SQLRewriteEngineTestParameters testParameters;
     

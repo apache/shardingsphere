@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
+package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import java.util.Properties;
 
 @Getter
-public final class RewriteNormalEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
+public final class RewriteQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
     
     private Properties props;
     
@@ -38,7 +38,7 @@ public final class RewriteNormalEncryptAlgorithmFixture implements StandardEncry
         if (null == plainValue) {
             return null;
         }
-        return "encrypt_" + plainValue;
+        return "assisted_query_" + plainValue;
     }
     
     @Override
@@ -51,6 +51,6 @@ public final class RewriteNormalEncryptAlgorithmFixture implements StandardEncry
     
     @Override
     public String getType() {
-        return "REWRITE.NORMAL.FIXTURE";
+        return "REWRITE.ASSISTED_QUERY.FIXTURE";
     }
 }

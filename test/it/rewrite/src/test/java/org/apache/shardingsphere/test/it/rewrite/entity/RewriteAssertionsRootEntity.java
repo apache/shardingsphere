@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.fixture.keygen;
+package org.apache.shardingsphere.test.it.rewrite.entity;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
+/**
+ * Rewrite assertions root entity for JAXB.
+ */
+@XmlRootElement(name = "rewrite-assertions")
 @Getter
-public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+public final class RewriteAssertionsRootEntity {
     
-    private Properties props;
+    @XmlAttribute(name = "yaml-rule", required = true)
+    private String yamlRule;
     
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public Long generateKey() {
-        return 1L;
-    }
-    
-    @Override
-    public String getType() {
-        return "REWRITE.FIXTURE";
-    }
+    @XmlElement(name = "rewrite-assertion")
+    private Collection<RewriteAssertionEntity> assertions = new LinkedList<>();
 }

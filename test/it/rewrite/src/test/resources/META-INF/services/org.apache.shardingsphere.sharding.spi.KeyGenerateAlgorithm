@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.rewrite.fixture.keygen.RewriteKeyGenerateAlgorithmFixture
+org.apache.shardingsphere.test.it.rewrite.fixture.keygen.RewriteKeyGenerateAlgorithmFixture
