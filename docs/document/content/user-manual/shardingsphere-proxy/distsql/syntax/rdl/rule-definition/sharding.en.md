@@ -24,20 +24,16 @@ DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
 
 DROP SHARDING KEY GENERATOR [IF EXISTS] keyGeneratorName [, keyGeneratorName] ...
     
-CREATE SHARDING AUDITOR auditorDefinition [, auditorDefinition] ...
-    
-ALTER SHARDING AUDITOR auditorDefinition [, auditorDefinition] ...
-    
 DROP SHARDING AUDITOR [IF EXISTS] auditorName [, auditorName] ...
 
 shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
 
 shardingAutoTableRule:
-    tableName(storageUnits, shardingColumn, algorithmDefinition [, keyGenerateDefinition] [, auditDeclaration])
+    tableName(storageUnits, shardingColumn, algorithmDefinition [, keyGenerateDefinition] [, auditDefinition])
 
 shardingTableRule:
-    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDefinition] [, auditDeclaration])
+    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDefinition] [, auditDefinition])
 
 storageUnits:
     STORAGE_UNITS(storageUnit [, storageUnit] ...)
@@ -59,18 +55,12 @@ algorithmDefinition:
 
 keyGenerateDefinition:
     KEY_GENERATE_STRATEGY(COLUMN=columnName, strategyDefinition)
-    
-auditDeclaration:
-    auditDefinition | auditStrategy
 
 auditDefinition:
-    AUDIT_STRATEGY([(singleAuditDefinition),(singleAuditDefinition)], ALLOW_HINT_DISABLE=true)
-    
+    AUDIT_STRATEGY([singleAuditDefinition, singleAuditDefinition], ALLOW_HINT_DISABLE=true)
+
 singleAuditDefinition:
-    NAME=auditor1, algorithmDefinition
-    
-auditStrategy:
-    AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2], ALLOW_HINT_DISABLE=true)
+    algorithmDefinition
 
 shardingScope:
     DATABASE | TABLE
@@ -90,23 +80,11 @@ shardingAlgorithm:
 strategyDefinition:
     TYPE(NAME=keyGenerateStrategyType [, PROPERTIES([algorithmProperties])])
 
-shardingAlgorithmDefinition:
-    shardingAlgorithmName(algorithmDefinition)
-
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
 
 algorithmProperty:
-    key=value   
-
-keyGeneratorDefinition: 
-    keyGeneratorName (algorithmDefinition)
-
-auditorDefinition:
-    auditorName (auditorAlgorithmDefinition)
-    
-auditorAlgorithmDefinition:
-    TYPE(NAME=auditorAlgorithmType [, PROPERTIES([algorithmProperties])])
+    key=value
 ```
 - `STORAGE_UNITS` needs to use storage units managed by RDL
 - `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/)
@@ -116,7 +94,6 @@ auditorAlgorithmDefinition:
 - To remove `shardingAlgorithm`, please execute `DROP SHARDING ALGORITHM`
 - `strategyType` specifies the sharding strategy, please refer to[Sharding Strategy](/en/features/sharding/concept/sharding/#sharding-strategy)
 - `Sharding Table Rule` supports both `Auto Table` and `Table` at the same time. The two types are different in syntax. For the corresponding configuration file, please refer to [Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)
-- When using the `autoCreativeAlgorithm` way to specify `shardingStrategy`, a new sharding algorithm will be created automatically. The algorithm naming rule is `tableName_strategyType_shardingAlgorithmType`, such as `t_order_database_inline`
 - executing `CREATE SHARDING TABLE RULE`，a new sharding algorithm will be created automatically. The algorithm naming rule is `tableName_scope_shardingAlgorithmType`，such as `t_order_database_inline`
 - executing `CREATE DEFAULT SHARDING STRATEGY`，a new sharding algorithm is also created automatically，The algorithm naming rule is `default_scope_shardingAlgorithmType`，such as `default_database_inline`
 
@@ -164,14 +141,14 @@ CREATE SHARDING TABLE RULE t_order (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
-AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING TABLE RULE t_order (
 STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
-AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
 DROP SHARDING TABLE RULE t_order;
@@ -187,7 +164,7 @@ DATANODES("ds_${0..1}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
-AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING TABLE RULE t_order_item (
@@ -195,7 +172,7 @@ DATANODES("ds_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}")))),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
-AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
 DROP SHARDING TABLE RULE t_order_item;
