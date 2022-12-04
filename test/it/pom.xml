@@ -31,7 +31,7 @@
     <modules>
         <module>parser</module>
         <module>optimizer</module>
-        <module>rewrite</module>
+        <module>rewriter</module>
         <module>pipeline</module>
     </modules>
     

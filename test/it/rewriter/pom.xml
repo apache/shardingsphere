@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-test-it</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-it-rewrite</artifactId>
+    <artifactId>shardingsphere-test-it-rewriter</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
