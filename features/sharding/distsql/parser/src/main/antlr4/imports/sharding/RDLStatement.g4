@@ -160,7 +160,7 @@ multiAuditDefinition
     ;
 
 singleAuditDefinition
-    : LP_ algorithmDefinition RP_
+    : algorithmDefinition
     ;
 
 auditAllowHintDisable
