@@ -34,6 +34,6 @@ public final class InternalUnsupportedMySQLParserIT extends InternalUnsupportedS
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return InternalUnsupportedSQLParserIT.getTestParameters("MySQL");
+        return getTestParameters("MySQL");
     }
 }

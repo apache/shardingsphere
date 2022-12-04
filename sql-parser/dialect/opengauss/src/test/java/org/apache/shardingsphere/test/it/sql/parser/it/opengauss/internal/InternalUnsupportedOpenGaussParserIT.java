@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.opengauss;
+package org.apache.shardingsphere.test.it.sql.parser.it.opengauss.internal;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalUnsupportedSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
@@ -34,6 +34,6 @@ public final class InternalUnsupportedOpenGaussParserIT extends InternalUnsuppor
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return InternalUnsupportedSQLParserIT.getTestParameters("openGauss");
+        return getTestParameters("openGauss");
     }
 }

@@ -34,6 +34,6 @@ public final class InternalUnsupportedPostgreSQLParserIT extends InternalUnsuppo
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return InternalUnsupportedSQLParserIT.getTestParameters("PostgreSQL");
+        return getTestParameters("PostgreSQL");
     }
 }
