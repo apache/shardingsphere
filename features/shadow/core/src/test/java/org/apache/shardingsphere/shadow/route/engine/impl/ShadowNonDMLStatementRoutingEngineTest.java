@@ -23,12 +23,10 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.junit.Before;
@@ -64,7 +62,7 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     @Test
     public void assertRoute() {
         RouteContext routeContext = createRouteContext();
-        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        shadowRouteEngine.route(routeContext, new ShadowRule(createShadowRuleConfiguration()));
         Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
         RouteMapper dataSourceMapper = routeUnits.iterator().next().getDataSourceMapper();
         assertThat(dataSourceMapper.getLogicName(), is("logic_db"));
@@ -82,16 +80,16 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
         return new RouteUnit(new RouteMapper("logic_db", "shadow-data-source"), Collections.singleton(new RouteMapper("t_order", "t_order")));
     }
     
-    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(Collections.singletonList(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds_shadow")));
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Collections.singleton("simple-hint-algorithm"))));
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
     
-    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        return Collections.singletonMap("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("SIMPLE_HINT", createProperties())));
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
+        return Collections.singletonMap("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", createProperties()));
     }
     
     private Properties createProperties() {

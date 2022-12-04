@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
@@ -62,13 +61,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, EncryptAlgorithmFactory.newInstance(value)));
-        ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
-        queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
-    }
-    
-    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration ruleConfig) {
-        configuration = ruleConfig;
-        ruleConfig.getEncryptors().forEach(this::putAllEncryptors);
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
         queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
     }
