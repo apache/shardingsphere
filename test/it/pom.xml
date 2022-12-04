@@ -29,8 +29,9 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>rewrite</module>
         <module>parser</module>
+        <module>optimizer</module>
+        <module>rewrite</module>
         <module>pipeline</module>
     </modules>
     
