@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding;
+package org.apache.shardingsphere.test.e2e.agent.opentelemetry.result;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
-/**
- * Drop sharding table rule statement test case.
- */
 @Getter
 @Setter
-public final class DropShardingTableRuleStatementTestCase extends SQLParserTestCase {
+public final class TracingResult {
     
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
+    private String traceId;
     
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
+    private String id;
+    
+    private String name;
+    
+    private Long timestamp;
+    
+    private Long duration;
+    
+    private Map<String, String> localEndpoint;
+    
+    private Map<String, String> tags;
 }

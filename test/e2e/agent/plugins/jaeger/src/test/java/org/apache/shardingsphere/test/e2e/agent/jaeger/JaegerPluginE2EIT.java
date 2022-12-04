@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding;
+package org.apache.shardingsphere.test.e2e.agent.jaeger;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
 
-/**
- * Drop sharding table rule statement test case.
- */
-@Getter
-@Setter
-public final class DropShardingTableRuleStatementTestCase extends SQLParserTestCase {
+public final class JaegerPluginE2EIT extends BasePluginE2EIT {
     
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
-    
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
+    @Test
+    @Ignore
+    public void assertProxyWithAgent() throws IOException {
+        super.assertProxyWithAgent();
+    }
 }

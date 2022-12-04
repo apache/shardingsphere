@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding;
+package org.apache.shardingsphere.test.e2e.agent.common.entity;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
-
-/**
- * Drop sharding table rule statement test case.
- */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class DropShardingTableRuleStatementTestCase extends SQLParserTestCase {
+public final class OrderEntity {
     
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
+    private final long orderId;
     
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
+    private final int userId;
+    
+    private final String status;
 }
