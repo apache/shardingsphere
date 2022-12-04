@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameterized.entity;
+package org.apache.shardingsphere.test.it.rewrite.fixture.keygen;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Properties;
 
-/**
- * Rewrite input entity for JAXB.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@Setter
-public final class RewriteOutputEntity {
+public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    @XmlAttribute(required = true)
-    private String sql;
+    private Properties props;
     
-    @XmlAttribute
-    private String parameters;
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
+    
+    @Override
+    public Long generateKey() {
+        return 1L;
+    }
+    
+    @Override
+    public String getType() {
+        return "REWRITE.FIXTURE";
+    }
 }

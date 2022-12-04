@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
+package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
 @Getter
-public final class RewriteQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
+public final class RewriteQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm<Object, String> {
     
     private Properties props;
     
@@ -38,19 +38,11 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements Standa
         if (null == plainValue) {
             return null;
         }
-        return "assisted_query_" + plainValue;
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        if (null == cipherValue) {
-            return null;
-        }
-        return cipherValue.replaceAll("encrypt_", "");
+        return "like_query_" + plainValue;
     }
     
     @Override
     public String getType() {
-        return "REWRITE.ASSISTED_QUERY.FIXTURE";
+        return "REWRITE.LIKE_QUERY.FIXTURE";
     }
 }

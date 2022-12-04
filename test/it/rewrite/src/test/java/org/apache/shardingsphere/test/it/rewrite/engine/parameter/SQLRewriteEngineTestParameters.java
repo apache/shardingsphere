@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter;
+package org.apache.shardingsphere.test.it.rewrite.engine.parameter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

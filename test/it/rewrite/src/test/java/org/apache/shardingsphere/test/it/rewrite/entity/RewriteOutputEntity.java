@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameterized.entity;
+package org.apache.shardingsphere.test.it.rewrite.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,26 +23,18 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
 
 /**
- * Rewrite assertion entity for JAXB.
+ * Rewrite input entity for JAXB.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class RewriteAssertionEntity {
+public final class RewriteOutputEntity {
     
     @XmlAttribute(required = true)
-    private String id;
+    private String sql;
     
-    @XmlElement(required = true)
-    private RewriteInputEntity input;
-    
-    @XmlElement(required = true, name = "output")
-    private List<RewriteOutputEntity> outputs;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+    @XmlAttribute
+    private String parameters;
 }
