@@ -54,7 +54,7 @@ public final class MigrationJob extends AbstractSimplePipelineJob {
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
     
     @Override
-    protected InventoryIncrementalJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
+    public InventoryIncrementalJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
         int shardingItem = shardingContext.getShardingItem();
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         InventoryIncrementalJobItemProgress initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);

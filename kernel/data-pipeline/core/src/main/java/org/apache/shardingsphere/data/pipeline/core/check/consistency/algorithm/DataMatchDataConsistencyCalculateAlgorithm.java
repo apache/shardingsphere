@@ -89,7 +89,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     @Override
-    protected Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter param) {
+    public Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter param) {
         CalculatedResult previousCalculatedResult = (CalculatedResult) param.getPreviousCalculatedResult();
         String sql = getQuerySQL(param);
         try (
