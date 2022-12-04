@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92;
 
-import org.apache.shardingsphere.test.sql.parser.internal.InternalUnsupportedSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserIT;
 import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class InternalUnsupportedSQL92ParserParameterizedIT extends InternalUnsupportedSQLParserParameterizedIT {
+public final class InternalSQL92ParserIT extends InternalSQLParserIT {
     
-    public InternalUnsupportedSQL92ParserParameterizedIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalSQL92ParserIT(final InternalSQLParserTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return InternalUnsupportedSQLParserParameterizedIT.getTestParameters("SQL92");
+        return getTestParameters("SQL92");
     }
 }

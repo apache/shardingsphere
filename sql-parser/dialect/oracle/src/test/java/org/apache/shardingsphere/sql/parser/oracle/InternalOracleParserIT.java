@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.internal;
+package org.apache.shardingsphere.sql.parser.oracle;
 
-import org.apache.shardingsphere.test.sql.parser.internal.InternalUnsupportedSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserIT;
 import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class InternalUnsupportedPostgreSQLParserParameterizedIT extends InternalUnsupportedSQLParserParameterizedIT {
+public final class InternalOracleParserIT extends InternalSQLParserIT {
     
-    public InternalUnsupportedPostgreSQLParserParameterizedIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalOracleParserIT(final InternalSQLParserTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return InternalUnsupportedSQLParserParameterizedIT.getTestParameters("PostgreSQL");
+        return getTestParameters("Oracle");
     }
 }

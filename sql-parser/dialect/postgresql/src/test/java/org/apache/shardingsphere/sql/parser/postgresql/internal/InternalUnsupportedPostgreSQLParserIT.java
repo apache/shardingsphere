@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.opengauss;
+package org.apache.shardingsphere.sql.parser.postgresql.internal;
 
-import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.internal.InternalUnsupportedSQLParserIT;
 import org.apache.shardingsphere.test.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class InternalOpenGaussParserParameterizedIT extends InternalSQLParserParameterizedIT {
+public final class InternalUnsupportedPostgreSQLParserIT extends InternalUnsupportedSQLParserIT {
     
-    public InternalOpenGaussParserParameterizedIT(final InternalSQLParserTestParameter testParameter) {
+    public InternalUnsupportedPostgreSQLParserIT(final InternalSQLParserTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return getTestParameters("openGauss");
+        return InternalUnsupportedSQLParserIT.getTestParameters("PostgreSQL");
     }
 }
