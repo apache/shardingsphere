@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.fixture;
+package org.apache.shardingsphere.test.e2e.fixture;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
+import lombok.Getter;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.List;
 import java.util.Properties;
 
-public final class ITShardingAuditAlgorithmFixture implements ShardingAuditAlgorithm {
+@Getter
+public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+    
+    private Properties props;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
     }
     
     @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereDatabase database) {
-    }
-    
-    @Override
-    public Properties getProps() {
-        return new Properties();
+    public Long generateKey() {
+        return 1L;
     }
     
     @Override
     public String getType() {
-        return "IT.AUDITOR.FIXTURE";
+        return "IT.FIXTURE";
     }
 }
