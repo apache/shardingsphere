@@ -15,9 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.showprocesslist.env.enums;
+package org.apache.shardingsphere.test.e2e.showprocesslist.parameter;
 
-public enum ITEnvTypeEnum {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ShowProcessListTestParameter {
     
-    NONE, DOCKER
+    private final DatabaseType databaseType;
+    
+    private final String scenario;
+    
+    private final String runMode;
 }

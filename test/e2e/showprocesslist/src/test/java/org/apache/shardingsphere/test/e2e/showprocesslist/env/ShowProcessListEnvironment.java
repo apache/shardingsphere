@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
-import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,22 +29,22 @@ import java.util.Collection;
 import java.util.Properties;
 
 @Getter
-public final class IntegrationTestEnvironment {
+public final class ShowProcessListEnvironment {
     
-    private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
+    private static final ShowProcessListEnvironment INSTANCE = new ShowProcessListEnvironment();
     
     private final Collection<String> runModes;
     
     private final Properties props;
     
-    private final ITEnvTypeEnum itEnvType;
+    private final ShowProcessListEnvTypeEnum itEnvType;
     
     private final Collection<String> scenarios;
     
-    private IntegrationTestEnvironment() {
+    private ShowProcessListEnvironment() {
         props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
-        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.NONE.name()).toUpperCase());
+        itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("it.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
         scenarios = getScenarios(props);
     }
     
@@ -53,14 +53,14 @@ public final class IntegrationTestEnvironment {
      *
      * @return singleton instance
      */
-    public static IntegrationTestEnvironment getInstance() {
+    public static ShowProcessListEnvironment getInstance() {
         return INSTANCE;
     }
     
     @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
+        try (InputStream inputStream = ShowProcessListEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
