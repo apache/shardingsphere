@@ -113,7 +113,8 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
-        sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", BaseITCase.SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
+        sourceExecuteWithLog(
+                String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", BaseITCase.SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
         startMigrationByJobId(jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
         proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
