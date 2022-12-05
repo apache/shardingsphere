@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDomainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss create domain statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussCreateDomainStatement extends CreateDomainStatement implements OpenGaussStatement {
 }

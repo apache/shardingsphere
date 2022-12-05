@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
@@ -37,14 +37,16 @@ import static org.junit.Assert.assertTrue;
 
 public final class HintShadowAlgorithmDeterminerTest {
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertIsShadow() {
-        assertTrue(HintShadowAlgorithmDeterminer.isShadow(createHintShadowAlgorithm(), createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())));
+        HintShadowAlgorithm hintShadowAlgorithm = (HintShadowAlgorithm) ShadowAlgorithmFactory.newInstance(createHintShadowAlgorithm());
+        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration())));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private HintShadowAlgorithm<Comparable<?>> createHintShadowAlgorithm() {
-        return (HintShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("SIMPLE_HINT", createProperties()));
+    private AlgorithmConfiguration createHintShadowAlgorithm() {
+        return new AlgorithmConfiguration("SIMPLE_HINT", createProperties());
     }
     
     private Properties createProperties() {
@@ -53,8 +55,8 @@ public final class HintShadowAlgorithmDeterminerTest {
         return result;
     }
     
-    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(createDataSources());
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), Collections.singleton("simple-hint-algorithm"))));
         result.setShadowAlgorithms(Collections.singletonMap("simple-hint-algorithm", createHintShadowAlgorithm()));

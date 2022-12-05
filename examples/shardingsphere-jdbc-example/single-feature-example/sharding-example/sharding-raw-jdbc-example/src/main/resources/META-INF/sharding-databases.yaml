@@ -59,15 +59,15 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database-inline
+      shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    database-inline:
+    database_inline:
       type: INLINE
       props:
-        algorithm-expression: ds_${user_id % 2}
+        algorithm_expression: ds_${user_id % 2}
     
   keyGenerators:
     snowflake:

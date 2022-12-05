@@ -19,7 +19,7 @@ weight = 4
 
 ## 使用指南
 
-模块路径 `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling` 。
+模块路径 `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling` 。
 
 ### 环境配置
 `${DOCKER-IMAGE}` 表示 docker 镜像名称，如 `mysql:8` 。 `${DATABASE-TYPE}` 表示数据库类型。
@@ -70,7 +70,7 @@ scaling.it.native.mysql.port=3306
 第一步：打包镜像
 
 ```
-./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
+./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling -Pit.env.docker -DskipTests
 ```
 
 运行以上命令会构建出一个用于集成测试的 Docker 镜像 apache/shardingsphere-proxy-test:latest，该镜像设置了远程调试的端口，默认是3308。 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。
@@ -82,7 +82,7 @@ ShardingSphere-Proxy 输出的日志带有 :Scaling-Proxy 前缀。
 使用 Maven 的方式运行用例。以 MySQL 为例：
 
 ```
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 也可以使用 IDE 的方式运行用例。`it-env.properties` 可以配置如下：

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.DefaultDataSourcePoolActiveDetector;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.HikariDataSourcePoolActiveDetector;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

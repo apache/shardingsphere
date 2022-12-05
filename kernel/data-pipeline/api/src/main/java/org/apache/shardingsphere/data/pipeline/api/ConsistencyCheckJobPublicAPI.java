@@ -62,6 +62,13 @@ public interface ConsistencyCheckJobPublicAPI extends PipelineJobPublicAPI, Requ
     void stopByParentJobId(String parentJobId);
     
     /**
+     * Drop by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
+    void dropByParentJobId(String parentJobId);
+    
+    /**
      * Get consistency job item info.
      *
      * @param parentJobId parent job id

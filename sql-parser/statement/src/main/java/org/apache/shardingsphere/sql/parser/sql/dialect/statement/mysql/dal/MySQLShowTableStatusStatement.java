@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -31,7 +30,6 @@ import java.util.Optional;
  * MySQL show table status statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class MySQLShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private FromSchemaSegment fromSchema;

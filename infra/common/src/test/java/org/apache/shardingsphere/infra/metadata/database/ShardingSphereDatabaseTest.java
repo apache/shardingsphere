@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Collection;

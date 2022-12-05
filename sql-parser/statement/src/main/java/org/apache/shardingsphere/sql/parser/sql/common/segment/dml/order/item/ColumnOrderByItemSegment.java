@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
  * Order by item segment for column.
  */
 @Getter
-@ToString(callSuper = true)
 public final class ColumnOrderByItemSegment extends TextOrderByItemSegment {
     
     private final ColumnSegment column;

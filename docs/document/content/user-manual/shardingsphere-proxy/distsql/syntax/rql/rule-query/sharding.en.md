@@ -140,9 +140,10 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 
 ### Sharding Table Reference Rule
 
-| Column                   | Description              | 
-| ------------------------ |--------------------------|
-| sharding_table_reference | Sharding table reference |
+| Column                   | Description                        | 
+| ------------------------ |------------------------------------|
+| name                     | Sharding table reference rule name |
+| sharding_table_reference | Sharding table reference           |
 
 ### Broadcast Table Rule
 
@@ -307,12 +308,12 @@ mysql> SHOW SHARDING TABLE NODES;
 
 ```sql
 mysql> SHOW SHARDING TABLE REFERENCE RULES;
-+--------------------------+
-| sharding_table_reference |
-+--------------------------+
-| t_order,t_order_item     |
-| t1,t2                    |
-+--------------------------+
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
+| ref_1 | t_c,t_d                  |
++-------+--------------------------+
 2 rows in set (0.00 sec)
 ```
 

@@ -20,45 +20,72 @@ grammar BaseRule;
 import Symbol, Keyword, Literals;
 
 literal
-    : STRING | (MINUS)? INT | TRUE | FALSE
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
     ;
 
 algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
+    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
     ;
 
 algorithmTypeName
-    : STRING
+    : STRING_ | buildInShardingAlgorithmType | buildInkeyGeneratorType | buildInAuditAlgorithmType
+    ;
+
+buildInShardingAlgorithmType
+    : MOD
+    | COSID_MOD
+    | HASH_MOD
+    | VOLUME_RANGE
+    | BOUNDARY_RANGE
+    | AUTO_INTERVAL
+    | INLINE
+    | INTERVAL
+    | COSID_INTERVAL
+    | COSID_INTERVAL_SNOWFLAKE
+    | COMPLEX_INLINE
+    | HINT_INLINE
+    ;
+
+buildInAuditAlgorithmType
+    : DML_SHARDING_CONDITIONS
     ;
 
 propertiesDefinition
-    : PROPERTIES LP properties? RP
+    : PROPERTIES LP_ properties? RP_
     ;
 
 properties
-    : property (COMMA property)*
+    : property (COMMA_ property)*
     ;
 
 property
-    : key=STRING EQ value=literal
+    : key=STRING_ EQ_ value=literal
     ;
 
 tableName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 shardingAlgorithmName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 keyGeneratorName
-    : IDENTIFIER
+    : IDENTIFIER_
+    ;
+
+buildInkeyGeneratorType
+    : SNOWFLAKE
+    | NANOID
+    | UUID
+    | COSID
+    | COSID_SNOWFLAKE
     ;
 
 auditorName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 ruleName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

@@ -77,15 +77,16 @@ chapter = true
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
  - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
- - 每个测试用例需精确断言。
+ - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
  - 只有 Mockito，junit `Assert`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
- - 单数据断言，应使用 `assertTrue`，`assertFalse`，`assertNull` 和 `assertNotNull`。
- - 多数据断言，应使用 `assertThat`。
- - 精确断言，尽量不使用 `not`，`containsString` 断言。
+ - 数据断言规范应遵循：
+    - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
+    - 空值断言应使用 `assertNull` 和 `assertNotNull`；
+    - 其他类型应使用 `assertThat`。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
- - 使用 Mockito mockStatic 和 mockConstruction 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
+ - 使用 Mockito `mockStatic` 和 `mockConstruction` 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
 
 ## G4 编码规范
 
@@ -102,4 +103,3 @@ chapter = true
    - 如果一个规则的分支超过 `5` 个，则每个分支一行。
    - 规则命名采用 java 变量的驼峰形式。
    - 为每种 SQL 语句类型定义一个独立的语法文件，文件名称由 `数据库名称` + `语句类型名称` + `Statement`。例如：`MySQLDQLStatement.g4`。
-   - 每个 `SQLStatement` 和 `SQLSegment` 实现类，必须添加 lombok `@ToString` 注解，如果实现类继承了某个父类，则需要添加 `callSuper = true` 参数。

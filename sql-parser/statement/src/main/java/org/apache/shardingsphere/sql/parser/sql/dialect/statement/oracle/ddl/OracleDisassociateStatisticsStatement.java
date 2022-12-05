@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
@@ -39,7 +38,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class OracleDisassociateStatisticsStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
     
     private List<IndexSegment> indexes = new LinkedList<>();

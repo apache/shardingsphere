@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Parse Dist SQL handler.
+ * Parse DistSQL handler.
  */
 public final class ParseDistSQLHandler extends SQLRULBackendHandler<ParseStatement> {
     

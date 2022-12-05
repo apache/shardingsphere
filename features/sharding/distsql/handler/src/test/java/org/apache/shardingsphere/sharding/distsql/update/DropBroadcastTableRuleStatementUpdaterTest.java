@@ -20,8 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropBroadcastTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropBroadcastTableRuleStatement;
 import org.junit.Test;
@@ -75,8 +73,8 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
     @Test
     public void assertDropSpecifiedRule() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
-        updater.updateCurrentRuleConfiguration(createSQLStatement("t_address"), currentRuleConfig);
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig));
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("t_address"), currentRuleConfig));
         assertTrue(currentRuleConfig.getBroadcastTables().isEmpty());
     }
     
@@ -108,8 +106,6 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
         result.getBroadcastTables().add("t_order");
         result.getBroadcastTables().add("t_address");
         return result;

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;

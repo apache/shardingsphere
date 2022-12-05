@@ -16,14 +16,14 @@ rules:
       productionDataSourceName: # 生产数据源名称
       shadowDataSourceName: # 影子数据源名称
   tables:
-    <table-name>:
+    <table_name>:
       dataSourceNames: # 影子表关联影子数据源名称列表
-        - <shadow-data-source>
+        - <shadow_data_source>
       shadowAlgorithmNames: # 影子表关联影子算法名称列表
-        - <shadow-algorithm-name>
+        - <shadow_algorithm_name>
   defaultShadowAlgorithmName: # 默认影子算法名称（选配项）
   shadowAlgorithms:
-    <shadow-algorithm-name> (+): # 影子算法名称
+    <shadow_algorithm_name> (+): # 影子算法名称
       type: # 影子算法类型
       props: # 影子算法属性配置
 ```
@@ -69,16 +69,16 @@ rules:
       dataSourceNames: 
         - shadowDataSource
       shadowAlgorithmNames: 
-        - user-id-insert-match-algorithm
-        - simple-hint-algorithm
+        - user_id_insert_match_algorithm
+        - simple_hint_algorithm
   shadowAlgorithms:
-    user-id-insert-match-algorithm:
+    user_id_insert_match_algorithm:
       type: REGEX_MATCH
       props:
         operation: insert
         column: user_id
         regex: "[1]"
-    simple-hint-algorithm:
+    simple_hint_algorithm:
       type: SIMPLE_HINT
       props:
         foo: bar

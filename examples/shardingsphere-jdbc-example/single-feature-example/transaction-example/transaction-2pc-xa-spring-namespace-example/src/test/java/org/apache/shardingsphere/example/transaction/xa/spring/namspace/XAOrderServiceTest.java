@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.transaction.xa.spring.namspace;
 
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

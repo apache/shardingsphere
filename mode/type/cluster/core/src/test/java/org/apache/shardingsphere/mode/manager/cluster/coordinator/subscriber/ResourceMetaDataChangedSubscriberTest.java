@@ -42,7 +42,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateSta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.SQLException;
 import java.util.Collection;

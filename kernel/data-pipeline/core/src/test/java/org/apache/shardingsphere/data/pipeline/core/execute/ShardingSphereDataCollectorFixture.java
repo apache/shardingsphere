@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,7 +36,7 @@ public final class ShardingSphereDataCollectorFixture implements ShardingSphereD
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table", Collections.emptyList());
+        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
         shardingSphereTableData.getRows().add(new ShardingSphereRowData(Arrays.asList("1", "2")));
         return Optional.of(shardingSphereTableData);
     }

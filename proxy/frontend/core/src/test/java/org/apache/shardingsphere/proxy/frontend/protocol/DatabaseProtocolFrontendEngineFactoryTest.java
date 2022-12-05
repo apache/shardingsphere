@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.protocol;
 
 import org.apache.shardingsphere.proxy.frontend.fixture.DatabaseProtocolFrontendEngineFixture;
-import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
+import org.apache.shardingsphere.test.fixture.infra.database.type.MockedDatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

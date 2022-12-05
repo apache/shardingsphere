@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dd
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
@@ -32,7 +31,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements PostgreSQLStatement {
     
     private final boolean ifNotExists;

@@ -24,13 +24,14 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                       | 说明         |
-| -------------------------| -------------|
-| sharding_table_reference | 关联表名称    |
+| 列                       | 说明             |
+| -------------------------| ----------------|
+| name                     | 分片表关联规则名称 |
+| sharding_table_reference | 分片表关联关系    |
 
 ### 示例
 
-- 查询指定逻辑库中具有关联关系的分片表
+- 查询指定逻辑库中的分片表关联规则
 
 ```sql
 SHOW SHARDING TABLE REFERENCE RULES FROM test1;
@@ -38,15 +39,16 @@ SHOW SHARDING TABLE REFERENCE RULES FROM test1;
 
 ```sql
 mysql> SHOW SHARDING TABLE REFERENCE RULES FROM test1;
-+--------------------------+
-| sharding_table_reference |
-+--------------------------+
-| t_order,t_order_item     |
-+--------------------------+
-1 row in set (0.00 sec)
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
+| ref_1 | t_c,t_d                  |
++-------+--------------------------+
+2 rows in set (0.00 sec)
 ```
 
-- 查询当前逻辑库中具有绑定关系的分片表
+- 查询当前逻辑库中的分片表关联规则
 
 ```sql
 SHOW SHARDING TABLE REFERENCE RULES;
@@ -54,12 +56,13 @@ SHOW SHARDING TABLE REFERENCE RULES;
 
 ```sql
 mysql> SHOW SHARDING TABLE REFERENCE RULES;
-+--------------------------+
-| sharding_table_reference |
-+--------------------------+
-| t_order,t_order_item     |
-+--------------------------+
-1 row in set (0.00 sec)
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
+| ref_1 | t_c,t_d                  |
++-------+--------------------------+
+2 rows in set (0.00 sec)
 ```
 
 ### 保留字

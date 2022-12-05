@@ -45,7 +45,12 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQ
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
-        return routeContext.containsTableSharding();
+        return isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding();
+    }
+    
+    private boolean isAllBindingTables(final SQLStatementContext<?> sqlStatementContext) {
+        Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames());
+        return shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames);
     }
     
     @Override

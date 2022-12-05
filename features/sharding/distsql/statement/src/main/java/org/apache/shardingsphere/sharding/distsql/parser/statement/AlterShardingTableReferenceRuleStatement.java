@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleSta
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Alter sharding table reference rule statement.
@@ -35,15 +35,11 @@ public final class AlterShardingTableReferenceRuleStatement extends AlterRuleSta
     private final Collection<TableReferenceRuleSegment> rules;
     
     /**
-     * Get table references.
+     * Get table names.
      * 
-     * @return table references
+     * @return table names
      */
-    public Collection<String> getTableReferences() {
-        Collection<String> result = new LinkedList<>();
-        for (TableReferenceRuleSegment each : rules) {
-            result.addAll(each.getTableReference());
-        }
-        return result;
+    public Collection<String> getTableNames() {
+        return rules.stream().flatMap(each -> each.getTableNames().stream()).collect(Collectors.toList());
     }
 }

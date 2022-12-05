@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * MySQL create database statement.
  */
-@ToString(callSuper = true)
 public final class SQLServerCreateDatabaseStatement extends CreateDatabaseStatement implements SQLServerStatement {
 }

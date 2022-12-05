@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.sharding.rule.builder.ShardingRuleBuilder
-org.apache.shardingsphere.sharding.rule.builder.AlgorithmProvidedShardingRuleBuilder

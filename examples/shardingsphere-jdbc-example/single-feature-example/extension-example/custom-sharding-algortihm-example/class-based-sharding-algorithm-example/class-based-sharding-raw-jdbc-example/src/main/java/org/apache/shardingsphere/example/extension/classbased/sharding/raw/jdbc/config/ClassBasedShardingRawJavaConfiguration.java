@@ -22,6 +22,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
@@ -51,7 +52,7 @@ public final class ClassBasedShardingRawJavaConfiguration implements ExampleConf
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(getOrderTableRuleConfiguration());
         result.getTables().add(getOrderItemTableRuleConfiguration());
-        result.getBindingTableGroups().add("t_order, t_order_item"); 
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order, t_order_item")); 
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database-classbased"));
         Properties props = new Properties();

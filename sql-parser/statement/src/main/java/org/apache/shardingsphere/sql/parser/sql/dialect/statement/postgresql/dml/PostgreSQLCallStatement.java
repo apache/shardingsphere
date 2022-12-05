@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dm
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -32,7 +31,6 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class PostgreSQLCallStatement extends CallStatement implements PostgreSQLStatement {
     
     private String procedureName;

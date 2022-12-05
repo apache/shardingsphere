@@ -163,7 +163,9 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getStatementId()).thenReturn(1);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
+        QueryHeader queryHeader = mock(QueryHeader.class);
+        when(queryHeader.getColumnTypeName()).thenReturn("VARCHAR");
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(queryHeader)));
         when(proxyBackendHandler.next()).thenReturn(true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         Iterator<DatabasePacket<?>> actual;

@@ -6,7 +6,7 @@ chapter = true
 
 ## Overview
 
-ShardingSphere-JDBC provides official Spring Namespace to make convenient for developers to integrate ShardingSphere-JDBC and Spring.
+ShardingSphere provides a JDBC driver, and developers can configure `ShardingSphereDriver` in Spring to use ShardingSphere.
 
 ## Usage
 
@@ -15,45 +15,45 @@ ShardingSphere-JDBC provides official Spring Namespace to make convenient for de
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
 ### Configure Spring Bean
 
+
 #### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.2.1.xsd)
+| *Name*            | *Type*      | *Description*                                     |
+|-------------------|-------------|---------------------------------------------------|
+| driverClass       | Attribute   | Database Driver, need to use ShardingSphereDriver |
+| url               | Attribute   | YAML configuration file path                      |
 
-\<shardingsphere:data-source />
+#### Driver Class Name
 
-| *Name*            | *Type*    | *Description*                                                                                                                                  |
-| ----------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| id                | Attribute | Spring Bean Id                                                                                                                                 |
-| database-name (?)   | Attribute | JDBC data source alias                                                                                                                         |
-| data-source-names | Attribute | Data source name, multiple data source names are separated by commas                                                                           |
-| rule-refs         | Attribute | Rule name, multiple rule names are separated by commas                                                                                         |
-| mode (?)          | Tag       | Mode configuration                                                                                                                             |
-| props (?)         | Tag       | Properties configuration, Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/props) for more details |
+`org.apache.shardingsphere.driver.ShardingSphereDriver`
+
+#### URL Configuration Instructions
+
+- Prefixed with `jdbc:shardingsphere:`
+- Configuration file: `xxx.yaml`, the configuration file format is consistent with [YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config)
+- Configuration file loading rules:
+  - No prefix means to load the configuration file from the specified path
+  - The `classpath:` prefix means to load configuration files from the classpath
 
 #### Example
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                           http://www.springframework.org/schema/beans/spring-beans.xsd 
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           ">
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="..." />
-        <props>
-            <prop key="xxx.xxx">${xxx.xxx}</prop>
-        </props>
-    </shardingsphere:data-source>
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <bean id="shardingDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="org.apache.shardingsphere.driver.ShardingSphereDriver" />
+        <property name="url" value="jdbc:shardingsphere:classpath:xxx.yaml" />
+    </bean>
 </beans>
 ```
 

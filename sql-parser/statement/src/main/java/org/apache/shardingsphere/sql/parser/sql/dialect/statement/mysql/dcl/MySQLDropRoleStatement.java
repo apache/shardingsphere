@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL drop role statement.
  */
-@ToString(callSuper = true)
 public final class MySQLDropRoleStatement extends DropRoleStatement implements MySQLStatement {
 }

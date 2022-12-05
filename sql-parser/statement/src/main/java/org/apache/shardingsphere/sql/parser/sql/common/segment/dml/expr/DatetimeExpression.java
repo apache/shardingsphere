@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Datetime expression.
@@ -27,7 +26,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 public final class DatetimeExpression implements ExpressionSegment {
     
     private final int startIndex;

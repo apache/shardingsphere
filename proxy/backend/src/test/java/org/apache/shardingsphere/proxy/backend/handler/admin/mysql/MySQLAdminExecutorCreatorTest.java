@@ -62,7 +62,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

@@ -20,29 +20,35 @@ grammar BaseRule;
 import Symbol, Keyword, Literals;
 
 literal
-    : STRING | (MINUS)? INT | TRUE | FALSE
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
     ;
 
 algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
+    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
     ;
 
 algorithmTypeName
-    : STRING
+    : STRING_ | buildInAlgorithmTypeName
+    ;
+
+buildInAlgorithmTypeName
+    : VALUE_MATCH
+    | REGEX_MATCH
+    | SIMPLE_HINT
     ;
 
 propertiesDefinition
-    : PROPERTIES LP properties? RP
+    : PROPERTIES LP_ properties? RP_
     ;
 
 properties
-    : property (COMMA property)*
+    : property (COMMA_ property)*
     ;
 
 property
-    : key=STRING EQ value=literal
+    : key=STRING_ EQ_ value=literal
     ;
 
 ruleName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

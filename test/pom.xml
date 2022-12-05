@@ -29,18 +29,14 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>common</module>
         <module>fixture</module>
-        <module>integration-test</module>
-        <module>integration-driver-test</module>
-        <module>integration-agent-test</module>
-        <module>rewrite</module>
-        <module>parser</module>
-        <module>optimize</module>
-        <module>pipeline</module>
+        <module>it</module>
+        <module>e2e</module>
     </modules>
     
     <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        
         <testcontainers.version>1.17.3</testcontainers.version>
     </properties>
     

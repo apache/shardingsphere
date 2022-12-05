@@ -19,22 +19,22 @@ rules:
 
 - !DB_DISCOVERY
   dataSources:
-    <data-source-name> (+): # 逻辑数据源名称
+    <data_source_name> (+): # 逻辑数据源名称
       dataSourceNames: # 数据源名称列表
-        - <data-source>
-        - <data-source>
+        - <data_source>
+        - <data_source>
       discoveryHeartbeatName: # 检测心跳名称
       discoveryTypeName: # 数据库发现类型名称
   
   # 心跳检测配置
   discoveryHeartbeats:
-    <discovery-heartbeat-name> (+): # 心跳名称
+    <discovery_heartbeat_name> (+): # 心跳名称
       props:
         keep-alive-cron: # cron 表达式，如：'0/5 * * * * ?'
   
   # 数据库发现类型配置
   discoveryTypes:
-    <discovery-type-name> (+): # 数据库发现类型名称
+    <discovery_type_name> (+): # 数据库发现类型名称
       type: # 数据库发现类型，如：MySQL.MGR，MySQL.NORMAL_REPLICATION，openGauss.NORMAL_REPLICATION 
       props (?):
         group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # 数据库发现类型必要参数，如 MGR 的 group-name
@@ -88,10 +88,10 @@ rules:
           - ds_0
           - ds_1
           - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
+        discoveryHeartbeatName: mgr_heartbeat
         discoveryTypeName: mgr
     discoveryHeartbeats:
-      mgr-heartbeat:
+      mgr_heartbeat:
         props:
           keep-alive-cron: '0/5 * * * * ?'
     discoveryTypes:

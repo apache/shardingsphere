@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Alter type statement.
  */
-@ToString(callSuper = true)
 public abstract class AlterTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

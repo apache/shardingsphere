@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Arrays;

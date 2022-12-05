@@ -56,8 +56,8 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             shardingConditions.merge();
         }
-        RouteContext result = ShardingRouteEngineFactory.newInstance(rule, database, queryContext.getSqlStatementContext(), shardingConditions, props, connectionContext).route(rule);
-        validator.ifPresent(optional -> optional.postValidate(rule, queryContext.getSqlStatementContext(), queryContext.getParameters(), database, props, result));
+        RouteContext result = ShardingRouteEngineFactory.newInstance(rule, database, queryContext, shardingConditions, props, connectionContext).route(rule);
+        validator.ifPresent(optional -> optional.postValidate(rule, queryContext.getSqlStatementContext(), queryContext.getHintValueContext(), queryContext.getParameters(), database, props, result));
         return result;
     }
     

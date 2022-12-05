@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss create text search statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussCreateTextSearchStatement extends CreateTextSearchStatement implements OpenGaussStatement {
 }

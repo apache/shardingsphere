@@ -39,7 +39,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 

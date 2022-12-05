@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,23 +42,23 @@ public final class ShadowRuleTest {
     
     @Before
     public void init() {
-        shadowRule = new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration());
+        shadowRule = new ShadowRule(createShadowRuleConfiguration());
     }
     
-    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(createDataSources());
         result.setTables(createTables());
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
     
-    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("SIMPLE_HINT", createHintProperties())));
-        result.put("user-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert"))));
-        result.put("user-id-update-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update"))));
-        result.put("order-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert"))));
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
+        result.put("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", createHintProperties()));
+        result.put("user-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert")));
+        result.put("user-id-update-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update")));
+        result.put("order-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert")));
         return result;
     }
     
@@ -105,7 +103,7 @@ public final class ShadowRuleTest {
     }
     
     @Test
-    public void assertNewShadowRulSuccessByAlgorithmProvidedShadowRuleConfiguration() {
+    public void assertNewShadowRulSuccessByShadowRuleConfiguration() {
         assertShadowDataSourceMappings(shadowRule.getShadowDataSourceMappings());
         assertShadowTableRules(shadowRule.getShadowTableRules());
     }

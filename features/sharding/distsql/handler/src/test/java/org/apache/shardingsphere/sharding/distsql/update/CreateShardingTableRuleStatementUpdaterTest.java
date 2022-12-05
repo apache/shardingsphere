@@ -36,15 +36,15 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLStatementParserFacade;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

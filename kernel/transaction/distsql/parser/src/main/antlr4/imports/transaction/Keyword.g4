@@ -54,3 +54,27 @@ NAME
 PROPERTIES
     : P R O P E R T I E S
     ;
+
+LOCAL
+    : L O C A L
+    ;
+
+XA
+    : X A
+    ;
+
+BASE
+    : B A S E
+    ;
+
+ATOMIKOS
+    : A T O M I K O S
+    ;
+
+NARAYANA
+    : N A R A Y A N A
+    ;
+
+BITRONIX
+    : B I T R O N I X
+    ;

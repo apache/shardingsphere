@@ -23,8 +23,8 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.io.InputStream;
@@ -36,7 +36,8 @@ import java.util.Properties;
 /**
  * Char digest like encrypt algorithm.
  */
-public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+@SuppressWarnings("UnstableApiUsage")
+public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorithm<Object, String> {
     
     private static final String DELTA = "delta";
     
@@ -121,10 +122,10 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
     
     @SneakyThrows
     private String initDefaultDict() {
-        InputStream inputStream = CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("like/CommonChineseCharacters.dict");
+        InputStream inputStream = CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict");
         LineProcessor<String> lineProcessor = new LineProcessor<String>() {
             
-            private StringBuilder builder = new StringBuilder();
+            private final StringBuilder builder = new StringBuilder();
             
             @Override
             public boolean processLine(final String line) {
@@ -173,11 +174,6 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
             return (char) (((charIndexes.get(originalChar) + delta) & mask) + start);
         }
         return (char) (((originalChar + delta) & mask) + start);
-    }
-    
-    @Override
-    public String decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return cipherValue;
     }
     
     @Override

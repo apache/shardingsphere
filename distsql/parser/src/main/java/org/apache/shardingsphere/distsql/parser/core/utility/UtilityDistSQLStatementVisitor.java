@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL statement visitor for utility Dist SQL.
+ * SQL statement visitor for utility DistSQL.
  */
 public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

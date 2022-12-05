@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class CombineSegment implements SQLSegment {
     
     private final int startIndex;

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
@@ -69,16 +68,6 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         ruleConfig.getDataSources().stream().filter(each -> null != ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))
                 .forEach(each -> loadBalancers.put(each.getName() + "." + each.getLoadBalancerName(),
                         ReadQueryLoadBalanceAlgorithmFactory.newInstance(ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))));
-        dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
-        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            dataSourceRules.putAll(createReadwriteSplittingDataSourceRules(each, builtRules));
-        }
-    }
-    
-    public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
-        configuration = ruleConfig;
-        ruleConfig.getDataSources().stream().filter(each -> null != ruleConfig.getLoadBalanceAlgorithms().get(each.getLoadBalancerName()))
-                .forEach(each -> loadBalancers.put(each.getName() + "." + each.getLoadBalancerName(), ruleConfig.getLoadBalanceAlgorithms().get(each.getLoadBalancerName())));
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             dataSourceRules.putAll(createReadwriteSplittingDataSourceRules(each, builtRules));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
 /**
  * Pipeline meta data persist service.

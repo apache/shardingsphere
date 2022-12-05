@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PasswordOrLockOptionSegment;
@@ -34,7 +33,6 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class MySQLCreateUserStatement extends CreateUserStatement implements MySQLStatement {
     
     private final Collection<String> defaultRoles = new LinkedList<>();

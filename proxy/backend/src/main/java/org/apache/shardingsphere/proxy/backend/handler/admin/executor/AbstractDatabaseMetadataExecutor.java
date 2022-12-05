@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.FunctionWithException;
 
@@ -209,7 +209,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
             ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
             Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
-            log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(ResourceNotExistedException::new).getKey(), sql);
+            log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(() -> new StorageUnitNotExistedException(databaseName)).getKey(), sql);
             try (
                     Connection connection = dataSourceEntry.get().getValue().getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql);

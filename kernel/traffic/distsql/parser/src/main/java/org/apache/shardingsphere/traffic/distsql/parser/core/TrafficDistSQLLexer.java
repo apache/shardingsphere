@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementL
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for traffic dist SQL.
+ * SQL lexer for traffic DistSQL.
  */
 public final class TrafficDistSQLLexer extends TrafficDistSQLStatementLexer implements SQLLexer {
     

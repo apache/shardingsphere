@@ -19,8 +19,7 @@ package org.apache.shardingsphere.sharding.checker.audit;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
-import org.apache.shardingsphere.infra.executor.check.SQLChecker;
+import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -45,27 +44,22 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
-                                final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
+    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
+                      final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {
-            return new SQLCheckResult(true, "");
+            return;
         }
         Collection<String> disableAuditNames = sqlStatementContext instanceof CommonSQLStatementContext
                 ? ((CommonSQLStatementContext<?>) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
                 : Collections.emptyList();
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
-                if (auditStrategy.isAllowHintDisable() && disableAuditNames.contains(auditorName.toLowerCase())) {
-                    continue;
-                }
-                SQLCheckResult result = rule.getAuditors().get(auditorName).check(sqlStatementContext, params, grantee, databases.get(currentDatabase.toLowerCase()));
-                if (!result.isPassed()) {
-                    return result;
+                if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {
+                    rule.getAuditors().get(auditorName).check(sqlStatementContext, params, grantee, databases.get(currentDatabase.toLowerCase()));
                 }
             }
         }
-        return new SQLCheckResult(true, "");
     }
     
     @Override

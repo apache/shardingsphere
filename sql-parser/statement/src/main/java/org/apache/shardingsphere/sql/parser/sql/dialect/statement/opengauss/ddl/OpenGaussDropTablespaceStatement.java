@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss drop tablespace statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussDropTablespaceStatement extends DropTablespaceStatement implements OpenGaussStatement {
 }

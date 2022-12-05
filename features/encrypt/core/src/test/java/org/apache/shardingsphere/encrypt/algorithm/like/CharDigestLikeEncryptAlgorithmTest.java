@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.like;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.junit.Before;
@@ -31,19 +31,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
+@SuppressWarnings("unchecked")
 public final class CharDigestLikeEncryptAlgorithmTest {
     
-    private EncryptAlgorithm<Object, String> encryptAlgorithm;
+    private LikeEncryptAlgorithm<Object, String> englishLikeEncryptAlgorithm;
     
-    private EncryptAlgorithm<Object, String> chineseLikeEncryptAlgorithm;
+    private LikeEncryptAlgorithm<Object, String> chineseLikeEncryptAlgorithm;
     
-    private EncryptAlgorithm<Object, String> koreanLikeEncryptAlgorithm;
+    private LikeEncryptAlgorithm<Object, String> koreanLikeEncryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
-        chineseLikeEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
-        koreanLikeEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", createProperties()));
+        englishLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
+        chineseLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
+        koreanLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", createProperties()));
     }
     
     private Properties createProperties() {
@@ -55,7 +56,7 @@ public final class CharDigestLikeEncryptAlgorithmTest {
     
     @Test
     public void assertEncrypt() {
-        assertThat(encryptAlgorithm.encrypt("1234567890%abcdefghijklmnopqrstuvwxyz%ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        assertThat(englishLikeEncryptAlgorithm.encrypt("1234567890%abcdefghijklmnopqrstuvwxyz%ABCDEFGHIJKLMNOPQRSTUVWXYZ",
                 mock(EncryptContext.class)), is("0145458981%`adedehihilmlmpqpqtutuxyxy%@ADEDEHIHILMLMPQPQTUTUXYXY"));
     }
     
@@ -71,11 +72,6 @@ public final class CharDigestLikeEncryptAlgorithmTest {
     
     @Test
     public void assertEncryptWithNullPlaintext() {
-        assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
-    }
-    
-    @Test
-    public void assertDecrypt() {
-        assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
+        assertNull(englishLikeEncryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
 }

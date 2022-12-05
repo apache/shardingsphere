@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.annotation;
 
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

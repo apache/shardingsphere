@@ -20,15 +20,15 @@ grammar RALStatement;
 import BaseRule;
 
 setShardingHintDatabaseValue
-    : SET SHARDING HINT DATABASE_VALUE EQ shardingValue
+    : SET SHARDING HINT DATABASE_VALUE EQ_ shardingValue
     ;
 
 addShardingHintDatabaseValue
-    : ADD SHARDING HINT DATABASE_VALUE tableName EQ shardingValue
+    : ADD SHARDING HINT DATABASE_VALUE tableName EQ_ shardingValue
     ;
 
 addShardingHintTableValue
-    : ADD SHARDING HINT TABLE_VALUE tableName EQ shardingValue
+    : ADD SHARDING HINT TABLE_VALUE tableName EQ_ shardingValue
     ;
 
 showShardingHintStatus
@@ -40,5 +40,5 @@ clearShardingHint
     ;
 
 shardingValue
-    : INT | STRING
+    : INT_ | STRING_
     ;

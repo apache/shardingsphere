@@ -134,7 +134,7 @@ public final class ProjectionsContextEngine {
             result.add((ColumnProjection) projection);
         }
         if (projection instanceof ShorthandProjection) {
-            result.addAll(((ShorthandProjection) projection).getActualColumns().values());
+            result.addAll(((ShorthandProjection) projection).getColumnProjections());
         }
         return result;
     }

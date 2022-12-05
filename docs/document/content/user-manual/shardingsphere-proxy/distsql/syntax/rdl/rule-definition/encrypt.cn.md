@@ -16,10 +16,16 @@ encryptRuleDefinition:
     tableName(COLUMNS(columnDefinition [, columnDefinition] ...), QUERY_WITH_CIPHER_COLUMN=queryWithCipherColumn)
 
 columnDefinition:
-    (NAME=columnName [, PLAIN=plainColumnName] , CIPHER=cipherColumnName, encryptAlgorithm)
+    (NAME=columnName [, PLAIN=plainColumnName] , CIPHER=cipherColumnName [, ASSISTED_QUERY_COLUMN=assistedQueryColumnName] [, LIKE_QUERY_COLUMN=likeQueryColumnName], encryptAlgorithm [, assistedQueryAlgorithm] [, likeQueryAlgorithm])
 
 encryptAlgorithm:
-    TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] )
+    ENCRYPT_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
+
+assistedQueryAlgorithm
+    ASSISTED_QUERY_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
+
+likeQueryAlgorithm
+    LIKE_QUERY_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -29,13 +35,15 @@ algorithmProperty:
 ```
 
 ### 参数解释
-| 名称                   | 数据类型       | 说明       |
-|:---------------------|:-----------|:---------|
-| tableName            | IDENTIFIER | 表名称      |
-| columnName           | IDENTIFIER | 逻辑数据列名称  |
-| plainColumnName      | IDENTIFIER | 明文数据列名称  |
-| cipherColumnName     | IDENTIFIER | 加密数据列名称  |
-| encryptAlgorithmType | STRING     | 加密算法类型名称 |
+| 名称                   | 数据类型       | 说明          |
+|:------------------------|:-----------|:--------------|
+| tableName               | IDENTIFIER | 表名称         |
+| columnName              | IDENTIFIER | 逻辑数据列名称  |
+| plainColumnName         | IDENTIFIER | 明文数据列名称  |
+| cipherColumnName        | IDENTIFIER | 加密数据列名称  |
+| assistedQueryColumnName | IDENTIFIER | 辅助查询列名称  |
+| likeQueryColumnName     | IDENTIFIER | 模糊查询列名称  |
+| encryptAlgorithmType    | STRING     | 加密算法类型名称 |
 
 ### 注意事项
 
@@ -49,19 +57,19 @@ algorithmProperty:
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
-(NAME=order_id, CIPHER =order_cipher,TYPE(NAME='MD5'))
-),QUERY_WITH_CIPHER_COLUMN=true),
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=user_assisted,LIKE_QUERY_COLUMN=user_like,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')), LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE'))),
+(NAME=order_id, CIPHER =order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
+), QUERY_WITH_CIPHER_COLUMN=true),
 t_encrypt_2 (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
-(NAME=order_id, CIPHER=order_cipher,TYPE(NAME='MD5'))
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
+(NAME=order_id, CIPHER=order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
 ), QUERY_WITH_CIPHER_COLUMN=FALSE);
 
 ALTER ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
-(NAME=order_id,CIPHER=order_cipher,TYPE(NAME='MD5'))
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=user_assisted,LIKE_QUERY_COLUMN=user_like,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')), LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE'))),
+(NAME=order_id,CIPHER=order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
 ), QUERY_WITH_CIPHER_COLUMN=TRUE);
 
 DROP ENCRYPT RULE t_encrypt,t_encrypt_2;

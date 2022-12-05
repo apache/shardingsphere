@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,7 +42,7 @@ public final class ShardingSphereDataJobWorker {
             if (WORKER_INITIALIZED.get()) {
                 return;
             }
-            boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_METADATA_COLLECTOR_ENABLED);
+            boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_METADATA_COLLECTOR_ENABLED);
             if (collectorEnabled) {
                 startScheduleThread(contextManager);
             }

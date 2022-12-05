@@ -43,6 +43,7 @@ Each SQL generates a test report in the combination of `database type * access p
   - Database types: H2, MySQL, PostgreSQL, SQLServer, and Oracle;
   - Access port types: ShardingSphere-JDBC and ShardingSphere-Proxy;
   - SQL execution modes: Statement and PreparedStatement;
+    
   - JDBC execution modes: execute and executeQuery/executeUpdate;
   - Scenarios: database shards, table shards, read/write splitting and sharding + read/write splitting
 
@@ -50,7 +51,7 @@ Therefore, one SQL will drive `Database type (5) * Access port type (2) * SQL ex
 
 ## User Guide
 
-Module path：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite`
+Module path：`shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-test-suite`
 
 ### Test case configuration
 
@@ -156,13 +157,13 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 #### Run Docker mode
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f shardingsphere-test/shardingsphere-test-e2e/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 Run the above command to build a Docker mirror `apache/shardingsphere-proxy-test:latest` used for integration testing.
 If you only modify the test code, you can reuse the existing test mirror without rebuilding it. Skip the mirror building and run the integration testing directly with the following command:
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-test-suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
 #### Notice

@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.sharding.checker.ShardingRuleConfigurationChecker
-org.apache.shardingsphere.sharding.checker.AlgorithmProvidedShardingRuleConfigurationChecker

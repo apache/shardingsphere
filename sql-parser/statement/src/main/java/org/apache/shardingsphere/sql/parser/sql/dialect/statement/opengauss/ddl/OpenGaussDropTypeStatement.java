@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss drop type statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussDropTypeStatement extends DropTypeStatement implements OpenGaussStatement {
 }

@@ -437,6 +437,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/azexcy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/101622833?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -453,6 +458,9 @@ chapter = true
         </td>
         <td>
             <b>Nianjun Sun</b>
+        </td>
+        <td>
+            <b>Xinze Guo</b>
         </td>
     </tr>
 </table>

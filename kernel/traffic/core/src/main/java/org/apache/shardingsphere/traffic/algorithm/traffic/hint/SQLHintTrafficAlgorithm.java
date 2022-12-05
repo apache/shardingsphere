@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.hint.SQLHintPropertiesKey;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
 
@@ -39,7 +38,7 @@ public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm {
     
     @Override
     public boolean match(final HintTrafficValue hintTrafficValue) {
-        return hintTrafficValue.getSqlHintProps().getValue(SQLHintPropertiesKey.USE_TRAFFIC_KEY);
+        return hintTrafficValue.getHintValueContext().isUseTraffic();
     }
     
     @Override

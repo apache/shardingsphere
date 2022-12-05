@@ -34,10 +34,10 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_date
-          shardingAlgorithmName: database-interval
+          shardingAlgorithmName: database_interval
 
   shardingAlgorithms:
-    database-interval:
+    database_interval:
       type: INTERVAL
       props:
         datetime-pattern: 'yyyy-MM-dd HH:mm:ss'

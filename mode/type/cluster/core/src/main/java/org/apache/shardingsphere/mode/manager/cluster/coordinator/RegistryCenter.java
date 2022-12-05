@@ -33,8 +33,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.StorageNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Registry center.
@@ -70,9 +73,14 @@ public final class RegistryCenter {
         this.databaseConfigs = databaseConfigs;
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
-        globalLockPersistService = new GlobalLockPersistService(repository.getDistributedLockHolder());
+        globalLockPersistService = new GlobalLockPersistService(initDistributedLockHolder(repository));
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
         createSubscribers(repository);
+    }
+    
+    private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
+        DistributedLockHolder distributedLockHolder = repository.getDistributedLockHolder();
+        return null == distributedLockHolder ? new DistributedLockHolder("default", repository, new DefaultLockTypedProperties(new Properties())) : distributedLockHolder;
     }
     
     private String getJDBCDatabaseName() {
@@ -84,7 +92,7 @@ public final class RegistryCenter {
         new ComputeNodeStatusSubscriber(this, repository);
         new StorageNodeStatusSubscriber(repository, eventBusContext);
         new ProcessRegistrySubscriber(repository, eventBusContext);
-        new ShardingSphereSchemaDataRegistrySubscriber(repository, eventBusContext);
+        new ShardingSphereSchemaDataRegistrySubscriber(repository, globalLockPersistService, eventBusContext);
     }
     
     /**

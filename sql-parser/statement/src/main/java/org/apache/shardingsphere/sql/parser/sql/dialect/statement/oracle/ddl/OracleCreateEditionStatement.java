@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateEditionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create edition statement.
  */
-@ToString(callSuper = true)
 public final class OracleCreateEditionStatement extends CreateEditionStatement implements OracleStatement {
 }

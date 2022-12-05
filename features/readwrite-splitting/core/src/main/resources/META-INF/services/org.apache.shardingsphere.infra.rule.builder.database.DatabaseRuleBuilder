@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.readwritesplitting.rule.builder.ReadwriteSplittingRuleBuilder
-org.apache.shardingsphere.readwritesplitting.rule.builder.AlgorithmProvidedReadwriteSplittingRuleBuilder

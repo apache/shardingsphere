@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -28,7 +27,6 @@ import java.util.Optional;
  * Explain statement.
  */
 @Setter
-@ToString(callSuper = true)
 public abstract class ExplainStatement extends AbstractSQLStatement implements DALStatement {
     
     private SQLStatement statement;

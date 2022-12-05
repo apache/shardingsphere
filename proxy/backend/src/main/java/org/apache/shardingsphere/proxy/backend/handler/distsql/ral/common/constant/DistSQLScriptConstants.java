@@ -75,11 +75,21 @@ public final class DistSQLScriptConstants {
     
     public static final String SHARDING_TABLE = " %s ("
             + System.lineSeparator()
-            + "DATANODES('%s'),"
+            + "DATANODES('%s')%s"
+            + System.lineSeparator()
+            + ")";
+    
+    public static final String SHARDING_AUTO_TABLE = " %s ("
+            + System.lineSeparator()
+            + "STORAGE_UNITS(%s),"
             + System.lineSeparator()
             + "%s"
             + System.lineSeparator()
             + ")";
+    
+    public static final String AUTO_TABLE_STRATEGY = "SHARDING_COLUMN=%s,"
+            + System.lineSeparator()
+            + "%s";
     
     public static final String DATABASE_STRATEGY = "DATABASE_STRATEGY";
     
@@ -91,23 +101,17 @@ public final class DistSQLScriptConstants {
     
     public static final String STRATEGY_HINT = "TYPE='%s', SHARDING_ALGORITHM(%s)";
     
-    public static final String SHARDING_STRATEGY_STANDARD = "%s(" + STRATEGY_STANDARD + ")," + System.lineSeparator();
+    public static final String SHARDING_STRATEGY_STANDARD = "%s(" + STRATEGY_STANDARD + ")";
     
-    public static final String SHARDING_STRATEGY_COMPLEX = "%s(" + STRATEGY_COMPLEX + ")," + System.lineSeparator();
+    public static final String SHARDING_STRATEGY_COMPLEX = "%s(" + STRATEGY_COMPLEX + ")";
     
-    public static final String SHARDING_STRATEGY_HINT = "%s(" + STRATEGY_HINT + ")," + System.lineSeparator();
+    public static final String SHARDING_STRATEGY_HINT = "%s(" + STRATEGY_HINT + ")";
     
-    public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, %s)," + System.lineSeparator();
-    
-    public static final String KEY_GENERATOR = " %s ("
-            + System.lineSeparator()
-            + "%s"
-            + System.lineSeparator()
-            + ")";
+    public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, %s)";
     
     public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING TABLE REFERENCE RULE";
     
-    public static final String BINDING_TABLES = " (%s)";
+    public static final String BINDING_TABLES = " %s (%s)";
     
     public static final String BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s";
     
@@ -159,6 +163,16 @@ public final class DistSQLScriptConstants {
     public static final String PLAIN = "PLAIN=%s";
     
     public static final String CIPHER = "CIPHER=%s";
+    
+    public static final String ASSISTED_QUERY_COLUMN = "ASSISTED_QUERY_COLUMN=%s";
+    
+    public static final String LIKE_QUERY_COLUMN = "LIKE_QUERY_COLUMN=%s";
+    
+    public static final String ENCRYPT_ALGORITHM = "ENCRYPT_ALGORITHM(%s)";
+    
+    public static final String ASSISTED_QUERY_ALGORITHM = "ASSISTED_QUERY_ALGORITHM(%s)";
+    
+    public static final String LIKE_QUERY_ALGORITHM = "LIKE_QUERY_ALGORITHM(%s)";
     
     public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
     

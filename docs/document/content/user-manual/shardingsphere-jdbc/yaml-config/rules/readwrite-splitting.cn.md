@@ -15,15 +15,15 @@ weight = 2
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    <data-source-name> (+): # 读写分离逻辑数据源名称
-       static-strategy: # 读写分离类型
-         write-data-source-name: # 写库数据源名称
-         read-data-source-names: # 读库数据源名称，多个从数据源用逗号分隔
+    <data_source_name> (+): # 读写分离逻辑数据源名称
+       static_strategy: # 读写分离类型
+         write_data_source_name: # 写库数据源名称
+         read_data_source_names: # 读库数据源名称，多个从数据源用逗号分隔
        loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置
   loadBalancers:
-    <load-balancer-name> (+): # 负载均衡算法名称
+    <load_balancer_name> (+): # 负载均衡算法名称
       type: # 负载均衡算法类型
       props: # 负载均衡算法属性配置
         # ...
@@ -35,15 +35,15 @@ rules:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    <data-source-name> (+): # 读写分离逻辑数据源名称
-       dynamic-strategy: # 读写分离类型
-         auto-aware-data-source-name: # 数据库发现逻辑数据源名称
-         write-data-source-query-enabled: # 从库全部下线，主库是否承担读流量
+    <data_source_name> (+): # 读写分离逻辑数据源名称
+       dynamic_strategy: # 读写分离类型
+         auto_aware_data_source_name: # 数据库发现逻辑数据源名称
+         write_data_source_query_enabled: # 从库全部下线，主库是否承担读流量
        loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置
   loadBalancers:
-    <load-balancer-name> (+): # 负载均衡算法名称
+    <load_balancer_name> (+): # 负载均衡算法名称
       type: # 负载均衡算法类型
       props: # 负载均衡算法属性配置
         # ...

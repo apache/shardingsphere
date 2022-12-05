@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
  * Order by item segment for expression.
  */
 @Getter
-@ToString(callSuper = true)
 public final class ExpressionOrderByItemSegment extends TextOrderByItemSegment {
     
     private final String expression;

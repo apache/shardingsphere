@@ -35,7 +35,7 @@ on:
       - 'src/resources/**'
       - '.github/workflows/checkstyle-and-license-check.yml'
       - 'examples/shardingsphere-example-generator/**'
-      - 'test/integration-agent-test/plugins/**'
+      - 'test/e2e/agent/plugins/**'
       - '!examples/**'
       - '!*.md'
   workflow_dispatch:

@@ -45,6 +45,11 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     
     <build>
@@ -60,7 +65,6 @@
                         <configuration>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>org.slf4j:*</exclude>
                                     <exclude>net.bytebuddy:*</exclude>
                                     <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
                                     <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
@@ -81,6 +85,14 @@
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>ch.qos.logback</pattern>
+                                    <shadedPattern>${shade.package}.ch.qos.logback</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

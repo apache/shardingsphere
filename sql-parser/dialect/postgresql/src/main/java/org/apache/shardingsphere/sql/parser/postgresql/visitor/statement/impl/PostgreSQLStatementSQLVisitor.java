@@ -82,6 +82,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Re
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectClauseNContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectFetchFirstValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectLimitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectLimitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectNoParensContext;
@@ -116,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -126,7 +128,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDupl
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -401,15 +403,15 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public ASTNode visitCaseExpr(final CaseExprContext ctx) {
-        Collection<ExpressionSegment> whenList = new LinkedList<>();
-        Collection<ExpressionSegment> thenList = new LinkedList<>();
+        Collection<ExpressionSegment> whenExprs = new LinkedList<>();
+        Collection<ExpressionSegment> thenExprs = new LinkedList<>();
         for (WhenClauseContext each : ctx.whenClauseList().whenClause()) {
-            whenList.add((ExpressionSegment) visit(each.aExpr(0)));
-            thenList.add((ExpressionSegment) visit(each.aExpr(1)));
+            whenExprs.add((ExpressionSegment) visit(each.aExpr(0)));
+            thenExprs.add((ExpressionSegment) visit(each.aExpr(1)));
         }
-        ExpressionSegment argExpression = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
-        ExpressionSegment elseExpression = null == ctx.caseDefault() ? null : (ExpressionSegment) visit(ctx.caseDefault().aExpr());
-        return new CaseWhenSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), argExpression, whenList, thenList, elseExpression);
+        ExpressionSegment caseExpr = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
+        ExpressionSegment elseExpr = null == ctx.caseDefault() ? null : (ExpressionSegment) visit(ctx.caseDefault().aExpr());
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
     }
     
     @Override
@@ -662,6 +664,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         if (null != ctx.optOnConflict()) {
             result.setOnDuplicateKeyColumnsSegment((OnDuplicateKeyColumnsSegment) visit(ctx.optOnConflict()));
+        }
+        if (null != ctx.returningClause()) {
+            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
@@ -1022,40 +1027,34 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
             return result;
         }
-        if (null != ctx.aExpr().cExpr()) {
-            ASTNode projection = visit(expr.cExpr());
-            return findProjectionFromCExpr(ctx, expr, projection).orElseGet(() -> new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null));
+        if (null != ctx.aExpr()) {
+            ASTNode projection = visit(ctx.aExpr());
+            return createProjectionSegment(ctx, expr, projection);
         }
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null);
     }
     
-    private Optional<ProjectionSegment> findProjectionFromCExpr(final TargetElContext ctx, final AExprContext expr, final ASTNode projection) {
+    private ProjectionSegment createProjectionSegment(final TargetElContext ctx, final AExprContext expr, final ASTNode projection) {
         if (projection instanceof ColumnSegment) {
-            return Optional.of(new ColumnProjectionSegment((ColumnSegment) projection));
-        }
-        if (projection instanceof FunctionSegment) {
-            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection));
+            return new ColumnProjectionSegment((ColumnSegment) projection);
         }
         if (projection instanceof AggregationProjectionSegment) {
-            return Optional.of((AggregationProjectionSegment) projection);
+            return (AggregationProjectionSegment) projection;
         }
         if (projection instanceof SubqueryExpressionSegment) {
             SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
             String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
-            return Optional.of(new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text));
+            return new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text);
         }
         if (projection instanceof ExistsSubqueryExpression) {
             ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
             String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
-            return Optional.of(new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text));
+            return new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
         }
-        if (projection instanceof LiteralExpressionSegment) {
-            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (LiteralExpressionSegment) projection));
+        if (projection instanceof ExpressionSegment) {
+            return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (ExpressionSegment) projection);
         }
-        if (projection instanceof CaseWhenSegment) {
-            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (CaseWhenSegment) projection));
-        }
-        return Optional.empty();
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null);
     }
     
     @Override
@@ -1121,6 +1120,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         TableSegment right = (TableSegment) visit(ctx.tableReference());
         tableSegment.setRight(right);
         tableSegment.setJoinType(getJoinType(ctx));
+        tableSegment.setNatural(null != ctx.naturalJoinType());
         return null != ctx.joinQual() ? visitJoinQual(ctx.joinQual(), tableSegment) : tableSegment;
     }
     
@@ -1150,7 +1150,10 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
         }
-        return JoinType.RIGHT.name();
+        if (null != ctx.RIGHT()) {
+            return JoinType.RIGHT.name();
+        }
+        return JoinType.INNER.name();
     }
     
     private static String getOutJoinType(final OuterJoinTypeContext ctx) {
@@ -1233,6 +1236,18 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
+    @Override
+    public ASTNode visitSelectFetchFirstValue(final SelectFetchFirstValueContext ctx) {
+        ASTNode astNode = visit(ctx.cExpr());
+        if (null != astNode) {
+            if (astNode instanceof ParameterMarkerLimitValueSegment) {
+                return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
+            }
+            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        }
+        return visit(ctx.NUMBER_());
+    }
+    
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
         ParseTree astNode0 = ctx.getChild(0);
         LimitValueSegment rowCount = null;
@@ -1253,10 +1268,23 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
         if (null != ctx.limitClause()) {
+            if (null != ctx.limitClause().selectOffsetValue()) {
+                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
+                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectOffsetValue());
+                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
+            }
+            if (null != ctx.limitClause().selectFetchFirstValue()) {
+                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectFetchFirstValue());
+                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+            }
             LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
         }
-        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
+        if (null != ctx.offsetClause().selectOffsetValue()) {
+            LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
+            return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+        }
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectFetchFirstValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
     }
     
