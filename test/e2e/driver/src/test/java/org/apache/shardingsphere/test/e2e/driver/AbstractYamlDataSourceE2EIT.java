@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.Objects;
 
 // TODO move to new acceptance test module with mode
-public abstract class AbstractYamlDataSourceTest {
+public abstract class AbstractYamlDataSourceE2EIT {
     
     @BeforeClass
     public static void createSchema() throws SQLException {
         for (String each : getSchemaFiles()) {
             RunScript.execute(
-                    createDataSource(getFileName(each)).getConnection(), new InputStreamReader(Objects.requireNonNull(AbstractYamlDataSourceTest.class.getClassLoader().getResourceAsStream(each))));
+                    createDataSource(getFileName(each)).getConnection(), new InputStreamReader(Objects.requireNonNull(AbstractYamlDataSourceE2EIT.class.getClassLoader().getResourceAsStream(each))));
         }
     }
     
