@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.discovery.env.enums;
 
-public enum E2EEnvTypeEnum {
+public enum DiscoveryE2EEnvTypeEnum {
     
     NONE, DOCKER, NATIVE
 }

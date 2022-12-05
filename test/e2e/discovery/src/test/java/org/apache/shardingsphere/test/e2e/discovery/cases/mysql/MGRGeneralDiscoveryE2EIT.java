@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.discovery.cases.mysql;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.discovery.cases.DatabaseClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.discovery.cases.DatabaseClusterEnvironmentFactory;
-import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseE2EIT;
+import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseDiscoveryE2EIT;
 import org.apache.shardingsphere.test.e2e.discovery.framework.parameter.DiscoveryTestParameter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,15 +32,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 @RunWith(Parameterized.class)
-@Slf4j
-public final class DiscoveryMGRGeneralE2EIT extends BaseE2EIT {
+public final class MGRGeneralDiscoveryE2EIT extends BaseDiscoveryE2EIT {
     
-    public DiscoveryMGRGeneralE2EIT(final DiscoveryTestParameter testParameter) {
+    public MGRGeneralDiscoveryE2EIT(final DiscoveryTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<DiscoveryTestParameter> getParameters() {
+    public static Collection<DiscoveryTestParameter> getTestParameters() {
         Collection<DiscoveryTestParameter> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String each : ENV.listStorageContainerImages(databaseType)) {
