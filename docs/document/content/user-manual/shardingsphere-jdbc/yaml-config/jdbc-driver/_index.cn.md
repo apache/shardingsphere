@@ -1,30 +1,30 @@
 +++
-title = "JDBC Driver"
+title = "JDBC 驱动"
 weight = 5
 chapter = true
 +++
 
-## Background
+## 背景信息
 
-ShardingSphere-JDBC provides a JDBC Driver, which can be used only through configuration changes without rewriting the code.
+ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使用，无需改写代码。
 
-## Parameters
+## 参数解释
 
-### Driver Class Name
+### 驱动类名称
 
 `org.apache.shardingsphere.driver.ShardingSphereDriver`
 
-### URL Configuration
+### URL 配置
 
-- Use jdbc:shardingsphere: as prefix
-- Configuration file: xxx.yaml, keep consist format with [YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/)
-- Configuration file loading rule:
-  - No prefix means that the configuration file is loaded from the absolute path
-  - `classpath:` prefix indicates that the configuration file is loaded from the classpath
+- 以 `jdbc:shardingsphere:` 为前缀
+- 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/)一致
+- 配置文件加载规则：
+  - 无前缀表示从指定路径加载配置文件
+  - `classpath:` 前缀表示从类路径中加载配置文件
 
-## Procedure
+## 操作步骤
 
-1. Import Maven Dependency
+1. 引入 Maven 依赖
 
 ```xml
 <dependency>
@@ -34,9 +34,9 @@ ShardingSphere-JDBC provides a JDBC Driver, which can be used only through confi
 </dependency>
 ```
 
-2. Use drive
+2. 使用驱动
 
-* Use native drivers:
+* 使用原生驱动：
 
 ```java
 Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
@@ -56,13 +56,13 @@ try (
 }
 ```
 
-* Use database connection pool:
+* 使用数据库连接池
 
 ```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
-// Take HikariCP as an example 
+// 以 HikariCP 为例 
 HikariDataSource dataSource = new HikariDataSource();
 dataSource.setDriverClassName(driverClassName);
 dataSource.setJdbcUrl(jdbcUrl);
@@ -81,14 +81,14 @@ try (
 }
 ```
 
-## Sample
+## 配置示例
 
-Load JDBC URL of config.yaml profile in classpath:
+加载 classpath 中 config.yaml 配置文件的 JDBC URL：
 ```
 jdbc:shardingsphere:classpath:config.yaml
 ```
 
-Load JDBC URL of config.yaml profile in absolute path
+加载绝对路径中 config.yaml 配置文件的 JDBC URL：
 ```
 jdbc:shardingsphere:/path/to/config.yaml
 ```

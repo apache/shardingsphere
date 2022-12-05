@@ -29,18 +29,6 @@ ShardingSphere provides a JDBC driver, and developers can configure `ShardingSph
 | driverClass       | Attribute   | Database Driver, need to use ShardingSphereDriver |
 | url               | Attribute   | YAML configuration file path                      |
 
-#### Driver Class Name
-
-`org.apache.shardingsphere.driver.ShardingSphereDriver`
-
-#### URL Configuration Instructions
-
-- Prefixed with `jdbc:shardingsphere:`
-- Configuration file: `xxx.yaml`, the configuration file format is consistent with [YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config)
-- Configuration file loading rules:
-  - No prefix means to load the configuration file from the specified path
-  - The `classpath:` prefix means to load configuration files from the classpath
-
 #### Example
 
 ```xml

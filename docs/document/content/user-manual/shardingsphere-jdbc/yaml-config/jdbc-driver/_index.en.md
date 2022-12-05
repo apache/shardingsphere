@@ -1,30 +1,30 @@
 +++
-title = "JDBC 驱动"
+title = "JDBC Driver"
 weight = 5
 chapter = true
 +++
 
-## 背景信息
+## Background
 
-ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使用，无需改写代码。
+ShardingSphere-JDBC provides a JDBC Driver, which can be used only through configuration changes without rewriting the code.
 
-## 参数解释
+## Parameters
 
-### 驱动类名称
+### Driver Class Name
 
 `org.apache.shardingsphere.driver.ShardingSphereDriver`
 
-### URL 配置
+### URL Configuration
 
-- 以 `jdbc:shardingsphere:` 为前缀
-- 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/)一致
-- 配置文件加载规则：
-  - 无前缀表示从绝对路径加载配置文件
-  - `classpath:` 前缀表示从类路径中加载配置文件
+- Use jdbc:shardingsphere: as prefix
+- Configuration file: xxx.yaml, keep consist format with [YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/)
+- Configuration file loading rule:
+  - No prefix means to load the configuration file from the specified path
+  - `classpath:` prefix indicates that the configuration file is loaded from the classpath
 
-## 操作步骤
+## Procedure
 
-1. 引入 Maven 依赖
+1. Import Maven Dependency
 
 ```xml
 <dependency>
@@ -34,9 +34,9 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
 </dependency>
 ```
 
-2. 使用驱动
+2. Use drive
 
-* 使用原生驱动：
+* Use native drivers:
 
 ```java
 Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
@@ -56,13 +56,13 @@ try (
 }
 ```
 
-* 使用数据库连接池
+* Use database connection pool:
 
 ```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
-// 以 HikariCP 为例 
+// Take HikariCP as an example 
 HikariDataSource dataSource = new HikariDataSource();
 dataSource.setDriverClassName(driverClassName);
 dataSource.setJdbcUrl(jdbcUrl);
@@ -81,14 +81,14 @@ try (
 }
 ```
 
-## 配置示例
+## Sample
 
-加载 classpath 中 config.yaml 配置文件的 JDBC URL：
+Load JDBC URL of config.yaml profile in classpath:
 ```
 jdbc:shardingsphere:classpath:config.yaml
 ```
 
-加载绝对路径中 config.yaml 配置文件的 JDBC URL：
+Load JDBC URL of config.yaml profile in absolute path
 ```
 jdbc:shardingsphere:/path/to/config.yaml
 ```

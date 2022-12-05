@@ -66,4 +66,4 @@ spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSph
 spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
 ```
 
-For details, see [Spring Boot](/en/user-manual/shardingsphere-jdbc/spring-boot/).
+For details, see [Spring Boot](/en/user-manual/shardingsphere-jdbc/yaml-config/jdbc-driver/spring-boot/).
