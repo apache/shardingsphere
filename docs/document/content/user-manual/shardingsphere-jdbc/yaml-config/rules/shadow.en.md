@@ -89,5 +89,3 @@ rules:
 ## Related References
 - [Core Features of Shadow DB](/en/features/shadow/)
 - [JAVA API: Shadow DB Configuration](/en/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
-- [Spring Boot Starter: Shadow DB Configuration](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
-- [Spring Namespace: Shadow DB Configuration](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

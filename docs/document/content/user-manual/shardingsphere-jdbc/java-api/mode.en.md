@@ -56,7 +56,7 @@ Attributes:
 ```xml
 <dependency>
  <groupId>org.apache.shardingsphere</groupId>
- <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+ <artifactId>shardingsphere-jdbc-core</artifactId>
  <version>${latest.release.version}</version>
 </dependency>
 ```
