@@ -90,11 +90,12 @@ public final class CDCServer extends Thread {
         workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     }
     
-    /**
-     * CDC server close.
-     */
-    public void close() {
-        bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
+    private void close() {
+        if (null != bossGroup) {
+            bossGroup.shutdownGracefully();
+        }
+        if (null != workerGroup) {
+            workerGroup.shutdownGracefully();
+        }
     }
 }

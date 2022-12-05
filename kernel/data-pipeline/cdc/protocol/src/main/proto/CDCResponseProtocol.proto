@@ -43,7 +43,7 @@ message CDCResponse {
 
 message ServerGreetingResult {
   string server_version = 1;
-  string curren_protocol_version = 2;
+  string protocol_version = 2;
 }
 
 message CreateSubscriptionResult {

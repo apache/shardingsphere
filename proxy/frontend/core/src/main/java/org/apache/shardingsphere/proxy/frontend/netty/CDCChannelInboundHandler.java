@@ -58,7 +58,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         CDCConnectionContext context = new CDCConnectionContext();
         context.setStatus(CDCConnectionStatus.NOT_LOGGED_IN);
         ctx.channel().attr(CONNECTION_CONTEXT_KEY).setIfAbsent(context);
-        CDCResponse response = CDCResponse.newBuilder().setServerGreetingResult(ServerGreetingResult.newBuilder().setServerVersion(ShardingSphereVersion.VERSION).setCurrenProtocolVersion("1")
+        CDCResponse response = CDCResponse.newBuilder().setServerGreetingResult(ServerGreetingResult.newBuilder().setServerVersion(ShardingSphereVersion.VERSION).setProtocolVersion("1")
                 .build()).build();
         ctx.writeAndFlush(response);
     }
@@ -105,7 +105,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             return;
         }
         Optional<ShardingSphereUser> user = authorityRule.get().findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
-        if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString(), body.getPassword())) {
+        if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString().toUpperCase(), body.getPassword())) {
             ctx.channel().attr(CONNECTION_CONTEXT_KEY).get().setStatus(CDCConnectionStatus.LOGGED_IN);
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
             return;

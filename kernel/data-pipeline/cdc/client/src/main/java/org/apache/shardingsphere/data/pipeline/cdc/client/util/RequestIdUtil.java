@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client;
+package org.apache.shardingsphere.data.pipeline.cdc.client.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 /**
- * Client bootstrap.
+ * Request id util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Bootstrap {
+public final class RequestIdUtil {
     
     /**
-     * Main entrance.
+     * Generate request id.
      *
-     * @param args args
+     * @return request id.
      */
-    public static void main(final String[] args) {
-        String address = args.length > 0 ? args[0] : "127.0.0.1";
-        int port = args.length > 1 ? Integer.parseInt(args[1]) : 33071;
-        new CDCClient().start(address, port);
+    public static String generateRequestId() {
+        return UUID.randomUUID().toString();
     }
 }

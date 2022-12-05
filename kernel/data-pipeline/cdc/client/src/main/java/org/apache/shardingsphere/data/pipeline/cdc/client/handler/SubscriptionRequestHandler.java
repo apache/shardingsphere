@@ -21,8 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.client.generator.RequestIdGenerator;
-import org.apache.shardingsphere.data.pipeline.cdc.client.generator.impl.UUIDRequestIdGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
@@ -38,12 +37,10 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 @Slf4j
 public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapter {
     
-    private final RequestIdGenerator requestIdGenerator = new UUIDRequestIdGenerator();
-    
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof CreateSubscriptionEvent) {
-            CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(buildCreateSubscriptionRequest()).setRequestId(requestIdGenerator.generateRequestId()).build();
+            CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(buildCreateSubscriptionRequest()).setRequestId(RequestIdUtil.generateRequestId()).build();
             ctx.writeAndFlush(request);
         }
     }
@@ -70,7 +67,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
             log.info("create subscription succeed, subcrption name {}", response.getCreateSubscriptionResult().getSubscriptionName());
             Builder builder = CDCRequest.newBuilder();
             builder.setStartSubscription(buildStartSubscriptionRequest(response.getCreateSubscriptionResult().getSubscriptionName()));
-            builder.setRequestId(requestIdGenerator.generateRequestId());
+            builder.setRequestId(RequestIdUtil.generateRequestId());
             ctx.writeAndFlush(builder.build());
         }
         // TODO waiting for pipeline refactoring finished

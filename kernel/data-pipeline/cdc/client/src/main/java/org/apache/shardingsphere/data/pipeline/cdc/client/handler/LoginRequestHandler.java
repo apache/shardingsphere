@@ -24,8 +24,7 @@ import io.netty.util.AttributeKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.client.generator.RequestIdGenerator;
-import org.apache.shardingsphere.data.pipeline.cdc.client.generator.impl.UUIDRequestIdGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest;
@@ -45,8 +44,6 @@ import java.util.Objects;
 public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     
     private static final AttributeKey<String> LOGIN_REQUEST_ID_KEY = AttributeKey.valueOf("login.request.id");
-    
-    private final RequestIdGenerator requestIdGenerator = new UUIDRequestIdGenerator();
     
     private final String username;
     
@@ -68,7 +65,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         CDCResponse response = (CDCResponse) msg;
         if (response.hasServerGreetingResult()) {
             ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
-            log.info("Server greeting result, server version: {}, min protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getCurrenProtocolVersion());
+            log.info("Server greeting result, server version: {}, min protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
             sendLoginRequest(ctx);
             return;
         }
@@ -84,9 +81,9 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     }
     
     private void sendLoginRequest(final ChannelHandlerContext ctx) {
-        String encryptPassword = Hashing.sha256().hashBytes(password.getBytes()).toString();
+        String encryptPassword = Hashing.sha256().hashBytes(password.getBytes()).toString().toUpperCase();
         LoginRequest loginRequest = LoginRequest.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(username).setPassword(encryptPassword).build()).build();
-        String loginRequestId = requestIdGenerator.generateRequestId();
+        String loginRequestId = RequestIdUtil.generateRequestId();
         ctx.channel().attr(LOGIN_REQUEST_ID_KEY).setIfAbsent(loginRequestId);
         CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(loginRequestId).setLogin(loginRequest).build();
         ctx.writeAndFlush(data);
