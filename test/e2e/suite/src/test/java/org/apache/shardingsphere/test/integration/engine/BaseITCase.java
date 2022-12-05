@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposerRegistry;
-import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelParameterized;
 import org.h2.tools.RunScript;

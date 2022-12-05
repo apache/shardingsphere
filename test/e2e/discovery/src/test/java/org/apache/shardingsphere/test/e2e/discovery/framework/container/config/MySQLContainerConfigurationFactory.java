@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.discovery.framework.container.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtil;
 import org.apache.shardingsphere.test.e2e.discovery.util.DiscoveryContainerUtil;
 
 import java.util.Collections;

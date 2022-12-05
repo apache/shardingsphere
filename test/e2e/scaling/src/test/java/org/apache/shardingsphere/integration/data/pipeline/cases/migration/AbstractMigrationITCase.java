@@ -25,7 +25,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseITCase
 import org.apache.shardingsphere.integration.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;

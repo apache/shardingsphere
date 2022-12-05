@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
-import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 
 /**
  * Total test suites count calculator.

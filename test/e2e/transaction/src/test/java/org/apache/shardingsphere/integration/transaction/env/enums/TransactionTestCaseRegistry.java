@@ -27,7 +27,7 @@ import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGa
 import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGaussProxyTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgresqlJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgresqlProxyTransactionIT;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 
 /**
  * Transaction test case registry.

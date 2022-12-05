@@ -25,15 +25,15 @@ import org.apache.shardingsphere.integration.transaction.framework.container.con
 import org.apache.shardingsphere.integration.transaction.framework.container.config.proxy.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.util.Objects;
 

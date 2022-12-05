@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.framework.container.config.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.transaction.framework.container.config.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.integration.transaction.framework.container.config.postgresql.PostgreSQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
 
 /**
  * Storage container configuration factory.
