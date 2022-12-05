@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.driver.sharding;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceE2EIT;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import java.util.Objects;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
+public class YamlShardingE2EIT extends AbstractYamlDataSourceE2EIT {
     
     private final String filePath;
     
@@ -56,7 +56,7 @@ public class YamlShardingIntegrateTest extends AbstractYamlDataSourceTest {
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(Objects.requireNonNull(YamlShardingIntegrateTest.class.getResource(filePath)).toURI());
+        File yamlFile = new File(Objects.requireNonNull(YamlShardingE2EIT.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);

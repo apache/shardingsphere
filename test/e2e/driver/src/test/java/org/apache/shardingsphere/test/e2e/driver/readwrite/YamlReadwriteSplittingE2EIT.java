@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.driver.mix;
+package org.apache.shardingsphere.test.e2e.driver.readwrite;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceE2EIT;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import java.util.Objects;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class YamlShardingWithReadwriteSplittingIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlReadwriteSplittingE2EIT extends AbstractYamlDataSourceE2EIT {
     
     private final String filePath;
     
@@ -47,36 +47,55 @@ public final class YamlShardingWithReadwriteSplittingIntegrateTest extends Abstr
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<Object[]> init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
         });
     }
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(Objects.requireNonNull(YamlShardingWithReadwriteSplittingIntegrateTest.class.getResource(filePath)).toURI());
+        File yamlFile = new File(Objects.requireNonNull(YamlReadwriteSplittingE2EIT.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = new HashMap<>(4, 1);
-            dataSourceMap.put("write_ds_0", createDataSource("write_ds_0"));
+            Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+            dataSourceMap.put("db_write", createDataSource("db_write"));
             dataSourceMap.put("read_ds_0", createDataSource("read_ds_0"));
-            dataSourceMap.put("write_ds_1", createDataSource("write_ds_1"));
             dataSourceMap.put("read_ds_1", createDataSource("read_ds_1"));
-            Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
-            result.putAll(dataSourceMap);
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(result, yamlFile);
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, yamlFile);
         }
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            statement.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
             statement.executeQuery("SELECT * FROM t_order");
             statement.executeQuery("SELECT * FROM t_order_item");
-            statement.executeQuery("SELECT * FROM config");
+            statement.executeQuery("SELECT * FROM t_config");
+        }
+        ((ShardingSphereDataSource) dataSource).close();
+    }
+    
+    @Test
+    public void assertWithDataSourceByYamlBytes() throws Exception {
+        File yamlFile = new File(Objects.requireNonNull(YamlReadwriteSplittingE2EIT.class.getResource(filePath)).toURI());
+        DataSource dataSource;
+        if (hasDataSource) {
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
+        } else {
+            Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+            dataSourceMap.put("db_write", createDataSource("db_write"));
+            dataSourceMap.put("read_ds_0", createDataSource("read_ds_0"));
+            dataSourceMap.put("read_ds_1", createDataSource("read_ds_1"));
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, yamlFile);
+        }
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.executeQuery("SELECT * FROM t_order_item");
+            statement.executeQuery("SELECT * FROM t_config");
         }
         ((ShardingSphereDataSource) dataSource).close();
     }
