@@ -47,7 +47,7 @@ import static org.junit.Assert.assertNotEquals;
 
 @Getter(AccessLevel.PROTECTED)
 @Slf4j
-public abstract class BaseE2EIT {
+public abstract class BaseDiscoveryE2EIT {
     
     protected static final DiscoveryE2ETestEnvironment ENV = DiscoveryE2ETestEnvironment.getInstance();
     
@@ -59,7 +59,7 @@ public abstract class BaseE2EIT {
     
     private final DataSource proxyDataSource;
     
-    public BaseE2EIT(final DiscoveryTestParameter testParameter) {
+    public BaseDiscoveryE2EIT(final DiscoveryTestParameter testParameter) {
         databaseType = testParameter.getDatabaseType();
         containerComposer = new DockerContainerComposer(testParameter.getScenario(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
         containerComposer.start();
