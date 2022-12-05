@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.transaction.engine.mysql;
+package org.apache.shardingsphere.test.e2e.transaction.engine.database.opengauss;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
-import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionParameterized;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,34 +29,30 @@ import org.junit.runners.Parameterized.Parameters;
 import java.sql.SQLException;
 import java.util.Collection;
 
-/**
- * MySQL general transaction test case with JDBC container, includes multiple cases.
- */
 @RunWith(Parameterized.class)
-@Slf4j
-public final class MysqlJdbcTransactionIT extends BaseTransactionITCase {
+public final class OpenGaussJdbcTransactionE2EIT extends TransactionBaseE2EIT {
     
-    private final TransactionParameterized parameterized;
+    private final TransactionTestParameter testParameter;
     
-    public MysqlJdbcTransactionIT(final TransactionParameterized parameterized) {
-        super(parameterized);
-        this.parameterized = parameterized;
-        log.info("Parameterized:{}", parameterized);
+    public OpenGaussJdbcTransactionE2EIT(final TransactionTestParameter testParameter) {
+        super(testParameter);
+        this.testParameter = testParameter;
     }
     
     @Parameters(name = "{0}")
-    public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(MysqlJdbcTransactionIT.class);
+    public static Collection<TransactionTestParameter> getTestParameters() {
+        return getTransactionTestParameters(OpenGaussJdbcTransactionE2EIT.class);
     }
     
     @After
-    public void after() throws SQLException {
+    @SneakyThrows(SQLException.class)
+    public void after() {
         getDataSource().close();
         getContainerComposer().close();
     }
     
     @Test
     public void assertTransaction() throws SQLException {
-        callTestCases(parameterized);
+        callTestCases(testParameter);
     }
 }

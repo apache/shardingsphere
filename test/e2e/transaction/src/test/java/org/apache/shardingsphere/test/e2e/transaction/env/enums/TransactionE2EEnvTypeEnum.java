@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.env.enums;
 
-public enum TransactionITEnvTypeEnum {
+public enum TransactionE2EEnvTypeEnum {
     
     NONE, DOCKER, NATIVE
 }

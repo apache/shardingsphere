@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -30,7 +30,7 @@ import java.sql.SQLException;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
 public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
-    public MySQLSavePointTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public MySQLSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

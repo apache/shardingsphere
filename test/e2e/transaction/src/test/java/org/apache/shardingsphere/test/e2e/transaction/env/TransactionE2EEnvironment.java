@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionITEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionE2EEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionTestCaseRegistry;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
@@ -37,13 +37,13 @@ import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
-public final class IntegrationTestEnvironment {
+public final class TransactionE2EEnvironment {
     
-    private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
+    private static final TransactionE2EEnvironment INSTANCE = new TransactionE2EEnvironment();
     
     private final Properties props;
     
-    private final TransactionITEnvTypeEnum itEnvType;
+    private final TransactionE2EEnvTypeEnum itEnvType;
     
     private final List<String> mysqlVersions;
     
@@ -59,9 +59,9 @@ public final class IntegrationTestEnvironment {
     
     private final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
     
-    private IntegrationTestEnvironment() {
+    private TransactionE2EEnvironment() {
         props = loadProperties();
-        itEnvType = TransactionITEnvTypeEnum.valueOf(props.getProperty("transaction.it.env.type", TransactionITEnvTypeEnum.NONE.name()).toUpperCase());
+        itEnvType = TransactionE2EEnvTypeEnum.valueOf(props.getProperty("transaction.it.env.type", TransactionE2EEnvTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
         postgresVersions = splitProperty("transaction.it.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
@@ -87,7 +87,7 @@ public final class IntegrationTestEnvironment {
     
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
+        try (InputStream inputStream = TransactionE2EEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
@@ -133,7 +133,7 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return itEnvType == TransactionITEnvTypeEnum.NATIVE
+        return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
                 ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USERNAME))
                 : StorageContainerConstants.USERNAME;
     }
@@ -145,7 +145,7 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return itEnvType == TransactionITEnvTypeEnum.NATIVE
+        return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
                 ? props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), ProxyContainerConstants.PASSWORD).toString()
                 : StorageContainerConstants.PASSWORD;
     }
@@ -175,7 +175,7 @@ public final class IntegrationTestEnvironment {
      *
      * @return singleton instance
      */
-    public static IntegrationTestEnvironment getInstance() {
+    public static TransactionE2EEnvironment getInstance() {
         return INSTANCE;
     }
 }

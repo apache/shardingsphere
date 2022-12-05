@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase
 public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
-    public ClassicTransferTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public ClassicTransferTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.opengauss.jdbc.PSQLSavepoint;
@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS})
 public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
-    public OpenGaussSavePointTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public OpenGaussSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

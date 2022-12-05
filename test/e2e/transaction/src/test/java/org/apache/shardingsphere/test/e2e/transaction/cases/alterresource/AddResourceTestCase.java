@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.alterresource;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
@@ -36,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase(adapters = AdapterContainerConstants.PROXY, scenario = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
-    public AddResourceTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public AddResourceTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

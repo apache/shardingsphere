@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase
 public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
-    public MultiOperationsCommitAndRollbackTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public MultiOperationsCommitAndRollbackTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

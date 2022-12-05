@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.proxy.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
-import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
@@ -54,31 +54,31 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DockerStorageContainer storageContainer;
     
-    public DockerContainerComposer(final TransactionParameterized parameterized) {
-        super(parameterized.getScenario());
-        this.databaseType = parameterized.getDatabaseType();
+    public DockerContainerComposer(final TransactionTestParameter testParameter) {
+        super(testParameter.getScenario());
+        this.databaseType = testParameter.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         storageContainer =
-                getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, parameterized.getStorageContainerImage(), parameterized.getScenario(),
+                getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParameter.getStorageContainerImage(), testParameter.getScenario(),
                         StorageContainerConfigurationFactory.newInstance(databaseType)));
-        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
+        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(testParameter.getAdapter())) {
             jdbcContainer = null;
             proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY,
-                    databaseType, storageContainer, parameterized.getScenario(), ProxyClusterContainerConfigurationFactory.newInstance(parameterized.getScenario(), databaseType));
+                    databaseType, storageContainer, testParameter.getScenario(), ProxyClusterContainerConfigurationFactory.newInstance(testParameter.getScenario(), databaseType));
             proxyContainer.dependsOn(governanceContainer, storageContainer);
             getContainers().registerContainer(proxyContainer);
         } else {
             proxyContainer = null;
             ShardingSphereJDBCContainer jdbcContainer = new ShardingSphereJDBCContainer(storageContainer,
-                    Objects.requireNonNull(ShardingSphereJDBCContainer.class.getClassLoader().getResource(getShardingSphereConfigResource(parameterized))).getFile());
+                    Objects.requireNonNull(ShardingSphereJDBCContainer.class.getClassLoader().getResource(getShardingSphereConfigResource(testParameter))).getFile());
             this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
         }
     }
     
-    private String getShardingSphereConfigResource(final TransactionParameterized parameterized) {
-        String result = String.format("env/%s/%s/config-sharding-%s%s.yaml", parameterized.getAdapter().toLowerCase(),
-                parameterized.getDatabaseType().getType().toLowerCase(), parameterized.getTransactionTypes().get(0).toString().toLowerCase(),
-                getTransactionProvider(parameterized.getProviders().get(0)));
+    private String getShardingSphereConfigResource(final TransactionTestParameter testParameter) {
+        String result = String.format("env/%s/%s/config-sharding-%s%s.yaml", testParameter.getAdapter().toLowerCase(),
+                testParameter.getDatabaseType().getType().toLowerCase(), testParameter.getTransactionTypes().get(0).toString().toLowerCase(),
+                getTransactionProvider(testParameter.getProviders().get(0)));
         log.info("Transaction IT tests use the configuration file: {}", result);
         return result;
     }

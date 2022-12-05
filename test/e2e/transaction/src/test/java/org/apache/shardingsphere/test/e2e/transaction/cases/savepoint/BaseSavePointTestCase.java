@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,7 +30,7 @@ import java.sql.Savepoint;
  */
 public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     
-    public BaseSavePointTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public BaseSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

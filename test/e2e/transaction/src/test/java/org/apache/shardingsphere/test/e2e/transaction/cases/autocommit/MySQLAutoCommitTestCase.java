@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.autocommit;
 
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
 public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
     
-    public MySQLAutoCommitTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public MySQLAutoCommitTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

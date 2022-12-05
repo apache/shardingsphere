@@ -26,12 +26,9 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Transaction test parameters.
- */
 @RequiredArgsConstructor
 @Getter
-public final class TransactionParameterized {
+public final class TransactionTestParameter {
     
     private final DatabaseType databaseType;
     
