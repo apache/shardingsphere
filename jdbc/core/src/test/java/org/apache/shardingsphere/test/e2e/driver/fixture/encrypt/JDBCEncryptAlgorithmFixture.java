@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.test.e2e.driver.fixture.encrypt;
 
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import lombok.Getter;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
+import java.util.Properties;
 
-public final class TestRuleConfigurationChecker implements RuleConfigurationChecker<TestRuleConfiguration> {
+@Getter
+public final class JDBCEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
+    
+    private Properties props;
     
     @Override
-    public void check(final String databaseName, final TestRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    public void init(final Properties props) {
+        this.props = props;
     }
     
     @Override
-    public int getOrder() {
-        return 10080;
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
     }
     
     @Override
-    public Class<TestRuleConfiguration> getTypeClass() {
-        return TestRuleConfiguration.class;
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "JDBC.FIXTURE";
     }
 }

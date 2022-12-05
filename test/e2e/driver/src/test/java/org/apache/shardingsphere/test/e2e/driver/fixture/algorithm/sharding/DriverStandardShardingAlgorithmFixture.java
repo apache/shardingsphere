@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.sharding;
+package org.apache.shardingsphere.test.e2e.driver.fixture.algorithm.sharding;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -23,11 +23,10 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Properties;
 
 @Getter
-public final class JDBCStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class DriverStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     private Properties props;
     
@@ -39,28 +38,20 @@ public final class JDBCStandardShardingAlgorithmFixture implements StandardShard
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 10))) {
                 return each;
             }
         }
-        return null;
+        throw new UnsupportedOperationException("");
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        Collection<String> result = new HashSet<>(2);
-        for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i % 2))) {
-                    result.add(each);
-                }
-            }
-        }
-        return result;
+        throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
     }
     
     @Override
     public String getType() {
-        return "JDBC.STANDARD.FIXTURE";
+        return "DRIVER.STANDARD.FIXTURE";
     }
 }

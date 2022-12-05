@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.encrypt;
+package org.apache.shardingsphere.test.e2e.driver.fixture.algorithm.keygen;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
-public final class JDBCEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
+public final class DriverKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+    
+    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
     
     private Properties props;
     
@@ -34,17 +36,12 @@ public final class JDBCEncryptAlgorithmFixture implements StandardEncryptAlgorit
     }
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
+    public Comparable<?> generateKey() {
+        return SEQUENCE.incrementAndGet();
     }
     
     @Override
     public String getType() {
-        return "JDBC.FIXTURE";
+        return "DRIVER.FIXTURE";
     }
 }

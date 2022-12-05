@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.algorithm.keygen;
+package org.apache.shardingsphere.test.e2e.driver.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
 
-@Getter
-public final class DriverKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
-    
-    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
-    
-    private Properties props;
+public final class TestRuleConfigurationChecker implements RuleConfigurationChecker<TestRuleConfiguration> {
     
     @Override
-    public void init(final Properties props) {
-        this.props = props;
+    public void check(final String databaseName, final TestRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
     }
     
     @Override
-    public Comparable<?> generateKey() {
-        return SEQUENCE.incrementAndGet();
+    public int getOrder() {
+        return 10080;
     }
     
     @Override
-    public String getType() {
-        return "DRIVER.FIXTURE";
+    public Class<TestRuleConfiguration> getTypeClass() {
+        return TestRuleConfiguration.class;
     }
 }

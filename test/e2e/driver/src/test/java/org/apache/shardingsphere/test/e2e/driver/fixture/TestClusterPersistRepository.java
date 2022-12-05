@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture;
+package org.apache.shardingsphere.test.e2e.driver.fixture;
 
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;

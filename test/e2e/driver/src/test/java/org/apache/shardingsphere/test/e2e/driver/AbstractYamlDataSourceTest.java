@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver;
+package org.apache.shardingsphere.test.e2e.driver;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.h2.tools.RunScript;

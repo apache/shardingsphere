@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.readwrite;
+package org.apache.shardingsphere.test.e2e.driver.readwrite;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.AbstractYamlDataSourceTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
