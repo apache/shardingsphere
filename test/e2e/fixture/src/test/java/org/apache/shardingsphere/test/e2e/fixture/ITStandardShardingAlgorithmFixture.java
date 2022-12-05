@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.fixture;
+package org.apache.shardingsphere.test.e2e.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
