@@ -44,5 +44,5 @@ countShadowRule
     ;
 
 databaseName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
