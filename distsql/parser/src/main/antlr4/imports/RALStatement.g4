@@ -20,11 +20,11 @@ grammar RALStatement;
 import BaseRule;
 
 setDistVariable
-    : SET DIST VARIABLE variableName EQ variableValue
+    : SET DIST VARIABLE variableName EQ_ variableValue
     ;
 
 showDistVariable
-    : SHOW DIST VARIABLE WHERE NAME EQ variableName
+    : SHOW DIST VARIABLE WHERE NAME EQ_ variableName
     ;
 
 showDistVariables
@@ -32,7 +32,7 @@ showDistVariables
     ;
 
 alterComputeNode
-    : ALTER COMPUTE NODE instanceId SET variableName EQ variableValues
+    : ALTER COMPUTE NODE instanceId SET variableName EQ_ variableValues
     ;
 
 enableComputeNode
@@ -60,7 +60,7 @@ refreshTableMetadata
     ;
 
 showTableMetadata
-    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
+    : SHOW TABLE METADATA tableName (COMMA_ tableName*)? (FROM databaseName)?
     ;
 
 showComputeNodeInfo
@@ -72,11 +72,11 @@ showComputeNodeMode
     ;
 
 labelComputeNode
-    : (LABEL | RELABEL) COMPUTE NODE instanceId WITH label (COMMA label)*
+    : (LABEL | RELABEL) COMPUTE NODE instanceId WITH label (COMMA_ label)*
     ;
 
 unlabelComputeNode
-    : UNLABEL COMPUTE NODE instanceId (WITH label (COMMA label)*)?
+    : UNLABEL COMPUTE NODE instanceId (WITH label (COMMA_ label)*)?
     ;
 
 exportDatabaseConfiguration
@@ -100,51 +100,51 @@ alterMigrationRule
     ;
 
 inventoryIncrementalRule
-    : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
+    : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
 
 readDefinition
-    : READ LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
+    : READ LP_ workerThread? (COMMA_? batchSize)? (COMMA_? shardingSize)? (COMMA_? rateLimiter)? RP_
     ;
 
 writeDefinition
-    : WRITE LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    : WRITE LP_ workerThread? (COMMA_? batchSize)? (COMMA_? rateLimiter)? RP_
     ;
 
 workerThread
-    : WORKER_THREAD EQ intValue
+    : WORKER_THREAD EQ_ intValue
     ;
 
 batchSize
-    : BATCH_SIZE EQ intValue
+    : BATCH_SIZE EQ_ intValue
     ;
 
 shardingSize
-    : SHARDING_SIZE EQ intValue
+    : SHARDING_SIZE EQ_ intValue
     ;
 
 rateLimiter
-    : RATE_LIMITER LP algorithmDefinition RP
+    : RATE_LIMITER LP_ algorithmDefinition RP_
     ;
 
 streamChannel
-    : STREAM_CHANNEL LP algorithmDefinition RP
+    : STREAM_CHANNEL LP_ algorithmDefinition RP_
     ;
 
 confPath
-    : STRING
+    : STRING_
     ;
 
 filePath
-    : STRING
+    : STRING_
     ;
 
 variableName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 variableValues
-    : variableValue (COMMA variableValue)*
+    : variableValue (COMMA_ variableValue)*
     ;
 
 variableValue
@@ -152,7 +152,7 @@ variableValue
     ;
 
 instanceId
-    : IDENTIFIER | STRING
+    : IDENTIFIER_ | STRING_
     ;
 
 refreshScope
@@ -164,11 +164,11 @@ fromSegment
     ;
 
 label
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 intValue
-    : INT
+    : INT_
     ;
 
 prepareDistSQL
