@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.algorithm.sharding;
+package org.apache.shardingsphere.test.e2e.driver.fixture.keygen;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
-public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
+public final class ResetIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+    
+    @Getter
+    private static final AtomicInteger COUNT = new AtomicInteger();
     
     private Properties props;
     
@@ -36,12 +37,12 @@ public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexK
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
-        return Collections.emptyList();
+    public Comparable<?> generateKey() {
+        return COUNT.incrementAndGet();
     }
     
     @Override
     public String getType() {
-        return "DRIVER.COMPLEX.FIXTURE";
+        return "JDBC.RESET_INCREMENT.FIXTURE";
     }
 }

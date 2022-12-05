@@ -15,33 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.keygen;
+package org.apache.shardingsphere.test.e2e.driver.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-@Getter
-public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
-    
-    private final AtomicInteger count = new AtomicInteger();
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
-    }
-    
-    @Override
-    public String getType() {
-        return "JDBC.INCREMENT.FIXTURE";
-    }
+public final class TestRuleConfiguration implements RuleConfiguration, EnhancedRuleConfiguration {
 }

@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.fixture.encrypt;
+package org.apache.shardingsphere.test.e2e.driver.fixture.algorithm.sharding;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 @Getter
-public final class JDBCQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
+public final class DriverComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<String> {
     
     private Properties props;
     
@@ -34,17 +36,12 @@ public final class JDBCQueryAssistedEncryptAlgorithmFixture implements StandardE
     }
     
     @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "assistedEncryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
+        return Collections.emptyList();
     }
     
     @Override
     public String getType() {
-        return "JDBC.QUERY_ASSISTED.FIXTURE";
+        return "DRIVER.COMPLEX.FIXTURE";
     }
 }
