@@ -31,5 +31,3 @@ Apache ShardingSphere 需要自动感知多样化的存储节点高可用方案�
 
 [Java API](/cn/user-manual/shardingsphere-jdbc/java-api/rules/ha)\
 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/ha)\
-[Spring Boot Starter](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha)\
-[Spring 命名空间](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha)

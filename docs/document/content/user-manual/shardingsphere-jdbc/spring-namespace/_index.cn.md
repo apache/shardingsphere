@@ -22,7 +22,6 @@ ShardingSphere 提供 JDBC 驱动，开发者可以在 Spring 中配置 `Shardin
 
 ### 配置 Spring Bean
 
-
 #### 配置项说明
 
 | *名称*             | *类型*    | *说明*                                              |
@@ -59,4 +58,4 @@ ShardingSphere 提供 JDBC 驱动，开发者可以在 Spring 中配置 `Shardin
 
 ### 使用数据源
 
-使用方式同 Spring Boot Starter。
+使用方式同 Spring Boot。

@@ -22,7 +22,6 @@ ShardingSphere provides a JDBC driver, and developers can configure `ShardingSph
 
 ### Configure Spring Bean
 
-
 #### Configuration Item Explanation
 
 | *Name*            | *Type*      | *Description*                                     |
@@ -59,4 +58,4 @@ ShardingSphere provides a JDBC driver, and developers can configure `ShardingSph
 
 ### Use Data Source
 
-Same with Spring Boot Starter.
+Same with Spring Boot.
