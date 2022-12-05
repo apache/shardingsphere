@@ -19,8 +19,8 @@ package org.apache.shardingsphere.integration.transaction.framework.container.co
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collections;
 import java.util.HashMap;

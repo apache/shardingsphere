@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.integration.engine.dcl;
 
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioCommonPath;
-import org.apache.shardingsphere.test.integration.env.runtime.scenario.authority.AuthorityEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.junit.After;
 import org.junit.Before;

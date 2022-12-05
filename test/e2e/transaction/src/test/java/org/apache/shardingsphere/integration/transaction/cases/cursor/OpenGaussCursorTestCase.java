@@ -24,7 +24,7 @@ import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransac
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;

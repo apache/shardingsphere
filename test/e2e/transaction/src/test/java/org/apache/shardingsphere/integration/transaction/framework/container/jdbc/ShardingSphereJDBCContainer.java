@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.integration.transaction.framework.container.jdbc;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 
 import javax.sql.DataSource;
 import java.io.File;

@@ -34,11 +34,11 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.c
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 
 import javax.sql.DataSource;

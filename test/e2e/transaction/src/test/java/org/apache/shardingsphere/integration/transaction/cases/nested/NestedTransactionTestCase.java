@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Assert;
 

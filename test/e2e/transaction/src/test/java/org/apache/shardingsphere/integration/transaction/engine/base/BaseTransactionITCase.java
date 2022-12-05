@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;

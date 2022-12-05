@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.junit.Before;
 

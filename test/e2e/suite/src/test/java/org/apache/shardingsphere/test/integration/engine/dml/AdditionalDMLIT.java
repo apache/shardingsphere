@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.dml;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.array.ITTestParameterFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy;

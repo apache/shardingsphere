@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.integration.container.compose.mode.StandaloneContainerComposer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 
 import javax.sql.DataSource;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.showprocesslist.env;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.integration.showprocesslist.env.enums.ITEnvTypeEnum;
 
 import java.io.IOException;

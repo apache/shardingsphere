@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 
 import java.io.IOException;
 import java.io.InputStream;

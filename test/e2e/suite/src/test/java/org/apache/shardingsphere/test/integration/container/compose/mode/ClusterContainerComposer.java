@@ -19,17 +19,17 @@ package org.apache.shardingsphere.test.integration.container.compose.mode;
 
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.integration.container.config.ProxyClusterContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainerFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtil;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 
 import javax.sql.DataSource;

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.migration.Abstr
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

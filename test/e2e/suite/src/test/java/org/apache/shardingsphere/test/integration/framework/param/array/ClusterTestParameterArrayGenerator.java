@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.integration.framework.param.array;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
-import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITTestParameter;
 
