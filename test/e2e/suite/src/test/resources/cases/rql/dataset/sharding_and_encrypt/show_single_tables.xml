@@ -18,7 +18,7 @@
 <dataset>
     <metadata>
         <column name="table_name" />
-        <column name="resource_name" />
+        <column name="storage_unit_name" />
     </metadata>
     <row values="t_order_federate| encrypt_ds_0" />
     <row values="t_order_item_federate| encrypt_ds_1" />
