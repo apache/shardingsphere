@@ -1,5 +1,5 @@
 +++
-title = "Spring Boot Starter"
+title = "Spring Boot"
 weight = 4
 chapter = true
 +++
