@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.discovery.env.enums.E2EEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.discovery.env.enums.DiscoveryE2EEnvTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,26 +33,26 @@ import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
-public final class E2ETestEnvironment {
+public final class DiscoveryE2ETestEnvironment {
     
-    private static final E2ETestEnvironment INSTANCE = new E2ETestEnvironment();
+    private static final DiscoveryE2ETestEnvironment INSTANCE = new DiscoveryE2ETestEnvironment();
     
     private final Properties props;
     
-    private final E2EEnvTypeEnum itEnvType;
+    private final DiscoveryE2EEnvTypeEnum itEnvType;
     
     private final List<String> mysqlVersions;
     
-    private E2ETestEnvironment() {
+    private DiscoveryE2ETestEnvironment() {
         props = loadProperties();
-        itEnvType = E2EEnvTypeEnum.valueOf(props.getProperty("it.env.type", E2EEnvTypeEnum.NONE.name()).toUpperCase());
+        itEnvType = DiscoveryE2EEnvTypeEnum.valueOf(props.getProperty("it.env.type", DiscoveryE2EEnvTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = Arrays.stream(props.getOrDefault("it.docker.mysql.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
     }
     
     @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = E2ETestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
+        try (InputStream inputStream = DiscoveryE2ETestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
@@ -66,7 +66,7 @@ public final class E2ETestEnvironment {
      *
      * @return singleton instance
      */
-    public static E2ETestEnvironment getInstance() {
+    public static DiscoveryE2ETestEnvironment getInstance() {
         return INSTANCE;
     }
     

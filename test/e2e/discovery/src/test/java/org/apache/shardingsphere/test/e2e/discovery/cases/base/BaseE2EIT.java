@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.discovery.build.DiscoveryRuleBuilder;
 import org.apache.shardingsphere.test.e2e.discovery.cases.DatabaseClusterEnvironment;
-import org.apache.shardingsphere.test.e2e.discovery.env.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.discovery.env.DiscoveryE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.parameter.DiscoveryTestParameter;
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertNotEquals;
 @Slf4j
 public abstract class BaseE2EIT {
     
-    protected static final E2ETestEnvironment ENV = E2ETestEnvironment.getInstance();
+    protected static final DiscoveryE2ETestEnvironment ENV = DiscoveryE2ETestEnvironment.getInstance();
     
     private final BaseContainerComposer containerComposer;
     
