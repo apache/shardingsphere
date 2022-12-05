@@ -1,6 +1,6 @@
 +++
 pre = "<b>6.4. </b>"
-title = "Scaling Integration Test"
+title = "Pipeline Integration Test"
 weight = 4
 +++
 
@@ -18,7 +18,7 @@ Currently, you can use MySQL, PostgreSQL and openGuass databases.
 
 ## User guide
 
-Module path: `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling`.
+Module path: `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline`.
 
 ### Environment setup
 
@@ -37,7 +37,7 @@ Currently, all the test cases are directly inherited from `BaseExtraSQLITCase` a
 - `BaseITCase`: Provide generic methods for sub-class.
 - `BaseExtraSQLITCase`: Provide table creation and CRUD statement execution methods.
 
-Test case example: MySQLGeneralScalingIT.
+Test case example: MySQLGeneralPipelineE2EIT.
 Functions included:
 - Database-level migration (all tables).
 - Table-level migration (any number).
@@ -58,11 +58,11 @@ The user starts ShardingSphere-Proxy locally in advance, along with dependent co
 The port required for ShardingSphere-Proxy is 3307.
 Take MySQL as an example, `it-env.properties` can be configured as follows: 
 ```
-scaling.it.env.type=NATIVE
-scaling.it.native.database=mysql
-scaling.it.native.mysql.username=root
-scaling.it.native.mysql.password=root
-scaling.it.native.mysql.port=3306
+pipeline.it.env.type=NATIVE
+pipeline.it.native.database=mysql
+pipeline.it.native.mysql.username=root
+pipeline.it.native.mysql.password=root
+pipeline.it.native.mysql.port=3306
 ```
 
 Find the appropriate test case and start it with Junit under the IDE.
@@ -72,7 +72,7 @@ Find the appropriate test case and start it with Junit under the IDE.
 Step 1: Package mirror.
 
 ```
-./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling -Pit.env.docker -DskipTests
+./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline -Pit.env.docker -DskipTests
 ```
 
 Running the above command will build a Docker mirror apache/shardingsphere-proxy-test:latest used for integration testing. 
@@ -80,17 +80,17 @@ The mirror sets the port for remote debugging and the default port is 3308. If o
 
 If you need to adjust Docker mirror startup parameters, you can modify the configuration of the ShardingSphereProxyDockerContainer file.
 
-The output log of ShardingSphere-Proxy has the prefix Scaling-Proxy.
+The output log of ShardingSphere-Proxy has the prefix Pipeline-Proxy.
 
 Use Maven to run the test cases. Take MySQL as an example:
 
 ```
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline/pom.xml -Dpipeline.it.env.type=DOCKER -Dpipeline.it.docker.mysql.version=${image-name}
 ```
 
 You can also use IDE to run test cases. `it-env.properties` can be configured as follows: 
 
 ```
-scaling.it.env.type=DOCKER
-scaling.it.docker.mysql.version=mysql:5.7
+pipeline.it.env.type=DOCKER
+pipeline.it.docker.mysql.version=mysql:5.7
 ```
