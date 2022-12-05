@@ -28,5 +28,5 @@ import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 public final class CDCConnectionContext {
     
     @Setter
-    private CDCConnectionStatus status;
+    private volatile CDCConnectionStatus status;
 }

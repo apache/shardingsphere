@@ -117,7 +117,7 @@ public final class CDCChannelInboundHandlerTest {
     
     @Test
     public void assertLoginRequestSucceed() {
-        String encryptPassword = Hashing.sha256().hashBytes("root".getBytes()).toString();
+        String encryptPassword = Hashing.sha256().hashBytes("root".getBytes()).toString().toUpperCase();
         Builder builder = CDCRequest.newBuilder().setLogin(LoginRequest.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root").setPassword(encryptPassword).build()).build());
         CDCRequest actualRequest = builder.build();
         channel.writeInbound(actualRequest);
