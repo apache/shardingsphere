@@ -15,7 +15,10 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.mode.type=Cluster
-spring.shardingsphere.mode.repository.type=ZooKeeper
-spring.shardingsphere.mode.repository.props.namespace=generator_demo
-spring.shardingsphere.mode.repository.props.server-lists=localhost:2181
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: generator_demo
+      server-lists: localhost:2181

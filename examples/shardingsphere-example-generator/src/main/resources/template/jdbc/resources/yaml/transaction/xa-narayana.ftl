@@ -14,4 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<standalone:repository id="standaloneRepository" type="JDBC" />
+- !TRANSACTION
+  defaultType: XA
+  providerType: Narayana

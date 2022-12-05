@@ -14,5 +14,28 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-spring.shardingsphere.props.xa-transaction-manager-type=Atomikos
+- !SHADOW
+  dataSources:
+    shadow_group:
+      productionDataSourceName: ds_0
+      shadowDataSourceName: ds_1
+  tables:
+    t_order:
+      dataSourceNames:
+        - shadow_group
+      shadowAlgorithmNames:
+        - user_id_insert_match_algorithm
+        - simple_hint_algorithm
+  defaultShadowAlgorithmName: simple-hint-algorithm
+  shadowAlgorithms:
+    user_id_insert_match_algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: insert
+        column: order_type
+        value: 1
+    simple_hint_algorithm:
+      type: SIMPLE_HINT
+      props:
+        shadow: true
+        foo: bar

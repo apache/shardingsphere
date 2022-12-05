@@ -14,8 +14,21 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-spring.shardingsphere.mode.type=Cluster
-spring.shardingsphere.mode.repository.type=etcd
-spring.shardingsphere.mode.repository.props.namespace=generator_demo
-spring.shardingsphere.mode.repository.props.server-lists=localhost:2379
+- !DB_DISCOVERY
+  dataSources:
+    group_0:
+      dataSourceNames:
+        - ds_0
+        - ds_1
+        - ds_2
+      discoveryHeartbeatName: mgr_heartbeat
+      discoveryTypeName: mgr_type
+    discoveryHeartbeats:
+      mgr_heartbeat:
+        props:
+          keep-alive-cron: '0/5 * * * * ?'
+    discoveryTypes:
+      mgr_type:
+        type: MySQL.MGR
+        props:
+          group-name: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa

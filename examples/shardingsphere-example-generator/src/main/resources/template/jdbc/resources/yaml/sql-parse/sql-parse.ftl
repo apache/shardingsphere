@@ -14,10 +14,5 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<cluster:repository id="clusterRepository" type="Zookeeper" namespace="generator_demo" server-lists="localhost:2181">
-    <props>
-        <prop key="max-retries">3</prop>
-        <prop key="operation-timeout-milliseconds">1000</prop>
-    </props>
-</cluster:repository>
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
