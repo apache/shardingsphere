@@ -28,15 +28,15 @@ alterTransactionRule
     ;
 
 transactionRuleDefinition
-    : LP DEFAULT EQ defaultType (COMMA providerDefinition)?
+    : LP_ DEFAULT EQ_ defaultType (COMMA_ providerDefinition)?
     ;
 
 providerDefinition
-    : TYPE LP NAME EQ providerName (COMMA propertiesDefinition)? RP
+    : TYPE LP_ NAME EQ_ providerName (COMMA_ propertiesDefinition)? RP_
     ;
 
 defaultType
-    : STRING | buildInDefaultTransactionType
+    : STRING_ | buildInDefaultTransactionType
     ;
 
 buildInDefaultTransactionType
@@ -44,7 +44,7 @@ buildInDefaultTransactionType
     ;
 
 providerName
-    : STRING | buildInProviderTypeName
+    : STRING_ | buildInProviderTypeName
     ;
 
 buildInProviderTypeName
@@ -52,13 +52,13 @@ buildInProviderTypeName
     ;
 
 propertiesDefinition
-    : PROPERTIES LP properties? RP
+    : PROPERTIES LP_ properties? RP_
     ;
 
 properties
-    : property (COMMA property)*
+    : property (COMMA_ property)*
     ;
 
 property
-    : key=STRING EQ value=STRING
+    : key=STRING_ EQ_ value=STRING_
     ;
