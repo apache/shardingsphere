@@ -37,13 +37,9 @@ ShardingSphere 提供 JDBC 驱动，开发者可以在 Spring 中配置 `Shardin
 #### URL 配置说明
 
 - 以 `jdbc:shardingsphere:` 为前缀
-
 - 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config)一致
-
 - 配置文件加载规则：
-
   - 无前缀表示从指定路径加载配置文件
-
   -  `classpath:` 前缀表示从类路径中加载配置文件
 
 #### 配置示例
