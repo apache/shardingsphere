@@ -6,7 +6,7 @@ chapter = true
 
 ## 简介
 
-ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非常便捷的整合 ShardingSphere-JDBC 和 Spring。
+ShardingSphere 提供 JDBC 驱动，开发者可以在 Spring 中配置 `ShardingSphereDriver` 来使用 ShardingSphere。
 
 ## 使用步骤
 
@@ -15,45 +15,45 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
 ### 配置 Spring Bean
 
+
 #### 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.2.1.xsd)
+| *名称*             | *类型*    | *说明*                                              |
+|-------------------|----------|-----------------------------------------------------|
+| driverClass       | 属性      | 数据库 Driver，这里需要指定使用 ShardingSphereDriver    |
+| url               | 属性      | YAML 配置文件路径                                     |
 
-\<shardingsphere:data-source />
+#### 驱动类名称
 
-| *名称*             | *类型* | *说明*                                                                            |
-| ----------------- | ----- | --------------------------------------------------------------------------------- |
-| id                | 属性  | Spring Bean Id                                                                     |
-| database-name (?)   | 属性  | JDBC 数据源别名                                                                      |
-| data-source-names | 标签  | 数据源名称，多个数据源以逗号分隔                                                         |
-| rule-refs         | 标签  | 规则名称，多个规则以逗号分隔                                                            |
-| mode (?)          | 标签  | 运行模式配置                                                                         |
-| props (?)         | 标签  | 属性配置，详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/props) |
+`org.apache.shardingsphere.driver.ShardingSphereDriver`
+
+#### URL 配置说明
+
+- 以 `jdbc:shardingsphere:` 为前缀
+- 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config)一致
+- 配置文件加载规则：
+  - 无前缀表示从指定路径加载配置文件
+  -  `classpath:` 前缀表示从类路径中加载配置文件
 
 #### 配置示例
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                           http://www.springframework.org/schema/beans/spring-beans.xsd 
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           ">
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="..." />
-        <props>
-            <prop key="xxx.xxx">${xxx.xxx}</prop>
-        </props>
-    </shardingsphere:data-source>
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <bean id="shardingDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="org.apache.shardingsphere.driver.ShardingSphereDriver" />
+        <property name="url" value="jdbc:shardingsphere:classpath:xxx.yaml" />
+    </bean>
 </beans>
 ```
 

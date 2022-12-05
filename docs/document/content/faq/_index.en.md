@@ -7,21 +7,6 @@ chapter = true
 
 ## JDBC
 
-### [JDBC] Why there may be an error when configure both shardingsphere-jdbc-spring-boot-starter and a spring-boot-starter of certain datasource pool (such as druid)?
-
-Answer:
-
-1. Because the spring-boot-starter of certain datasource pool (such as druid) will be configured before shardingsphere-jdbc-spring-boot-starter and create a default datasource, causing conflict to occur when ShardingSphere-JDBC create datasources.
-2. A simple way to solve this issue is removing the spring-boot-starter of certain datasource pool, allowing shardingsphere-jdbc to create datasources with suitable pools.
-
-### [JDBC] Why is xsd unable to be found when Spring Namespace is used?
-
-Answer:
-
-The norm of Spring Namespace does not require deploying xsd files to the official website. But considering some users' needs, we will deploy them to ShardingSphere's official website.
-Actually, META-INF\spring.schemas in the jar package of shardingsphere-jdbc-spring-namespace has been configured with the position of xsd files:
-META-INF\namespace\sharding.xsd and META-INF\namespace\readwrite-splitting.xsd, so you only need to make sure that the file is in the jar package.
-
 ### [JDBC] Found a JtaTransactionManager in spring boot project when integrating with XAtransaction.
 
 Answer:

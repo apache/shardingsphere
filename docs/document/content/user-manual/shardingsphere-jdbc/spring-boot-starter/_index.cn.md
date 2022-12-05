@@ -1,18 +1,12 @@
 +++
-title = "Spring Boot Starter"
+title = "Spring Boot"
 weight = 4
 chapter = true
 +++
 
 ## 简介
 
-ShardingSphere-JDBC 提供官方的 Spring Boot Starter，使开发者可以非常便捷的整合 ShardingSphere-JDBC 和 Spring Boot。
-
-兼容 SpringBoot 版本支持列表如下 : 
-
-1. SpringBoot 1.x
-2. SpringBoot 2.x 
-3. SpringBoot 3.x (实验中)
+ShardingSphere 提供 JDBC 驱动，开发者可以在 Spring Boot 中配置 `ShardingSphereDriver` 来使用 ShardingSphere。
 
 ## 使用步骤
 
@@ -21,36 +15,32 @@ ShardingSphere-JDBC 提供官方的 Spring Boot Starter，使开发者可以非�
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
-### 配置 Spring Boot 属性
+### 配置 Spring Boot
 
-ShardingSphere-JDBC 的 Spring Boot 属性配置由 Database 名称、运行模式、数据源集合、规则集合以及属性配置组成。
+#### 驱动类名称
+
+`org.apache.shardingsphere.driver.ShardingSphereDriver`
+
+#### URL 配置说明
+
+- 以 `jdbc:shardingsphere:` 为前缀
+- 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/)一致
+- 配置文件加载规则：
+  - 无前缀表示从指定路径加载配置文件
+  - `classpath:` 前缀表示从类路径中加载配置文件
 
 ```properties
-# JDBC 逻辑库名称。在集群模式中，使用该参数来联通 ShardingSphere-JDBC 与 ShardingSphere-Proxy。
-spring.shardingsphere.database.name= # 逻辑库名称，默认值：logic_db
-spring.shardingsphere.mode.xxx= # 运行模式
-spring.shardingsphere.dataSource.xxx= # 数据源集合
-spring.shardingsphere.rules.xxx= # 规则集合
-spring.shardingsphere.props= # 属性配置
+# 配置 DataSource Driver
+spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSphereDriver
+# 指定 YAML 配置文件
+spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
 ```
-
-模式详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/mode)。
-
-数据源详情请参见[数据源配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/data-source)。
-
-规则详情请参见[规则配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules)。
 
 ### 使用数据源
 
-直接通过注入的方式即可使用 ShardingSphereDataSource；
-或者将 ShardingSphereDataSource 配置在 JPA、Hibernate、MyBatis 等 ORM 框架中配合使用。
-
-```java
-@Resource
-private DataSource dataSource;
-```
+直接使用该数据源；或者将 ShardingSphereDataSource 配置在 JPA、Hibernate、MyBatis 等 ORM 框架中配合使用。
