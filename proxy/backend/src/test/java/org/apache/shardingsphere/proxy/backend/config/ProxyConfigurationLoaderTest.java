@@ -48,6 +48,7 @@ public final class ProxyConfigurationLoaderTest {
         YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
         assertNull(serverConfig.getMode());
         assertNull(serverConfig.getAuthority());
+        assertNull(serverConfig.getCdc());
         assertNull(serverConfig.getLabels());
         assertTrue(serverConfig.getProps().isEmpty());
         assertTrue(serverConfig.getRules().isEmpty());

@@ -22,5 +22,3 @@ Apache ShardingSphere 通过解析 SQL，对传入的 SQL 进行影子判定，�
 ## 相关参考
 [JAVA API：影子库配置](/cn/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)  
 [YAML 配置：影子库配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)  
-[ Spring Boot Starter：影子库配置 ](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)  
-[Spring 命名空间：影子库配置](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

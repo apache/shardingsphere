@@ -92,7 +92,7 @@ algorithmProperty:
 - `auditorAlgorithmType` 指定分片审计策略，请参考 [分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)；
 - 重复的 `tableName` 将无法被创建；
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`；
-- `strategyType` 指定分片策略，请参考[分片策略](/cn/features/sharding/concept/sharding/#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5)；
+- `strategyType` 指定分片策略，请参考[分片策略](/cn/features/sharding/concept/#分片策略)；
 - `Sharding Table Rule` 同时支持 `Auto Table` 和 `Table` 两种类型，两者在语法上有所差异，对应配置文件请参考 [数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) ；
 - 执行 `CREATE SHARDING TABLE RULE` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_scope_shardingAlgorithmType`，如 `t_order_database_inline`。
 - 执行 `CREATE DEFAULT SHARDING STRATEGY` 时，同样会自动创建新的分片算法，算法命名规则为 `default_scope_shardingAlgorithmType`，如 `default_database_inline`。

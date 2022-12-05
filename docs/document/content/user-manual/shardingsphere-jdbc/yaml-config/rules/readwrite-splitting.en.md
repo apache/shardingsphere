@@ -77,5 +77,3 @@ rules:
 
 - [Read-write splitting-Core features](/en/features/readwrite-splitting/)
 - [Java API: read-write splitting](/en/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting/)
-- [Spring Boot Starter: read-write splitting](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)
-- [Spring namespace: read-write splitting](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting/)

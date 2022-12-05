@@ -26,10 +26,10 @@ table:
 
 ### Single Table
 
-| 列            | 说明                  |
-| ------------- | -------------------- |
-| table_name    | 单表名称              |
-| resource_name | 单表所在的数据源名称    |
+| 列                | 说明                |
+| ----------------- |---------------------|
+| table_name        | 单表名称             |
+| storage_unit_name | 单表所在的存储节点名称 |
 
 ### Single Table Rule Count
 
@@ -57,11 +57,11 @@ sql> SHOW DEFAULT SINGLE TABLE STORAGE UNIT;
 
 ```sql
 sql> SHOW SINGLE TABLE t_single_0;
-+----------------+---------------+
-| table_name     | resource_name |
-+----------------+---------------+
-| t_single_0     | ds_0          |
-+----------------+---------------+
++----------------+-------------------+
+| table_name     | storage_unit_name |
++----------------+-------------------+
+| t_single_0     | ds_0              |
++----------------+-------------------+
 1 row in set (0.01 sec)
 ```
 
@@ -69,12 +69,12 @@ sql> SHOW SINGLE TABLE t_single_0;
 
 ```sql
 mysql> SHOW SINGLE TABLES;
-+--------------+---------------+
-| table_name   | resource_name |
-+--------------+---------------+
-| t_single_0   | ds_0          |
-| t_single_1   | ds_1          |
-+--------------+---------------+
++--------------+-------------------+
+| table_name   | storage_unit_name |
++--------------+-------------------+
+| t_single_0   | ds_0              |
+| t_single_1   | ds_1              |
++--------------+-------------------+
 2 rows in set (0.02 sec)
 ```
 

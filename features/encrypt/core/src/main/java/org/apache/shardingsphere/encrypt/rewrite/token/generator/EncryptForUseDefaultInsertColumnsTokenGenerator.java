@@ -93,9 +93,19 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
             String columnName = descendingColumnNames.next();
             if (encryptTable.findEncryptorName(columnName).isPresent()) {
                 int columnIndex = result.indexOf(columnName);
-                addPlainColumn(result, encryptTable, columnName, columnIndex);
-                addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);
                 setCipherColumn(result, encryptTable, columnName, columnIndex);
+                if (encryptTable.findAssistedQueryColumn(columnName).isPresent()) {
+                    addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);
+                    columnIndex++;
+                }
+                if (encryptTable.findLikeQueryEncryptorName(columnName).isPresent()) {
+                    addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
+                    columnIndex++;
+                }
+                if (encryptTable.findPlainColumn(columnName).isPresent()) {
+                    addPlainColumn(result, encryptTable, columnName, columnIndex);
+                    columnIndex++;
+                }
             }
         }
         return result;
@@ -107,6 +117,10 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     
     private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
         encryptTable.findAssistedQueryColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
+    }
+    
+    private void addLikeQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
+        encryptTable.findLikeQueryColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
     }
     
     private void setCipherColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {

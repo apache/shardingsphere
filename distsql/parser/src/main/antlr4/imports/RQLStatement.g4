@@ -20,7 +20,7 @@ grammar RQLStatement;
 import BaseRule;
 
 showStorageUnits
-    : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ usageCount)?
+    : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ_ usageCount)?
     ;
 
 showDefaultSingleTableStorageUnit
@@ -40,5 +40,5 @@ countSingleTableRule
     ;
 
 usageCount
-    : INT
+    : INT_
     ;

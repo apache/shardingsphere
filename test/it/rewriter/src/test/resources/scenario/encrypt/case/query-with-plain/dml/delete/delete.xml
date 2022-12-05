@@ -37,4 +37,14 @@
         <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
         <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND plain_password = 'aaa' AND plain_password like 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="delete_t_account_bak_with_alias_for_parameters" db-types="MySQL">
+        <input sql="DELETE t FROM t_account_bak t WHERE t.account_id = ? AND t.password = ? AND t.password like ? AND t.amount = ? AND t.status = ?" parameters="1, aaa, aaa, 1000, OK" />
+        <output sql="DELETE t FROM t_account_bak t WHERE t.account_id = ? AND t.plain_password = ? AND t.plain_password like ? AND t.plain_amount = ? AND t.status = ?" parameters="1, aaa, aaa, 1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="delete_t_account_bak_with_alias_for_literals" db-types="MySQL">
+        <input sql="DELETE t FROM t_account_bak t WHERE t.account_id = 1 AND t.password = 'aaa' AND t.password like 'aaa' AND t.amount = 1000 AND t.status = 'OK'" />
+        <output sql="DELETE t FROM t_account_bak t WHERE t.account_id = 1 AND t.plain_password = 'aaa' AND t.plain_password like 'aaa' AND t.plain_amount = 1000 AND t.status = 'OK'" />
+    </rewrite-assertion>
 </rewrite-assertions>
