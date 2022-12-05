@@ -94,6 +94,9 @@ public final class SQLOptimizeEngineTest {
         tables.put("t_single_table", createTSingleTableMetaData());
         tables.put("t_order_federate_sharding", createTOrderFederateShardingMetaData());
         tables.put("t_order_item_federate_sharding", createTOrderItemFederateShardingMetaData());
+        tables.put("t_merchant", createTMerchantMetaData());
+        tables.put("t_product", createTProductMetaData());
+        tables.put("t_product_detail", createTProductDetailMetaData());
         ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
         SqlToRelConverter converter = createSqlToRelConverter(schema);
         optimizeEngine = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
@@ -155,6 +158,37 @@ public final class SQLOptimizeEngineTest {
         ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);
         ShardingSphereColumn remarksColumn = new ShardingSphereColumn("remarks", Types.VARCHAR, false, false, false, true, false);
         return new ShardingSphereTable("t_order_item_federate_sharding", Arrays.asList(itemIdColumn, orderIdColumn, userIdColumn, statusColumn, remarksColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTMerchantMetaData() {
+        ShardingSphereColumn merchantIdColumn = new ShardingSphereColumn("merchant_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn countryIdColumn = new ShardingSphereColumn("country_id", Types.SMALLINT, false, false, false, true, false);
+        ShardingSphereColumn merchantNameColumn = new ShardingSphereColumn("merchant_name", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn businessCodeColumn = new ShardingSphereColumn("business_code", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn telephoneColumn = new ShardingSphereColumn("telephone", Types.CHAR, false, false, false, true, false);
+        ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
+        return new ShardingSphereTable("t_merchant", Arrays.asList(merchantIdColumn, countryIdColumn, merchantNameColumn, businessCodeColumn, telephoneColumn, creationDateColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTProductDetailMetaData() {
+        ShardingSphereColumn detailIdColumn = new ShardingSphereColumn("detail_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn productIdColumn = new ShardingSphereColumn("product_id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn descriptionColumn = new ShardingSphereColumn("description", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
+        return new ShardingSphereTable("t_product_detail", Arrays.asList(detailIdColumn, productIdColumn, descriptionColumn, creationDateColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTProductMetaData() {
+        ShardingSphereColumn productIdColumn = new ShardingSphereColumn("product_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn productNameColumn = new ShardingSphereColumn("product_name", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn categoryIdColumn = new ShardingSphereColumn("category_id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn priceColumn = new ShardingSphereColumn("price", Types.DECIMAL, false, false, false, true, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
+        return new ShardingSphereTable("t_product", Arrays.asList(productIdColumn, productNameColumn, categoryIdColumn, priceColumn, statusColumn, creationDateColumn),
                 Collections.emptyList(), Collections.emptyList());
     }
     
