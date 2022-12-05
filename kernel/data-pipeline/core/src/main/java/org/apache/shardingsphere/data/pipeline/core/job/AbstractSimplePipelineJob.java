@@ -35,7 +35,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
      * @param shardingContext sharding context
      * @return pipeline job item context
      */
-    public abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
+    protected abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
     
     protected abstract PipelineTasksRunner buildPipelineTasksRunner(PipelineJobItemContext pipelineJobItemContext);
     
