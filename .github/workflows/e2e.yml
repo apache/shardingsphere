@@ -15,11 +15,39 @@
 # limitations under the License.
 #
 
-name: Nightly - IT
+name: E2E
 
 on:
-  schedule:
-    - cron: '0 20 */1 * *'  # once a day. UTC time
+  push:
+    branches: [ master, dev ]
+    paths:
+      - '.github/workflows/e2e.yml'
+      - '**/pom.xml'
+      - '**/src/main/**'
+      - 'distribution/proxy/**'
+      - 'test/pom.xml'
+      - 'test/e2e/**'
+      - '!examples/**'
+      - '!distribution/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!test/**'
+      - '!*.md'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/e2e.yml'
+      - '**/pom.xml'
+      - '**/src/main/**'
+      - 'distribution/proxy/**'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/e2e/**'
+      - '!examples/**'
+      - '!distribution/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!*.md'
   workflow_dispatch:
 
 concurrency:
@@ -28,10 +56,11 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true -Drat.skip=true
+  REPOSITORY: apache/shardingsphere
+  REPOSITORY_NAME: shardingsphere
 
 jobs:
   build-it-image:
-    if: github.repository == 'apache/shardingsphere'
     name: Build IT image
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -44,10 +73,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
           restore-keys: |
-            shardingsphere-maven-third-party-it-cache-
-            shardingsphere-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build IT image
@@ -55,11 +84,11 @@ jobs:
       - name: Verify Suite CI Run
         run: ./mvnw -B install -pl test/e2e/suite -Dspotless.apply.skip=true
       - name: Save IT image
-        run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
+        run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar ${{ env.REPOSITORY }}-proxy-test:latest
       - uses: actions/upload-artifact@v3
         with:
           name: it-image
-          path: /tmp/shardingsphere-proxy-test.tar
+          path: /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
           retention-days: 1
 
   it-empty-rule:
@@ -80,7 +109,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -93,7 +122,7 @@ jobs:
           path: /tmp/
       - name: Load IT image
         if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+        run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
@@ -105,9 +134,9 @@ jobs:
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]
-        mode: [ standalone, Cluster ]
+        mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
-        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow, encrypt_with_data_type ]
+        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
         exclude:
           - adapter: jdbc
             mode: Cluster
@@ -116,7 +145,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -129,7 +158,7 @@ jobs:
           path: /tmp/
       - name: Load IT image
         if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+        run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
@@ -152,7 +181,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -165,14 +194,12 @@ jobs:
           path: /tmp/
       - name: Load IT image
         if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+        run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   mysql-proxy-agent:
     name: Agent Metrics & OpenTelemetry
-    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
-    needs: it-mixture-rule
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -183,9 +210,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
