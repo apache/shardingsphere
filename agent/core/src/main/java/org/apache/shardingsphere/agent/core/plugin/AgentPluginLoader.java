@@ -62,7 +62,7 @@ public final class AgentPluginLoader implements PluginLoader {
     /**
      * Load plugin jars and interceptor points.
      *
-     * @throws IOException IOException
+     * @throws IOException IO exception
      */
     public void load() throws IOException {
         loadPluginJars();

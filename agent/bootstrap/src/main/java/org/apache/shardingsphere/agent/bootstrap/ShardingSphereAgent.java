@@ -54,7 +54,6 @@ public final class ShardingSphereAgent {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfig);
         AgentPluginLoader pluginLoader = createPluginLoader();
-        pluginLoader.setEnhancedForProxy(isEnhancedForProxy());
         setUpAgentBuilder(instrumentation, pluginLoader);
         if (pluginLoader.isEnhancedForProxy()) {
             setupPluginBootService(agentConfig.getPlugins());
@@ -63,6 +62,7 @@ public final class ShardingSphereAgent {
     
     private static AgentPluginLoader createPluginLoader() throws IOException {
         AgentPluginLoader result = new AgentPluginLoader();
+        result.setEnhancedForProxy(isEnhancedForProxy());
         result.load();
         return result;
     }
