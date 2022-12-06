@@ -28,8 +28,8 @@ import java.util.Collection;
 
 public final class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
     
-    public ExternalPostgreSQLParserIT(final ExternalSQLParserTestParameter testParameter) {
-        super(testParameter);
+    public ExternalPostgreSQLParserIT(final ExternalSQLParserTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0} (PostgreSQL) -> {1}")

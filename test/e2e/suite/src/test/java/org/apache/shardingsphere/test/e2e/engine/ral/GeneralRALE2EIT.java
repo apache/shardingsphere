@@ -35,8 +35,8 @@ import java.util.Collection;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALE2EIT extends BaseRALE2EIT {
     
-    public GeneralRALE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public GeneralRALE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

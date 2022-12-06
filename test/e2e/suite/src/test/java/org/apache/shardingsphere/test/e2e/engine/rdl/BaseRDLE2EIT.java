@@ -42,8 +42,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseRDLE2EIT extends SingleE2EIT {
     
-    public BaseRDLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseRDLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Before

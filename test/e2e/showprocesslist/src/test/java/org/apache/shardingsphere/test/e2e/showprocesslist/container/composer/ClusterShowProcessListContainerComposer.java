@@ -49,17 +49,17 @@ public final class ClusterShowProcessListContainerComposer {
     
     private final AdapterContainer proxyContainer;
     
-    public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParameter) {
-        containers = new ITContainers(testParameter.getScenario());
-        governanceContainer = isClusterMode(testParameter.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
-        StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParameter.getDatabaseType(), "", testParameter.getScenario(),
-                StorageContainerConfigurationFactory.newInstance(testParameter.getDatabaseType())));
-        AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParameter.getScenario(),
-                getMountedResources(testParameter.getScenario(), testParameter.getDatabaseType(), testParameter.getRunMode()), AdapterContainerUtil.getAdapterContainerImage());
-        jdbcContainer = AdapterContainerFactory.newInstance(testParameter.getRunMode(), "jdbc", testParameter.getDatabaseType(), storageContainer, testParameter.getScenario(), containerConfig);
-        proxyContainer = AdapterContainerFactory.newInstance(testParameter.getRunMode(), "proxy", testParameter.getDatabaseType(), storageContainer, testParameter.getScenario(), containerConfig);
+    public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
+        containers = new ITContainers(testParam.getScenario());
+        governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
+        StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", testParam.getScenario(),
+                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
+        AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(),
+                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode()), AdapterContainerUtil.getAdapterContainerImage());
+        jdbcContainer = AdapterContainerFactory.newInstance(testParam.getRunMode(), "jdbc", testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
+        proxyContainer = AdapterContainerFactory.newInstance(testParam.getRunMode(), "proxy", testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
         if (proxyContainer instanceof DockerITContainer) {
-            if (isClusterMode(testParameter.getRunMode())) {
+            if (isClusterMode(testParam.getRunMode())) {
                 ((DockerITContainer) proxyContainer).dependsOn(governanceContainer);
             }
             ((DockerITContainer) proxyContainer).dependsOn(storageContainer);

@@ -28,8 +28,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class InternalOpenGaussParserIT extends InternalSQLParserIT {
     
-    public InternalOpenGaussParserIT(final InternalSQLParserTestParameter testParameter) {
-        super(testParameter);
+    public InternalOpenGaussParserIT(final InternalSQLParserTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

@@ -109,11 +109,11 @@ public abstract class PipelineBaseE2EIT {
     @Setter
     private Thread increaseTaskThread;
     
-    public PipelineBaseE2EIT(final PipelineTestParameter testParameter) {
-        databaseType = testParameter.getDatabaseType();
+    public PipelineBaseE2EIT(final PipelineTestParameter testParam) {
+        databaseType = testParam.getDatabaseType();
         containerComposer = ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER
-                ? new DockerContainerComposer(testParameter.getDatabaseType(), testParameter.getStorageContainerImage())
-                : new NativeContainerComposer(testParameter.getDatabaseType());
+                ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage())
+                : new NativeContainerComposer(testParam.getDatabaseType());
         containerComposer.start();
         if (ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
@@ -123,11 +123,11 @@ public abstract class PipelineBaseE2EIT {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
         }
-        createProxyDatabase(testParameter.getDatabaseType());
+        createProxyDatabase(testParam.getDatabaseType());
         if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             cleanUpDataSource();
         }
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource(testParameter.getScenario())), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         pipelineWatcher = new PipelineWatcher(containerComposer);
     }
     

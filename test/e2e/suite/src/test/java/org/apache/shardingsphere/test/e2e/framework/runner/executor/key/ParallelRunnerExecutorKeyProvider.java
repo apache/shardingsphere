@@ -28,10 +28,10 @@ public interface ParallelRunnerExecutorKeyProvider {
     /**
      * Get key.
      * 
-     * @param testParameter test parameter
+     * @param testParam test parameter
      * @return parallel runner executor key
      */
-    String getKey(E2ETestParameter testParameter);
+    String getKey(E2ETestParameter testParam);
     
     /**
      * Get parallel level.

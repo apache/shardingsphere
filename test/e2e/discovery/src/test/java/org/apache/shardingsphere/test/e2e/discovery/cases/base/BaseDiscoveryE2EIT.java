@@ -59,9 +59,9 @@ public abstract class BaseDiscoveryE2EIT {
     
     private final DataSource proxyDataSource;
     
-    public BaseDiscoveryE2EIT(final DiscoveryTestParameter testParameter) {
-        databaseType = testParameter.getDatabaseType();
-        containerComposer = new DockerContainerComposer(testParameter.getScenario(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
+    public BaseDiscoveryE2EIT(final DiscoveryTestParameter testParam) {
+        databaseType = testParam.getDatabaseType();
+        containerComposer = new DockerContainerComposer(testParam.getScenario(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
         containerComposer.start();
         mappedDataSources = containerComposer.getMappedDatasource();
         proxyDataSource = containerComposer.getProxyDatasource();

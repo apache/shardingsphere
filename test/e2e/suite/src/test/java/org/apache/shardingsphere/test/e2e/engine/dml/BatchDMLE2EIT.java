@@ -41,8 +41,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLE2EIT extends BatchE2EIT {
     
-    public BatchDMLE2EIT(final CaseTestParameter testParameter) {
-        super(testParameter);
+    public BatchDMLE2EIT(final CaseTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

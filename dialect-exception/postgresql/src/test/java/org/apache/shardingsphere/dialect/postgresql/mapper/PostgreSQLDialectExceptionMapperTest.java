@@ -46,7 +46,7 @@ public final class PostgreSQLDialectExceptionMapperTest {
     private final String sqlState;
     
     @Parameters(name = "{1} -> {0}")
-    public static Collection<Object[]> getParameters() {
+    public static Collection<Object[]> getTestParameters() {
         return Arrays.asList(new Object[][]{
                 {DatabaseCreateExistsException.class, "42P04"},
                 {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()},
