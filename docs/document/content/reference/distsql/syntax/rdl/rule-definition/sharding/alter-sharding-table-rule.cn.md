@@ -26,7 +26,7 @@ keyGenerateStrategyDefinition ::=
   'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' algorithmDefinition ')' 
     
 auditStrategyDefinition ::= 
-  'AUDIT_STRATEGY' '(' algorithmDefinition ( ',' algorithmDefinition ')' )
+  'AUDIT_STRATEGY' '(' algorithmDefinition ( ',' algorithmDefinition ) ')'
 
 algorithmDefinition ::=
    'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'
