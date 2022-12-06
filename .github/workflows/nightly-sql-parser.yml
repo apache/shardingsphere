@@ -32,7 +32,7 @@ jobs:
   database-parse:
     if: github.repository == '${{ env.REPOSITORY }}'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }} for ${{ matrix.database }}
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
       fail-fast: false

@@ -68,7 +68,6 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Drat.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
-  RUNS_ON: ubuntu-latest
   REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
 
@@ -76,7 +75,7 @@ jobs:
   pipeline-it-test:
     if: (github.event_name != 'schedule')
     name: pipeline-it-test
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:12-alpine
       mysql_version: mysql:5.7
@@ -109,7 +108,7 @@ jobs:
   pipeline-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == '${{ env.REPOSITORY }}')
     name: pipeline-daily-it-test
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
       mysql_version: mysql:5.7,mysql:8.0

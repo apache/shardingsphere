@@ -24,7 +24,6 @@ on:
     
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Drat.skip=true
-  RUNS_ON: ubuntu-latest
   REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
 
@@ -32,7 +31,7 @@ jobs:
   build-cache:
     if: github.repository == '${{ env.REPOSITORY }}'
     name: Build Cache
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v3
@@ -51,7 +50,7 @@ jobs:
   generate-and-test-examples:
     if: github.repository == '${{ env.REPOSITORY }}'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     needs: build-cache
     strategy:

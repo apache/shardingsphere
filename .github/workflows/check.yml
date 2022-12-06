@@ -45,13 +45,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RUNS_ON: ubuntu-latest
   REPOSITORY_NAME: shardingsphere
 
 jobs:
   check-checkstyle:
     name: Check - checkstyle
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
@@ -67,7 +66,7 @@ jobs:
   check-license:
     name: Check - license
     timeout-minutes: 10
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: apache/skywalking-eyes@v0.4.0

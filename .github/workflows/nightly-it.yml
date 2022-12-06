@@ -28,7 +28,6 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true -Drat.skip=true
-  RUNS_ON: ubuntu-latest
   REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
 
@@ -36,7 +35,7 @@ jobs:
   build-it-image:
     if: github.repository == '${{ env.REPOSITORY }}'
     name: Build IT image
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
@@ -67,7 +66,7 @@ jobs:
 
   it-empty-rule:
     name: empty rule
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-it-image
     strategy:
@@ -105,7 +104,7 @@ jobs:
   it-single-rule:
     name: single rule
     needs: it-empty-rule
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       max-parallel: 2
@@ -143,7 +142,7 @@ jobs:
   it-mixture-rule:
     name: mixture rule
     needs: it-single-rule
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       max-parallel: 2
@@ -182,7 +181,7 @@ jobs:
     name: Agent Metrics & OpenTelemetry
     if: (github.event_name == 'schedule' && github.repository == '${{ env.REPOSITORY }}')
     needs: it-mixture-rule
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3

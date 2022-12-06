@@ -25,12 +25,11 @@ on:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=30 -DskipTests
-  RUNS_ON: ubuntu-latest
   REPOSITORY_NAME: shardingsphere
 
 jobs:
   deploy-docker-images:
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3

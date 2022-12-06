@@ -56,13 +56,12 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Drat.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
-  RUNS_ON: ubuntu-latest
   REPOSITORY_NAME: shardingsphere
 
 jobs:
   discovery-it-test:
     name: discovery-it-test
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     env:
       mysql_version: 5.7
     timeout-minutes: 10

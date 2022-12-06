@@ -58,13 +58,12 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Drat.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
-  RUNS_ON: ${{ env.RUNS_ON }}
   REPOSITORY_NAME: shardingsphere
 
 jobs:
   transaction-it-test:
     name: transaction-it-test
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:12-alpine
       opengauss_version: enmotech/opengauss:2.1.0

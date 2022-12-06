@@ -52,14 +52,13 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -Drat.skip=true
-  RUNS_ON: ubuntu-latest
   REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
 
 jobs:
   ci:
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       matrix:
@@ -86,7 +85,7 @@ jobs:
   test-coverage:
     if: github.repository == '${{ env.REPOSITORY }}'
     name: Test coverage report
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos

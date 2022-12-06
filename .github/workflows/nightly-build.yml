@@ -28,7 +28,6 @@ on:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
-  RUNS_ON: ubuntu-latest
   REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
   HUB: ghcr.io/apache/shardingsphere
@@ -38,7 +37,7 @@ env:
 jobs:
   upload-to-nightlies:
     if: (github.event_name == 'schedule' && github.repository == '${{ env.REPOSITORY }}')
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/cache@v3
@@ -69,7 +68,7 @@ jobs:
   build-proxy-image:
     if: github.repository == '${{ env.REPOSITORY }}'
     name: Build Proxy Image
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -108,7 +107,7 @@ jobs:
       contents: read
       packages: write
     name: Build GraalVM Native Image
-    runs-on: ${{ env.RUNS_ON }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
