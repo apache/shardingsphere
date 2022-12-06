@@ -4,19 +4,19 @@ weight = 3
 chapter = true
 +++
 
-RAL (Resource & Rule Administration Language) responsible for hint, circuit breaker, configuration import and export, scaling control and other management functions.
+RAL (Resource & Rule Administration Language) is used to manage hint, circuit breaker, configuration import and export, scaling control and other management functions.
 
 ## Hint
 
 | Statement                                            | Function                                                                                                    | Example                                        |
 | :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------- | :--------------------------------------------- |
-| SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | For current connection, set readwrite splitting routing strategy (automatic or forced to write data source) | SET READWRITE_SPLITTINGHINT SOURCE = write     |
+| SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | For current connection, set read/write splitting routing strategy (automatic or forced to write data source) | SET READWRITE_SPLITTINGHINT SOURCE = write     |
 | SET SHARDING HINT DATABASE_VALUE = yy                | For current connection, set sharding value for database sharding only, yy: sharding value                   | SET SHARDING HINT DATABASE_VALUE = 100         |
 | ADD SHARDING HINT DATABASE_VALUE xx = yy             | For current connection, add sharding value for table, xx: logic table, yy: database sharding value          | ADD SHARDING HINT DATABASE_VALUE t_order = 100 |
 | ADD SHARDING HINT TABLE_VALUE xx = yy                | For current connection, add sharding value for table, xx: logic table, yy: table sharding value             | ADD SHARDING HINT TABLE_VALUE t_order = 100    |
 | CLEAR HINT                                           | For current connection, clear all hint settings                                                             | CLEAR HINT                                     |
-| CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | For current connection, clear hint settings of sharding or readwrite splitting                              | CLEAR READWRITE_SPLITTING HINT                 |
-| SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | For current connection, query hint settings of sharding or readwrite splitting                              | SHOW READWRITE_SPLITTING HINT STATUS           |
+| CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | For current connection, clear hint settings of sharding or read/write splitting                              | CLEAR READWRITE_SPLITTING HINT                 |
+| SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | For current connection, query hint settings of sharding or read/write splitting                              | SHOW READWRITE_SPLITTING HINT STATUS           |
 
 ## Migration
 
@@ -26,7 +26,7 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | SHOW MIGRATION LIST                                     | Query running list                             | SHOW MIGRATION LIST                             |
 | SHOW MIGRATION STATUS jobId                             | Query migration status                         | SHOW MIGRATION STATUS 1234                      |
 | STOP MIGRATION jobId                                    | Stop migration                                 | STOP MIGRATION 1234                             |
-| START MIGRATION jobId                                   | Start stopped migration                        | START MIGRATION 1234                            |
+| START MIGRATION jobId                                   | Restart stopped migration                        | START MIGRATION 1234                            |
 | CHECK MIGRATION jobId                                   | Data consistency check                         | CHECK MIGRATION 1234                            |
 | SHOW MIGRATION CHECK ALGORITHMS                         | Show available consistency check algorithms    | SHOW MIGRATION CHECK ALGORITHMS                 |
 | CHECK MIGRATION jobId BY TYPE(NAME=algorithmTypeName)   | Data consistency check with defined algorithm  | CHECK MIGRATION 1234 BY TYPE(NAME="DATA_MATCH") |
@@ -44,7 +44,7 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) storageUnitName [FROM databaseName] | Enable or disable read data source                      | ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_1  |
 | [ENABLE / DISABLE] COMPUTE NODE instanceId                                                          | Enable or disable proxy instance                        | DISABLE COMPUTE NODE instance_1                          |
 | SHOW COMPUTE NODES                                                                                  | Query proxy instance information                        | SHOW COMPUTE NODES                                       |
-| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                   | Query data sources status of readwrite splitting groups | SHOW STATUS FROM READWRITE_SPLITTING RULES               |
+| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                   | Query data sources status of read/write splitting groups | SHOW STATUS FROM READWRITE_SPLITTING RULES               |
 
 ## Global Rule
 
@@ -64,7 +64,7 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | SHOW COMPUTE NODE MODE                                                      | Query the mode configuration of the proxy                                                                                                               | SHOW COMPUTE NODE MODE                                            |
 | SET DIST VARIABLE proxy_property_name = xx                                  | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of proxy, name is split by underscore | SET DIST VARIABLE sql_show = true                                 |
 | SET DIST VARIABLE transaction_type = xx                                     | Modify transaction_type of the current connection, supports LOCAL, XA, BASE                                                                             | SET DIST VARIABLE transaction_type = "XA"                         |
-| SET DIST VARIABLE agent_plugins_enabled = [TRUE / FALSE]                    | Set whether the agent plugins are enabled, the default value is false                                                                                   | SET DIST VARIABLE agent_plugins_enabled = TRUE                    |
+| SET DIST VARIABLE agent_plugins_enabled = [TRUE / FALSE]                    | Sets whether the agent plugins are enabled, the default value is false                                                                                   | SET DIST VARIABLE agent_plugins_enabled = TRUE                    |
 | SHOW DIST VARIABLES                                                         | Query proxy all properties configuration                                                                                                                | SHOW DIST VARIABLES                                               |
 | SHOW DIST VARIABLE WHERE name = variable_name                               | Query proxy variable, name is split by underscore                                                                                                       | SHOW DIST VARIABLE WHERE name = sql_show                          |
 | REFRESH TABLE METADATA                                                      | Refresh the metadata of all tables                                                                                                                      | REFRESH TABLE METADATA                                            |
@@ -79,4 +79,4 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 
 ## Notice
 
-ShardingSphere-Proxy does not support hint by default, to support it, set `proxy-hint-enabled` to true in `conf/server.yaml`.
+ShardingSphere-Proxy does not support hint by default. In order to support it, set `proxy-hint-enabled` to true in `conf/server.yaml`.
