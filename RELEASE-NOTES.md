@@ -8,16 +8,12 @@
 1. Proxy: Remove the default logback.xml and use API initialization
 1. JDBC: Remove the Spring configuration and use Driver + YAML configuration instead
 
-### New Feature
-
-1. Agent: Support integration with ShardingSphere-JDBC
-
 ### Enhancements
 
 1. DistSQL: New syntax REFRESH DATABASE METADATA, refresh logic database metadata
 1. Kernel: Support DistSQL REFRESH DATABASE METADATA to load configuration from the governance center and rebuild MetaDataContext
 1. Support postgresql/openGauss setting transaction isolation level
-1. Scaling: Increase inventory task progress update frequence
+1. Scaling: Increase inventory task progress update frequency
 1. Scaling: DATA_MATCH consistency check support breakpoint resume
 1. Scaling: Support drop consistency check job via DistSQL
 1. Scaling: Rename column from sharding_total_count to job_item_count in job list DistSQL response
@@ -49,7 +45,7 @@
 1. Scaling: Fix part of columns value might be ignored in DATA_MATCH consistency check
 1. Scaling: Fix jdbc url parameters are not updated in consistency check
 1. Scaling: Fix tables sharding algorithm type INLINE is case-sensitive
-1. Scaling: Fix increamental task on MySQL require mysql system database permission
+1. Scaling: Fix incremental task on MySQL require mysql system database permission
 1. Proxy: Fix the NPE when executing select SQL without storage node
 1. Proxy: Support DATABASE_PERMITTED permission verification in unicast scenarios
 1. Kernel: Fix the wrong value of worker-id in show compute nodes
