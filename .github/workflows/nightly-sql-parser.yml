@@ -30,7 +30,7 @@ env:
 
 jobs:
   database-parse:
-    if: github.repository == '${{ env.REPOSITORY }}'
+    if: ${{ github.repository == env.REPOSITORY }}
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }} for ${{ matrix.database }}
     runs-on: ubuntu-latest
     timeout-minutes: 90

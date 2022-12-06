@@ -29,7 +29,7 @@ env:
 
 jobs:
   ci:
-    if: github.repository == '${{ env.REPOSITORY }}'
+    if: ${{ github.repository == env.REPOSITORY }}
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
