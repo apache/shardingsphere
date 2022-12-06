@@ -103,8 +103,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     @Before
     public void setup() {
         ProxyContext.init(mockContextManager);
-        when(mockContextManager.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(mockContextManager.getMetadataContexts().getMetadata().containsDatabase("db")).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());

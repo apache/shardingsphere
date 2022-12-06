@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetadataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Meta data version persist service.
+ * Metadata version persist service.
  */
 @RequiredArgsConstructor
-public final class MetaDataVersionPersistService {
+public final class MetadataVersionPersistService {
     
     private final PersistRepository repository;
     
@@ -39,7 +39,7 @@ public final class MetaDataVersionPersistService {
      * @return active database version
      */
     public Optional<String> getActiveVersion(final String databaseName) {
-        return Optional.ofNullable(repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName)));
+        return Optional.ofNullable(repository.getDirectly(DatabaseMetadataNode.getActiveVersionPath(databaseName)));
     }
     
     /**
@@ -66,9 +66,9 @@ public final class MetaDataVersionPersistService {
             return Optional.empty();
         }
         String newVersion = String.valueOf(new AtomicLong(Long.parseLong(activeVersion.get())).incrementAndGet());
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
+        repository.persist(DatabaseMetadataNode.getRulePath(databaseName, newVersion), repository.getDirectly(DatabaseMetadataNode.getRulePath(databaseName, activeVersion.get())));
         repository.persist(
-                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion), repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
+                DatabaseMetadataNode.getMetadataDataSourcePath(databaseName, newVersion), repository.getDirectly(DatabaseMetadataNode.getMetadataDataSourcePath(databaseName, activeVersion.get())));
         return Optional.of(newVersion);
     }
     
@@ -81,7 +81,7 @@ public final class MetaDataVersionPersistService {
     public void persistActiveVersion(final String databaseName, final String version) {
         Optional<String> activeVersion = getActiveVersion(databaseName);
         if (activeVersion.isPresent() && !activeVersion.get().equals(version)) {
-            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), version);
+            repository.persist(DatabaseMetadataNode.getActiveVersionPath(databaseName), version);
         }
     }
     
@@ -92,6 +92,6 @@ public final class MetaDataVersionPersistService {
      * @param version version
      */
     public void deleteVersion(final String databaseName, final String version) {
-        repository.delete(DatabaseMetaDataNode.getDatabaseVersionPath(databaseName, version));
+        repository.delete(DatabaseMetadataNode.getDatabaseVersionPath(databaseName, version));
     }
 }

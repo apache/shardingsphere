@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecutor;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutor;
@@ -47,17 +47,17 @@ public final class DriverExecutor implements AutoCloseable {
     private final TrafficExecutor trafficExecutor;
     
     public DriverExecutor(final ShardingSphereConnection connection) {
-        MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
+        MetadataContexts metadataContexts = connection.getContextManager().getMetadataContexts();
         ExecutorEngine executorEngine = connection.getContextManager().getExecutorEngine();
         EventBusContext eventBusContext = connection.getContextManager().getInstanceContext().getEventBusContext();
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.getConnectionContext());
         regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
-        rawExecutor = new RawExecutor(executorEngine, connection.getConnectionContext(), metaDataContexts.getMetaData().getProps(), eventBusContext);
-        DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
+        rawExecutor = new RawExecutor(executorEngine, connection.getConnectionContext(), metadataContexts.getMetadata().getProps(), eventBusContext);
+        DatabaseType protocolType = metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, connection.getDatabaseName());
-        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        federationExecutor = sqlFederationRule.getSQLFederationExecutor(connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(),
-                metaDataContexts.getShardingSphereData(), jdbcExecutor, eventBusContext);
+        SQLFederationRule sqlFederationRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
+        federationExecutor = sqlFederationRule.getSQLFederationExecutor(connection.getDatabaseName(), schemaName, metadataContexts.getMetadata(),
+                metadataContexts.getShardingSphereData(), jdbcExecutor, eventBusContext);
         trafficExecutor = new TrafficExecutor();
     }
     

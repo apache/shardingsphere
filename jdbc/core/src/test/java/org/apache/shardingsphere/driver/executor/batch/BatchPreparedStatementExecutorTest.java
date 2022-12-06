@@ -63,7 +63,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new BatchPreparedStatementExecutor(getConnection().getContextManager().getMetaDataContexts(), new JDBCExecutor(getExecutorEngine(), getConnection().getConnectionContext()),
+        actual = spy(new BatchPreparedStatementExecutor(getConnection().getContextManager().getMetadataContexts(), new JDBCExecutor(getExecutorEngine(), getConnection().getConnectionContext()),
                 DefaultDatabase.LOGIC_NAME, new EventBusContext()));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }

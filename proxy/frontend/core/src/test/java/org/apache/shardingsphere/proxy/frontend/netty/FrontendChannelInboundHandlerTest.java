@@ -79,7 +79,7 @@ public final class FrontendChannelInboundHandlerTest {
             ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
             mocked.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
             ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-            when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+            when(mockedProxyContext.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
             when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class));
             frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         }

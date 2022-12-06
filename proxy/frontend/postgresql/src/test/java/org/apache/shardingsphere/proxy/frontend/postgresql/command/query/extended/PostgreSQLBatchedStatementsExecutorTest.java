@@ -89,15 +89,15 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getConnectionContext()).thenReturn(new ConnectionContext());
         ProxyContext.init(contextManager);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(contextManager.getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
+        when(contextManager.getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+        when(contextManager.getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        when(contextManager.getMetadataContexts().getMetadata().getDatabase("db")).thenReturn(database);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
     }
     

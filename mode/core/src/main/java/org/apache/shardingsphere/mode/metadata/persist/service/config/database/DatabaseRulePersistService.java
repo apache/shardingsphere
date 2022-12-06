@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetadataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
@@ -49,14 +49,14 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
-            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
+            repository.persist(DatabaseMetadataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        repository.persist(DatabaseMetadataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     @Override
     public void persist(final String databaseName, final String version, final Collection<RuleConfiguration> configs) {
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, version), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        repository.persist(DatabaseMetadataNode.getRulePath(databaseName, version), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
@@ -67,7 +67,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
         return isExisted(databaseName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName,
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetadataNode.getRulePath(databaseName,
                         getDatabaseActiveVersion(databaseName))), Collection.class, true))
                 : new LinkedList<>();
     }
@@ -75,19 +75,19 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @SuppressWarnings("unchecked")
     @Override
     public Collection<RuleConfiguration> load(final String databaseName, final String version) {
-        String yamlContent = repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, version));
+        String yamlContent = repository.getDirectly(DatabaseMetadataNode.getRulePath(databaseName, version));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>()
-                : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode
+                : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetadataNode
                         .getRulePath(databaseName, getDatabaseActiveVersion(databaseName))), Collection.class, true));
     }
     
     @Override
     public boolean isExisted(final String databaseName) {
         return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))
-                && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
+                && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetadataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
     }
     
     private String getDatabaseActiveVersion(final String databaseName) {
-        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
+        return repository.getDirectly(DatabaseMetadataNode.getActiveVersionPath(databaseName));
     }
 }

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -76,9 +76,9 @@ public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextResto
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         when(authorityRule.findPrivileges(grantee)).thenReturn(Optional.of(new DatabasePermittedPrivileges(Collections.singleton("auth_db"))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
+        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
                 new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getMetadataContexts()).thenReturn(metadataContexts);
         return result;
     }
     
@@ -87,7 +87,7 @@ public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextResto
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
         expectedResultSetMap.put("sn", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(expectedResultSetMap));
+        ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabases().put("auth_db", createDatabase(expectedResultSetMap));
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
         DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
         executor.execute(connectionSession);
@@ -97,7 +97,7 @@ public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextResto
     
     @Test
     public void assertExecuteWithDefaultValue() throws SQLException {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
+        ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabases().put("auth_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
         executor.execute(connectionSession);

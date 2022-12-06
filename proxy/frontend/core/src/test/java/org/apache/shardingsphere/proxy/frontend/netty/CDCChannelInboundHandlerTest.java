@@ -67,7 +67,7 @@ public final class CDCChannelInboundHandlerTest {
         ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
         proxyContext.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(mockedProxyContext.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         List<ShardingSphereRule> rules = Collections.singletonList(mockAuthRule());
         when(globalRuleMetaData.getRules()).thenReturn(rules);
     }

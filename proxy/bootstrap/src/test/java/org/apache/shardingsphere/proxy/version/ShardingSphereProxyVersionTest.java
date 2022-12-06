@@ -54,11 +54,11 @@ public final class ShardingSphereProxyVersionTest {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getProtocolType()).thenReturn(DatabaseTypeFactory.getInstance("MySQL"));
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
+        when(contextManager.getMetadataContexts().getMetadata().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
             mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION)).thenReturn("5.7.22");
+            when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION)).thenReturn("5.7.22");
             ShardingSphereProxyVersion.setVersion(contextManager);
         }
         assertThat(MySQLServerInfo.getServerVersion("sharding_db"), startsWith("5.7.32"));
@@ -75,7 +75,7 @@ public final class ShardingSphereProxyVersionTest {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getProtocolType()).thenReturn(DatabaseTypeFactory.getInstance("MySQL"));
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
+        when(contextManager.getMetadataContexts().getMetadata().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
         ShardingSphereProxyVersion.setVersion(contextManager);
         assertThat(MySQLServerInfo.getServerVersion("sharding_db"), startsWith("5.7.22"));
     }

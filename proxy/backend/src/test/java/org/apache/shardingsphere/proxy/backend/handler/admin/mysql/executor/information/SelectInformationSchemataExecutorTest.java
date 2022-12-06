@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -85,15 +85,15 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         when(authorityRule.findPrivileges(grantee)).thenReturn(Optional.of(new DatabasePermittedPrivileges(Collections.singleton("auth_db"))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
+        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
                 new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getMetadataContexts()).thenReturn(metadataContexts);
         return result;
     }
     
     @Test
     public void assertExecuteWithUnauthorizedDatabase() throws SQLException {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("no_auth_db", createDatabase("no_auth_db"));
+        ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabases().put("no_auth_db", createDatabase("no_auth_db"));
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
@@ -105,7 +105,7 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(expectedResultSetMap));
+        ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabases().put("auth_db", createDatabase(expectedResultSetMap));
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
@@ -117,7 +117,7 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
     
     @Test
     public void assertExecuteWithAuthorizedDatabaseAndEmptyResource() throws SQLException {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase("auth_db"));
+        ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabases().put("auth_db", createDatabase("auth_db"));
         SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));

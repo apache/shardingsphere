@@ -78,7 +78,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).containsDataSource(), () -> new StorageUnitNotExistedException(databaseName));
         try {
             connectionSession.setCurrentDatabase(databaseName);
-            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata(),
                     sqlStatement, connectionSession.getDefaultDatabaseName());
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, sql, Collections.emptyList()),
                     connectionSession.getBackendConnection(), false);

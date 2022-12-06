@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -38,16 +38,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetaDataContextsTest {
+public final class MetadataContextsTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertGetDefaultMetaData() {
+    public void assertGetDefaultMetadata() {
         Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
         databases.put(DefaultDatabase.LOGIC_NAME, database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()));
-        assertThat(new MetaDataContexts(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
+        assertThat(new MetadataContexts(mock(MetadataPersistService.class), metaData).getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

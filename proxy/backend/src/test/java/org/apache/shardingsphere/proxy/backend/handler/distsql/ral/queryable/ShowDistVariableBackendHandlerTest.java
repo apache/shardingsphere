@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -54,7 +54,7 @@ public final class ShowDistVariableBackendHandlerTest extends ProxyContextRestor
     @Before
     public void setup() {
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
+        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
     
@@ -114,11 +114,11 @@ public final class ShowDistVariableBackendHandlerTest extends ProxyContextRestor
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
         ProxyContext.init(contextManager);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetadataContexts metadataContexts = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         Properties props = new Properties();
         props.put("sql-show", Boolean.TRUE.toString());
-        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
+        when(metadataContexts.getMetadata().getProps()).thenReturn(new ConfigurationProperties(props));
         ShowDistVariableHandler backendHandler = new ShowDistVariableHandler();
         backendHandler.init(new ShowDistVariableStatement("SQL_SHOW"), connectionSession);
         ResponseHeader actual = backendHandler.execute();

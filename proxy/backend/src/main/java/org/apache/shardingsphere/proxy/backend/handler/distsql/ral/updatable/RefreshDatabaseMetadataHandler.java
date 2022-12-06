@@ -34,7 +34,7 @@ public final class RefreshDatabaseMetadataHandler extends UpdatableRALBackendHan
     
     @Override
     protected void update(final ContextManager contextManager) {
-        contextManager.reloadDatabaseMetaData(getDatabaseName());
+        contextManager.reloadDatabaseMetadata(getDatabaseName());
     }
     
     private String getDatabaseName() {

@@ -42,7 +42,7 @@ public final class OKDriverStateTest {
     public void assertGetConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(contextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class));
         Connection actual = new OKDriverState().getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));

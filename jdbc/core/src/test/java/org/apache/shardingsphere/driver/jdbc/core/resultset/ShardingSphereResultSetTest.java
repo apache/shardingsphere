@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,9 +95,9 @@ public final class ShardingSphereResultSetTest {
     
     private ShardingSphereStatement getShardingSphereStatement() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(connection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetadataContexts metadataContexts = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
+        when(metadataContexts.getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetadataContexts()).thenReturn(metadataContexts);
         ShardingSphereStatement result = mock(ShardingSphereStatement.class);
         when(result.getConnection()).thenReturn(connection);
         return result;

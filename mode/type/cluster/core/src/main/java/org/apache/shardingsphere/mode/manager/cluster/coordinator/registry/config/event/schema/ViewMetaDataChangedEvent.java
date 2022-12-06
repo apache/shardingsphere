@@ -23,17 +23,17 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * View meta data changed event.
+ * View Metadata changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ViewMetaDataChangedEvent implements GovernanceEvent {
+public final class ViewMetadataChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String schemaName;
     
-    private final ShardingSphereView changedViewMetaData;
+    private final ShardingSphereView changedViewMetadata;
     
     private final String deletedView;
 }

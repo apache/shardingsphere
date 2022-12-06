@@ -72,15 +72,15 @@ public final class PreparedStatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes())
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class)).thenReturn(trafficRule);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData().getSingleRule(TrafficRule.class)).thenReturn(trafficRule);
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
     

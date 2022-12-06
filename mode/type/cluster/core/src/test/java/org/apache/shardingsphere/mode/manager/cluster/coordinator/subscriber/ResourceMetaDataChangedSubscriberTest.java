@@ -33,14 +33,14 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetaDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetadataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetadataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Before;
@@ -66,14 +66,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ResourceMetaDataChangedSubscriberTest {
+public final class ResourceMetadataChangedSubscriberTest {
     
-    private ResourceMetaDataChangedSubscriber subscriber;
+    private ResourceMetadataChangedSubscriber subscriber;
     
     private ContextManager contextManager;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MetaDataPersistService persistService;
+    private MetadataPersistService persistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -81,9 +81,9 @@ public final class ResourceMetaDataChangedSubscriberTest {
     @Before
     public void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
-        contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
-                contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        subscriber = new ResourceMetaDataChangedSubscriber(contextManager);
+        contextManager.renewMetadataContexts(new MetadataContexts(contextManager.getMetadataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
+                contextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
+        subscriber = new ResourceMetadataChangedSubscriber(contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -112,7 +112,7 @@ public final class ResourceMetaDataChangedSubscriberTest {
         when(persistService.getDataSourceService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         subscriber.renew(new DatabaseAddedEvent("db_added"));
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getDataSources());
+        assertNotNull(contextManager.getMetadataContexts().getMetadata().getDatabase("db_added").getResourceMetaData().getDataSources());
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
@@ -127,37 +127,37 @@ public final class ResourceMetaDataChangedSubscriberTest {
     @Test
     public void assertRenewForDatabaseDeleted() {
         subscriber.renew(new DatabaseDeletedEvent("db"));
-        assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"));
+        assertNull(contextManager.getMetadataContexts().getMetadata().getDatabase("db"));
     }
     
     @Test
     public void assertRenewForSchemaAdded() {
         subscriber.renew(new SchemaAddedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).putSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
+        verify(contextManager.getMetadataContexts().getMetadata().getDatabase("db")).putSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertRenewForSchemaDeleted() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
+        when(contextManager.getMetadataContexts().getMetadata().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
         subscriber.renew(new SchemaDeletedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).removeSchema("foo_schema");
+        verify(contextManager.getMetadataContexts().getMetadata().getDatabase("db")).removeSchema("foo_schema");
     }
     
     @Test
-    public void assertRenewForTableMetaDataChangedChanged() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
-        ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        TableMetaDataChangedEvent event = new TableMetaDataChangedEvent("db", "db", changedTableMetaData, null);
+    public void assertRenewForTableMetadataChangedChanged() {
+        when(contextManager.getMetadataContexts().getMetadata().getDatabase("db").containsSchema("db")).thenReturn(true);
+        ShardingSphereTable changedTableMetadata = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        TableMetadataChangedEvent event = new TableMetadataChangedEvent("db", "db", changedTableMetadata, null);
         subscriber.renew(event);
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putTable("t_order", event.getChangedTableMetaData());
+        verify(contextManager.getMetadataContexts().getMetadata().getDatabase("db").getSchema("db")).putTable("t_order", event.getChangedTableMetadata());
     }
     
     @Test
-    public void assertRenewForViewMetaDataChanged() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
-        ShardingSphereView changedViewMetaData = new ShardingSphereView("t_order_view", "");
-        ViewMetaDataChangedEvent event = new ViewMetaDataChangedEvent("db", "db", changedViewMetaData, null);
+    public void assertRenewForViewMetadataChanged() {
+        when(contextManager.getMetadataContexts().getMetadata().getDatabase("db").containsSchema("db")).thenReturn(true);
+        ShardingSphereView changedViewMetadata = new ShardingSphereView("t_order_view", "");
+        ViewMetadataChangedEvent event = new ViewMetadataChangedEvent("db", "db", changedViewMetadata, null);
         subscriber.renew(event);
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putView("t_order_view", event.getChangedViewMetaData());
+        verify(contextManager.getMetadataContexts().getMetadata().getDatabase("db").getSchema("db")).putView("t_order_view", event.getChangedViewMetadata());
     }
 }
