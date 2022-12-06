@@ -48,9 +48,8 @@ import static org.hamcrest.Matchers.is;
 @Slf4j
 public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParameter) {
-        super(testParameter);
-        log.info("testParameter:{}", testParameter);
+    public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
+        super(testParam);
     }
     
     @Override

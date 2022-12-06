@@ -37,8 +37,8 @@ import static org.junit.Assert.assertNotNull;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     
-    public GeneralRDLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public GeneralRDLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

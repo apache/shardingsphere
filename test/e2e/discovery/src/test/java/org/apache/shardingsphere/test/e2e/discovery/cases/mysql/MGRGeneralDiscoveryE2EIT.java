@@ -34,8 +34,8 @@ import java.util.LinkedList;
 @RunWith(Parameterized.class)
 public final class MGRGeneralDiscoveryE2EIT extends BaseDiscoveryE2EIT {
     
-    public MGRGeneralDiscoveryE2EIT(final DiscoveryTestParameter testParameter) {
-        super(testParameter);
+    public MGRGeneralDiscoveryE2EIT(final DiscoveryTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

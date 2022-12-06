@@ -49,8 +49,8 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
     
     private DataSource expectedDataSource;
     
-    public BaseDQLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseDQLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Before

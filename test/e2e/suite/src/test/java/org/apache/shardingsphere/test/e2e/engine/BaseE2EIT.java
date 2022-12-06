@@ -76,13 +76,13 @@ public abstract class BaseE2EIT {
     
     private Map<String, DataSource> expectedDataSourceMap;
     
-    public BaseE2EIT(final E2ETestParameter testParameter) {
-        mode = testParameter.getMode();
-        scenario = testParameter.getScenario();
-        databaseType = testParameter.getDatabaseType();
-        itKey = testParameter.getKey();
-        itCase = testParameter.getTestCaseContext().getTestCase();
-        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(testParameter);
+    public BaseE2EIT(final E2ETestParameter testParam) {
+        mode = testParam.getMode();
+        scenario = testParam.getScenario();
+        databaseType = testParam.getDatabaseType();
+        itKey = testParam.getKey();
+        itCase = testParam.getTestCaseContext().getTestCase();
+        containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(testParam);
     }
     
     @Before

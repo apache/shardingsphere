@@ -40,8 +40,8 @@ import static org.junit.Assert.assertTrue;
 @ParallelRunningStrategy(ParallelLevel.CASE)
 public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
-    public GeneralDQLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public GeneralDQLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

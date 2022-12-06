@@ -155,10 +155,10 @@ public final class SQLNodeConverterEngineIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public SQLNodeConverterEngineIT(final InternalSQLParserTestParameter testParameter) {
-        sqlCaseId = testParameter.getSqlCaseId();
-        databaseType = testParameter.getDatabaseType();
-        sqlCaseType = testParameter.getSqlCaseType();
+    public SQLNodeConverterEngineIT(final InternalSQLParserTestParameter testParam) {
+        sqlCaseId = testParam.getSqlCaseId();
+        databaseType = testParam.getDatabaseType();
+        sqlCaseType = testParam.getSqlCaseType();
     }
     
     @Parameters(name = "{0}")
@@ -176,12 +176,12 @@ public final class SQLNodeConverterEngineIT {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParameter) {
-        return SQLCaseType.Placeholder == testParameter.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParameter.getSqlCaseId()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
+        return SQLCaseType.Placeholder == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
     }
     
-    private static boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParameter) {
-        return testParameter.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(testParameter.getSqlCaseId());
+    private static boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {
+        return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(testParam.getSqlCaseId());
     }
     
     @Test

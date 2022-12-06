@@ -47,8 +47,8 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
     
     private final MigrationDistSQLCommand migrationDistSQLCommand;
     
-    public AbstractMigrationE2EIT(final PipelineTestParameter testParameter) {
-        super(testParameter);
+    public AbstractMigrationE2EIT(final PipelineTestParameter testParam) {
+        super(testParam);
         migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
         if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {

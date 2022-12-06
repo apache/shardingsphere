@@ -38,8 +38,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDALE2EIT extends SingleE2EIT {
     
-    public BaseDALE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseDALE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

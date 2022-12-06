@@ -42,8 +42,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseRALE2EIT extends SingleE2EIT {
     
-    public BaseRALE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseRALE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Before

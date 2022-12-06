@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.e2e.framework.runner.executor.key.Parallel
 public final class ScenarioParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
     
     @Override
-    public String getKey(final E2ETestParameter testParameter) {
-        return String.join("-", testParameter.getAdapter(), testParameter.getScenario(), testParameter.getDatabaseType().getType());
+    public String getKey(final E2ETestParameter testParam) {
+        return String.join("-", testParam.getAdapter(), testParam.getScenario(), testParam.getDatabaseType().getType());
     }
     
     @Override

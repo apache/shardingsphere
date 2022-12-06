@@ -103,18 +103,16 @@ public abstract class BaseE2EIT {
         log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
     }
     
-    public BaseE2EIT(final TransactionTestParameter testParameter) {
-        databaseType = testParameter.getDatabaseType();
-        adapter = testParameter.getAdapter();
-        containerComposer = initializeContainerComposer(testParameter);
+    public BaseE2EIT(final TransactionTestParameter testParam) {
+        databaseType = testParam.getDatabaseType();
+        adapter = testParam.getAdapter();
+        containerComposer = initializeContainerComposer(testParam);
         commonSQLCommand = loadCommonSQLCommand();
-        dataSource = isProxyAdapter(testParameter) ? createProxyDataSource() : createJdbcDataSource();
+        dataSource = isProxyAdapter(testParam) ? createProxyDataSource() : createJdbcDataSource();
     }
     
-    private BaseContainerComposer initializeContainerComposer(final TransactionTestParameter testParameter) {
-        BaseContainerComposer result = ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER
-                ? new DockerContainerComposer(testParameter)
-                : new NativeContainerComposer(testParameter.getDatabaseType());
+    private BaseContainerComposer initializeContainerComposer(final TransactionTestParameter testParam) {
+        BaseContainerComposer result = ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER ? new DockerContainerComposer(testParam) : new NativeContainerComposer(testParam.getDatabaseType());
         result.start();
         return result;
     }
@@ -123,8 +121,8 @@ public abstract class BaseE2EIT {
         return JAXB.unmarshal(Objects.requireNonNull(BaseE2EIT.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
-    final boolean isProxyAdapter(final TransactionTestParameter testParameter) {
-        return AdapterContainerConstants.PROXY.equalsIgnoreCase(testParameter.getAdapter());
+    final boolean isProxyAdapter(final TransactionTestParameter testParam) {
+        return AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter());
     }
     
     private ProxyDataSource createProxyDataSource() {
@@ -160,24 +158,24 @@ public abstract class BaseE2EIT {
         return result;
     }
     
-    private static void addTestParameters(final TransactionTestCaseRegistry currentTestCaseInfo, final Collection<TransactionTestParameter> testParameters) {
+    private static void addTestParameters(final TransactionTestCaseRegistry currentTestCaseInfo, final Collection<TransactionTestParameter> testParams) {
         if (TransactionTestConstants.MYSQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-            addParametersByVersions(ENV.getMysqlVersions(), testParameters, currentTestCaseInfo);
+            addParametersByVersions(ENV.getMysqlVersions(), testParams, currentTestCaseInfo);
         } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-            addParametersByVersions(ENV.getPostgresVersions(), testParameters, currentTestCaseInfo);
+            addParametersByVersions(ENV.getPostgresVersions(), testParams, currentTestCaseInfo);
         } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-            addParametersByVersions(ENV.getOpenGaussVersions(), testParameters, currentTestCaseInfo);
+            addParametersByVersions(ENV.getOpenGaussVersions(), testParams, currentTestCaseInfo);
         }
     }
     
-    private static void addParametersByVersions(final List<String> databaseVersion, final Collection<TransactionTestParameter> testParameters, final TransactionTestCaseRegistry currentTestCaseInfo) {
+    private static void addParametersByVersions(final List<String> databaseVersion, final Collection<TransactionTestParameter> testParams, final TransactionTestCaseRegistry currentTestCaseInfo) {
         for (String each : databaseVersion) {
-            testParameters.addAll(addParametersByTestCaseClasses(each, currentTestCaseInfo));
+            testParams.addAll(addParametersByTestCaseClasses(each, currentTestCaseInfo));
         }
     }
     
     private static Collection<TransactionTestParameter> addParametersByTestCaseClasses(final String version, final TransactionTestCaseRegistry currentTestCaseInfo) {
-        Map<String, TransactionTestParameter> parameterizedMap = new LinkedHashMap<>();
+        Map<String, TransactionTestParameter> testParams = new LinkedHashMap<>();
         for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
             if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(each.getSimpleName())) {
                 log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
@@ -199,50 +197,50 @@ public abstract class BaseE2EIT {
                 continue;
             }
             String scenario = annotation.scenario();
-            addParametersByTransactionTypes(version, currentTestCaseInfo, each, annotation, parameterizedMap, scenario);
+            addParametersByTransactionTypes(version, currentTestCaseInfo, each, annotation, testParams, scenario);
         }
-        return parameterizedMap.values();
+        return testParams.values();
     }
     
     private static void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                                         final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
-                                                        final Map<String, TransactionTestParameter> testParameters, final String scenario) {
+                                                        final Map<String, TransactionTestParameter> testParams, final String scenario) {
         if (AdapterContainerConstants.PROXY.equals(currentTestCaseInfo.getRunningAdaptor())) {
             List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
                     : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
-            addParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, testParameters, scenario);
+            addParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, testParams, scenario);
         } else {
             for (TransactionType each : annotation.transactionTypes()) {
                 if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
                     log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
                     continue;
                 }
-                addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, testParameters, scenario);
+                addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, testParams, scenario);
             }
         }
     }
     
     private static void addParametersByTransactionProvidersInJDBC(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                                                   final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
-                                                                  final Map<String, TransactionTestParameter> testParameters, final String scenario) {
+                                                                  final Map<String, TransactionTestParameter> testParams, final String scenario) {
         if (TransactionType.LOCAL.equals(each)) {
-            addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), testParameters, scenario);
+            addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), testParams, scenario);
         } else if (TransactionType.XA.equals(each)) {
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
             for (String provider : allowProviders) {
-                addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(provider), testParameters, scenario);
+                addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(provider), testParams, scenario);
             }
         }
     }
     
     private static void addParameters(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                       final Class<? extends BaseTransactionTestCase> caseClass, final List<TransactionType> transactionTypes, final List<String> providers,
-                                      final Map<String, TransactionTestParameter> testParameters, final String scenario) {
+                                      final Map<String, TransactionTestParameter> testParams, final String scenario) {
         String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, scenario);
-        testParameters.putIfAbsent(uniqueKey, new TransactionTestParameter(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
+        testParams.putIfAbsent(uniqueKey, new TransactionTestParameter(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
                 getStorageContainerImage(currentTestCaseInfo.getDbType(), version), scenario, new LinkedList<>()));
-        testParameters.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
+        testParams.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
     }
     
     private static String getUniqueKey(final String dbType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {

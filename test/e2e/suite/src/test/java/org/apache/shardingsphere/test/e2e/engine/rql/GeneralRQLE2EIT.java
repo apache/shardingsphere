@@ -35,8 +35,8 @@ import java.util.Collection;
 @ParallelRunningStrategy(ParallelLevel.CASE)
 public final class GeneralRQLE2EIT extends BaseRQLE2EIT {
     
-    public GeneralRQLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public GeneralRQLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")
