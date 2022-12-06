@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Begin xid event.
+ * Begin TX event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class BeginXidEvent extends AbstractWALEvent {
+public final class BeginTXEvent extends AbstractWALEvent {
     
     private final long xid;
 }

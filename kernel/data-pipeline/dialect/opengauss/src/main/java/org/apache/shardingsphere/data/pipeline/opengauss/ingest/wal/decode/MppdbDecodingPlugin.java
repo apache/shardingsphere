@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Deco
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginXidEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitXidEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -41,23 +41,16 @@ import org.opengauss.util.PGobject;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Mppdb decoding plugin in openGauss.
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 public final class MppdbDecodingPlugin implements DecodingPlugin {
-    
-    private static final Pattern PATTERN_BEGIN_XID = Pattern.compile("BEGIN\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_COMMIT_XID = Pattern.compile("COMMIT\\s+(\\d+).*CSN\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
     
     private static final ObjectMapper OBJECT_MAPPER;
     
@@ -68,45 +61,44 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private final BaseTimestampUtils timestampUtils;
     
-    private final boolean decodeWithXid;
+    private final boolean decodeWithTX;
     
     public MppdbDecodingPlugin(final BaseTimestampUtils timestampUtils) {
         this.timestampUtils = timestampUtils;
-        decodeWithXid = false;
+        decodeWithTX = false;
     }
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
         AbstractWALEvent result;
-        String dataText = StandardCharsets.UTF_8.decode(data).toString();
-        if (decodeWithXid) {
-            result = decodeDataWithXid(dataText);
+        byte[] bytes = new byte[data.remaining()];
+        data.get(bytes);
+        String dataText = new String(bytes);
+        if (decodeWithTX) {
+            result = decodeDataWithTX(dataText);
         } else {
-            result = decodeDataIgnoreXid(dataText);
+            result = decodeDataIgnoreTX(dataText);
         }
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }
     
-    private AbstractWALEvent decodeDataWithXid(final String dataText) {
-        AbstractWALEvent result;
-        if (dataText.startsWith("{")) {
+    private AbstractWALEvent decodeDataWithTX(final String dataText) {
+        AbstractWALEvent result = new PlaceholderEvent();
+        if (dataText.startsWith("BEGIN")) {
+            int beginIndex = dataText.indexOf("BEGIN") + "BEGIN".length() + 1;
+            result = new BeginTXEvent(Long.parseLong(dataText.substring(beginIndex)));
+        } else if (dataText.startsWith("COMMIT")) {
+            int commitBeginIndex = dataText.indexOf("COMMIT") + "COMMIT".length() + 1;
+            int csnBeginIndex = dataText.indexOf("CSN") + "CSN".length() + 1;
+            result = new CommitTXEvent(Long.parseLong(dataText.substring(commitBeginIndex, dataText.indexOf(" ", commitBeginIndex))), Long.parseLong(dataText.substring(csnBeginIndex)));
+        } else if (dataText.startsWith("{")) {
             result = readTableEvent(dataText);
-            return result;
-        }
-        Matcher beginXidMatcher = PATTERN_BEGIN_XID.matcher(dataText);
-        Matcher commitXidMatcher = PATTERN_COMMIT_XID.matcher(dataText);
-        if (beginXidMatcher.matches()) {
-            result = new BeginXidEvent(Long.parseLong(beginXidMatcher.group(1)));
-        } else if (commitXidMatcher.matches()) {
-            result = new CommitXidEvent(Long.parseLong(commitXidMatcher.group(1)), Long.parseLong(commitXidMatcher.group(2)));
-        } else {
-            result = new PlaceholderEvent();
         }
         return result;
     }
     
-    private AbstractWALEvent decodeDataIgnoreXid(final String dataText) {
+    private AbstractWALEvent decodeDataIgnoreTX(final String dataText) {
         return dataText.startsWith("{") ? readTableEvent(dataText) : new PlaceholderEvent();
     }
     

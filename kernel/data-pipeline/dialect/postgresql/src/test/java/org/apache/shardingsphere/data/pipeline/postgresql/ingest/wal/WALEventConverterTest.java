@@ -32,8 +32,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginXidEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitXidEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -61,6 +61,8 @@ public final class WALEventConverterTest {
     private WALEventConverter walEventConverter;
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    
+    private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
     
     @Before
     public void setUp() {
@@ -95,21 +97,21 @@ public final class WALEventConverterTest {
     }
     
     @Test
-    public void assertConvertBeginXidEvent() {
-        BeginXidEvent beginXidEvent = new BeginXidEvent(100);
-        beginXidEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf("0/0")));
-        Record record = walEventConverter.convert(beginXidEvent);
+    public void assertConvertBeginTXEvent() {
+        BeginTXEvent beginTXEvent = new BeginTXEvent(100);
+        beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
+        Record record = walEventConverter.convert(beginTXEvent);
         assertTrue(record instanceof PlaceholderRecord);
-        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(0L));
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
     }
     
     @Test
-    public void assertConvertCommitXidEvent() {
-        CommitXidEvent commitXidEvent = new CommitXidEvent(1, 3468L);
-        commitXidEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf("0/0")));
-        Record record = walEventConverter.convert(commitXidEvent);
+    public void assertConvertCommitTXEvent() {
+        CommitTXEvent commitTXEvent = new CommitTXEvent(1, 3468L);
+        commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
+        Record record = walEventConverter.convert(commitTXEvent);
         assertTrue(record instanceof PlaceholderRecord);
-        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(0L));
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
     }
     
     @Test

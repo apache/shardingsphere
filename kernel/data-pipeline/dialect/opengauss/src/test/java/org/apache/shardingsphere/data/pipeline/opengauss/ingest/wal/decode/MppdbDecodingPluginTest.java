@@ -23,8 +23,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginXidEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitXidEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -252,11 +252,11 @@ public final class MppdbDecodingPluginTest {
         }
         assertThat(expectedEvent.size(), is(4));
         AbstractWALEvent actualFirstEvent = expectedEvent.get(0);
-        assertTrue(actualFirstEvent instanceof BeginXidEvent);
-        assertThat(((BeginXidEvent) actualFirstEvent).getXid(), is(1L));
+        assertTrue(actualFirstEvent instanceof BeginTXEvent);
+        assertThat(((BeginTXEvent) actualFirstEvent).getXid(), is(1L));
         AbstractWALEvent actualLastEvent = expectedEvent.get(expectedEvent.size() - 1);
-        assertTrue(actualLastEvent instanceof CommitXidEvent);
-        assertThat(((CommitXidEvent) actualLastEvent).getCsn(), is(3468L));
-        assertThat(((CommitXidEvent) actualLastEvent).getXid(), is(1L));
+        assertTrue(actualLastEvent instanceof CommitTXEvent);
+        assertThat(((CommitTXEvent) actualLastEvent).getCsn(), is(3468L));
+        assertThat(((CommitTXEvent) actualLastEvent).getXid(), is(1L));
     }
 }

@@ -35,8 +35,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginXidEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitXidEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.opengauss.jdbc.PgConnection;
@@ -62,12 +62,12 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private final OpenGaussLogicalReplication logicalReplication;
     
-    private final boolean decodeWithXid;
+    private final boolean decodeWithTX;
     
     private final List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
     public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition<WALPosition> position,
-                              final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader, final boolean decodeWithXid) {
+                              final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader, final boolean decodeWithTX) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
@@ -75,7 +75,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
         logicalReplication = new OpenGaussLogicalReplication();
-        this.decodeWithXid = decodeWithXid;
+        this.decodeWithTX = decodeWithTX;
     }
     
     @Override
@@ -83,7 +83,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
-            DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()));
+            DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
@@ -91,10 +91,10 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                     continue;
                 }
                 AbstractWALEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
-                if (decodeWithXid) {
-                    processEventWithXid(event);
+                if (decodeWithTX) {
+                    processEventWithTX(event);
                 } else {
-                    channel.pushRecord(walEventConverter.convert(event));
+                    processEventIgnoreTX(event);
                 }
             }
         } catch (final SQLException ex) {
@@ -113,19 +113,28 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
         return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).unwrap(PgConnection.class);
     }
     
-    private void processEventWithXid(final AbstractWALEvent event) {
+    private void processEventWithTX(final AbstractWALEvent event) {
         if (event instanceof AbstractRowEvent) {
             rowEvents.add((AbstractRowEvent) event);
             return;
         }
-        if (event instanceof BeginXidEvent) {
+        if (event instanceof BeginTXEvent) {
             rowEvents.clear();
+            return;
         }
-        if (event instanceof CommitXidEvent) {
+        if (event instanceof CommitTXEvent) {
+            Long csn = ((CommitTXEvent) event).getCsn();
             for (AbstractRowEvent each : rowEvents) {
-                // TODO if multiple threads are pushing data in a channel at the same time, the order of the data will be incorrect
+                each.setCsn(csn);
                 channel.pushRecord(walEventConverter.convert(each));
             }
+        }
+        channel.pushRecord(walEventConverter.convert(event));
+    }
+    
+    private void processEventIgnoreTX(final AbstractWALEvent event) {
+        if (event instanceof BeginTXEvent) {
+            return;
         }
         channel.pushRecord(walEventConverter.convert(event));
     }

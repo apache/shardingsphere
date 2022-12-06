@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Commit xid event.
+ * Commit TX event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CommitXidEvent extends AbstractWALEvent {
+public final class CommitTXEvent extends AbstractWALEvent {
     
     private final long xid;
     
