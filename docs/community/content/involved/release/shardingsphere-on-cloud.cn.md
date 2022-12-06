@@ -217,11 +217,6 @@ helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases
 ```
 3. 替换原有的 index.yaml
 
-### 6. 更新下载页面
-
-更新如下页面：
-* <https://shardingsphere.apache.org/document/current/en/downloads/>
-* <https://shardingsphere.apache.org/document/current/cn/downloads/>
 
 
 ## 检查发布结果

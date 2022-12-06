@@ -218,12 +218,6 @@ helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases
 ```
 3. Replace the original index.yaml
 
-### 6. Update the download page
-
-Update the following pages:
-* <https://shardingsphere.apache.org/document/current/en/downloads/>
-* <https://shardingsphere.apache.org/document/current/cn/downloads/>
-
 
 ### Check Release
 
