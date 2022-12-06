@@ -204,12 +204,19 @@ helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apac
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-cluster-charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
+### 5. 上传 charts，生成 index
+1. 上传上一步生成的 tgz 文件至 release 的 Assets 下
+2. 生成 index.yaml
+```shell
+cd ~/shardingsphere-on-cloud/charts
+mkdir release
+mv *.tgz release
+git checkout gh-pages 
+mv ~/shardingsphere-on-cloud/index.yaml index.yaml
+helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases/download/${RELEASE.VERSION}  . --merge index.yaml
+```
+3. 替换原有的 index.yaml
 
-### 5. 更新下载页面
-
-更新如下页面：
-* <https://shardingsphere.apache.org/document/current/en/downloads/>
-* <https://shardingsphere.apache.org/document/current/cn/downloads/>
 
 
 ## 检查发布结果
@@ -283,7 +290,7 @@ helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
 helm search repo apache
 ```
 
-可以查询到三个制品即为发布成功,`helm repo add` 和 `helm search repo` 会根据 index.yaml 中的校验值进行校验 
+可以查询到三个制品即为发布成功,`helm repo add` 和 `helm search repo -l` 会根据 index.yaml 中的校验值进行校验 
 
 ```shell
 NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
