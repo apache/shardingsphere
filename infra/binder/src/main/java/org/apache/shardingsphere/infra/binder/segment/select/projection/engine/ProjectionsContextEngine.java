@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -37,10 +40,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Projections context engine.
@@ -115,12 +114,12 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameColumn(final Projection projection, final ColumnSegment columnSegment) {
-        Collection<ColumnProjection> columns = getColumnProjections(projection);
+        Collection<Projection> columns = expandProjection(projection);
         if (columns.isEmpty()) {
             return false;
         }
         boolean columnSegmentPresent = columnSegment.getOwner().isPresent();
-        for (ColumnProjection each : columns) {
+        for (Projection each : columns) {
             if (columnSegmentPresent ? isSameQualifiedName(each, columnSegment.getQualifiedName()) : isSameName(each, columnSegment.getQualifiedName())) {
                 return true;
             }
@@ -128,19 +127,24 @@ public final class ProjectionsContextEngine {
         return false;
     }
     
-    private Collection<ColumnProjection> getColumnProjections(final Projection projection) {
-        Collection<ColumnProjection> result = new LinkedList<>();
-        if (projection instanceof ColumnProjection) {
-            result.add((ColumnProjection) projection);
-        }
+    /**
+     * expand projection, such as ShorthandProjection.
+     * @param projection the projection to expand
+     * @return expanded projections
+     */
+    public static Collection<Projection> expandProjection(final Projection projection) {
+        Collection<Projection> result = new LinkedList<>();
         if (projection instanceof ShorthandProjection) {
             result.addAll(((ShorthandProjection) projection).getActualColumns().values());
+        } else if (!(projection instanceof DerivedProjection)) {
+            result.add(projection);
         }
         return result;
     }
     
-    private boolean isSameName(final ColumnProjection projection, final String text) {
-        return SQLUtil.getExactlyValue(text).equalsIgnoreCase(projection.getName());
+    private boolean isSameName(final Projection projection, final String text) {
+        String expression = projection.getExpression();
+        return SQLUtil.getExactlyValue(text).equalsIgnoreCase(expression.substring(expression.indexOf('.') + 1));
     }
     
     private boolean isSameAlias(final Projection projection, final String text) {
