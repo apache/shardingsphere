@@ -41,6 +41,7 @@ import org.opengauss.util.PGobject;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         AbstractWALEvent result;
         byte[] bytes = new byte[data.remaining()];
         data.get(bytes);
-        String dataText = new String(bytes);
+        String dataText = new String(bytes, StandardCharsets.UTF_8);
         if (decodeWithTX) {
             result = decodeDataWithTX(dataText);
         } else {
