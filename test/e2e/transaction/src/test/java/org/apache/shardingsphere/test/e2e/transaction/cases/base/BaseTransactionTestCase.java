@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public abstract class BaseTransactionTestCase {
     
-    private final BaseTransactionITCase baseTransactionITCase;
+    private final TransactionBaseE2EIT baseTransactionITCase;
     
     private final DataSource dataSource;
     

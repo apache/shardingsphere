@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 @Slf4j
 public final class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
     
-    public ExceptionInTransactionTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public ExceptionInTransactionTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.transaction.env.enums;
+package org.apache.shardingsphere.test.e2e.showprocesslist.env.enums;
 
-public enum TransactionITEnvTypeEnum {
+public enum ShowProcessListEnvTypeEnum {
     
-    NONE, DOCKER, NATIVE
+    NONE, DOCKER
 }

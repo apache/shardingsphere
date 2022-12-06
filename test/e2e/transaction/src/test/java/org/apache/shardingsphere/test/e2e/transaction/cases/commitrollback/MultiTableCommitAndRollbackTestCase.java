@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -35,7 +35,7 @@ public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTe
     
     private static final String T_ORDER_ITEM = "t_order_item";
     
-    public MultiTableCommitAndRollbackTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public MultiTableCommitAndRollbackTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

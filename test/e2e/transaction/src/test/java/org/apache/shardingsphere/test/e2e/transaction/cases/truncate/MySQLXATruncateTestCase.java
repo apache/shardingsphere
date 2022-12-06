@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.truncate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 @Slf4j
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
-    public MySQLXATruncateTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public MySQLXATruncateTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

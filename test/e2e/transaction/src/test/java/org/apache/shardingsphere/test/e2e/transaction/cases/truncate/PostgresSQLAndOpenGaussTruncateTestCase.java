@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.truncate;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -32,7 +32,7 @@ import java.sql.SQLException;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL, TransactionTestConstants.OPENGAUSS})
 public final class PostgresSQLAndOpenGaussTruncateTestCase extends BaseTransactionTestCase {
     
-    public PostgresSQLAndOpenGaussTruncateTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public PostgresSQLAndOpenGaussTruncateTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

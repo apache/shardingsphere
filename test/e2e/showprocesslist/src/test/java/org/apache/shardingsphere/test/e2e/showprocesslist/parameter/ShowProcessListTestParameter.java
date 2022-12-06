@@ -15,40 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.transaction.framework.param;
+package org.apache.shardingsphere.test.e2e.showprocesslist.parameter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 
-import java.util.Collection;
-import java.util.List;
-
-/**
- * Transaction test parameters.
- */
 @RequiredArgsConstructor
 @Getter
-public final class TransactionParameterized {
+@ToString
+public final class ShowProcessListTestParameter {
     
     private final DatabaseType databaseType;
     
-    private final String adapter;
-    
-    private final List<TransactionType> transactionTypes;
-    
-    private final List<String> providers;
-    
-    private final String storageContainerImage;
-    
     private final String scenario;
     
-    private final Collection<Class<? extends BaseTransactionTestCase>> transactionTestCaseClasses;
-    
-    @Override
-    public String toString() {
-        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, storageContainerImage, scenario);
-    }
+    private final String runMode;
 }

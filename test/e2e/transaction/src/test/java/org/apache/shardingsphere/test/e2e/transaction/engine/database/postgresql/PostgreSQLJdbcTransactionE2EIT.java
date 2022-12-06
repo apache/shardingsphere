@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.transaction.engine.postgresql;
+package org.apache.shardingsphere.test.e2e.transaction.engine.database.postgresql;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
-import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,24 +29,19 @@ import org.junit.runners.Parameterized.Parameters;
 import java.sql.SQLException;
 import java.util.Collection;
 
-/**
- * PostgreSQL general transaction test case with JDBC container, includes multiple cases.
- */
-@Slf4j
 @RunWith(Parameterized.class)
-public final class PostgresqlJdbcTransactionIT extends BaseTransactionITCase {
+public final class PostgreSQLJdbcTransactionE2EIT extends TransactionBaseE2EIT {
     
-    private final TransactionParameterized parameterized;
+    private final TransactionTestParameter testParameter;
     
-    public PostgresqlJdbcTransactionIT(final TransactionParameterized parameterized) {
-        super(parameterized);
-        this.parameterized = parameterized;
-        log.info("Parameterized:{}", parameterized);
+    public PostgreSQLJdbcTransactionE2EIT(final TransactionTestParameter testParameter) {
+        super(testParameter);
+        this.testParameter = testParameter;
     }
     
     @Parameters(name = "{0}")
-    public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(PostgresqlJdbcTransactionIT.class);
+    public static Collection<TransactionTestParameter> getTestParameters() {
+        return getTransactionTestParameters(PostgreSQLJdbcTransactionE2EIT.class);
     }
     
     @After
@@ -59,6 +53,6 @@ public final class PostgresqlJdbcTransactionIT extends BaseTransactionITCase {
     
     @Test
     public void assertTransaction() throws SQLException {
-        callTestCases(parameterized);
+        callTestCases(testParameter);
     }
 }

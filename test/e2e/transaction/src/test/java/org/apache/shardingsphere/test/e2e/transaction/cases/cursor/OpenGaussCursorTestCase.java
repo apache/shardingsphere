@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.cursor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseITCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
@@ -46,13 +46,13 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     private final CursorSQLCommand cursorSQLCommand;
     
-    public OpenGaussCursorTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+    public OpenGaussCursorTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
         this.cursorSQLCommand = loadCursorSQLCommand();
     }
     
     private CursorSQLCommand loadCursorSQLCommand() {
-        return JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
+        return JAXB.unmarshal(Objects.requireNonNull(BaseE2EIT.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
     }
     
     @Override

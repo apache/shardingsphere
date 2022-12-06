@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.showprocesslist.engine;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
-import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ITEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.showprocesslist.parameter.ShowProcessListParameterized;
-import org.apache.shardingsphere.test.e2e.showprocesslist.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.showprocesslist.parameter.ShowProcessListTestParameter;
+import org.apache.shardingsphere.test.e2e.showprocesslist.env.ShowProcessListEnvironment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,25 +43,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 // TODO add jdbc
 @RunWith(Parameterized.class)
-public final class ShowProcessListIT {
+public final class ShowProcessListE2EIT {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    private static final ShowProcessListEnvironment ENV = ShowProcessListEnvironment.getInstance();
     
     private static final String SELECT_SLEEP = "select sleep(10)";
     
     private final ClusterShowProcessListContainerComposer containerComposer;
     
-    public ShowProcessListIT(final ShowProcessListParameterized parameterized) {
-        containerComposer = new ClusterShowProcessListContainerComposer(parameterized);
+    public ShowProcessListE2EIT(final ShowProcessListTestParameter testParameter) {
+        containerComposer = new ClusterShowProcessListContainerComposer(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ShowProcessListParameterized> getParameters() {
-        Collection<ShowProcessListParameterized> result = new LinkedList<>();
+    public static Collection<ShowProcessListTestParameter> getTestParameters() {
+        Collection<ShowProcessListTestParameter> result = new LinkedList<>();
         ENV.getScenarios().forEach(each -> {
-            if (ITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            if (ShowProcessListEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
                 for (String runMode : ENV.getRunModes()) {
-                    result.add(new ShowProcessListParameterized(new MySQLDatabaseType(), each, runMode));
+                    result.add(new ShowProcessListTestParameter(new MySQLDatabaseType(), each, runMode));
                 }
             }
         });
