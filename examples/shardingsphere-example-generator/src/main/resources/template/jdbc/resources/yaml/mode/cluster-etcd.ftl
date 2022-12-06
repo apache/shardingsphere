@@ -15,10 +15,10 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.rules.database-discovery.data-sources.rule.data-source-names=ds-0,ds-1,ds-2
-spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-heartbeat-name=mgr-heartbeat
-spring.shardingsphere.rules.database-discovery.data-sources.rule.discovery-type-name=mgr
-spring.shardingsphere.rules.database-discovery.discovery-heartbeats.mgr-heartbeat.props.keep-alive-cron=0/5 * * * * ?
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.type=MySQL.MGR
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.keep-alive-cron=0/5 * * * * ?
-spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.group-name=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+mode:
+  type: Cluster
+  repository:
+    type: etcd
+    props:
+      namespace: generator_demo
+      server-lists: localhost:2379

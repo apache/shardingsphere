@@ -14,10 +14,21 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<cluster:repository id="clusterRepository" type="Zookeeper" namespace="generator_demo" server-lists="localhost:2181">
-    <props>
-        <prop key="max-retries">3</prop>
-        <prop key="operation-timeout-milliseconds">1000</prop>
-    </props>
-</cluster:repository>
+- !DB_DISCOVERY
+  dataSources:
+    group_0:
+      dataSourceNames:
+        - ds_0
+        - ds_1
+        - ds_2
+      discoveryHeartbeatName: mgr_heartbeat
+      discoveryTypeName: mgr_type
+    discoveryHeartbeats:
+      mgr_heartbeat:
+        props:
+          keep-alive-cron: '0/5 * * * * ?'
+    discoveryTypes:
+      mgr_type:
+        type: MySQL.MGR
+        props:
+          group-name: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa

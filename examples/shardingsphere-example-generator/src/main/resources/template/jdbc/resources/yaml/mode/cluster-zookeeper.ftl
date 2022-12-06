@@ -14,19 +14,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
-    <encrypt:encrypt-algorithm id="phone_encryptor" type="AES">
-        <props>
-            <prop key="aes-key-value">123456</prop>
-        </props>
-    </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="string_encryptor" type="assistedTest" />
-    
-    <encrypt:rule id="encryptRule">
-        <encrypt:table name="t_order">
-            <encrypt:column logic-column="status" cipher-column="status" assisted-query-column="assisted_query_status" encrypt-algorithm-ref="string_encryptor" assisted-query-encrypt-algorithm-ref="string_encryptor" />
-        </encrypt:table>
-        <encrypt:table name="t_order_item">
-            <encrypt:column logic-column="phone" cipher-column="phone" plain-column="phone_plain" encrypt-algorithm-ref="phone_encryptor" />
-        </encrypt:table>
-    </encrypt:rule>
+
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: generator_demo
+      server-lists: localhost:2181

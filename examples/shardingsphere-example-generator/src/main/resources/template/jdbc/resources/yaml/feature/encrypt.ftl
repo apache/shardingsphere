@@ -14,5 +14,24 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+- !ENCRYPT
+  tables:
+    t_order:
+      columns:
+        status:
+          cipherColumn: status
+          encryptorName: string_encryptor
+          assistedQueryColumn: assisted_query_status
+          assistedQueryEncryptorName: string_encryptor
+        phone:
+          plainColumn: phone_plain
+          cipherColumn: phone
+          encryptorName: phone_encryptor
 
-spring.shardingsphere.props.xa-transaction-manager-type=Narayana
+  encryptors:
+    string_encryptor:
+      type: assistedTest
+    phone_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456
