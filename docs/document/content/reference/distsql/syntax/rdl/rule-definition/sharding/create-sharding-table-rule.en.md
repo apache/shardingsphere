@@ -14,10 +14,10 @@ CreateShardingTableRule ::=
   'CREATE' 'SHARDING' 'TABLE' 'RULE' ( tableDefinition | autoTableDefinition ) ( ',' ( tableDefinition | autoTableDefinition ) )*
 
 tableDefinition ::= 
-   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')'  ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+  tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')'  ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+  tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
@@ -29,11 +29,11 @@ auditStrategyDefinition ::=
   'AUDIT_STRATEGY' '(' algorithmDefinition ( ',' algorithmDefinition )* ')'
 
 algorithmDefinition ::=
-   'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' ( propertyDefinition )?  ')' )?')'
+  'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' ( propertyDefinition )?  ')' )?')'
 
 propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )* 
-    
+
 tableName ::=
   identifier
 
@@ -45,7 +45,7 @@ columnName ::=
 
 algorithmType ::=
   identifier
-    
+
 algorithmType ::=
   string
 ```
