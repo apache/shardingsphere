@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.dcl;
+package org.apache.shardingsphere.test.e2e.engine.ral;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.e2e.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
@@ -27,53 +26,46 @@ import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
-public final class GeneralDCLIT extends BaseDCLIT {
+public final class GeneralRALE2EIT extends BaseRALE2EIT {
     
-    public GeneralDCLIT(final AssertionTestParameter testParameter) {
+    public GeneralRALE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionTestParameter> getTestParameters() {
-        return ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.DCL);
-    }
-    
-    @Test
-    public void assertExecuteUpdate() throws SQLException, ParseException {
-        String sql = getSQL();
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                try (Statement statement = connection.createStatement()) {
-                    statement.executeUpdate(sql);
-                }
-            } else {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        }
+        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RAL);
     }
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        String sql = getSQL();
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                try (Statement statement = connection.createStatement()) {
-                    statement.execute(sql);
-                }
-            } else {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    preparedStatement.execute();
-                }
+            try (
+                    Statement statement = connection.createStatement()) {
+                assertResultSet(statement);
             }
+        }
+    }
+    
+    private void assertResultSet(final Statement statement) throws SQLException, ParseException {
+        if (null == getAssertion().getAssertionSQL()) {
+            assertResultSet(statement, getSQL());
+        } else {
+            statement.execute(getSQL());
+            assertResultSet(statement, getAssertion().getAssertionSQL().getSql());
+        }
+    }
+    
+    private void assertResultSet(final Statement statement, final String sql) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(sql)) {
+            assertResultSet(resultSet);
         }
     }
 }

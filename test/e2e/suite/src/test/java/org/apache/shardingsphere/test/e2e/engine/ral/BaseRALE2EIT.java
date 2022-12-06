@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.SingleITCase;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.After;
 import org.junit.Before;
@@ -40,9 +40,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseRALIT extends SingleITCase {
+public abstract class BaseRALE2EIT extends SingleE2EIT {
     
-    public BaseRALIT(final AssertionTestParameter testParameter) {
+    public BaseRALE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     

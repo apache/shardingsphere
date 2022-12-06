@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.framework.runner.executor.key;
 
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
 
 /**
@@ -31,7 +31,7 @@ public interface ParallelRunnerExecutorKeyProvider {
      * @param testParameter test parameter
      * @return parallel runner executor key
      */
-    String getKey(ITTestParameter testParameter);
+    String getKey(E2ETestParameter testParameter);
     
     /**
      * Get parallel level.

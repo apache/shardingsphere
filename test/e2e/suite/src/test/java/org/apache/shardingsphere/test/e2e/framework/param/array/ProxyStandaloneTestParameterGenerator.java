@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import java.util.Collection;
 
@@ -42,7 +42,7 @@ public final class ProxyStandaloneTestParameterGenerator {
      * @return assertion test parameters
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
-        return new ITTestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
+        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
                 ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionTestParameter(sqlCommandType);
     }
     
@@ -52,8 +52,8 @@ public final class ProxyStandaloneTestParameterGenerator {
      * @param sqlCommandType SQL command type
      * @return assertion test parameters
      */
-    public static Collection<ITTestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        return new ITTestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
+    public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
+        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(),
                 ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, ENV.getClusterEnvironment().getDatabaseTypes()).getCaseTestParameter(sqlCommandType);
     }
 }

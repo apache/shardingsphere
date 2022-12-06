@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.e2e.container.compose.mode.ClusterContaine
 import org.apache.shardingsphere.test.e2e.container.compose.mode.StandaloneContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
      * @param testParameter test parameter
      * @return composed container
      */
-    public ContainerComposer getContainerComposer(final ITTestParameter testParameter) {
+    public ContainerComposer getContainerComposer(final E2ETestParameter testParameter) {
         String key = testParameter.getKey();
         if (containerComposers.containsKey(key)) {
             return containerComposers.get(key);
@@ -55,11 +55,11 @@ public final class ContainerComposerRegistry implements AutoCloseable {
         }
     }
     
-    private ContainerComposer createContainerComposer(final ITTestParameter testParameter) {
+    private ContainerComposer createContainerComposer(final E2ETestParameter testParameter) {
         return isClusterMode(testParameter) ? new ClusterContainerComposer(testParameter) : new StandaloneContainerComposer(testParameter);
     }
     
-    private boolean isClusterMode(final ITTestParameter testParameter) {
+    private boolean isClusterMode(final E2ETestParameter testParameter) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
         return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(testParameter.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(testParameter.getAdapter());
     }

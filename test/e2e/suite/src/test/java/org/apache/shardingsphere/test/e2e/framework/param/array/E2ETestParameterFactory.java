@@ -23,16 +23,16 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * IT test parameter factory.
+ * E2E test parameter factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ITTestParameterFactory {
+public final class E2ETestParameterFactory {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
@@ -62,8 +62,8 @@ public final class ITTestParameterFactory {
      * @param sqlCommandType SQL command type
      * @return case test parameters
      */
-    public static Collection<ITTestParameter> getCaseTestParameters(final SQLCommandType sqlCommandType) {
-        Collection<ITTestParameter> result = new LinkedList<>();
+    public static Collection<E2ETestParameter> getCaseTestParameters(final SQLCommandType sqlCommandType) {
+        Collection<E2ETestParameter> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.SingleITCase;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
@@ -47,11 +47,11 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public abstract class BaseDMLIT extends SingleITCase {
+public abstract class BaseDMLE2EIT extends SingleE2EIT {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BaseDMLIT(final AssertionTestParameter testParameter) {
+    public BaseDMLE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.rql;
+package org.apache.shardingsphere.test.e2e.engine.dal;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
@@ -32,16 +32,16 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
-@ParallelRunningStrategy(ParallelLevel.CASE)
-public final class GeneralRQLIT extends BaseRQLIT {
+@ParallelRunningStrategy(ParallelLevel.SCENARIO)
+public final class GeneralDALE2EIT extends BaseDALE2EIT {
     
-    public GeneralRQLIT(final AssertionTestParameter testParameter) {
+    public GeneralDALE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionTestParameter> getTestParameters() {
-        return ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL);
+        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DAL);
     }
     
     @Test

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.Adapter
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public final class JdbcStandaloneTestParameterGenerator {
      * @return assertion test parameter
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
-        return new ITTestParameterGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getAssertionTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getAssertionTestParameter(sqlCommandType);
     }
     
     /**
@@ -59,7 +59,7 @@ public final class JdbcStandaloneTestParameterGenerator {
      * @param sqlCommandType SQL command type
      * @return case test parameter
      */
-    public static Collection<ITTestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        return new ITTestParameterGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getCaseTestParameter(sqlCommandType);
+    public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
+        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getCaseTestParameter(sqlCommandType);
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelParameterized;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(ParallelParameterized.class)
 @Getter(AccessLevel.PROTECTED)
-public abstract class BaseITCase {
+public abstract class BaseE2EIT {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
@@ -76,7 +76,7 @@ public abstract class BaseITCase {
     
     private Map<String, DataSource> expectedDataSourceMap;
     
-    public BaseITCase(final ITTestParameter testParameter) {
+    public BaseE2EIT(final E2ETestParameter testParameter) {
         mode = testParameter.getMode();
         scenario = testParameter.getScenario();
         databaseType = testParameter.getDatabaseType();

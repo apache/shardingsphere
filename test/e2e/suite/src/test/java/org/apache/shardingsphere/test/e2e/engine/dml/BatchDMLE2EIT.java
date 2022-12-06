@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.e2e.engine.dml;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.engine.BatchITCase;
-import org.apache.shardingsphere.test.e2e.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.e2e.engine.BatchE2EIT;
+import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -39,15 +39,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
-public final class BatchDMLIT extends BatchITCase {
+public final class BatchDMLE2EIT extends BatchE2EIT {
     
-    public BatchDMLIT(final CaseTestParameter testParameter) {
+    public BatchDMLE2EIT(final CaseTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ITTestParameter> getTestParameters() {
-        return ITTestParameterFactory.getCaseTestParameters(SQLCommandType.DML);
+    public static Collection<E2ETestParameter> getTestParameters() {
+        return E2ETestParameterFactory.getCaseTestParameters(SQLCommandType.DML);
     }
     
     @Test

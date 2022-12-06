@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.dql;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.engine.SingleITCase;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -43,13 +43,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class BaseDQLIT extends SingleITCase {
+public abstract class BaseDQLE2EIT extends SingleE2EIT {
     
     private static final Collection<String> FILLED_SUITES = new HashSet<>();
     
     private DataSource expectedDataSource;
     
-    public BaseDQLIT(final AssertionTestParameter testParameter) {
+    public BaseDQLE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     

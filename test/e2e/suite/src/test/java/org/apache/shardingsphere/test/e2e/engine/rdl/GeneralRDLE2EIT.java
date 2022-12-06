@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.rdl;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
@@ -35,15 +35,15 @@ import java.util.Collection;
 import static org.junit.Assert.assertNotNull;
 
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
-public final class GeneralRDLIT extends BaseRDLIT {
+public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     
-    public GeneralRDLIT(final AssertionTestParameter testParameter) {
+    public GeneralRDLE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionTestParameter> getTestParameters() {
-        return ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL);
+        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL);
     }
     
     @Test

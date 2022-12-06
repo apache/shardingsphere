@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.rql;
+package org.apache.shardingsphere.test.e2e.engine.dal;
 
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.SingleITCase;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,9 +36,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseRQLIT extends SingleITCase {
+public abstract class BaseDALE2EIT extends SingleE2EIT {
     
-    public BaseRQLIT(final AssertionTestParameter testParameter) {
+    public BaseDALE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     
@@ -54,6 +56,10 @@ public abstract class BaseRQLIT extends SingleITCase {
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
+        // TODO Fix shadow
+        if ("shadow".equals(getScenario())) {
+            return;
+        }
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
         for (DataSetColumn each : expected) {
@@ -65,20 +71,33 @@ public abstract class BaseRQLIT extends SingleITCase {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue("Size of actual result set is different with size of expected data set rows.", rowCount < expected.size());
+            assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
             assertRow(actual, actualMetaData, expected.get(rowCount));
             rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected data set rows.", rowCount, is(expected.size()));
+        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
     }
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.splitValues("|")) {
+        for (String each : expected.splitValues(",")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
-            assertObjectValue(actual, columnIndex, columnLabel, each);
+            if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+                assertDateValue(actual, columnIndex, columnLabel, each);
+            } else {
+                assertObjectValue(actual, columnIndex, columnLabel, each);
+            }
             columnIndex++;
         }
+    }
+    
+    private void assertDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
+        if (NOT_VERIFY_FLAG.equals(expected)) {
+            return;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        assertThat(dateFormat.format(actual.getDate(columnIndex)), is(expected));
+        assertThat(dateFormat.format(actual.getDate(columnLabel)), is(expected));
     }
     
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
