@@ -30,7 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>cluster-mode-example</module>
         <module>sharding-example</module>
         <module>transaction-example</module>
     </modules>
