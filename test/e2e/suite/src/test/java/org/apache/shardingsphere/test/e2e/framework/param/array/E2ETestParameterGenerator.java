@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,10 +41,10 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * IT test parameter generator.
+ * E2E test parameter generator.
  */
 @RequiredArgsConstructor
-public final class ITTestParameterGenerator {
+public final class E2ETestParameterGenerator {
     
     private static final IntegrationTestCasesLoader TEST_CASES_LOADER = IntegrationTestCasesLoader.getInstance();
     
@@ -139,16 +139,16 @@ public final class ITTestParameterGenerator {
      * @param sqlCommandType SQL command type
      * @return case test parameter
      */
-    public Collection<ITTestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        Collection<ITTestParameter> result = new LinkedList<>();
+    public Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
+        Collection<E2ETestParameter> result = new LinkedList<>();
         for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
             result.addAll(getCaseTestParameter(each));
         }
         return result;
     }
     
-    private Collection<ITTestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext) {
-        Collection<ITTestParameter> result = new LinkedList<>();
+    private Collection<E2ETestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext) {
+        Collection<E2ETestParameter> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
             if (envDatabaseTypes.contains(each)) {
                 result.addAll(getCaseTestParameter(testCaseContext, each));
@@ -157,15 +157,15 @@ public final class ITTestParameterGenerator {
         return result;
     }
     
-    private Collection<ITTestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final DatabaseType databaseType) {
-        Collection<ITTestParameter> result = new LinkedList<>();
+    private Collection<E2ETestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final DatabaseType databaseType) {
+        Collection<E2ETestParameter> result = new LinkedList<>();
         for (String adapter : envAdapters) {
             result.addAll(getCaseTestParameter(testCaseContext, adapter, databaseType));
         }
         return result;
     }
     
-    private Collection<ITTestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final String adapter, final DatabaseType databaseType) {
+    private Collection<E2ETestParameter> getCaseTestParameter(final IntegrationTestCaseContext testCaseContext, final String adapter, final DatabaseType databaseType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
                 .map(each -> new CaseTestParameter(testCaseContext, adapter, each, envMode, databaseType)).collect(Collectors.toList());

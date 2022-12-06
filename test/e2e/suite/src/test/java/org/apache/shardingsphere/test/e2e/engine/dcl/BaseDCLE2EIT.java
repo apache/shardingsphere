@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.test.e2e.engine.dcl;
 
-import org.apache.shardingsphere.test.e2e.engine.SingleITCase;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.After;
 import org.junit.Before;
 
-public abstract class BaseDCLIT extends SingleITCase {
+public abstract class BaseDCLE2EIT extends SingleE2EIT {
     
     private AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    public BaseDCLIT(final AssertionTestParameter testParameter) {
+    public BaseDCLE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     

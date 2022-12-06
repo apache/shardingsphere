@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.e2e.framework.param.array.ITTestParameterFactory;
+import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
@@ -40,15 +40,15 @@ import java.util.Collections;
 import static org.junit.Assert.assertTrue;
 
 @ParallelRunningStrategy(ParallelLevel.CASE)
-public final class AdditionalDQLIT extends BaseDQLIT {
+public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
-    public AdditionalDQLIT(final AssertionTestParameter testParameter) {
+    public AdditionalDQLE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     
     @Parameters(name = "{0}")
     public static Collection<AssertionTestParameter> getTestParameters() {
-        return IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases() ? ITTestParameterFactory.getAssertionTestParameters(SQLCommandType.DQL) : Collections.emptyList();
+        return IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases() ? E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DQL) : Collections.emptyList();
     }
     
     @Test

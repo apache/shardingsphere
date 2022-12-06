@@ -25,10 +25,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 /**
- * Integration test watcher.
+ * E2E test watcher.
  */
 @Slf4j
-public final class ITWatcher extends TestWatcher {
+public final class E2EWatcher extends TestWatcher {
     
     @Override
     protected void failed(final Throwable cause, final Description description) {

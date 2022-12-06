@@ -15,31 +15,82 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.dal;
+package org.apache.shardingsphere.test.e2e.engine.rdl;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.SingleITCase;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.junit.After;
+import org.junit.Before;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseDALIT extends SingleITCase {
+public abstract class BaseRDLE2EIT extends SingleE2EIT {
     
-    public BaseDALIT(final AssertionTestParameter testParameter) {
+    public BaseRDLE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
+    }
+    
+    @Before
+    public final void init() throws Exception {
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            executeInitSQLs(connection);
+        }
+        sleep();
+    }
+    
+    @After
+    public final void tearDown() throws Exception {
+        if (null != getAssertion().getDestroySQL()) {
+            try (Connection connection = getTargetDataSource().getConnection()) {
+                executeDestroySQLs(connection);
+            }
+        }
+        sleep();
+    }
+    
+    private void executeInitSQLs(final Connection connection) throws SQLException {
+        if (null == getAssertion().getInitialSQL() || null == getAssertion().getInitialSQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
+        }
+    }
+    
+    private void executeDestroySQLs(final Connection connection) throws SQLException {
+        if (null == getAssertion().getDestroySQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
+        }
+    }
+    
+    protected void sleep() {
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (final InterruptedException ignored) {
+        }
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
@@ -56,10 +107,6 @@ public abstract class BaseDALIT extends SingleITCase {
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
-        // TODO Fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
         for (DataSetColumn each : expected) {
@@ -80,24 +127,11 @@ public abstract class BaseDALIT extends SingleITCase {
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.splitValues(",")) {
+        for (String each : expected.splitValues("|")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
-            if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
-                assertDateValue(actual, columnIndex, columnLabel, each);
-            } else {
-                assertObjectValue(actual, columnIndex, columnLabel, each);
-            }
+            assertObjectValue(actual, columnIndex, columnLabel, each);
             columnIndex++;
         }
-    }
-    
-    private void assertDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
-        if (NOT_VERIFY_FLAG.equals(expected)) {
-            return;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        assertThat(dateFormat.format(actual.getDate(columnIndex)), is(expected));
-        assertThat(dateFormat.format(actual.getDate(columnLabel)), is(expected));
     }
     
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {

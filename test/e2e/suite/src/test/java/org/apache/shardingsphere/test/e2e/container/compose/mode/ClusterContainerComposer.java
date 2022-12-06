@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtil;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -48,7 +48,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public ClusterContainerComposer(final ITTestParameter testParameter) {
+    public ClusterContainerComposer(final E2ETestParameter testParameter) {
         String scenario = testParameter.getScenario();
         containers = new ITContainers(scenario);
         // TODO support other types of governance

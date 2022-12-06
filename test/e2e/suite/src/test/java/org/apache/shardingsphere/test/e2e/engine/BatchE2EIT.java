@@ -50,7 +50,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public abstract class BatchITCase extends BaseITCase {
+public abstract class BatchE2EIT extends BaseE2EIT {
     
     private final Collection<DataSet> dataSets = new LinkedList<>();
     
@@ -58,7 +58,7 @@ public abstract class BatchITCase extends BaseITCase {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BatchITCase(final CaseTestParameter testParameter) {
+    public BatchE2EIT(final CaseTestParameter testParameter) {
         super(testParameter);
         parentPath = testParameter.getTestCaseContext().getParentPath();
     }

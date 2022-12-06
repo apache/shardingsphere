@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.framework.runner.executor.key.impl;
 
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.e2e.framework.runner.executor.key.ParallelRunnerExecutorKeyProvider;
 
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.framework.runner.executor.key.Parallel
 public final class CaseParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
     
     @Override
-    public String getKey(final ITTestParameter testParameter) {
+    public String getKey(final E2ETestParameter testParameter) {
         return testParameter.getDatabaseType().getType();
     }
     

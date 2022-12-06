@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -42,7 +42,7 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public StandaloneContainerComposer(final ITTestParameter testParameter) {
+    public StandaloneContainerComposer(final E2ETestParameter testParameter) {
         String scenario = testParameter.getScenario();
         containers = new ITContainers(scenario);
         // TODO add more version of databases

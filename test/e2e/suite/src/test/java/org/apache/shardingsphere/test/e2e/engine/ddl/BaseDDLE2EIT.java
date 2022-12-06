@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
-import org.apache.shardingsphere.test.e2e.engine.SingleITCase;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.After;
 import org.junit.Before;
@@ -48,9 +48,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-public abstract class BaseDDLIT extends SingleITCase {
+public abstract class BaseDDLE2EIT extends SingleE2EIT {
     
-    public BaseDDLIT(final AssertionTestParameter testParameter) {
+    public BaseDDLE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
     }
     

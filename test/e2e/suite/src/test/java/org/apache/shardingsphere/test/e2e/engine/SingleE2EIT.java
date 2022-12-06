@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.watcher.ITWatcher;
+import org.apache.shardingsphere.test.e2e.framework.watcher.E2EWatcher;
 import org.junit.Rule;
 
 import java.text.ParseException;
@@ -34,11 +34,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class SingleITCase extends BaseITCase {
+public abstract class SingleE2EIT extends BaseE2EIT {
     
     @Rule
     @Getter(AccessLevel.NONE)
-    public ITWatcher watcher = new ITWatcher();
+    public E2EWatcher watcher = new E2EWatcher();
     
     private final SQLExecuteType sqlExecuteType;
     
@@ -46,7 +46,7 @@ public abstract class SingleITCase extends BaseITCase {
     
     private final DataSet dataSet;
     
-    public SingleITCase(final AssertionTestParameter testParameter) {
+    public SingleE2EIT(final AssertionTestParameter testParameter) {
         super(testParameter);
         sqlExecuteType = testParameter.getSqlExecuteType();
         assertion = testParameter.getAssertion();

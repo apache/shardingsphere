@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
 
 /**
- * IT test parameter.
+ * E2E test parameter.
  */
-public interface ITTestParameter {
+public interface E2ETestParameter {
     
     /**
      * Get test case context.
