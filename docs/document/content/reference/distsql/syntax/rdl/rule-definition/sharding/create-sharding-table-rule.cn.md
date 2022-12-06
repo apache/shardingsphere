@@ -26,9 +26,7 @@ keyGenerateStrategyDefinition ::=
   'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ','  algorithmDefinition  ')' 
 
 auditStrategyDefinition ::= 
-  'AUDIT_STRATEGY' '(' 'AUDITORS' '=' '[' auditorName ',' auditorName ']' ',' 'ALLOW_HINT_DISABLE' '=' 'TRUE | FALSE' ')'
-  |
-  'AUDIT_STRATEGY' '(' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ',' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ')'
+  'AUDIT_STRATEGY' '(' algorithmDefinition ',' algorithmDefinition ')'
 
 algorithmDefinition ::=
   'SHARDING_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')' ')'
