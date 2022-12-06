@@ -295,7 +295,7 @@ helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
 helm search repo apache
 ```
 
-可以查询到三个制品即为发布成功,`helm repo add` 和 `helm search repo` 会根据 index.yaml 中的校验值进行校验 
+可以查询到三个制品即为发布成功,`helm repo add` 和 `helm search repo -l` 会根据 index.yaml 中的校验值进行校验 
 
 ```shell
 NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
