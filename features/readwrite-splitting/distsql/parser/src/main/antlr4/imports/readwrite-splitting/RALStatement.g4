@@ -20,7 +20,7 @@ grammar RALStatement;
 import BaseRule;
 
 setReadwriteSplittingHintSource
-    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
+    : SET READWRITE_SPLITTING HINT SOURCE EQ_ sourceValue
     ;
 
 showReadwriteSplittingHintStatus
@@ -40,5 +40,5 @@ showStatusFromReadwriteSplittingRules
     ;
 
 sourceValue
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

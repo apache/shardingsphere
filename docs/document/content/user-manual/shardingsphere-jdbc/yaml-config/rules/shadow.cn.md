@@ -88,5 +88,3 @@ rules:
 
 - [影子库的核心特性](/cn/features/shadow/)
 - [JAVA API：影子库配置](/cn/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
-- [Spring Boot Starter：影子库配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
-- [Spring 命名空间：影子库配置](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

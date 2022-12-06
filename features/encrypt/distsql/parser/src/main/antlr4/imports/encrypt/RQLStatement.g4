@@ -32,5 +32,5 @@ countEncryptRule
     ;
 
 databaseName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

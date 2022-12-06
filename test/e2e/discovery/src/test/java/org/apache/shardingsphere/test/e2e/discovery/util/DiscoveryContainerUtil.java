@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.discovery.util;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
@@ -27,7 +28,7 @@ import java.util.Map;
 /**
  * Discovery container utility.
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DiscoveryContainerUtil {
     
     /**

@@ -22,8 +22,6 @@ mode:
     props:
       namespace: demo_spring_boot_ds_sharding
       server-lists: localhost:2181
-      
-databaseName: sharding_databases_tables
 
 dataSources:
   ds_0:
@@ -87,16 +85,3 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-- !ENCRYPT
-  tables:
-    t_order:
-      columns:
-        status: 
-         cipherColumn: status
-         encryptorName: status-encryptor
-        
-  encryptors:
-    status-encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456

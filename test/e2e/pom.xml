@@ -32,11 +32,11 @@
         <module>fixture</module>
         <module>env</module>
         <module>suite</module>
-        <module>scaling</module>
+        <module>driver</module>
+        <module>pipeline</module>
         <module>transaction</module>
         <module>discovery</module>
         <module>showprocesslist</module>
-        <module>driver</module>
         <module>agent</module>
     </modules>
     

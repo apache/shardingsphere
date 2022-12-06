@@ -103,5 +103,3 @@ rules:
 
 - [Feature Description of HA](/en/features/ha/)
 - [JAVA API: HA](/en/user-manual/shardingsphere-jdbc/java-api/rules/ha/)
-- [Spring Boot Starter: HA](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha/)
-- [Spring Namespace: HA](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha/)

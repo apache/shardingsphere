@@ -53,7 +53,7 @@ public final class SingleTableQueryResultSet implements DatabaseDistSQLResultSet
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table_name", "resource_name");
+        return Arrays.asList("table_name", "storage_unit_name");
     }
     
     @Override

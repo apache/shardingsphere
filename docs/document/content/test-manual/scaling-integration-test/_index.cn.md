@@ -1,6 +1,6 @@
 +++
 pre = "<b>6.4. </b>"
-title = "Scaling 集成测试"
+title = "Pipeline 集成测试"
 weight = 4
 +++
 
@@ -19,7 +19,7 @@ weight = 4
 
 ## 使用指南
 
-模块路径 `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling` 。
+模块路径 `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline` 。
 
 ### 环境配置
 `${DOCKER-IMAGE}` 表示 docker 镜像名称，如 `mysql:8` 。 `${DATABASE-TYPE}` 表示数据库类型。
@@ -36,7 +36,7 @@ weight = 4
 - `BaseITCase`：提供了通用方法给子类
 - `BaseExtraSQLITCase`：提供了建表、CRUD 语句执行方法
 
-用例示例：MySQLGeneralScalingIT。
+用例示例：MySQLGeneralPipelineE2EIT。
 覆盖的功能点如下：
 - 库级别迁移（所有表）
 - 表级别迁移（任意多个表）
@@ -56,11 +56,11 @@ weight = 4
 要求 ShardingSphere-Proxy 的端口是 3307。
 以 MySQL 为例，`it-env.properties` 可以配置如下：
 ```
-scaling.it.env.type=NATIVE
-scaling.it.native.database=mysql
-scaling.it.native.mysql.username=root
-scaling.it.native.mysql.password=root
-scaling.it.native.mysql.port=3306
+pipeline.it.env.type=NATIVE
+pipeline.it.native.database=mysql
+pipeline.it.native.mysql.username=root
+pipeline.it.native.mysql.password=root
+pipeline.it.native.mysql.port=3306
 ```
 
 找到对应的用例，在 IDE 下使用 Junit 的方式启动即可。
@@ -70,24 +70,24 @@ scaling.it.native.mysql.port=3306
 第一步：打包镜像
 
 ```
-./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling -Pit.env.docker -DskipTests
+./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline -Pit.env.docker -DskipTests
 ```
 
 运行以上命令会构建出一个用于集成测试的 Docker 镜像 apache/shardingsphere-proxy-test:latest，该镜像设置了远程调试的端口，默认是3308。 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。
 
 Docker 模式下，如果需要对 Docker 镜像启动参数进行调整，可以对修改 ShardingSphereProxyDockerContainer 文件中的相关配置。
 
-ShardingSphere-Proxy 输出的日志带有 :Scaling-Proxy 前缀。
+ShardingSphere-Proxy 输出的日志带有 :Pipeline-Proxy 前缀。
 
 使用 Maven 的方式运行用例。以 MySQL 为例：
 
 ```
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline/pom.xml -Dpipeline.it.env.type=DOCKER -Dpipeline.it.docker.mysql.version=${image-name}
 ```
 
 也可以使用 IDE 的方式运行用例。`it-env.properties` 可以配置如下：
 
 ```
-scaling.it.env.type=DOCKER
-scaling.it.docker.mysql.version=mysql:5.7
+pipeline.it.env.type=DOCKER
+pipeline.it.docker.mysql.version=mysql:5.7
 ```
