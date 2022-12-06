@@ -52,16 +52,18 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -Drat.skip=true
+  RUNS_ON: ubuntu-latest
+  REPOSITORY: apache/shardingsphere
+  REPOSITORY_NAME: shardingsphere
 
 jobs:
   ci:
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ env.RUNS_ON }}
     timeout-minutes: 60
     strategy:
       matrix:
         java-version: [ 8, 19 ]
-        os: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -71,9 +73,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build prod with Maven
@@ -82,18 +84,18 @@ jobs:
         run: ./mvnw -T1C -B -f examples/pom.xml clean package -DskipTests
 
   test-coverage:
-    if: github.repository == 'apache/shardingsphere'
+    if: github.repository == '${{ env.REPOSITORY }}'
     name: Test coverage report
-    runs-on: ubuntu-latest
+    runs-on: ${{ env.RUNS_ON }}
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'

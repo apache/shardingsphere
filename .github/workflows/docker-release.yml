@@ -25,10 +25,12 @@ on:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.httpconnectionManager.ttlSeconds=30 -DskipTests
+  RUNS_ON: ubuntu-latest
+  REPOSITORY_NAME: shardingsphere
 
 jobs:
   deploy-docker-images:
-    runs-on: ubuntu-latest
+    runs-on: ${{ env.RUNS_ON }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
@@ -41,9 +43,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'

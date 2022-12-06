@@ -44,26 +44,30 @@ concurrency:
   group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  RUNS_ON: ubuntu-latest
+  REPOSITORY_NAME: shardingsphere
+
 jobs:
   check-checkstyle:
     name: Check - checkstyle
-    runs-on: ubuntu-latest
+    runs-on: ${{ env.RUNS_ON }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Run checkstyle
         run: ./mvnw checkstyle:check -T1C
 
   check-license:
     name: Check - license
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: ${{ env.RUNS_ON }}
     steps:
       - uses: actions/checkout@v3
       - uses: apache/skywalking-eyes@v0.4.0
