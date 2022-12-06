@@ -33,7 +33,7 @@ env:
 
 jobs:
   build-it-image:
-    if: ${{ github.repository == env.REPOSITORY }}
+    if: github.repository == 'apache/shardingsphere'
     name: Build IT image
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -179,7 +179,7 @@ jobs:
 
   mysql-proxy-agent:
     name: Agent Metrics & OpenTelemetry
-    if: (github.event_name == 'schedule' && ${{ github.repository == env.REPOSITORY }})
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     needs: it-mixture-rule
     runs-on: ubuntu-latest
     steps:

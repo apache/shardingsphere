@@ -30,7 +30,7 @@ env:
 
 jobs:
   database-parse:
-    if: ${{ github.repository == env.REPOSITORY }}
+    if: github.repository == 'apache/shardingsphere'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }} for ${{ matrix.database }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -48,10 +48,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY }}-maven-third-party-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY }}-maven-third-party-cache-
-            ${{ env.REPOSITORY }}-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-cache-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Build prod with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL parser

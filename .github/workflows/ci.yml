@@ -52,7 +52,6 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -Drat.skip=true
-  REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
 
 jobs:
@@ -83,7 +82,7 @@ jobs:
         run: ./mvnw -T1C -B -f examples/pom.xml clean package -DskipTests
 
   test-coverage:
-    if: ${{ REPOSITORY == 'Monday'}}
+    if: github.repository == 'apache/shardingsphere'
     name: Test coverage report
     runs-on: ubuntu-latest
     steps:

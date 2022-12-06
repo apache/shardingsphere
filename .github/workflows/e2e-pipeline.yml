@@ -68,7 +68,6 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Drat.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
-  REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
 
 jobs:
@@ -106,7 +105,7 @@ jobs:
         run: ./mvnw -nsu -B install -f test/e2e/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.opengauss.version=${{ env.opengauss_version }}
 
   pipeline-daily-it-test:
-    if: (github.event_name == 'schedule' && ${{ github.repository == env.REPOSITORY }})
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: pipeline-daily-it-test
     runs-on: ubuntu-latest
     env:
