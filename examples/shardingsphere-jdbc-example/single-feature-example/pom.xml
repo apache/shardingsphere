@@ -30,7 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>extension-example</module>
         <module>sharding-example</module>
         <module>transaction-example</module>
     </modules>

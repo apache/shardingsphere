@@ -43,6 +43,7 @@ public final class SpringNamespaceMyBatisExampleScenario implements FrameworkExa
     public Map<String, String> getResourceTemplateMap() {
         Map<String, String> result = new HashMap<>(4, 1);
         result.put("resources/xml/application.ftl", "application.xml");
+        result.put("resources/yaml/config.ftl", "config.yaml");
         result.put("resources/mappers/OrderItemMapper.ftl", "mappers/OrderItemMapper.xml");
         result.put("resources/mappers/OrderMapper.ftl", "mappers/OrderMapper.xml");
         result.put("resources/mappers/AddressMapper.ftl", "mappers/AddressMapper.xml");

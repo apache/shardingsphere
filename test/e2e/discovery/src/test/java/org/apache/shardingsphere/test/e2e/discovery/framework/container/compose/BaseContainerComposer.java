@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.discovery.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;

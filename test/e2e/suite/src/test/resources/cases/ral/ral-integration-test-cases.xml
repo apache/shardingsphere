@@ -82,7 +82,7 @@
         <assertion expected-data-file="show_sharding_table_rule.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES" />
         </assertion>
-        <assertion expected-data-file="show_resources.xml">
+        <assertion expected-data-file="show_storage_units.xml">
             <assertion-sql sql="SHOW STORAGE UNITS" />
         </assertion>
         <assertion expected-data-file="show_tables.xml">
