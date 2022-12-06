@@ -83,7 +83,7 @@ jobs:
         run: ./mvnw -T1C -B -f examples/pom.xml clean package -DskipTests
 
   test-coverage:
-    if: ${{ env.REPOSITORY == 'Monday'}}
+    if: ${{ REPOSITORY == 'Monday'}}
     name: Test coverage report
     runs-on: ubuntu-latest
     steps:
