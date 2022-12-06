@@ -173,29 +173,7 @@ https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE
 
 GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
 
-### 4. 更新 ShardingSphere-JDBC Spring 文档中 xsd 文件链接
-
-更新目录 `docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace` 下文档内的所有 xsd 链接。
-
-将：
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVIOUS.RELEASE.VERSION}.xsd
-```
-
-更新为：
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
-```
-
-参考命令：
-```shell
-cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
-grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
-```
-
-在文档中指定 xsd 版本，而不是直接使用 `sharding.xsd`，是为了让历史版本的文档能够对应到正确版本的 xsd 文件。
-
-### 5. 修改 README 文件
+### 4. 修改 README 文件
 
 更新 `README.md` 和 `README_ZH.md` 里的 `${RELEASE.VERSION}` 和 `${NEXT.RELEASE.VERSION}`。
 
@@ -572,49 +550,22 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 
 参考：[Release Download Pages for Projects](https://infra.apache.org/release-download-pages.html)。
 
-### 6. 上传 Spring namespace xsd 文件至官方网站
-
-提交 pull request 将源码中的 xsd 文件以及发布版本的 xsd 文件上传至 https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
-
-应上传的文件列表如下：
-
-- datasource.xsd
-- datasource-${RELEASE.VERSION}.xsd  
-- mode/standalone/repository.xsd
-- mode/standalone/repository-${RELEASE.VERSION}.xsd  
-- mode/cluster/repository.xsd
-- mode/cluster/repository-${RELEASE.VERSION}.xsd  
-- sharding.xsd
-- sharding-${RELEASE.VERSION}.xsd  
-- encrypt.xsd
-- encrypt-${RELEASE.VERSION}.xsd  
-- readwrite-splitting.xsd
-- readwrite-splitting-${RELEASE.VERSION}.xsd  
-- shadow.xsd
-- shadow-${RELEASE.VERSION}.xsd  
-- database-discovery.xsd
-- database-discovery-${RELEASE.VERSION}.xsd
-- sql-parser.xsd
-- sql-parser-${RELEASE.VERSION}.xsd
-- sql-translator.xsd
-- sql-translator-${RELEASE.VERSION}.xsd
-
-### 7. 官网首页增加发布版本文档入口
+### 6. 官网首页增加发布版本文档入口
 
 参考以下代码：
 - [英文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
 - [中文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
 
-### 8. 更新示例版本
+### 7. 更新示例版本
 
 更新 examples 模块的 pom，将版本由 ${RELEASE.VERSION} 替换为 ${NEXT.DEVELOPMENT.VERSION}，并提交 PR 到发布分支。
 
-### 9. 合并 GitHub 的 release 分支到 `master`，合并完成后删除 release 分支
+### 8. 合并 GitHub 的 release 分支到 `master`，合并完成后删除 release 分支
 
 确认下载页面中的新发布版本的链接可用后，在 GitHub 页面创建 Pull Request 将分支 `${RELEASE.VERSION}-release` 合并到 `master`。
 如果代码存在冲突，可以先把 master 分支合并到 `${RELEASE.VERSION}-release`。
 
-### 10. 邮件通知版本发布完成
+### 9. 邮件通知版本发布完成
 
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
