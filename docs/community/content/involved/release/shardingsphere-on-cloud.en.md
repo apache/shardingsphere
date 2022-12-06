@@ -205,8 +205,20 @@ helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apac
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-cluster-charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
+### 5. 上传 charts，生成 index
+1. Upload the tgz file generated in the previous step to the Assets of release
+2. generate index.yaml
+```shell
+cd ~/shardingsphere-on-cloud/charts
+mkdir release
+mv *.tgz release
+git checkout gh-pages 
+mv ~/shardingsphere-on-cloud/index.yaml index.yaml
+helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases/download/${RELEASE.VERSION}  . --merge index.yaml
+```
+3. Replace the original index.yaml
 
-### 5. Update the download page
+### 6. Update the download page
 
 Update the following pages:
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
