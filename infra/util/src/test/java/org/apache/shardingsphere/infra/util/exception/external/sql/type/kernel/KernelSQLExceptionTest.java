@@ -24,16 +24,30 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public final class KernelSQLExceptionTest {
     
     @SuppressWarnings("serial")
     @Test
-    public void assertNewKernelSQLExceptionSQLException() {
+    public void assertToSQLException() {
         SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason") {
         }.toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorCode(), is(11001));
         assertThat(actual.getMessage(), is("reason"));
+        assertNull(actual.getCause());
+    }
+    
+    @SuppressWarnings("serial")
+    @Test
+    public void assertToSQLExceptionWithCause() {
+        Exception cause = new RuntimeException("test");
+        SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason", cause) {
+        }.toSQLException();
+        assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
+        assertThat(actual.getErrorCode(), is(11001));
+        assertThat(actual.getMessage(), is("reason"));
+        assertThat(actual.getCause(), is(cause));
     }
 }

@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.junit.Test;
 
 import java.sql.SQLException;
 
-/**
- * SQL wrapper exception.
- */
-public final class SQLWrapperException extends ShardingSphereSQLException {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class SQLWrapperExceptionTest {
     
-    private static final long serialVersionUID = 8983736995662464009L;
-    
-    private static final int TYPE_OFFSET = 0;
-    
-    public SQLWrapperException(final SQLException cause) {
-        super(cause.getSQLState(), TYPE_OFFSET, cause.getErrorCode(), cause.getMessage(), cause);
+    @Test
+    public void assertToSQLException() {
+        SQLException actual = new SQLWrapperException(new SQLException("reason", "1", 10)).toSQLException();
+        assertThat(actual.getSQLState(), is("1"));
+        assertThat(actual.getErrorCode(), is(10));
+        assertThat(actual.getMessage(), is("reason"));
     }
 }
