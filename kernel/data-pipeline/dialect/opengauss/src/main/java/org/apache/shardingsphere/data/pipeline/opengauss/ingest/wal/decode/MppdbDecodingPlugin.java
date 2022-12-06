@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
@@ -30,6 +30,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Deco
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginXidEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitXidEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -39,16 +41,23 @@ import org.opengauss.util.PGobject;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Mppdb decoding plugin in openGauss.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class MppdbDecodingPlugin implements DecodingPlugin {
+    
+    private static final Pattern PATTERN_BEGIN_XID = Pattern.compile("BEGIN\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
+    
+    private static final Pattern PATTERN_COMMIT_XID = Pattern.compile("COMMIT\\s+(\\d+).*CSN\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
     
     private static final ObjectMapper OBJECT_MAPPER;
     
@@ -59,30 +68,46 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private final BaseTimestampUtils timestampUtils;
     
+    private final boolean decodeWithXid;
+    
+    public MppdbDecodingPlugin(final BaseTimestampUtils timestampUtils) {
+        this.timestampUtils = timestampUtils;
+        decodeWithXid = false;
+    }
+    
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
         AbstractWALEvent result;
-        char eventType = readOneChar(data);
-        result = '{' == eventType ? readTableEvent(readMppData(data)) : new PlaceholderEvent();
+        String dataText = StandardCharsets.UTF_8.decode(data).toString();
+        if (decodeWithXid) {
+            result = decodeDataWithXid(dataText);
+        } else {
+            result = decodeDataIgnoreXid(dataText);
+        }
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }
     
-    private char readOneChar(final ByteBuffer data) {
-        return (char) data.get();
+    private AbstractWALEvent decodeDataWithXid(final String dataText) {
+        AbstractWALEvent result;
+        if (dataText.startsWith("{")) {
+            result = readTableEvent(dataText);
+            return result;
+        }
+        Matcher beginXidMatcher = PATTERN_BEGIN_XID.matcher(dataText);
+        Matcher commitXidMatcher = PATTERN_COMMIT_XID.matcher(dataText);
+        if (beginXidMatcher.matches()) {
+            result = new BeginXidEvent(Long.parseLong(beginXidMatcher.group(1)));
+        } else if (commitXidMatcher.matches()) {
+            result = new CommitXidEvent(Long.parseLong(commitXidMatcher.group(1)), Long.parseLong(commitXidMatcher.group(2)));
+        } else {
+            result = new PlaceholderEvent();
+        }
+        return result;
     }
     
-    private String readMppData(final ByteBuffer data) {
-        StringBuilder mppData = new StringBuilder();
-        mppData.append('{');
-        int depth = 1;
-        while (0 != depth && data.hasRemaining()) {
-            char next = (char) data.get();
-            mppData.append(next);
-            int optDepth = '{' == next ? 1 : ('}' == next ? -1 : 0);
-            depth += optDepth;
-        }
-        return mppData.toString();
+    private AbstractWALEvent decodeDataIgnoreXid(final String dataText) {
+        return dataText.startsWith("{") ? readTableEvent(dataText) : new PlaceholderEvent();
     }
     
     private AbstractRowEvent readTableEvent(final String mppData) {

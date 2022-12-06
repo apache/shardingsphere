@@ -28,6 +28,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableM
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginXidEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitXidEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -69,7 +71,7 @@ public final class WALEventConverter {
         if (event instanceof DeleteRowEvent) {
             return handleDeleteRowsEvent((DeleteRowEvent) event);
         }
-        if (event instanceof PlaceholderEvent) {
+        if (event instanceof PlaceholderEvent || event instanceof BeginXidEvent || event instanceof CommitXidEvent) {
             return createPlaceholderRecord(event);
         }
         throw new UnsupportedSQLOperationException("");
