@@ -26,10 +26,10 @@ keyGenerateStrategyDefinition ::=
   'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ','  algorithmDefinition  ')' 
 
 auditStrategyDefinition ::= 
-  'AUDIT_STRATEGY' '(' algorithmDefinition ( ',' algorithmDefinition ) ')'
+  'AUDIT_STRATEGY' '(' algorithmDefinition ( ',' algorithmDefinition )* ')'
 
 algorithmDefinition ::=
-  'SHARDING_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')' ')'
+   'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' ( propertyDefinition )?  ')' )?')'
 
 propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )* 
@@ -42,11 +42,8 @@ storageUnitName ::=
 
 columnName ::=
   identifier
-    
-auditorName ::=
-  identifier
 
-algorithmName ::=
+algorithmType ::=
   identifier
     
 algorithmType ::=
