@@ -297,7 +297,7 @@ helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
 helm search repo apache
 ```
 
-If three products can be queried, the release is successful, and `helm repo add` and `helm search repo` will be verified according to the verification value in index.yaml
+If three products can be queried, the release is successful, and `helm repo add` and `helm search repo -l` will be verified according to the verification value in index.yaml
 
 
 ```shell
