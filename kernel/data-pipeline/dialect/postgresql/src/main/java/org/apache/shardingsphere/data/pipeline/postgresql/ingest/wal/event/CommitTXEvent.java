@@ -18,20 +18,16 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Abstract row event.
+ * Commit TX event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString(callSuper = true)
-public abstract class AbstractRowEvent extends AbstractWALEvent {
+public final class CommitTXEvent extends AbstractWALEvent {
     
-    private String databaseName;
+    private final long xid;
     
-    private String tableName;
-    
-    private Long csn;
+    private final Long csn;
 }
