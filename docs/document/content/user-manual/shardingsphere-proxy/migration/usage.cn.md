@@ -106,7 +106,7 @@ CREATE DATABASE migration_ds_12 DEFAULT CHARSET utf8;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -140,7 +140,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+2. 在 proxy 配置源端存储单元。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -332,7 +332,7 @@ CREATE DATABASE migration_ds_12;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -366,7 +366,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+2. 在 proxy 配置源端存储单元。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -566,7 +566,7 @@ CREATE DATABASE migration_ds_12;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
 
 1.1. 创建逻辑库。
 
@@ -615,7 +615,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 ```
 
-2. 在 proxy 配置源端资源。
+2. 在 proxy 配置源端存储单元。
 
 2.1. 同构数据库。
 

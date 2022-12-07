@@ -100,7 +100,7 @@ CREATE DATABASE migration_ds_12 DEFAULT CHARSET utf8;
 
 #### Procedure
 
-1. Create a new logical database in proxy and configure resources and rules.
+1. Create a new logical database in proxy and configure storage units and rules.
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -134,7 +134,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+2. Configure the source storage units in proxy.
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -326,7 +326,7 @@ CREATE DATABASE migration_ds_12;
 
 #### Procedure
 
-1. Create a new logical database in proxy and configure resources and rules.
+1. Create a new logical database in proxy and configure storage units and rules.
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -360,7 +360,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+2. Configure the source storage units in proxy.
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -559,7 +559,7 @@ CREATE DATABASE migration_ds_12;
 
 #### Procedure
 
-1. Create a new logical database and configure resources and rules.
+1. Create a new logical database and configure storage units and rules.
 
 1.1. Create logic database.
 
@@ -610,7 +610,7 @@ MySQL example:
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 ```
 
-2. Configure the source resources in proxy.
+2. Configure the source storage units in proxy.
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
