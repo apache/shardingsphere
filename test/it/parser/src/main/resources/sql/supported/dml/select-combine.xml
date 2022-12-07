@@ -30,5 +30,11 @@
     <sql-case id="select_minus" value="SELECT * FROM table1 MINUS SELECT * FROM table2" db-types="openGauss" />
     <sql-case id="select_minus_order_by" value="SELECT * FROM table1 MINUS SELECT * FROM table2 ORDER BY id" db-types="openGauss" />
     <sql-case id="select_minus_order_by_limit" value="SELECT * FROM table1 MINUS SELECT * FROM table2 ORDER BY id LIMIT 1, 1" db-types="openGauss" />
+    <sql-case id="select_union_intersect" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_union_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 EXCEPT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_union_intersect_except" value="SELECT * FROM table1 UNION SELECT * FROM table2 INTERSECT SELECT * FROM table3 EXCEPT SELECT * FROM table4" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_except_union" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 UNION SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_except_intersect" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_except_intersect_union" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3 UNION SELECT * FROM table4" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_sub_union" value="SELECT * FROM table1 UNION (SELECT * FROM table2 UNION SELECT * FROM table3)" db-types="MySQL,PostgreSQL,openGauss" />
 </sql-cases>

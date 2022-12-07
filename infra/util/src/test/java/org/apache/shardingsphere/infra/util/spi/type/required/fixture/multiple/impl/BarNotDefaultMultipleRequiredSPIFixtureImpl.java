@@ -18,11 +18,7 @@
 package org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl;
 
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleWithDefaultRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleWithoutDefaultRequiredSPIFixture;
 
-public final class DefaultMultipleRequiredSPIFixtureImpl implements MultipleWithDefaultRequiredSPIFixture {
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+public final class BarNotDefaultMultipleRequiredSPIFixtureImpl implements MultipleWithDefaultRequiredSPIFixture, MultipleWithoutDefaultRequiredSPIFixture {
 }

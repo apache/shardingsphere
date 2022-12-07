@@ -24,6 +24,7 @@ CREATE DATABASE pipeline_it_3;
 CREATE DATABASE pipeline_it_4;
 
 GRANT REPLICATION CLIENT, REPLICATION SLAVE ON *.*  TO `test_user`@`%`;
+-- TODO remove unnecessary permissions
 GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON pipeline_it_0.* TO `test_user`@`%`;
 GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON pipeline_it_1.* TO `test_user`@`%`;
 GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON pipeline_it_2.* TO `test_user`@`%`;

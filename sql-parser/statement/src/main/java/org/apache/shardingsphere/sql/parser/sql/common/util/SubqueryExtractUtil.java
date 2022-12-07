@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -64,7 +65,11 @@ public final class SubqueryExtractUtil {
         if (selectStatement.getWhere().isPresent()) {
             extractSubquerySegmentsFromExpression(result, selectStatement.getWhere().get().getExpr());
         }
-        selectStatement.getCombine().ifPresent(optional -> extractSubquerySegments(result, optional.getSelectStatement()));
+        if (selectStatement.getCombine().isPresent()) {
+            CombineSegment combineSegment = selectStatement.getCombine().get();
+            extractSubquerySegments(result, combineSegment.getLeft());
+            extractSubquerySegments(result, combineSegment.getRight());
+        }
     }
     
     private static void extractSubquerySegmentsFromProjections(final List<SubquerySegment> result, final ProjectionsSegment projections) {

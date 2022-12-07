@@ -19,5 +19,5 @@ package org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple;
 
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
-public interface MultipleRequiredSPIFixture extends RequiredSPI {
+public interface MultipleWithoutDefaultRequiredSPIFixture extends RequiredSPI {
 }
