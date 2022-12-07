@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.util.spi.type.ordered;
 
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixture;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedInterfaceFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
 import org.junit.After;
 import org.junit.Test;

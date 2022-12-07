@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.util.spi;
 
-import org.apache.shardingsphere.infra.util.spi.fixture.EmptySPIFixture;
-import org.apache.shardingsphere.infra.util.spi.fixture.MultitonSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.fixture.SingletonSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.fixture.impl.MultitonSPIFixtureImpl;
-import org.apache.shardingsphere.infra.util.spi.fixture.impl.SingletonSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.fixture.empty.EmptySPIFixture;
+import org.apache.shardingsphere.infra.util.spi.fixture.multiton.MultitonSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.fixture.singleton.SingletonSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.fixture.multiton.impl.MultitonSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.fixture.singleton.impl.SingletonSPIFixtureImpl;
 import org.junit.Test;
 
 import java.util.Collection;

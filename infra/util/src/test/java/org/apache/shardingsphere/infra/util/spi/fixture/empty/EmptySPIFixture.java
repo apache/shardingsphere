@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.type.ordered.fixture;
+package org.apache.shardingsphere.infra.util.spi.fixture.empty;
 
-public final class OrderedInterfaceFixtureImpl implements OrderedInterfaceFixture {
+public interface EmptySPIFixture {
 }
