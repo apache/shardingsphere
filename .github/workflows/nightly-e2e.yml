@@ -112,7 +112,7 @@ jobs:
         adapter: [ proxy, jdbc ]
         mode: [ standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
-        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow, encrypt_with_data_type ]
+        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
         exclude:
           - adapter: jdbc
             mode: Cluster

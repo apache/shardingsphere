@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.type.typed.fixture;
+package org.apache.shardingsphere.infra.util.spi.type.typed.fixture.impl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.TypedSPIFixture;
 
 import java.util.Collection;
 import java.util.Collections;

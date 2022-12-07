@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.fixture;
+package org.apache.shardingsphere.infra.util.spi.fixture.singleton.impl;
 
-public final class MultitonSPIFixtureImpl implements MultitonSPIFixture {
+import org.apache.shardingsphere.infra.util.spi.fixture.singleton.SingletonSPIFixture;
+
+public final class SingletonSPIFixtureImpl implements SingletonSPIFixture {
 }

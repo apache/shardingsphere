@@ -19,7 +19,6 @@ package org.apache.shardingsphere.example.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
