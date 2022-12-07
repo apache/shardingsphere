@@ -51,8 +51,8 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BaseDMLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseDMLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Before

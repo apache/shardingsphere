@@ -50,8 +50,8 @@ import static org.junit.Assert.assertNotNull;
 
 public abstract class BaseDDLE2EIT extends SingleE2EIT {
     
-    public BaseDDLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseDDLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Before

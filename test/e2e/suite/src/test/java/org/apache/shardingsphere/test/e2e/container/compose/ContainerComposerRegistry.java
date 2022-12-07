@@ -39,29 +39,29 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     /**
      * Get container composer.
      *
-     * @param testParameter test parameter
+     * @param testParam test parameter
      * @return composed container
      */
-    public ContainerComposer getContainerComposer(final E2ETestParameter testParameter) {
-        String key = testParameter.getKey();
+    public ContainerComposer getContainerComposer(final E2ETestParameter testParam) {
+        String key = testParam.getKey();
         if (containerComposers.containsKey(key)) {
             return containerComposers.get(key);
         }
         synchronized (containerComposers) {
             if (!containerComposers.containsKey(key)) {
-                containerComposers.put(key, createContainerComposer(testParameter));
+                containerComposers.put(key, createContainerComposer(testParam));
             }
             return containerComposers.get(key);
         }
     }
     
-    private ContainerComposer createContainerComposer(final E2ETestParameter testParameter) {
-        return isClusterMode(testParameter) ? new ClusterContainerComposer(testParameter) : new StandaloneContainerComposer(testParameter);
+    private ContainerComposer createContainerComposer(final E2ETestParameter testParam) {
+        return isClusterMode(testParam) ? new ClusterContainerComposer(testParam) : new StandaloneContainerComposer(testParam);
     }
     
-    private boolean isClusterMode(final E2ETestParameter testParameter) {
+    private boolean isClusterMode(final E2ETestParameter testParam) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(testParameter.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(testParameter.getAdapter());
+        return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(testParam.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter());
     }
     
     @Override

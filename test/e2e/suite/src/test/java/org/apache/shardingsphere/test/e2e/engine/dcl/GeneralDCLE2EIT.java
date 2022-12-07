@@ -36,8 +36,8 @@ import java.util.Collection;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
     
-    public GeneralDCLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public GeneralDCLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

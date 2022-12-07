@@ -58,9 +58,9 @@ public abstract class BatchE2EIT extends BaseE2EIT {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BatchE2EIT(final CaseTestParameter testParameter) {
-        super(testParameter);
-        parentPath = testParameter.getTestCaseContext().getParentPath();
+    public BatchE2EIT(final CaseTestParameter testParam) {
+        super(testParam);
+        parentPath = testParam.getTestCaseContext().getParentPath();
     }
     
     @Before

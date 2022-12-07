@@ -36,8 +36,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseRQLE2EIT extends SingleE2EIT {
     
-    public BaseRQLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseRQLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

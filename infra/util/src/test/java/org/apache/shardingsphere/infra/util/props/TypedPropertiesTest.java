@@ -33,7 +33,8 @@ public final class TypedPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        TypedPropertiesFixture actual = new TypedPropertiesFixture(createProperties());
+        Properties props = createProperties();
+        TypedPropertiesFixture actual = new TypedPropertiesFixture(props);
         assertTrue(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
         assertTrue(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
         assertThat(actual.getValue(TypedPropertyKeyFixture.INT_VALUE), is(100));
@@ -41,6 +42,7 @@ public final class TypedPropertiesTest {
         assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_VALUE), is(10000L));
         assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE), is(10000L));
         assertThat(actual.getValue(TypedPropertyKeyFixture.STRING_VALUE), is("new_value"));
+        assertThat(actual.getProps(), is(props));
     }
     
     private Properties createProperties() {

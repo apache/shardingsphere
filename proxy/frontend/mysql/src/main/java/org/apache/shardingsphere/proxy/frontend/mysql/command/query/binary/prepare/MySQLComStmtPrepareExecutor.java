@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -60,15 +60,15 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         failedIfContainsMultiStatements();
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
+        SQLParserRule sqlParserRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeFactory.getInstance("MySQL").getType()).parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
         int projectionCount = getProjectionCount(sqlStatement);
         int statementId = MySQLStatementIDGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext));
         return createPackets(statementId, projectionCount, sqlStatement.getParameterCount());
@@ -86,7 +86,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private int getProjectionCount(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory
-                    .newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), sqlStatement, connectionSession.getDatabaseName());
+                    .newInstance(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata(), sqlStatement, connectionSession.getDatabaseName());
             return sqlStatementContext.getProjectionsContext().getExpandProjections().size();
         }
         return 0;

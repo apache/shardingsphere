@@ -57,13 +57,13 @@ public final class JDBCOKProxyState implements OKProxyState {
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)
+        return ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)
                 || TransactionType.isDistributedTransaction(connectionSession.getTransactionStatus().getTransactionType());
     }
     
     private boolean isPreferNettyEventLoop() {
         return BackendExecutorType.OLTP == ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE);
+                .getContextManager().getMetadataContexts().getMetadata().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE);
     }
     
     @Override

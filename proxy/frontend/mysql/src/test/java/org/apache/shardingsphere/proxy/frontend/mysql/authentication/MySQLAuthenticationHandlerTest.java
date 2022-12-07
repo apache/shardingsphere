@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
@@ -131,13 +131,13 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final ShardingSphereUser user, final boolean isNeedSuper) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = getMetaDataContexts(user, isNeedSuper);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetadataContexts metadataContexts = getMetadataContexts(user, isNeedSuper);
+        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
-        return new MetaDataContexts(mock(MetaDataPersistService.class),
+    private MetadataContexts getMetadataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
+        return new MetadataContexts(mock(MetadataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user, isNeedSuper), new ConfigurationProperties(new Properties())));
     }
     

@@ -75,7 +75,10 @@
             <!-- FIXME support VALUES (1) projection parse -->
             <projections start-index="-1" stop-index="-1" />
             <combine combine-type="UNION_ALL" start-index="58" stop-index="107">
-                <select>
+                <left>
+                    <projections start-index="-1" stop-index="-1" />
+                </left>
+                <right>
                     <projections start-index="75" stop-index="77">
                         <expression-projection text="n+1" start-index="75" stop-index="77" />
                     </projections>
@@ -95,7 +98,7 @@
                             </binary-operation-expression>
                         </expr>
                     </where>
-                </select>
+                </right>
             </combine>
         </select>
     </create-view>

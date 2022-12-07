@@ -56,7 +56,7 @@ public final class ShardingSphereMetaData {
         databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
-        this.internalProps = new InternalConfigurationProperties(props.getProps());
+        internalProps = new InternalConfigurationProperties(props.getProps());
     }
     
     /**

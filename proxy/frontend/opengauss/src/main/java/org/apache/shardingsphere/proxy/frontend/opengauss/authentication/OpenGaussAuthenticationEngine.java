@@ -121,7 +121,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         if (version >= OpenGaussProtocolVersion.PROTOCOL_350.getVersion()) {
             return "";
         }
-        String password = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
+        String password = ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
                 .flatMap(authorityRule -> authorityRule.findUser(new Grantee(username, "%"))).map(ShardingSphereUser::getPassword).orElse("");
         return OpenGaussAuthenticationHandler.calculateServerSignature(password, saltHexString, nonceHexString, serverIteration);
     }

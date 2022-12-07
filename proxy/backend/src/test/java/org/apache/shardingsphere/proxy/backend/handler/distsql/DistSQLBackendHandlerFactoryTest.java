@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandlerFactory;
@@ -81,16 +81,16 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class);
-        MetaDataContexts metaDataContexts = mockMetaDataContexts();
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetadataContexts metadataContexts = mockMetaDataContexts();
+        when(result.getMetadataContexts()).thenReturn(metadataContexts);
         return result;
     }
     
-    private MetaDataContexts mockMetaDataContexts() {
-        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().containsDatabase("db")).thenReturn(true);
+    private MetadataContexts mockMetaDataContexts() {
+        MetadataContexts result = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
+        when(result.getMetadata().containsDatabase("db")).thenReturn(true);
         ShardingSphereDatabase database = mockDatabase();
-        when(result.getMetaData().getDatabase("db")).thenReturn(database);
+        when(result.getMetadata().getDatabase("db")).thenReturn(database);
         return result;
     }
     
@@ -207,7 +207,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         ShadowRuleConfiguration ruleConfig = mockShadowRuleConfiguration();
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase("db")).thenReturn(database);
     }
     
     private ShadowRuleConfiguration mockShadowRuleConfiguration() {

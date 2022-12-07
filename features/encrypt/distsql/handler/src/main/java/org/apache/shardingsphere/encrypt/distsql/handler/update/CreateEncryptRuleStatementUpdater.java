@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSeg
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
+import org.apache.shardingsphere.infra.distsql.exception.resource.EmptyResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
@@ -46,7 +47,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
         checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
-        // TODO check resource
+        checkDataSources(database);
     }
     
     private void checkDuplicateRuleNames(final String databaseName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
@@ -72,6 +73,10 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
         Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !EncryptAlgorithmFactory.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors));
+    }
+    
+    private void checkDataSources(final ShardingSphereDatabase database) {
+        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getDataSources().isEmpty(), () -> new EmptyResourceException(database.getName()));
     }
     
     @Override

@@ -42,14 +42,14 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public StandaloneContainerComposer(final E2ETestParameter testParameter) {
-        String scenario = testParameter.getScenario();
+    public StandaloneContainerComposer(final E2ETestParameter testParam) {
+        String scenario = testParam.getScenario();
         containers = new ITContainers(scenario);
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParameter.getDatabaseType(), "", scenario,
-                StorageContainerConfigurationFactory.newInstance(testParameter.getDatabaseType())));
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(testParameter.getMode(), testParameter.getAdapter(),
-                testParameter.getDatabaseType(), storageContainer, scenario, ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, testParameter.getDatabaseType())));
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", scenario,
+                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(testParam.getMode(), testParam.getAdapter(),
+                testParam.getDatabaseType(), storageContainer, scenario, ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, testParam.getDatabaseType())));
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
         }

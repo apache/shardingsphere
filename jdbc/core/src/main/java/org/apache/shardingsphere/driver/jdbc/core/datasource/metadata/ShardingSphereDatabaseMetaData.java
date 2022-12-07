@@ -51,7 +51,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
         super(connection.getJdbcContext().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules();
+        rules = connection.getContextManager().getMetadataContexts().getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules();
     }
     
     @Override
@@ -223,13 +223,13 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String getActualCatalog(final String catalog) {
         DataSourceMetaData metaData = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getDataSourceMetaData(getDataSourceName());
+                .getMetadataContexts().getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getDataSourceMetaData(getDataSourceName());
         return null != catalog && catalog.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getCatalog() : catalog;
     }
     
     private String getActualSchema(final String schema) {
         DataSourceMetaData metaData = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getDataSourceMetaData(getDataSourceName());
+                .getMetadataContexts().getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getDataSourceMetaData(getDataSourceName());
         return null != schema && schema.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getSchema() : schema;
     }
     

@@ -41,8 +41,8 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class TransactionBaseE2EIT extends BaseE2EIT {
     
-    public TransactionBaseE2EIT(final TransactionTestParameter testParameter) {
-        super(testParameter);
+    public TransactionBaseE2EIT(final TransactionTestParameter testParam) {
+        super(testParam);
     }
     
     /**
@@ -119,46 +119,46 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
         return result;
     }
     
-    protected void callTestCases(final TransactionTestParameter testParameter) throws SQLException {
-        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(testParameter.getAdapter())) {
-            for (TransactionType each : testParameter.getTransactionTypes()) {
+    protected void callTestCases(final TransactionTestParameter testParam) throws SQLException {
+        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter())) {
+            for (TransactionType each : testParam.getTransactionTypes()) {
                 if (TransactionType.LOCAL.equals(each)) {
-                    log.info("Call transaction IT {}, alter transaction rule {}.", testParameter, "");
+                    log.info("Call transaction IT {}, alter transaction rule {}.", testParam, "");
                     alterTransactionRule(each, "");
-                    doCallTestCases(testParameter, each, "");
+                    doCallTestCases(testParam, each, "");
                 } else if (TransactionType.XA.equals(each)) {
-                    for (String eachProvider : testParameter.getProviders()) {
-                        log.info("Call transaction IT {}, alter transaction rule {}.", testParameter, eachProvider);
+                    for (String eachProvider : testParam.getProviders()) {
+                        log.info("Call transaction IT {}, alter transaction rule {}.", testParam, eachProvider);
                         alterTransactionRule(each, eachProvider);
-                        doCallTestCases(testParameter, each, eachProvider);
+                        doCallTestCases(testParam, each, eachProvider);
                     }
                 }
             }
         } else {
-            doCallTestCases(testParameter);
+            doCallTestCases(testParam);
         }
     }
     
-    private void alterTransactionRule(final TransactionType transactionType, final String each) throws SQLException {
+    private void alterTransactionRule(final TransactionType transactionType, final String providerType) throws SQLException {
         if (Objects.equals(transactionType, TransactionType.LOCAL)) {
             alterLocalTransactionRule();
         } else if (Objects.equals(transactionType, TransactionType.XA)) {
-            alterXaTransactionRule(each);
+            alterXaTransactionRule(providerType);
         }
     }
     
-    private void doCallTestCases(final TransactionTestParameter testParameter) {
-        for (Class<? extends BaseTransactionTestCase> each : testParameter.getTransactionTestCaseClasses()) {
-            log.info("Transaction IT {} -> {} test begin.", testParameter, each.getSimpleName());
+    private void doCallTestCases(final TransactionTestParameter testParam) {
+        for (Class<? extends BaseTransactionTestCase> each : testParam.getTransactionTestCaseClasses()) {
+            log.info("Transaction IT {} -> {} test begin.", testParam, each.getSimpleName());
             try {
                 each.getConstructor(TransactionBaseE2EIT.class, DataSource.class).newInstance(this, getDataSource()).execute();
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error(String.format("Transaction IT %s -> %s test failed", testParameter, each.getSimpleName()), ex);
+                log.error(String.format("Transaction IT %s -> %s test failed", testParam, each.getSimpleName()), ex);
                 throw new RuntimeException(ex);
             }
-            log.info("Transaction IT {} -> {} test end.", testParameter, each.getSimpleName());
+            log.info("Transaction IT {} -> {} test end.", testParam, each.getSimpleName());
             try {
                 getDataSource().close();
             } catch (final SQLException ignored) {
@@ -166,21 +166,21 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
         }
     }
     
-    private void doCallTestCases(final TransactionTestParameter testParameter, final TransactionType transactionType, final String provider) {
-        for (Class<? extends BaseTransactionTestCase> each : testParameter.getTransactionTestCaseClasses()) {
+    private void doCallTestCases(final TransactionTestParameter testParam, final TransactionType transactionType, final String provider) {
+        for (Class<? extends BaseTransactionTestCase> each : testParam.getTransactionTestCaseClasses()) {
             if (!Arrays.asList(each.getAnnotation(TransactionTestCase.class).transactionTypes()).contains(transactionType)) {
                 return;
             }
-            log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", testParameter, transactionType, provider, each.getSimpleName());
+            log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", testParam, transactionType, provider, each.getSimpleName());
             try {
                 each.getConstructor(TransactionBaseE2EIT.class, DataSource.class).newInstance(this, getDataSource()).execute();
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error(String.format("Transaction IT %s -> %s test failed", testParameter, each.getSimpleName()), ex);
+                log.error(String.format("Transaction IT %s -> %s test failed", testParam, each.getSimpleName()), ex);
                 throw new RuntimeException(ex);
             }
-            log.info("Call transaction IT {} -> {} -> {} -> {} test end.", testParameter, transactionType, provider, each.getSimpleName());
+            log.info("Call transaction IT {} -> {} -> {} -> {} test end.", testParam, transactionType, provider, each.getSimpleName());
             try {
                 getDataSource().close();
             } catch (final SQLException ignored) {

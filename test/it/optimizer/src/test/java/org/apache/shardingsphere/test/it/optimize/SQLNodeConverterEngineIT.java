@@ -35,12 +35,12 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.SQLParserTestCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -139,6 +139,13 @@ public final class SQLNodeConverterEngineIT {
         SUPPORTED_SQL_CASE_IDS.add("select_minus");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_union_intersect");
+        SUPPORTED_SQL_CASE_IDS.add("select_union_except");
+        SUPPORTED_SQL_CASE_IDS.add("select_union_intersect_except");
+        SUPPORTED_SQL_CASE_IDS.add("select_except_union");
+        SUPPORTED_SQL_CASE_IDS.add("select_except_intersect");
+        SUPPORTED_SQL_CASE_IDS.add("select_except_intersect_union");
+        SUPPORTED_SQL_CASE_IDS.add("select_sub_union");
         SUPPORTED_SQL_CASE_IDS.add("select_projections_with_expr");
         SUPPORTED_SQL_CASE_IDS.add("select_projections_with_only_expr");
         SUPPORTED_SQL_CASE_IDS.add("select_natural_join");
@@ -155,10 +162,10 @@ public final class SQLNodeConverterEngineIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public SQLNodeConverterEngineIT(final InternalSQLParserTestParameter testParameter) {
-        sqlCaseId = testParameter.getSqlCaseId();
-        databaseType = testParameter.getDatabaseType();
-        sqlCaseType = testParameter.getSqlCaseType();
+    public SQLNodeConverterEngineIT(final InternalSQLParserTestParameter testParam) {
+        sqlCaseId = testParam.getSqlCaseId();
+        databaseType = testParam.getDatabaseType();
+        sqlCaseType = testParam.getSqlCaseType();
     }
     
     @Parameters(name = "{0}")
@@ -176,12 +183,12 @@ public final class SQLNodeConverterEngineIT {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParameter) {
-        return SQLCaseType.Placeholder == testParameter.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParameter.getSqlCaseId()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
+        return SQLCaseType.Placeholder == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
     }
     
-    private static boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParameter) {
-        return testParameter.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(testParameter.getSqlCaseId());
+    private static boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {
+        return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(testParam.getSqlCaseId());
     }
     
     @Test

@@ -44,7 +44,7 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
         
         @Override
         protected ClusterPersistRepository initialize() {
-            return (ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+            return (ClusterPersistRepository) PipelineContext.getContextManager().getMetadataContexts().getPersistService().getRepository();
         }
     };
     

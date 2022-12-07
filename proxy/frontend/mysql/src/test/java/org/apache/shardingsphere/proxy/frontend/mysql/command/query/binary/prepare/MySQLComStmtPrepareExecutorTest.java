@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -78,12 +78,12 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     
     private void prepareSQLParser() {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        MetadataContexts metadataContexts = contextManager.getMetadataContexts();
+        when(metadataContexts.getMetadata().getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
         CacheOption cacheOption = new CacheOption(1024, 1024);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
+        when(metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        when(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(metadataContexts.getMetadata().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test(expected = UnsupportedPreparedStatementException.class)

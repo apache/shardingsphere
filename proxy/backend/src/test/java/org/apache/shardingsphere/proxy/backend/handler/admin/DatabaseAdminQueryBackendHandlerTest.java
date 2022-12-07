@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor.SelectTableExecutor;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -57,9 +57,9 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
     
     @Before
     public void before() throws SQLException {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
+        ContextManager contextManager = new ContextManager(metadataContexts, mock(InstanceContext.class));
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("db");

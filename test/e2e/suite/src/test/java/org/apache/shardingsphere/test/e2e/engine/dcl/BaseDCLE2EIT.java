@@ -28,8 +28,8 @@ public abstract class BaseDCLE2EIT extends SingleE2EIT {
     
     private AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    public BaseDCLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public BaseDCLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Before

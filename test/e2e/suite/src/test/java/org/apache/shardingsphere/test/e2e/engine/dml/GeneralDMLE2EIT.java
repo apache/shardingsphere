@@ -39,8 +39,8 @@ import static org.junit.Assert.assertFalse;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
-    public GeneralDMLE2EIT(final AssertionTestParameter testParameter) {
-        super(testParameter);
+    public GeneralDMLE2EIT(final AssertionTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -217,7 +216,7 @@ public final class EncryptTable {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns() {
-        Map<String, String> result = new HashMap<>(columns.size(), 1);
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getCipherColumn());
         }

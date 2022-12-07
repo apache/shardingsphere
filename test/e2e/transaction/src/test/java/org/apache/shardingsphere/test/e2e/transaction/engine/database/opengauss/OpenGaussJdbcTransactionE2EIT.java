@@ -32,11 +32,11 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class OpenGaussJdbcTransactionE2EIT extends TransactionBaseE2EIT {
     
-    private final TransactionTestParameter testParameter;
+    private final TransactionTestParameter testParam;
     
-    public OpenGaussJdbcTransactionE2EIT(final TransactionTestParameter testParameter) {
-        super(testParameter);
-        this.testParameter = testParameter;
+    public OpenGaussJdbcTransactionE2EIT(final TransactionTestParameter testParam) {
+        super(testParam);
+        this.testParam = testParam;
     }
     
     @Parameters(name = "{0}")
@@ -53,6 +53,6 @@ public final class OpenGaussJdbcTransactionE2EIT extends TransactionBaseE2EIT {
     
     @Test
     public void assertTransaction() throws SQLException {
-        callTestCases(testParameter);
+        callTestCases(testParam);
     }
 }

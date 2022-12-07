@@ -39,7 +39,7 @@ public final class ShardingSphereDataNode {
     /**
      * Get ShardingSphere data node path.
      *
-     * @return meta data node path
+     * @return Metadata node path
      */
     public static String getShardingSphereDataNodePath() {
         return String.join("/", "", ROOT_NODE);
@@ -56,7 +56,7 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get meta data tables path.
+     * Get Metadata tables path.
      *
      * @param databaseName database name
      * @param schemaName schema name
@@ -78,7 +78,7 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get meta data schemas path.
+     * Get Metadata schemas path.
      *
      * @param databaseName database name
      * @return schemas path
@@ -88,12 +88,12 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get table meta data path.
+     * Get table Metadata path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
-     * @return table meta data path
+     * @return table Metadata path
      */
     public static String getTablePath(final String databaseName, final String schemaName, final String table) {
         return String.join("/", getTablesPath(databaseName, schemaName), table);
@@ -106,7 +106,7 @@ public final class ShardingSphereDataNode {
      * @param schemaName schema name
      * @param table table name
      * @param uniqueKey unique key
-     * @return table meta data path
+     * @return table Metadata path
      */
     public static String getTableRowPath(final String databaseName, final String schemaName, final String table, final String uniqueKey) {
         return String.join("/", getTablePath(databaseName, schemaName, table), uniqueKey);
@@ -163,12 +163,12 @@ public final class ShardingSphereDataNode {
     /**
      * Get table data path.
      *
-     * @param tableMetaDataPath table data path
+     * @param tableMetadataPath table data path
      * @return table name
      */
-    public static Optional<String> getTableName(final String tableMetaDataPath) {
+    public static Optional<String> getTableName(final String tableMetadataPath) {
         Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(tableMetaDataPath);
+        Matcher matcher = pattern.matcher(tableMetadataPath);
         return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     

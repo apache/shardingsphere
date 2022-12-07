@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -56,14 +56,14 @@ public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
     private DropDatabaseStatement sqlStatement;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MetaDataContexts metaDataContexts;
+    private MetadataContexts metadataContexts;
     
     private DropDatabaseBackendHandler handler;
     
     @Before
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         ProxyContext.init(contextManager);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
@@ -71,12 +71,12 @@ public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         databases.put("test_db", database);
         databases.put("other_db", database);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
-        when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabase("other_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(metadataContexts.getMetadata().getDatabases()).thenReturn(databases);
+        when(metadataContexts.getMetadata().getDatabase("test_db")).thenReturn(database);
+        when(metadataContexts.getMetadata().getDatabase("other_db")).thenReturn(database);
+        when(metadataContexts.getMetadata().getDatabase("test_not_exist_db")).thenReturn(database);
+        when(metadataContexts.getMetadata().getDatabase("test_not_exist_db")).thenReturn(database);
+        when(metadataContexts.getMetadata().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
         when(ProxyContext.getInstance().databaseExists("other_db")).thenReturn(true);
     }

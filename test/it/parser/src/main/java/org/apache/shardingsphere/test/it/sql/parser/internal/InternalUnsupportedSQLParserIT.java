@@ -41,10 +41,10 @@ public abstract class InternalUnsupportedSQLParserIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public InternalUnsupportedSQLParserIT(final InternalSQLParserTestParameter testParameter) {
-        sqlCaseId = testParameter.getSqlCaseId();
-        databaseType = testParameter.getDatabaseType();
-        sqlCaseType = testParameter.getSqlCaseType();
+    public InternalUnsupportedSQLParserIT(final InternalSQLParserTestParameter testParam) {
+        sqlCaseId = testParam.getSqlCaseId();
+        databaseType = testParam.getDatabaseType();
+        sqlCaseType = testParam.getSqlCaseType();
     }
     
     protected static Collection<InternalSQLParserTestParameter> getTestParameters(final String databaseType) {
