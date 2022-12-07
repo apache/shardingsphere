@@ -28,7 +28,6 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true -Drat.skip=true
-  REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
 
 jobs:
@@ -57,7 +56,7 @@ jobs:
       - name: Verify Suite CI Run
         run: ./mvnw -B install -pl test/e2e/suite -Dspotless.apply.skip=true
       - name: Save IT image
-        run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar ${{ env.REPOSITORY }}-proxy-test:latest
+        run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v3
         with:
           name: it-image
