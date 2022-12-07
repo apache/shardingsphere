@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.fixture;
+package org.apache.shardingsphere.infra.util.spi.fixture.singleton;
 
-public interface MultitonSPIFixture {
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+
+@SingletonSPI
+public interface SingletonSPIFixture {
 }
