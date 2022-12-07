@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
+public final class ShowTableMetaDataHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecute() throws SQLException {
@@ -57,7 +57,7 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
-        ShowTableMetadataHandler handler = new ShowTableMetadataHandler();
+        ShowTableMetaDataHandler handler = new ShowTableMetaDataHandler();
         handler.init(createSqlStatement(), connectionSession);
         handler.execute();
         handler.next();
@@ -84,7 +84,7 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
         return result;
     }
     
-    private ShowTableMetadataStatement createSqlStatement() {
-        return new ShowTableMetadataStatement(Collections.singleton("t_order"), new DatabaseSegment(0, 0, new IdentifierValue("db_name")));
+    private ShowTableMetaDataStatement createSqlStatement() {
+        return new ShowTableMetaDataStatement(Collections.singleton("t_order"), new DatabaseSegment(0, 0, new IdentifierValue("db_name")));
     }
 }

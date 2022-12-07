@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextRestorer {
+public final class DefaultDatabaseMetaDataExecutorTest extends ProxyContextRestorer {
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
     
@@ -89,7 +89,7 @@ public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextResto
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(expectedResultSetMap));
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
-        DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
         executor.execute(connectionSession);
         assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
         assertThat(executor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
@@ -99,7 +99,7 @@ public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextResto
     public void assertExecuteWithDefaultValue() throws SQLException {
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
-        DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {

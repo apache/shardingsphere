@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.singletable.route.validator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
+import org.junit.Test;
 
-import java.util.Optional;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-/**
- * Refresh database metadata statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class RefreshDatabaseMetadataStatement extends UpdatableRALStatement {
+public final class SingleTableMetaDataValidatorFactoryTest {
     
-    private final String databaseName;
+    @Test
+    public void assertNewInstanceForDropSchemaStatement() {
+        assertTrue(SingleTableMetaDataValidatorFactory.newInstance(mock(DropSchemaStatement.class)).isPresent());
+    }
     
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    public Optional<String> getDatabaseName() {
-        return Optional.ofNullable(databaseName);
+    @Test
+    public void assertNewInstanceForNotDropSchemaStatement() {
+        assertFalse(SingleTableMetaDataValidatorFactory.newInstance(mock(SQLStatement.class)).isPresent());
     }
 }

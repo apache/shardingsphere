@@ -295,7 +295,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.LabelComputeNodeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.PrepareDistSQLStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.RefreshTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.RefreshTableMetaDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.SetDistVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.SetShardingHintDatabaseValueStatementTestCase;
@@ -311,7 +311,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowSQLTranslatorRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowStatusFromReadwriteSplittingRulesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetaDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTrafficRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.UnlabelComputeNodeStatementTestCase;
@@ -1220,7 +1220,7 @@ public final class RootSQLParserTestCases {
     private final List<ShowStatusStatementTestCase> showStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "refresh-table-metadata")
-    private final List<RefreshTableMetadataStatementTestCase> refreshTableMetadataTestCases = new LinkedList<>();
+    private final List<RefreshTableMetaDataStatementTestCase> refreshTableMetaDataTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-events")
     private final List<ShowEventsStatementTestCase> showEventsTestCases = new LinkedList<>();
@@ -1292,7 +1292,7 @@ public final class RootSQLParserTestCases {
     private final List<DiscardDistSQLStatementTestCase> discardDistSQLTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-table-metadata")
-    private final List<ShowTableMetadataStatementTestCase> showTableMetadataTestCases = new LinkedList<>();
+    private final List<ShowTableMetaDataStatementTestCase> showTableMetaDataTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-conversion")
     private final List<CreateConversionStatementTestCase> createConversionTestCases = new LinkedList<>();

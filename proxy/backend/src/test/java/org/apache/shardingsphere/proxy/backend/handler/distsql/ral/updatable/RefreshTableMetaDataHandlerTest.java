@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.distsql.exception.resource.EmptyResourceException;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RefreshTableMetadataHandlerTest extends ProxyContextRestorer {
+public final class RefreshTableMetaDataHandlerTest extends ProxyContextRestorer {
     
     private ConnectionSession connectionSession;
     
@@ -67,16 +67,16 @@ public final class RefreshTableMetadataHandlerTest extends ProxyContextRestorer 
     
     @Test(expected = NoDatabaseSelectedException.class)
     public void assertNoDatabaseSelected() throws SQLException {
-        RefreshTableMetadataHandler backendHandler = new RefreshTableMetadataHandler();
-        backendHandler.init(new RefreshTableMetadataStatement(), connectionSession);
+        RefreshTableMetaDataHandler backendHandler = new RefreshTableMetaDataHandler();
+        backendHandler.init(new RefreshTableMetaDataStatement(), connectionSession);
         backendHandler.execute();
     }
     
     @Test(expected = UnknownDatabaseException.class)
     public void assertUnknownDatabaseException() throws SQLException {
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        RefreshTableMetadataHandler backendHandler = new RefreshTableMetadataHandler();
-        backendHandler.init(new RefreshTableMetadataStatement(), connectionSession);
+        RefreshTableMetaDataHandler backendHandler = new RefreshTableMetaDataHandler();
+        backendHandler.init(new RefreshTableMetaDataStatement(), connectionSession);
         backendHandler.execute();
     }
     
@@ -85,8 +85,8 @@ public final class RefreshTableMetadataHandlerTest extends ProxyContextRestorer 
         when(connectionSession.getDatabaseName()).thenReturn("sharding_db");
         when(shardingSphereMetaData.containsDatabase("sharding_db")).thenReturn(true);
         when(contextManager.getDataSourceMap("sharding_db")).thenReturn(Collections.emptyMap());
-        RefreshTableMetadataHandler backendHandler = new RefreshTableMetadataHandler();
-        backendHandler.init(new RefreshTableMetadataStatement(), connectionSession);
+        RefreshTableMetaDataHandler backendHandler = new RefreshTableMetaDataHandler();
+        backendHandler.init(new RefreshTableMetaDataStatement(), connectionSession);
         backendHandler.execute();
     }
     
@@ -96,8 +96,8 @@ public final class RefreshTableMetadataHandlerTest extends ProxyContextRestorer 
         when(shardingSphereMetaData.containsDatabase("sharding_db")).thenReturn(true);
         Map<String, DataSource> dataSources = createDataSources();
         when(contextManager.getDataSourceMap("sharding_db")).thenReturn(dataSources);
-        RefreshTableMetadataHandler backendHandler = new RefreshTableMetadataHandler();
-        backendHandler.init(new RefreshTableMetadataStatement("t_order", "ds_1", null), connectionSession);
+        RefreshTableMetaDataHandler backendHandler = new RefreshTableMetaDataHandler();
+        backendHandler.init(new RefreshTableMetaDataStatement("t_order", "ds_1", null), connectionSession);
         backendHandler.execute();
     }
     
@@ -107,8 +107,8 @@ public final class RefreshTableMetadataHandlerTest extends ProxyContextRestorer 
         when(shardingSphereMetaData.containsDatabase("sharding_db")).thenReturn(true);
         Map<String, DataSource> dataSources = createDataSources();
         when(contextManager.getDataSourceMap("sharding_db")).thenReturn(dataSources);
-        RefreshTableMetadataHandler backendHandler = new RefreshTableMetadataHandler();
-        backendHandler.init(new RefreshTableMetadataStatement(), connectionSession);
+        RefreshTableMetaDataHandler backendHandler = new RefreshTableMetaDataHandler();
+        backendHandler.init(new RefreshTableMetaDataStatement(), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }

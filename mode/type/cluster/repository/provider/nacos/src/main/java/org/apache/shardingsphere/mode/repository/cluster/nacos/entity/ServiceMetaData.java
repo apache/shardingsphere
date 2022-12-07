@@ -25,12 +25,12 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEv
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Service metadata.
+ * Service meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class ServiceMetadata {
+public final class ServiceMetaData {
     
     private final String serviceName;
     

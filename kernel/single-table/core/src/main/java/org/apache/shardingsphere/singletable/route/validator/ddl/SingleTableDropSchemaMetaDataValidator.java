@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.singletable.exception.DropNotEmptySchemaException;
-import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
+import org.apache.shardingsphere.singletable.route.validator.SingleTableMetaDataValidator;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropSchemaStatementHandler;
 
 /**
- * Single table drop schema metadata validator.
+ * Single table drop schema meta data validator.
  */
-public final class SingleTableDropSchemaMetadataValidator implements SingleTableMetadataValidator<DropSchemaStatement> {
+public final class SingleTableDropSchemaMetaDataValidator implements SingleTableMetaDataValidator<DropSchemaStatement> {
     
     @Override
     public void validate(final SingleTableRule rule, final SQLStatementContext<DropSchemaStatement> sqlStatementContext, final ShardingSphereDatabase database) {

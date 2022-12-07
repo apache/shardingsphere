@@ -19,23 +19,18 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Set;
 
 /**
- * Refresh table metadata statement test case.
+ * Show table meta data statement test case.
  */
 @Getter
 @Setter
-public final class RefreshTableMetadataStatementTestCase extends SQLParserTestCase {
+public final class ShowTableMetaDataStatementTestCase extends DatabaseContainedTestCase {
     
-    @XmlAttribute(name = "table-name")
-    private String tableName;
-    
-    @XmlAttribute(name = "storage-unit-name")
-    private String storageUnitName;
-    
-    @XmlAttribute(name = "schema-name")
-    private String schemaName;
+    @XmlElement(name = "table-name")
+    private Set<String> tableNames;
 }

@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 public enum InternalConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
-     * Proxy metadata collector enabled.
+     * Proxy meta data collector enabled.
      */
-    PROXY_METADATA_COLLECTOR_ENABLED("proxy-metadata-collector-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
+    PROXY_META_DATA_COLLECTOR_ENABLED("proxy-meta-data-collector-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
     
     private final String key;
     

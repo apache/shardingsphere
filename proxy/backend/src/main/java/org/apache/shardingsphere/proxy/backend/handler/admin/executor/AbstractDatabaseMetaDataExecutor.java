@@ -55,17 +55,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The abstract class of database metadata, used to define the template.
+ * The abstract class of database meta data, used to define the template.
  */
-public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQueryExecutor {
+@Getter
+public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQueryExecutor {
     
-    @Getter
     private QueryResultMetaData queryResultMetaData;
     
-    @Getter
     private MergedResult mergedResult;
     
-    @Getter
     private final LinkedList<Map<String, Object>> rows = new LinkedList<>();
     
     @Override
@@ -179,7 +177,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
      */
     @RequiredArgsConstructor
     @Slf4j
-    public static class DefaultDatabaseMetadataExecutor extends AbstractDatabaseMetadataExecutor {
+    public static class DefaultDatabaseMetaDataExecutor extends AbstractDatabaseMetaDataExecutor {
         
         private final String sql;
         
@@ -195,7 +193,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         @Override
         protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
             Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
-                    .filter(AbstractDatabaseMetadataExecutor::hasDataSource).findFirst();
+                    .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).findFirst();
             return database.map(Collections::singletonList).orElse(Collections.emptyList());
         }
         

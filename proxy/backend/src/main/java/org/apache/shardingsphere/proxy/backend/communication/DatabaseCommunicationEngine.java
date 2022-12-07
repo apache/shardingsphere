@@ -74,7 +74,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private final MetaDataRefreshEngine metadataRefreshEngine;
+    private final MetaDataRefreshEngine metaDataRefreshEngine;
     
     private List<QueryHeader> queryHeaders;
     
@@ -89,7 +89,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         this.database = database;
         this.queryContext = queryContext;
         this.backendConnection = backendConnection;
-        metadataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
+        metaDataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
         }
@@ -129,7 +129,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     }
     
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
+        Optional<MetaDataRefreshedEvent> event = metaDataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(event.get());
         }

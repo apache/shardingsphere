@@ -82,9 +82,9 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
                     return invocation.callRealMethod();
             }
         });
-        Map<String, DataSourceMetaData> cachedDatasourceMetadata =
+        Map<String, DataSourceMetaData> cachedDatasourceMetaData =
                 (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
-        cachedDatasourceMetadata.put("mock_url", new MockDataSourceMetaData());
+        cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
         storageTypes.put("mock.db", new MySQLDatabaseType());
         ReflectiveUtil.setField(mock, "storageTypes", storageTypes);

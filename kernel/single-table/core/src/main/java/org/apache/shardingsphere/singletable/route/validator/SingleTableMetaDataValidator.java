@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.singletable.route.validator;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
-import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
-public final class SingleTableMetadataValidatorFactoryTest {
+/**
+ * Single table meta data validator.
+ *
+ * @param <T> type of SQL statement
+ */
+public interface SingleTableMetaDataValidator<T extends SQLStatement> {
     
-    @Test
-    public void assertNewInstanceForDropSchemaStatement() {
-        assertTrue(SingleTableMetadataValidatorFactory.newInstance(mock(DropSchemaStatement.class)).isPresent());
-    }
-    
-    @Test
-    public void assertNewInstanceForNotDropSchemaStatement() {
-        assertFalse(SingleTableMetadataValidatorFactory.newInstance(mock(SQLStatement.class)).isPresent());
-    }
+    /**
+     * Validate single table meta data.
+     * 
+     * @param rule single table rule
+     * @param sqlStatementContext SQL statement context
+     * @param database database
+     */
+    void validate(SingleTableRule rule, SQLStatementContext<T> sqlStatementContext, ShardingSphereDatabase database);
 }
