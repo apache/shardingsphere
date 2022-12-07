@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 
 import javax.sql.DataSource;
@@ -50,39 +50,39 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Meta data contexts.
+ * Metadata contexts.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetaDataContextsFactory {
+public final class MetadataContextsFactory {
     
     /**
-     * Create meta data contexts.
+     * Create Metadata contexts.
      *
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext instance context
-     * @return meta data contexts
+     * @return Metadata contexts
      * @throws SQLException SQL exception
      */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param, final InstanceContext instanceContext) throws SQLException {
+    public static MetadataContexts create(final MetadataPersistService persistService, final ContextManagerBuilderParameter param, final InstanceContext instanceContext) throws SQLException {
         return create(persistService, param, instanceContext, Collections.emptyMap());
     }
     
     /**
-     * Create meta data contexts.
+     * Create Metadata contexts.
      *
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext instance context
      * @param storageNodes storage nodes
-     * @return meta data contexts
+     * @return Metadata contexts
      * @throws SQLException SQL exception
      */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
+    public static MetadataContexts create(final MetadataPersistService persistService, final ContextManagerBuilderParameter param,
                                           final InstanceContext instanceContext, final Map<String, StorageNodeDataSource> storageNodes) throws SQLException {
         Collection<String> databaseNames = instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
                 ? param.getDatabaseConfigs().keySet()
-                : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
+                : persistService.getDatabaseMetadataService().loadAllDatabaseNames();
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(databaseNames, param.getDatabaseConfigs(), persistService);
         checkDataSourceStates(effectiveDatabaseConfigs, storageNodes, param.isForce());
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
@@ -90,17 +90,17 @@ public final class MetaDataContextsFactory {
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
         databases.putAll(reloadDatabases(databases, persistService));
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext, props));
-        return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
+        return new MetadataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
     }
     
     private static Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames,
-                                                                                            final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
+                                                                                            final Map<String, DatabaseConfiguration> databaseConfigs, final MetadataPersistService persistService) {
         return databaseNames.stream().collect(
                 Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, persistService), (a, b) -> b, () -> new HashMap<>(databaseNames.size(), 1)));
     }
     
     private static DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName,
-                                                                              final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
+                                                                              final Map<String, DatabaseConfiguration> databaseConfigs, final MetadataPersistService persistService) {
         Map<String, DataSource> effectiveDataSources = persistService.getEffectiveDataSources(databaseName, databaseConfigs);
         Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRulePersistService().load(databaseName);
         return new DataSourceProvidedDatabaseConfiguration(effectiveDataSources, databaseRuleConfigs);
@@ -127,10 +127,10 @@ public final class MetaDataContextsFactory {
         return result;
     }
     
-    private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) {
+    private static Map<String, ShardingSphereDatabase> reloadDatabases(final Map<String, ShardingSphereDatabase> databases, final MetadataPersistService persistService) {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databases.size(), 1);
         databases.forEach((key, value) -> {
-            Map<String, ShardingSphereSchema> schemas = persistService.getDatabaseMetaDataService().loadSchemas(key);
+            Map<String, ShardingSphereSchema> schemas = persistService.getDatabaseMetadataService().loadSchemas(key);
             result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
                     value.getProtocolType(), value.getResourceMetaData(), value.getRuleMetaData(), schemas.isEmpty() ? value.getSchemas() : schemas));
         });

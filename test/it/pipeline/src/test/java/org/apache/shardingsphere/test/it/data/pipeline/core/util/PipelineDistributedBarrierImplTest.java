@@ -43,7 +43,7 @@ public final class PipelineDistributedBarrierImplTest {
     @SuppressWarnings("rawtypes")
     public void assertRegisterAndRemove() throws NoSuchFieldException, IllegalAccessException {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
-        PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PersistRepository repository = PipelineContext.getContextManager().getMetadataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrierImpl instance = new PipelineDistributedBarrierImpl();
         String parentPath = "/barrier";
@@ -58,7 +58,7 @@ public final class PipelineDistributedBarrierImplTest {
     @Test
     public void assertAwait() {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
-        PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PersistRepository repository = PipelineContext.getContextManager().getMetadataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrierImpl instance = new PipelineDistributedBarrierImpl();
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);

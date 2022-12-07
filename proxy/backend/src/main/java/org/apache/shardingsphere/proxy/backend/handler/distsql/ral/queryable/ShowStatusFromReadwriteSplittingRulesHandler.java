@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -68,10 +68,10 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Queryabl
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
-        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
+        MetadataContexts metadataContexts = contextManager.getMetadataContexts();
+        ShardingSphereDatabase database = metadataContexts.getMetadata().getDatabase(databaseName);
         Collection<String> allReadResources = getAllReadResources(database, getSqlStatement().getGroupName());
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getPersistService());
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metadataContexts.getPersistService());
         return buildRows(allReadResources, persistentReadResources);
     }
     
@@ -100,7 +100,7 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Queryabl
                 .map(this::deconstructString).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
-    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final MetaDataPersistService persistService) {
+    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final MetadataPersistService persistService) {
         if (null == persistService || null == persistService.getRepository() || !(persistService.getRepository() instanceof ClusterPersistRepository)) {
             return Collections.emptyMap();
         }

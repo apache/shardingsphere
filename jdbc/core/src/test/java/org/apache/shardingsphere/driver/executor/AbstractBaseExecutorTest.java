@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
@@ -69,8 +69,8 @@ public abstract class AbstractBaseExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = mockMetaDataContexts();
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetadataContexts metadataContexts = mockMetaDataContexts();
+        when(result.getMetadataContexts()).thenReturn(metadataContexts);
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(mockDataSourceMap());
         return result;
     }
@@ -83,16 +83,16 @@ public abstract class AbstractBaseExecutorTest {
         return result;
     }
     
-    private MetaDataContexts mockMetaDataContexts() {
-        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+    private MetadataContexts mockMetaDataContexts() {
+        MetadataContexts result = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         TransactionRule transactionRule = mockTransactionRule();
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()));
-        when(result.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", DatabaseTypeFactory.getInstance("H2")));
+        when(result.getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", DatabaseTypeFactory.getInstance("H2")));
         ShardingRule shardingRule = mockShardingRule();
-        when(result.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
+        when(result.getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
         return result;
     }
     

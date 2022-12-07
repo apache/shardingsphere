@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -83,11 +83,11 @@ public final class ConnectionManagerTest {
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
-        MetaDataPersistService persistService = mockMetaDataPersistService();
+        MetadataPersistService persistService = mockMetaDataPersistService();
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
+        when(result.getMetadataContexts().getPersistService()).thenReturn(persistService);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class, RETURNS_DEEP_STUBS));
         when(result.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
@@ -108,8 +108,8 @@ public final class ConnectionManagerTest {
         return Collections.singletonMap("127.0.0.1@3307", result);
     }
     
-    private MetaDataPersistService mockMetaDataPersistService() {
-        MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
+    private MetadataPersistService mockMetaDataPersistService() {
+        MetadataPersistService result = mock(MetadataPersistService.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceService().load(DefaultDatabase.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;

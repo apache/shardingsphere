@@ -47,8 +47,8 @@ public final class UnsupportedOperationStatementTest {
         TrafficRule trafficRule = new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build());
         SQLFederationRule sqlFederationRule = new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build());
         when(connection.getDatabaseName()).thenReturn("db");
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(connection.getContextManager().getMetadataContexts().getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(trafficRule);
         when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
         shardingSphereStatement = new ShardingSphereStatement(connection);

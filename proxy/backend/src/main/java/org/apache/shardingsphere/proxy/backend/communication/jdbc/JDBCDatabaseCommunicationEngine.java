@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -114,16 +114,16 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     @Override
     public ResponseHeader execute() throws SQLException {
         QueryContext queryContext = getQueryContext();
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
-        SQLFederationDeciderContext deciderContext = decide(queryContext, metaDataContexts.getMetaData().getProps(), database);
+        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
+        ShardingSphereDatabase database = metadataContexts.getMetadata().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
+        SQLFederationDeciderContext deciderContext = decide(queryContext, metadataContexts.getMetadata().getProps(), database);
         if (deciderContext.isUseSQLFederation()) {
             prepareFederationExecutor();
-            ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
-            return processExecuteFederation(resultSet, metaDataContexts);
+            ResultSet resultSet = doExecuteFederation(queryContext, metadataContexts);
+            return processExecuteFederation(resultSet, metadataContexts);
         }
-        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(queryContext, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
-                metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getConnectionContext());
+        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(queryContext, getDatabase(), metadataContexts.getMetadata().getGlobalRuleMetaData(),
+                metadataContexts.getMetadata().getProps(), backendConnection.getConnectionSession().getConnectionContext());
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
@@ -142,40 +142,40 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     }
     
     private void prepareFederationExecutor() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         DatabaseType databaseType = getQueryContext().getSqlStatementContext().getDatabaseType();
         String schemaName = getQueryContext().getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
-        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        federationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
+        SQLFederationRule sqlFederationRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
+        federationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metadataContexts.getMetadata(), metadataContexts.getShardingSphereData(),
                 new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.getConnectionSession().getConnectionContext()),
                 ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
     }
     
-    private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) throws SQLException {
+    private ResultSet doExecuteFederation(final QueryContext queryContext, final MetadataContexts metadataContexts) throws SQLException {
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
+        ShardingSphereDatabase database = metadataContexts.getMetadata().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
         DatabaseType protocolType = database.getProtocolType();
         Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(getDriverType(), protocolType, storageTypes,
                 queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
-        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData());
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metadataContexts);
+        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metadataContexts.getMetadata());
         return federationExecutor.executeQuery(prepareEngine, callback, context);
     }
     
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
-        int maxConnectionsSizePerQuery = metaData.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetadataContexts metaData) {
+        int maxConnectionsSizePerQuery = metaData.getMetadata().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         JDBCBackendStatement statementManager = (JDBCBackendStatement) backendConnection.getConnectionSession().getStatementManager();
         return new DriverExecutionPrepareEngine<>(getDriverType(), maxConnectionsSizePerQuery, backendConnection, statementManager,
-                new StatementOption(isReturnGeneratedKeys), metaData.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getRuleMetaData().getRules(),
-                metaData.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getResourceMetaData().getStorageTypes());
+                new StatementOption(isReturnGeneratedKeys), metaData.getMetadata().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getRuleMetaData().getRules(),
+                metaData.getMetadata().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getResourceMetaData().getStorageTypes());
     }
     
-    private ResponseHeader processExecuteFederation(final ResultSet resultSet, final MetaDataContexts metaDataContexts) throws SQLException {
+    private ResponseHeader processExecuteFederation(final ResultSet resultSet, final MetadataContexts metadataContexts) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         setQueryHeaders(new ArrayList<>(columnCount));
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
+        ShardingSphereDatabase database = metadataContexts.getMetadata().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(null == database ? null : database.getProtocolType());
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             getQueryHeaders().add(queryHeaderBuilderEngine.build(new JDBCQueryResultMetaData(resultSet.getMetaData()), database, columnIndex));

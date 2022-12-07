@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service.config.schema;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
-import org.apache.shardingsphere.mode.metadata.persist.service.schema.ViewMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.schema.ViewMetadataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ViewMetaDataPersistServiceTest {
+public final class ViewMetadataPersistServiceTest {
     
     @Mock
     private PersistRepository repository;
@@ -48,7 +48,7 @@ public final class ViewMetaDataPersistServiceTest {
     @Test
     public void assertPersist() {
         ShardingSphereView view = new ShardingSphereView("foo_view", "select `db`.`db`.`id` AS `id`,`db`.`db`.`order_id` AS `order_id` from `db`.`db`");
-        new ViewMetaDataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", view));
+        new ViewMetadataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_view", view));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/views/foo_view", "name: foo_view" + System.lineSeparator()
                 + "viewDefinition: select `db`.`db`.`id` AS `id`,`db`.`db`.`order_id` AS `order_id` from" + System.lineSeparator()
                 + "  `db`.`db`" + System.lineSeparator());
@@ -56,10 +56,10 @@ public final class ViewMetaDataPersistServiceTest {
     
     @Test
     public void assertLoad() {
-        ViewMetaDataPersistService viewMetaDataPersistService = new ViewMetaDataPersistService(repository);
+        ViewMetadataPersistService viewMetadataPersistService = new ViewMetadataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views")).thenReturn(Collections.singletonList("foo_view"));
         when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/views/foo_view")).thenReturn(readYAML());
-        Map<String, ShardingSphereView> views = viewMetaDataPersistService.load("foo_db", "foo_schema");
+        Map<String, ShardingSphereView> views = viewMetadataPersistService.load("foo_db", "foo_schema");
         assertThat(views.size(), is(1));
         assertThat(views.get("foo_view").getName(), is("foo_view"));
         assertThat(views.get("foo_view").getViewDefinition(), is("select `db`.`db`.`id` AS `id`,`db`.`db`.`order_id` AS `order_id` from `db`.`db`"));
@@ -67,7 +67,7 @@ public final class ViewMetaDataPersistServiceTest {
     
     @Test
     public void assertDelete() {
-        new ViewMetaDataPersistService(repository).delete("foo_db", "foo_schema", "foo_view");
+        new ViewMetadataPersistService(repository).delete("foo_db", "foo_schema", "foo_view");
         verify(repository).delete("/metadata/foo_db/schemas/foo_schema/views/foo_view");
     }
     

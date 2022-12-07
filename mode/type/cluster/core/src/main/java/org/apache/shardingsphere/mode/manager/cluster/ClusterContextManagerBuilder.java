@@ -29,9 +29,9 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ContextManagerSubscriberFacade;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
@@ -47,7 +47,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
-        MetaDataPersistService persistService = new MetaDataPersistService(repository);
+        MetadataPersistService persistService = new MetadataPersistService(repository);
         persistConfigurations(persistService, param);
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), param.getInstanceMetaData(), param.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, param);
@@ -55,14 +55,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (persistRepository instanceof InstanceContextAware) {
             ((InstanceContextAware) persistRepository).setInstanceContext(instanceContext);
         }
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
-        persistMetaData(metaDataContexts);
-        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
+        MetadataContexts metadataContexts = MetadataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
+        persistMetadata(metadataContexts);
+        ContextManager result = new ContextManager(metadataContexts, instanceContext);
         registerOnline(persistService, registryCenter, param, result);
         return result;
     }
     
-    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param) {
+    private void persistConfigurations(final MetadataPersistService persistService, final ContextManagerBuilderParameter param) {
         if (!param.isEmpty()) {
             persistService.persistConfigurations(param.getDatabaseConfigs(), param.getGlobalRuleConfigs(), param.getProps());
         }
@@ -73,16 +73,16 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 param.getModeConfiguration(), new GlobalLockContext(registryCenter.getGlobalLockPersistService()), registryCenter.getEventBusContext());
     }
     
-    private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
-                .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persist(each.getName(), schemaName, schema)));
-        for (Entry<String, ShardingSphereDatabaseData> entry : metaDataContexts.getShardingSphereData().getDatabaseData().entrySet()) {
-            entry.getValue().getSchemaData().forEach((schemaName, schemaData) -> metaDataContexts.getPersistService().getShardingSphereDataPersistService()
-                    .persist(entry.getKey(), schemaName, schemaData, metaDataContexts.getMetaData().getDatabases()));
+    private void persistMetadata(final MetadataContexts metadataContexts) {
+        metadataContexts.getMetadata().getDatabases().values().forEach(each -> each.getSchemas()
+                .forEach((schemaName, schema) -> metadataContexts.getPersistService().getDatabaseMetadataService().persist(each.getName(), schemaName, schema)));
+        for (Entry<String, ShardingSphereDatabaseData> entry : metadataContexts.getShardingSphereData().getDatabaseData().entrySet()) {
+            entry.getValue().getSchemaData().forEach((schemaName, schemaData) -> metadataContexts.getPersistService().getShardingSphereDataPersistService()
+                    .persist(entry.getKey(), schemaName, schemaData, metadataContexts.getMetadata().getDatabases()));
         }
     }
     
-    private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+    private void registerOnline(final MetadataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ContextManagerSubscriberFacade(persistService, registryCenter, contextManager);
