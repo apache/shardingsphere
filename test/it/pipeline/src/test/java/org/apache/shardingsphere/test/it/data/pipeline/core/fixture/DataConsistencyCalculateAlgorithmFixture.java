@@ -23,14 +23,14 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmDescription;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-@SPIDescription("Fixture description.")
+@AlgorithmDescription("Fixture description.")
 @Getter
 public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
     
