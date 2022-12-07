@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilde
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 /**
  * CRC32 match data consistency calculate algorithm.
  */
+@SPIDescription("Match CRC32 of records.")
 @Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
@@ -87,11 +89,6 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
         return SUPPORTED_DATABASE_TYPES;
-    }
-    
-    @Override
-    public String getDescription() {
-        return "Match CRC32 of records.";
     }
     
     @RequiredArgsConstructor
