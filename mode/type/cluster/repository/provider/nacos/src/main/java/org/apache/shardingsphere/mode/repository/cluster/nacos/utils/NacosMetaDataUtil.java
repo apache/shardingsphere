@@ -28,10 +28,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Nacos Metadata util.
+ * Nacos meta data util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NacosMetadataUtil {
+public final class NacosMetaDataUtil {
     
     public static final ZoneOffset UTC_ZONE_OFFSET = ZoneOffset.of("+8");
     

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
@@ -136,8 +136,8 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
             return;
         }
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
-        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
-        ShardingSphereDatabase database = metadataContexts.getMetadata().getDatabase(databaseName);
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) each);
@@ -162,8 +162,8 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
             }
         }
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
-        ProxyContext.getInstance().getContextManager().renewMetadataContexts(metadataContexts);
-        metadataContexts.getPersistService().getDatabaseRulePersistService().persist(metadataContexts.getMetadata().getActualDatabaseName(databaseName), ruleConfigs);
+        ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
+        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
     }
     
     private void dropDatabase(final String databaseName) {

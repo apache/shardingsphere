@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetadataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.MetadataVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
@@ -41,16 +41,16 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Metadata persist service.
+ * Meta data persist service.
  */
 @Getter
-public final class MetadataPersistService {
+public final class MetaDataPersistService {
     
     private final PersistRepository repository;
     
     private final DataSourcePersistService dataSourceService;
     
-    private final DatabaseMetadataPersistService databaseMetadataService;
+    private final DatabaseMetaDataPersistService databaseMetaDataService;
     
     private final DatabaseRulePersistService databaseRulePersistService;
     
@@ -58,18 +58,18 @@ public final class MetadataPersistService {
     
     private final PropertiesPersistService propsService;
     
-    private final MetadataVersionPersistService metadataVersionPersistService;
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     private final ShardingSphereDataPersistService shardingSphereDataPersistService;
     
-    public MetadataPersistService(final PersistRepository repository) {
+    public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
-        databaseMetadataService = new DatabaseMetadataPersistService(repository);
+        databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
-        metadataVersionPersistService = new MetadataVersionPersistService(repository);
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         shardingSphereDataPersistService = new ShardingSphereDataPersistService(repository);
     }
     
@@ -89,7 +89,7 @@ public final class MetadataPersistService {
             Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
             Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
             if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
-                databaseMetadataService.addDatabase(databaseName);
+                databaseMetaDataService.addDatabase(databaseName);
             } else {
                 dataSourceService.conditionalPersist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()));
                 databaseRulePersistService.conditionalPersist(databaseName, entry.getValue().getRuleConfigurations());

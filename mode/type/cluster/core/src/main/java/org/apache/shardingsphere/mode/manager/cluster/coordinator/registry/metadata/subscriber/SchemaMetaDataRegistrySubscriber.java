@@ -26,27 +26,27 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchem
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropIndexEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Schema Metadata registry subscriber.
+ * Schema meta data registry subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class SchemaMetadataRegistrySubscriber {
+public final class SchemaMetaDataRegistrySubscriber {
     
-    private final DatabaseMetadataPersistService persistService;
+    private final DatabaseMetaDataPersistService persistService;
     
-    public SchemaMetadataRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
-        persistService = new DatabaseMetadataPersistService(repository);
+    public SchemaMetaDataRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
+        persistService = new DatabaseMetaDataPersistService(repository);
         eventBusContext.register(this);
     }
     
     /**
-     * Update when Metadata altered.
+     * Update when meta data altered.
      *
      * @param event schema altered event
      */

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service;
 
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetadataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,49 +34,49 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class MetadataVersionPersistServiceTest {
+public final class MetaDataVersionPersistServiceTest {
     
     private PersistRepository repository;
     
-    private MetadataVersionPersistService metadataVersionPersistService;
+    private MetaDataVersionPersistService metaDataVersionPersistService;
     
     @Before
     public void setUp() {
         repository = mock(PersistRepository.class);
         when(repository.getDirectly(contains("foo_db"))).thenReturn("1");
-        metadataVersionPersistService = new MetadataVersionPersistService(repository);
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
     }
     
     @Test
     public void assertGetActiveVersion() {
-        Optional<String> actual = metadataVersionPersistService.getActiveVersion("foo_db");
+        Optional<String> actual = metaDataVersionPersistService.getActiveVersion("foo_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("1"));
     }
     
     @Test
     public void assertIsActiveVersion() {
-        assertTrue(metadataVersionPersistService.isActiveVersion("foo_db", "1"));
+        assertTrue(metaDataVersionPersistService.isActiveVersion("foo_db", "1"));
     }
     
     @Test
     public void assertIsNotActiveVersionWithNotExistedDatabase() {
-        assertFalse(metadataVersionPersistService.isActiveVersion("bar_db", "1"));
+        assertFalse(metaDataVersionPersistService.isActiveVersion("bar_db", "1"));
     }
     
     @Test
     public void assertIsNotActiveVersionWithNotExistedVersion() {
-        assertFalse(metadataVersionPersistService.isActiveVersion("foo_db", "2"));
+        assertFalse(metaDataVersionPersistService.isActiveVersion("foo_db", "2"));
     }
     
     @Test
     public void assertCreateNewVersionWithoutExistedActiveVersion() {
-        assertFalse(metadataVersionPersistService.createNewVersion("bar_db").isPresent());
+        assertFalse(metaDataVersionPersistService.createNewVersion("bar_db").isPresent());
     }
     
     @Test
     public void assertCreateNewVersionWithExistedActiveVersion() {
-        Optional<String> actual = metadataVersionPersistService.createNewVersion("foo_db");
+        Optional<String> actual = metaDataVersionPersistService.createNewVersion("foo_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("2"));
         verify(repository).persist("/metadata/foo_db/versions/2/rules", "1");
@@ -85,19 +85,19 @@ public final class MetadataVersionPersistServiceTest {
     
     @Test
     public void assertPersistActiveVersionWhenExisted() {
-        metadataVersionPersistService.persistActiveVersion("foo_db", "2");
-        verify(repository).persist(DatabaseMetadataNode.getActiveVersionPath("foo_db"), "2");
+        metaDataVersionPersistService.persistActiveVersion("foo_db", "2");
+        verify(repository).persist(DatabaseMetaDataNode.getActiveVersionPath("foo_db"), "2");
     }
     
     @Test
     public void assertPersistActiveVersionWithNotExistedDatabase() {
-        metadataVersionPersistService.persistActiveVersion("bar_db", "2");
-        verify(repository, times(0)).persist(DatabaseMetadataNode.getActiveVersionPath("bar_db"), "2");
+        metaDataVersionPersistService.persistActiveVersion("bar_db", "2");
+        verify(repository, times(0)).persist(DatabaseMetaDataNode.getActiveVersionPath("bar_db"), "2");
     }
     
     @Test
     public void assertDeleteVersion() {
-        metadataVersionPersistService.deleteVersion("foo_db", "1");
-        verify(repository).delete(DatabaseMetadataNode.getDatabaseVersionPath("foo_db", "1"));
+        metaDataVersionPersistService.deleteVersion("foo_db", "1");
+        verify(repository).delete(DatabaseMetaDataNode.getDatabaseVersionPath("foo_db", "1"));
     }
 }

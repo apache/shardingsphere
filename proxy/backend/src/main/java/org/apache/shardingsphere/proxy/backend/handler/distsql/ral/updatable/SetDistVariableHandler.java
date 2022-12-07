@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
@@ -62,12 +62,12 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     
     private void handleConfigurationProperty(final ConfigurationPropertyKey propertyKey, final String value) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetadataContexts metadataContexts = contextManager.getMetadataContexts();
+        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Properties props = new Properties();
-        props.putAll(metadataContexts.getMetadata().getProps().getProps());
+        props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.alterProperties(props);
-        MetadataPersistService persistService = metadataContexts.getPersistService();
+        MetaDataPersistService persistService = metaDataContexts.getPersistService();
         if (null != persistService.getPropsService()) {
             persistService.getPropsService().persist(props);
         }

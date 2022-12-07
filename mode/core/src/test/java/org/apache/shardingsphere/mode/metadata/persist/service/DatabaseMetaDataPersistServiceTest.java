@@ -48,20 +48,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DatabaseMetadataPersistServiceTest {
+public final class DatabaseMetaDataPersistServiceTest {
     
     @Mock
     private PersistRepository repository;
     
     @Test
     public void assertPersistEmptySchemas() {
-        new DatabaseMetadataPersistService(repository).persist("foo_db", "foo_schema", new ShardingSphereSchema());
+        new DatabaseMetaDataPersistService(repository).persist("foo_db", "foo_schema", new ShardingSphereSchema());
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables"), anyString());
     }
     
     @Test
     public void assertCompareAndPersistEmptySchemas() {
-        new DatabaseMetadataPersistService(repository).compareAndPersist("foo_db", "foo_schema", new ShardingSphereSchema());
+        new DatabaseMetaDataPersistService(repository).compareAndPersist("foo_db", "foo_schema", new ShardingSphereSchema());
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables"), anyString());
     }
     
@@ -70,39 +70,39 @@ public final class DatabaseMetadataPersistServiceTest {
         ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlShardingSphereTable.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_order", table);
-        new DatabaseMetadataPersistService(repository).persist("foo_db", "foo_schema", schema);
+        new DatabaseMetaDataPersistService(repository).persist("foo_db", "foo_schema", schema);
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/t_order"), anyString());
     }
     
     @Test
     public void assertAddDatabase() {
-        new DatabaseMetadataPersistService(repository).addDatabase("foo_db");
+        new DatabaseMetaDataPersistService(repository).addDatabase("foo_db");
         verify(repository).persist("/metadata/foo_db", "");
     }
     
     @Test
     public void assertDropDatabase() {
-        new DatabaseMetadataPersistService(repository).dropDatabase("foo_db");
+        new DatabaseMetaDataPersistService(repository).dropDatabase("foo_db");
         verify(repository).delete("/metadata/foo_db");
     }
     
     @Test
     public void assertLoadAllDatabaseNames() {
         when(repository.getChildrenKeys("/metadata")).thenReturn(Collections.singletonList("foo_db"));
-        Collection<String> actual = new DatabaseMetadataPersistService(repository).loadAllDatabaseNames();
+        Collection<String> actual = new DatabaseMetaDataPersistService(repository).loadAllDatabaseNames();
         assertThat(actual.size(), is(1));
         assertThat(actual, hasItems("foo_db"));
     }
     
     @Test
     public void assertAddSchema() {
-        new DatabaseMetadataPersistService(repository).addSchema("foo_db", "foo_schema");
+        new DatabaseMetaDataPersistService(repository).addSchema("foo_db", "foo_schema");
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
     }
     
     @Test
     public void assertDropSchema() {
-        new DatabaseMetadataPersistService(repository).dropSchema("foo_db", "foo_schema");
+        new DatabaseMetaDataPersistService(repository).dropSchema("foo_db", "foo_schema");
         verify(repository).delete("/metadata/foo_db/schemas/foo_schema");
     }
     
@@ -110,14 +110,14 @@ public final class DatabaseMetadataPersistServiceTest {
     public void assertPersistSchemaMetaData() {
         ShardingSphereTable table = new ShardingSphereTable("FOO_TABLE", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereView view = new ShardingSphereView("FOO_VIEW", "select id from foo_table");
-        new DatabaseMetadataPersistService(repository).persist("foo_db", "foo_schema",
+        new DatabaseMetaDataPersistService(repository).persist("foo_db", "foo_schema",
                 new ShardingSphereSchema(Collections.singletonMap("FOO_TABLE", table), Collections.singletonMap("FOO_VIEW", view)));
         verify(repository).persist(eq("/metadata/foo_db/schemas/foo_schema/tables/foo_table"), anyString());
     }
     
     @Test
     public void assertLoadSchemas() {
-        DatabaseMetadataPersistService databaseMetaDataPersistService = new DatabaseMetadataPersistService(repository);
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = new DatabaseMetaDataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas")).thenReturn(Collections.singletonList("foo_schema"));
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
         when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());

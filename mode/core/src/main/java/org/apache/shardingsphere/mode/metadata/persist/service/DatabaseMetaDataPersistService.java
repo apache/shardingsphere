@@ -21,9 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetadataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetadataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.schema.ViewMetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.schema.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
@@ -31,30 +31,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Database Metadata registry service.
+ * Database meta data registry service.
  */
 @Getter
-public final class DatabaseMetadataPersistService {
+public final class DatabaseMetaDataPersistService {
     
     private final PersistRepository repository;
     
-    private final TableMetadataPersistService tableMetaDataPersistService;
+    private final TableMetaDataPersistService tableMetaDataPersistService;
     
-    private final ViewMetadataPersistService viewMetaDataPersistService;
+    private final ViewMetaDataPersistService viewMetaDataPersistService;
     
-    public DatabaseMetadataPersistService(final PersistRepository repository) {
+    public DatabaseMetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
-        this.tableMetaDataPersistService = new TableMetadataPersistService(repository);
-        this.viewMetaDataPersistService = new ViewMetadataPersistService(repository);
+        this.tableMetaDataPersistService = new TableMetaDataPersistService(repository);
+        this.viewMetaDataPersistService = new ViewMetaDataPersistService(repository);
     }
     
     /**
      * Add database name.
-     *
+     * 
      * @param databaseName database name
      */
     public void addDatabase(final String databaseName) {
-        repository.persist(DatabaseMetadataNode.getDatabaseNamePath(databaseName), "");
+        repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
     }
     
     /**
@@ -63,7 +63,7 @@ public final class DatabaseMetadataPersistService {
      * @param databaseName database name to be deleted
      */
     public void dropDatabase(final String databaseName) {
-        repository.delete(DatabaseMetadataNode.getDatabaseNamePath(databaseName));
+        repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
     /**
@@ -72,7 +72,7 @@ public final class DatabaseMetadataPersistService {
      * @return all database names
      */
     public Collection<String> loadAllDatabaseNames() {
-        return repository.getChildrenKeys(DatabaseMetadataNode.getMetadataNodePath());
+        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNodePath());
     }
     
     /**
@@ -82,7 +82,7 @@ public final class DatabaseMetadataPersistService {
      * @param schemaName schema name
      */
     public void addSchema(final String databaseName, final String schemaName) {
-        repository.persist(DatabaseMetadataNode.getMetadataTablesPath(databaseName, schemaName), "");
+        repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
     }
     
     /**
@@ -92,15 +92,15 @@ public final class DatabaseMetadataPersistService {
      * @param schemaName schema name
      */
     public void dropSchema(final String databaseName, final String schemaName) {
-        repository.delete(DatabaseMetadataNode.getMetadataSchemaPath(databaseName, schemaName));
+        repository.delete(DatabaseMetaDataNode.getMetaDataSchemaPath(databaseName, schemaName));
     }
     
     /**
-     * Compare and persist schema Metadata.
+     * Compare and persist schema meta data.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema Metadata
+     * @param schema schema meta data
      */
     public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
@@ -112,11 +112,11 @@ public final class DatabaseMetadataPersistService {
     }
     
     /**
-     * Persist schema Metadata.
+     * Persist schema meta data.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema Metadata
+     * @param schema schema meta data
      */
     public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
@@ -126,21 +126,21 @@ public final class DatabaseMetadataPersistService {
     }
     
     /**
-     * Delete schema Metadata.
+     * Delete schema meta data.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema Metadata
+     * @param schema schema meta data
      */
     public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**
-     * Load schema Metadata.
+     * Load schema meta data.
      *
      * @param databaseName database name
-     * @return schema Metadata
+     * @return schema meta data
      */
     public Map<String, ShardingSphereSchema> loadSchemas(final String databaseName) {
         Collection<String> schemaNames = loadAllSchemaNames(databaseName);
@@ -151,6 +151,6 @@ public final class DatabaseMetadataPersistService {
     }
     
     private Collection<String> loadAllSchemaNames(final String databaseName) {
-        return repository.getChildrenKeys(DatabaseMetadataNode.getMetadataSchemasPath(databaseName));
+        return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataSchemasPath(databaseName));
     }
 }

@@ -89,7 +89,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         this.database = database;
         this.queryContext = queryContext;
         this.backendConnection = backendConnection;
-        metadataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps());
+        metadataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
         }
@@ -169,7 +169,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     }
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps(),
+        MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
                 getBackendConnection().getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -71,12 +71,12 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     
     @Before
     public void setUp() {
-        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(metadataContexts.getMetadata().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test
@@ -144,16 +144,16 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetadataContexts metadataContexts = isGovernance
+        MetaDataContexts metaDataContexts = isGovernance
                 ? mockMetaDataContexts()
-                : new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData());
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     
-    private MetadataContexts mockMetaDataContexts() {
-        MetadataContexts result = ProxyContext.getInstance().getContextManager().getMetadataContexts();
-        when(result.getMetadata().getDatabase("db").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getMetadata().getDatabase("db").getResourceMetaData().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        when(result.getMetaData().getDatabase("db").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getMetaData().getDatabase("db").getResourceMetaData().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         return result;
     }
     

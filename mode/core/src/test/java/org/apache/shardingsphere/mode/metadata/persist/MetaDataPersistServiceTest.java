@@ -57,7 +57,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetadataPersistServiceTest {
+public final class MetaDataPersistServiceTest {
     
     private static final String SCHEMA_RULE_YAML = "yaml/persist/data-database-rule.yaml";
     
@@ -73,11 +73,11 @@ public final class MetadataPersistServiceTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    private MetadataPersistService metadataPersistService;
+    private MetaDataPersistService metaDataPersistService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        metadataPersistService = new MetadataPersistService(mock(PersistRepository.class));
+        metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
@@ -85,9 +85,9 @@ public final class MetadataPersistServiceTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Field field = metadataPersistService.getClass().getDeclaredField(name);
+        Field field = metaDataPersistService.getClass().getDeclaredField(name);
         field.setAccessible(true);
-        field.set(metadataPersistService, value);
+        field.set(metaDataPersistService, value);
     }
     
     @Test
@@ -96,7 +96,7 @@ public final class MetadataPersistServiceTest {
         Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        metadataPersistService.persistConfigurations(
+        metaDataPersistService.persistConfigurations(
                 Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
         verify(dataSourceService).conditionalPersist("foo_db", createDataSourcePropertiesMap(dataSourceMap));
         verify(databaseRulePersistService).conditionalPersist("foo_db", ruleConfigs);
@@ -150,7 +150,7 @@ public final class MetadataPersistServiceTest {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs));
-        Map<String, DataSource> resultEffectiveDataSources = metadataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
+        Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
     }
 }

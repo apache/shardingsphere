@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequire
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -69,7 +69,7 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     private ConnectionSession connectionSession;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MetadataContexts metadataContexts;
+    private MetaDataContexts metaDataContexts;
     
     @Mock
     private ShardingSphereDatabase database;
@@ -84,8 +84,8 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     
     @Before
     public void setUp() throws Exception {
-        when(metadataContexts.getMetadata().getDatabase("test_db")).thenReturn(database);
-        when(metadataContexts.getMetadata().containsDatabase("test_db")).thenReturn(true);
+        when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         alterStorageUnitBackendHandler = new AlterStorageUnitBackendHandler(alterStorageUnitStatement, connectionSession);
         Field field = alterStorageUnitBackendHandler.getClass().getDeclaredField("validator");
@@ -96,7 +96,7 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     @Test
     public void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
@@ -111,9 +111,9 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertExecuteWithNotExistedStorageUnitNames() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metadataContexts.getMetadata().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
         alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("not_existed"));
@@ -122,7 +122,7 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     @Test(expected = InvalidResourcesException.class)
     public void assertExecuteWithAlterDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
