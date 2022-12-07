@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.aware;
+package org.apache.shardingsphere.infra.util.spi.annotation;
 
-import java.util.Collection;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * SPI metadata aware.
+ * SPI description.
  */
-public interface SPIMetadataAware {
-    
-    /**
-     * Get supported database types.
-     *
-     * @return supported database types
-     */
-    Collection<String> getSupportedDatabaseTypes();
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SPIDescription {
     
     /**
      * Get description.
      *
      * @return description
      */
-    String getDescription();
+    String value();
 }

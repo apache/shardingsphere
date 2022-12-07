@@ -46,8 +46,10 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collection;
@@ -174,8 +176,16 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return DataConsistencyCalculateAlgorithmFactory.getAllInstances().stream()
-                .map(each -> new DataConsistencyCheckAlgorithmInfo(each.getType(), each.getSupportedDatabaseTypes(), each.getDescription())).collect(Collectors.toList());
+        Collection<DataConsistencyCheckAlgorithmInfo> result = new LinkedList<>();
+        for (DataConsistencyCalculateAlgorithm each : DataConsistencyCalculateAlgorithmFactory.getAllInstances()) {
+            SPIDescription spiDescription = each.getClass().getAnnotation(SPIDescription.class);
+            result.add(new DataConsistencyCheckAlgorithmInfo(each.getType(), getSupportedDatabaseTypes(each.getSupportedDatabaseTypes()), null == spiDescription ? "" : spiDescription.value()));
+        }
+        return result;
+    }
+    
+    private Collection<String> getSupportedDatabaseTypes(final Collection<String> supportedDatabaseTypes) {
+        return supportedDatabaseTypes.isEmpty() ? DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList()) : supportedDatabaseTypes;
     }
     
     @Override
