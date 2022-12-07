@@ -49,7 +49,7 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmDescription;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collection;
@@ -178,8 +178,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         checkModeConfig();
         Collection<DataConsistencyCheckAlgorithmInfo> result = new LinkedList<>();
         for (DataConsistencyCalculateAlgorithm each : DataConsistencyCalculateAlgorithmFactory.getAllInstances()) {
-            SPIDescription spiDescription = each.getClass().getAnnotation(SPIDescription.class);
-            result.add(new DataConsistencyCheckAlgorithmInfo(each.getType(), getSupportedDatabaseTypes(each.getSupportedDatabaseTypes()), null == spiDescription ? "" : spiDescription.value()));
+            AlgorithmDescription description = each.getClass().getAnnotation(AlgorithmDescription.class);
+            result.add(new DataConsistencyCheckAlgorithmInfo(each.getType(), getSupportedDatabaseTypes(each.getSupportedDatabaseTypes()), null == description ? "" : description.value()));
         }
         return result;
     }

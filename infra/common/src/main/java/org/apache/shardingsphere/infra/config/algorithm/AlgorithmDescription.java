@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.annotation;
+package org.apache.shardingsphere.infra.config.algorithm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,11 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * SPI description.
+ * Algorithm description.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SPIDescription {
+public @interface AlgorithmDescription {
     
     /**
      * Get description.
