@@ -62,7 +62,7 @@ public final class ShowDistVariableHandler extends QueryableRALBackendHandler<Sh
     }
     
     private String getConfigurationValue(final ContextManager contextManager, final String key) {
-        return contextManager.getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
+        return contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
     }
     
     private String getSpecialValue(final String key) {

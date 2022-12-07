@@ -19,21 +19,21 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * View Metadata changed event.
+ * Table meta data changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ViewMetadataChangedEvent implements GovernanceEvent {
+public final class TableMetaDataChangedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String schemaName;
     
-    private final ShardingSphereView changedViewMetadata;
+    private final ShardingSphereTable changedTableMetaData;
     
-    private final String deletedView;
+    private final String deletedTable;
 }

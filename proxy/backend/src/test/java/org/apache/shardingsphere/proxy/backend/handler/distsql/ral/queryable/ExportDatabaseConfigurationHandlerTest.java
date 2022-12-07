@@ -71,11 +71,11 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     public void init() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, ShardingSphereDatabase> databases = createDatabases();
-        when(contextManager.getMetadataContexts().getMetadata().getDatabases()).thenReturn(databases);
-        when(contextManager.getMetadataContexts().getMetadata().containsDatabase("normal_db")).thenReturn(true);
-        when(contextManager.getMetadataContexts().getMetadata().containsDatabase("empty_db")).thenReturn(true);
-        when(contextManager.getMetadataContexts().getMetadata().getDatabase("normal_db")).thenReturn(databases.get("normal_db"));
-        when(contextManager.getMetadataContexts().getMetadata().getDatabase("empty_db")).thenReturn(databases.get("empty_db"));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(databases);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("normal_db")).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("empty_db")).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("normal_db")).thenReturn(databases.get("normal_db"));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("empty_db")).thenReturn(databases.get("empty_db"));
         ProxyContext.init(contextManager);
     }
     

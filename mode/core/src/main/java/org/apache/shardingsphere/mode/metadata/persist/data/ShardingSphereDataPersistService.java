@@ -53,18 +53,18 @@ public final class ShardingSphereDataPersistService {
     /**
      * Load.
      *
-     * @param metadata Metadata
+     * @param metaData metadata
      * @return ShardingSphere data
      */
-    public Optional<ShardingSphereData> load(final ShardingSphereMetaData metadata) {
+    public Optional<ShardingSphereData> load(final ShardingSphereMetaData metaData) {
         Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereDataNode.getShardingSphereDataNodePath());
         if (databaseNames.isEmpty()) {
             return Optional.empty();
         }
         ShardingSphereData result = new ShardingSphereData();
         for (String each : databaseNames) {
-            if (metadata.containsDatabase(each)) {
-                ShardingSphereDatabaseData databaseData = loadDatabaseData(each, metadata.getDatabase(each));
+            if (metaData.containsDatabase(each)) {
+                ShardingSphereDatabaseData databaseData = loadDatabaseData(each, metaData.getDatabase(each));
                 result.getDatabaseData().put(each, databaseData);
             }
         }
@@ -116,7 +116,6 @@ public final class ShardingSphereDataPersistService {
     
     /**
      * Persist.
-     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param schemaData schema data

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.que
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -77,8 +77,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         if (SQLUtil.trimComment(sql).isEmpty()) {
             return new EmptyStatement();
         }
-        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
-        SQLParserRule sqlParserRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         return sqlParserRule.getSQLParserEngine(databaseType.getType()).parse(sql, false);
     }
     

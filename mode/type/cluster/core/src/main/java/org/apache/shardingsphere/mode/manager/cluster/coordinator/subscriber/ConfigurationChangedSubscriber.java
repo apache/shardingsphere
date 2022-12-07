@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
@@ -44,13 +44,13 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public final class ConfigurationChangedSubscriber {
     
-    private final MetadataPersistService persistService;
+    private final MetaDataPersistService persistService;
     
     private final RegistryCenter registryCenter;
     
     private final ContextManager contextManager;
     
-    public ConfigurationChangedSubscriber(final MetadataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
+    public ConfigurationChangedSubscriber(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
         this.persistService = persistService;
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
@@ -65,7 +65,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        if (persistService.getMetadataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
+        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
             disableDataSources();
         }
@@ -78,7 +78,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        if (persistService.getMetadataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
+        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigurations());
             disableDataSources();
         }
@@ -119,7 +119,7 @@ public final class ConfigurationChangedSubscriber {
     }
     
     private void disableDataSources() {
-        contextManager.getMetadataContexts().getMetadata().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
             if (each instanceof StaticDataSourceContainedRule) {
                 disableDataSources((StaticDataSourceContainedRule) each);
             }

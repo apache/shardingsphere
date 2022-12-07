@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service.config.schema;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TableMetadataPersistServiceTest {
+public final class TableMetaDataPersistServiceTest {
     
     @Mock
     private PersistRepository repository;
@@ -48,13 +48,13 @@ public final class TableMetadataPersistServiceTest {
     @Test
     public void assertPersist() {
         ShardingSphereTable table = new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        new TableMetadataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_table", table));
+        new TableMetaDataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_table", table));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_table", "name: foo_table" + System.lineSeparator());
     }
     
     @Test
     public void assertLoad() {
-        TableMetadataPersistService tableMetaDataPersistService = new TableMetadataPersistService(repository);
+        TableMetaDataPersistService tableMetaDataPersistService = new TableMetaDataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
         when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
         Map<String, ShardingSphereTable> tables = tableMetaDataPersistService.load("foo_db", "foo_schema");
@@ -66,7 +66,7 @@ public final class TableMetadataPersistServiceTest {
     
     @Test
     public void assertDelete() {
-        new TableMetadataPersistService(repository).delete("foo_db", "foo_schema", "foo_table");
+        new TableMetaDataPersistService(repository).delete("foo_db", "foo_schema", "foo_table");
         verify(repository).delete("/metadata/foo_db/schemas/foo_schema/tables/foo_table");
     }
     

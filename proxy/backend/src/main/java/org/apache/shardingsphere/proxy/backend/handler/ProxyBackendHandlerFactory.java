@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
@@ -100,7 +100,7 @@ public final class ProxyBackendHandlerFactory {
         if (Strings.isNullOrEmpty(SQLUtil.trimComment(sql))) {
             return new SkipBackendHandler(new EmptyStatement());
         }
-        SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
         return newInstance(databaseType, sql, sqlStatement, connectionSession, hintValueContext);
     }
@@ -140,7 +140,7 @@ public final class ProxyBackendHandlerFactory {
             checkUnsupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
             return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata(),
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
         connectionSession.setQueryContext(queryContext);
@@ -192,7 +192,7 @@ public final class ProxyBackendHandlerFactory {
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
         SQLCheckEngine.check(sqlStatementContext, queryContext.getParameters(),
-                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabases(), connectionSession.getGrantee());
+                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
@@ -210,7 +210,7 @@ public final class ProxyBackendHandlerFactory {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase(databaseName).getProtocolType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType();
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
@@ -236,13 +236,13 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
-        MetadataContexts contexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
+        MetaDataContexts contexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         if (Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)) {
-            return contexts.getMetadata().getGlobalRuleMetaData().getRules();
+            return contexts.getMetaData().getGlobalRuleMetaData().getRules();
         }
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getMetadata().getDatabase(databaseName).getRuleMetaData().getRules());
-        result.addAll(contexts.getMetadata().getGlobalRuleMetaData().getRules());
+        result = new LinkedList<>(contexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
+        result.addAll(contexts.getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
     

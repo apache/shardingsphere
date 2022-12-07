@@ -19,28 +19,28 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetadataChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetadataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 
 /**
- * Resource Metadata changed subscriber.
+ * Resource meta data changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ResourceMetadataChangedSubscriber {
+public final class ResourceMetaDataChangedSubscriber {
     
     private final ContextManager contextManager;
     
-    public ResourceMetadataChangedSubscriber(final ContextManager contextManager) {
+    public ResourceMetaDataChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
     }
     
     /**
-     * Renew to persist Metadata.
+     * Renew to persist meta data.
      *
      * @param event database added event
      */
@@ -80,24 +80,24 @@ public final class ResourceMetadataChangedSubscriber {
     }
     
     /**
-     * Renew Metadata of the table.
+     * Renew meta data of the table.
      *
-     * @param event table Metadata changed event
+     * @param event table meta data changed event
      */
     @Subscribe
-    public synchronized void renew(final TableMetadataChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetadata(), null);
+    public synchronized void renew(final TableMetaDataChangedEvent event) {
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), null);
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable(), null);
     }
     
     /**
-     * Renew Metadata of the view.
+     * Renew meta data of the view.
      *
-     * @param event view Metadata changed event
+     * @param event view meta data changed event
      */
     @Subscribe
-    public synchronized void renew(final ViewMetadataChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getChangedViewMetadata());
+    public synchronized void renew(final ViewMetaDataChangedEvent event) {
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getChangedViewMetaData());
         contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getDeletedView());
     }
 }

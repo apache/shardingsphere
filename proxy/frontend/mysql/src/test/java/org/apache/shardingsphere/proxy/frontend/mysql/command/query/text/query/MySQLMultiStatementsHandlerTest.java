@@ -89,19 +89,19 @@ public final class MySQLMultiStatementsHandlerTest {
         MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
-            when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase("db").getResourceMetaData().getAllInstanceDataSourceNames())
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getAllInstanceDataSourceNames())
                     .thenReturn(Collections.singletonList("ds_0"));
-            when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase("db").getResourceMetaData().getStorageTypes())
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
                     .thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
-            when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase("db").getProtocolType()).thenReturn(new MySQLDatabaseType());
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new MySQLDatabaseType());
             ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-            when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
             when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
             when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
-            when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-            when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
             when(ProxyContext.getInstance()
-                    .getContextManager().getMetadataContexts().getMetadata().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+                    .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
             ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
             assertThat(actual, instanceOf(UpdateResponseHeader.class));
             UpdateResponseHeader actualHeader = (UpdateResponseHeader) actual;

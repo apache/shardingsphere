@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetadataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class MetadataChangedWatcherTest {
+public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateEventWithInvalidPath() {
@@ -115,7 +115,7 @@ public final class MetadataChangedWatcherTest {
         String key = "/metadata/sharding_db/schemas/sharding_schema/tables/t_order";
         Optional<GovernanceEvent> actual = createEvent(key, "{}", Type.DELETED);
         assertTrue(actual.isPresent());
-        assertThat(((TableMetadataChangedEvent) actual.get()).getDeletedTable(), is("t_order"));
+        assertThat(((TableMetaDataChangedEvent) actual.get()).getDeletedTable(), is("t_order"));
     }
     
     @Test
@@ -134,6 +134,6 @@ public final class MetadataChangedWatcherTest {
     
     private Optional<GovernanceEvent> createEvent(final String key, final String value, final Type type) {
         DataChangedEvent dataChangedEvent = new DataChangedEvent(key, value, type);
-        return new MetadataChangedWatcher().createGovernanceEvent(dataChangedEvent);
+        return new MetaDataChangedWatcher().createGovernanceEvent(dataChangedEvent);
     }
 }

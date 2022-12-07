@@ -48,10 +48,10 @@ public final class ShardingSphereDataCollectorTest {
     public void assertCollect() throws InterruptedException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereData shardingSphereData = mockShardingSphereData();
-        when(contextManager.getMetadataContexts().getShardingSphereData()).thenReturn(shardingSphereData);
+        when(contextManager.getMetaDataContexts().getShardingSphereData()).thenReturn(shardingSphereData);
         ShardingSphereMetaData metaData = mockMetaData();
-        when(contextManager.getMetadataContexts().getMetadata()).thenReturn(metaData);
-        when(contextManager.getMetadataContexts().getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         new ShardingSphereDataScheduleCollector(contextManager).start();
         Thread.sleep(100L);
         verify(contextManager, atLeastOnce()).getInstanceContext();

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -48,16 +48,16 @@ public final class ShowDistVariablesHandlerTest extends ProxyContextRestorer {
     @Before
     public void setup() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetadataContexts metadataContexts = mockMetaDataContexts();
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private MetadataContexts mockMetaDataContexts() {
-        MetadataContexts result = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), "JDBC");
-        when(result.getMetadata().getProps()).thenReturn(new ConfigurationProperties(props));
+        when(result.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
         return result;
     }
     

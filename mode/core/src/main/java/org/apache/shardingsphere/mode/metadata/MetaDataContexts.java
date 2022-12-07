@@ -25,37 +25,37 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilderFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Metadata contexts.
+ * Meta data contexts.
  */
 @Getter
-public final class MetadataContexts implements AutoCloseable {
+public final class MetaDataContexts implements AutoCloseable {
     
-    private final MetadataPersistService persistService;
+    private final MetaDataPersistService persistService;
     
-    private final ShardingSphereMetaData metadata;
+    private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereData shardingSphereData;
     
-    public MetadataContexts(final MetadataPersistService persistService, final ShardingSphereMetaData metadata) {
+    public MetaDataContexts(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
         this.persistService = persistService;
-        this.metadata = metadata;
-        this.shardingSphereData = initShardingSphereData(persistService, metadata);
+        this.metaData = metaData;
+        this.shardingSphereData = initShardingSphereData(persistService, metaData);
     }
     
-    private ShardingSphereData initShardingSphereData(final MetadataPersistService persistService, final ShardingSphereMetaData metadata) {
-        if (metadata.getDatabases().isEmpty()) {
+    private ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+        if (metaData.getDatabases().isEmpty()) {
             return new ShardingSphereData();
         }
-        ShardingSphereData result = Optional.ofNullable(metadata.getDatabases().values().iterator().next().getProtocolType())
-                .flatMap(protocolType -> ShardingSphereDataBuilderFactory.getInstance(protocolType).map(builder -> builder.build(metadata))).orElseGet(ShardingSphereData::new);
+        ShardingSphereData result = Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
+                .flatMap(protocolType -> ShardingSphereDataBuilderFactory.getInstance(protocolType).map(builder -> builder.build(metaData))).orElseGet(ShardingSphereData::new);
         Optional<ShardingSphereData> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
-                .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metadata));
+                .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
         loadedShardingSphereData.ifPresent(sphereData -> useLoadedToReplaceInit(result, sphereData));
         return result;
     }
@@ -87,7 +87,7 @@ public final class MetadataContexts implements AutoCloseable {
     @Override
     public void close() {
         persistService.getRepository().close();
-        metadata.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
-        metadata.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
+        metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
+        metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
     }
 }

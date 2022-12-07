@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -50,7 +50,7 @@ import java.util.Optional;
  */
 public final class BatchPreparedStatementExecutor {
     
-    private final MetadataContexts metadataContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final JDBCExecutor jdbcExecutor;
     
@@ -65,9 +65,9 @@ public final class BatchPreparedStatementExecutor {
     
     private final EventBusContext eventBusContext;
     
-    public BatchPreparedStatementExecutor(final MetadataContexts metadataContexts, final JDBCExecutor jdbcExecutor, final String databaseName, final EventBusContext eventBusContext) {
+    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String databaseName, final EventBusContext eventBusContext) {
         this.databaseName = databaseName;
-        this.metadataContexts = metadataContexts;
+        this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         this.eventBusContext = eventBusContext;
         executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>());
@@ -138,8 +138,8 @@ public final class BatchPreparedStatementExecutor {
      */
     public int[] executeBatch(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(metadataContexts.getMetadata().getDatabase(databaseName).getProtocolType(),
-                metadataContexts.getMetadata().getDatabase(databaseName).getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement(), isExceptionThrown, eventBusContext) {
+        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement(), isExceptionThrown, eventBusContext) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
@@ -160,7 +160,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        for (ShardingSphereRule each : metadataContexts.getMetadata().getDatabase(databaseName).getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
