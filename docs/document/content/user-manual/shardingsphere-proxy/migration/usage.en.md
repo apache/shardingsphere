@@ -515,13 +515,29 @@ GRANT ALL PRIVILEGES TO migration_user;
 
 #### Requirements
 
-1. Prepare the source database, table, and data in openGauss.
+1. Prepare the source database, table, and data.
+
+1.1. Isomorphic database.
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0;
 
 \c migration_ds_0
+
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+```
+
+1.2. Heterogeneous database.
+
+MySQL example:
+```sql
+DROP DATABASE IF EXISTS migration_ds_0;
+CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
+
+USE migration_ds_0
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 
@@ -545,11 +561,17 @@ CREATE DATABASE migration_ds_12;
 
 1. Create a new logical database and configure resources and rules.
 
+1.1. Create logic database.
+
 ```sql
 CREATE DATABASE sharding_db;
 
 \c sharding_db
+```
 
+1.2. Register storage units.
+
+```sql
 REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_10",
     USER="gaussdb",
@@ -566,7 +588,11 @@ REGISTER STORAGE UNIT ds_2 (
     PASSWORD="Root@123",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
+```
 
+1.3. Create sharding table rule.
+
+```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
@@ -575,7 +601,14 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
+1.4. Create target table.
+
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
+
+MySQL example:
+```sql
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+```
 
 2. Configure the source resources in proxy.
 
