@@ -188,7 +188,8 @@ public final class SelectStatementAssert {
             assertTrue(assertContext.getText("Actual combine segment should exist."), combineSegment.isPresent());
             assertThat(assertContext.getText("Combine type assertion error: "), combineSegment.get().getCombineType().name(), is(expected.getCombineClause().getCombineType()));
             SQLSegmentAssert.assertIs(assertContext, combineSegment.get(), expected.getCombineClause());
-            assertIs(assertContext, combineSegment.get().getSelectStatement(), expected.getCombineClause().getSelectClause());
+            assertIs(assertContext, combineSegment.get().getLeft(), expected.getCombineClause().getLeft());
+            assertIs(assertContext, combineSegment.get().getRight(), expected.getCombineClause().getRight());
         }
     }
     
