@@ -48,12 +48,12 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParameter;
+    private final PipelineTestParameter testParam;
     
-    public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParameter) {
-        super(testParameter);
-        this.testParameter = testParameter;
-        log.info("testParameter:{}", testParameter);
+    public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
+        super(testParam);
+        this.testParam = testParam;
+        log.info("testParameter:{}", testParam);
     }
     
     @Parameters(name = "{0}")
@@ -85,7 +85,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParameter.getDatabaseType(), 3000);
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());

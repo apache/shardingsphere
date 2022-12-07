@@ -71,7 +71,7 @@ public final class ProxyContext {
      * @return database exists or not
      */
     public boolean databaseExists(final String name) {
-        return contextManager.getMetaDataContexts().getMetaData().containsDatabase(name);
+        return contextManager.getMetadataContexts().getMetadata().containsDatabase(name);
     }
     
     /**
@@ -81,10 +81,10 @@ public final class ProxyContext {
      * @return got database
      */
     public ShardingSphereDatabase getDatabase(final String name) {
-        if (Strings.isNullOrEmpty(name) || !contextManager.getMetaDataContexts().getMetaData().containsDatabase(name)) {
+        if (Strings.isNullOrEmpty(name) || !contextManager.getMetadataContexts().getMetadata().containsDatabase(name)) {
             throw new NoDatabaseSelectedException();
         }
-        return contextManager.getMetaDataContexts().getMetaData().getDatabase(name);
+        return contextManager.getMetadataContexts().getMetadata().getDatabase(name);
     }
     
     /**
@@ -93,7 +93,7 @@ public final class ProxyContext {
      * @return all database names
      */
     public Collection<String> getAllDatabaseNames() {
-        return contextManager.getMetaDataContexts().getMetaData().getDatabases().values().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
+        return contextManager.getMetadataContexts().getMetadata().getDatabases().values().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
     }
     
     /**
@@ -115,9 +115,9 @@ public final class ProxyContext {
     public Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         if (!Strings.isNullOrEmpty(databaseName) && databaseExists(databaseName)) {
-            result.addAll(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
+            result.addAll(contextManager.getMetadataContexts().getMetadata().getDatabase(databaseName).getRuleMetaData().getRules());
         }
-        result.addAll(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
+        result.addAll(contextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData().getRules());
         return result;
     }
 }

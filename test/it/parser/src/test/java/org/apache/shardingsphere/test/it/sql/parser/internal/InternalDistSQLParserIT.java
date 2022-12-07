@@ -26,8 +26,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class InternalDistSQLParserIT extends InternalSQLParserIT {
     
-    public InternalDistSQLParserIT(final InternalSQLParserTestParameter testParameter) {
-        super(testParameter);
+    public InternalDistSQLParserIT(final InternalSQLParserTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

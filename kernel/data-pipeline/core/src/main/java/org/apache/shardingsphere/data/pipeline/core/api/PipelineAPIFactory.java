@@ -53,7 +53,7 @@ public final class PipelineAPIFactory {
         
         @Override
         protected GovernanceRepositoryAPI initialize() {
-            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository());
+            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) PipelineContext.getContextManager().getMetadataContexts().getPersistService().getRepository());
         }
     };
     

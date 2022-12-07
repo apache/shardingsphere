@@ -51,8 +51,8 @@ public final class ShowProcessListE2EIT {
     
     private final ClusterShowProcessListContainerComposer containerComposer;
     
-    public ShowProcessListE2EIT(final ShowProcessListTestParameter testParameter) {
-        containerComposer = new ClusterShowProcessListContainerComposer(testParameter);
+    public ShowProcessListE2EIT(final ShowProcessListTestParameter testParam) {
+        containerComposer = new ClusterShowProcessListContainerComposer(testParam);
     }
     
     @Parameters(name = "{0}")

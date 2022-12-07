@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
@@ -51,11 +51,11 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
     @Before
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetadataContexts metadataContexts = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         ProxyContext.init(contextManager);
         handler = new CreateDatabaseBackendHandler(statement);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", mock(ShardingSphereDatabase.class)));
+        when(metadataContexts.getMetadata().getDatabases()).thenReturn(Collections.singletonMap("test_db", mock(ShardingSphereDatabase.class)));
     }
     
     @Test

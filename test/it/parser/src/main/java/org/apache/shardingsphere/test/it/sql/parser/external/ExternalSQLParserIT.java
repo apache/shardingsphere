@@ -41,11 +41,11 @@ public abstract class ExternalSQLParserIT {
     
     private final SQLParseResultReporter resultReporter;
     
-    protected ExternalSQLParserIT(final ExternalSQLParserTestParameter testParameter) {
-        sqlCaseId = testParameter.getSqlCaseId();
-        sql = testParameter.getSql();
-        databaseType = testParameter.getDatabaseType();
-        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(testParameter.getReportType()).create(databaseType);
+    protected ExternalSQLParserIT(final ExternalSQLParserTestParameter testParam) {
+        sqlCaseId = testParam.getSqlCaseId();
+        sql = testParam.getSql();
+        databaseType = testParam.getDatabaseType();
+        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(testParam.getReportType()).create(databaseType);
     }
     
     @Test

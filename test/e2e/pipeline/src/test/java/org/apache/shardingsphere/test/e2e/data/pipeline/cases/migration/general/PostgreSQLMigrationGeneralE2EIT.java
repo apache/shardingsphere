@@ -47,12 +47,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParameter;
+    private final PipelineTestParameter testParam;
     
-    public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParameter) {
-        super(testParameter);
-        this.testParameter = testParameter;
-        log.info("testParameter:{}", testParameter);
+    public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
+        super(testParam);
+        this.testParam = testParam;
     }
     
     @Override
@@ -87,7 +86,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParameter.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         log.info("init data begin: {}", LocalDateTime.now());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());

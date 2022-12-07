@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.util.spi.type.required;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.empty.EmptyRequiredSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.DefaultMultipleRequiredSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.DefaultMultipleRequiredSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.SingleRequiredSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.SingleRequiredSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.impl.SingleRequiredSPIFixtureImpl;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

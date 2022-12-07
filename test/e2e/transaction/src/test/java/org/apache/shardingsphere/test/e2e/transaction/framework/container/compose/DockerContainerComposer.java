@@ -54,31 +54,30 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final DockerStorageContainer storageContainer;
     
-    public DockerContainerComposer(final TransactionTestParameter testParameter) {
-        super(testParameter.getScenario());
-        this.databaseType = testParameter.getDatabaseType();
+    public DockerContainerComposer(final TransactionTestParameter testParam) {
+        super(testParam.getScenario());
+        this.databaseType = testParam.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer =
-                getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParameter.getStorageContainerImage(), testParameter.getScenario(),
-                        StorageContainerConfigurationFactory.newInstance(databaseType)));
-        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(testParameter.getAdapter())) {
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), testParam.getScenario(),
+                StorageContainerConfigurationFactory.newInstance(databaseType)));
+        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
             proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY,
-                    databaseType, storageContainer, testParameter.getScenario(), ProxyClusterContainerConfigurationFactory.newInstance(testParameter.getScenario(), databaseType));
+                    databaseType, storageContainer, testParam.getScenario(), ProxyClusterContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType));
             proxyContainer.dependsOn(governanceContainer, storageContainer);
             getContainers().registerContainer(proxyContainer);
         } else {
             proxyContainer = null;
             ShardingSphereJDBCContainer jdbcContainer = new ShardingSphereJDBCContainer(storageContainer,
-                    Objects.requireNonNull(ShardingSphereJDBCContainer.class.getClassLoader().getResource(getShardingSphereConfigResource(testParameter))).getFile());
+                    Objects.requireNonNull(ShardingSphereJDBCContainer.class.getClassLoader().getResource(getShardingSphereConfigResource(testParam))).getFile());
             this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
         }
     }
     
-    private String getShardingSphereConfigResource(final TransactionTestParameter testParameter) {
-        String result = String.format("env/%s/%s/config-sharding-%s%s.yaml", testParameter.getAdapter().toLowerCase(),
-                testParameter.getDatabaseType().getType().toLowerCase(), testParameter.getTransactionTypes().get(0).toString().toLowerCase(),
-                getTransactionProvider(testParameter.getProviders().get(0)));
+    private String getShardingSphereConfigResource(final TransactionTestParameter testParam) {
+        String result = String.format("env/%s/%s/config-sharding-%s%s.yaml", testParam.getAdapter().toLowerCase(),
+                testParam.getDatabaseType().getType().toLowerCase(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
+                getTransactionProvider(testParam.getProviders().get(0)));
         log.info("Transaction IT tests use the configuration file: {}", result);
         return result;
     }

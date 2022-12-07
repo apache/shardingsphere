@@ -50,10 +50,10 @@ public abstract class InternalSQLParserIT {
     
     private final SQLCaseType sqlCaseType;
     
-    public InternalSQLParserIT(final InternalSQLParserTestParameter testParameter) {
-        sqlCaseId = testParameter.getSqlCaseId();
-        databaseType = testParameter.getDatabaseType();
-        sqlCaseType = testParameter.getSqlCaseType();
+    public InternalSQLParserIT(final InternalSQLParserTestParameter testParam) {
+        sqlCaseId = testParam.getSqlCaseId();
+        databaseType = testParam.getDatabaseType();
+        sqlCaseType = testParam.getSqlCaseType();
     }
     
     protected static Collection<InternalSQLParserTestParameter> getTestParameters(final String... databaseTypes) {
@@ -66,8 +66,8 @@ public abstract class InternalSQLParserIT {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParameter) {
-        return SQLCaseType.Placeholder == testParameter.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParameter.getSqlCaseId()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
+        return SQLCaseType.Placeholder == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
     }
     
     @Test

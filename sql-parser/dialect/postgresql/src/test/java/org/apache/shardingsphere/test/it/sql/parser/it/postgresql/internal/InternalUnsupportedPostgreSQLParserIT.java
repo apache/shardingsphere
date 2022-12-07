@@ -28,8 +28,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class InternalUnsupportedPostgreSQLParserIT extends InternalUnsupportedSQLParserIT {
     
-    public InternalUnsupportedPostgreSQLParserIT(final InternalSQLParserTestParameter testParameter) {
-        super(testParameter);
+    public InternalUnsupportedPostgreSQLParserIT(final InternalSQLParserTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")
