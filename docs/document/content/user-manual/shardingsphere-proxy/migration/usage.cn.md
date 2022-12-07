@@ -80,8 +80,6 @@ GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO
 
 1. 在 MySQL 已准备好源端库、表、数据。
 
-示例：
-
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
@@ -94,8 +92,6 @@ INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,
 ```
 
 2. 在 MySQL 准备目标端库。
-
-示例：
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_10;
@@ -110,7 +106,7 @@ CREATE DATABASE migration_ds_12 DEFAULT CHARSET utf8;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -144,7 +140,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+2. 在 proxy 配置源端存储单元。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -336,7 +332,7 @@ CREATE DATABASE migration_ds_12;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -370,7 +366,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+2. 在 proxy 配置源端存储单元。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -526,13 +522,29 @@ GRANT ALL PRIVILEGES TO migration_user;
 
 #### 前提条件
 
-1. 在 openGauss 已准备好源端库、表、数据。
+1. 准备好源端库、表、数据。
+
+1.1. 同构数据库。
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0;
 
 \c migration_ds_0
+
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+```
+
+1.2. 异构数据库。
+
+MySQL 示例：
+```sql
+DROP DATABASE IF EXISTS migration_ds_0;
+CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
+
+USE migration_ds_0;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 
@@ -554,13 +566,18 @@ CREATE DATABASE migration_ds_12;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
+
+1.1. 创建逻辑库。
 
 ```sql
 CREATE DATABASE sharding_db;
 
 \c sharding_db
+```
+1.2. 注册存储单元。
 
+```sql
 REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_10",
     USER="gaussdb",
@@ -577,7 +594,11 @@ REGISTER STORAGE UNIT ds_2 (
     PASSWORD="Root@123",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
+```
 
+1.3. 创建分片规则。
+
+```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
@@ -586,15 +607,35 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
+1.4. 创建目标端表。
+
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+```sql
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+```
+
+2. 在 proxy 配置源端存储单元。
+
+2.1. 同构数据库。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
+    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
+);
+```
+
+2.2. 异构数据库。
+
+MySQL 示例：
+```sql
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
+    USER="root",
+    PASSWORD="root",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
 ```

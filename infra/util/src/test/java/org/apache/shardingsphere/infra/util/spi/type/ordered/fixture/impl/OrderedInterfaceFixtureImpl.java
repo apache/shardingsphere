@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.type.required.fixture.single;
+package org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl;
 
-public final class SingleRequiredSPIFixtureImpl implements SingleRequiredSPIFixture {
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixture;
+
+public final class OrderedInterfaceFixtureImpl implements OrderedInterfaceFixture {
 }

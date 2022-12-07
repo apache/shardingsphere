@@ -15,7 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.type.optional.fixture;
+package org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl;
 
-public class OptionalSPIFixtureImpl implements OptionalSPIFixture {
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
+
+public final class DefaultMultipleRequiredSPIFixtureImpl implements MultipleRequiredSPIFixture {
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

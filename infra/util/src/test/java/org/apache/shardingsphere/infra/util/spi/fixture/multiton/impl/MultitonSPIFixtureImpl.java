@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.fixture;
+package org.apache.shardingsphere.infra.util.spi.fixture.multiton.impl;
 
-public interface EmptySPIFixture {
+import org.apache.shardingsphere.infra.util.spi.fixture.multiton.MultitonSPIFixture;
+
+public final class MultitonSPIFixtureImpl implements MultitonSPIFixture {
 }
