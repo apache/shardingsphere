@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
@@ -28,9 +29,9 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALB
 import java.util.Optional;
 
 /**
- * Refresh database metadata handler.
+ * Refresh database meta data handler.
  */
-public final class RefreshDatabaseMetadataHandler extends UpdatableRALBackendHandler<RefreshDatabaseMetadataStatement> {
+public final class RefreshDatabaseMetaDataHandler extends UpdatableRALBackendHandler<RefreshDatabaseMetaDataStatement> {
     
     @Override
     protected void update(final ContextManager contextManager) {
@@ -39,13 +40,9 @@ public final class RefreshDatabaseMetadataHandler extends UpdatableRALBackendHan
     
     private String getDatabaseName() {
         Optional<String> databaseName = getSqlStatement().getDatabaseName();
-        String result = databaseName.isPresent() ? databaseName.get() : getConnectionSession().getDatabaseName();
-        if (Strings.isNullOrEmpty(result)) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().databaseExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
+        String result = databaseName.orElseGet(() -> getConnectionSession().getDatabaseName());
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(result), NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(result), () -> new UnknownDatabaseException(result));
         return result;
     }
 }

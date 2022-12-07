@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetaDataStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -28,19 +28,19 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Show table metadata statement assert.
+ * Show table meta data statement assert.
  */
-public final class ShowTableMetadataStatementAssert {
+public final class ShowTableMetaDataStatementAssert {
     
     /**
-     * Assert show table metadata statement is correct with expected parser result.
+     * Assert show table meta data statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show table metadata statement
-     * @param expected expected show table metadata statement test case
+     * @param actual actual show table meta data statement
+     * @param expected expected show table meta data statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetadataStatement actual,
-                                final ShowTableMetadataStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetaDataStatement actual,
+                                final ShowTableMetaDataStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

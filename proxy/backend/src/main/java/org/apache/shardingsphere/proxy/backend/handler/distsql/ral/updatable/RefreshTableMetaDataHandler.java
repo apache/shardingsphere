@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.distsql.exception.resource.EmptyResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
@@ -34,9 +34,9 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Refresh table metadata handler.
+ * Refresh table meta data handler.
  */
-public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement> {
+public final class RefreshTableMetaDataHandler extends UpdatableRALBackendHandler<RefreshTableMetaDataStatement> {
     
     @Override
     protected void update(final ContextManager contextManager) {

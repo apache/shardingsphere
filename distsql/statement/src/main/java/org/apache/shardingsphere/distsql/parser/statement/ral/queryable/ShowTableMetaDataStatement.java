@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Show table metadata statement.
+ * Show table meta data statement.
  */
 @RequiredArgsConstructor
-public final class ShowTableMetadataStatement extends QueryableRALStatement implements FromDatabaseAvailable {
+public final class ShowTableMetaDataStatement extends QueryableRALStatement implements FromDatabaseAvailable {
     
     @Getter
     private final Collection<String> tableNames;

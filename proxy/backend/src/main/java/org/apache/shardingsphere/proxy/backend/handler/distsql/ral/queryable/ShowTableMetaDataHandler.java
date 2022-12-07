@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Show table metadata handler.
  */
-public final class ShowTableMetadataHandler extends QueryableRALBackendHandler<ShowTableMetadataStatement> {
+public final class ShowTableMetaDataHandler extends QueryableRALBackendHandler<ShowTableMetaDataStatement> {
     
     private static final String SCHEMA_NAME = "schema_name";
     

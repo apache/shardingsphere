@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowConnectionIdExecutor;
@@ -300,7 +300,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select ENGINE from ENGINES", "");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor.class));
+        assertThat(actual.get(), instanceOf(DefaultDatabaseMetaDataExecutor.class));
     }
     
     @Test

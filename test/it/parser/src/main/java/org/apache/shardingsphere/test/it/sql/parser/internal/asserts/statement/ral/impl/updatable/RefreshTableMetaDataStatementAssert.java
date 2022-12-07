@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.RefreshTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.RefreshTableMetaDataStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -27,18 +27,18 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Refresh table metadata statement assert.
+ * Refresh table meta data statement assert.
  */
-public final class RefreshTableMetadataStatementAssert {
+public final class RefreshTableMetaDataStatementAssert {
     
     /**
-     * Assert refresh table metadata statement is correct with expected parser result.
+     * Assert refresh table meta data statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual refresh table metadata statement
-     * @param expected expected refresh table metadata statement test case
+     * @param actual actual refresh table meta data statement
+     * @param expected expected refresh table meta data statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final RefreshTableMetadataStatement actual, final RefreshTableMetadataStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RefreshTableMetaDataStatement actual, final RefreshTableMetaDataStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

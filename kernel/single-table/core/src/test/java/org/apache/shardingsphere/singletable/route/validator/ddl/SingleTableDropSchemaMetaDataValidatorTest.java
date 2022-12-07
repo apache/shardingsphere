@@ -36,23 +36,23 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleTableDropSchemaMetadataValidatorTest {
+public final class SingleTableDropSchemaMetaDataValidatorTest {
     
     @Test(expected = DropNotEmptySchemaException.class)
     public void assertValidateWithoutCascadeSchema() {
-        new SingleTableDropSchemaMetadataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", false), mockDatabase());
+        new SingleTableDropSchemaMetaDataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", false), mockDatabase());
     }
     
     @Test(expected = SchemaNotFoundException.class)
     public void assertValidateWithNotExistedSchema() {
         ShardingSphereDatabase database = mockDatabase();
         when(database.getSchema("not_existed_schema")).thenReturn(null);
-        new SingleTableDropSchemaMetadataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("not_existed_schema", true), database);
+        new SingleTableDropSchemaMetaDataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("not_existed_schema", true), database);
     }
     
     @Test
     public void assertValidate() {
-        new SingleTableDropSchemaMetadataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", true), mockDatabase());
+        new SingleTableDropSchemaMetaDataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", true), mockDatabase());
     }
     
     private ShardingSphereDatabase mockDatabase() {

@@ -47,7 +47,7 @@ public class PipelineWatcher extends TestWatcher {
         }
     }
     
-    // TODO now the metadata mistake is not reproduce, but keep this method, it may be used again later
+    // TODO now the meta data mistake is not reproduce, but keep this method, it may be used again later
     private void outputZookeeperData() {
         DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
         DatabaseType databaseType = dockerContainerComposer.getStorageContainer().getDatabaseType();

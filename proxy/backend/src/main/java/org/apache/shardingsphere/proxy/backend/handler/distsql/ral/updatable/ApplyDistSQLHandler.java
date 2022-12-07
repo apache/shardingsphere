@@ -28,6 +28,6 @@ public final class ApplyDistSQLHandler extends UpdatableRALBackendHandler<ApplyD
     
     @Override
     protected void update(final ContextManager contextManager) {
-        // TODO Metadata support required
+        // TODO Meta data support required
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.singletable.route.validator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.singletable.route.validator.ddl.SingleTableDropSchemaMetadataValidator;
+import org.apache.shardingsphere.singletable.route.validator.ddl.SingleTableDropSchemaMetaDataValidator;
 import org.apache.shardingsphere.singletable.route.validator.ddl.SingleTableDropTableValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
@@ -28,21 +28,21 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableSt
 import java.util.Optional;
 
 /**
- * Single table metadata validator factory.
+ * Single table meta data validator factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingleTableMetadataValidatorFactory {
+public final class SingleTableMetaDataValidatorFactory {
     
     /**
-     * New instance of single table metadata validator.
+     * New instance of single table meta data validator.
      * 
      * @param sqlStatement SQL statement
      * @return created instance
      */
     @SuppressWarnings("rawtypes")
-    public static Optional<SingleTableMetadataValidator> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<SingleTableMetaDataValidator> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DropSchemaStatement) {
-            return Optional.of(new SingleTableDropSchemaMetadataValidator());
+            return Optional.of(new SingleTableDropSchemaMetaDataValidator());
         }
         if (sqlStatement instanceof DropTableStatement) {
             return Optional.of(new SingleTableDropTableValidator());
