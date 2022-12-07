@@ -612,11 +612,25 @@ CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHA
 
 2. Configure the source storage units in proxy.
 
+2.1. Isomorphic database.
+
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
+    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
+);
+```
+
+2.2. Heterogeneous database.
+
+MySQL example:
+```sql
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
+    USER="root",
+    PASSWORD="root",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
 ```
