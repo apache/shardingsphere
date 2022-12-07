@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.required.fixture.single;
 
+import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
-public interface SingleRequiredSPIFixture extends RequiredSPI {
+public interface SingleRequiredSPIFixture extends RequiredSPI, SPIPostProcessor {
 }

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl;
 
-import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleWithDefaultRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleWithoutDefaultRequiredSPIFixture;
 
-public final class NotDefaultMultipleRequiredSPIFixtureImpl implements MultipleRequiredSPIFixture {
+public final class FooNotDefaultMultipleRequiredSPIFixtureImpl implements MultipleWithDefaultRequiredSPIFixture, MultipleWithoutDefaultRequiredSPIFixture {
 }

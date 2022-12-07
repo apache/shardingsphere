@@ -20,21 +20,26 @@ package org.apache.shardingsphere.infra.util.spi.type.required;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.empty.EmptyRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleWithDefaultRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleWithoutDefaultRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.BarNotDefaultMultipleRequiredSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.DefaultMultipleRequiredSPIFixtureImpl;
-import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.FooNotDefaultMultipleRequiredSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.SingleRequiredSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.impl.SingleRequiredSPIFixtureImpl;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class RequiredSPIRegistryTest {
     
     static {
         ShardingSphereServiceLoader.register(EmptyRequiredSPIFixture.class);
         ShardingSphereServiceLoader.register(SingleRequiredSPIFixture.class);
-        ShardingSphereServiceLoader.register(MultipleRequiredSPIFixture.class);
+        ShardingSphereServiceLoader.register(MultipleWithDefaultRequiredSPIFixture.class);
+        ShardingSphereServiceLoader.register(MultipleWithoutDefaultRequiredSPIFixture.class);
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
@@ -44,11 +49,19 @@ public final class RequiredSPIRegistryTest {
     
     @Test
     public void assertRegisteredServiceWithOneImplementation() {
-        assertThat(RequiredSPIRegistry.getRegisteredService(SingleRequiredSPIFixture.class), instanceOf(SingleRequiredSPIFixtureImpl.class));
+        SingleRequiredSPIFixture actual = RequiredSPIRegistry.getRegisteredService(SingleRequiredSPIFixture.class);
+        assertThat(actual, instanceOf(SingleRequiredSPIFixtureImpl.class));
+        assertTrue(((SingleRequiredSPIFixtureImpl) actual).isInitialized());
     }
     
     @Test
-    public void assertRegisteredServiceWithMoreImplementations() {
-        assertThat(RequiredSPIRegistry.getRegisteredService(MultipleRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
+    public void assertRegisteredServiceWithMoreImplementationsAndWithDefaultImplementation() {
+        assertThat(RequiredSPIRegistry.getRegisteredService(MultipleWithDefaultRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
+    }
+    
+    @Test
+    public void assertRegisteredServiceWithMoreImplementationsAndWithoutDefaultImplementation() {
+        MultipleWithoutDefaultRequiredSPIFixture actual = RequiredSPIRegistry.getRegisteredService(MultipleWithoutDefaultRequiredSPIFixture.class);
+        assertTrue(actual instanceof FooNotDefaultMultipleRequiredSPIFixtureImpl || actual instanceof BarNotDefaultMultipleRequiredSPIFixtureImpl);
     }
 }
