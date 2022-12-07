@@ -90,9 +90,9 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Renew Metadata contexts.
+     * Renew metadata contexts.
      *
-     * @param metadataContexts Metadata contexts
+     * @param metadataContexts metadata contexts
      */
     public synchronized void renewMetadataContexts(final MetadataContexts metadataContexts) {
         this.metadataContexts = metadataContexts;
@@ -515,7 +515,7 @@ public final class ContextManager implements AutoCloseable {
                     each -> each.getSchemas().forEach((schemaName, schema) -> metadataContexts.getPersistService().getDatabaseMetadataService().compareAndPersist(each.getName(), schemaName, schema)));
             switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
-            log.error("Reload database Metadata: {} failed", databaseName, ex);
+            log.error("Reload database metadata: {} failed", databaseName, ex);
         }
     }
     
@@ -537,7 +537,7 @@ public final class ContextManager implements AutoCloseable {
                 metadataContexts.getPersistService().getDatabaseMetadataService().compareAndPersist(metadataContexts.getMetadata().getActualDatabaseName(databaseName), schemaName, reloadedSchema);
             }
         } catch (final SQLException ex) {
-            log.error("Reload Metadata of database: {} schema: {} with data source: {} failed", databaseName, schemaName, dataSourceName, ex);
+            log.error("Reload metadata of database: {} schema: {} with data source: {} failed", databaseName, schemaName, dataSourceName, ex);
         }
     }
     
@@ -564,7 +564,7 @@ public final class ContextManager implements AutoCloseable {
         try {
             reloadTable(databaseName, schemaName, tableName, dataSourceMap);
         } catch (final SQLException ex) {
-            log.error("Reload table: {} Metadata of database: {} schema: {} failed", tableName, databaseName, schemaName, ex);
+            log.error("Reload table: {} metadata of database: {} schema: {} failed", tableName, databaseName, schemaName, ex);
         }
     }
     
@@ -582,7 +582,7 @@ public final class ContextManager implements AutoCloseable {
         try {
             reloadTable(databaseName, schemaName, tableName, dataSourceMap);
         } catch (final SQLException ex) {
-            log.error("Reload table: {} Metadata of database: {} schema: {} with data source: {} failed", tableName, databaseName, schemaName, dataSourceName, ex);
+            log.error("Reload table: {} metadata of database: {} schema: {} with data source: {} failed", tableName, databaseName, schemaName, dataSourceName, ex);
         }
     }
     

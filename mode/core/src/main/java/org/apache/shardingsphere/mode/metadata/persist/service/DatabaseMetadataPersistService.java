@@ -31,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Database Metadata registry service.
+ * Database metadata registry service.
  */
 @Getter
 public final class DatabaseMetadataPersistService {
@@ -96,11 +96,11 @@ public final class DatabaseMetadataPersistService {
     }
     
     /**
-     * Compare and persist schema Metadata.
+     * Compare and persist schema metadata.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema Metadata
+     * @param schema schema metadata
      */
     public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
@@ -112,11 +112,11 @@ public final class DatabaseMetadataPersistService {
     }
     
     /**
-     * Persist schema Metadata.
+     * Persist schema metadata.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema Metadata
+     * @param schema schema metadata
      */
     public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
@@ -126,21 +126,21 @@ public final class DatabaseMetadataPersistService {
     }
     
     /**
-     * Delete schema Metadata.
+     * Delete schema metadata.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema Metadata
+     * @param schema schema metadata
      */
     public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
     
     /**
-     * Load schema Metadata.
+     * Load schema metadata.
      *
      * @param databaseName database name
-     * @return schema Metadata
+     * @return schema metadata
      */
     public Map<String, ShardingSphereSchema> loadSchemas(final String databaseName) {
         Collection<String> schemaNames = loadAllSchemaNames(databaseName);

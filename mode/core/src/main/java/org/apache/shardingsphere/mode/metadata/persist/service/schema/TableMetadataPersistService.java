@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Table Metadata persist service.
+ * Table metadata persist service.
  */
 @RequiredArgsConstructor
 public final class TableMetadataPersistService implements SchemaMetadataPersistService<Map<String, ShardingSphereTable>> {

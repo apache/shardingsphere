@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Schema Metadata registry subscriber.
+ * Schema metadata registry subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 public final class SchemaMetadataRegistrySubscriber {
@@ -46,7 +46,7 @@ public final class SchemaMetadataRegistrySubscriber {
     }
     
     /**
-     * Update when Metadata altered.
+     * Update when metadata altered.
      *
      * @param event schema altered event
      */

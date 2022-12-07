@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 
 /**
- * Resource Metadata changed subscriber.
+ * Resource metadata changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 public final class ResourceMetadataChangedSubscriber {
@@ -40,7 +40,7 @@ public final class ResourceMetadataChangedSubscriber {
     }
     
     /**
-     * Renew to persist Metadata.
+     * Renew to persist metadata.
      *
      * @param event database added event
      */
@@ -80,9 +80,9 @@ public final class ResourceMetadataChangedSubscriber {
     }
     
     /**
-     * Renew Metadata of the table.
+     * Renew metadata of the table.
      *
-     * @param event table Metadata changed event
+     * @param event table metadata changed event
      */
     @Subscribe
     public synchronized void renew(final TableMetadataChangedEvent event) {
@@ -91,9 +91,9 @@ public final class ResourceMetadataChangedSubscriber {
     }
     
     /**
-     * Renew Metadata of the view.
+     * Renew metadata of the view.
      *
-     * @param event view Metadata changed event
+     * @param event view metadata changed event
      */
     @Subscribe
     public synchronized void renew(final ViewMetadataChangedEvent event) {

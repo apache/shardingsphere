@@ -53,7 +53,7 @@ public final class ShardingSphereDataPersistService {
     /**
      * Load.
      *
-     * @param metadata Metadata
+     * @param metadata metadata
      * @return ShardingSphere data
      */
     public Optional<ShardingSphereData> load(final ShardingSphereMetaData metadata) {

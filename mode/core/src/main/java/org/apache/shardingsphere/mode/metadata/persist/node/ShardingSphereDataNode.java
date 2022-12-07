@@ -39,7 +39,7 @@ public final class ShardingSphereDataNode {
     /**
      * Get ShardingSphere data node path.
      *
-     * @return Metadata node path
+     * @return metadata node path
      */
     public static String getShardingSphereDataNodePath() {
         return String.join("/", "", ROOT_NODE);
@@ -56,7 +56,7 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get Metadata tables path.
+     * Get metadata tables path.
      *
      * @param databaseName database name
      * @param schemaName schema name
@@ -78,7 +78,7 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get Metadata schemas path.
+     * Get metadata schemas path.
      *
      * @param databaseName database name
      * @return schemas path
@@ -88,12 +88,12 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get table Metadata path.
+     * Get table metadata path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
-     * @return table Metadata path
+     * @return table metadata path
      */
     public static String getTablePath(final String databaseName, final String schemaName, final String table) {
         return String.join("/", getTablesPath(databaseName, schemaName), table);
@@ -106,7 +106,7 @@ public final class ShardingSphereDataNode {
      * @param schemaName schema name
      * @param table table name
      * @param uniqueKey unique key
-     * @return table Metadata path
+     * @return table metadata path
      */
     public static String getTableRowPath(final String databaseName, final String schemaName, final String table, final String uniqueKey) {
         return String.join("/", getTablePath(databaseName, schemaName, table), uniqueKey);

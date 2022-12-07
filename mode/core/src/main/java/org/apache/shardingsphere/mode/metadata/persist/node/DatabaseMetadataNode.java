@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Database Metadata node.
+ * Database metadata node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseMetadataNode {
@@ -47,7 +47,7 @@ public final class DatabaseMetadataNode {
     private static final String VERSIONS = "versions";
     
     /**
-     * Get Metadata data source path.
+     * Get metadata data source path.
      *
      * @param databaseName database name
      * @param version data source version
@@ -58,9 +58,9 @@ public final class DatabaseMetadataNode {
     }
     
     /**
-     * Get Metadata node path.
+     * Get metadata node path.
      *
-     * @return Metadata node path
+     * @return metadata node path
      */
     public static String getMetadataNodePath() {
         return String.join("/", "", ROOT_NODE);
@@ -88,7 +88,7 @@ public final class DatabaseMetadataNode {
     }
     
     /**
-     * Get Metadata tables path.
+     * Get metadata tables path.
      *
      * @param databaseName database name
      * @param schemaName schema name
@@ -99,7 +99,7 @@ public final class DatabaseMetadataNode {
     }
     
     /**
-     * Get Metadata views path.
+     * Get metadata views path.
      *
      * @param databaseName database name
      * @param schemaName schema name
@@ -121,7 +121,7 @@ public final class DatabaseMetadataNode {
     }
     
     /**
-     * Get Metadata schemas path.
+     * Get metadata schemas path.
      *
      * @param databaseName database name
      * @return schemas path
@@ -131,24 +131,24 @@ public final class DatabaseMetadataNode {
     }
     
     /**
-     * Get table Metadata path.
+     * Get table metadata path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
-     * @return table Metadata path
+     * @return table metadata path
      */
     public static String getTableMetadataPath(final String databaseName, final String schemaName, final String table) {
         return String.join("/", getMetadataTablesPath(databaseName, schemaName), table);
     }
     
     /**
-     * Get view Metadata path.
+     * Get view metadata path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param view view name
-     * @return view Metadata path
+     * @return view metadata path
      */
     public static String getViewMetadataPath(final String databaseName, final String schemaName, final String view) {
         return String.join("/", getMetadataViewsPath(databaseName, schemaName), view);
@@ -207,9 +207,9 @@ public final class DatabaseMetadataNode {
     }
     
     /**
-     * Get table Metadata path.
+     * Get table metadata path.
      *
-     * @param tableMetadataPath table Metadata path
+     * @param tableMetadataPath table metadata path
      * @return table name
      */
     public static Optional<String> getTableName(final String tableMetadataPath) {
@@ -219,9 +219,9 @@ public final class DatabaseMetadataNode {
     }
     
     /**
-     * Get view Metadata path.
+     * Get view metadata path.
      *
-     * @param viewMetadataPath view Metadata path
+     * @param viewMetadataPath view metadata path
      * @return view name
      */
     public static Optional<String> getViewName(final String viewMetadataPath) {

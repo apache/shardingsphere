@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Nacos Metadata util.
+ * Nacos metadata util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NacosMetadataUtil {

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * View Metadata changed event.
+ * View metadata changed event.
  */
 @RequiredArgsConstructor
 @Getter

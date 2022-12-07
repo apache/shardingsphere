@@ -32,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * View Metadata persist service.
+ * View metadata persist service.
  */
 @RequiredArgsConstructor
 public final class ViewMetadataPersistService implements SchemaMetadataPersistService<Map<String, ShardingSphereView>> {

@@ -56,12 +56,12 @@ import java.util.stream.Collectors;
 public final class MetadataContextsFactory {
     
     /**
-     * Create Metadata contexts.
+     * Create metadata contexts.
      *
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext instance context
-     * @return Metadata contexts
+     * @return metadata contexts
      * @throws SQLException SQL exception
      */
     public static MetadataContexts create(final MetadataPersistService persistService, final ContextManagerBuilderParameter param, final InstanceContext instanceContext) throws SQLException {
@@ -69,13 +69,13 @@ public final class MetadataContextsFactory {
     }
     
     /**
-     * Create Metadata contexts.
+     * Create metadata contexts.
      *
      * @param persistService persist service
      * @param param context manager builder parameter
      * @param instanceContext instance context
      * @param storageNodes storage nodes
-     * @return Metadata contexts
+     * @return metadata contexts
      * @throws SQLException SQL exception
      */
     public static MetadataContexts create(final MetadataPersistService persistService, final ContextManagerBuilderParameter param,

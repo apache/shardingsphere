@@ -18,27 +18,27 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.schema;
 
 /**
- * Schema Metadata persist service.
+ * Schema metadata persist service.
  *
  * @param <T> type of schema
  */
 public interface SchemaMetadataPersistService<T> {
     
     /**
-     * Persist Metadata.
+     * Persist metadata.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param schema schema Metadata
+     * @param schema schema metadata
      */
     void persist(String databaseName, String schemaName, T schema);
     
     /**
-     * Load schema Metadata.
+     * Load schema metadata.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @return schema Metadata
+     * @return schema metadata
      */
     T load(String databaseName, String schemaName);
     
