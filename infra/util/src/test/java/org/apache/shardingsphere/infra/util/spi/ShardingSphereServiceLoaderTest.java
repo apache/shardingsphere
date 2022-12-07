@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.util.spi;
 
 import org.apache.shardingsphere.infra.util.spi.fixture.EmptySPIFixture;
 import org.apache.shardingsphere.infra.util.spi.fixture.MultitonSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.fixture.MultitonSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.fixture.SingletonSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.fixture.SingletonSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.fixture.impl.MultitonSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.fixture.impl.SingletonSPIFixtureImpl;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,12 +34,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereServiceLoaderTest {
     
-    static {
-        ShardingSphereServiceLoader.register(EmptySPIFixture.class);
-        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
-        ShardingSphereServiceLoader.register(MultitonSPIFixture.class);
-    }
-    
     @Test
     public void assertGetServiceInstancesWithUnregisteredSPI() {
         assertTrue(ShardingSphereServiceLoader.getServiceInstances(Object.class).isEmpty());
@@ -47,11 +41,13 @@ public final class ShardingSphereServiceLoaderTest {
     
     @Test
     public void assertGetServiceInstancesWithEmptyInstances() {
+        ShardingSphereServiceLoader.register(EmptySPIFixture.class);
         assertTrue(ShardingSphereServiceLoader.getServiceInstances(EmptySPIFixture.class).isEmpty());
     }
     
     @Test
     public void assertGetServiceInstancesWithSingletonSPI() {
+        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
         Collection<SingletonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(SingletonSPIFixture.class);
         assertThat(actual.size(), is(1));
         SingletonSPIFixture actualInstance = actual.iterator().next();
@@ -61,6 +57,7 @@ public final class ShardingSphereServiceLoaderTest {
     
     @Test
     public void assertGetServiceInstancesWithMultitonSPI() {
+        ShardingSphereServiceLoader.register(MultitonSPIFixture.class);
         Collection<MultitonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(MultitonSPIFixture.class);
         assertThat(actual.size(), is(1));
         MultitonSPIFixture actualInstance = actual.iterator().next();

@@ -47,7 +47,7 @@ public final class OrderedServicesCacheTest {
     
     @After
     public void cleanCache() throws NoSuchFieldException, IllegalAccessException {
-        Field field = OrderedServicesCache.class.getDeclaredField("softCache");
+        Field field = OrderedServicesCache.class.getDeclaredField("cache");
         field.setAccessible(true);
         field.set(null, new SoftReference<>(new ConcurrentHashMap<>()));
     }
