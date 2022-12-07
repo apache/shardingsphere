@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.util.spi.type.required;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.empty.EmptyRequiredSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiton.impl.DefaultMultitonRequiredSPIFixtureImpl;
-import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiton.MultitonRequiredSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.DefaultMultipleRequiredSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.SingleRequiredSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.impl.SingleRequiredSPIFixtureImpl;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public final class RequiredSPIRegistryTest {
     static {
         ShardingSphereServiceLoader.register(EmptyRequiredSPIFixture.class);
         ShardingSphereServiceLoader.register(SingleRequiredSPIFixture.class);
-        ShardingSphereServiceLoader.register(MultitonRequiredSPIFixture.class);
+        ShardingSphereServiceLoader.register(MultipleRequiredSPIFixture.class);
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
@@ -49,6 +49,6 @@ public final class RequiredSPIRegistryTest {
     
     @Test
     public void assertRegisteredServiceWithMoreImplementations() {
-        assertThat(RequiredSPIRegistry.getRegisteredService(MultitonRequiredSPIFixture.class), instanceOf(DefaultMultitonRequiredSPIFixtureImpl.class));
+        assertThat(RequiredSPIRegistry.getRegisteredService(MultipleRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
     }
 }

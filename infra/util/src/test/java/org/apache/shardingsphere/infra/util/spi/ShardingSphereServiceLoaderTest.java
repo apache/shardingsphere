@@ -34,6 +34,12 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereServiceLoaderTest {
     
+    static {
+        ShardingSphereServiceLoader.register(EmptySPIFixture.class);
+        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
+        ShardingSphereServiceLoader.register(MultitonSPIFixture.class);
+    }
+    
     @Test
     public void assertGetServiceInstancesWithUnregisteredSPI() {
         assertTrue(ShardingSphereServiceLoader.getServiceInstances(Object.class).isEmpty());
@@ -41,13 +47,11 @@ public final class ShardingSphereServiceLoaderTest {
     
     @Test
     public void assertGetServiceInstancesWithEmptyInstances() {
-        ShardingSphereServiceLoader.register(EmptySPIFixture.class);
         assertTrue(ShardingSphereServiceLoader.getServiceInstances(EmptySPIFixture.class).isEmpty());
     }
     
     @Test
     public void assertGetServiceInstancesWithSingletonSPI() {
-        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
         Collection<SingletonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(SingletonSPIFixture.class);
         assertThat(actual.size(), is(1));
         SingletonSPIFixture actualInstance = actual.iterator().next();
@@ -57,7 +61,6 @@ public final class ShardingSphereServiceLoaderTest {
     
     @Test
     public void assertGetServiceInstancesWithMultitonSPI() {
-        ShardingSphereServiceLoader.register(MultitonSPIFixture.class);
         Collection<MultitonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(MultitonSPIFixture.class);
         assertThat(actual.size(), is(1));
         MultitonSPIFixture actualInstance = actual.iterator().next();
