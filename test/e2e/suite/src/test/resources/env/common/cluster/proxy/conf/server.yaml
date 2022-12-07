@@ -33,6 +33,15 @@ authority:
       password: Proxy@123
   privilege:
     type: ALL_PERMITTED
+    
+sqlParser:
+  sqlCommentParseEnabled: true
+  sqlStatementCache:
+    initialCapacity: 2000
+    maximumSize: 65535
+  parseTreeCache:
+    initialCapacity: 128
+    maximumSize: 1024
 
 props:
   max-connections-size-per-query: 1
