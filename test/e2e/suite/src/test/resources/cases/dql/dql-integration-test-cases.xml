@@ -968,6 +968,94 @@
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION (SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION (SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? EXCEPT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long,1000:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? EXCEPT SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long,1000:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? MINUS SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long,1000:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="(SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? MINUS SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long,1000:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="(SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ?) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ? INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="(SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ?) INTERSECT SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order EXCEPT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order MINUS SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order MINUS (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order EXCEPT SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="(SELECT * FROM t_order EXCEPT SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order MINUS SELECT * FROM t_order INTERSECT SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="(SELECT * FROM t_order MINUS SELECT * FROM t_order) INTERSECT (SELECT * FROM t_order WHERE order_id = ? UNION SELECT * FROM t_order WHERE order_id = ?) ORDER BY order_id" db-types="openGauss" scenario-types="db">
+        <assertion parameters="2500:long,2900:long" expected-data-source-name="read_dataset" />
+    </test-case>
     
 <!--    TODO FIX ME Expected: is "true" but was "1"-->
 <!--    <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL" scenario-types="sharding_and_shadow">-->
