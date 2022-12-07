@@ -11,7 +11,7 @@ weight = 2
 
 ### 权限要求
 
-1. 开启 `binlog`
+1. 源端开启 `binlog`
 
 MySQL 5.7 `my.cnf` 示例配置：
 
@@ -43,16 +43,14 @@ show variables like '%binlog%';
 +-----------------------------------------+---------------------------------------+
 ```
 
-2. 赋予 MySQL 账号 Replication 相关权限。
+2. 赋予源端 MySQL 账号 replication 相关权限。
 
 执行以下命令，查看该用户是否有迁移权限：
-
 ```
 SHOW GRANTS FOR 'migration_user';
 ```
 
 示例结果：
-
 ```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
@@ -62,14 +60,18 @@ SHOW GRANTS FOR 'migration_user';
 +------------------------------------------------------------------------------+
 ```
 
-3. 赋予迁移时用到物理库的增删改查权限
+3. 赋予 MySQL 账号 DDL DML 权限
 
-如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的物理库上，具备增删改查的权限。
-
+源端账号需要具备查询权限。
 示例：
-
 ```sql
-GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `migration_user`@`%`;
+GRANT SELECT ON migration_ds_0.* TO `migration_user`@`%`;
+```
+
+目标端账号需要具备增删改查等权限。
+示例：
+```sql
+GRANT CREATE, DROP, INDEX, SELECT, INSERT, UPDATE, DELETE ON *.* TO `migration_user`@`%`;
 ```
 
 详情请参见 [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
@@ -253,9 +255,9 @@ REFRESH TABLE METADATA;
 
 ### 权限要求
 
-1. 开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)。
+1. 源端开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)。
 
-2. 调整 WAL 配置。
+2. 源端调整 WAL 配置。
 
 `postgresql.conf` 示例配置：
 ```
@@ -268,7 +270,7 @@ max_connections = 600
 
 详情请参见 [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) 和 [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html )。
 
-3. 配置 PostgreSQL 允许 Proxy 拥有 replication 权限。
+3. 赋予源端 PostgreSQL 账号 replication 权限。
 
 `pg_hba.conf` 示例配置：
 ```
@@ -277,12 +279,11 @@ host replication repl_acct 0.0.0.0/0 md5
 
 详情请参见 [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-pg-hba-conf.html)。
 
-4. 赋予数据库和表的访问权限
+4. 赋予源端 PostgreSQL 账号 DDL DML 权限。
 
 如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE 和 CONNECT 的权限。
 
 示例：
-
 ```sql
 GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
@@ -467,7 +468,7 @@ REFRESH TABLE METADATA;
 
 ### 权限要求
 
-1. 调整 WAL 配置。
+1. 调整源端 WAL 配置。
 
 `postgresql.conf` 示例配置：
 ```
@@ -480,7 +481,7 @@ max_connections = 600
 
 详情请参见 [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
 
-2. 配置 openGauss 允许 Proxy 拥有 replication 权限。
+2. 赋予源端 openGauss 账号 replication 权限。
 
 `pg_hba.conf` 示例配置：
 ```
@@ -489,12 +490,11 @@ host replication repl_acct 0.0.0.0/0 md5
 
 详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
 
-3. 赋予数据库和表的访问权限
+3. 赋予 openGauss 账号 DDL DML 权限。
 
 如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE 和 CONNECT 的权限。
 
 示例：
-
 ```sql
 GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
