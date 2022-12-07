@@ -17,7 +17,18 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.impl;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.util.spi.type.required.fixture.single.SingleRequiredSPIFixture;
 
+import java.util.Properties;
+
+@Getter
 public final class SingleRequiredSPIFixtureImpl implements SingleRequiredSPIFixture {
+    
+    private boolean initialized;
+    
+    @Override
+    public void init(final Properties props) {
+        initialized = true;
+    }
 }

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.DefaultMultipleRequiredSPIFixtureImpl
-org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.NotDefaultMultipleRequiredSPIFixtureImpl
+org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.FooNotDefaultMultipleRequiredSPIFixtureImpl
+org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl.BarNotDefaultMultipleRequiredSPIFixtureImpl
