@@ -27,9 +27,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptTableTest {
@@ -141,6 +141,7 @@ public final class EncryptTableTest {
     @Test
     public void assertGetLogicAndCipherColumns() {
         assertThat(encryptTable.getLogicAndCipherColumns(), is(Collections.singletonMap("logicColumn", "cipherColumn")));
+        assertTrue(encryptTable.getLogicAndCipherColumns().containsKey("LOGICCOLUMN"));
     }
     
     @Test
