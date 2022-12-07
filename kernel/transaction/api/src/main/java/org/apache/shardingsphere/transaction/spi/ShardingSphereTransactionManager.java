@@ -91,9 +91,9 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
      * Judge whether the provider type is valid.
      *
      * @param providerType transaction manager provider type 
-     * @return valid or invalid
+     * @return contains provider type or not
      */
-    default boolean isValidProviderType(String providerType) {
+    default boolean containsProviderType(String providerType) {
         return true;
     }
 }

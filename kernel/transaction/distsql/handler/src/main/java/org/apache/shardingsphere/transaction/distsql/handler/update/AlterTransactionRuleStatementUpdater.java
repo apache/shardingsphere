@@ -71,7 +71,7 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     
     private void checkTransactionManager(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
         ShardingSpherePreconditions.checkState(ShardingSphereTransactionManagerFactory.contains(transactionType),
-                () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction type `%s`", statement.getDefaultType())));
+                () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager with type `%s`", statement.getDefaultType())));
     }
     
     private void checkTransactionManagerProviderType(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
@@ -79,8 +79,8 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
                 () -> new InvalidRuleConfigurationException("Transaction", "Not specified required transaction manager provider"));
         
         ShardingSphereTransactionManager transactionManager = new ShardingSphereTransactionManagerEngine().getTransactionManager(transactionType);
-        ShardingSpherePreconditions.checkState(transactionManager.isValidProviderType(statement.getProvider().getProviderType()),
-                () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager provider `%s`", statement.getProvider().getProviderType())));
+        ShardingSpherePreconditions.checkState(transactionManager.containsProviderType(statement.getProvider().getProviderType()),
+                () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager provider with type `%s`", statement.getProvider().getProviderType())));
     }
     
     private TransactionRuleConfiguration createToBeAlteredRuleConfiguration(final SQLStatement sqlStatement) {

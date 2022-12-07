@@ -45,10 +45,10 @@ public final class ShardingSphereTransactionManagerFactory {
     }
     
     /**
-     * Judge whether contains transaction type.
+     * Judge whether contains the transaction manager for the specified transaction type.
      *
      * @param transactionType transaction type
-     * @return contains transaction type or not
+     * @return contains the specified transaction manager or not
      */
     public static boolean contains(final TransactionType transactionType) {
         Collection<ShardingSphereTransactionManager> transactionManagers = ShardingSphereTransactionManagerFactory.getAllInstances();

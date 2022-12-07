@@ -137,7 +137,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     }
     
     @Override
-    public boolean isValidProviderType(final String providerType) {
+    public boolean containsProviderType(final String providerType) {
         return XATransactionManagerProviderFactory.contains(providerType);
     }
 }
