@@ -34,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueRead
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -55,6 +56,7 @@ import java.util.stream.Collectors;
 /**
  * Data match data consistency calculate algorithm.
  */
+@SPIDescription("Match raw data of records.")
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
@@ -154,11 +156,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
         return SUPPORTED_DATABASE_TYPES;
-    }
-    
-    @Override
-    public String getDescription() {
-        return "Match raw data of records.";
     }
     
     @RequiredArgsConstructor
