@@ -24,6 +24,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * ShardingSphere transaction manager factory.
@@ -45,16 +46,16 @@ public final class ShardingSphereTransactionManagerFactory {
     }
     
     /**
-     * Judge whether contains the transaction manager for the specified transaction type.
+     * Get instance of ShardingSphere transaction manager.
      *
      * @param transactionType transaction type
-     * @return contains the specified transaction manager or not
+     * @return ShardingSphere transaction manager instance
      */
-    public static boolean contains(final TransactionType transactionType) {
+    public static Optional<ShardingSphereTransactionManager> getInstance(final TransactionType transactionType) {
         Collection<ShardingSphereTransactionManager> transactionManagers = ShardingSphereTransactionManagerFactory.getAllInstances();
         if (null == transactionManagers || transactionManagers.isEmpty()) {
-            return false;
+            return Optional.empty();
         }
-        return transactionManagers.stream().anyMatch(each -> transactionType.equals(each.getTransactionType()));
+        return transactionManagers.stream().filter(each -> transactionType.equals(each.getTransactionType())).findFirst();
     }
 }

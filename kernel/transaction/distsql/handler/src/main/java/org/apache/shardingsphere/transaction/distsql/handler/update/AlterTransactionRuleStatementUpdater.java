@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
@@ -33,6 +31,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Alter transaction rule statement handler.
@@ -56,9 +55,6 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
             return;
         }
         checkTransactionManager(statement, transactionType);
-        if (TransactionType.XA.equals(transactionType)) {
-            checkTransactionManagerProviderType(statement, transactionType);
-        }
     }
     
     private void checkTransactionType(final AlterTransactionRuleStatement statement) {
@@ -70,17 +66,17 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     }
     
     private void checkTransactionManager(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
-        ShardingSpherePreconditions.checkState(ShardingSphereTransactionManagerFactory.contains(transactionType),
+        ShardingSphereTransactionManager transactionManager = ShardingSphereTransactionManagerFactory.getInstance(transactionType).orElse(null);
+        ShardingSpherePreconditions.checkState(Objects.nonNull(transactionManager),
                 () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager with type `%s`", statement.getDefaultType())));
+        if (TransactionType.XA.equals(transactionType)) {
+            checkTransactionManagerProviderType(transactionManager, statement.getProvider().getProviderType());
+        }
     }
     
-    private void checkTransactionManagerProviderType(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(statement.getProvider().getProviderType()),
-                () -> new InvalidRuleConfigurationException("Transaction", "Not specified required transaction manager provider"));
-        
-        ShardingSphereTransactionManager transactionManager = new ShardingSphereTransactionManagerEngine().getTransactionManager(transactionType);
-        ShardingSpherePreconditions.checkState(transactionManager.containsProviderType(statement.getProvider().getProviderType()),
-                () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager provider with type `%s`", statement.getProvider().getProviderType())));
+    private void checkTransactionManagerProviderType(final ShardingSphereTransactionManager transactionManager, final String providerType) {
+        ShardingSpherePreconditions.checkState(transactionManager.containsProviderType(providerType),
+                () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager provider with type `%s`", providerType)));
     }
     
     private TransactionRuleConfiguration createToBeAlteredRuleConfiguration(final SQLStatement sqlStatement) {
