@@ -21,10 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
-import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * Required SPI registry.
@@ -40,14 +38,6 @@ public final class RequiredSPIRegistry {
      * @return registered service
      */
     public static <T extends RequiredSPI> T getRegisteredService(final Class<T> spiClass) {
-        T result = getRequiredService(spiClass);
-        if (result instanceof SPIPostProcessor) {
-            ((SPIPostProcessor) result).init(new Properties());
-        }
-        return result;
-    }
-    
-    private static <T extends RequiredSPI> T getRequiredService(final Class<T> spiClass) {
         Collection<T> services = ShardingSphereServiceLoader.getServiceInstances(spiClass);
         if (services.isEmpty()) {
             throw new ServiceProviderNotFoundServerException(spiClass);

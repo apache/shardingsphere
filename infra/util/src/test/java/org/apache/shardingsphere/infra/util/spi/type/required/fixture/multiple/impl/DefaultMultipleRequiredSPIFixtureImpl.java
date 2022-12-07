@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiton;
+package org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.impl;
 
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.fixture.multiple.MultipleRequiredSPIFixture;
 
-public interface MultitonRequiredSPIFixture extends RequiredSPI {
+public final class DefaultMultipleRequiredSPIFixtureImpl implements MultipleRequiredSPIFixture {
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
