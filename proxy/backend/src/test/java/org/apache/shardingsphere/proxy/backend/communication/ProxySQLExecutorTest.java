@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -85,7 +85,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData());
+        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetadata());
         ProxyContext.init(new ContextManager(metadataContexts, mock(InstanceContext.class)));
     }
     
@@ -208,15 +208,15 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         OpenGaussCursorStatement sqlStatement = new OpenGaussCursorStatement();
         sqlStatement.setSelect(selectStatement);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetadata(database), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+    private ShardingSphereMetadata createShardingSphereMetadata(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetadata(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private SelectStatement createSelectStatement() {
@@ -231,7 +231,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-        return new InsertStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+        return new InsertStatementContext(createShardingSphereMetadata(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private CreateTableStatementContext createPostgreSQLCreateTableStatementContext() {
@@ -245,6 +245,6 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema("public")).thenReturn(mock(ShardingSphereSchema.class));
-        return new InsertStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+        return new InsertStatementContext(createShardingSphereMetadata(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
     }
 }

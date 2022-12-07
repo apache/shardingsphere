@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -47,32 +47,32 @@ public final class CreateTrafficRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithInUsedRuleName() {
-        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereMetadata metadata = createMetadata();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         CreateTrafficRuleStatementUpdater updater = new CreateTrafficRuleStatementUpdater();
-        updater.executeUpdate(metaData, new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
+        updater.executeUpdate(metadata, new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithmType() {
-        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereMetadata metadata = createMetadata();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         CreateTrafficRuleStatementUpdater updater = new CreateTrafficRuleStatementUpdater();
-        updater.executeUpdate(metaData, new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
+        updater.executeUpdate(metadata, new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertExecuteWithLoadBalancerCannotBeNull() {
-        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereMetadata metadata = createMetadata();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         CreateTrafficRuleStatementUpdater updater = new CreateTrafficRuleStatementUpdater();
         try {
-            updater.executeUpdate(metaData, new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
+            updater.executeUpdate(metadata, new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
         } catch (final IllegalStateException ex) {
-            TrafficRule currentRule = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+            TrafficRule currentRule = metadata.getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
             assertNotNull(currentRule);
             throw ex;
         }
@@ -80,14 +80,14 @@ public final class CreateTrafficRuleStatementUpdaterTest {
     
     @Test
     public void assertExecute() {
-        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereMetadata metadata = createMetadata();
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(
                 "rule_name_4", Collections.emptyList(), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         CreateTrafficRuleStatementUpdater updater = new CreateTrafficRuleStatementUpdater();
-        updater.executeUpdate(metaData, new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
-        TrafficRuleConfiguration addedConfig = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
+        updater.executeUpdate(metadata, new CreateTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)));
+        TrafficRuleConfiguration addedConfig = metadata.getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
         assertThat(addedConfig.getTrafficStrategies().size(), is(4));
         assertThat(addedConfig.getLoadBalancers().size(), is(4));
         assertThat(addedConfig.getTrafficAlgorithms().size(), is(4));
@@ -99,11 +99,11 @@ public final class CreateTrafficRuleStatementUpdaterTest {
         assertNotNull(addedConfig.getLoadBalancers().get("rule_name_4_distsql.fixture"));
     }
     
-    private ShardingSphereMetaData createMetaData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+    private ShardingSphereMetadata createMetadata() {
+        ShardingSphereMetadata metadata = mock(ShardingSphereMetadata.class);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(mockTrafficRule())));
-        when(metaData.getGlobalRuleMetaData()).thenReturn(ruleMetaData);
-        return metaData;
+        when(metadata.getGlobalRuleMetaData()).thenReturn(ruleMetaData);
+        return metadata;
     }
     
     private TrafficRule mockTrafficRule() {

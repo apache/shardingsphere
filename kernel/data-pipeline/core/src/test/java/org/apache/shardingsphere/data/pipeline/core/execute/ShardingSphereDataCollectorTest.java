@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
@@ -49,8 +49,8 @@ public final class ShardingSphereDataCollectorTest {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereData shardingSphereData = mockShardingSphereData();
         when(contextManager.getMetadataContexts().getShardingSphereData()).thenReturn(shardingSphereData);
-        ShardingSphereMetaData metaData = mockMetaData();
-        when(contextManager.getMetadataContexts().getMetadata()).thenReturn(metaData);
+        ShardingSphereMetadata metadata = mockMetaData();
+        when(contextManager.getMetadataContexts().getMetadata()).thenReturn(metadata);
         when(contextManager.getMetadataContexts().getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         new ShardingSphereDataScheduleCollector(contextManager).start();
         Thread.sleep(100L);
@@ -68,8 +68,8 @@ public final class ShardingSphereDataCollectorTest {
         return shardingSphereData;
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+    private ShardingSphereMetadata mockMetaData() {
+        ShardingSphereMetadata result = mock(ShardingSphereMetadata.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("logic_db");
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(1, 1);

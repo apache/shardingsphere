@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.data.builder.dialect;
 
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
@@ -49,7 +49,7 @@ public final class PostgreSQLShardingSphereDataBuilder implements ShardingSphere
     }
     
     @Override
-    public ShardingSphereData build(final ShardingSphereMetaData metaData) {
+    public ShardingSphereData build(final ShardingSphereMetadata metaData) {
         ShardingSphereData result = new ShardingSphereData();
         for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
             if (new PostgreSQLDatabaseType().getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {

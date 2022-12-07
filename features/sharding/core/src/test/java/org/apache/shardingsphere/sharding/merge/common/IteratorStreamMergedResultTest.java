@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
@@ -54,11 +54,11 @@ public final class IteratorStreamMergedResultTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+                createShardingSphereMetadata(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+    private ShardingSphereMetadata createShardingSphereMetadata(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetadata(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     @Test

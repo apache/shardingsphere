@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.data.builder.dialect;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
@@ -38,9 +38,9 @@ public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataB
     private static final String SHARDING_SPHERE = "shardingsphere";
     
     @Override
-    public ShardingSphereData build(final ShardingSphereMetaData metaData) {
+    public ShardingSphereData build(final ShardingSphereMetadata metadata) {
         ShardingSphereData result = new ShardingSphereData();
-        Optional<ShardingSphereSchema> shardingSphereSchema = Optional.ofNullable(metaData.getDatabase(SHARDING_SPHERE)).map(database -> database.getSchema(SHARDING_SPHERE));
+        Optional<ShardingSphereSchema> shardingSphereSchema = Optional.ofNullable(metadata.getDatabase(SHARDING_SPHERE)).map(database -> database.getSchema(SHARDING_SPHERE));
         if (!shardingSphereSchema.isPresent()) {
             return result;
         }

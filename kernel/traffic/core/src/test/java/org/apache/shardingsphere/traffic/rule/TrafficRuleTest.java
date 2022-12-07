@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -91,13 +91,13 @@ public final class TrafficRuleTest {
         when(sqlStatement.getCommentSegments()).thenReturn(includeComments ? Collections.singleton(new CommentSegment("/* SHARDINGSPHERE_HINT: USE_TRAFFIC=true */", 0, 0)) : Collections.emptyList());
         when(sqlStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         SQLStatementContext statementContext =
-                new SelectStatementContext(createShardingSphereMetaData(mock(ShardingSphereDatabase.class)), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
+                new SelectStatementContext(createShardingSphereMetadata(mock(ShardingSphereDatabase.class)), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
         when(result.getSqlStatementContext()).thenReturn(statementContext);
         return result;
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+    private ShardingSphereMetadata createShardingSphereMetadata(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetadata(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private TrafficRuleConfiguration createTrafficRuleConfig() {

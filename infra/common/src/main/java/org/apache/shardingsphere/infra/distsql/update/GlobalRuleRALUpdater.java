@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.distsql.update;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -31,8 +31,8 @@ public interface GlobalRuleRALUpdater extends TypedSPI {
     /**
      * Execute update.
      *
-     * @param metaData meta data
+     * @param metadata metadata
      * @param sqlStatement SQL statement
      */
-    void executeUpdate(ShardingSphereMetaData metaData, SQLStatement sqlStatement);
+    void executeUpdate(ShardingSphereMetadata metadata, SQLStatement sqlStatement);
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
@@ -48,9 +48,9 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     @Test
     public void assertExecuteWithXA() {
         AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
-        ShardingSphereMetaData metaData = createMetaData();
-        updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
-        TransactionRule updatedRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        ShardingSphereMetadata metadata = createMetadata();
+        updater.executeUpdate(metadata, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
+        TransactionRule updatedRule = metadata.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         assertThat(updatedRule.getDefaultType(), is(TransactionType.XA));
         assertThat(updatedRule.getProviderType(), is("Atomikos"));
         assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
@@ -63,18 +63,18 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     @Test
     public void assertExecuteWithLocal() {
         AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
-        ShardingSphereMetaData metaData = createMetaData();
-        updater.executeUpdate(metaData, new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
-        TransactionRule updatedRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        ShardingSphereMetadata metadata = createMetadata();
+        updater.executeUpdate(metadata, new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));
+        TransactionRule updatedRule = metadata.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         assertThat(updatedRule.getDefaultType(), is(TransactionType.LOCAL));
         assertThat(updatedRule.getProviderType(), is(""));
         assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
     }
     
-    private ShardingSphereMetaData createMetaData() {
+    private ShardingSphereMetadata createMetadata() {
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", mockDatabase()));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(createTransactionRule(databases))));
-        return new ShardingSphereMetaData(databases, ruleMetaData, new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetadata(databases, ruleMetaData, new ConfigurationProperties(new Properties()));
     }
     
     private TransactionRule createTransactionRule(final Map<String, ShardingSphereDatabase> databases) {

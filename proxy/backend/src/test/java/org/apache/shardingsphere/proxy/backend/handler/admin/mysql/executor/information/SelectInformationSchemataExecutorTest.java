@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.provider.database.model.privilege.Dat
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -85,7 +85,7 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         when(authorityRule.findPrivileges(grantee)).thenReturn(Optional.of(new DatabasePermittedPrivileges(Collections.singleton("auth_db"))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
+        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetadata(new HashMap<>(),
                 new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
         when(result.getMetadataContexts()).thenReturn(metadataContexts);
         return result;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -36,9 +36,9 @@ import java.util.Collection;
 public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUpdater {
     
     @Override
-    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        SQLParserRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(metaData.getGlobalRuleMetaData(), sqlStatement);
-        Collection<ShardingSphereRule> globalRules = metaData.getGlobalRuleMetaData().getRules();
+    public void executeUpdate(final ShardingSphereMetadata metadata, final SQLStatement sqlStatement) {
+        SQLParserRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(metadata.getGlobalRuleMetaData(), sqlStatement);
+        Collection<ShardingSphereRule> globalRules = metadata.getGlobalRuleMetaData().getRules();
         globalRules.removeIf(each -> each instanceof SQLParserRule);
         globalRules.add(new SQLParserRule(toBeAlteredRuleConfig));
     }

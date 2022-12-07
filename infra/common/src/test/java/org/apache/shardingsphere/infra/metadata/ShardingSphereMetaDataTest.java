@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSphereMetaDataTest {
+public final class ShardingSphereMetadataTest {
     
     @Test
     public void assertAddDatabase() {
@@ -60,10 +60,10 @@ public final class ShardingSphereMetaDataTest {
             DatabaseType databaseType = mock(DatabaseType.class);
             mockedStatic.when(() -> ShardingSphereDatabase.create("foo_db", databaseType)).thenReturn(database);
             Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
-            ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases,
+            ShardingSphereMetadata metadata = new ShardingSphereMetadata(databases,
                     new ShardingSphereRuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
-            metaData.addDatabase("foo_db", databaseType);
-            assertThat(metaData.getDatabases(), is(databases));
+            metadata.addDatabase("foo_db", databaseType);
+            assertThat(metadata.getDatabases(), is(databases));
             verify(globalResourceHeldRule).addResource(database);
         }
     }
@@ -74,10 +74,10 @@ public final class ShardingSphereMetaDataTest {
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseResourceHeldRule))),
+        ShardingSphereMetadata metadata = new ShardingSphereMetadata(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseResourceHeldRule))),
                 new ShardingSphereRuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
-        metaData.dropDatabase("foo_db");
-        assertTrue(metaData.getDatabases().isEmpty());
+        metadata.dropDatabase("foo_db");
+        assertTrue(metadata.getDatabases().isEmpty());
         verify(resourceMetaData).close(dataSource);
         verify(databaseResourceHeldRule).closeStaleResource("foo_db");
         verify(globalResourceHeldRule).closeStaleResource("foo_db");

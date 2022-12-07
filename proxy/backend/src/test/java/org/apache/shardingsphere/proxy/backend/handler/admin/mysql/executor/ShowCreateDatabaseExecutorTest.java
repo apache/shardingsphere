@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -52,7 +52,7 @@ public final class ShowCreateDatabaseExecutorTest extends ProxyContextRestorer {
     public void setUp() {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetadata(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         ProxyContext.init(contextManager);

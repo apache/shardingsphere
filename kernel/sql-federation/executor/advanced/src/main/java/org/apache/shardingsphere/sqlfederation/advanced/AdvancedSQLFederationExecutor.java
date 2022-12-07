@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -95,13 +95,13 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     private ResultSet resultSet;
     
     @Override
-    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data,
+    public void init(final String databaseName, final String schemaName, final ShardingSphereMetadata metadata, final ShardingSphereData data,
                      final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
-        this.optimizerContext = OptimizerContextFactory.create(metaData.getDatabases(), metaData.getGlobalRuleMetaData());
-        this.globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        this.props = metaData.getProps();
+        this.optimizerContext = OptimizerContextFactory.create(metadata.getDatabases(), metadata.getGlobalRuleMetaData());
+        this.globalRuleMetaData = metadata.getGlobalRuleMetaData();
+        this.props = metadata.getProps();
         this.data = data;
         this.jdbcExecutor = jdbcExecutor;
         this.eventBusContext = eventBusContext;
@@ -112,7 +112,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         SQLStatementContext<?> sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
-        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
+        ShardingSphereDatabase database = federationContext.getMetadata().getDatabase(databaseName);
         ShardingSphereSchema schema = database.getSchema(schemaName);
         AbstractSchema sqlFederationSchema = createSQLFederationSchema(prepareEngine, database.getProtocolType(), schema, callback, federationContext);
         Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());

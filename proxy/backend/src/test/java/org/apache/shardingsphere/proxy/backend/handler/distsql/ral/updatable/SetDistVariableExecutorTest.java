@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
@@ -70,7 +70,7 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithConfigurationKey() throws SQLException {
-        ContextManager contextManager = new ContextManager(new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData()), null);
+        ContextManager contextManager = new ContextManager(new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetadata()), null);
         ProxyContext.init(contextManager);
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetDistVariableHandler handler = new SetDistVariableHandler();

@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -105,37 +105,37 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private PaginationContext paginationContext;
     
-    public SelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final SelectStatement sqlStatement, final String defaultDatabaseName) {
+    public SelectStatementContext(final ShardingSphereMetadata metadata, final List<Object> params, final SelectStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        subqueryContexts = createSubqueryContexts(metaData, params, defaultDatabaseName);
+        subqueryContexts = createSubqueryContexts(metadata, params, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(metaData, databaseName), getDatabaseType())
+        projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(metadata, databaseName), getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetadata metadata, final List<Object> params, final String defaultDatabaseName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(metaData, params, each.getSelect(), defaultDatabaseName);
+            SelectStatementContext subqueryContext = new SelectStatementContext(metadata, params, each.getSelect(), defaultDatabaseName);
             subqueryContext.setSubqueryType(each.getSubqueryType());
             result.put(each.getStartIndex(), subqueryContext);
         }
         return result;
     }
     
-    private Map<String, ShardingSphereSchema> getSchemas(final ShardingSphereMetaData metaData, final String databaseName) {
+    private Map<String, ShardingSphereSchema> getSchemas(final ShardingSphereMetadata metadata, final String databaseName) {
         if (null == databaseName) {
             ShardingSpherePreconditions.checkState(tablesContext.getTables().isEmpty(), NoDatabaseSelectedException::new);
             return Collections.emptyMap();
         }
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSphereDatabase database = metadata.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
         return database.getSchemas();
     }

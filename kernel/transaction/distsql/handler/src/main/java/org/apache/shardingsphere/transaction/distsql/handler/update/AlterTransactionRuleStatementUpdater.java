@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -33,12 +33,12 @@ import java.util.Collection;
 public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRALUpdater {
     
     @Override
-    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Collection<ShardingSphereRule> globalRules = metaData.getGlobalRuleMetaData().getRules();
+    public void executeUpdate(final ShardingSphereMetadata metadata, final SQLStatement sqlStatement) {
+        Collection<ShardingSphereRule> globalRules = metadata.getGlobalRuleMetaData().getRules();
         globalRules.stream().filter(each -> each instanceof TransactionRule).forEach(each -> ((TransactionRule) each).closeStaleResource());
         globalRules.removeIf(each -> each instanceof TransactionRule);
         TransactionRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(sqlStatement);
-        globalRules.add(new TransactionRule(toBeAlteredRuleConfig, metaData.getDatabases()));
+        globalRules.add(new TransactionRule(toBeAlteredRuleConfig, metadata.getDatabases()));
     }
     
     private TransactionRuleConfiguration createToBeAlteredRuleConfiguration(final SQLStatement sqlStatement) {

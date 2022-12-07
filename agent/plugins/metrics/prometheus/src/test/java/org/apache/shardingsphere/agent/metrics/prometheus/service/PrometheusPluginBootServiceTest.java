@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
@@ -52,7 +52,7 @@ public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer 
     
     @Test
     public void assertStart() throws IOException {
-        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData());
+        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetadata());
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null), mock(LockContext.class),
                 new EventBusContext());

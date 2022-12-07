@@ -29,7 +29,7 @@ import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -138,7 +138,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     
     private MetadataContexts getMetadataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
         return new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user, isNeedSuper), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetadata(getDatabases(), buildGlobalRuleMetaData(user, isNeedSuper), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {

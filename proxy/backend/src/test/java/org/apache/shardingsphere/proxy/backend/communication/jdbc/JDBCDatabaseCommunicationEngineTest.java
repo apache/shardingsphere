@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
@@ -115,7 +115,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     public void setUp() {
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(mockDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetadata(mockDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         ProxyContext.init(contextManager);

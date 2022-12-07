@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetadataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
@@ -99,7 +99,7 @@ public final class CommandExecutorTaskTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
-        ProxyContext.init(new ContextManager(new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
+        ProxyContext.init(new ContextManager(new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetadata()), mock(InstanceContext.class)));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }

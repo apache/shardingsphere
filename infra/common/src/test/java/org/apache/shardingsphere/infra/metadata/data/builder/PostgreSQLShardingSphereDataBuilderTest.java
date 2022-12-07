@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.data.builder;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.builder.dialect.PostgreSQLShardingSphereDataBuilder;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,15 +36,15 @@ public final class PostgreSQLShardingSphereDataBuilderTest {
     
     @Test
     public void assertBuild() {
-        ShardingSphereMetaData metaData = mockMetaData();
-        ShardingSphereData shardingSphereData = new PostgreSQLShardingSphereDataBuilder().build(metaData);
+        ShardingSphereMetadata metadata = mockMetadata();
+        ShardingSphereData shardingSphereData = new PostgreSQLShardingSphereDataBuilder().build(metadata);
         assertTrue(shardingSphereData.getDatabaseData().containsKey("logic_db"));
         assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().containsKey("pg_catalog"));
         assertTrue(shardingSphereData.getDatabaseData().get("logic_db").getSchemaData().get("pg_catalog").getTableData().containsKey("pg_class"));
     }
     
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+    private ShardingSphereMetadata mockMetadata() {
+        ShardingSphereMetadata result = mock(ShardingSphereMetadata.class);
         Map<String, ShardingSphereDatabase> databaseMap = mockDatabaseMap();
         when(result.getDatabases()).thenReturn(databaseMap);
         return result;

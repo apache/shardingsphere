@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionIniti
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -90,9 +90,9 @@ public final class PipelineJobPreparerUtils {
      * @return SQL parser engine
      */
     public static ShardingSphereSQLParserEngine getSQLParserEngine(final String targetDatabaseName) {
-        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetadataContexts().getMetadata();
-        ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
-        return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType().getType());
+        ShardingSphereMetadata metadata = PipelineContext.getContextManager().getMetadataContexts().getMetadata();
+        ShardingSphereDatabase database = metadata.getDatabase(targetDatabaseName);
+        return metadata.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType().getType());
     }
     
     /**

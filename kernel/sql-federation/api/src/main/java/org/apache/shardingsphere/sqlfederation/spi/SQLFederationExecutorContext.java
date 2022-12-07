@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,5 +39,5 @@ public final class SQLFederationExecutorContext {
     
     private final QueryContext queryContext;
     
-    private final ShardingSphereMetaData metaData;
+    private final ShardingSphereMetadata metadata;
 }

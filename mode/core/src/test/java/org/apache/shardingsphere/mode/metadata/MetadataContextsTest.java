@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
@@ -47,7 +47,7 @@ public final class MetadataContextsTest {
     public void assertGetDefaultMetadata() {
         Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
         databases.put(DefaultDatabase.LOGIC_NAME, database);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()));
-        assertThat(new MetadataContexts(mock(MetadataPersistService.class), metaData).getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
+        ShardingSphereMetadata metadata = new ShardingSphereMetadata(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()));
+        assertThat(new MetadataContexts(mock(MetadataPersistService.class), metadata).getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
     }
 }

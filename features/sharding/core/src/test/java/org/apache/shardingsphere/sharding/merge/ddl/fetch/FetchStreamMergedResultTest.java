@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.context.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.merge.ddl.ShardingDDLResultMerger;
@@ -94,11 +94,11 @@ public final class FetchStreamMergedResultTest {
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         OpenGaussCursorStatement cursorStatement = new OpenGaussCursorStatement();
         cursorStatement.setSelect(createSelectStatement());
-        return new CursorStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), cursorStatement, DefaultDatabase.LOGIC_NAME);
+        return new CursorStatementContext(createShardingSphereMetadata(database), Collections.emptyList(), cursorStatement, DefaultDatabase.LOGIC_NAME);
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+    private ShardingSphereMetadata createShardingSphereMetadata(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetadata(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private OpenGaussSelectStatement createSelectStatement() {

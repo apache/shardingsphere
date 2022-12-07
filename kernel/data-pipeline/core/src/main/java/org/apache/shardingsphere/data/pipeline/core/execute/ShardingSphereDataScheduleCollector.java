@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
@@ -72,14 +72,14 @@ public final class ShardingSphereDataScheduleCollector {
         @Override
         public void run() {
             ShardingSphereData shardingSphereData = contextManager.getMetadataContexts().getShardingSphereData();
-            ShardingSphereMetaData metaData = contextManager.getMetadataContexts().getMetadata();
+            ShardingSphereMetadata metadata = contextManager.getMetadataContexts().getMetadata();
             ShardingSphereData changedShardingSphereData = new ShardingSphereData();
             shardingSphereData.getDatabaseData().forEach((key, value) -> {
-                if (metaData.containsDatabase(key)) {
-                    collectForDatabase(key, value, metaData.getDatabases(), changedShardingSphereData);
+                if (metadata.containsDatabase(key)) {
+                    collectForDatabase(key, value, metadata.getDatabases(), changedShardingSphereData);
                 }
             });
-            compareUpdateAndSendEvent(shardingSphereData, changedShardingSphereData, metaData.getDatabases());
+            compareUpdateAndSendEvent(shardingSphereData, changedShardingSphereData, metadata.getDatabases());
         }
         
         private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData,

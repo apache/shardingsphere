@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -43,17 +43,17 @@ public final class DropTrafficRuleStatementUpdaterTest {
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteForNotExistedRuleWithoutIfExists() {
-        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereMetadata metadata = createMetadata();
         DropTrafficRuleStatementUpdater updater = new DropTrafficRuleStatementUpdater();
-        updater.executeUpdate(metaData, new DropTrafficRuleStatement(false, Collections.singleton("not_existed_rule")));
+        updater.executeUpdate(metadata, new DropTrafficRuleStatement(false, Collections.singleton("not_existed_rule")));
     }
     
     @Test
     public void assertExecuteForNotExistedRuleWithIfExists() {
-        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereMetadata metadata = createMetadata();
         DropTrafficRuleStatementUpdater updater = new DropTrafficRuleStatementUpdater();
-        updater.executeUpdate(metaData, new DropTrafficRuleStatement(true, Collections.singleton("rule_name_3")));
-        TrafficRuleConfiguration updatedConfig = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
+        updater.executeUpdate(metadata, new DropTrafficRuleStatement(true, Collections.singleton("rule_name_3")));
+        TrafficRuleConfiguration updatedConfig = metadata.getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
         assertThat(updatedConfig.getTrafficStrategies().size(), is(2));
         assertThat(updatedConfig.getLoadBalancers().size(), is(2));
         assertThat(updatedConfig.getTrafficAlgorithms().size(), is(2));
@@ -61,10 +61,10 @@ public final class DropTrafficRuleStatementUpdaterTest {
     
     @Test
     public void assertExecute() {
-        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereMetadata metadata = createMetadata();
         DropTrafficRuleStatementUpdater updater = new DropTrafficRuleStatementUpdater();
-        updater.executeUpdate(metaData, new DropTrafficRuleStatement(false, Collections.singleton("rule_name_1")));
-        TrafficRuleConfiguration updatedConfig = metaData.getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
+        updater.executeUpdate(metadata, new DropTrafficRuleStatement(false, Collections.singleton("rule_name_1")));
+        TrafficRuleConfiguration updatedConfig = metadata.getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
         assertThat(updatedConfig.getTrafficStrategies().size(), is(1));
         assertThat(updatedConfig.getLoadBalancers().size(), is(1));
         assertThat(updatedConfig.getTrafficAlgorithms().size(), is(1));
@@ -73,12 +73,12 @@ public final class DropTrafficRuleStatementUpdaterTest {
         assertNotNull(updatedConfig.getLoadBalancers().get("load_balancer_2"));
     }
     
-    private ShardingSphereMetaData createMetaData() {
+    private ShardingSphereMetadata createMetadata() {
         TrafficRule trafficRule = mock(TrafficRule.class);
         when(trafficRule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(trafficRule))));
-        return metaData;
+        ShardingSphereMetadata metadata = mock(ShardingSphereMetadata.class);
+        when(metadata.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(trafficRule))));
+        return metadata;
     }
     
     private TrafficRuleConfiguration createTrafficRuleConfiguration() {

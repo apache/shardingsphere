@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
@@ -58,7 +58,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     @Override
     public Future<ResponseHeader> executeFuture() {
         try {
-            ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata();
+            ShardingSphereMetadata metaData = ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata();
             SQLFederationDeciderContext deciderContext = decide(getQueryContext(), metaData.getProps(), getDatabase());
             if (deciderContext.isUseSQLFederation()) {
                 return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet."));

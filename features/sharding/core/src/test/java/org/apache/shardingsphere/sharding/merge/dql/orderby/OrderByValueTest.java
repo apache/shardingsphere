@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -90,7 +90,7 @@ public final class OrderByValueTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+                createShardingSphereMetadata(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
@@ -112,8 +112,8 @@ public final class OrderByValueTest {
         assertFalse(orderByValue2.getQueryResult().next());
     }
     
-    private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+    private static ShardingSphereMetadata createShardingSphereMetadata(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetadata(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     @Test
@@ -146,7 +146,7 @@ public final class OrderByValueTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetadata(database),
                 Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getTable("table")).thenReturn(new ShardingSphereTable());
@@ -200,7 +200,7 @@ public final class OrderByValueTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetadata(database),
                 Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.data;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
@@ -56,7 +56,7 @@ public final class ShardingSphereDataPersistService {
      * @param metadata metadata
      * @return ShardingSphere data
      */
-    public Optional<ShardingSphereData> load(final ShardingSphereMetaData metadata) {
+    public Optional<ShardingSphereData> load(final ShardingSphereMetadata metadata) {
         Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereDataNode.getShardingSphereDataNodePath());
         if (databaseNames.isEmpty()) {
             return Optional.empty();

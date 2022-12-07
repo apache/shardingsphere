@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -119,7 +119,7 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
     
     private MetadataContexts getMetadataContexts(final ShardingSphereUser user) {
         return new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetadata(getDatabases(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -72,7 +72,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     @Before
     public void setUp() {
         MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetadata(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
@@ -146,7 +146,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetadataContexts metadataContexts = isGovernance
                 ? mockMetaDataContexts()
-                : new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData());
+                : new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetadata());
         when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
     }
     

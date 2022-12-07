@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
@@ -40,9 +40,9 @@ public final class AlterSQLParserRuleStatementUpdaterTest {
     public void assertExecute() {
         AlterSQLParserRuleStatementUpdater updater = new AlterSQLParserRuleStatementUpdater();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        ShardingSphereMetaData metaData = createMetaData();
-        updater.executeUpdate(metaData, sqlStatement);
-        SQLParserRule actual = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        ShardingSphereMetadata metadata = createMetadata();
+        updater.executeUpdate(metadata, sqlStatement);
+        SQLParserRule actual = metadata.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
@@ -50,9 +50,9 @@ public final class AlterSQLParserRuleStatementUpdaterTest {
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
     }
     
-    private ShardingSphereMetaData createMetaData() {
+    private ShardingSphereMetadata createMetadata() {
         SQLParserRule rule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
-        return new ShardingSphereMetaData(Collections.emptyMap(), ruleMetaData, new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetadata(Collections.emptyMap(), ruleMetaData, new ConfigurationProperties(new Properties()));
     }
 }

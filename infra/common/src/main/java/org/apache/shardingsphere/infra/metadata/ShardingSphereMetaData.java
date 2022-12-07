@@ -34,10 +34,10 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Meta data contexts.
+ * Metadata contexts.
  */
 @Getter
-public final class ShardingSphereMetaData {
+public final class ShardingSphereMetadata {
     
     private final Map<String, ShardingSphereDatabase> databases;
     
@@ -47,11 +47,11 @@ public final class ShardingSphereMetaData {
     
     private final InternalConfigurationProperties internalProps;
     
-    public ShardingSphereMetaData() {
+    public ShardingSphereMetadata() {
         this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
-    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+    public ShardingSphereMetadata(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         this.databases = new ConcurrentHashMap<>(databases.size(), 1);
         databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
@@ -72,10 +72,10 @@ public final class ShardingSphereMetaData {
     }
     
     /**
-     * Judge contains database from meta data or not.
+     * Judge contains database from metadata or not.
      *
      * @param databaseName database name
-     * @return contains database from meta data or not
+     * @return contains database from metadata or not
      */
     public boolean containsDatabase(final String databaseName) {
         return databases.containsKey(databaseName.toLowerCase());
@@ -85,7 +85,7 @@ public final class ShardingSphereMetaData {
      * Get database.
      *
      * @param databaseName database name
-     * @return meta data database
+     * @return metadata database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
         return databases.get(databaseName.toLowerCase());

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -50,21 +50,21 @@ public final class SQLFederationRule implements GlobalRule {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param metaData ShardingSphere meta data
+     * @param metadata ShardingSphere metadata
      * @param shardingSphereData ShardingSphere data
      * @param jdbcExecutor jdbc executor
      * @param eventBusContext event bus context
      * @return created instance
      */
-    public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
+    public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetadata metadata, final ShardingSphereData shardingSphereData,
                                                           final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
-        String sqlFederationType = metaData.getProps().getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
+        String sqlFederationType = metadata.getProps().getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
         Preconditions.checkArgument(SQLFederationTypeEnum.isValidSQLFederationType(sqlFederationType), "%s is not a valid sqlFederationType.", sqlFederationType);
         if (!configuration.getSqlFederationType().equals(sqlFederationType)) {
             configuration.setSqlFederationType(sqlFederationType);
             sqlFederationExecutor = SQLFederationExecutorFactory.getInstance(configuration.getSqlFederationType());
         }
-        sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor, eventBusContext);
+        sqlFederationExecutor.init(databaseName, schemaName, metadata, shardingSphereData, jdbcExecutor, eventBusContext);
         return sqlFederationExecutor;
     }
     

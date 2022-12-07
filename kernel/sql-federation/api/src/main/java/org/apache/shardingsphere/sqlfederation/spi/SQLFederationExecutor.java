@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -42,12 +42,12 @@ public interface SQLFederationExecutor extends TypedSPI, RequiredSPI, AutoClosea
      * 
      * @param databaseName database name
      * @param schemaName schema name
-     * @param metaData ShardingSphere meta data
+     * @param metadata ShardingSphere metadata
      * @param data ShardingSphere data
      * @param jdbcExecutor jdbc executor
      * @param eventBusContext event bus context
      */
-    void init(String databaseName, String schemaName, ShardingSphereMetaData metaData, ShardingSphereData data, JDBCExecutor jdbcExecutor, EventBusContext eventBusContext);
+    void init(String databaseName, String schemaName, ShardingSphereMetadata metadata, ShardingSphereData data, JDBCExecutor jdbcExecutor, EventBusContext eventBusContext);
     
     /**
      * Execute query.

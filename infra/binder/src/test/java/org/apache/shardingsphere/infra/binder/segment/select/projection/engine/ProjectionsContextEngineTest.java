@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -230,8 +230,8 @@ public final class ProjectionsContextEngineTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getSchemas()).thenReturn(mockSchemas());
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
-        return new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetadata metadata = new ShardingSphereMetadata(databases, mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+        return new SelectStatementContext(metadata, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     private Map<String, ShardingSphereSchema> mockSchemas() {

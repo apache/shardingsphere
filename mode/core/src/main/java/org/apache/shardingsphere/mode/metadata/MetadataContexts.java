@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
@@ -38,17 +38,17 @@ public final class MetadataContexts implements AutoCloseable {
     
     private final MetadataPersistService persistService;
     
-    private final ShardingSphereMetaData metadata;
+    private final ShardingSphereMetadata metadata;
     
     private final ShardingSphereData shardingSphereData;
     
-    public MetadataContexts(final MetadataPersistService persistService, final ShardingSphereMetaData metadata) {
+    public MetadataContexts(final MetadataPersistService persistService, final ShardingSphereMetadata metadata) {
         this.persistService = persistService;
         this.metadata = metadata;
         this.shardingSphereData = initShardingSphereData(persistService, metadata);
     }
     
-    private ShardingSphereData initShardingSphereData(final MetadataPersistService persistService, final ShardingSphereMetaData metadata) {
+    private ShardingSphereData initShardingSphereData(final MetadataPersistService persistService, final ShardingSphereMetadata metadata) {
         if (metadata.getDatabases().isEmpty()) {
             return new ShardingSphereData();
         }

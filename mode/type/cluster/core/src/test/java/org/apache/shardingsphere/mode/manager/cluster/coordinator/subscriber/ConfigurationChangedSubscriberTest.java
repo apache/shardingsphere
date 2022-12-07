@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -96,7 +96,7 @@ public final class ConfigurationChangedSubscriberTest {
     @Before
     public void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
-        contextManager.renewMetadataContexts(new MetadataContexts(contextManager.getMetadataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
+        contextManager.renewMetadataContexts(new MetadataContexts(contextManager.getMetadataContexts().getPersistService(), new ShardingSphereMetadata(createDatabases(),
                 contextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
         subscriber = new ConfigurationChangedSubscriber(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
                 new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);

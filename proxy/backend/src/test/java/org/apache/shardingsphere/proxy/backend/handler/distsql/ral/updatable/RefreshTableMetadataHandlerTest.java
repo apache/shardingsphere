@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.distsql.exception.resource.EmptyResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -52,7 +52,7 @@ public final class RefreshTableMetadataHandlerTest extends ProxyContextRestorer 
     
     private ConnectionSession connectionSession;
     
-    private final ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+    private final ShardingSphereMetadata shardingSphereMetaData = mock(ShardingSphereMetadata.class);
     
     private final ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
     

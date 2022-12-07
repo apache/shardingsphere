@@ -61,7 +61,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DoStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
@@ -121,31 +121,31 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param metaData metaData
+     * @param metadata metadata
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final String defaultDatabaseName) {
-        return newInstance(metaData, Collections.emptyList(), sqlStatement, defaultDatabaseName);
+    public static SQLStatementContext<?> newInstance(final ShardingSphereMetadata metadata, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+        return newInstance(metadata, Collections.emptyList(), sqlStatement, defaultDatabaseName);
     }
     
     /**
      * Create SQL statement context.
      *
-     * @param metaData metaData
+     * @param metadata metadata
      * @param params SQL parameters
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final ShardingSphereMetaData metaData,
+    public static SQLStatementContext<?> newInstance(final ShardingSphereMetadata metadata,
                                                      final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, defaultDatabaseName);
+            return getDMLStatementContext(metadata, params, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, defaultDatabaseName);
+            return getDDLStatementContext(metadata, params, (DDLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -156,10 +156,10 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereMetaData metaData,
+    private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereMetadata metadata,
                                                                  final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName);
+            return new SelectStatementContext(metadata, params, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -168,7 +168,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, defaultDatabaseName);
+            return new InsertStatementContext(metadata, params, (InsertStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);
@@ -182,7 +182,7 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext<?> getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
+    private static SQLStatementContext<?> getDDLStatementContext(final ShardingSphereMetadata metadata, final List<Object> params,
                                                                  final DDLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
@@ -233,7 +233,7 @@ public final class SQLStatementContextFactory {
             return new CommentStatementContext((CommentStatement) sqlStatement);
         }
         if (sqlStatement instanceof OpenGaussCursorStatement) {
-            return new CursorStatementContext(metaData, params, (OpenGaussCursorStatement) sqlStatement, defaultDatabaseName);
+            return new CursorStatementContext(metadata, params, (OpenGaussCursorStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
             return new CloseStatementContext((CloseStatement) sqlStatement);

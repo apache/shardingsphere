@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetadata;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -52,7 +52,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
     @Test
     public void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
         MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetadata(Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ProxyContext.init(new ContextManager(metadataContexts, mock(InstanceContext.class)));
         assertTrue(metadataContexts.getMetadata().getDatabases().isEmpty());
         assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("MySQL"));
@@ -61,7 +61,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
     @Test
     public void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
         MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(mockDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetadata(mockDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ProxyContext.init(new ContextManager(metadataContexts, mock(InstanceContext.class)));
         assertFalse(metadataContexts.getMetadata().getDatabases().isEmpty());
         String configuredDatabaseType = metadataContexts.getMetadata().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
@@ -75,7 +75,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
     @Test
     public void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
         MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class),
-                new ShardingSphereMetaData(mockDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(createProperties())));
+                new ShardingSphereMetadata(mockDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(createProperties())));
         ProxyContext.init(new ContextManager(metadataContexts, mock(InstanceContext.class)));
         assertFalse(metadataContexts.getMetadata().getDatabases().isEmpty());
         String configuredDatabaseType = metadataContexts.getMetadata().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
