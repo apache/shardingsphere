@@ -88,7 +88,7 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
     void rollback();
     
     /**
-     * Judge whether the provider type is valid.
+     * Judge whether contains the provider type.
      *
      * @param providerType transaction manager provider type 
      * @return contains provider type or not
