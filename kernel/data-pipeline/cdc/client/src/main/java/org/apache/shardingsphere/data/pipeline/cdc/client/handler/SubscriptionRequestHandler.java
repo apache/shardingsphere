@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
@@ -31,25 +32,31 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscri
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 
+import java.util.List;
+
 /**
  * Subscription request handler.
  */
 @Slf4j
+@RequiredArgsConstructor
 public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapter {
+    
+    private final String database;
+    
+    private final String subscriptionName;
+    
+    private final List<TableName> subscribeTables;
+    
+    private final SubscriptionMode subscribeMode;
     
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof CreateSubscriptionEvent) {
-            CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(buildCreateSubscriptionRequest()).setRequestId(RequestIdUtil.generateRequestId()).build();
+            CreateSubscriptionRequest createSubscriptionRequest = CreateSubscriptionRequest.newBuilder().setDatabase(database).setSubscriptionMode(subscribeMode).setSubscriptionName(subscriptionName)
+                    .addAllTableNames(subscribeTables).build();
+            CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(createSubscriptionRequest).setRequestId(RequestIdUtil.generateRequestId()).build();
             ctx.writeAndFlush(request);
         }
-    }
-    
-    private CreateSubscriptionRequest buildCreateSubscriptionRequest() {
-        // TODO the parameter shouldn't hard code, will be fixed when completed
-        TableName tableName = TableName.newBuilder().build();
-        return CreateSubscriptionRequest.newBuilder().setSubscriptionMode(SubscriptionMode.INCREMENTAL).setSubscriptionName("sharding_db").setDatabase("sharding_db")
-                .addTableNames(tableName).build();
     }
     
     @Override
@@ -64,21 +71,17 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     private void processSucceed(final ChannelHandlerContext ctx, final CDCResponse response) {
         if (response.hasCreateSubscriptionResult()) {
-            log.info("create subscription succeed, subcrption name {}", response.getCreateSubscriptionResult().getSubscriptionName());
-            Builder builder = CDCRequest.newBuilder();
-            builder.setStartSubscription(buildStartSubscriptionRequest(response.getCreateSubscriptionResult().getSubscriptionName()));
-            builder.setRequestId(RequestIdUtil.generateRequestId());
+            log.info("create subscription succeed, subscription name {}", response.getCreateSubscriptionResult().getSubscriptionName());
+            StartSubscriptionRequest startSubscriptionRequest = StartSubscriptionRequest.newBuilder().setSubscriptionName(subscriptionName).build();
+            Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setStartSubscription(startSubscriptionRequest);
             ctx.writeAndFlush(builder.build());
         }
         // TODO waiting for pipeline refactoring finished
     }
     
-    private StartSubscriptionRequest buildStartSubscriptionRequest(final String subscriptionName) {
-        return StartSubscriptionRequest.newBuilder().setSubscriptionName(subscriptionName).build();
-    }
-    
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
         log.error("subscription handler error", cause);
+        // TODO passing error messages to the caller
     }
 }

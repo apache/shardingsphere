@@ -30,8 +30,10 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.exception.InvalidStartCDCClientParameterException;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.SubscriptionRequestHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 
 /**
@@ -40,15 +42,37 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 @Slf4j
 public final class CDCClient {
     
+    private final StartCDCClientParameter parameter;
+    
+    public CDCClient(final StartCDCClientParameter parameter) throws InvalidStartCDCClientParameterException {
+        validateParameter(parameter);
+        this.parameter = parameter;
+    }
+    
+    private void validateParameter(final StartCDCClientParameter parameter) throws InvalidStartCDCClientParameterException {
+        if (null == parameter.getDatabase() || parameter.getDatabase().isEmpty()) {
+            throw new InvalidStartCDCClientParameterException("database");
+        }
+        if (null == parameter.getUsername() || parameter.getUsername().isEmpty()) {
+            throw new InvalidStartCDCClientParameterException("username");
+        }
+        if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
+            throw new InvalidStartCDCClientParameterException("address");
+        }
+        if (null == parameter.getSubscriptionMode()) {
+            throw new InvalidStartCDCClientParameterException("subscriptionMode");
+        }
+        if (null == parameter.getSubscribeTables() || parameter.getSubscribeTables().isEmpty()) {
+            throw new InvalidStartCDCClientParameterException("subscribeTables");
+        }
+    }
+    
     /**
      * Start ShardingSphere CDC client.
-     *
-     * @param port port
-     * @param address addresses
      */
     @SneakyThrows(InterruptedException.class)
-    public void start(final String address, final int port) {
-        startInternal(address, port);
+    public void start() {
+        startInternal(parameter.getAddress(), parameter.getPort());
     }
     
     private void startInternal(final String address, final int port) throws InterruptedException {
@@ -65,9 +89,9 @@ public final class CDCClient {
                         channel.pipeline().addLast(new ProtobufDecoder(CDCResponse.getDefaultInstance()));
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
-                        // TODO username and password are read from the configuration file or args
-                        channel.pipeline().addLast(new LoginRequestHandler("root", "root"));
-                        channel.pipeline().addLast(new SubscriptionRequestHandler());
+                        channel.pipeline().addLast(new LoginRequestHandler(parameter.getUsername(), parameter.getPassword()));
+                        channel.pipeline().addLast(new SubscriptionRequestHandler(parameter.getDatabase(), parameter.getSubscriptionName(), parameter.getSubscribeTables(),
+                                parameter.getSubscriptionMode()));
                     }
                 });
         ChannelFuture future = bootstrap.connect(address, port).sync();
