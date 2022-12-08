@@ -31,13 +31,13 @@ import java.util.List;
 @Setter
 public final class StartCDCClientParameter {
     
-    private String address = "localhost";
+    private String address;
     
-    private int port = 33071;
+    private int port;
     
-    private String username = "root";
+    private String username;
     
-    private String password = "root";
+    private String password;
     
     private String database;
     

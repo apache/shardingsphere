@@ -30,7 +30,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.client.exception.InvalidStartCDCClientParameterException;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.SubscriptionRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
@@ -44,26 +43,26 @@ public final class CDCClient {
     
     private final StartCDCClientParameter parameter;
     
-    public CDCClient(final StartCDCClientParameter parameter) throws InvalidStartCDCClientParameterException {
+    public CDCClient(final StartCDCClientParameter parameter) {
         validateParameter(parameter);
         this.parameter = parameter;
     }
     
-    private void validateParameter(final StartCDCClientParameter parameter) throws InvalidStartCDCClientParameterException {
+    private void validateParameter(final StartCDCClientParameter parameter) {
         if (null == parameter.getDatabase() || parameter.getDatabase().isEmpty()) {
-            throw new InvalidStartCDCClientParameterException("database");
+            throw new IllegalArgumentException("The database parameter can't be null");
         }
         if (null == parameter.getUsername() || parameter.getUsername().isEmpty()) {
-            throw new InvalidStartCDCClientParameterException("username");
+            throw new IllegalArgumentException("The username parameter can't be null");
         }
         if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
-            throw new InvalidStartCDCClientParameterException("address");
+            throw new IllegalArgumentException("The address parameter can't be null");
         }
         if (null == parameter.getSubscriptionMode()) {
-            throw new InvalidStartCDCClientParameterException("subscriptionMode");
+            throw new IllegalArgumentException("The subscriptionMode parameter can't be null");
         }
         if (null == parameter.getSubscribeTables() || parameter.getSubscribeTables().isEmpty()) {
-            throw new InvalidStartCDCClientParameterException("subscribeTables");
+            throw new IllegalArgumentException("The subscribeTables parameter can't be null");
         }
     }
     
