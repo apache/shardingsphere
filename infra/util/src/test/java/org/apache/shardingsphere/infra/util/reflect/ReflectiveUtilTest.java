@@ -17,11 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.reflect;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.AccessLevel;
+import org.apache.shardingsphere.infra.util.reflect.fixture.ReflectiveFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,33 +26,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class ReflectiveUtilTest {
     
     @Test
-    public void assertGetFieldValue() throws IllegalAccessError {
+    public void assertGetFieldValue() {
         ReflectiveFixture reflectiveFixture = new ReflectiveFixture("bar");
         assertThat(ReflectiveUtil.getFieldValue(reflectiveFixture, "value"), is("bar"));
     }
     
     @Test
-    public void assertSetField() throws IllegalAccessError {
+    public void assertSetField() {
         ReflectiveFixture reflectiveFixture = new ReflectiveFixture();
         ReflectiveUtil.setField(reflectiveFixture, "value", "foo");
         assertThat(ReflectiveUtil.getFieldValue(reflectiveFixture, "value"), is("foo"));
     }
     
     @Test
-    public void assertSetStaticField() throws IllegalAccessError {
+    public void assertSetStaticField() {
         ReflectiveFixture reflectiveFixture = new ReflectiveFixture();
         ReflectiveUtil.setStaticField(reflectiveFixture.getClass(), "staticValue", "foo");
         assertThat(ReflectiveUtil.getFieldValue(reflectiveFixture, "staticValue"), is("foo"));
-    }
-    
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @Setter(AccessLevel.PRIVATE)
-    private static final class ReflectiveFixture {
-        
-        private static String staticValue;
-        
-        private String value;
     }
 }
