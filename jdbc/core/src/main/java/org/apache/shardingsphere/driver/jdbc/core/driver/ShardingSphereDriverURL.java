@@ -54,12 +54,12 @@ public final class ShardingSphereDriverURL {
     
     /**
      * Generate to configuration bytes.
-     * 
+     *
      * @return generated configuration bytes
      */
     @SneakyThrows(IOException.class)
     public byte[] toConfigurationBytes() {
-        try (InputStream stream = inClasspath ? ShardingSphereDriverURL.class.getResourceAsStream("/" + file) : Files.newInputStream(new File(file).toPath())) {
+        try (InputStream stream = inClasspath ? getResourceAsStream(file) : Files.newInputStream(new File(file).toPath())) {
             Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file));
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             StringBuilder builder = new StringBuilder();
@@ -71,5 +71,23 @@ public final class ShardingSphereDriverURL {
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
         }
+    }
+
+    private InputStream getResourceAsStream(final String resource) throws IOException {
+        ClassLoader[] classLoaders = new ClassLoader[]{
+                Thread.currentThread().getContextClassLoader(), getClass().getClassLoader(), ClassLoader.getSystemClassLoader(),
+        };
+        for (ClassLoader each : classLoaders) {
+            if (null != each) {
+                InputStream result = each.getResourceAsStream(resource);
+                if (null == result) {
+                    result = each.getResourceAsStream("/" + resource);
+                }
+                if (null != result) {
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 }
