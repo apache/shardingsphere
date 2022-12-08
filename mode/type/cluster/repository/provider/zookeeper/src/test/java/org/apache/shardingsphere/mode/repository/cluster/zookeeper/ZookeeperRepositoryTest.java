@@ -67,6 +67,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -130,6 +131,7 @@ public final class ZookeeperRepositoryTest {
         builderFiled.set(REPOSITORY, builder);
         when(builder.connectString(anyString())).thenReturn(builder);
         when(builder.retryPolicy(any(RetryPolicy.class))).thenReturn(builder);
+        when(builder.ensembleTracker(anyBoolean())).thenReturn(builder);
         when(builder.namespace(anyString())).thenReturn(builder);
         when(builder.sessionTimeoutMs(anyInt())).thenReturn(builder);
         when(builder.connectionTimeoutMs(anyInt())).thenReturn(builder);
