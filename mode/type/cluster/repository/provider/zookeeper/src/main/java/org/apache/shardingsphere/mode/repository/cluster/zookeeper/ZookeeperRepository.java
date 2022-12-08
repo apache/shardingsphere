@@ -82,9 +82,8 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
         int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
-        boolean ensembleTracker = zookeeperProps.getValue(ZookeeperPropertyKey.ENSEMBLE_TRACKER);
         builder.connectString(config.getServerLists())
-                .ensembleTracker(ensembleTracker)
+                .ensembleTracker(false)
                 .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
                 .namespace(config.getNamespace());
         if (0 != timeToLiveSeconds) {
