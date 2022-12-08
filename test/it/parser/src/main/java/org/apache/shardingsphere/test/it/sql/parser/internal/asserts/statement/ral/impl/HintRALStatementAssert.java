@@ -20,8 +20,10 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
@@ -30,6 +32,8 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hin
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.hint.AddShardingHintDatabaseValueStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.hint.AddShardingHintTableValueStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.hint.ClearHintStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.hint.ClearShardingHintStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.hint.SetShardingHintDatabaseValueStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.hint.SetReadwriteSplittingHintStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.hint.ShowReadwriteSplittingHintStatusStatementAssert;
@@ -38,6 +42,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AddShardingHintTableValueStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ClearHintStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ClearShardingHintStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
@@ -72,6 +78,10 @@ public final class HintRALStatementAssert {
             ShowShardingHintStatusStatementAssert.assertIs(assertContext, (ShowShardingHintStatusStatement) actual, (ShowShardingHintStatusStatementTestCase) expected);
         } else if (actual instanceof ClearReadwriteSplittingHintStatement) {
             ClearReadwriteSplittingHintStatementAssert.assertIs(assertContext, (ClearReadwriteSplittingHintStatement) actual, (ClearReadwriteSplittingHintStatementTestCase) expected);
+        } else if (actual instanceof ClearShardingHintStatement) {
+            ClearShardingHintStatementAssert.assertIs(assertContext, (ClearShardingHintStatement) actual, (ClearShardingHintStatementTestCase) expected);
+        } else if (actual instanceof ClearHintStatement) {
+            ClearHintStatementAssert.assertIs(assertContext, (ClearHintStatement) actual, (ClearHintStatementTestCase) expected);
         }
     }
 }
