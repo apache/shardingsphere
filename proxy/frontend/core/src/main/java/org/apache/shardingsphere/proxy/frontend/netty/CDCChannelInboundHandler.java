@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
@@ -128,7 +129,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             return;
         }
         CreateSubscriptionRequest createSubscriptionRequest = request.getCreateSubscription();
-        if (createSubscriptionRequest.getTableNamesList().isEmpty() || createSubscriptionRequest.getDatabase().isEmpty()) {
+        if (createSubscriptionRequest.getTableNamesList().isEmpty() || createSubscriptionRequest.getDatabase().isEmpty() || createSubscriptionRequest.getSubscriptionName().isEmpty()
+                || createSubscriptionRequest.getSubscriptionMode() == SubscriptionMode.UNKNOWN) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal subscription request parameter"))
                     .addListener(ChannelFutureListener.CLOSE);
             return;
