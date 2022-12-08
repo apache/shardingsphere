@@ -47,4 +47,14 @@ public final class XATransactionManagerProviderFactory {
                 ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
                 : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, type, new Properties());
     }
+    
+    /**
+     * Judge whether contains XA transaction manager provider.
+     *
+     * @param type XA transaction manager provider type
+     * @return contains XA transaction manager provider or not
+     */
+    public static boolean contains(final String type) {
+        return TypedSPIRegistry.findRegisteredService(XATransactionManagerProvider.class, type).isPresent();
+    }
 }
