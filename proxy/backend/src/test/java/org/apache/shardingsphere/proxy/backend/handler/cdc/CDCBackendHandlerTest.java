@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public final class CDCBackendHandlerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("sharding_db");
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        Set<ShardingSphereRule> shardingRule = Collections.singleton(mock(ShardingSphereRule.class));
+        Set<ShardingSphereRule> shardingRule = Collections.singleton(mock(ShardingRule.class));
         when(database.getRuleMetaData().getRules()).thenReturn(shardingRule);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("sharding_db", database);
@@ -90,8 +91,10 @@ public final class CDCBackendHandlerTest {
     
     @Test
     public void assertCreateSubscriptionSucceed() {
-        CDCRequest request = CDCRequest.newBuilder().setRequestId("1").setCreateSubscription(CreateSubscriptionRequest.newBuilder().setDatabase("sharding_db")).build();
+        String requestId = "1";
+        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setCreateSubscription(CreateSubscriptionRequest.newBuilder().setDatabase("sharding_db")).build();
         CDCResponse actualResponse = handler.createSubscription(request);
-        assertThat(actualResponse.getStatus(), is(Status.FAILED));
+        assertThat(actualResponse.getStatus(), is(Status.SUCCEED));
+        assertThat(actualResponse.getRequestId(), is(requestId));
     }
 }

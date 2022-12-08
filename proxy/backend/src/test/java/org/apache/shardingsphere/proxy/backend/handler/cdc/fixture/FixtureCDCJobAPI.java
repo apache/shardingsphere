@@ -15,23 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api;
+package org.apache.shardingsphere.proxy.backend.handler.cdc.fixture;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 
-/**
- * CDC job api.
- */
-@SingletonSPI
-public interface CDCJobAPI extends RequiredSPI {
+public final class FixtureCDCJobAPI implements CDCJobAPI {
     
-    /**
-     * Create CDC job config and start.
-     *
-     * @param event create CDC job event
-     * @return job id
-     */
-    String createJobAndStart(CreateSubscriptionJobParameter event);
+    @Override
+    public String createJobAndStart(final CreateSubscriptionJobParameter event) {
+        return "";
+    }
 }

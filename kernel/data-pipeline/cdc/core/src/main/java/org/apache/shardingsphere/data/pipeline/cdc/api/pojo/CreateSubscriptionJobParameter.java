@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.cdc;
+package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Create subscription job event.
+ * Create subscription job parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateSubscriptionJobEvent {
+public final class CreateSubscriptionJobParameter {
     
     private final String database;
     

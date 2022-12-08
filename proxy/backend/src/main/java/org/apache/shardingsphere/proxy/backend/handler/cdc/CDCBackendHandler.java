@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.cdc;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
@@ -28,8 +29,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.cdc.CreateSubscriptionJobEvent;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -69,9 +69,9 @@ public final class CDCBackendHandler {
         for (String each : tableNames) {
             actualDataNodesMap.put(each, getActualDataNodes(rule.get(), each));
         }
-        CreateSubscriptionJobEvent event = new CreateSubscriptionJobEvent(subscriptionRequest.getDatabase(), tableNames, subscriptionRequest.getSubscriptionName(),
+        CreateSubscriptionJobParameter parameter = new CreateSubscriptionJobParameter(subscriptionRequest.getDatabase(), tableNames, subscriptionRequest.getSubscriptionName(),
                 subscriptionRequest.getSubscriptionMode().name(), actualDataNodesMap);
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(event);
+        CDCJobAPIFactory.getInstance().createJobAndStart(parameter);
         return CDCResponseGenerator.succeedBuilder(request.getRequestId()).build();
     }
     

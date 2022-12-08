@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemP
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJobId;
@@ -54,7 +55,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.cdc.CreateSubscriptionJobEvent;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
@@ -77,7 +77,7 @@ public final class CDCJobAPIImpl extends AbstractPipelineJobAPIImpl implements C
     private final YamlPipelineDataSourceConfigurationSwapper pipelineDataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
     @Override
-    public String createJobAndStart(final CreateSubscriptionJobEvent event) {
+    public String createJobAndStart(final CreateSubscriptionJobParameter event) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         Map<String, String> tablesFirstDataNodesMap = new HashMap<>(event.getDataNodesMap().size(), 1);
         for (Entry<String, List<DataNode>> entry : event.getDataNodesMap().entrySet()) {
@@ -128,6 +128,13 @@ public final class CDCJobAPIImpl extends AbstractPipelineJobAPIImpl implements C
     }
     
     @Override
+    protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
+        CDCJobId jobId = (CDCJobId) pipelineJobId;
+        String text = Joiner.on('|').join(jobId.getDatabaseName(), jobId.getSubscriptionName());
+        return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
+    }
+    
+    @Override
     public PipelineTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         // TODO to be implement
         return null;
@@ -150,6 +157,11 @@ public final class CDCJobAPIImpl extends AbstractPipelineJobAPIImpl implements C
     }
     
     @Override
+    protected YamlPipelineJobConfiguration swapToYamlJobConfiguration(final PipelineJobConfiguration jobConfig) {
+        return new YamlCDCJobConfigurationSwapper().swapToYamlConfiguration((CDCJobConfiguration) jobConfig);
+    }
+    
+    @Override
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         // TODO to be implement
     }
@@ -166,13 +178,6 @@ public final class CDCJobAPIImpl extends AbstractPipelineJobAPIImpl implements C
     }
     
     @Override
-    protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
-        CDCJobId jobId = (CDCJobId) pipelineJobId;
-        String text = Joiner.on('|').join(jobId.getDatabaseName(), jobId.getSubscriptionName());
-        return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
-    }
-    
-    @Override
     protected PipelineJobInfo getJobInfo(final String jobId) {
         // TODO to be implement
         return null;
@@ -181,11 +186,6 @@ public final class CDCJobAPIImpl extends AbstractPipelineJobAPIImpl implements C
     @Override
     protected String getJobClassName() {
         return CDCJob.class.getName();
-    }
-    
-    @Override
-    protected YamlPipelineJobConfiguration swapToYamlJobConfiguration(final PipelineJobConfiguration jobConfig) {
-        return new YamlCDCJobConfigurationSwapper().swapToYamlConfiguration((CDCJobConfiguration) jobConfig);
     }
     
     @Override

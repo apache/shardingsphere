@@ -47,8 +47,8 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     private CreateSubscriptionRequest buildCreateSubscriptionRequest() {
         // TODO the parameter shouldn't hard code, will be fixed when completed
-        TableName tableName = TableName.newBuilder().setName("t_order").build();
-        return CreateSubscriptionRequest.newBuilder().setSubscriptionMode(SubscriptionMode.INCREMENTAL).setSubscriptionName("subscribe_sharding_db").setDatabase("sharding_db")
+        TableName tableName = TableName.newBuilder().build();
+        return CreateSubscriptionRequest.newBuilder().setSubscriptionMode(SubscriptionMode.INCREMENTAL).setSubscriptionName("sharding_db").setDatabase("sharding_db")
                 .addTableNames(tableName).build();
     }
     
