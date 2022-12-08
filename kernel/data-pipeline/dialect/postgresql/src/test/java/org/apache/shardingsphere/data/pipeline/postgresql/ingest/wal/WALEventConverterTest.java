@@ -30,7 +30,10 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -39,6 +42,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -50,12 +54,15 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class WALEventConverterTest {
     
     private WALEventConverter walEventConverter;
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    
+    private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
     
     @Before
     public void setUp() {
@@ -87,6 +94,24 @@ public final class WALEventConverterTest {
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
+    }
+    
+    @Test
+    public void assertConvertBeginTXEvent() {
+        BeginTXEvent beginTXEvent = new BeginTXEvent(100);
+        beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
+        Record record = walEventConverter.convert(beginTXEvent);
+        assertTrue(record instanceof PlaceholderRecord);
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
+    }
+    
+    @Test
+    public void assertConvertCommitTXEvent() {
+        CommitTXEvent commitTXEvent = new CommitTXEvent(1, 3468L);
+        commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
+        Record record = walEventConverter.convert(commitTXEvent);
+        assertTrue(record instanceof PlaceholderRecord);
+        assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asLong(), is(21953976L));
     }
     
     @Test

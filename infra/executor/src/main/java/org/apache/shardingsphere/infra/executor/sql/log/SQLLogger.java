@@ -37,14 +37,13 @@ public final class SQLLogger {
     
     /**
      * Log SQL.
-     * 
+     *
      * @param queryContext query context
      * @param showSimple whether show SQL in simple style
      * @param executionContext Execution context
      */
     public static void logSQL(final QueryContext queryContext, final boolean showSimple, final ExecutionContext executionContext) {
         log("Logic SQL: {}", queryContext.getSql());
-        log("SQLStatement: {}", queryContext.getSqlStatementContext().getSqlStatement());
         if (showSimple) {
             logSimpleMode(executionContext.getExecutionUnits());
         } else {

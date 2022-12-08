@@ -66,7 +66,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
-    private SQLHintExtractor sqlHintExtractor;
+    private final SQLHintExtractor sqlHintExtractor;
     
     public ShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions, final SQLStatementContext<?> sqlStatementContext,
                                          final HintValueContext hintValueContext, final ConfigurationProperties props) {

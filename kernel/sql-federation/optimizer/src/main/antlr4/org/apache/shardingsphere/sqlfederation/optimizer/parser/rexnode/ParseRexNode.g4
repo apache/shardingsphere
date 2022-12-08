@@ -17,7 +17,7 @@
 
 grammar ParseRexNode;
 
-import Symbol,Keyword,Literals;
+import Symbol, Keyword, Literals;
 
 expression
     : op LP_ parameter COMMA_ parameter RP_

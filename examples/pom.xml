@@ -29,7 +29,6 @@
     <modules>
         <module>example-core</module>
         <module>other-example</module>
-        <module>shardingsphere-jdbc-example</module>
         <module>shardingsphere-proxy-example</module>
         
         <module>shardingsphere-example-generator</module>
@@ -120,16 +119,6 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

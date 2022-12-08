@@ -104,5 +104,5 @@ COUNT
     ;
 
 MYSQLMGR
-    : M Y S Q L DOT M G R
+    : M Y S Q L DOT_ M G R
     ;

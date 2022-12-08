@@ -75,7 +75,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     private AbstractBinlogEvent decodeEvent(final MySQLPacketPayload payload, final MySQLBinlogEventHeader binlogEventHeader) {
-        switch (MySQLBinlogEventType.valueOf(binlogEventHeader.getEventType())) {
+        MySQLBinlogEventType eventType = MySQLBinlogEventType.valueOf(binlogEventHeader.getEventType()).orElse(MySQLBinlogEventType.UNKNOWN_EVENT);
+        switch (eventType) {
             case ROTATE_EVENT:
                 decodeRotateEvent(binlogEventHeader, payload);
                 return null;

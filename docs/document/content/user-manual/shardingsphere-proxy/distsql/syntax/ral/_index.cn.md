@@ -33,6 +33,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | SHOW MIGRATION CHECK STATUS jobId                       | 查询数据一致性校验进度                      | SHOW MIGRATION CHECK STATUS 1234    |
 | STOP MIGRATION CHECK jobId                              | 停止数据一致性校验                          | STOP MIGRATION CHECK 1234          |
 | START MIGRATION CHECK jobId                             | 开启数据一致性校验                          | START MIGRATION CHECK 1234      |
+| DROP MIGRATION CHECK jobId                              | 删除数据一致性校验作业                       | DROP MIGRATION CHECK 1234          |
 | ROLLBACK MIGRATION jobId                                | 撤销作业。注意：该语句会清理目标端表，请谨慎操作 | ROLLBACK MIGRATION 1234                         |
 | COMMIT MIGRATION jobId                                  | 完成作业                                  | COMMIT MIGRATION 1234                           |
 
@@ -70,6 +71,7 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | REFRESH TABLE METADATA tableName                                           | 刷新指定表的元数据                                                                                                  | REFRESH TABLE METADATA t_order                                       |
 | REFRESH TABLE METADATA tableName FROM STORAGE UNIT storageUnitName         | 刷新指定数据源中表的元数据                                                                                           | REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1                |
 | REFRESH TABLE METADATA FROM STORAGE UNIT storageUnitName SCHEMA schemaName | 刷新指定 schema 中表的元数据，如果 schema 中不存在表，则会删除该 schema                                                 | REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema       |
+| REFRESH DATABASE METADATA [databaseName] FROM GOVERNANCE CENTER            | 从治理中心拉取最新配置，刷新本地逻辑库元数据                                                                            | REFRESH DATABASE METADATA [databaseName] FROM GOVERNANCE CENTER      |
 | SHOW TABLE METADATA tableName [, tableName] ...                            | 查询表的元数据                                                                                                      | SHOW TABLE METADATA t_order                                           |
 | EXPORT DATABASE CONFIGURATION [FROM databaseName] [TO FILE "filePath"]     | 将 database 中的数据源和规则配置导出为 YAML 格式                                                                      | EXPORT DATABASE CONFIGURATION TO FILE "/xxx/config-sharding.yaml"     |
 | IMPORT DATABASE CONFIGURATION FROM FILE "filePath"                         | 将 YAML 中的配置导入到 database 中，仅支持对空库进行导入操作                                                            | IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config-sharding.yaml"   |

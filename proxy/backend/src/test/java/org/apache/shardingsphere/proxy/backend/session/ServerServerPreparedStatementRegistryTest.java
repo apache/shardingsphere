@@ -37,6 +37,14 @@ public final class ServerServerPreparedStatementRegistryTest {
         assertNull(registry.getPreparedStatement(1));
     }
     
+    @Test
+    public void assertClearPreparedStatements() {
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
+        registry.addPreparedStatement(1, new DummyServerPreparedStatement());
+        registry.clear();
+        assertNull(registry.getPreparedStatement(1));
+    }
+    
     private static class DummyServerPreparedStatement implements ServerPreparedStatement {
         
         @Override

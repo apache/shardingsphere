@@ -29,12 +29,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Ordered services cached.
+ * Ordered services cache.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderedServicesCache {
     
-    private static volatile SoftReference<Map<Key, Map<?, ?>>> softCache = new SoftReference<>(new ConcurrentHashMap<>(128));
+    private static volatile SoftReference<Map<Key, Map<?, ?>>> cache = new SoftReference<>(new ConcurrentHashMap<>(128));
     
     /**
      * Find cached services.
@@ -44,7 +44,7 @@ public final class OrderedServicesCache {
      * @return cached services
      */
     public static Optional<Map<?, ?>> findCachedServices(final Class<?> spiClass, final Collection<?> types) {
-        return Optional.ofNullable(softCache.get()).map(optional -> optional.get(new Key(spiClass, types)));
+        return Optional.ofNullable(cache.get()).map(optional -> optional.get(new Key(spiClass, types)));
     }
     
     /**
@@ -55,13 +55,13 @@ public final class OrderedServicesCache {
      * @param services services to be cached
      */
     public static void cacheServices(final Class<?> spiClass, final Collection<?> types, final Map<?, ?> services) {
-        Map<Key, Map<?, ?>> cache = softCache.get();
+        Map<Key, Map<?, ?>> cache = OrderedServicesCache.cache.get();
         if (null == cache) {
             synchronized (OrderedServicesCache.class) {
-                cache = softCache.get();
+                cache = OrderedServicesCache.cache.get();
                 if (null == cache) {
                     cache = new ConcurrentHashMap<>(128);
-                    softCache = new SoftReference<>(cache);
+                    OrderedServicesCache.cache = new SoftReference<>(cache);
                 }
             }
         }

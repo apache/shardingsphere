@@ -39,7 +39,7 @@ public final class ShardingSphereDataNode {
     /**
      * Get ShardingSphere data node path.
      *
-     * @return meta data node path
+     * @return Metadata node path
      */
     public static String getShardingSphereDataNodePath() {
         return String.join("/", "", ROOT_NODE);
@@ -56,7 +56,7 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get meta data tables path.
+     * Get Metadata tables path.
      *
      * @param databaseName database name
      * @param schemaName schema name
@@ -78,7 +78,7 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get meta data schemas path.
+     * Get Metadata schemas path.
      *
      * @param databaseName database name
      * @return schemas path
@@ -88,28 +88,28 @@ public final class ShardingSphereDataNode {
     }
     
     /**
-     * Get table meta data path.
+     * Get table Metadata path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
-     * @return table meta data path
+     * @return table Metadata path
      */
     public static String getTablePath(final String databaseName, final String schemaName, final String table) {
         return String.join("/", getTablesPath(databaseName, schemaName), table);
     }
     
     /**
-     * Get table partition rows path.
+     * Get table row path.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
-     * @param partition partition
-     * @return table meta data path
+     * @param uniqueKey unique key
+     * @return table Metadata path
      */
-    public static String getTablePartitionRowsPath(final String databaseName, final String schemaName, final String table, final String partition) {
-        return String.join("/", getTablePath(databaseName, schemaName, table), partition);
+    public static String getTableRowPath(final String databaseName, final String schemaName, final String table, final String uniqueKey) {
+        return String.join("/", getTablePath(databaseName, schemaName, table), uniqueKey);
     }
     
     /**
@@ -163,34 +163,36 @@ public final class ShardingSphereDataNode {
     /**
      * Get table data path.
      *
-     * @param tableMetaDataPath table data path
+     * @param tableMetadataPath table data path
      * @return table name
      */
-    public static Optional<String> getTableName(final String tableMetaDataPath) {
-        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(tableMetaDataPath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static Optional<String> getTableName(final String tableMetadataPath) {
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(tableMetadataPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Get table name by partition rows path.
+     * Get table name by row path.
      *
-     * @param partitionRowsPath partition rows data path
+     * @param rowPath row data path
      * @return table name
      */
-    public static Optional<String> getTableNameByPartitionRowsPath(final String partitionRowsPath) {
-        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(partitionRowsPath);
-        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    public static Optional<String> getTableNameByRowPath(final String rowPath) {
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rowPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
     }
     
     /**
-     * Is table row data matched.
-     * @param path path
-     * @return is matched
+     * Get row unique key.
+     *
+     * @param rowPath row data path
+     * @return row unique key
      */
-    public static boolean isTableRowDataMatched(final String path) {
-        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\d+)$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(path).find();
+    public static Optional<String> getRowUniqueKey(final String rowPath) {
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rowPath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
 }

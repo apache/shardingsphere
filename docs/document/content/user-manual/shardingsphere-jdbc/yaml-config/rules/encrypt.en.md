@@ -14,9 +14,9 @@ Based on the YAML configuration, ShardingSphere automatically completes the crea
 rules:
 - !ENCRYPT
   tables:
-    <table-name> (+): # Encrypt table name
+    <table_name> (+): # Encrypt table name
       columns:
-        <column-name> (+): # Encrypt logic column name
+        <column_name> (+): # Encrypt logic column name
           plainColumn (?): # Plain column name
           cipherColumn: # Cipher column name
           encryptorName: # Cipher encrypt algorithm name
@@ -28,7 +28,7 @@ rules:
     
   # Encrypt algorithm configuration
   encryptors:
-    <encrypt-algorithm-name> (+): # Encrypt algorithm name
+    <encrypt_algorithm_name> (+): # Encrypt algorithm name
       type: # Encrypt algorithm type
       props: # Encrypt algorithm properties
         # ...

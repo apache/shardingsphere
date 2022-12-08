@@ -37,5 +37,3 @@ chapter = true
 
 [Java API](/cn/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting)\
 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting)\
-[Spring Boot Starter](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting)\
-[Spring 命名空间](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting)

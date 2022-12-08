@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -77,6 +78,16 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
         updater.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(1));
+    }
+    
+    @Test
+    public void assertUpdateMultipleStrategies() {
+        ShardingRuleConfiguration currentRuleConfig = createMultipleCurrentRuleConfiguration();
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig));
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig));
+        assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
+        assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
+        assertTrue(currentRuleConfig.getShardingAlgorithms().isEmpty());
     }
     
     private DropDefaultShardingStrategyStatement createSQLStatement(final String defaultType) {

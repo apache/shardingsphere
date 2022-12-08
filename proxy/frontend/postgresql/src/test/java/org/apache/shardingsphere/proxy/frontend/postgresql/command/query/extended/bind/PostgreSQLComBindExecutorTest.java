@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLEmptyStatement;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -73,7 +73,7 @@ public final class PostgreSQLComBindExecutorTest extends ProxyContextRestorer {
     public void assertExecuteBind() throws SQLException {
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         String databaseName = "postgres";
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName)).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().containsDatabase(databaseName)).thenReturn(true);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(ProxyContext.getInstance().getDatabase(databaseName)).thenReturn(database);
         when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());

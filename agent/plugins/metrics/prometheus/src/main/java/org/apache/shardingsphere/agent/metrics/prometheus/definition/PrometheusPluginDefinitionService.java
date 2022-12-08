@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
-import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
 import org.apache.shardingsphere.agent.core.entity.Interceptor;
@@ -31,11 +30,10 @@ import java.io.InputStream;
 /**
  * Metrics plugin definition service.
  */
-@Slf4j
 public final class PrometheusPluginDefinitionService extends AbstractPluginDefinitionService {
     
     @Override
-    public void defineInterceptors() {
+    public void defineProxyInterceptors() {
         InputStream inputStream = getClass().getResourceAsStream("/prometheus/interceptors.yaml");
         Interceptors interceptors = new Yaml().loadAs(inputStream, Interceptors.class);
         for (Interceptor each : interceptors.getInterceptors()) {
@@ -45,7 +43,6 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
             Builder builder = defineInterceptor(each.getTarget());
             if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
                 builder.onConstructor(ElementMatchers.isConstructor()).implement(each.getConstructAdvice()).build();
-                log.debug("Init construct: {}", each.getConstructAdvice());
             }
             if (null == each.getPoints()) {
                 continue;
@@ -54,13 +51,16 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
             String[] staticPoints = each.getPoints().stream().filter(i -> "static".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
             if (instancePoints.length > 0) {
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints)).implement(each.getInstanceAdvice()).build();
-                log.debug("Init instance: {}", each.getInstanceAdvice());
             }
             if (staticPoints.length > 0) {
                 builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints)).implement(each.getStaticAdvice()).build();
-                log.debug("Init static: {}", each.getStaticAdvice());
             }
         }
+    }
+    
+    @Override
+    public void defineJdbcInterceptors() {
+        // TODO add JDBC related interception
     }
     
     @Override

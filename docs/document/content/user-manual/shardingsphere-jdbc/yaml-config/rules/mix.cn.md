@@ -13,7 +13,7 @@ ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、�
 rules:
   - !SHARDING
     tables:
-      <logic-table-name>: # 逻辑表名称:
+      <logic_table_name>: # 逻辑表名称:
         actualDataNodes: # 由逻辑数据源名 + 表名组成（参考 Inline 语法规则）
         tableStrategy: # 分表策略，同分库策略
           standard:
@@ -27,7 +27,7 @@ rules:
         shardingColumn: # 分片列名称
         shardingAlgorithmName: # 分片算法名称
     shardingAlgorithms:
-      <sharding-algorithm-name>: # 分片算法名称
+      <sharding_algorithm_name>: # 分片算法名称
         type: INLINE
         props:
           algorithm-expression: # INLINE 表达式
@@ -36,27 +36,27 @@ rules:
         props:
           algorithm-expression: # INLINE 表达式
     keyGenerators:
-      <key-generate-algorithm-name> (+): # 分布式序列算法名称
+      <key_generate_algorithm_name> (+): # 分布式序列算法名称
         type: # 分布式序列算法类型
         props: # 分布式序列算法属性配置
   - !READWRITE_SPLITTING
     dataSources:
-      <data-source-name>: # 读写分离逻辑数据源名称
+      <data_source_name>: # 读写分离逻辑数据源名称
         dynamicStrategy: # 读写分离类型
           autoAwareDataSourceName: # 数据库发现逻辑数据源名称
-      <data-source-name>: # 读写分离逻辑数据源名称
+      <data_source_name>: # 读写分离逻辑数据源名称
         dynamicStrategy: # 读写分离类型
           autoAwareDataSourceName: # 数据库发现逻辑数据源名称
   - !DB_DISCOVERY
     dataSources:
-      <data-source-name>:
+      <data_source_name>:
         dataSourceNames: # 数据源名称列表
           - ds_0
           - ds_1
           - ds_2
         discoveryHeartbeatName: # 检测心跳名称
         discoveryTypeName: # 数据库发现类型名称
-      <data-source-name>:
+      <data_source_name>:
         dataSourceNames: # 数据源名称列表
           - ds_3
           - ds_4
@@ -64,25 +64,25 @@ rules:
         discoveryHeartbeatName: # 检测心跳名称
         discoveryTypeName: # 数据库发现类型名称
     discoveryHeartbeats:
-      <discovery-heartbeat-name>: # 心跳名称
+      <discovery_heartbeat_name>: # 心跳名称
         props:
           keep-alive-cron: # cron 表达式，如：'0/5 * * * * ?'
     discoveryTypes:
-      <discovery-type-name>: # 数据库发现类型名称
+      <discovery_type_name>: # 数据库发现类型名称
         type: # 数据库发现类型，如：MySQL.MGR 
         props:
           group-name:  # 数据库发现类型必要参数，如 MGR 的 group-name
   - !ENCRYPT
     encryptors:
-      <encrypt-algorithm-name> (+): # 加解密算法名称
+      <encrypt_algorithm_name> (+): # 加解密算法名称
         type: # 加解密算法类型
         props: # 加解密算法属性配置
-      <encrypt-algorithm-name> (+): # 加解密算法名称
+      <encrypt_algorithm_name> (+): # 加解密算法名称
         type: # 加解密算法类型
     tables:
-      <table-name>: # 加密表名称
+      <table_name>: # 加密表名称
         columns:
-          <column-name> (+): # 加密列名称
+          <column_name> (+): # 加密列名称
             plainColumn (?): # 原文列名称
             cipherColumn: # 密文列名称
             encryptorName: # 密文列加密算法名称
@@ -143,17 +143,17 @@ rules:
           - ds_0
           - ds_1
           - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
+        discoveryHeartbeatName: mgr_heartbeat
         discoveryTypeName: mgr
       readwrite_ds_1:
         dataSourceNames:
           - ds_3
           - ds_4
           - ds_5
-        discoveryHeartbeatName: mgr-heartbeat
+        discoveryHeartbeatName: mgr_heartbeat
         discoveryTypeName: mgr
     discoveryHeartbeats:
-      mgr-heartbeat:
+      mgr_heartbeat:
         props:
           keep-alive-cron: '0/5 * * * * ?'
     discoveryTypes:

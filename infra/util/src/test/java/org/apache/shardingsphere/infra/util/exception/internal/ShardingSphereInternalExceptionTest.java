@@ -22,8 +22,14 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public final class ShardingSphereInternalExceptionTest {
+    
+    @Test
+    public void assertGetMessageWithNoArgsConstructor() {
+        assertNull(new ShardingSphereInternalExceptionFixture().getMessage());
+    }
     
     @Test
     public void assertGetMessage() {

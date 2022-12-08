@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -62,9 +62,9 @@ public final class DriverStateContextTest {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class));
-        MetaDataPersistService mockedPersistService = mock(MetaDataPersistService.class);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mockedPersistService, new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class)));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        MetadataPersistService mockedPersistService = mock(MetadataPersistService.class);
+        MetadataContexts metadataContexts = new MetadataContexts(mockedPersistService, new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class)));
+        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }
     

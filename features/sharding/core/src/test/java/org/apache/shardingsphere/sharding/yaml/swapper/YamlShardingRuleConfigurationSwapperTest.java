@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -31,8 +32,8 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStan
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 public final class YamlShardingRuleConfigurationSwapperTest {
@@ -44,7 +45,7 @@ public final class YamlShardingRuleConfigurationSwapperTest {
         YamlShardingRuleConfiguration actual = swapper.swapToYamlConfiguration(createShardingRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTables().size(), is(1));
-        assertThat(actual.getBindingTables().iterator().next(), is("tbl, sub_tbl"));
+        assertThat(actual.getBindingTables().iterator().next(), is("foo:tbl, sub_tbl"));
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("dict"));
         assertNotNull(actual.getDefaultDatabaseStrategy());
@@ -57,7 +58,7 @@ public final class YamlShardingRuleConfigurationSwapperTest {
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(mock(ShardingTableRuleConfiguration.class));
-        result.getBindingTableGroups().add("tbl, sub_tbl");
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "tbl, sub_tbl"));
         result.getBroadcastTables().add("dict");
         result.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
         result.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
@@ -73,7 +74,7 @@ public final class YamlShardingRuleConfigurationSwapperTest {
         ShardingRuleConfiguration actual = swapper.swapToObject(createYamlShardingRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTableGroups().size(), is(1));
-        assertThat(actual.getBindingTableGroups().iterator().next(), is("tbl, sub_tbl"));
+        assertThat(actual.getBindingTableGroups().iterator().next().getReference(), is("tbl, sub_tbl"));
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("dict"));
         assertNotNull(actual.getDefaultDatabaseShardingStrategy());

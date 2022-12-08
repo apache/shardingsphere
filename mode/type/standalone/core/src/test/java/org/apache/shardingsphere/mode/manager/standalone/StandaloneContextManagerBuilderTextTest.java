@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetadataNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -46,11 +46,11 @@ public final class StandaloneContextManagerBuilderTextTest {
     @Test
     public void assertBuild() throws SQLException {
         ContextManager actual = new StandaloneContextManagerBuilder().build(createContextManagerBuilderParameter());
-        assertNotNull(actual.getMetaDataContexts().getMetaData().getDatabase("foo_db"));
-        PersistRepository repository = actual.getMetaDataContexts().getPersistService().getRepository();
+        assertNotNull(actual.getMetadataContexts().getMetadata().getDatabase("foo_db"));
+        PersistRepository repository = actual.getMetadataContexts().getPersistService().getRepository();
         assertNotNull(repository.getDirectly(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_db", "0")));
-        assertNotNull(repository.getDirectly(DatabaseMetaDataNode.getRulePath("foo_db", "0")));
+        assertNotNull(repository.getDirectly(DatabaseMetadataNode.getMetadataDataSourcePath("foo_db", "0")));
+        assertNotNull(repository.getDirectly(DatabaseMetadataNode.getRulePath("foo_db", "0")));
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {

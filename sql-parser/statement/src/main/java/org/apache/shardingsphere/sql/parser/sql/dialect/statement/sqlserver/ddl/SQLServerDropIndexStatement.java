@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -33,7 +32,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class SQLServerDropIndexStatement extends DropIndexStatement implements SQLServerStatement {
     
     private final boolean ifExists;

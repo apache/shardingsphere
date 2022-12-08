@@ -122,17 +122,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy instance type.
      */
-    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true),
-    
-    /**
-     * Metadata chunk unit rows.
-     */
-    METADATA_CHUNK_UNIT_ROWS("metadata-chunk-unit-rows", "100", int.class, false),
-    
-    /**
-     * Proxy metadata collector enabled.
-     */
-    PROXY_METADATA_COLLECTOR_ENABLED("proxy-metadata-collector-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
+    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true);
     
     private final String key;
     

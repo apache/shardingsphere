@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.infra.distsql.exception.resource.EmptyResourceException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -89,7 +89,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         this.database = database;
         this.queryContext = queryContext;
         this.backendConnection = backendConnection;
-        metadataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
+        metadataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps());
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
         }
@@ -98,9 +98,9 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext<?> sqlStatementContext) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
-        ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyResourceException(connectionSession.getDatabaseName()));
+        ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new StorageUnitNotExistedException(connectionSession.getDatabaseName()));
         if (!isSystemSchema && !database.isComplete()) {
-            throw new RuleNotExistedException();
+            throw new RuleNotExistedException(connectionSession.getDatabaseName());
         }
     }
     
@@ -169,7 +169,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     }
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
+        MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps(),
                 getBackendConnection().getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }

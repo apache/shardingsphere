@@ -30,7 +30,7 @@ public final class OpenTelemetryTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        new OpenTelemetryTracingPluginBootService().start(new PluginConfiguration(null, 0, null, createProperties()));
+        new OpenTelemetryTracingPluginBootService().start(new PluginConfiguration(null, 0, null, createProperties()), true);
         assertNotNull(GlobalOpenTelemetry.getTracerProvider());
         assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
     }

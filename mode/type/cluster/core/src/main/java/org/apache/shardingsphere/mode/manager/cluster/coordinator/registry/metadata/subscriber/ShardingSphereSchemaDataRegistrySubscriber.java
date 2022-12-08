@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.metadata.data.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
@@ -51,14 +50,15 @@ public final class ShardingSphereSchemaDataRegistrySubscriber {
     public void update(final ShardingSphereSchemaDataAlteredEvent event) {
         String databaseName = event.getDatabaseName();
         String schemaName = event.getSchemaName();
-        for (YamlShardingSphereTableData each : event.getAlteredYamlTables()) {
-            GlobalLockDefinition lockDefinition = new GlobalLockDefinition("sys_data_" + each.getName());
-            if (lockPersistService.tryLock(lockDefinition, 10_000)) {
-                try {
-                    persistService.persistTable(databaseName, schemaName, each);
-                } finally {
-                    lockPersistService.unlock(lockDefinition);
-                }
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition("sys_data_" + event.getDatabaseName() + event.getSchemaName() + event.getTableName());
+        if (lockPersistService.tryLock(lockDefinition, 10_000)) {
+            try {
+                persistService.persistTable(databaseName, schemaName, event.getTableName());
+                persistService.persistRows(databaseName, schemaName, event.getTableName(), event.getAddedRows());
+                persistService.persistRows(databaseName, schemaName, event.getTableName(), event.getUpdatedRows());
+                persistService.deleteRows(databaseName, schemaName, event.getTableName(), event.getDeletedRows());
+            } finally {
+                lockPersistService.unlock(lockDefinition);
             }
         }
     }

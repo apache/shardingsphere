@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALB
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,7 +62,7 @@ public final class ShowDistVariableHandler extends QueryableRALBackendHandler<Sh
     }
     
     private String getConfigurationValue(final ContextManager contextManager, final String key) {
-        return contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
+        return contextManager.getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
     }
     
     private String getSpecialValue(final String key) {

@@ -41,8 +41,9 @@ public final class PluginBootServiceManager {
      *
      * @param pluginConfigurationMap plugin configuration map
      * @param classLoader classLoader
+     * @param isEnhancedForProxy is enhanced for proxy
      */
-    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap, final ClassLoader classLoader) {
+    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(classLoader);
@@ -50,7 +51,7 @@ public final class PluginBootServiceManager {
                 AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
                     try {
                         LOGGER.info("Start plugin: {}", optional.getType());
-                        optional.start(entry.getValue());
+                        optional.start(entry.getValue(), isEnhancedForProxy);
                         // CHECKSTYLE:OFF
                     } catch (final Throwable ex) {
                         // CHECKSTYLE:ON

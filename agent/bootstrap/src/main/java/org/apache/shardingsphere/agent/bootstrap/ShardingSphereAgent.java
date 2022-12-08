@@ -27,9 +27,9 @@ import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ShardingSphereTransformer;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
 
@@ -54,7 +54,6 @@ public final class ShardingSphereAgent {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfig);
         AgentPluginLoader pluginLoader = createPluginLoader();
-        pluginLoader.setEnhancedForProxy(isEnhancedForProxy());
         setUpAgentBuilder(instrumentation, pluginLoader);
         if (pluginLoader.isEnhancedForProxy()) {
             setupPluginBootService(agentConfig.getPlugins());
@@ -63,6 +62,7 @@ public final class ShardingSphereAgent {
     
     private static AgentPluginLoader createPluginLoader() throws IOException {
         AgentPluginLoader result = new AgentPluginLoader();
+        result.setEnhancedForProxy(isEnhancedForProxy());
         result.load();
         return result;
     }
@@ -79,7 +79,7 @@ public final class ShardingSphereAgent {
     }
     
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
-        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getDefaultPluginClassloader());
+        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getDefaultPluginClassloader(), true);
         Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     

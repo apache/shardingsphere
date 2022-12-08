@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -30,7 +29,6 @@ import java.util.Optional;
  * MySQL delete statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class MySQLDeleteStatement extends DeleteStatement implements MySQLStatement {
     
     private OrderBySegment orderBy;

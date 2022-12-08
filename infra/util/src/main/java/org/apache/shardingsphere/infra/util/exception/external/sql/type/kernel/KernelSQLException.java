@@ -33,7 +33,7 @@ public abstract class KernelSQLException extends ShardingSphereSQLException {
         super(sqlState, TYPE_OFFSET, kernelCode * 1000 + errorCode, reason, messageArgs);
     }
     
-    public KernelSQLException(final String reason, final Exception cause, final SQLState sqlState, final int kernelCode, final int errorCode) {
-        super(reason, cause, sqlState.getValue(), TYPE_OFFSET, kernelCode * 1000 + errorCode);
+    public KernelSQLException(final SQLState sqlState, final int kernelCode, final int errorCode, final String reason, final Exception cause) {
+        super(sqlState.getValue(), TYPE_OFFSET, kernelCode * 1000 + errorCode, reason, cause);
     }
 }

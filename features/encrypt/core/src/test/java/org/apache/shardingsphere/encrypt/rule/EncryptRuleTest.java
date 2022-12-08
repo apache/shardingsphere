@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.fixture.CoreEncryptAlgorithmFixture;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.fixture.CoreSchemaMetaDataAwareEncryptAlgorithmFixture;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -40,23 +38,13 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class EncryptRuleTest {
-    
-    @Test
-    public void assertNewInstanceWithAlgorithmProvidedEncryptRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", null);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
-        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
-        EncryptRule actual = new EncryptRule(ruleConfig);
-        assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
-    }
     
     @Test
     public void assertFindEncryptTable() {
@@ -143,31 +131,6 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertIsQueryWithCipherColumn() {
-        EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", null);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
-        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
-        EncryptRule actual = new EncryptRule(ruleConfig);
-        assertTrue(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-        encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", null);
-        tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), false);
-        ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
-        actual = new EncryptRule(ruleConfig);
-        assertFalse(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-        encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", true);
-        tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), false);
-        ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
-        actual = new EncryptRule(ruleConfig);
-        assertTrue(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-        encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", false);
-        tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
-        ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
-        actual = new EncryptRule(ruleConfig);
-        assertFalse(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-    }
-    
-    @Test
     public void assertGetTables() {
         assertThat(new EncryptRule(createEncryptRuleConfiguration()).getTables(), is(Collections.singleton("t_encrypt")));
     }
@@ -190,7 +153,7 @@ public final class EncryptRuleTest {
         EncryptRule encryptRule = new EncryptRule(createEncryptRuleConfiguration());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         encryptRule.setSchemaMetaData("foo_db", Collections.singletonMap("foo_schema", schema));
-        Optional<EncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
+        Optional<StandardEncryptAlgorithm> actual = encryptRule.findEncryptor("t_encrypt", "name");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(CoreSchemaMetaDataAwareEncryptAlgorithmFixture.class));
         assertThat(((CoreSchemaMetaDataAwareEncryptAlgorithmFixture) actual.get()).getDatabaseName(), is("foo_db"));

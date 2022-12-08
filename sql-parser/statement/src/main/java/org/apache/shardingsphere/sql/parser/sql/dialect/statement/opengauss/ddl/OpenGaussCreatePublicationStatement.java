@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreatePublicationStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss create publication statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussCreatePublicationStatement extends CreatePublicationStatement implements OpenGaussStatement {
 }

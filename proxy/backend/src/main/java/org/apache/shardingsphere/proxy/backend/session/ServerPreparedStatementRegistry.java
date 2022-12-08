@@ -57,4 +57,11 @@ public final class ServerPreparedStatementRegistry {
     public void removePreparedStatement(final Object statementId) {
         preparedStatements.remove(statementId);
     }
+    
+    /**
+     * Clear prepared statements.
+     */
+    public void clear() {
+        preparedStatements.clear();
+    }
 }

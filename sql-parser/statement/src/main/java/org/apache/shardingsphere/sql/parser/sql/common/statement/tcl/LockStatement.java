@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Lock statement.
  */
-@ToString(callSuper = true)
 public abstract class LockStatement extends AbstractSQLStatement implements TCLStatement {
 }

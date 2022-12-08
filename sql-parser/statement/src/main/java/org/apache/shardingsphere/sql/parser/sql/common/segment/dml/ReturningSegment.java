@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class ReturningSegment implements SQLSegment {
     
     private final int startIndex;

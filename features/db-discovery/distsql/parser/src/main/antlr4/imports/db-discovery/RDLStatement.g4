@@ -20,51 +20,51 @@ grammar RDLStatement;
 import BaseRule;
 
 createDatabaseDiscoveryRule
-    : CREATE DB_DISCOVERY RULE databaseDiscoveryRule (COMMA databaseDiscoveryRule)*
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRule (COMMA_ databaseDiscoveryRule)*
     ;
 
 alterDatabaseDiscoveryRule
-    : ALTER DB_DISCOVERY RULE databaseDiscoveryRule (COMMA databaseDiscoveryRule)*
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRule (COMMA_ databaseDiscoveryRule)*
     ;
 
 dropDatabaseDiscoveryRule
-    : DROP DB_DISCOVERY RULE ifExists? ruleName (COMMA ruleName)*
+    : DROP DB_DISCOVERY RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
 dropDatabaseDiscoveryType
-    : DROP DB_DISCOVERY TYPE ifExists? discoveryTypeName (COMMA discoveryTypeName)*
+    : DROP DB_DISCOVERY TYPE ifExists? discoveryTypeName (COMMA_ discoveryTypeName)*
     ;
 
 dropDatabaseDiscoveryHeartbeat
-    : DROP DB_DISCOVERY HEARTBEAT ifExists? discoveryHeartbeatName (COMMA discoveryHeartbeatName)*
+    : DROP DB_DISCOVERY HEARTBEAT ifExists? discoveryHeartbeatName (COMMA_ discoveryHeartbeatName)*
     ;
 
 databaseDiscoveryRule
-    : ruleName LP storageUnits COMMA algorithmDefinition COMMA discoveryHeartbeat RP
+    : ruleName LP_ storageUnits COMMA_ algorithmDefinition COMMA_ discoveryHeartbeat RP_
     ;
 
 ruleName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 storageUnits
-    : STORAGE_UNITS LP storageUnitName (COMMA storageUnitName)* RP
+    : STORAGE_UNITS LP_ storageUnitName (COMMA_ storageUnitName)* RP_
     ;
 
 storageUnitName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 discoveryHeartbeat
-    : HEARTBEAT LP propertiesDefinition RP
+    : HEARTBEAT LP_ propertiesDefinition RP_
     ;
 
 discoveryTypeName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 discoveryHeartbeatName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 ifExists

@@ -49,7 +49,7 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     
     public MySQLFrontendEngine() {
         MySQLServerInfo.setDefaultMysqlVersion(ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION));
+                .getContextManager().getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION));
     }
     
     @Override

@@ -7,21 +7,6 @@ chapter = true
 
 ## JDBC
 
-### [JDBC] 为什么配置了某个数据连接池的 spring-boot-starter（比如 druid）和 shardingsphere-jdbc-spring-boot-starter 时，系统启动会报错？
-
-回答：
-
-1. 因为数据连接池的 starter（比如 druid）可能会先加载并且其创建一个默认数据源，这将会使得 ShardingSphere-JDBC 创建数据源时发生冲突。
-2. 解决办法为，去掉数据连接池的 starter 即可，ShardingSphere-JDBC 自己会创建数据连接池。
-
-### [JDBC] 使用 Spring 命名空间时找不到 xsd?
-
-回答：
-
-Spring 命名空间使用规范并未强制要求将 xsd 文件部署至公网地址，但考虑到部分用户的需求，我们也将相关 xsd 文件部署至 ShardingSphere 官网。
-实际上 shardingsphere-jdbc-spring-namespace 的 jar 包中 META-INF\spring.schemas 配置了 xsd 文件的位置：
-META-INF\namespace\sharding.xsd 和 META-INF\namespace\readwrite-splitting.xsd，只需确保 jar 包中该文件存在即可。
-
 ### [JDBC] 引入 `shardingsphere-transaction-xa-core` 后，如何避免 spring-boot 自动加载默认的 JtaTransactionManager？
 
 回答:
@@ -334,44 +319,3 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](/cn/concep
 ```
 更多关于 alias 使用方法请参考 [Proxool官网](http://proxool.sourceforge.net/configure.html)。
 PS：sourceforge 网站需要翻墙访问。
-
-### [其他] 使用 Spring Boot 2.x 集成 ShardingSphere 时，配置文件中的属性设置不生效？
-
-回答：
-
-需要特别注意，Spring Boot 2.x 环境下配置文件的属性名称约束为仅允许小写字母、数字和短横线，即 `[a-z][0-9]` 和 `-`。
-原因如下:
-Spring Boot 2.x 环境下，ShardingSphere 通过 Binder 来绑定配置文件，属性名称不规范（如：驼峰或下划线等）会导致属性设置不生效从而校验属性值时抛出 `NullPointerException` 异常。参考以下错误示例：
-下划线示例：database_inline
-```
-spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds-$->{user_id % 2}
-```
-```
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'database_inline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        ... 
-Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
-        at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
-        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
-        ... 
-```
-驼峰示例：databaseInline
-```
-spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.props.algorithm-expression=ds-$->{user_id % 2}
-```
-```
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'databaseInline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        ... 
-Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
-        at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
-        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
-        ... 
-```
-从异常堆栈中分析可知： `AbstractAlgorithmProvidedBeanRegistry.registerBean` 方法调用 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法判断指定前缀 `prefix` 的配置是否存在，而 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法，在 Spring Boot 2.x 环境下使用了 Binder，不规范的属性名称（如：驼峰或下划线等）会导致属性设置不生效。

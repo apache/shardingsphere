@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-@ToString(callSuper = true)
 public abstract class LoadStatement extends AbstractSQLStatement implements DALStatement {
 }

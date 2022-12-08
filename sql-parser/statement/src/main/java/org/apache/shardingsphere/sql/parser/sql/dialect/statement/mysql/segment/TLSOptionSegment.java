@@ -20,13 +20,11 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class TLSOptionSegment implements SQLSegment {
     
     private int startIndex;

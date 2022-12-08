@@ -87,6 +87,9 @@ chapter = true
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
  - 使用 Mockito `mockStatic` 和 `mockConstruction` 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
+ - 使用 `mock` 应遵循如下规范：
+   - 单元测试需要连接某个环境时，应使用 `mock`；
+   - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
 
 ## G4 编码规范
 
@@ -103,4 +106,3 @@ chapter = true
    - 如果一个规则的分支超过 `5` 个，则每个分支一行。
    - 规则命名采用 java 变量的驼峰形式。
    - 为每种 SQL 语句类型定义一个独立的语法文件，文件名称由 `数据库名称` + `语句类型名称` + `Statement`。例如：`MySQLDQLStatement.g4`。
-   - 每个 `SQLStatement` 和 `SQLSegment` 实现类，必须添加 lombok `@ToString` 注解，如果实现类继承了某个父类，则需要添加 `callSuper = true` 参数。

@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.standalone.subscriber.ProcessStandaloneSubscriber;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetadataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryFactory;
 
@@ -42,15 +42,15 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
         StandalonePersistRepository repository = StandalonePersistRepositoryFactory.getInstance(param.getModeConfiguration().getRepository());
-        MetaDataPersistService persistService = new MetaDataPersistService(repository);
+        MetadataPersistService persistService = new MetadataPersistService(repository);
         persistConfigurations(persistService, param);
         InstanceContext instanceContext = buildInstanceContext(param);
         new ProcessStandaloneSubscriber(instanceContext.getEventBusContext());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
-        return new ContextManager(metaDataContexts, instanceContext);
+        MetadataContexts metadataContexts = MetadataContextsFactory.create(persistService, param, instanceContext);
+        return new ContextManager(metadataContexts, instanceContext);
     }
     
-    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param) {
+    private void persistConfigurations(final MetadataPersistService persistService, final ContextManagerBuilderParameter param) {
         if (!param.isEmpty()) {
             persistService.persistConfigurations(param.getDatabaseConfigs(), param.getGlobalRuleConfigs(), param.getProps());
         }

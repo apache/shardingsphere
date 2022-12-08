@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CheckpointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss checkpoint statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussCheckpointStatement extends CheckpointStatement implements OpenGaussStatement {
 }

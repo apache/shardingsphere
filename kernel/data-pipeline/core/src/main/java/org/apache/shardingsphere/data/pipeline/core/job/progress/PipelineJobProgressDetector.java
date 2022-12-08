@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
 import java.util.Collection;
@@ -45,29 +43,5 @@ public final class PipelineJobProgressDetector {
             log.warn("inventoryTasks is empty");
         }
         return inventoryTasks.stream().allMatch(each -> each.getTaskProgress().getPosition() instanceof FinishedPosition);
-    }
-    
-    /**
-     * Whether job is completed (successful or failed).
-     *
-     * @param jobShardingCount job sharding count
-     * @param jobItemProgresses job item progresses
-     * @return completed or not
-     */
-    public static boolean isJobCompleted(final int jobShardingCount, final Collection<? extends PipelineJobItemProgress> jobItemProgresses) {
-        return jobShardingCount == jobItemProgresses.size()
-                && jobItemProgresses.stream().allMatch(each -> null != each && !each.getStatus().isRunning());
-    }
-    
-    /**
-     * Whether job is successful.
-     *
-     * @param jobShardingCount job sharding count
-     * @param jobItemProgresses job item progresses
-     * @return completed or not
-     */
-    public static boolean isJobSuccessful(final int jobShardingCount, final Collection<? extends PipelineJobItemProgress> jobItemProgresses) {
-        return jobShardingCount == jobItemProgresses.size()
-                && jobItemProgresses.stream().allMatch(each -> null != each && JobStatus.FINISHED == each.getStatus());
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.Routi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -91,7 +92,9 @@ public final class TableExtractor {
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         lockSegment.ifPresent(this::extractTablesFromLock);
         if (selectStatement.getCombine().isPresent()) {
-            extractTablesFromSelect(selectStatement.getCombine().get().getSelectStatement());
+            CombineSegment combineSegment = selectStatement.getCombine().get();
+            extractTablesFromSelect(combineSegment.getLeft());
+            extractTablesFromSelect(combineSegment.getRight());
         }
     }
     
