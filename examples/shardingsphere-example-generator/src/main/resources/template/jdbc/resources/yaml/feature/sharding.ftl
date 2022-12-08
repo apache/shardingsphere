@@ -15,44 +15,40 @@
   ~ limitations under the License.
   -->
 - !SHARDING
-  tables:
-    t_order:
-      actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
-      tableStrategy:
-        standard:
-        shardingColumn: order_id
-        shardingAlgorithmName: t_order_inline
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake_generator
-      auditStrategy:
-        auditorNames:
-          - sharding_key_required_auditor
-        allowHintDisable: true
-    t_order_item:
-      actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
-      tableStrategy:
-        standard:
-        shardingColumn: order_id
-        shardingAlgorithmName: t_order_item_inline
-      keyGenerateStrategy:
-        column: order_item_id
-        keyGeneratorName: snowflake_generator
+    tables:
+      t_order:
+        actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: t_order_inline
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake
+      t_order_item:
+        actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: t_order_item_inline
+        keyGenerateStrategy:
+          column: order_item_id
+          keyGeneratorName: snowflake_generator
     bindingTables:
       - t_order,t_order_item
     broadcastTables:
       - t_address
-
     defaultDatabaseStrategy:
       standard:
-      shardingColumn: user_id
-      shardingAlgorithmName: database_inline
+        shardingColumn: user_id
+        shardingAlgorithmName: database_inline
 
     shardingAlgorithms:
       database_inline:
         type: INLINE
         props:
-          algorithm-expression: ds_$->{user_id % 2}
+          algorithm-expression: ds_${user_id % 2}
+          
       t_order_inline:
         type: INLINE
         props:
@@ -64,6 +60,3 @@
     keyGenerators:
       snowflake_generator:
         type: SNOWFLAKE
-    auditors:
-      sharding_key_required_auditor:
-        type: DML_SHARDING_CONDITIONS
