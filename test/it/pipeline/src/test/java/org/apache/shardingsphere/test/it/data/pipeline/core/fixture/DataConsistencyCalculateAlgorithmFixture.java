@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmDescription;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
 
 import java.util.Collection;
 import java.util.Collections;

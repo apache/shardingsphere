@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm.fixture;
+package org.apache.shardingsphere.infra.algorithm.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 import java.util.Properties;
 

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.infra.algorithm;
 
-import org.apache.shardingsphere.infra.config.algorithm.fixture.ShardingSphereAlgorithmFixture;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.fixture.ShardingSphereAlgorithmFixture;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;

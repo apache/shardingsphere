@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.infra.algorithm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
