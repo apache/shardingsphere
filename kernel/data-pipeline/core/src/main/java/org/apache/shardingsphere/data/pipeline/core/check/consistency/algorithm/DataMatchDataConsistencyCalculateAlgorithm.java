@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueRead
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmDescription;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
 
 import java.math.BigDecimal;
 import java.sql.Connection;

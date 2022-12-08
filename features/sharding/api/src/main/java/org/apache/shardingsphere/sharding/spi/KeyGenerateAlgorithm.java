@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spi;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 /**

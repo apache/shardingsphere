@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.infra.algorithm;
 
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
