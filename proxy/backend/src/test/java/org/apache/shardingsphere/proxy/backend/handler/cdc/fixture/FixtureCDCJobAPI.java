@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
+package org.apache.shardingsphere.proxy.backend.handler.cdc.fixture;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 
-/**
- * Pipeline changed job configuration processor.
- */
-// TODO rename to PipelineJobConfigurationChangedProcessor
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+public final class FixtureCDCJobAPI implements CDCJobAPI {
     
-    /**
-     * Process changed job configuration.
-     *
-     * @param eventType event type
-     * @param jobConfigPOJO job configuration pojo
-     */
-    // TODO replace JobConfigurationPOJO to JobConfiguration
-    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
+    @Override
+    public String createJobAndStart(final CreateSubscriptionJobParameter event) {
+        return "";
+    }
 }

@@ -29,15 +29,17 @@ import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CreateSubscriptionResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.cdc.CDCBackendHandler;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -52,6 +54,8 @@ import java.util.Optional;
 public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter {
     
     private static final AttributeKey<CDCConnectionContext> CONNECTION_CONTEXT_KEY = AttributeKey.valueOf("connection.context");
+    
+    private final CDCBackendHandler backendHandler = new CDCBackendHandler();
     
     @Override
     public void channelActive(final ChannelHandlerContext ctx) {
@@ -124,9 +128,15 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                     .addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        // TODO waiting for pipeline refactoring finished
-        CreateSubscriptionResult subscriptionResult = CreateSubscriptionResult.newBuilder().setSubscriptionName(request.getCreateSubscription().getSubscriptionName()).build();
-        ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateSubscriptionResult(subscriptionResult).build());
+        CreateSubscriptionRequest createSubscriptionRequest = request.getCreateSubscription();
+        if (createSubscriptionRequest.getTableNamesList().isEmpty() || createSubscriptionRequest.getDatabase().isEmpty() || createSubscriptionRequest.getSubscriptionName().isEmpty()
+                || createSubscriptionRequest.getSubscriptionMode() == SubscriptionMode.UNKNOWN) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal subscription request parameter"))
+                    .addListener(ChannelFutureListener.CLOSE);
+            return;
+        }
+        CDCResponse response = backendHandler.createSubscription(request);
+        ctx.writeAndFlush(response);
     }
     
     private void processStartSubscription(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {

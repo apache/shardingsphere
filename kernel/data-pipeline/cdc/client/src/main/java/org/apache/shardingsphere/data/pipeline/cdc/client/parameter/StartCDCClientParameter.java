@@ -15,24 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
+package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.TableName;
+
+import java.util.List;
 
 /**
- * Pipeline changed job configuration processor.
+ * Start CDC client parameter.
  */
-// TODO rename to PipelineJobConfigurationChangedProcessor
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+@Getter
+@Setter
+public final class StartCDCClientParameter {
     
-    /**
-     * Process changed job configuration.
-     *
-     * @param eventType event type
-     * @param jobConfigPOJO job configuration pojo
-     */
-    // TODO replace JobConfigurationPOJO to JobConfiguration
-    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
+    private String address;
+    
+    private int port;
+    
+    private String username;
+    
+    private String password;
+    
+    private String database;
+    
+    private List<TableName> subscribeTables;
+    
+    private String subscriptionName;
+    
+    private SubscriptionMode subscriptionMode = SubscriptionMode.INCREMENTAL;
 }

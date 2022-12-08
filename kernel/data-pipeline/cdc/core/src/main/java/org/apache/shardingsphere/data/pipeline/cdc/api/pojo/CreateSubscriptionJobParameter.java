@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
+package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Pipeline changed job configuration processor.
+ * Create subscription job parameter.
  */
-// TODO rename to PipelineJobConfigurationChangedProcessor
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class CreateSubscriptionJobParameter {
     
-    /**
-     * Process changed job configuration.
-     *
-     * @param eventType event type
-     * @param jobConfigPOJO job configuration pojo
-     */
-    // TODO replace JobConfigurationPOJO to JobConfiguration
-    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
+    private final String database;
+    
+    private final List<String> subscribeTableNames;
+    
+    private final String subscriptionName;
+    
+    private final String subscriptionMode;
+    
+    private final Map<String, List<DataNode>> dataNodesMap;
 }
