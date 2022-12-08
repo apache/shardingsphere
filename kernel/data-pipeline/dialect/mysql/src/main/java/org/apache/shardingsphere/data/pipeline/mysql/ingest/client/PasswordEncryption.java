@@ -107,7 +107,7 @@ public final class PasswordEncryption {
     
     private static byte[] formatKey(final String key) {
         int start = key.indexOf("\n") + 1;
-        int end = key.lastIndexOf("\n");
+        int end = key.endsWith("\n") ? key.substring(0, key.length() - 2).lastIndexOf("\n") : key.lastIndexOf("\n");
         return key.substring(start, end).replace("\n", "").getBytes();
     }
     

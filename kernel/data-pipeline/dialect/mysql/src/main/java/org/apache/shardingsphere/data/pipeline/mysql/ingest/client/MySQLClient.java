@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.GlobalTableMapEventMapping;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLCommandPacketDecoder;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLNegotiateHandler;
@@ -157,6 +158,7 @@ public final class MySQLClient {
         dumpBinlog(binlogFileName, binlogPosition, queryChecksumLength());
         log.info("subscribe binlog file: {}, position: {}", binlogFileName, binlogPosition);
         reconnectTimes.set(0);
+        running = true;
     }
     
     private void initDumpConnectSession() {
@@ -197,8 +199,15 @@ public final class MySQLClient {
         channel.pipeline().remove(MySQLCommandResponseHandler.class);
         String tableKey = String.join(":", connectInfo.getHost(), String.valueOf(connectInfo.getPort()));
         channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey)));
-        channel.pipeline().addLast(new MySQLBinlogEventHandler());
+        channel.pipeline().addLast(new MySQLBinlogEventHandler(getLastBinlogEvent(binlogFileName, binlogPosition)));
         channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
+    }
+    
+    private AbstractBinlogEvent getLastBinlogEvent(final String binlogFileName, final long binlogPosition) {
+        PlaceholderEvent result = new PlaceholderEvent();
+        result.setFileName(binlogFileName);
+        result.setPosition(binlogPosition);
+        return result;
     }
     
     /**
@@ -242,6 +251,7 @@ public final class MySQLClient {
             return;
         }
         try {
+            running = false;
             channel.close().sync();
         } catch (final InterruptedException ex) {
             log.error("close channel interrupted", ex);
@@ -270,6 +280,10 @@ public final class MySQLClient {
         
         private AbstractBinlogEvent lastBinlogEvent;
         
+        MySQLBinlogEventHandler(final AbstractBinlogEvent lastBinlogEvent) {
+            this.lastBinlogEvent = lastBinlogEvent;
+        }
+    
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
             if (!running) {
@@ -291,25 +305,22 @@ public final class MySQLClient {
         
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-            running = false;
             String fileName = null == lastBinlogEvent ? null : lastBinlogEvent.getFileName();
             Long position = null == lastBinlogEvent ? null : lastBinlogEvent.getPosition();
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
+            if (!running) {
+                return;
+            }
             reconnect();
         }
         
         private void reconnect() {
+            closeChannel();
             if (reconnectTimes.get() > 3) {
                 log.warn("exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
-                running = false;
                 return;
             }
             reconnectTimes.incrementAndGet();
-            if (null == lastBinlogEvent || null == lastBinlogEvent.getFileName()) {
-                log.warn("last binlog event is null or the file name is null， last binlog event:{}", lastBinlogEvent);
-                return;
-            }
-            closeChannel();
             connect();
             subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
         }
