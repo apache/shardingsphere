@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
+package org.apache.shardingsphere.data.pipeline.cdc.api.job.type;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.data.pipeline.api.job.type.AbstractJobType;
 
 /**
- * Pipeline changed job configuration processor.
+ * CDC job type.
  */
-// TODO rename to PipelineJobConfigurationChangedProcessor
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+public final class CDCJobType extends AbstractJobType {
     
-    /**
-     * Process changed job configuration.
-     *
-     * @param eventType event type
-     * @param jobConfigPOJO job configuration pojo
-     */
-    // TODO replace JobConfigurationPOJO to JobConfiguration
-    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
+    public static final String TYPE_CODE = "03";
+    
+    public CDCJobType() {
+        super("CDC", TYPE_CODE);
+    }
 }

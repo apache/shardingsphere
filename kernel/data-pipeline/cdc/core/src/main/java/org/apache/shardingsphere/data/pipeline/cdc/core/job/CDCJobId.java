@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
+package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
 /**
- * Pipeline changed job configuration processor.
+ * CDC job id.
  */
-// TODO rename to PipelineJobConfigurationChangedProcessor
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+@Getter
+@ToString(callSuper = true)
+public final class CDCJobId extends AbstractPipelineJobId {
     
-    /**
-     * Process changed job configuration.
-     *
-     * @param eventType event type
-     * @param jobConfigPOJO job configuration pojo
-     */
-    // TODO replace JobConfigurationPOJO to JobConfiguration
-    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
+    public static final String CURRENT_VERSION = "01";
+    
+    private final String databaseName;
+    
+    private final String subscriptionName;
+    
+    public CDCJobId(final String databaseName, final String subscriptionName) {
+        super(new CDCJobType(), CURRENT_VERSION);
+        this.databaseName = databaseName;
+        this.subscriptionName = subscriptionName;
+    }
 }
