@@ -99,7 +99,7 @@ public final class PasswordEncryption {
     }
     
     private static RSAPublicKey parseRSAPublicKey(final String key) throws GeneralSecurityException {
-        byte[] certificateData = Base64.getDecoder().decode(formatKey(key));
+        byte[] certificateData = Base64.getDecoder().decode(formatKey(key.trim()));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(certificateData);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return (RSAPublicKey) kf.generatePublic(spec);
@@ -107,7 +107,7 @@ public final class PasswordEncryption {
     
     private static byte[] formatKey(final String key) {
         int start = key.indexOf("\n") + 1;
-        int end = key.endsWith("\n") ? key.substring(0, key.length() - 2).lastIndexOf("\n") : key.lastIndexOf("\n");
+        int end = key.lastIndexOf("\n");
         return key.substring(start, end).replace("\n", "").getBytes();
     }
     

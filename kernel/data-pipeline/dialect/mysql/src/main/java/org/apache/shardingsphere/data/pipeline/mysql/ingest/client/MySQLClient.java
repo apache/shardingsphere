@@ -105,6 +105,8 @@ public final class MySQLClient {
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
         serverInfo = waitExpectedResponse(ServerInfo.class);
+        reconnectTimes.set(0);
+        running = true;
     }
     
     /**
@@ -157,8 +159,6 @@ public final class MySQLClient {
         registerSlave();
         dumpBinlog(binlogFileName, binlogPosition, queryChecksumLength());
         log.info("subscribe binlog file: {}, position: {}", binlogFileName, binlogPosition);
-        reconnectTimes.set(0);
-        running = true;
     }
     
     private void initDumpConnectSession() {
@@ -283,7 +283,7 @@ public final class MySQLClient {
         MySQLBinlogEventHandler(final AbstractBinlogEvent lastBinlogEvent) {
             this.lastBinlogEvent = lastBinlogEvent;
         }
-    
+        
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
             if (!running) {
