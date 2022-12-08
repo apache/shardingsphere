@@ -73,8 +73,8 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.isComplete()).thenReturn(true);
         when(database.containsDataSource()).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase("db")).thenReturn(database);
-        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().containsDatabase("db")).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(mock(JDBCBackendConnection.class));

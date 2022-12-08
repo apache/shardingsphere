@@ -47,7 +47,7 @@ public final class ShowDistVariablesHandler extends QueryableRALBackendHandler<S
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        ConfigurationProperties props = contextManager.getMetadataContexts().getMetadata().getProps();
+        ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
         Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), props.getValue(ConfigurationPropertyKey.valueOf(each)).toString())).collect(Collectors.toList());
         result.add(new LocalDataQueryResultRow(

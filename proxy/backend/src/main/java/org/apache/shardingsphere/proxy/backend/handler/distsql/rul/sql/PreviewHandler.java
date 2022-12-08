@@ -52,7 +52,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
@@ -94,13 +94,13 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
-        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = getDatabaseName();
-        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metadataContexts.getMetadata().getDatabase(databaseName).getProtocolType());
-        ShardingSphereRuleMetaData globalRuleMetaData = metadataContexts.getMetadata().getGlobalRuleMetaData();
+        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+        ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
         SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metadataContexts.getMetadata(), previewedStatement, databaseName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), previewedStatement, databaseName);
         QueryContext queryContext = new QueryContext(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
         getConnectionSession().setQueryContext(queryContext);
         if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
@@ -108,9 +108,9 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         }
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(getConnectionSession().getDatabaseName());
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(getConnectionSession().getDatabaseName()));
-        ConfigurationProperties props = metadataContexts.getMetadata().getProps();
-        SQLFederationDeciderContext deciderContext = decide(queryContext, props, metadataContexts.getMetadata().getDatabase(getConnectionSession().getDatabaseName()));
-        Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(queryContext, databaseName, metadataContexts)
+        ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
+        SQLFederationDeciderContext deciderContext = decide(queryContext, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
+        Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)
                 : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
@@ -134,17 +134,17 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         return new LocalDataQueryResultRow(unit.getDataSourceName(), unit.getSqlUnit().getSql());
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final String databaseName, final MetadataContexts metadataContexts) throws SQLException {
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final String databaseName, final MetaDataContexts metaDataContexts) throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metadataContexts);
-        SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metadataContexts.getMetadata());
-        ShardingSphereDatabase database = metadataContexts.getMetadata().getDatabase(getDatabaseName());
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
+        SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaDataContexts.getMetaData());
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(getDatabaseName());
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), databaseName));
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
-        SQLFederationRule sqlFederationRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
+        SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
         SQLFederationExecutor sqlFederationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName,
-                metadataContexts.getMetadata(), metadataContexts.getShardingSphereData(),
+                metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
                 new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), getConnectionSession().getConnectionContext()), eventBusContext);
         sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement, eventBusContext),
                 context);
@@ -167,12 +167,12 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         };
     }
     
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetadataContexts metadataContexts) {
-        int maxConnectionsSizePerQuery = metadataContexts.getMetadata().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaDataContexts) {
+        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) getConnectionSession().getBackendConnection(),
                 (JDBCBackendStatement) getConnectionSession().getStatementManager(), new StatementOption(isReturnGeneratedKeys),
-                metadataContexts.getMetadata().getDatabase(getDatabaseName()).getRuleMetaData().getRules(),
-                metadataContexts.getMetadata().getDatabase(getDatabaseName()).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getRuleMetaData().getRules(),
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResourceMetaData().getStorageTypes());
     }
     
     private String getDatabaseName() {

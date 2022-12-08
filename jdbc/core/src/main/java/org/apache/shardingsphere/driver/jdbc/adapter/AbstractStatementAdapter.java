@@ -27,7 +27,7 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOper
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -193,9 +193,9 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         }
     }
     
-    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetadataContexts metadataContexts) {
+    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
         if (connection.getConnectionManager().getConnectionTransaction().isInTransaction()) {
-            DatabaseType databaseType = metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType();
+            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
             if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
                 connection.getConnectionManager().getConnectionTransaction().setRollbackOnly(true);
             }

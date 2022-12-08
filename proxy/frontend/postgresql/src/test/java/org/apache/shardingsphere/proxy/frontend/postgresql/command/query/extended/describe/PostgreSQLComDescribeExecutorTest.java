@@ -112,13 +112,13 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     @Before
     public void setup() {
         ProxyContext.init(contextManager);
-        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
-        when(contextManager.getMetadataContexts().getMetadata().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
         prepareTableMetaData();
     }
     
@@ -129,11 +129,11 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
                 new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false),
                 new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false));
         ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(contextManager.getMetadataContexts().getMetadata().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
-        when(contextManager.getMetadataContexts().getMetadata().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(contextManager.getMetadataContexts().getMetadata().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageTypes())
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(contextManager.getMetadataContexts().getMetadata().containsDatabase(DATABASE_NAME)).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
     }
     
     @Test

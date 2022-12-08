@@ -63,16 +63,16 @@ public final class StateChangedSubscriber {
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        if (!contextManager.getMetadataContexts().getMetadata().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
             return;
         }
-        Optional<ShardingSphereRule> dynamicDataSourceRule = contextManager.getMetadataContexts().getMetadata().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
+        Optional<ShardingSphereRule> dynamicDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
                 .getRules().stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
         if (dynamicDataSourceRule.isPresent()) {
             ((DynamicDataSourceContainedRule) dynamicDataSourceRule.get()).updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource()));
             return;
         }
-        Optional<ShardingSphereRule> staticDataSourceRule = contextManager.getMetadataContexts().getMetadata().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
+        Optional<ShardingSphereRule> staticDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
                 .getRules().stream().filter(each -> each instanceof StaticDataSourceContainedRule).findFirst();
         staticDataSourceRule.ifPresent(optional -> ((StaticDataSourceContainedRule) optional)
                 .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
@@ -87,11 +87,11 @@ public final class StateChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
-        if (!contextManager.getMetadataContexts().getMetadata().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
             return;
         }
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetadataContexts().getMetadata().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof DynamicDataSourceContainedRule)
                 .forEach(each -> ((DynamicDataSourceContainedRule) each)

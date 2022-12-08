@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetadataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.LinkedHashMap;
@@ -50,15 +50,15 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     @Override
     public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
-            repository.persist(DatabaseMetadataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
+            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(DatabaseMetadataNode.getMetadataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
                 YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
     @Override
     public void persist(final String databaseName, final String version, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        repository.persist(DatabaseMetadataNode.getMetadataDataSourcePath(databaseName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+        repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceProperties> dataSourcePropsMap) {
@@ -69,12 +69,12 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName) {
         return isExisted(databaseName) ? getDataSourceProperties(repository.getDirectly(
-                DatabaseMetadataNode.getMetadataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
+                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
     }
     
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
-        String yamlContent = repository.getDirectly(DatabaseMetadataNode.getMetadataDataSourcePath(databaseName, version));
+        String yamlContent = repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : getDataSourceProperties(yamlContent);
     }
     
@@ -91,7 +91,7 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     
     @Override
     public boolean isExisted(final String databaseName) {
-        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetadataNode.getMetadataDataSourcePath(databaseName,
+        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName,
                 getDatabaseActiveVersion(databaseName))));
     }
     
@@ -108,6 +108,6 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     }
     
     private String getDatabaseActiveVersion(final String databaseName) {
-        return repository.getDirectly(DatabaseMetadataNode.getActiveVersionPath(databaseName));
+        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }

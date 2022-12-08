@@ -71,8 +71,8 @@ public final class ShardingSphereDataScheduleCollector {
         
         @Override
         public void run() {
-            ShardingSphereData shardingSphereData = contextManager.getMetadataContexts().getShardingSphereData();
-            ShardingSphereMetaData metaData = contextManager.getMetadataContexts().getMetadata();
+            ShardingSphereData shardingSphereData = contextManager.getMetaDataContexts().getShardingSphereData();
+            ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
             ShardingSphereData changedShardingSphereData = new ShardingSphereData();
             shardingSphereData.getDatabaseData().forEach((key, value) -> {
                 if (metaData.containsDatabase(key)) {

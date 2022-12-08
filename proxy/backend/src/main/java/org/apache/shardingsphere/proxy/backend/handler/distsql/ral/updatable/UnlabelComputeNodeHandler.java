@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
@@ -41,7 +41,7 @@ public final class UnlabelComputeNodeHandler extends UpdatableRALBackendHandler<
     
     @Override
     protected void update(final ContextManager contextManager) {
-        MetadataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetadataContexts().getPersistService();
+        MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         ShardingSpherePreconditions.checkState(null != persistService.getRepository() && !(persistService.getRepository() instanceof StandalonePersistRepository),
                 () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode"));
         String instanceId = getSqlStatement().getInstanceId();

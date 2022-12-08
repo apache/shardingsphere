@@ -43,49 +43,49 @@ import static org.mockito.Mockito.when;
 
 public final class TransactionRuleTest {
     
-    private static final String SHARDING_DB = "sharding_db";
+    private static final String SHARDING_DB_1 = "sharding_db_1";
     
-    private static final String SHARDING_DB2 = "sharding_db2";
+    private static final String SHARDING_DB_2 = "sharding_db_2";
     
     @Test
     public void assertInitTransactionRuleWithMultiDatabaseType() {
-        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         assertNotNull(actual.getResource());
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     public void assertAddResource() {
-        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.addResource(createAddDatabase());
         assertNotNull(actual.getResource());
         assertThat(actual.getDatabases().size(), is(2));
-        assertTrue(actual.getDatabases().containsKey(SHARDING_DB));
-        ShardingSphereResourceMetaData shardingMetadata = actual.getDatabases().get(SHARDING_DB).getResourceMetaData();
-        assertThat(shardingMetadata.getDataSources().size(), is(2));
-        assertTrue(shardingMetadata.getDataSources().containsKey("ds_0"));
-        assertTrue(shardingMetadata.getDataSources().containsKey("ds_1"));
-        assertThat(shardingMetadata.getStorageTypes().size(), is(2));
-        assertTrue(actual.getDatabases().containsKey(SHARDING_DB2));
-        ShardingSphereResourceMetaData shardingMetadata2 = actual.getDatabases().get(SHARDING_DB2).getResourceMetaData();
-        assertThat(shardingMetadata2.getDataSources().size(), is(2));
-        assertTrue(shardingMetadata2.getDataSources().containsKey("ds_0"));
-        assertTrue(shardingMetadata2.getDataSources().containsKey("ds_1"));
-        assertThat(shardingMetadata2.getStorageTypes().size(), is(2));
+        assertTrue(actual.getDatabases().containsKey(SHARDING_DB_1));
+        ShardingSphereResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
+        assertThat(resourceMetaData1.getDataSources().size(), is(2));
+        assertTrue(resourceMetaData1.getDataSources().containsKey("ds_0"));
+        assertTrue(resourceMetaData1.getDataSources().containsKey("ds_1"));
+        assertThat(resourceMetaData1.getStorageTypes().size(), is(2));
+        assertTrue(actual.getDatabases().containsKey(SHARDING_DB_2));
+        ShardingSphereResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
+        assertThat(resourceMetaData2.getDataSources().size(), is(2));
+        assertTrue(resourceMetaData2.getDataSources().containsKey("ds_0"));
+        assertTrue(resourceMetaData2.getDataSources().containsKey("ds_1"));
+        assertThat(resourceMetaData2.getStorageTypes().size(), is(2));
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     public void assertCloseStaleResource() {
-        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
-        actual.closeStaleResource(SHARDING_DB);
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
+        actual.closeStaleResource(SHARDING_DB_1);
         assertTrue(actual.getDatabases().isEmpty());
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     public void assertCloseAllStaleResources() {
-        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.closeStaleResource();
         assertTrue(actual.getDatabases().isEmpty());
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
@@ -116,7 +116,7 @@ public final class TransactionRuleTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         ShardingSphereResourceMetaData resourceMetaData = createAddResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(result.getName()).thenReturn(SHARDING_DB2);
+        when(result.getName()).thenReturn(SHARDING_DB_2);
         return result;
     }
     

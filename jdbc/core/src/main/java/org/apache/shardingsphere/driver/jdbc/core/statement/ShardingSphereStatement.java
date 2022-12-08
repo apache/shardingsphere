@@ -73,7 +73,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -106,7 +106,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Getter
     private final ShardingSphereConnection connection;
     
-    private final MetadataContexts metadataContexts;
+    private final MetaDataContexts metaDataContexts;
     
     private final List<Statement> statements;
     
@@ -144,13 +144,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         this.connection = connection;
-        metadataContexts = connection.getContextManager().getMetadataContexts();
+        metaDataContexts = connection.getContextManager().getMetaDataContexts();
         eventBusContext = connection.getContextManager().getInstanceContext().getEventBusContext();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
         kernelProcessor = new KernelProcessor();
-        trafficRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         statementManager = new StatementManager();
     }
     
@@ -168,7 +168,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, Statement::executeQuery);
             }
-            deciderContext = decide(queryContext, metadataContexts.getMetadata().getProps(), metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()));
+            deciderContext = decide(queryContext, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
             if (deciderContext.isUseSQLFederation()) {
                 return executeFederationQuery(queryContext);
             }
@@ -179,8 +179,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -212,31 +212,31 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
-        if (metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+        if (metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
             return executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getQueryContext(),
                     new RawSQLExecutorCallback(eventBusContext)).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
         cacheStatements(executionGroupContext.getInputGroups());
-        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType(),
-                metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), executionContext.getSqlStatementContext().getSqlStatement(),
+        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), executionContext.getSqlStatementContext().getSqlStatement(),
                 SQLExecutorExceptionHandler.isExceptionThrown(), eventBusContext);
         return executor.getRegularExecutor().executeQuery(executionGroupContext, executionContext.getQueryContext(), callback);
     }
     
     private ResultSet executeFederationQuery(final QueryContext queryContext) throws SQLException {
-        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType(),
-                metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), queryContext.getSqlStatementContext().getSqlStatement(),
+        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), queryContext.getSqlStatementContext().getSqlStatement(),
                 SQLExecutorExceptionHandler.isExceptionThrown(), eventBusContext);
-        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metadataContexts.getMetadata());
+        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData());
         return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
-        int maxConnectionsSizePerQuery = metadataContexts.getMetadata().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getConnectionManager(), statementManager, statementOption,
-                metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
-                metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes());
     }
     
     @Override
@@ -250,15 +250,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return executor.getTrafficExecutor().execute(executionUnit, Statement::executeUpdate);
             }
             executionContext = createExecutionContext(queryContext);
-            if (metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            if (metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getQueryContext(), new RawSQLExecutorCallback(eventBusContext)));
             }
             return executeUpdate((actualSQL, statement) -> statement.executeUpdate(actualSQL), executionContext.getSqlStatementContext());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -278,15 +278,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, actualSQL) -> statement.executeUpdate(actualSQL, autoGeneratedKeys));
             }
             executionContext = createExecutionContext(queryContext);
-            if (metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            if (metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getQueryContext(), new RawSQLExecutorCallback(eventBusContext)));
             }
             return executeUpdate((actualSQL, statement) -> statement.executeUpdate(actualSQL, autoGeneratedKeys), executionContext.getSqlStatementContext());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -304,15 +304,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, actualSQL) -> statement.executeUpdate(actualSQL, columnIndexes));
             }
             executionContext = createExecutionContext(queryContext);
-            if (metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            if (metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getQueryContext(), new RawSQLExecutorCallback(eventBusContext)));
             }
             return executeUpdate((actualSQL, statement) -> statement.executeUpdate(actualSQL, columnIndexes), executionContext.getSqlStatementContext());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -330,15 +330,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, actualSQL) -> statement.executeUpdate(actualSQL, columnNames));
             }
             executionContext = createExecutionContext(queryContext);
-            if (metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            if (metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 return accumulate(executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getQueryContext(), new RawSQLExecutorCallback(eventBusContext)));
             }
             return executeUpdate((actualSQL, statement) -> statement.executeUpdate(actualSQL, columnNames), executionContext.getSqlStatementContext());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         } finally {
             currentResultSet = null;
         }
@@ -358,7 +358,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         }
         return result;
     }
@@ -373,8 +373,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private JDBCExecutorCallback<Integer> createExecuteUpdateCallback(final ExecuteUpdateCallback updater, final SQLStatementContext<?> sqlStatementContext) {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Integer>(metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType(),
-                metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement(), isExceptionThrown,
+        return new JDBCExecutorCallback<Integer>(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement(), isExceptionThrown,
                 eventBusContext) {
             
             @Override
@@ -404,8 +404,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:OFF
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         }
     }
     
@@ -419,8 +419,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:OFF
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         }
     }
     
@@ -432,8 +432,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:OFF
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         }
     }
     
@@ -445,8 +445,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:OFF
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
-            handleExceptionInTransaction(connection, metadataContexts);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            handleExceptionInTransaction(connection, metaDataContexts);
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         }
     }
     
@@ -459,13 +459,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, actualSQL) -> callback.execute(actualSQL, statement));
             }
-            deciderContext = decide(queryContext, metadataContexts.getMetadata().getProps(), metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()));
+            deciderContext = decide(queryContext, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
             if (deciderContext.isUseSQLFederation()) {
                 ResultSet resultSet = executeFederationQuery(queryContext);
                 return null != resultSet;
             }
             executionContext = createExecutionContext(queryContext);
-            if (metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
+            if (metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
                 // TODO process getStatement
                 Collection<ExecuteResult> results = executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getQueryContext(), new RawSQLExecutorCallback(eventBusContext));
                 return results.iterator().next() instanceof QueryResult;
@@ -504,20 +504,20 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private QueryContext createQueryContext(final String sql) {
-        SQLParserRule sqlParserRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType())).parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metadataContexts.getMetadata(), sqlStatement, connection.getDatabaseName());
+                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType())).parse(sql, false);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, connection.getDatabaseName());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) throws SQLException {
         clearStatements();
         SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(),
-                metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
-                connection.getDatabaseName(), metadataContexts.getMetadata().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(queryContext, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()), metadataContexts.getMetadata().getGlobalRuleMetaData(),
-                metadataContexts.getMetadata().getProps(), connection.getConnectionContext());
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
+                connection.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
+        return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+                metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext() throws SQLException {
@@ -526,8 +526,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private ExecutionGroupContext<RawSQLExecutionUnit> createRawExecutionContext() throws SQLException {
-        int maxConnectionsSizePerQuery = metadataContexts.getMetadata().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules())
+        int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules())
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
@@ -549,7 +549,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
         }
         return result;
     }
@@ -571,8 +571,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback(final ExecuteCallback executeCallback, final SQLStatement sqlStatement) {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Boolean>(metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getProtocolType(),
-                metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatement, isExceptionThrown, eventBusContext) {
+        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatement, isExceptionThrown, eventBusContext) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
@@ -630,8 +630,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()),
-                metadataContexts.getMetadata().getProps(), connection.getConnectionContext());
+        MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()),
+                metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
@@ -654,7 +654,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        return metadataContexts.getMetadata().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream()
+        return metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules().stream()
                 .anyMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each)
                         .isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
     }

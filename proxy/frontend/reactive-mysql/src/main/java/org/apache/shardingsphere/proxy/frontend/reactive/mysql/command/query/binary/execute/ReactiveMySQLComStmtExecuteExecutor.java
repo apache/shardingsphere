@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -95,8 +95,8 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         connectionSession.setQueryContext(queryContext);
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         String databaseName = connectionSession.getDatabaseName();
-        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
-        SQLCheckEngine.check(sqlStatementContext, params, getRules(databaseName), databaseName, metadataContexts.getMetadata().getDatabases(), connectionSession.getGrantee());
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        SQLCheckEngine.check(sqlStatementContext, params, getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         // TODO Refactor the following branch
         if (sqlStatement instanceof TCLStatement) {
@@ -134,8 +134,8 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase(databaseName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
     

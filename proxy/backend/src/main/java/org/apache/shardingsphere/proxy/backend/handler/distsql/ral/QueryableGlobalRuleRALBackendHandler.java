@@ -48,7 +48,7 @@ public final class QueryableGlobalRuleRALBackendHandler implements ProxyBackendH
     
     @Override
     public ResponseHeader execute() {
-        resultSet.init(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData(), sqlStatement);
+        resultSet.init(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), sqlStatement);
         List<QueryHeader> queryHeaders = new ArrayList<>();
         for (String each : resultSet.getColumnNames()) {
             queryHeaders.add(new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));
