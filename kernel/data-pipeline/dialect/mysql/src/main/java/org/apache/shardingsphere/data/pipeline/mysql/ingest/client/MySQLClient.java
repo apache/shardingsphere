@@ -29,6 +29,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
@@ -276,13 +277,10 @@ public final class MySQLClient {
         }
     }
     
+    @AllArgsConstructor
     private final class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         
-        private AbstractBinlogEvent lastBinlogEvent;
-        
-        MySQLBinlogEventHandler(final AbstractBinlogEvent lastBinlogEvent) {
-            this.lastBinlogEvent = lastBinlogEvent;
-        }
+        private volatile AbstractBinlogEvent lastBinlogEvent;
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
