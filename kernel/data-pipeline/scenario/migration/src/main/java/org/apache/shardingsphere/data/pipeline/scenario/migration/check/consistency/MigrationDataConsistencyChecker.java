@@ -65,7 +65,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final InventoryIncrementalProcessContext processContext,
                                            final ConsistencyCheckJobItemProgressContext progressContext) {
         this.jobConfig = jobConfig;
-        readRateLimitAlgorithm = null != processContext ? processContext.getReadRateLimitAlgorithm() : null;
+        readRateLimitAlgorithm = null == processContext ? null : processContext.getReadRateLimitAlgorithm();
         tableNameSchemaNameMapping = new TableNameSchemaNameMapping(
                 TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), new HashSet<>(Arrays.asList(jobConfig.getSourceTableName(), jobConfig.getTargetTableName()))));
         this.progressContext = progressContext;
@@ -84,8 +84,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             progressContext.setRecordsCount(getRecordsCount());
             progressContext.getTableNames().add(jobConfig.getSourceTableName());
             PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
-            SingleTableInventoryDataConsistencyChecker singleTableInventoryChecker = new SingleTableInventoryDataConsistencyChecker(jobConfig.getJobId(), sourceDataSource, targetDataSource,
-                    sourceTable, targetTable, jobConfig.getUniqueKeyColumn(), metaDataLoader, readRateLimitAlgorithm, progressContext);
+            SingleTableInventoryDataConsistencyChecker singleTableInventoryChecker = new SingleTableInventoryDataConsistencyChecker(
+                    jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, jobConfig.getUniqueKeyColumn(), metaDataLoader, readRateLimitAlgorithm, progressContext);
             result.put(sourceTable.getTableName().getOriginal(), singleTableInventoryChecker.check(calculateAlgorithm));
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);

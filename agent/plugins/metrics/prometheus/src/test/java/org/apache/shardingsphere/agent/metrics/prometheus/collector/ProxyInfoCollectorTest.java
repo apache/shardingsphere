@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Test;
 
@@ -39,11 +39,11 @@ public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
     
     @Test
     public void assertCollect() {
-        MetadataContexts metadataContexts = new MetadataContexts(mock(MetadataPersistService.class), new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null), mock(LockContext.class),
                 new EventBusContext());
-        ProxyContext.init(new ContextManager(metadataContexts, instanceContext));
+        ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
         assertFalse(new ProxyInfoCollector().collect().isEmpty());
     }
 }

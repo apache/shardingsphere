@@ -44,8 +44,8 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
@@ -106,9 +106,9 @@ public final class PipelineContextUtil {
                 ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = getContextManager(dataSource);
-        MetadataPersistService persistService = new MetadataPersistService(getClusterPersistRepository());
-        MetadataContexts metadataContexts = renewMetaDataContexts(contextManager.getMetadataContexts(), persistService);
-        PipelineContext.initContextManager(new ContextManager(metadataContexts, contextManager.getInstanceContext()));
+        MetaDataPersistService persistService = new MetaDataPersistService(getClusterPersistRepository());
+        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
+        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -123,12 +123,12 @@ public final class PipelineContextUtil {
         return PERSIST_REPOSITORY_LAZY_INITIALIZER.get();
     }
     
-    private static MetadataContexts renewMetaDataContexts(final MetadataContexts old, final MetadataPersistService persistService) {
+    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
                 new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
-        old.getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).putAll(tables);
-        return new MetadataContexts(persistService, old.getMetadata());
+        old.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).putAll(tables);
+        return new MetaDataContexts(persistService, old.getMetaData());
     }
     
     /**

@@ -36,7 +36,7 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      *
      * @param deciderContext decider context
      * @param queryContext query context
-     * @param database database metadata
+     * @param database database
      * @param rule rule
      * @param props props
      */

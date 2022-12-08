@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Standard pipeline table metadata loader.
+ * Standard pipeline table meta data loader.
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -63,11 +63,11 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         try {
             loadTableMetaData(schemaName, tableName);
         } catch (final SQLException ex) {
-            throw new RuntimeException(String.format("Load metadata for schema '%s' and table '%s' failed", schemaName, tableName), ex);
+            throw new RuntimeException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
         result = tableMetaDataMap.get(new TableName(tableName));
         if (null == result) {
-            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
+            log.warn("getTableMetaData, can not load meta data for table '{}'", tableName);
         }
         return result;
     }

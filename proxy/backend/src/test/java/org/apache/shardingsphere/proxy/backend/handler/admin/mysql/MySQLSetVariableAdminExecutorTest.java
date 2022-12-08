@@ -56,9 +56,9 @@ public final class MySQLSetVariableAdminExecutorTest extends ProxyContextRestore
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase("db")).thenReturn(mock(ShardingSphereDatabase.class));
-        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().containsDatabase("db")).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData())
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(mock(ShardingSphereDatabase.class));
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1), new CacheOption(1, 1))))));
         try (MockedConstruction<JDBCDatabaseCommunicationEngine> mockConstruction = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
             executor.execute(connectionSession);

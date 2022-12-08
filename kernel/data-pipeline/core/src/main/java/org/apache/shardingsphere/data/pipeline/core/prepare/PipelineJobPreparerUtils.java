@@ -90,7 +90,7 @@ public final class PipelineJobPreparerUtils {
      * @return SQL parser engine
      */
     public static ShardingSphereSQLParserEngine getSQLParserEngine(final String targetDatabaseName) {
-        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetadataContexts().getMetadata();
+        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
         return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType().getType());
     }

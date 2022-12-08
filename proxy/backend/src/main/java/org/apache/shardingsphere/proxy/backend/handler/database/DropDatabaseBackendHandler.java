@@ -71,11 +71,11 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     
     private Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getDatabase(databaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         if (null != database && null != database.getRuleMetaData()) {
             result.addAll(database.getRuleMetaData().getRules());
         }
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
 }
