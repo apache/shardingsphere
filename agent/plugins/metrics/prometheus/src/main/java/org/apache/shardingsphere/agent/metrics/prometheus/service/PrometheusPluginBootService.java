@@ -50,7 +50,8 @@ public final class PrometheusPluginBootService implements PluginBootService {
         Preconditions.checkState(pluginConfig.getPort() > 0, "Prometheus config error, host is null or port is `%s`", pluginConfig.getPort());
         this.isEnhancedForProxy = isEnhancedForProxy;
         startServer(pluginConfig);
-        MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
+        PrometheusWrapperFactory prometheusWrapperFactory = new PrometheusWrapperFactory(isEnhancedForProxy);
+        MetricsPool.setMetricsFactory(prometheusWrapperFactory);
     }
     
     private void startServer(final PluginConfiguration pluginConfig) {

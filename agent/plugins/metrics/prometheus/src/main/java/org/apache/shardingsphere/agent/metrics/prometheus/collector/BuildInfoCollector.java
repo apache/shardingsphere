@@ -27,6 +27,7 @@ import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrap
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -38,13 +39,16 @@ public final class BuildInfoCollector extends Collector {
     
     private static final String PROXY_BOOTSTRAP_CLASS = "org.apache.shardingsphere.proxy.Bootstrap";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    private PrometheusWrapperFactory prometheusWrapperFactory;
     
     private final boolean isEnhancedForProxy;
     
     @Override
     public List<MetricFamilySamples> collect() {
-        Optional<GaugeMetricFamily> artifactInfo = FACTORY.createGaugeMetricFamily(MetricIds.BUILD_INFO);
+        if (Objects.isNull(prometheusWrapperFactory)) {
+            prometheusWrapperFactory = new PrometheusWrapperFactory(isEnhancedForProxy);
+        }
+        Optional<GaugeMetricFamily> artifactInfo = prometheusWrapperFactory.createGaugeMetricFamily(MetricIds.BUILD_INFO);
         if (!artifactInfo.isPresent()) {
             return Collections.emptyList();
         }

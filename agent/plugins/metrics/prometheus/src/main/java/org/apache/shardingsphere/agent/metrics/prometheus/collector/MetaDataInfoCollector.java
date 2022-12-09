@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -50,12 +51,15 @@ public final class MetaDataInfoCollector extends Collector {
     
     private static final String PROXY_CONTEXT_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    private PrometheusWrapperFactory prometheusWrapperFactory;
     
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.METADATA_INFO);
+        if (Objects.isNull(prometheusWrapperFactory)) {
+            prometheusWrapperFactory = new PrometheusWrapperFactory(true);
+        }
+        Optional<GaugeMetricFamily> metaDataInfo = prometheusWrapperFactory.createGaugeMetricFamily(MetricIds.METADATA_INFO);
         if (null != ProxyContext.getInstance().getContextManager() && metaDataInfo.isPresent() && MetricsUtil.isClassExisted(PROXY_CONTEXT_CLASS)) {
             collectProxy(metaDataInfo.get());
             result.add(metaDataInfo.get());

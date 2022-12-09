@@ -27,5 +27,6 @@ public final class PrometheusPluginDefinitionServiceTest {
     @Test
     public void assertDefine() {
         assertThat(new PrometheusPluginDefinitionService().install(true).size(), is(5));
+        assertThat(new PrometheusPluginDefinitionService().install(false).size(), is(2));
     }
 }
