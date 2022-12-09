@@ -14,30 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 <#assign package = feature?replace('-', '')?replace(',', '.') />
+
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')};
 
-import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.service.ExampleService;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-<#if transaction?contains("xa")>
-import org.springframework.context.annotation.Import;
-</#if>
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
-@SpringBootApplication
-<#if transaction?contains("xa")>
-@Import(TransactionConfiguration.class)
-</#if>
-public class ExampleMain {
+/**
+ * Spring boot tx configuration.
+ */
+@Configuration
+@EnableTransactionManagement
+public class TransactionConfiguration {
     
-    public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
-            ExampleService exampleService = applicationContext.getBean(ExampleService.class);
-            exampleService.run();
-        }
+    /**
+     * Create platform transaction manager bean.
+     *
+     * @param dataSource data source
+     * @return platform transaction manager
+     */
+    @Bean
+    public PlatformTransactionManager txManager(final DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 }
