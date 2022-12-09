@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CaseTestParameter implements ITTestParameter {
+public final class CaseTestParameter implements E2ETestParameter {
     
     private final IntegrationTestCaseContext testCaseContext;
     

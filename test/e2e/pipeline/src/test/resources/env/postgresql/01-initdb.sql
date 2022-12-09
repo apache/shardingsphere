@@ -21,6 +21,7 @@ CREATE DATABASE pipeline_it_1;
 CREATE DATABASE pipeline_it_2;
 CREATE DATABASE pipeline_it_3;
 CREATE DATABASE pipeline_it_4;
+-- TODO remove unnecessary permissions
 GRANT CREATE, CONNECT ON DATABASE pipeline_it_0 TO test_user;
 GRANT CREATE, CONNECT ON DATABASE pipeline_it_1 TO test_user;
 GRANT CREATE, CONNECT ON DATABASE pipeline_it_2 TO test_user;

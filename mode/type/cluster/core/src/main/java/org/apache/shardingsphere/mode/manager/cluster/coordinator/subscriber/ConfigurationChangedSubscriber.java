@@ -79,7 +79,7 @@ public final class ConfigurationChangedSubscriber {
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
         if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
-            contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigurations());
+            contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigs());
             disableDataSources();
         }
     }
@@ -91,7 +91,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
-        contextManager.alterGlobalRuleConfiguration(event.getRuleConfigurations());
+        contextManager.alterGlobalRuleConfiguration(event.getRuleConfigs());
         disableDataSources();
     }
     

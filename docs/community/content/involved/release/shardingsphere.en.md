@@ -175,29 +175,7 @@ Update the following pages:
 
 GPG signatures and hashes (SHA* etc) should be prefixed with `https://downloads.apache.org/shardingsphere/`
 
-### 4. Update links of Spring xsd in documents of ShardingSphere-JDBC
-
-Update all links of xsd in documents under `docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace`.
-
-Update from:
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVIOUS.RELEASE.VERSION}.xsd
-```
-
-to:
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
-```
-
-Sample commands:
-```shell
-cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
-grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
-```
-
-Specifying version of xsd instead of using `sharding.xsd`, is to make legacy documents can be mapped to corresponding version of xsd.
-
-### 5. Update README files
+### 4. Update README files
 
 Update `${RELEASE.VERSION}` and `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md.
 
@@ -582,49 +560,22 @@ Incubating stage versions will be archived automatically in [Incubator Archive r
 
 Refer to [Release Download Pages for Projects](https://infra.apache.org/release-download-pages.html).
 
-### 6. Upload xsd files of Spring namespace to official website
-
-Submit a pull request to upload the xsd files of Spring namespace to https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
-
-The list of files to be uploaded is as follows:
-
-- datasource.xsd
-- datasource-${RELEASE.VERSION}.xsd
-- mode/standalone/repository.xsd
-- mode/standalone/repository-${RELEASE.VERSION}.xsd
-- mode/cluster/repository.xsd
-- mode/cluster/repository-${RELEASE.VERSION}.xsd
-- sharding.xsd
-- sharding-${RELEASE.VERSION}.xsd
-- encrypt.xsd
-- encrypt-${RELEASE.VERSION}.xsd
-- readwrite-splitting.xsd
-- readwrite-splitting-${RELEASE.VERSION}.xsd
-- shadow.xsd
-- shadow-${RELEASE.VERSION}.xsd
-- database-discovery.xsd
-- database-discovery-${RELEASE.VERSION}.xsd
-- sql-parser.xsd
-- sql-parser-${RELEASE.VERSION}.xsd
-- sql-translator.xsd
-- sql-translator-${RELEASE.VERSION}.xsd
-
-### 7. Add entrance of documents of the new release into home page
+### 6. Add entrance of documents of the new release into home page
 
 Refer to:
 - [English home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
 - [Chinese home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
 
-### 8. Update Example Version
+### 7. Update Example Version
 
 Update the POM of the module examples, changing the version from ${RELEASE.VERSION} to ${NEXT.DEVELOPMENT.VERSION}, and submit a PR to release branch.
 
-### 9. Merge release branch to `master` and delete release branch on GitHub
+### 8. Merge release branch to `master` and delete release branch on GitHub
 
 After confirmed that download links of new release in download pages are available, create a Pull Request on GitHub to merge `${RELEASE.VERSION}-release` into `master.
 If code conflicted, you may merge `master` into `${RELEASE.VERSION}-release` before merging Pull Request.
 
-### 10. Announce release completed by email
+### 9. Announce release completed by email
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 

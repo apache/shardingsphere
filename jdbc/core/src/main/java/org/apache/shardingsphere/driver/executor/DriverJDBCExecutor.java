@@ -53,7 +53,7 @@ public final class DriverJDBCExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final MetaDataRefreshEngine metadataRefreshEngine;
+    private final MetaDataRefreshEngine metaDataRefreshEngine;
     
     private final EventBusContext eventBusContext;
     
@@ -63,7 +63,7 @@ public final class DriverJDBCExecutor {
         this.jdbcExecutor = jdbcExecutor;
         metaDataContexts = contextManager.getMetaDataContexts();
         eventBusContext = contextManager.getInstanceContext().getEventBusContext();
-        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
+        metaDataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
     }
     
     /**
@@ -159,7 +159,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(sqlStatementContext, routeUnits);
+        Optional<MetaDataRefreshedEvent> event = metaDataRefreshEngine.refresh(sqlStatementContext, routeUnits);
         if (contextManager.getInstanceContext().isCluster() && event.isPresent()) {
             eventBusContext.post(event.get());
         }

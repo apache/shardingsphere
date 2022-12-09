@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAss
  */
 @RequiredArgsConstructor
 @Getter
-public final class AssertionTestParameter implements ITTestParameter {
+public final class AssertionTestParameter implements E2ETestParameter {
     
     private final IntegrationTestCaseContext testCaseContext;
     

@@ -20,8 +20,11 @@ package org.apache.shardingsphere.transaction.factory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
+
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * ShardingSphere transaction manager factory.
@@ -40,5 +43,19 @@ public final class ShardingSphereTransactionManagerFactory {
      */
     public static Collection<ShardingSphereTransactionManager> getAllInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class);
+    }
+    
+    /**
+     * Get instance of ShardingSphere transaction manager.
+     *
+     * @param transactionType transaction type
+     * @return ShardingSphere transaction manager instance
+     */
+    public static Optional<ShardingSphereTransactionManager> getInstance(final TransactionType transactionType) {
+        Collection<ShardingSphereTransactionManager> transactionManagers = ShardingSphereTransactionManagerFactory.getAllInstances();
+        if (null == transactionManagers || transactionManagers.isEmpty()) {
+            return Optional.empty();
+        }
+        return transactionManagers.stream().filter(each -> transactionType.equals(each.getTransactionType())).findFirst();
     }
 }

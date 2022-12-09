@@ -312,4 +312,8 @@
         <assertion parameters="3:int, 3.4028235E38:float, 1.7976931348623157E308:double" expected-data-file="insert_max_floating_point_values.xml" />
         <assertion parameters="4:int, 1.4E-45:float, 4.9E-324:double" expected-data-file="insert_min_floating_point_values.xml" />
     </test-case>
+    
+    <test-case sql="/* SHARDINGSPHERE_HINT: t_product.SHARDING_TABLE_VALUE=1 */INSERT INTO t_product values (21, 'macbook2022', 4, 13999, 'on sale', '2022-08-08')" db-types="MySQL" scenario-types="tbl">
+        <assertion expected-data-file="insert_into_t_product_with_hint.xml" />
+    </test-case>
 </integration-test-cases>

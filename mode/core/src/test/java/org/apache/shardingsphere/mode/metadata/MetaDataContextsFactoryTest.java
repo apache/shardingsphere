@@ -127,7 +127,7 @@ public final class MetaDataContextsFactoryTest {
     }
     
     @Test
-    public void assertCreateWithJDBCInstanceMetadata() throws SQLException {
+    public void assertCreateWithJDBCInstanceMetaData() throws SQLException {
         InstanceContext instanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(instanceContext.getInstance().getMetaData()).thenReturn(jdbcInstanceMetaData);
         try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), instanceContext)) {
@@ -139,7 +139,7 @@ public final class MetaDataContextsFactoryTest {
     }
     
     @Test
-    public void assertCreateWithProxyInstanceMetadata() throws SQLException {
+    public void assertCreateWithProxyInstanceMetaData() throws SQLException {
         when(databaseMetaDataPersistService.loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(InstanceContext.class, RETURNS_DEEP_STUBS))) {

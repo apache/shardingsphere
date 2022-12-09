@@ -29,7 +29,6 @@
     <modules>
         <module>example-core</module>
         <module>other-example</module>
-        <module>shardingsphere-jdbc-example</module>
         <module>shardingsphere-proxy-example</module>
         
         <module>shardingsphere-example-generator</module>

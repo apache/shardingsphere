@@ -80,19 +80,19 @@ public final class CreateTableSQLGeneratorIT {
     
     private final DockerStorageContainer storageContainer;
     
-    private final PipelineTestParameter testParameter;
+    private final PipelineTestParameter testParam;
     
     private final CreateTableSQLGeneratorAssertionsRootEntity rootEntity;
     
-    public CreateTableSQLGeneratorIT(final PipelineTestParameter testParameter) {
-        this.testParameter = testParameter;
+    public CreateTableSQLGeneratorIT(final PipelineTestParameter testParam) {
+        this.testParam = testParam;
         rootEntity = JAXB.unmarshal(
-                Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(testParameter.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
-        DatabaseType databaseType = testParameter.getDatabaseType();
-        StorageContainerConfiguration storageContainerConfig = DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(testParameter.getStorageContainerImage()).getMajorVersion() > 5
+                Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
+        DatabaseType databaseType = testParam.getDatabaseType();
+        StorageContainerConfiguration storageContainerConfig = DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(testParam.getStorageContainerImage()).getMajorVersion() > 5
                 ? MySQLContainerConfigurationFactory.newInstance(null, null, Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER))
                 : StorageContainerConfigurationFactory.newInstance(databaseType);
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParameter.getStorageContainerImage(), "",
+        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), "",
                 storageContainerConfig);
         storageContainer.start();
     }
@@ -117,7 +117,7 @@ public final class CreateTableSQLGeneratorIT {
     
     @Test
     public void assertGenerateCreateTableSQL() throws SQLException {
-        log.info("generate create table sql, parameterized: {}", testParameter);
+        log.info("generate create table sql, test parameter: {}", testParam);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
@@ -125,7 +125,7 @@ public final class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> actualDDLs = CreateTableSQLGeneratorFactory.getInstance(testParameter.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
+                Collection<String> actualDDLs = CreateTableSQLGeneratorFactory.getInstance(testParam.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
                 assertIsCorrect(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }

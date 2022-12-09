@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.inf
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 /**
  * Schemata query executor, used to query the schemata table.
  */
-public final class SelectInformationSchemataExecutor extends DefaultDatabaseMetadataExecutor {
+public final class SelectInformationSchemataExecutor extends DefaultDatabaseMetaDataExecutor {
     
     public static final String SCHEMA_NAME = "SCHEMA_NAME";
     
@@ -84,8 +84,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDataSource(each)).collect(Collectors.toSet()));
-        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDataSource).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetaDataExecutor.hasDataSource(each)).collect(Collectors.toSet()));
+        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             fillSchemasWithoutDataSource();
         }

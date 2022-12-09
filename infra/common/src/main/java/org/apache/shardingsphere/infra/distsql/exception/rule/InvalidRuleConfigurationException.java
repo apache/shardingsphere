@@ -35,4 +35,8 @@ public final class InvalidRuleConfigurationException extends RuleDefinitionViola
     public InvalidRuleConfigurationException(final String ruleType, final Collection<String> rules, final Collection<String> errorMessages) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 100, "Invalid `%s` rules `%s`, error messages are: %s", ruleType, rules, errorMessages);
     }
+    
+    public InvalidRuleConfigurationException(final String ruleType, final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 100, "Invalid `%s` rule, error message is: %s", ruleType, errorMessage);
+    }
 }

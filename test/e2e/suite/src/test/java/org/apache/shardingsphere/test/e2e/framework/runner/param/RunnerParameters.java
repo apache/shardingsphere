@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.framework.runner.param;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.e2e.framework.param.model.ITTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 
 import java.lang.reflect.Field;
@@ -38,11 +38,11 @@ public final class RunnerParameters {
      * @return test parameter
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public ITTestParameter getTestParameter() {
+    public E2ETestParameter getTestParameter() {
         Field paramsField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
         paramsField.setAccessible(true);
         Object[] params = (Object[]) paramsField.get(getRunner());
-        return (ITTestParameter) params[0];
+        return (E2ETestParameter) params[0];
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

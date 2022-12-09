@@ -33,15 +33,15 @@ public final class SQLValueGroup {
     
     private final Collection<SQLValue> values;
     
-    public SQLValueGroup(final DataSetMetaData metadata, final List<String> values) throws ParseException {
-        this.values = createSQLValues(metadata, values);
+    public SQLValueGroup(final DataSetMetaData metaData, final List<String> values) throws ParseException {
+        this.values = createSQLValues(metaData, values);
     }
     
-    private Collection<SQLValue> createSQLValues(final DataSetMetaData metadata, final List<String> values) throws ParseException {
+    private Collection<SQLValue> createSQLValues(final DataSetMetaData metaData, final List<String> values) throws ParseException {
         Collection<SQLValue> result = new LinkedList<>();
         int count = 0;
         for (String each : values) {
-            result.add(new SQLValue(each, metadata.getColumns().get(count).getType(), count + 1));
+            result.add(new SQLValue(each, metaData.getColumns().get(count).getType(), count + 1));
             count++;
         }
         return result;

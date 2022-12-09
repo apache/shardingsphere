@@ -14,28 +14,26 @@ AlterShardingTableRule ::=
   'ALTER' 'SHARDING' 'TABLE' 'RULE' ( tableDefinition | autoTableDefinition ) ( ',' ( tableDefinition | autoTableDefinition ) )*
 
 tableDefinition ::= 
-   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ','  'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'TABLE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+  tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ','  'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'TABLE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ','  'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+  tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ','  'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
   'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' algorithmDefinition ')' 
-    
+
 auditStrategyDefinition ::= 
-  'AUDIT_STRATEGY' '(' 'AUDITORS' '=' '[' auditorName ',' auditorName ']' ',' 'ALLOW_HINT_DISABLE' '=' 'TRUE | FALSE' ')'
-  |
-  'AUDIT_STRATEGY' '(' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ',' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ')'
+  'AUDIT_STRATEGY' '(' algorithmDefinition ( ',' algorithmDefinition )* ')'
 
 algorithmDefinition ::=
-   'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'
+  'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' ( propertyDefinition )?  ')' )?')'
 
 propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )* 
-    
+
 tableName ::=
   identifier
 
@@ -44,11 +42,8 @@ storageUnitName ::=
 
 columnName ::=
   identifier
-    
-auditorName ::=
-  identifier
 
-algorithmName ::=
+algorithmType ::=
   identifier
     
 strategyType ::=

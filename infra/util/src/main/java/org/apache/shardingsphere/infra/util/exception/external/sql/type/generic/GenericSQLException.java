@@ -34,6 +34,6 @@ public abstract class GenericSQLException extends ShardingSphereSQLException {
     }
     
     public GenericSQLException(final String reason, final Exception cause, final SQLState sqlState, final int errorCode) {
-        super(reason, cause, sqlState.getValue(), TYPE_OFFSET, errorCode);
+        super(sqlState.getValue(), TYPE_OFFSET, errorCode, reason, cause);
     }
 }
