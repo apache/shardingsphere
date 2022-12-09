@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
