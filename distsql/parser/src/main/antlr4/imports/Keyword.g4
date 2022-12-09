@@ -355,6 +355,6 @@ CENTER
     : C E N T E R
     ;
 
-LIKES
+LIKE
     : L I K E
     ;
