@@ -127,6 +127,18 @@ public final class SingleTableQueryResultSetTest {
         assertThat(rowData.next(), is("ds_2"));
     }
     
+    @Test
+    public void assertGetSingleTableWithLikeLiteral() {
+        DatabaseDistSQLResultSet resultSet = new SingleTableQueryResultSet();
+        ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
+        resultSet.init(database, statement);
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(2));
+        Iterator<Object> iterator = actual.iterator();
+        assertThat(iterator.next(), is("t_order_item"));
+        assertThat(iterator.next(), is("ds_2"));
+    }
+    
     private SingleTableRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
         SingleTableRule result = mock(SingleTableRule.class);
         when(result.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);

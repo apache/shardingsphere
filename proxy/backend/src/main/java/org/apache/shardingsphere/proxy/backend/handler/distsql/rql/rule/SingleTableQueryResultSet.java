@@ -21,8 +21,10 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTab
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.distsql.handler.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.proxy.backend.util.RegularUtil;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,6 +49,10 @@ public final class SingleTableQueryResultSet implements DatabaseDistSQLResultSet
                 .map(each -> (SingleTableRule) each).map(each -> each.getSingleTableDataNodes().values()).flatMap(Collection::stream).filter(Objects::nonNull).map(each -> each.iterator().next());
         if (null != showSingleTableStatement.getTableName()) {
             singleTableRules = singleTableRules.filter(each -> showSingleTableStatement.getTableName().equals(each.getTableName()));
+        }
+        if (null != showSingleTableStatement.getLikeLiteral()) {
+            String pattern = SQLUtil.convertLikePatternToRegex(showSingleTableStatement.getLikeLiteral());
+            singleTableRules = singleTableRules.filter(each -> RegularUtil.matchesCaseInsensitive(pattern, each.getTableName())).collect(Collectors.toList()).stream();
         }
         data = singleTableRules.sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList()).iterator();
     }
