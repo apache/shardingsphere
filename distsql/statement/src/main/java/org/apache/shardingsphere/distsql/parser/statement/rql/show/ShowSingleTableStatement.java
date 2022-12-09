@@ -28,8 +28,11 @@ public final class ShowSingleTableStatement extends ShowRulesStatement {
     
     private final String tableName;
     
-    public ShowSingleTableStatement(final String tableName, final DatabaseSegment database) {
+    private final String likeLiteral;
+    
+    public ShowSingleTableStatement(final String tableName, final String likeLiteral, final DatabaseSegment database) {
         super(database);
         this.tableName = tableName;
+        this.likeLiteral = likeLiteral;
     }
 }
