@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.constant;
+package org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Exportable constants.
+ * Exportable item constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExportableConstants {
+public class ExportableItemConstants {
     
-    public static final String EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES = "primary_data_source";
+    public static final String AUTO_AWARE_DATA_SOURCE_NAME = "auto_aware_data_source_name";
     
-    public static final String EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE = "dynamic_readwrite_splitting_rules";
+    public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
     
-    public static final String EXPORT_STATIC_READWRITE_SPLITTING_RULE = "static_readwrite_splitting_rules";
+    public static final String REPLICA_DATA_SOURCE_NAMES = "replica_data_source_names";
 }
