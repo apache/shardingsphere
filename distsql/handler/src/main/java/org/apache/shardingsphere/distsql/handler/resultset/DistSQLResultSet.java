@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query;
+package org.apache.shardingsphere.distsql.handler.resultset;
 
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.fixture.QueryableScalingFixtureResultSet;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.fixture.QueryableScalingFixtureRALStatement;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
 
-public final class QueryableScalingRALBackendHandlerFactoryTest {
+/**
+ * DistSQL result set.
+ */
+public interface DistSQLResultSet extends TypedSPI {
     
-    @Test
-    public void assertNewInstance() {
-        assertThat(QueryableScalingRALBackendHandlerFactory.newInstance(new QueryableScalingFixtureRALStatement()), instanceOf(QueryableScalingFixtureResultSet.class));
-    }
+    /**
+     * Get result set column names.
+     *
+     * @return result set column names
+     */
+    Collection<String> getColumnNames();
+    
+    /**
+     * Go to next data.
+     *
+     * @return true if next data exist
+     */
+    boolean next();
+    
+    /**
+     * Get row data.
+     *
+     * @return row data
+     */
+    Collection<Object> getRowData();
 }

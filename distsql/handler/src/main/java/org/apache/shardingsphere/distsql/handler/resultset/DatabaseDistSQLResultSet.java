@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query;
+package org.apache.shardingsphere.distsql.handler.resultset;
 
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.fixture.QueryableScalingFixtureResultSet;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.fixture.QueryableScalingFixtureRALStatement;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class QueryableScalingRALBackendHandlerFactoryTest {
+/**
+ * DistSQL result set for database.
+ */
+public interface DatabaseDistSQLResultSet extends DistSQLResultSet {
     
-    @Test
-    public void assertNewInstance() {
-        assertThat(QueryableScalingRALBackendHandlerFactory.newInstance(new QueryableScalingFixtureRALStatement()), instanceOf(QueryableScalingFixtureResultSet.class));
-    }
+    /**
+     * Initialize data.
+     *
+     * @param database database
+     * @param sqlStatement SQL statement
+     */
+    void init(ShardingSphereDatabase database, SQLStatement sqlStatement);
 }
