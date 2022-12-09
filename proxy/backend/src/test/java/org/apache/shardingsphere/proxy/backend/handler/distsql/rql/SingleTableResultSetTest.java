@@ -129,7 +129,7 @@ public final class SingleTableResultSetTest {
     
     @Test
     public void assertGetSingleTableWithLikeLiteral() {
-        DatabaseDistSQLResultSet resultSet = new SingleTableQueryResultSet();
+        DatabaseDistSQLResultSet resultSet = new SingleTableResultSet();
         ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
         resultSet.init(database, statement);
         Collection<Object> actual = resultSet.getRowData();
