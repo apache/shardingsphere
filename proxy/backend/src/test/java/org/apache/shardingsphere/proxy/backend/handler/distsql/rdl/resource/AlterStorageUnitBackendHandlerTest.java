@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
-    private DataSourcePropertiesValidator validator;
+    private DataSourcePropertiesValidateHandler validateHandler;
     
     @Mock
     private AlterStorageUnitStatement alterStorageUnitStatement;
@@ -88,9 +88,9 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         alterStorageUnitBackendHandler = new AlterStorageUnitBackendHandler(alterStorageUnitStatement, connectionSession);
-        Field field = alterStorageUnitBackendHandler.getClass().getDeclaredField("validator");
+        Field field = alterStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler");
         field.setAccessible(true);
-        field.set(alterStorageUnitBackendHandler, validator);
+        field.set(alterStorageUnitBackendHandler, validateHandler);
     }
     
     @Test

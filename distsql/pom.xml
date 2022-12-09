@@ -30,5 +30,6 @@
     <modules>
         <module>statement</module>
         <module>parser</module>
+        <module>handler</module>
     </modules>
 </project>

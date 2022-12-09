@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilde
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmDescription;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

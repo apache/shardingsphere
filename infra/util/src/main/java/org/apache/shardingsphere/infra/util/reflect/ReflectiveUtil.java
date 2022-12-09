@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Objects;
 
 /**
  * Reflective utility.
@@ -38,23 +37,23 @@ public final class ReflectiveUtil {
      * @param fieldName field name
      * @return field value
      */
-    @SneakyThrows(IllegalAccessException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     public static Object getFieldValue(final Object target, final String fieldName) {
-        Field field = getField(target.getClass(), fieldName);
-        Objects.requireNonNull(field).setAccessible(true);
-        return field.get(target);
+        return getField(target.getClass(), fieldName).get(target);
     }
     
-    private static Field getField(final Class<?> target, final String fieldName) {
+    private static Field getField(final Class<?> target, final String fieldName) throws NoSuchFieldException {
         Class<?> clazz = target;
         while (null != clazz) {
             try {
-                return clazz.getDeclaredField(fieldName);
+                Field result = clazz.getDeclaredField(fieldName);
+                result.setAccessible(true);
+                return result;
             } catch (final NoSuchFieldException ignored) {
             }
             clazz = clazz.getSuperclass();
         }
-        return null;
+        throw new NoSuchFieldException(String.format("Can not find field name `%s` in class %s.", fieldName, target));
     }
     
     /**
@@ -64,11 +63,9 @@ public final class ReflectiveUtil {
      * @param fieldName field name
      * @param value value
      */
-    @SneakyThrows(IllegalAccessException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void setField(final Object target, final String fieldName, final Object value) {
-        Field field = getField(target.getClass(), fieldName);
-        Objects.requireNonNull(field).setAccessible(true);
-        field.set(target, value);
+        getField(target.getClass(), fieldName).set(target, value);
     }
     
     /**
@@ -78,11 +75,10 @@ public final class ReflectiveUtil {
      * @param fieldName field name
      * @param value value
      */
-    @SneakyThrows(IllegalAccessException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void setStaticField(final Class<?> target, final String fieldName, final Object value) {
         Field field = getField(target, fieldName);
-        if (Modifier.isStatic(Objects.requireNonNull(field).getModifiers())) {
-            field.setAccessible(true);
+        if (Modifier.isStatic(field.getModifiers())) {
             field.set(null, value);
         }
     }

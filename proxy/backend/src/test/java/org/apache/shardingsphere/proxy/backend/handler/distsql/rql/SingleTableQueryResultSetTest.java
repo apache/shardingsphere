@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -125,6 +125,18 @@ public final class SingleTableQueryResultSetTest {
         rowData = actual.iterator();
         assertThat(rowData.next(), is("t_order_item"));
         assertThat(rowData.next(), is("ds_2"));
+    }
+    
+    @Test
+    public void assertGetSingleTableWithLikeLiteral() {
+        DatabaseDistSQLResultSet resultSet = new SingleTableQueryResultSet();
+        ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
+        resultSet.init(database, statement);
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(2));
+        Iterator<Object> iterator = actual.iterator();
+        assertThat(iterator.next(), is("t_order_item"));
+        assertThat(iterator.next(), is("ds_2"));
     }
     
     private SingleTableRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {

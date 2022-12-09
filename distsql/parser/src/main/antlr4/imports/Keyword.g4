@@ -354,3 +354,7 @@ GOVERNANCE
 CENTER
     : C E N T E R
     ;
+
+LIKE
+    : L I K E
+    ;
