@@ -25,11 +25,11 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.constants.Transacti
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * PostgresSQL auto commit transaction integration test.
@@ -52,16 +52,10 @@ public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase
         executeWithLog(connection1, "begin;");
         executeWithLog(connection2, "begin;");
         executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1)");
-        ResultSet emptyResultSet = executeQueryWithLog(connection2, "select * from account;");
-        if (emptyResultSet.next()) {
-            fail("There should not be result.");
-        }
+        assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
         executeWithLog(connection1, "commit;");
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
-        ResultSet notEmptyResultSet = executeQueryWithLog(connection2, "select * from account");
-        if (!notEmptyResultSet.next()) {
-            fail("There should be result.");
-        }
+        assertTrue(executeQueryWithLog(connection2, "select * from account").next());
         executeWithLog(connection2, "commit;");
     }
 }
