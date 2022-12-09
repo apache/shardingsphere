@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;

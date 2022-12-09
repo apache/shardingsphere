@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRul
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 

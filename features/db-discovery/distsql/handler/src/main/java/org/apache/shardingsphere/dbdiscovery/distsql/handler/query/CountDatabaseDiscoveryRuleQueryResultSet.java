@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.query;
 
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CountDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 

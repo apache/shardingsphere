@@ -26,10 +26,10 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegme
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 

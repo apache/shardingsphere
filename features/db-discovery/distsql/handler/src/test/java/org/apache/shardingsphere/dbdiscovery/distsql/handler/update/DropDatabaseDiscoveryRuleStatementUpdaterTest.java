@@ -24,8 +24,8 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDataba
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;

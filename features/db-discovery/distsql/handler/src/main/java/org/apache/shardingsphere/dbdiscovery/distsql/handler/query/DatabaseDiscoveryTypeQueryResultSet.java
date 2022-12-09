@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
