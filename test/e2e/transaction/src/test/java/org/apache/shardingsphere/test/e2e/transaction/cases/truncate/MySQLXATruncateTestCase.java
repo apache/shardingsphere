@@ -44,13 +44,25 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     }
     
     @Override
+    protected void beforeTest() throws SQLException {
+        super.beforeTest();
+        prepare();
+    }
+    
+    private void prepare() throws SQLException {
+        Connection connection = getDataSource().getConnection();
+        executeWithLog(connection, "delete from account;");
+        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
+        connection.close();
+    }
+    
+    @Override
     public void executeTest() throws SQLException {
         assertTruncateInMySQLXATransaction();
     }
     
     private void assertTruncateInMySQLXATransaction() throws SQLException {
         // TODO This test case may cause bad effects to other test cases in JDBC adapter
-        prepare();
         Connection connection = getDataSource().getConnection();
         connection.setAutoCommit(false);
         assertAccountRowCount(connection, 8);
@@ -65,12 +77,5 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
             connection.rollback();
             connection.close();
         }
-    }
-    
-    private void prepare() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeWithLog(connection, "delete from account;");
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
-        connection.close();
     }
 }
