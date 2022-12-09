@@ -47,7 +47,7 @@
       database_inline:
         type: INLINE
         props:
-          algorithm-expression: ds_${user_id % 2}
+          algorithm-expression: ${r'ds_${user_id % 2}'}
           
       t_order_inline:
         type: INLINE
