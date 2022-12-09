@@ -146,7 +146,12 @@
     <#elseif framework=="spring-namespace-jdbc">
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <artifactId>spring-context-support</artifactId>
+            <version>5.2.15.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
             <version>5.2.15.RELEASE</version>
         </dependency>
     <#elseif framework=="spring-namespace-mybatis">
