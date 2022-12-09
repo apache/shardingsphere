@@ -114,7 +114,6 @@ mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
 1 row in set (0.11 sec)
 ```
 
-
 - Query the single tables whose table name end with `order_5` for the current logic database
 
 ```sql

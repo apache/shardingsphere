@@ -114,7 +114,6 @@ mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
 1 row in set (0.11 sec)
 ```
 
-
 - 查询当前逻辑库中表名以 `order_5` 结尾的单表
 
 ```sql
