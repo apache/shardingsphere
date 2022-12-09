@@ -19,7 +19,7 @@
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Address;
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
