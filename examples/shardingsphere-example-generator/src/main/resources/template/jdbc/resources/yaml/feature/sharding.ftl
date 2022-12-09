@@ -20,8 +20,8 @@
       actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
       tableStrategy:
         standard:
-        shardingColumn: order_id
-        shardingAlgorithmName: t_order_inline
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake_generator
@@ -33,8 +33,8 @@
       actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
       tableStrategy:
         standard:
-        shardingColumn: order_id
-        shardingAlgorithmName: t_order_item_inline
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_item_inline
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake_generator
@@ -42,28 +42,28 @@
       - t_order,t_order_item
     broadcastTables:
       - t_address
-
-    defaultDatabaseStrategy:
-      standard:
+  
+  defaultDatabaseStrategy:
+    standard:
       shardingColumn: user_id
       shardingAlgorithmName: database_inline
-
-    shardingAlgorithms:
-      database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_$->{user_id % 2}
-      t_order_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_$->{order_id % 2}
-      t_order_item_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_item_$->{order_id % 2}
-    keyGenerators:
-      snowflake_generator:
-        type: SNOWFLAKE
-    auditors:
-      sharding_key_required_auditor:
-        type: DML_SHARDING_CONDITIONS
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_$->{user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_$->{order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_$->{order_id % 2}
+  keyGenerators:
+    snowflake_generator:
+      type: SNOWFLAKE
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
