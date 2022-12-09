@@ -18,6 +18,7 @@
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
+        result.setDefaultShadowAlgorithmName("simple-hint-algorithm");
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
         return result;

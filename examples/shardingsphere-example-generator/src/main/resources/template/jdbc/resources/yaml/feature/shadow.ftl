@@ -34,7 +34,7 @@
         operation: insert
         column: order_type
         value: 1
-    simple_hint_algorithm:
+    simple-hint-algorithm:
       type: SIMPLE_HINT
       props:
         shadow: true
