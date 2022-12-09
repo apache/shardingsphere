@@ -24,7 +24,7 @@
             shardingAlgorithmName: t_order_inline
         keyGenerateStrategy:
           column: order_id
-          keyGeneratorName: snowflake
+          keyGeneratorName: snowflake_generator
       t_order_item:
         actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
         tableStrategy:
