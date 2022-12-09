@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.rule;
+package org.apache.shardingsphere.distsql.handler.exception.algorithm;
 
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;

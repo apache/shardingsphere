@@ -26,8 +26,8 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateData
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
