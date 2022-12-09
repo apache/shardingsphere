@@ -66,14 +66,14 @@ sql> SHOW SINGLE TABLE t_single_0;
 1 row in set (0.01 sec)
 ```
 
-*SHOW SINGLE TABLES LIKES*
+*SHOW SINGLE TABLES LIKE*
 
 ```sql
-mysql> show single tables likes '%order_5';
+mysql> SHOW SINGLE TABLES LIKE '%order_5';
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+
-| t_order_5  | su_1              |
+| t_order_5  | ds_1              |
 +------------+-------------------+
 1 row in set (0.11 sec)
 ```

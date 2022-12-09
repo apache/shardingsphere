@@ -28,7 +28,7 @@ showDefaultSingleTableStorageUnit
     ;
 
 showSingleTable
-    : SHOW SINGLE (TABLES (LIKES likeLiteral)? | TABLE tableName) (FROM databaseName)?
+    : SHOW SINGLE (TABLES (LIKE likeLiteral)? | TABLE tableName) (FROM databaseName)?
     ;
 
 showRulesUsedStorageUnit

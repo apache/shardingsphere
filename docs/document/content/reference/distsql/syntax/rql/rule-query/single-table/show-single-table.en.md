@@ -101,15 +101,15 @@ mysql> SHOW SINGLE TABLES;
 - Query the single tables whose table name end with `order_5` for the specified logic database.
 
 ```sql
-SHOW SINGLE TABLES LIKES '%order_5' FROM test1;
+SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES LIKES '%order_5' FROM test1;
+mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+
-| t_order_5  | su_1              |
+| t_order_5  | ds_1              |
 +------------+-------------------+
 1 row in set (0.11 sec)
 ```
@@ -118,22 +118,22 @@ mysql> SHOW SINGLE TABLES LIKES '%order_5' FROM test1;
 - Query the single tables whose table name end with `order_5` for the current logic database
 
 ```sql
-SHOW SINGLE TABLES LIKES '%order_5';
+SHOW SINGLE TABLES LIKE '%order_5';
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES LIKES '%order_5';
+mysql> SHOW SINGLE TABLES LIKE '%order_5';
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+
-| t_order_5  | su_1              |
+| t_order_5  | ds_1              |
 +------------+-------------------+
 1 row in set (0.11 sec)
 ```
 
 ### Reserved word
 
-`SHOW`, `SINGLE`, `TABLE`, `TABLES`, `FROM`
+`SHOW`, `SINGLE`, `TABLE`, `TABLES`, `LIKE`, `FROM`
 
 ### Related links
 

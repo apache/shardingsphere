@@ -356,5 +356,5 @@ CENTER
     ;
 
 LIKES
-    : L I K E S
+    : L I K E
     ;

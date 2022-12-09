@@ -11,7 +11,7 @@ weight = 3
 
 ```
 ShowSingleTable::=
-  'SHOW' 'SINGLE' ('TABLES' ('LIKES' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
+  'SHOW' 'SINGLE' ('TABLES' ('LIKE' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
 
 tableName ::=
   identifier
@@ -101,15 +101,15 @@ mysql> SHOW SINGLE TABLES;
 - 查询指定逻辑库中表名以 `order_5` 结尾的单表
 
 ```sql
-SHOW SINGLE TABLES LIKES '%order_5' FROM test1;
+SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES LIKES '%order_5' FROM test1;
+mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+
-| t_order_5  | su_1              |
+| t_order_5  | ds_1              |
 +------------+-------------------+
 1 row in set (0.11 sec)
 ```
@@ -118,22 +118,22 @@ mysql> SHOW SINGLE TABLES LIKES '%order_5' FROM test1;
 - 查询当前逻辑库中表名以 `order_5` 结尾的单表
 
 ```sql
-SHOW SINGLE TABLES LIKES '%order_5';
+SHOW SINGLE TABLES LIKE '%order_5';
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES LIKES '%order_5';
+mysql> SHOW SINGLE TABLES LIKE '%order_5';
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+
-| t_order_5  | su_1              |
+| t_order_5  | ds_1              |
 +------------+-------------------+
 1 row in set (0.11 sec)
 ```
 
 ### 保留字
 
-`SHOW`、`SINGLE`、`TABLE`、`TABLES`、`FROM`
+`SHOW`、`SINGLE`、`TABLE`、`TABLES`、`LIKE`、`FROM`
 
 ### 相关链接
 
