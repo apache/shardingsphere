@@ -28,7 +28,7 @@ showDefaultSingleTableStorageUnit
     ;
 
 showSingleTable
-    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
+    : SHOW SINGLE (TABLES (LIKE likeLiteral)? | TABLE tableName) (FROM databaseName)?
     ;
 
 showRulesUsedStorageUnit
@@ -41,4 +41,8 @@ countSingleTableRule
 
 usageCount
     : INT_
+    ;
+
+likeLiteral
+    : STRING_
     ;
