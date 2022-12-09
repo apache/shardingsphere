@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Before;
@@ -50,8 +50,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -72,7 +72,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
     private final String databaseDiscovery = "database_discovery_db";
     
     @Mock
-    private DataSourcePropertiesValidator validator;
+    private DataSourcePropertiesValidateHandler validateHandler;
     
     @Mock
     private ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker;
@@ -131,9 +131,9 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         ImportDatabaseConfigurationHandler handler = importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler();
         handler.init(new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationHandlerTest.class.getResource(featureMap.get(feature))).getPath()),
                 mock(ConnectionSession.class));
-        Field validatorField = importDatabaseConfigurationHandler.getClass().getDeclaredField("validator");
-        validatorField.setAccessible(true);
-        validatorField.set(importDatabaseConfigurationHandler, validator);
+        Field field = importDatabaseConfigurationHandler.getClass().getDeclaredField("validateHandler");
+        field.setAccessible(true);
+        field.set(importDatabaseConfigurationHandler, validateHandler);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));

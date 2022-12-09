@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.datanode.SingleTableDataNodeLoader;
 
@@ -278,7 +279,7 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     
     @Override
     public Map<String, Object> getExportData() {
-        return Collections.singletonMap("single_tables", tableNames.keySet());
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames.keySet());
     }
     
     @Override

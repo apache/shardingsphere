@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;

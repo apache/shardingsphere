@@ -47,7 +47,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
             return;
         }
         addTableDataNodes(deciderContext, rule, tableNames);
-        ShardingConditions shardingConditions = createShardingConditions(queryContext, database, rule);
+        ShardingConditions shardingConditions = getMergedShardingConditions(queryContext, database, rule);
         if (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition()) {
             return;
         }
@@ -69,10 +69,14 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static ShardingConditions createShardingConditions(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
+    private static ShardingConditions getMergedShardingConditions(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
         ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, rule);
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
-        return new ShardingConditions(shardingConditions, queryContext.getSqlStatementContext(), rule);
+        ShardingConditions result = new ShardingConditions(shardingConditions, queryContext.getSqlStatementContext(), rule);
+        if (result.isNeedMerge()) {
+            result.merge();
+        }
+        return result;
     }
     
     @Override

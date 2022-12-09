@@ -39,23 +39,23 @@ public final class PluginBootServiceManager {
     /**
      * Start all services.
      *
-     * @param pluginConfigurationMap plugin configuration map
+     * @param pluginConfigMap plugin configuration map
      * @param classLoader classLoader
      * @param isEnhancedForProxy is enhanced for proxy
      */
-    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
+    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigMap, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(classLoader);
-            for (Entry<String, PluginConfiguration> entry : pluginConfigurationMap.entrySet()) {
-                AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
+            for (Entry<String, PluginConfiguration> entry : pluginConfigMap.entrySet()) {
+                AgentTypedSPIRegistry.getRegisteredService(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
                     try {
                         LOGGER.info("Start plugin: {}", optional.getType());
                         optional.start(entry.getValue(), isEnhancedForProxy);
                         // CHECKSTYLE:OFF
                     } catch (final Throwable ex) {
                         // CHECKSTYLE:ON
-                        LOGGER.error("Failed to start service", ex);
+                        LOGGER.error("Failed to start service.", ex);
                     }
                 });
             }
@@ -68,20 +68,20 @@ public final class PluginBootServiceManager {
      * Close all services.
      */
     public static void closeAllServices() {
-        AgentTypedSPIRegistry.getAllRegisteredService(PluginBootService.class).forEach(each -> {
+        AgentTypedSPIRegistry.getAllRegisteredServices(PluginBootService.class).forEach(each -> {
             try {
                 each.close();
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                LOGGER.error("Failed to close service", ex);
+                LOGGER.error("Failed to close service.", ex);
             }
         });
         PluginJarHolder.getPluginJars().forEach(each -> {
             try {
                 each.getJarFile().close();
             } catch (final IOException ex) {
-                LOGGER.error("Failed to close jar file", ex);
+                LOGGER.error("Failed to close jar file.", ex);
             }
         });
     }

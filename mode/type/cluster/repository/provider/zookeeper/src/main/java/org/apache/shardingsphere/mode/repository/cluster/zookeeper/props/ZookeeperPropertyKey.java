@@ -49,11 +49,6 @@ public enum ZookeeperPropertyKey implements TypedPropertyKey {
     OPERATION_TIMEOUT_MILLISECONDS("operationTimeoutMilliseconds", String.valueOf(500), int.class),
     
     /**
-     * ZooKeeper client ensemble tracker.
-     */
-    ENSEMBLE_TRACKER("ensembleTracker", String.valueOf(Boolean.TRUE), boolean.class),
-    
-    /**
      * ZooKeeper client connection authorization schema name.
      */
     DIGEST("digest", "", String.class);

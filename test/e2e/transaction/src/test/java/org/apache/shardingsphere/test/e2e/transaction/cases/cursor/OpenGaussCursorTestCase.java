@@ -35,6 +35,7 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 /**
@@ -175,31 +176,21 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     private void fetch(final Connection connection, final int expectedId) throws SQLException {
         ResultSet resultSet = executeQueryWithLog(connection, "fetch test;");
         if (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            assertThat(id, is(expectedId));
+            assertThat(resultSet.getInt("id"), is(expectedId));
         } else {
             fail("Expected has result.");
         }
     }
     
     private void fetchOver(final Connection connection) throws SQLException {
-        ResultSet resultSet = executeQueryWithLog(connection, "fetch test;");
-        while (resultSet.next()) {
-            fail("Expected fetch nothing.");
-        }
+        assertFalse(executeQueryWithLog(connection, "fetch test;").next());
     }
     
     private void fetchForwardOver(final Connection connection) throws SQLException {
-        ResultSet resultSet = executeQueryWithLog(connection, "fetch forward from test;");
-        while (resultSet.next()) {
-            fail("Expected fetch nothing.");
-        }
+        assertFalse(executeQueryWithLog(connection, "fetch forward from test;").next());
     }
     
     private void fetchForwardAllOver(final Connection connection) throws SQLException {
-        ResultSet resultSet = executeQueryWithLog(connection, "fetch forward all from test;");
-        while (resultSet.next()) {
-            fail("Expected fetch nothing.");
-        }
+        assertFalse(executeQueryWithLog(connection, "fetch forward all from test;").next());
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

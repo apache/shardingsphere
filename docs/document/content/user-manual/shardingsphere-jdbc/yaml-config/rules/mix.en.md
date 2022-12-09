@@ -5,7 +5,7 @@ weight = 9
 
 ## Background
 
-ShardingSphere provides a variety of features, such as data sharding, read/write splitting, high availability, and data decryption. These features can be used independently or in combination. 
+ShardingSphere provides a variety of features, such as data sharding, read/write splitting, high availability, and data encryption. These features can be used independently or in combination. 
 Below, you will find the parameters' explanation and configuration samples based on YAML.
 
 ## Parameters

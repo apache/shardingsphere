@@ -106,9 +106,7 @@ public final class PasswordEncryption {
     }
     
     private static byte[] formatKey(final String key) {
-        int start = key.indexOf("\n") + 1;
-        int end = key.lastIndexOf("\n");
-        return key.substring(start, end).replace("\n", "").getBytes();
+        return key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "").trim().replace("\n", "").getBytes();
     }
     
     private static byte[] concatSeed(final MessageDigest messageDigest, final byte[] seed, final byte[] passwordSha1) {

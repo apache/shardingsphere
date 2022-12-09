@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.infra.distsql.query.GlobalRuleDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;

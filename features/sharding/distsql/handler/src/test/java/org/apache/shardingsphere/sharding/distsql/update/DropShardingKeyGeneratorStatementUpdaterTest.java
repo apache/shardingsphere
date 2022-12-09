@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.AlgorithmInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;

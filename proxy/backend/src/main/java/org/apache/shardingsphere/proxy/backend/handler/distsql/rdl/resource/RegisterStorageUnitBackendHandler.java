@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.ResourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -54,19 +54,19 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
     
     private final DatabaseType databaseType;
     
-    private final DataSourcePropertiesValidator validator;
+    private final DataSourcePropertiesValidateHandler validateHandler;
     
     public RegisterStorageUnitBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
-        validator = new DataSourcePropertiesValidator();
+        validateHandler = new DataSourcePropertiesValidateHandler();
     }
     
     @Override
     public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
-        validator.validate(dataSourcePropsMap);
+        validateHandler.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
