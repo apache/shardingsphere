@@ -55,6 +55,24 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return createById(id);
     }
     
+    private void initMetrics() {
+        if (null == metrics) {
+            synchronized (PrometheusWrapperFactory.class) {
+                if (null == metrics) {
+                    String resourceName = isEnhancedForProxy ? "/prometheus/proxy/metrics.yaml" : "/prometheus/jdbc/metrics.yaml";
+                    parseMetricsYaml(resourceName);
+                }
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void parseMetricsYaml(final String resourceName) {
+        InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream(resourceName);
+        Map<String, List<Map<String, Object>>> metricsMap = new Yaml().loadAs(inputStream, LinkedHashMap.class);
+        metrics = metricsMap.get("metrics");
+    }
+    
     /**
      * Create gauge metric family.
      *
@@ -75,24 +93,6 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
             return createGaugeMetricFamily(metric);
         }
         return Optional.empty();
-    }
-    
-    private void initMetrics() {
-        if (null == metrics) {
-            synchronized (PrometheusWrapperFactory.class) {
-                if (null == metrics) {
-                    String resourceName = isEnhancedForProxy ? "/prometheus/proxy/metrics.yaml" : "/prometheus/jdbc/metrics.yaml";
-                    parseMetricsYaml(resourceName);
-                }
-            }
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static void parseMetricsYaml(final String resourceName) {
-        InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream(resourceName);
-        Map<String, List<Map<String, Object>>> metricsMap = new Yaml().loadAs(inputStream, LinkedHashMap.class);
-        metrics = metricsMap.get("metrics");
     }
     
     private Optional<GaugeMetricFamily> createGaugeMetricFamily(final Map<String, Object> metric) {
