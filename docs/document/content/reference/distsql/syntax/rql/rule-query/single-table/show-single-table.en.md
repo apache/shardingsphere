@@ -11,7 +11,7 @@ The `SHOW SINGLE TABLE` syntax is used to query single tables for specified data
 
 ```
 ShowSingleTable::=
-  'SHOW' 'SINGLE' ('TABLES'|'TABLE' tableName) ('FROM' databaseName)?
+  'SHOW' 'SINGLE' ('TABLES' ('LIKES' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
 
 tableName ::=
   identifier
@@ -98,9 +98,41 @@ mysql> SHOW SINGLE TABLES;
 1 row in set (0.00 sec)
 ```
 
+- Query the single tables whose table name end with `order_5` for the specified logic database.
+
+```sql
+SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
+```
+
+```sql
+mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_order_5  | ds_1              |
++------------+-------------------+
+1 row in set (0.11 sec)
+```
+
+- Query the single tables whose table name end with `order_5` for the current logic database
+
+```sql
+SHOW SINGLE TABLES LIKE '%order_5';
+```
+
+```sql
+mysql> SHOW SINGLE TABLES LIKE '%order_5';
++------------+-------------------+
+| table_name | storage_unit_name |
++------------+-------------------+
+| t_order_5  | ds_1              |
++------------+-------------------+
+1 row in set (0.11 sec)
+```
+
 ### Reserved word
 
-`SHOW`, `SINGLE`, `TABLE`, `TABLES`, `FROM`
+`SHOW`, `SINGLE`, `TABLE`, `TABLES`, `LIKE`, `FROM`
 
 ### Related links
 

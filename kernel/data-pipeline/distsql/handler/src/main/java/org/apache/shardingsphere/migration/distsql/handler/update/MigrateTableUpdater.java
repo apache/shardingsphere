@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 
 /**

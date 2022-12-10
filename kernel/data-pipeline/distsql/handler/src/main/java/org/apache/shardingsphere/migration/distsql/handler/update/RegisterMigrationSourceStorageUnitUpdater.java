@@ -19,6 +19,8 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
@@ -26,8 +28,6 @@ import org.apache.shardingsphere.distsql.parser.segment.converter.ResourceSegmen
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
@@ -43,6 +43,8 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
+    private final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
+    
     @Override
     public void executeUpdate(final String databaseName, final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
@@ -51,8 +53,7 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourceProperties> sourcePropertiesMap = ResourceSegmentsConverter.convert(databaseType, dataSources);
-        DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-        validator.validate(sourcePropertiesMap);
+        validateHandler.validate(sourcePropertiesMap);
         JOB_API.addMigrationSourceResources(sourcePropertiesMap);
     }
     
