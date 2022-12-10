@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import org.junit.Test;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 
-import static org.junit.Assert.assertTrue;
-
-public final class PrometheusWrapperFactoryTest {
-    
-    @Test
-    public void assertCreate() {
-        PrometheusWrapperFactory factory = new PrometheusWrapperFactory(true);
-        assertTrue(factory.create("a").isPresent());
-        assertTrue(factory.create("b").isPresent());
-        assertTrue(factory.create("c").isPresent());
-        assertTrue(factory.create("d").isPresent());
-        assertTrue(factory.create("e").isPresent());
-    }
+/**
+ * Advice for metadata contexts factory. 
+ * No logic, only used to sense JDBC startup.
+ */
+public class MetaDataContextsFactoryAdvice implements ClassStaticMethodAroundAdvice {
 }

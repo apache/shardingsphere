@@ -22,6 +22,7 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.GaugeMetricFamily;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapperFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -35,20 +36,12 @@ import java.util.Optional;
 /**
  * Prometheus metrics wrapper factory.
  */
+@RequiredArgsConstructor
 public class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
-    private static List<Map<String, Object>> metrics;
+    private static volatile List<Map<String, Object>> metrics;
     
-    static {
-        parseMetricsYaml();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static void parseMetricsYaml() {
-        InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream("/prometheus/metrics.yaml");
-        Map<String, List<Map<String, Object>>> metricsMap = new Yaml().loadAs(inputStream, LinkedHashMap.class);
-        metrics = metricsMap.get("metrics");
-    }
+    private final boolean isEnhancedForProxy;
     
     /**
      * Create metrics wrapper.
@@ -58,7 +51,26 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
      */
     @Override
     public Optional<MetricsWrapper> create(final String id) {
+        initMetrics();
         return createById(id);
+    }
+    
+    private void initMetrics() {
+        if (null == metrics) {
+            synchronized (PrometheusWrapperFactory.class) {
+                if (null == metrics) {
+                    String resourceName = isEnhancedForProxy ? "/prometheus/proxy/metrics.yaml" : "/prometheus/jdbc/metrics.yaml";
+                    parseMetricsYaml(resourceName);
+                }
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void parseMetricsYaml(final String resourceName) {
+        InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream(resourceName);
+        Map<String, List<Map<String, Object>>> metricsMap = new Yaml().loadAs(inputStream, LinkedHashMap.class);
+        metrics = metricsMap.get("metrics");
     }
     
     /**
@@ -68,6 +80,7 @@ public class PrometheusWrapperFactory implements MetricsWrapperFactory {
      * @return gauge metric family
      */
     public Optional<GaugeMetricFamily> createGaugeMetricFamily(final String id) {
+        initMetrics();
         Optional<Map<String, Object>> metricMap = findMetric(id);
         if (!metricMap.isPresent()) {
             return Optional.empty();

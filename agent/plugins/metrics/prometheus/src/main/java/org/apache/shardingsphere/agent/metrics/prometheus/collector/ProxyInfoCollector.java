@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,9 +42,9 @@ public final class ProxyInfoCollector extends Collector {
     
     private static final String PROXY_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
-    
     private static final ConcurrentHashMap<StateType, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<>();
+    
+    private PrometheusWrapperFactory prometheusWrapperFactory;
     
     static {
         PROXY_STATE_MAP.put(StateType.OK, 1);
@@ -55,7 +56,10 @@ public final class ProxyInfoCollector extends Collector {
         if (!MetricsUtil.isClassExisted(PROXY_CLASS) || null == ProxyContext.getInstance().getContextManager()) {
             return Collections.emptyList();
         }
-        Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
+        if (Objects.isNull(prometheusWrapperFactory)) {
+            prometheusWrapperFactory = new PrometheusWrapperFactory(true);
+        }
+        Optional<GaugeMetricFamily> proxyInfo = prometheusWrapperFactory.createGaugeMetricFamily(MetricIds.PROXY_INFO);
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
         if (!proxyInfo.isPresent() || !stateContext.isPresent()) {
             return Collections.emptyList();

@@ -30,4 +30,6 @@ public final class TargetPoint {
     private String type;
     
     private String name;
+    
+    private Integer parameterLength;
 }
