@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
+import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.io.File;
 import java.io.IOException;

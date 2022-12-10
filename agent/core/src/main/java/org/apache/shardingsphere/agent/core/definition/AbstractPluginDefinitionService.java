@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.definition;
 
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
-import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
+import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.util.Collection;
 

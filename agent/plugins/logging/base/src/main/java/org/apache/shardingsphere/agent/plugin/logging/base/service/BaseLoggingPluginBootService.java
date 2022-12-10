@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.service;
 
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 /**
  * Base logging plugin boot service.

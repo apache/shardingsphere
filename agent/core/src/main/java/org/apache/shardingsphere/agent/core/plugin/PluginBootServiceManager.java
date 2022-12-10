@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.AgentSPIRegistry;
-import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.io.IOException;
 import java.util.Map;
