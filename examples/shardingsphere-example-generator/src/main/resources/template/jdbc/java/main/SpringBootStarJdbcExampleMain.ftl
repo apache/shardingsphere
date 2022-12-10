@@ -38,6 +38,9 @@ public class ExampleMain {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
             ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.run();
+        <#if transaction=="xa-narayana">
+            System.exit(1);
+        </#if>
         }
     }
 }
