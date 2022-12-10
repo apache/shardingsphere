@@ -38,7 +38,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-api</artifactId>
+                <artifactId>shardingsphere-agent-core</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
