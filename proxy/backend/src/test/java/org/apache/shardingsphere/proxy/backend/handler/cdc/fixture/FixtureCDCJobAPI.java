@@ -17,13 +17,127 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.cdc.fixture;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
-public final class FixtureCDCJobAPI implements CDCJobAPI {
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+
+public final class FixtureCDCJobAPI implements InventoryIncrementalJobAPI, CDCJobAPI {
     
     @Override
     public String createJobAndStart(final CreateSubscriptionJobParameter event) {
         return "";
+    }
+    
+    @Override
+    public JobType getJobType() {
+        return null;
+    }
+    
+    @Override
+    public void startDisabledJob(final String jobId) {
+    }
+    
+    @Override
+    public void stop(final String jobId) {
+    }
+    
+    @Override
+    public List<? extends PipelineJobInfo> list() {
+        return null;
+    }
+    
+    @Override
+    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final PipelineJobConfiguration pipelineJobConfig) {
+        return null;
+    }
+    
+    @Override
+    public String marshalJobId(final PipelineJobId pipelineJobId) {
+        return null;
+    }
+    
+    @Override
+    public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+    }
+    
+    @Override
+    public CDCTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
+        return null;
+    }
+    
+    @Override
+    public CDCProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
+        return null;
+    }
+    
+    @Override
+    public Optional<String> start(final PipelineJobConfiguration jobConfig) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public PipelineJobConfiguration getJobConfiguration(final String jobId) {
+        return null;
+    }
+    
+    @Override
+    public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
+    }
+    
+    @Override
+    public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
+        return null;
+    }
+    
+    @Override
+    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
+    }
+    
+    @Override
+    public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
+        return null;
+    }
+    
+    @Override
+    public void persistJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
+    }
+    
+    @Override
+    public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
+    }
+    
+    @Override
+    public DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(final PipelineJobConfiguration jobConfig, final String algorithmType, final Properties algorithmProps) {
+        return null;
+    }
+    
+    @Override
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration pipelineJobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm,
+                                                                        final ConsistencyCheckJobItemProgressContext progressContext) {
+        return null;
+    }
+    
+    @Override
+    public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
+        return false;
     }
 }

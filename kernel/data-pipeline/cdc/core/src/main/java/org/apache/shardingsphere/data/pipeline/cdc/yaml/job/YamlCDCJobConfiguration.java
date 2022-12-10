@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJ
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * CDC job configuration for YAML.
@@ -46,7 +45,13 @@ public final class YamlCDCJobConfiguration implements YamlPipelineJobConfigurati
     
     private YamlPipelineDataSourceConfiguration dataSourceConfiguration;
     
-    private Map<String, String> tablesFirstDataNodesMap;
+    private String tablesFirstDataNodes;
+    
+    private List<String> jobShardingDataNodes;
+    
+    private int concurrency = 1;
+    
+    private int retryTimes;
     
     @Override
     public String getTargetDatabaseName() {
