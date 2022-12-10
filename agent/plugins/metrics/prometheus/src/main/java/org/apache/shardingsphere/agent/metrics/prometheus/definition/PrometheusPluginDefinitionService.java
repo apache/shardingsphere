@@ -33,7 +33,7 @@ import java.io.InputStream;
 public final class PrometheusPluginDefinitionService extends AbstractPluginDefinitionService {
     
     @Override
-    public void defineProxyInterceptors() {
+    protected void defineProxyInterceptors() {
         InputStream inputStream = getClass().getResourceAsStream("/prometheus/interceptors.yaml");
         Interceptors interceptors = new Yaml().loadAs(inputStream, Interceptors.class);
         for (Interceptor each : interceptors.getInterceptors()) {
@@ -59,7 +59,7 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
     }
     
     @Override
-    public void defineJdbcInterceptors() {
+    protected void defineJdbcInterceptors() {
         // TODO add JDBC related interception
     }
     

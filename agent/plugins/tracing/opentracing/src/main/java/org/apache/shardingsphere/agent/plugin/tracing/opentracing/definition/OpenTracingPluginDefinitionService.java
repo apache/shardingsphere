@@ -46,7 +46,7 @@ public final class OpenTracingPluginDefinitionService extends AbstractPluginDefi
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice";
     
     @Override
-    public void defineProxyInterceptors() {
+    protected void defineProxyInterceptors() {
         defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -64,7 +64,7 @@ public final class OpenTracingPluginDefinitionService extends AbstractPluginDefi
     }
     
     @Override
-    public void defineJdbcInterceptors() {
+    protected void defineJdbcInterceptors() {
         // TODO add JDBC related interception
     }
     
