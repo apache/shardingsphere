@@ -39,7 +39,7 @@ public final class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     
     private Integer m;
     
-    private String replaceChar;
+    private Character replaceChar;
     
     @Getter
     private Properties props;
@@ -50,31 +50,34 @@ public final class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
         if ("".equals(value) || value.length() <= n + m) {
             return value;
         }
-        StringBuilder sb = new StringBuilder(value);
-        sb.replace(n, value.length() - m, replaceChar);
-        return sb.toString();
+        char[] chars = value.toCharArray();
+        for (int i = n; i < value.length() - m; i++) {
+            chars[i] = replaceChar;
+        }
+        return new String(chars);
     }
     
-    private Integer initStartIndex(final Properties props) {
+    private Integer initNIndex(final Properties props) {
         Preconditions.checkArgument(props.containsKey(N), "%s can not be null.", N);
         return Integer.parseInt(props.getProperty(N));
     }
     
-    private Integer initStopIndex(final Properties props) {
+    private Integer initMIndex(final Properties props) {
         Preconditions.checkArgument(props.containsKey(M), "%s can not be null.", M);
         return Integer.parseInt(props.getProperty(M));
     }
     
-    private String initReplaceChar(final Properties props) {
+    private Character initReplaceChar(final Properties props) {
         Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
-        return props.getProperty(REPLACE_CHAR);
+        Preconditions.checkArgument(props.getProperty(REPLACE_CHAR).length() == 1, "%s length must be 1.", REPLACE_CHAR);
+        return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     
     @Override
     public void init(final Properties props) {
         this.props = props;
-        this.n = initStartIndex(props);
-        this.m = initStopIndex(props);
+        this.n = initNIndex(props);
+        this.m = initMIndex(props);
         this.replaceChar = initReplaceChar(props);
     }
     
