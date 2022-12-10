@@ -33,10 +33,10 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     private final Map<String, Builder> interceptorPointMap = new HashMap<>();
     
     /**
-     * Install to collection of plugin interceptor point.
+     * Install plugin interceptor points.
      *
      * @param isEnhancedForProxy is enhanced for proxy
-     * @return collection of plugin interceptor point
+     * @return plugin interceptor points
      */
     public final Collection<PluginInterceptorPoint> install(final boolean isEnhancedForProxy) {
         if (isEnhancedForProxy) {
