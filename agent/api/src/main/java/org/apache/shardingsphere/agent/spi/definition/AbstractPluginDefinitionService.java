@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.spi.definition;
 
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractPluginDefinitionService implements PluginDefinitionService {
     
-    private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = new HashMap<>();
+    private final Map<String, Builder> interceptorPointMap = new HashMap<>();
     
     /**
      * Install to collection of plugin interceptor point.
@@ -43,25 +44,19 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
         } else {
             defineJdbcInterceptors();
         }
-        return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
+        return interceptorPointMap.values().stream().map(Builder::install).collect(Collectors.toList());
     }
     
-    /**
-     * Define proxy interceptors to collection of plugin interceptor point.
-     */
-    public abstract void defineProxyInterceptors();
+    protected abstract void defineProxyInterceptors();
     
-    /**
-     * Define JDBC interceptors to collection of plugin interceptor point.
-     */
-    public abstract void defineJdbcInterceptors();
+    protected abstract void defineJdbcInterceptors();
     
-    protected final PluginInterceptorPoint.Builder defineInterceptor(final String classNameOfTarget) {
-        if (interceptorPointMap.containsKey(classNameOfTarget)) {
-            return interceptorPointMap.get(classNameOfTarget);
+    protected final Builder defineInterceptor(final String targetClassName) {
+        if (interceptorPointMap.containsKey(targetClassName)) {
+            return interceptorPointMap.get(targetClassName);
         }
-        PluginInterceptorPoint.Builder builder = PluginInterceptorPoint.intercept(classNameOfTarget);
-        interceptorPointMap.put(classNameOfTarget, builder);
-        return builder;
+        Builder result = PluginInterceptorPoint.intercept(targetClassName);
+        interceptorPointMap.put(targetClassName, result);
+        return result;
     }
 }

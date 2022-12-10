@@ -33,7 +33,7 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
-    public void defineProxyInterceptors() {
+    protected void defineProxyInterceptors() {
         defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
                 .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
@@ -41,7 +41,7 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     }
     
     @Override
-    public void defineJdbcInterceptors() {
+    protected void defineJdbcInterceptors() {
         defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
                 .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
