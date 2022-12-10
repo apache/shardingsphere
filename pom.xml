@@ -88,7 +88,6 @@
         
         <elasticjob.version>3.0.2</elasticjob.version>
         
-        <bytebuddy.version>1.12.12</bytebuddy.version>
         <prometheus.version>0.11.0</prometheus.version>
         <prometheus.jmx.version>0.16.1</prometheus.jmx.version>
         <opentracing.version>0.31.0</opentracing.version>
@@ -431,11 +430,6 @@
             </dependency>
             
             <dependency>
-                <groupId>net.bytebuddy</groupId>
-                <artifactId>byte-buddy</artifactId>
-                <version>${bytebuddy.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.prometheus</groupId>
                 <artifactId>simpleclient</artifactId>
                 <version>${prometheus.version}</version>
@@ -665,13 +659,6 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
                 <version>${springframework.version}</version>
-                <scope>test</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>net.bytebuddy</groupId>
-                <artifactId>byte-buddy-agent</artifactId>
-                <version>${bytebuddy.version}</version>
                 <scope>test</scope>
             </dependency>
             
