@@ -17,10 +17,21 @@
 
 package org.apache.shardingsphere.agent.spi.definition;
 
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.spi.AgentSPI;
+
+import java.util.Collection;
 
 /**
  * Plugin definition service.
  */
 public interface PluginDefinitionService extends AgentSPI {
+    
+    /**
+     * Install plugin interceptor points.
+     *
+     * @param isEnhancedForProxy is enhanced for proxy
+     * @return plugin interceptor points
+     */
+    Collection<PluginInterceptorPoint> install(boolean isEnhancedForProxy);
 }

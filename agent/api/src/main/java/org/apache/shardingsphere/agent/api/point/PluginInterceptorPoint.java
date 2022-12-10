@@ -38,11 +38,11 @@ import java.util.List;
  * .install();
  * }
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class PluginInterceptorPoint {
     
-    private final String classNameOfTarget;
+    private final String targetClassName;
     
     private final List<ConstructorPoint> constructorPoints;
     
@@ -62,11 +62,11 @@ public final class PluginInterceptorPoint {
     /**
      * Intercept target class.
      *
-     * @param classNameOfTarget a class name of wanted advice target
+     * @param targetClassName target class name
      * @return builder
      */
-    public static Builder intercept(final String classNameOfTarget) {
-        return new Builder(classNameOfTarget);
+    public static Builder intercept(final String targetClassName) {
+        return new Builder(targetClassName);
     }
     
     /**
@@ -81,7 +81,7 @@ public final class PluginInterceptorPoint {
         
         private final List<ClassStaticMethodPoint> classStaticMethodPoints = new ArrayList<>();
         
-        private final String classNameOfTarget;
+        private final String targetClassName;
         
         /**
          * Configure the intercepting point on constructor.
@@ -119,35 +119,31 @@ public final class PluginInterceptorPoint {
          * @return plugin advice definition
          */
         public PluginInterceptorPoint install() {
-            return new PluginInterceptorPoint(classNameOfTarget, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
+            return new PluginInterceptorPoint(targetClassName, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
         }
         
         /**
          * Instance method intercepting point configuration builder.
          */
+        @RequiredArgsConstructor
         public static final class InstanceMethodPointBuilder {
             
             private final Builder builder;
-            
-            private String classNameOfAdvice;
-            
-            private boolean overrideArgs;
-            
+    
             private final ElementMatcher<? super MethodDescription> matcher;
             
-            private InstanceMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
-                this.builder = builder;
-                this.matcher = matcher;
-            }
+            private String adviceClassName;
+            
+            private boolean overrideArgs;
             
             /**
              * Configure implementation for interceptor point.
              *
-             * @param classNameOfAdvice the class name of advice
+             * @param adviceClassName advice class name
              * @return instance method point builder
              */
-            public InstanceMethodPointBuilder implement(final String classNameOfAdvice) {
-                this.classNameOfAdvice = classNameOfAdvice;
+            public InstanceMethodPointBuilder implement(final String adviceClassName) {
+                this.adviceClassName = adviceClassName;
                 return this;
             }
             
@@ -168,7 +164,7 @@ public final class PluginInterceptorPoint {
              * @return plugin advice builder
              */
             public Builder build() {
-                builder.instanceMethodPoints.add(new InstanceMethodPoint(matcher, classNameOfAdvice, overrideArgs));
+                builder.instanceMethodPoints.add(new InstanceMethodPoint(matcher, adviceClassName, overrideArgs));
                 return builder;
             }
         }
@@ -179,12 +175,12 @@ public final class PluginInterceptorPoint {
         public static final class StaticMethodPointBuilder {
             
             private final Builder builder;
+    
+            private final ElementMatcher<? super MethodDescription> matcher;
             
-            private String classNameOfAdvice;
+            private String adviceClassName;
             
             private boolean overrideArgs;
-            
-            private final ElementMatcher<? super MethodDescription> matcher;
             
             private StaticMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;
@@ -194,11 +190,11 @@ public final class PluginInterceptorPoint {
             /**
              * Configure implementation for intercepting point.
              *
-             * @param classNameOfAdvice the class name of advice
-             * @return static method point configurer
+             * @param adviceClassName advice class name
+             * @return static method point configure builder
              */
-            public StaticMethodPointBuilder implement(final String classNameOfAdvice) {
-                this.classNameOfAdvice = classNameOfAdvice;
+            public StaticMethodPointBuilder implement(final String adviceClassName) {
+                this.adviceClassName = adviceClassName;
                 return this;
             }
             
@@ -206,7 +202,7 @@ public final class PluginInterceptorPoint {
              * Configure whether or not override the origin method arguments.
              *
              * @param overrideArgs whether to override origin method arguments
-             * @return static method point configurer
+             * @return static method point builder
              */
             public StaticMethodPointBuilder overrideArgs(final boolean overrideArgs) {
                 this.overrideArgs = overrideArgs;
@@ -219,7 +215,7 @@ public final class PluginInterceptorPoint {
              * @return builder
              */
             public Builder build() {
-                builder.classStaticMethodPoints.add(new ClassStaticMethodPoint(matcher, classNameOfAdvice, overrideArgs));
+                builder.classStaticMethodPoints.add(new ClassStaticMethodPoint(matcher, adviceClassName, overrideArgs));
                 return builder;
             }
         }
@@ -233,7 +229,7 @@ public final class PluginInterceptorPoint {
             
             private final ElementMatcher<? super MethodDescription> matcher;
             
-            private String classNameOfAdvice;
+            private String adviceClassName;
             
             private ConstructorPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;
@@ -243,11 +239,11 @@ public final class PluginInterceptorPoint {
             /**
              * Configure implementation for intercepting point.
              *
-             * @param classNameOfAdvice the class name of advice
+             * @param adviceClassName advice class name
              * @return constructor point builder
              */
-            public ConstructorPointBuilder implement(final String classNameOfAdvice) {
-                this.classNameOfAdvice = classNameOfAdvice;
+            public ConstructorPointBuilder implement(final String adviceClassName) {
+                this.adviceClassName = adviceClassName;
                 return this;
             }
             
@@ -257,7 +253,7 @@ public final class PluginInterceptorPoint {
              * @return plugin advice builder
              */
             public Builder build() {
-                builder.constructorPoints.add(new ConstructorPoint(matcher, classNameOfAdvice));
+                builder.constructorPoints.add(new ConstructorPoint(matcher, adviceClassName));
                 return builder;
             }
         }

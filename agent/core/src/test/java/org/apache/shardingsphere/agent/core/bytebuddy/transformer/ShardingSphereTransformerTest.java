@@ -84,7 +84,7 @@ public final class ShardingSphereTransformerTest {
                 .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
-        interceptorPointMap.put(interceptorPoint.getClassNameOfTarget(), interceptorPoint);
+        interceptorPointMap.put(interceptorPoint.getTargetClassName(), interceptorPoint);
         PluginInterceptorPoint interceptorPointInTwice = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
@@ -93,7 +93,7 @@ public final class ShardingSphereTransformerTest {
                 .implement(MockInstanceMethodAroundRepeatedAdvice.class.getTypeName())
                 .build()
                 .install();
-        interceptorPointMap.put(interceptorPointInTwice.getClassNameOfTarget(), interceptorPointInTwice);
+        interceptorPointMap.put(interceptorPointInTwice.getTargetClassName(), interceptorPointInTwice);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), PLUGIN_LOADER, interceptorPointMap);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))

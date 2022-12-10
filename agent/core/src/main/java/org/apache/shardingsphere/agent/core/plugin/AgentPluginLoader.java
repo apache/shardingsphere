@@ -30,7 +30,6 @@ import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
 
 import java.io.File;
@@ -106,9 +105,8 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginInterceptorPoint> pointMap) {
-        AbstractPluginDefinitionService definitionService = (AbstractPluginDefinitionService) pluginDefinitionService;
-        definitionService.install(isEnhancedForProxy).forEach(each -> {
-            String target = each.getClassNameOfTarget();
+        pluginDefinitionService.install(isEnhancedForProxy).forEach(each -> {
+            String target = each.getTargetClassName();
             if (pointMap.containsKey(target)) {
                 PluginInterceptorPoint pluginInterceptorPoint = pointMap.get(target);
                 pluginInterceptorPoint.getConstructorPoints().addAll(each.getConstructorPoints());
@@ -156,8 +154,7 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T getOrCreateInstance(final String adviceClassName, final ClassLoader classLoader) {
-        return (T) AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, isEnhancedForProxy);
+        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, isEnhancedForProxy);
     }
 }
