@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-frontend-core</artifactId>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>
