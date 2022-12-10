@@ -21,29 +21,33 @@ import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
- * Abstract plugin definition service.
+ * Interceptor point registry.
  */
-public abstract class AbstractPluginDefinitionService implements PluginDefinitionService {
+public final class InterceptorPointRegistry {
     
-    private final InterceptorPointRegistry interceptorPointRegistry = new InterceptorPointRegistry();
+    private final Map<String, Builder> builders = new ConcurrentHashMap<>();
     
-    @Override
-    public final Collection<PluginInterceptorPoint> install(final boolean isEnhancedForProxy) {
-        if (isEnhancedForProxy) {
-            defineProxyInterceptors();
-        } else {
-            defineJdbcInterceptors();
-        }
-        return interceptorPointRegistry.getAllInterceptorPoints();
+    /**
+     * Get interceptor point builder.
+     * 
+     * @param targetClassName target class name to be intercepted
+     * @return interceptor point builder
+     */
+    public Builder getInterceptorPointBuilder(final String targetClassName) {
+        return builders.computeIfAbsent(targetClassName, PluginInterceptorPoint::intercept);
     }
     
-    protected abstract void defineProxyInterceptors();
-    
-    protected abstract void defineJdbcInterceptors();
-    
-    protected final Builder defineInterceptor(final String targetClassName) {
-        return interceptorPointRegistry.getInterceptorPointBuilder(targetClassName);
+    /**
+     * Get all interceptor points.
+     * 
+     * @return all interceptor points
+     */
+    public Collection<PluginInterceptorPoint> getAllInterceptorPoints() {
+        return builders.values().stream().map(Builder::install).collect(Collectors.toList());
     }
 }
