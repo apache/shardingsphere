@@ -36,14 +36,15 @@
         <module>distribution</module>
     </modules>
     
+    <properties>
+        <bytebuddy.version>1.12.12</bytebuddy.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-agent</artifactId>
+            <version>${bytebuddy.version}</version>
         </dependency>
     </dependencies>
 </project>
