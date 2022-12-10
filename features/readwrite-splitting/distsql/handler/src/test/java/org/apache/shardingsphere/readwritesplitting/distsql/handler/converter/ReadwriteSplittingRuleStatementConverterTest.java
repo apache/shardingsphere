@@ -100,12 +100,12 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
                 });
     }
     
-    private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration) {
-        return null == ruleConfiguration.getDynamicStrategy() ? ruleConfiguration.getStaticStrategy().getWriteDataSourceName() : null;
+    private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfig) {
+        return null == ruleConfig.getDynamicStrategy() ? ruleConfig.getStaticStrategy().getWriteDataSourceName() : null;
     }
     
-    private Collection<String> getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration) {
-        return null == ruleConfiguration.getDynamicStrategy() ? ruleConfiguration.getStaticStrategy().getReadDataSourceNames() : Collections.emptyList();
+    private Collection<String> getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfig) {
+        return null == ruleConfig.getDynamicStrategy() ? ruleConfig.getStaticStrategy().getReadDataSourceNames() : Collections.emptyList();
     }
     
     private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String writeDataSource,
