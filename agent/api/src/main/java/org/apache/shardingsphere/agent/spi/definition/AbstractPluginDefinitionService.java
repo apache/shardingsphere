@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractPluginDefinitionService implements PluginDefinitionService {
     
-    private final Map<String, Builder> interceptorPointMap = new HashMap<>();
+    private final Map<String, Builder> interceptorPoints = new HashMap<>();
     
     /**
-     * Install to collection of plugin interceptor point.
+     * Install plugin interceptor points.
      *
      * @param isEnhancedForProxy is enhanced for proxy
-     * @return collection of plugin interceptor point
+     * @return plugin interceptor points
      */
     public final Collection<PluginInterceptorPoint> install(final boolean isEnhancedForProxy) {
         if (isEnhancedForProxy) {
@@ -44,7 +44,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
         } else {
             defineJdbcInterceptors();
         }
-        return interceptorPointMap.values().stream().map(Builder::install).collect(Collectors.toList());
+        return interceptorPoints.values().stream().map(Builder::install).collect(Collectors.toList());
     }
     
     protected abstract void defineProxyInterceptors();
@@ -52,11 +52,11 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     protected abstract void defineJdbcInterceptors();
     
     protected final Builder defineInterceptor(final String targetClassName) {
-        if (interceptorPointMap.containsKey(targetClassName)) {
-            return interceptorPointMap.get(targetClassName);
+        if (interceptorPoints.containsKey(targetClassName)) {
+            return interceptorPoints.get(targetClassName);
         }
         Builder result = PluginInterceptorPoint.intercept(targetClassName);
-        interceptorPointMap.put(targetClassName, result);
+        interceptorPoints.put(targetClassName, result);
         return result;
     }
 }
