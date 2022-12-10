@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
+import org.apache.shardingsphere.agent.spi.AgentSPI;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public final class AgentTypedSPIRegistry {
      * @param <T> type of agent typed SPI
      * @return registered service
      */
-    public static <T extends AgentTypedSPI> Optional<T> getRegisteredService(final Class<T> typedSPIClass, final String type) {
+    public static <T extends AgentSPI> Optional<T> getRegisteredService(final Class<T> typedSPIClass, final String type) {
         return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
     }
     
@@ -49,7 +49,7 @@ public final class AgentTypedSPIRegistry {
      * @param <T> type of agent typed SPI
      * @return registered services
      */
-    public static <T extends AgentTypedSPI> Collection<T> getAllRegisteredServices(final Class<T> typedSPIClass) {
+    public static <T extends AgentSPI> Collection<T> getAllRegisteredServices(final Class<T> typedSPIClass) {
         return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances();
     }
 }

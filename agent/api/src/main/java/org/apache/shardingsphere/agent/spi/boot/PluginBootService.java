@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.agent.spi.boot;
 
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
+import org.apache.shardingsphere.agent.spi.AgentSPI;
 
 /**
  * Plugin boot service that the lifecycle is from the agent start to shutdown.
  */
-public interface PluginBootService extends AgentTypedSPI, AutoCloseable {
+public interface PluginBootService extends AgentSPI, AutoCloseable {
     
     /**
      * Start plugin boot service.
