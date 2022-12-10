@@ -23,13 +23,14 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 /**
  * KEEP_FIRST_N_LAST_M test.
  */
-public class KeepFirstNLastMMaskAlgorithmTest {
+public final class KeepFirstNLastMMaskAlgorithmTest {
     
     private KeepFirstNLastMMaskAlgorithm keepFirstNLastMMaskAlgorithm;
     
@@ -41,33 +42,32 @@ public class KeepFirstNLastMMaskAlgorithmTest {
     
     private Properties initProperties() {
         Properties properties = new Properties();
-        properties.setProperty("start-index", "2");
-        properties.setProperty("stop-index", "5");
+        properties.setProperty("n", "2");
+        properties.setProperty("m", "5");
         properties.setProperty("replace-char", "*");
         return properties;
     }
     
     @Test
     public void testMask() {
-        String result = keepFirstNLastMMaskAlgorithm.mask("abc123456");
-        assertEquals("ab*23456", result);
+        String actual = keepFirstNLastMMaskAlgorithm.mask("abc123456");
+        assertThat(actual, is("ab*23456"));
     }
     
     @Test
     public void testMaskIfPlainValueIsLess() {
-        String result = keepFirstNLastMMaskAlgorithm.mask("abc");
-        assertEquals("abc", result);
+        String actual = keepFirstNLastMMaskAlgorithm.mask("abc");
+        assertThat(actual, is("abc"));
     }
     
     @Test
     public void testNotSetStartIndex() {
         KeepFirstNLastMMaskAlgorithm keepFirstNLastMMaskAlgorithm1 = new KeepFirstNLastMMaskAlgorithm();
         Properties wrongProperties = new Properties();
-        wrongProperties.setProperty("stop-index", "5");
+        wrongProperties.setProperty("m", "5");
         wrongProperties.setProperty("replace-char", "*");
         assertThrows(IllegalArgumentException.class, () -> {
             keepFirstNLastMMaskAlgorithm1.init(wrongProperties);
         });
     }
-    
 }

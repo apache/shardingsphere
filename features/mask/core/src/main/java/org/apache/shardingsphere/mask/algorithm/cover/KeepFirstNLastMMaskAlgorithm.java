@@ -27,17 +27,17 @@ import java.util.Properties;
 /**
  * KEEP_FIRST_N_LAST_M Algorithm.
  */
-public class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object, String> {
+public final class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object, String> {
     
-    private static final String START_INDEX = "start-index";
+    private static final String N = "n";
     
-    private static final String STOP_INDEX = "stop-index";
+    private static final String M = "m";
     
     private static final String REPLACE_CHAR = "replace-char";
     
-    private Integer startIndex;
+    private Integer n;
     
-    private Integer stopIndex;
+    private Integer m;
     
     private String replaceChar;
     
@@ -47,22 +47,22 @@ public class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object, Strin
     @Override
     public String mask(final Object plainValue) {
         String value = Optional.ofNullable(plainValue).orElse("").toString();
-        if ("".equals(value) || value.length() <= startIndex + stopIndex) {
+        if ("".equals(value) || value.length() <= n + m) {
             return value;
         }
         StringBuilder sb = new StringBuilder(value);
-        sb.replace(startIndex, value.length() - stopIndex, replaceChar);
+        sb.replace(n, value.length() - m, replaceChar);
         return sb.toString();
     }
     
     private Integer initStartIndex(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(START_INDEX), "%s can not be null.", START_INDEX);
-        return Integer.parseInt(props.getProperty(START_INDEX));
+        Preconditions.checkArgument(props.containsKey(N), "%s can not be null.", N);
+        return Integer.parseInt(props.getProperty(N));
     }
     
     private Integer initStopIndex(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(STOP_INDEX), "%s can not be null.", STOP_INDEX);
-        return Integer.parseInt(props.getProperty(STOP_INDEX));
+        Preconditions.checkArgument(props.containsKey(M), "%s can not be null.", M);
+        return Integer.parseInt(props.getProperty(M));
     }
     
     private String initReplaceChar(final Properties props) {
@@ -73,8 +73,8 @@ public class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object, Strin
     @Override
     public void init(final Properties props) {
         this.props = props;
-        this.startIndex = initStartIndex(props);
-        this.stopIndex = initStopIndex(props);
+        this.n = initStartIndex(props);
+        this.m = initStopIndex(props);
         this.replaceChar = initReplaceChar(props);
     }
     
