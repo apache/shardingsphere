@@ -66,7 +66,7 @@ mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 
 ### Reserved word
 
-`SHOW`、`UNUSED`、`SHARDING`、`KEY`、`GENERATORS`、`FROM`
+`SHOW`, `UNUSED`, `SHARDING`, `KEY`, `GENERATORS`, `FROM`
 
 ### Related links
 

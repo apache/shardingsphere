@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComResetConnectionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
@@ -49,9 +50,11 @@ public final class MySQLCommandPacketFactory {
      * @param commandPacketType command packet type for MySQL
      * @param payload packet payload for MySQL
      * @param connectionSession connection session
+     * @param sqlCommentParseEnabled SQL comment parse enabled
      * @return created instance
      */
-    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload, final ConnectionSession connectionSession) {
+    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload,
+                                                 final ConnectionSession connectionSession, final boolean sqlCommentParseEnabled) {
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitPacket();
@@ -60,13 +63,13 @@ public final class MySQLCommandPacketFactory {
             case COM_FIELD_LIST:
                 return new MySQLComFieldListPacket(payload);
             case COM_QUERY:
-                return new MySQLComQueryPacket(payload);
+                return new MySQLComQueryPacket(payload, sqlCommentParseEnabled);
             case COM_STMT_PREPARE:
                 return new MySQLComStmtPreparePacket(payload);
             case COM_STMT_EXECUTE:
                 MySQLServerPreparedStatement serverPreparedStatement =
                         connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));
-                return new MySQLComStmtExecutePacket(payload, serverPreparedStatement.getSqlStatement().getParameterCount());
+                return new MySQLComStmtExecutePacket(payload, serverPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount());
             case COM_STMT_SEND_LONG_DATA:
                 return new MySQLComStmtSendLongDataPacket(payload);
             case COM_STMT_RESET:
@@ -77,6 +80,8 @@ public final class MySQLCommandPacketFactory {
                 return new MySQLComSetOptionPacket(payload);
             case COM_PING:
                 return new MySQLComPingPacket();
+            case COM_RESET_CONNECTION:
+                return new MySQLComResetConnectionPacket();
             default:
                 return new MySQLUnsupportedCommandPacket(commandPacketType);
         }

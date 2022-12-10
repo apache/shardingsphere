@@ -31,10 +31,10 @@ public final class SPISQLExecutionHook implements SQLExecutionHook {
     private final Collection<SQLExecutionHook> sqlExecutionHooks = SQLExecutionHookFactory.getAllInstances();
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters,
+    public void start(final String dataSourceName, final String sql, final List<Object> params,
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+            each.start(dataSourceName, sql, params, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
         }
     }
     

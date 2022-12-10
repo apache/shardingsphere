@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.fixture;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
@@ -24,12 +25,13 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorState
 public final class FixtureExecutorStatementManager implements ExecutorStatementManager<Object, Object, FixtureStorageResourceOption> {
     
     @Override
-    public Object createStorageResource(final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option) {
+    public Object createStorageResource(final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option, final DatabaseType databaseType) {
         return null;
     }
     
     @Override
-    public Object createStorageResource(final ExecutionUnit executionUnit, final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option) {
+    public Object createStorageResource(final ExecutionUnit executionUnit, final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option,
+                                        final DatabaseType databaseType) {
         return null;
     }
 }

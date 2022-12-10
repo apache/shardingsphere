@@ -45,7 +45,7 @@ public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String sql = getSqlStatement().getSql();
-        String databaseType = getConnectionSession().getDatabaseType().getType();
+        String databaseType = getConnectionSession().getProtocolType().getType();
         return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sql, databaseType)));
     }
     

@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Convert yaml configuration statement.
+ * Convert YAML configuration statement.
  */
 @RequiredArgsConstructor
 @Getter

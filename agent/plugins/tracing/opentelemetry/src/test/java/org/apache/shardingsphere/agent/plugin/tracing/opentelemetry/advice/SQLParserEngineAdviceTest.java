@@ -44,7 +44,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
     
-    private static final String SQL_STMT = "select 1";
+    private static final String SQL_STATEMENT = "select 1";
     
     private SQLParserEngineAdvice advice;
     
@@ -61,8 +61,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(2));
@@ -71,14 +71,14 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STMT));
+        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STATEMENT));
     }
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STMT, true}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(2));
@@ -88,6 +88,6 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STMT));
+        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STATEMENT));
     }
 }

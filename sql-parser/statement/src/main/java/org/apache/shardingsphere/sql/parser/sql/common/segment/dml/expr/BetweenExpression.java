@@ -20,12 +20,10 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class BetweenExpression implements ExpressionSegment {
     
     private final int startIndex;

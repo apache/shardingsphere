@@ -19,27 +19,32 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.spi.data.collector.ShardingSphereDataCollector;
-import org.apache.shardingsphere.data.pipeline.spi.data.collector.ShardingSphereDataCollectorFactory;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
+import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollectorFactory;
 import org.apache.shardingsphere.infra.metadata.data.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere data schedule collector.
@@ -47,8 +52,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public final class ShardingSphereDataScheduleCollector {
-    
-    private static final String SHARDING_SPHERE = "shardingsphere";
     
     private final ScheduledExecutorService dataCollectorExecutor = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("data-collect-%d"));
     
@@ -62,7 +65,7 @@ public final class ShardingSphereDataScheduleCollector {
     }
     
     @RequiredArgsConstructor
-    private static final class ShardingSphereDataCollectorRunnable implements Runnable {
+    protected static final class ShardingSphereDataCollectorRunnable implements Runnable {
         
         private final ContextManager contextManager;
         
@@ -70,80 +73,95 @@ public final class ShardingSphereDataScheduleCollector {
         public void run() {
             ShardingSphereData shardingSphereData = contextManager.getMetaDataContexts().getShardingSphereData();
             ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-            DatabaseType databaseType = metaData.getDatabases().values().iterator().next().getProtocolType();
-            // TODO refactor by dialect database
-            if (databaseType instanceof MySQLDatabaseType) {
-                collectForMySQL(shardingSphereData, metaData, databaseType);
-            } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-                collectForPostgreSQL(shardingSphereData, metaData, databaseType);
-            }
-        }
-        
-        private void collectForMySQL(final ShardingSphereData shardingSphereData, final ShardingSphereMetaData metaData, final DatabaseType databaseType) {
-            Optional<Collection<ShardingSphereTable>> shardingSphereTables = Optional.ofNullable(metaData.getDatabase(SHARDING_SPHERE))
-                    .map(database -> database.getSchema(SHARDING_SPHERE)).map(schema -> schema.getTables().values());
-            shardingSphereTables.ifPresent(tables -> tables.forEach(table -> metaData.getDatabases().forEach((key, value) -> {
-                if (!databaseType.getSystemDatabaseSchemaMap().containsKey(key)) {
-                    collectAndSendEvent(shardingSphereData, table, value, databaseType);
+            ShardingSphereData changedShardingSphereData = new ShardingSphereData();
+            shardingSphereData.getDatabaseData().forEach((key, value) -> {
+                if (metaData.containsDatabase(key)) {
+                    collectForDatabase(key, value, metaData.getDatabases(), changedShardingSphereData);
                 }
-            })));
+            });
+            compareUpdateAndSendEvent(shardingSphereData, changedShardingSphereData, metaData.getDatabases());
         }
         
-        private void collectForPostgreSQL(final ShardingSphereData shardingSphereData, final ShardingSphereMetaData metaData, final DatabaseType databaseType) {
-            metaData.getDatabases().forEach((key, value) -> {
-                if (!databaseType.getSystemDatabaseSchemaMap().containsKey(key)) {
-                    Optional<Collection<ShardingSphereTable>> shardingSphereTables = Optional.ofNullable(value.getSchema(SHARDING_SPHERE)).map(schema -> schema.getTables().values());
-                    shardingSphereTables.ifPresent(tables -> tables.forEach(table -> collectAndSendEvent(shardingSphereData, table, value, databaseType)));
+        private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData,
+                                        final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
+            databaseData.getSchemaData().forEach((key, value) -> {
+                if (databases.get(databaseName.toLowerCase()).containsSchema(key)) {
+                    collectForSchema(databaseName, key, value, databases, changedShardingSphereData);
                 }
             });
         }
         
-        private void collectAndSendEvent(final ShardingSphereData shardingSphereData, final ShardingSphereTable table, final ShardingSphereDatabase database, final DatabaseType databaseType) {
-            String databaseName = database.getName();
+        private void collectForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
+                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
+            schemaData.getTableData().forEach((key, value) -> {
+                if (databases.get(databaseName.toLowerCase()).getSchema(schemaName).containsTable(key)) {
+                    collectForTable(databaseName, schemaName, databases.get(databaseName).getSchema(schemaName).getTable(key), databases, changedShardingSphereData);
+                }
+            });
+        }
+        
+        private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
+                                     final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
             Optional<ShardingSphereDataCollector> shardingSphereDataCollector = ShardingSphereDataCollectorFactory.findInstance(table.getName());
             if (!shardingSphereDataCollector.isPresent()) {
                 return;
             }
             Optional<ShardingSphereTableData> tableData = Optional.empty();
             try {
-                tableData = shardingSphereDataCollector.get().collect(database, table);
+                tableData = shardingSphereDataCollector.get().collect(databaseName, table, databases);
             } catch (SQLException ex) {
-                log.error("Collect data for sharding_table_statistics error!", ex);
+                log.error("Collect data failed!", ex);
             }
-            tableData.ifPresent(optional -> updateAndSendEvent(shardingSphereData, table.getName(), optional, databaseType, databaseName));
+            tableData.ifPresent(shardingSphereTableData -> changedShardingSphereData.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
+                    .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), shardingSphereTableData));
         }
         
-        private void updateAndSendEvent(final ShardingSphereData shardingSphereData, final String tableName, final ShardingSphereTableData changedTableData,
-                                        final DatabaseType databaseType, final String databaseName) {
-            Optional<ShardingSphereTableData> originTableData = getOriginTableData(shardingSphereData, tableName, databaseName, databaseType);
-            if (originTableData.isPresent() && originTableData.get().equals(changedTableData)) {
+        private void compareUpdateAndSendEvent(final ShardingSphereData shardingSphereData, final ShardingSphereData changedShardingSphereData, final Map<String, ShardingSphereDatabase> databases) {
+            changedShardingSphereData.getDatabaseData().forEach((key, value) -> compareUpdateAndSendEventForDatabase(key, shardingSphereData.getDatabaseData().get(key), value, shardingSphereData,
+                    databases.get(key.toLowerCase())));
+        }
+        
+        private void compareUpdateAndSendEventForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData, final ShardingSphereDatabaseData changedDatabaseData,
+                                                          final ShardingSphereData shardingSphereData, final ShardingSphereDatabase database) {
+            changedDatabaseData.getSchemaData().forEach((key, value) -> compareUpdateAndSendEventForSchema(databaseName, key, databaseData.getSchemaData().get(key), value, shardingSphereData,
+                    database.getSchema(key)));
+        }
+        
+        private void compareUpdateAndSendEventForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
+                                                        final ShardingSphereSchemaData changedSchemaData, final ShardingSphereData shardingSphereData, final ShardingSphereSchema schema) {
+            changedSchemaData.getTableData().forEach((key, value) -> compareUpdateAndSendEventForTable(databaseName, schemaName, schemaData.getTableData().get(key), value, shardingSphereData,
+                    schema.getTable(key)));
+        }
+        
+        private void compareUpdateAndSendEventForTable(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
+                                                       final ShardingSphereTableData changedTableData, final ShardingSphereData shardingSphereData, final ShardingSphereTable table) {
+            if (tableData.equals(changedTableData)) {
                 return;
             }
-            Optional<String> shardingSphereDataDatabaseName = findShardingSphereDatabaseName(databaseName, databaseType);
-            if (!shardingSphereDataDatabaseName.isPresent()) {
-                return;
-            }
-            Optional.ofNullable(shardingSphereData.getDatabaseData().get(shardingSphereDataDatabaseName.get())).map(database -> database.getSchemaData().get(SHARDING_SPHERE))
-                    .ifPresent(shardingSphereSchemaData -> shardingSphereSchemaData.getTableData().put(tableName, changedTableData));
-            ShardingSphereSchemaDataAlteredEvent event = new ShardingSphereSchemaDataAlteredEvent(shardingSphereDataDatabaseName.get(), SHARDING_SPHERE);
-            event.getAlteredTables().add(changedTableData);
+            shardingSphereData.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
+            ShardingSphereSchemaDataAlteredEvent event = getShardingSphereSchemaDataAlteredEvent(databaseName, schemaName, tableData, changedTableData, table);
             contextManager.getInstanceContext().getEventBusContext().post(event);
         }
         
-        private Optional<ShardingSphereTableData> getOriginTableData(final ShardingSphereData shardingSphereData, final String tableName, final String databaseName, final DatabaseType databaseType) {
-            Optional<String> shardingSphereDataDatabaseName = findShardingSphereDatabaseName(databaseName, databaseType);
-            return shardingSphereDataDatabaseName.flatMap(optional -> Optional.ofNullable(shardingSphereData.getDatabaseData().get(optional))
-                    .map(database -> database.getSchemaData().get(SHARDING_SPHERE)).map(shardingSphereSchemaData -> shardingSphereSchemaData.getTableData().get(tableName)));
-        }
-        
-        private Optional<String> findShardingSphereDatabaseName(final String databaseName, final DatabaseType databaseType) {
-            if (databaseType instanceof MySQLDatabaseType) {
-                return Optional.of(SHARDING_SPHERE);
-            } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-                return Optional.of(databaseName);
+        private ShardingSphereSchemaDataAlteredEvent getShardingSphereSchemaDataAlteredEvent(final String databaseName, final String schemaName, final ShardingSphereTableData tableData,
+                                                                                             final ShardingSphereTableData changedTableData, final ShardingSphereTable table) {
+            ShardingSphereSchemaDataAlteredEvent result = new ShardingSphereSchemaDataAlteredEvent(databaseName, schemaName, tableData.getName());
+            Map<String, ShardingSphereRowData> tableDataMap = tableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
+            Map<String, ShardingSphereRowData> changedTableDataMap = changedTableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
+            YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getColumns().values()));
+            for (Entry<String, ShardingSphereRowData> entry : changedTableDataMap.entrySet()) {
+                if (!tableDataMap.containsKey(entry.getKey())) {
+                    result.getAddedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
+                } else if (!tableDataMap.get(entry.getKey()).equals(entry.getValue())) {
+                    result.getUpdatedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
+                }
             }
-            // TODO support other database type
-            return Optional.empty();
+            for (Entry<String, ShardingSphereRowData> entry : tableDataMap.entrySet()) {
+                if (!changedTableDataMap.containsKey(entry.getKey())) {
+                    result.getDeletedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
+                }
+            }
+            return result;
         }
     }
 }

@@ -31,13 +31,11 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class PostgreSQLRowDescriptionPacket implements PostgreSQLIdentifierPacket {
     
-    private final int fieldCount;
-    
     private final Collection<PostgreSQLColumnDescription> columnDescriptions;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt2(fieldCount);
+        payload.writeInt2(columnDescriptions.size());
         for (PostgreSQLColumnDescription each : columnDescriptions) {
             payload.writeStringNul(each.getColumnName());
             payload.writeInt4(each.getTableOID());

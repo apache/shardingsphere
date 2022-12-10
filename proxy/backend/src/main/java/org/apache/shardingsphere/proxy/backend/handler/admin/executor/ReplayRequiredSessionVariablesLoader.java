@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
@@ -26,6 +28,7 @@ import java.util.Collections;
 /**
  * Loader for session variables need to be replayed.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReplayRequiredSessionVariablesLoader {
     
     static {

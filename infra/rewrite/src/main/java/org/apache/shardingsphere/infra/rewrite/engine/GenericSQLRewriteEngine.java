@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
+import java.util.Map;
+
 /**
  * Generic SQL rewrite engine.
  */
@@ -35,7 +37,7 @@ public final class GenericSQLRewriteEngine {
     
     private final DatabaseType protocolType;
     
-    private final DatabaseType storageType;
+    private final Map<String, DatabaseType> storageTypes;
     
     /**
      * Rewrite SQL and parameters.
@@ -45,7 +47,7 @@ public final class GenericSQLRewriteEngine {
      */
     public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
         String sql = translatorRule.translate(
-                new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), protocolType, storageType);
+                new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), protocolType, storageTypes.values().iterator().next());
         return new GenericSQLRewriteResult(new SQLRewriteUnit(sql, sqlRewriteContext.getParameterBuilder().getParameters()));
     }
 }

@@ -64,9 +64,9 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     @Before
     public void initTable() {
         try {
-            Connection conn = dataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
-            conn.close();
+            Connection connection = dataSource.getConnection();
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
+            connection.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }

@@ -19,11 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class NotExpression implements ExpressionSegment {
     
     private final int startIndex;

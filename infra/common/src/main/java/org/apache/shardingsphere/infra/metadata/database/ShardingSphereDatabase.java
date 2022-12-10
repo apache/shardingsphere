@@ -180,10 +180,13 @@ public final class ShardingSphereDatabase {
      */
     public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass) {
         Collection<? extends ShardingSphereRule> toBeReloadedRules = ruleMetaData.findRules(ruleClass);
-        RuleConfiguration config = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
+        RuleConfiguration ruleConfig = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
+        Collection<ShardingSphereRule> databaseRules = new LinkedList<>(ruleMetaData.getRules());
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
-            ruleMetaData.getRules().removeAll(toBeReloadedRules);
-            ruleMetaData.getRules().add(((MutableDataNodeRule) optional).reloadRule(config, name, resourceMetaData.getDataSources(), ruleMetaData.getRules()));
+            databaseRules.removeAll(toBeReloadedRules);
+            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, resourceMetaData.getDataSources(), databaseRules));
         });
+        ruleMetaData.getRules().clear();
+        ruleMetaData.getRules().addAll(databaseRules);
     }
 }

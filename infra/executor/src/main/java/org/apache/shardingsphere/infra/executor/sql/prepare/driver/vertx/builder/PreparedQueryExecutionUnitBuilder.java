@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.builde
 
 import io.vertx.core.Future;
 import io.vertx.sqlclient.SqlClient;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.vertx.VertxExecutionUnit;
@@ -32,7 +33,7 @@ public final class PreparedQueryExecutionUnitBuilder implements VertxExecutionUn
     
     @Override
     public VertxExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorVertxStatementManager statementManager,
-                                    final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option) {
+                                    final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option, final DatabaseType databaseType) {
         return new VertxExecutionUnit(executionUnit, connectionMode, connection.compose(sqlClient -> Future.succeededFuture(sqlClient.preparedQuery(executionUnit.getSqlUnit().getSql()))));
     }
     

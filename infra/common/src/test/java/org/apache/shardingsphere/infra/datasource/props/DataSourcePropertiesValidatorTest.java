@@ -18,25 +18,22 @@
 package org.apache.shardingsphere.infra.datasource.props;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 public final class DataSourcePropertiesValidatorTest {
     
     @Test
-    public void assertValidateSuccess() throws InvalidResourcesException {
-        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())), new H2DatabaseType());
-    }
-    
-    @Test(expected = InvalidResourcesException.class)
-    public void assertDatabaseTypeInValidateFail() throws InvalidResourcesException {
-        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())), new MySQLDatabaseType());
+    public void assertValidateSuccess() {
+        assertTrue(new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties()))).isEmpty());
     }
     
     private Map<String, Object> createValidProperties() {
@@ -48,9 +45,11 @@ public final class DataSourcePropertiesValidatorTest {
         return result;
     }
     
-    @Test(expected = InvalidResourcesException.class)
-    public void assertValidateFailed() throws InvalidResourcesException {
-        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createInvalidProperties())), new H2DatabaseType());
+    @Test
+    public void assertValidateFailed() {
+        Collection<String> actual = new DataSourcePropertiesValidator().validate(
+                Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createInvalidProperties())));
+        assertThat(actual, is(Collections.singletonList("Invalid data source `name`, error message is: The URL `InvalidJdbcUrl` is not recognized, please refer to the pattern `jdbc:.*`.")));
     }
     
     private Map<String, Object> createInvalidProperties() {

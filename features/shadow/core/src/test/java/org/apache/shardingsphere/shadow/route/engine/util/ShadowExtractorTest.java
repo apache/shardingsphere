@@ -33,8 +33,8 @@ public final class ShadowExtractorTest {
     @Test
     public void assertExtractValuesSimpleExpressionSegment() {
         SimpleExpressionSegment simpleExpressionSegment = new LiteralExpressionSegment(1, 2, "expected");
-        List<Object> parameters = new LinkedList<>();
-        assertTrue(ShadowExtractor.extractValues(simpleExpressionSegment, parameters).isPresent());
-        assertThat(ShadowExtractor.extractValues(simpleExpressionSegment, parameters).get().iterator().next(), is("expected"));
+        List<Object> params = new LinkedList<>();
+        assertTrue(ShadowExtractor.extractValues(simpleExpressionSegment, params).isPresent());
+        assertThat(ShadowExtractor.extractValues(simpleExpressionSegment, params).get().iterator().next(), is("expected"));
     }
 }

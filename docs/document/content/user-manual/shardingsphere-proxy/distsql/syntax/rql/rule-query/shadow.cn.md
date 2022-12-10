@@ -46,12 +46,6 @@ shadowRule:
 | props                 | 算法参数    |
 | is_default            | 是否默认    |
 
-### Shadow Rule status
-
-| 列                    | 说明     |
-| -------------------   | ------- |
-| status                | 是否启用 |
-
 ## 示例
 
 *SHOW SHADOW RULES*

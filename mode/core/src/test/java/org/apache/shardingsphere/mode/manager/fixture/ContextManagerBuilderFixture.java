@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 public final class ContextManagerBuilderFixture implements ContextManagerBuilder {
     
     @Override
-    public ContextManager build(final ContextManagerBuilderParameter parameter) {
+    public ContextManager build(final ContextManagerBuilderParameter param) {
         return mock(ContextManager.class);
     }
     

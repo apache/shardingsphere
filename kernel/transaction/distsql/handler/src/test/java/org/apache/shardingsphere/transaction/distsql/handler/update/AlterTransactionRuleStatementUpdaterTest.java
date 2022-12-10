@@ -18,47 +18,55 @@
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.factory.ShardingSphereTransactionManagerFactory;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public final class AlterTransactionRuleStatementUpdaterTest {
     
     @Test
     public void assertExecuteWithXA() {
-        AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
-        ShardingSphereMetaData metaData = createMetaData();
-        updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
-        TransactionRule updatedRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        assertThat(updatedRule.getDefaultType(), is(TransactionType.XA));
-        assertThat(updatedRule.getProviderType(), is("Atomikos"));
-        assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
-        assertTrue(null != updatedRule.getProps() && !updatedRule.getProps().isEmpty());
-        String props = PropertiesConverter.convert(updatedRule.getProps());
-        assertTrue(props.contains("host=127.0.0.1"));
-        assertTrue(props.contains("databaseName=jbossts"));
+        try (MockedStatic<ShardingSphereTransactionManagerFactory> mockFactory = mockStatic(ShardingSphereTransactionManagerFactory.class)) {
+            mockFactory.when(() -> ShardingSphereTransactionManagerFactory.getInstance(any())).thenReturn(Optional.of(new ShardingSphereTransactionManagerFixture()));
+            AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
+            ShardingSphereMetaData metaData = createMetaData();
+            updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
+            TransactionRule updatedRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+            assertThat(updatedRule.getDefaultType(), is(TransactionType.XA));
+            assertThat(updatedRule.getProviderType(), is("Atomikos"));
+            assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
+            assertTrue(null != updatedRule.getProps() && !updatedRule.getProps().isEmpty());
+            String props = PropertiesConverter.convert(updatedRule.getProps());
+            assertTrue(props.contains("host=127.0.0.1"));
+            assertTrue(props.contains("databaseName=jbossts"));
+        }
     }
     
     @Test
@@ -79,7 +87,7 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     }
     
     private TransactionRule createTransactionRule(final Map<String, ShardingSphereDatabase> databases) {
-        return new TransactionRule(new TransactionRuleConfiguration("BASE", null, new Properties()), databases, mock(InstanceContext.class));
+        return new TransactionRule(new TransactionRuleConfiguration("BASE", null, new Properties()), databases);
     }
     
     private ShardingSphereDatabase mockDatabase() {

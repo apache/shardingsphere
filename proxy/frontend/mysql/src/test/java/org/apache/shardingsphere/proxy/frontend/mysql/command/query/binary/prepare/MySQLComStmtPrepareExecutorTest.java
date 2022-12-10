@@ -55,7 +55,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -110,9 +109,8 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         assertFalse(actualIterator.hasNext());
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLSelectStatement.class));
-        assertTrue(actualPreparedStatement.getSqlStatementContext().isPresent());
-        assertThat(actualPreparedStatement.getSqlStatementContext().get(), instanceOf(SelectStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
         MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
     }
     
@@ -129,9 +127,8 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         assertFalse(actualIterator.hasNext());
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
-        assertTrue(actualPreparedStatement.getSqlStatementContext().isPresent());
-        assertThat(actualPreparedStatement.getSqlStatementContext().get(), instanceOf(UpdateStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(UpdateStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
         MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
     }
     

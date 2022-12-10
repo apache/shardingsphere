@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -48,8 +47,6 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final RuleConfiguration configuration;
     
-    private ShadowAlgorithm defaultShadowAlgorithm;
-    
     private final Collection<String> hintShadowAlgorithmNames = new LinkedList<>();
     
     private final Map<String, ShadowDataSourceRule> shadowDataSourceMappings = new LinkedHashMap<>();
@@ -58,24 +55,21 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final Map<String, ShadowTableRule> shadowTableRules = new LinkedHashMap<>();
     
+    private final ShadowAlgorithm defaultShadowAlgorithm;
+    
     public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         initShadowDataSourceMappings(ruleConfig.getDataSources());
         initShadowAlgorithmConfigurations(ruleConfig.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(ruleConfig.getDefaultShadowAlgorithmName());
+        defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
+        if (defaultShadowAlgorithm instanceof HintShadowAlgorithm<?>) {
+            hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
+        }
         initShadowTableRules(ruleConfig.getTables());
     }
     
-    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration ruleConfig) {
-        configuration = ruleConfig;
-        initShadowDataSourceMappings(ruleConfig.getDataSources());
-        initShadowAlgorithms(ruleConfig.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(ruleConfig.getDefaultShadowAlgorithmName());
-        initShadowTableRules(ruleConfig.getTables());
-    }
-    
-    private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getProductionDataSourceName(), value.getShadowDataSourceName())));
+    private void initShadowDataSourceMappings(final Collection<ShadowDataSourceConfiguration> dataSources) {
+        dataSources.forEach(each -> shadowDataSourceMappings.put(each.getName(), new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName())));
     }
     
     private void initShadowAlgorithmConfigurations(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
@@ -86,23 +80,6 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
             }
             shadowAlgorithms.put(key, algorithm);
         });
-    }
-    
-    private void initShadowAlgorithms(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        shadowAlgorithms.forEach((key, value) -> {
-            if (value instanceof HintShadowAlgorithm<?>) {
-                hintShadowAlgorithmNames.add(key);
-            }
-            this.shadowAlgorithms.put(key, value);
-        });
-    }
-    
-    private void initDefaultShadowAlgorithm(final String defaultShadowAlgorithmName) {
-        ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(defaultShadowAlgorithmName);
-        if (shadowAlgorithm instanceof HintShadowAlgorithm<?>) {
-            hintShadowAlgorithmNames.add(defaultShadowAlgorithmName);
-        }
-        defaultShadowAlgorithm = shadowAlgorithm;
     }
     
     private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables) {

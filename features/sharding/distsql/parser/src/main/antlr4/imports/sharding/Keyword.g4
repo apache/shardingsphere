@@ -51,8 +51,8 @@ FROM
     : F R O M
     ;
 
-RESOURCES
-    : R E S O U R C E S
+STORAGE_UNITS
+    : S T O R A G E UL_ U N I T S
     ;
 
 KEY_GENERATE_STRATEGY
@@ -91,8 +91,8 @@ COLUMN
     : C O L U M N
     ;
 
-BINDING
-    : B I N D I N G
+REFERENCE
+    : R E F E R E N C E
     ;
 
 BROADCAST
@@ -229,4 +229,96 @@ AUDIT_STRATEGY
 
 ALLOW_HINT_DISABLE
     : A L L O W UL_ H I N T UL_ D I S A B L E
+    ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
+MOD
+    : M O D
+    ;
+
+COSID_MOD
+    : C O S I D UL_ M O D
+    ;
+
+HASH_MOD
+    : H A S H UL_ M O D
+    ;
+
+VOLUME_RANGE
+    : V O L U M E UL_ R A N G E
+    ;
+
+BOUNDARY_RANGE
+    : B O U N D A R Y UL_ R A N G E
+    ;
+
+AUTO_INTERVAL
+    : A U T O UL_ I N T E R V A L
+    ;
+
+INLINE
+    : I N L I N E
+    ;
+
+INTERVAL
+    : I N T E R V A L
+    ;
+
+COSID_INTERVAL
+    : C O S I D UL_ I N T E R V A L
+    ;
+
+COSID_INTERVAL_SNOWFLAKE
+    : C O S I D UL_ I N T E R V A L UL_ S N O W F L A K E
+    ;
+
+COMPLEX_INLINE
+    : C O M P L E X UL_ I N L I N E
+    ;
+
+HINT_INLINE
+    : H I N T UL_ I N L I N E
+    ;
+
+CLASS_BASED
+    : C L A S S UL_ B A S E D
+    ;
+
+SNOWFLAKE
+    : S N O W F L A K E
+    ;
+
+NANOID
+    : N A N O I D
+    ;
+
+UUID
+    : U U I D
+    ;
+
+COSID
+    : C O S I D
+    ;
+
+COSID_SNOWFLAKE
+    : C O S I D UL_ S N O W F L A K E
+    ;
+
+STANDARD
+    : S T A N D A R D
+    ;
+
+COMPLEX
+    : C O M P L E X
+    ;
+
+DML_SHARDING_CONDITIONS
+    : D M L UL_ S H A R D I N G UL_ C O N D I T I O N S
     ;

@@ -39,7 +39,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(Collections.emptyList());
-        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
+        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
     
     @Test
@@ -47,6 +47,6 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
-        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
+        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
 }

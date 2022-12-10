@@ -36,8 +36,7 @@ public final class KeyGenerateAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstanceWithAlgorithmConfiguration() {
-        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
-        assertThat(KeyGenerateAlgorithmFactory.newInstance(configuration), instanceOf(KeyGenerateAlgorithmFixture.class));
+        assertThat(KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("FIXTURE", new Properties())), instanceOf(KeyGenerateAlgorithmFixture.class));
     }
     
     @Test

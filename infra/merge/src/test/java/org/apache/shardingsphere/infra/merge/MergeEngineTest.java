@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.merge.fixture.rule.DecoratorRuleFixture;
 import org.apache.shardingsphere.infra.merge.fixture.rule.MergerRuleFixture;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.test.fixture.rule.MockedRule;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;

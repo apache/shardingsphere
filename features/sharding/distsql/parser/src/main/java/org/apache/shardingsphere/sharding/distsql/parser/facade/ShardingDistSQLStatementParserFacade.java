@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for sharding dist SQL statement.
+ * SQL parser facade for sharding DistSQL statement.
  */
 public final class ShardingDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     

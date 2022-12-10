@@ -66,7 +66,7 @@ mysql> SHOW SHARDING AUDITORS;
 
 ### Reserved word
 
-`SHOW`、`SHARDING`、`AUDITORS`、`FROM`
+`SHOW`, `SHARDING`, `AUDITORS`, `FROM`
 
 ### Related links
 

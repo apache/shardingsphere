@@ -19,36 +19,26 @@ package org.apache.shardingsphere.parser.yaml.swapper;
 
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public final class YamlSQLParserCacheOptionConfigurationSwapperTest {
     
-    private final YamlSQLParserCacheOptionConfigurationSwapper cacheOptionConfigurationSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
-    
-    private final CacheOption cacheOption = new CacheOption(2, 5);
-    
-    private final YamlSQLParserCacheOptionRuleConfiguration cacheOptionRuleConfiguration = new YamlSQLParserCacheOptionRuleConfiguration();
-    
-    @Before
-    public void setup() {
-        cacheOptionRuleConfiguration.setInitialCapacity(cacheOption.getInitialCapacity());
-        cacheOptionRuleConfiguration.setMaximumSize(cacheOption.getMaximumSize());
-    }
-    
     @Test
     public void assertSwapToYamlConfiguration() {
-        YamlSQLParserCacheOptionRuleConfiguration actual = cacheOptionConfigurationSwapper.swapToYamlConfiguration(cacheOption);
+        YamlSQLParserCacheOptionRuleConfiguration actual = new YamlSQLParserCacheOptionConfigurationSwapper().swapToYamlConfiguration(new CacheOption(2, 5));
         assertThat(actual.getInitialCapacity(), is(2));
         assertThat(actual.getMaximumSize(), is(5L));
     }
     
     @Test
     public void assertSwapToObject() {
-        CacheOption actual = cacheOptionConfigurationSwapper.swapToObject(cacheOptionRuleConfiguration);
+        YamlSQLParserCacheOptionRuleConfiguration cacheOptionRuleConfig = new YamlSQLParserCacheOptionRuleConfiguration();
+        cacheOptionRuleConfig.setInitialCapacity(2);
+        cacheOptionRuleConfig.setMaximumSize(5L);
+        CacheOption actual = new YamlSQLParserCacheOptionConfigurationSwapper().swapToObject(cacheOptionRuleConfig);
         assertThat(actual.getInitialCapacity(), is(2));
         assertThat(actual.getMaximumSize(), is(5L));
     }

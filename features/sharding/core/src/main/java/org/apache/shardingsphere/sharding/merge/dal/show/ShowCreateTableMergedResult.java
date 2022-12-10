@@ -51,15 +51,15 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
             String actualIndexName = IndexMetaDataUtil.getActualIndexName(each, actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each));
         }
-        for (Entry<String, ShardingSphereConstraint> each : table.getConstrains().entrySet()) {
-            String actualIndexName = IndexMetaDataUtil.getActualIndexName(each.getKey(), actualTableName);
-            memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each.getKey()));
-            Optional<TableRule> tableRule = shardingRule.findTableRule(each.getValue().getReferencedTableName());
+        for (Entry<String, ShardingSphereConstraint> entry : table.getConstrains().entrySet()) {
+            String actualIndexName = IndexMetaDataUtil.getActualIndexName(entry.getKey(), actualTableName);
+            memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, entry.getKey()));
+            Optional<TableRule> tableRule = shardingRule.findTableRule(entry.getValue().getReferencedTableName());
             if (!tableRule.isPresent()) {
                 continue;
             }
             for (DataNode dataNode : tableRule.get().getActualDataNodes()) {
-                memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(dataNode.getTableName(), each.getValue().getReferencedTableName()));
+                memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(dataNode.getTableName(), entry.getValue().getReferencedTableName()));
             }
         }
     }

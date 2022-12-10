@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,7 +81,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
         DropEncryptRuleStatement statement = createSQLStatement(true, "t_encrypt_1");
         updater.checkSQLStatement(database, statement, mock(EncryptRuleConfiguration.class));
         assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
-        assertThat(ruleConfig.getEncryptors().size(), is(1));
+        assertThat(ruleConfig.getEncryptors().size(), is(3));
     }
     
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
@@ -93,15 +93,18 @@ public final class DropEncryptRuleStatementUpdaterTest {
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
-        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5", null);
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "", "user_plain", "t_encrypt_user_id_MD5", "t_encrypt_test_assisted",
+                "t_encrypt_test_like", null);
+        Map<String, AlgorithmConfiguration> encryptors = new HashMap<>(3, 1);
+        encryptors.put("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
+        encryptors.put("t_encrypt_test_assisted", new AlgorithmConfiguration("TEST", new Properties()));
+        encryptors.put("t_encrypt_test_like", new AlgorithmConfiguration("TEST", new Properties()));
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
-        Map<String, AlgorithmConfiguration> encryptors = new HashMap<>(
-                Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties())));
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), encryptors, true);
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfigurationWithMultipleTableRules() {
-        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5", null);
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "", "user_plain", "t_encrypt_user_id_MD5", null);
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,

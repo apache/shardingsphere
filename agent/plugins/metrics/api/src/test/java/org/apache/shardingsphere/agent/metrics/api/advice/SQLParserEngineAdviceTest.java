@@ -21,8 +21,8 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -88,12 +88,12 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertParseRQL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RQL, new ShowResourcesStatement(new DatabaseSegment(0, 0, null)));
+        assertParse(MetricIds.PARSE_DIST_SQL_RQL, new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null));
     }
     
     @Test
     public void assertParseRDL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RDL, new AddResourceStatement(Collections.emptyList()));
+        assertParse(MetricIds.PARSE_DIST_SQL_RDL, new RegisterStorageUnitStatement(Collections.emptyList()));
     }
     
     @Test

@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -33,6 +35,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -84,7 +90,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private void appendDatabaseName(final String databaseName, final StringBuilder stringBuilder) {
-        stringBuilder.append("databaseName").append(": ").append(databaseName).append(System.lineSeparator());
+        stringBuilder.append("databaseName: ").append(databaseName).append(System.lineSeparator());
     }
     
     private void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
@@ -112,8 +118,29 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         }
         stringBuilder.append("rules:").append(System.lineSeparator());
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet()) {
+            if (checkRuleConfigIsEmpty(entry.getKey())) {
+                continue;
+            }
             stringBuilder.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
+    }
+    
+    private boolean checkRuleConfigIsEmpty(final RuleConfiguration ruleConfig) {
+        if (ruleConfig instanceof ShardingRuleConfiguration) {
+            ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
+            return shardingRuleConfig.getTables().isEmpty() && shardingRuleConfig.getAutoTables().isEmpty();
+        } else if (ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
+            return ((ReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().isEmpty();
+        } else if (ruleConfig instanceof DatabaseDiscoveryRuleConfiguration) {
+            return ((DatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().isEmpty();
+        } else if (ruleConfig instanceof EncryptRuleConfiguration) {
+            return ((EncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
+        } else if (ruleConfig instanceof ShadowRuleConfiguration) {
+            return ((ShadowRuleConfiguration) ruleConfig).getTables().isEmpty();
+        } else if (ruleConfig instanceof SingleTableRuleConfiguration) {
+            return !((SingleTableRuleConfiguration) ruleConfig).getDefaultDataSource().isPresent();
+        }
+        return false;
     }
     
     @SuppressWarnings("ResultOfMethodCallIgnored")

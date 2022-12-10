@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.resource.ResourceRegistrar;
-import org.apache.shardingsphere.transaction.xa.bitronix.manager.fixture.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,9 +33,9 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,7 +53,7 @@ public final class BitronixXATransactionManagerProviderTest {
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setProperty(transactionManagerProvider, "transactionManager", transactionManager);
+        ReflectiveUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
     }
     
     @Test

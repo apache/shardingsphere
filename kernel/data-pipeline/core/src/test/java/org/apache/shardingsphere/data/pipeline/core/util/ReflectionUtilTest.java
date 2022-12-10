@@ -49,9 +49,24 @@ public final class ReflectionUtilTest {
         assertThat(reflectionFixture.getValue(), is("new_value"));
     }
     
+    @Test
+    public void assertInvokeParentMethod() throws Exception {
+        ReflectionFixture reflectionFixture = new ReflectionFixture();
+        ReflectionUtil.invokeMethodInParentClass(reflectionFixture, "setParentValue", new Class[]{String.class}, new Object[]{"parent_value"});
+        assertThat(reflectionFixture.getParentValue(), is("parent_value"));
+    }
+    
+    @NoArgsConstructor
+    private static class ReflectionParentFixture {
+        
+        @Getter
+        @Setter
+        private String parentValue;
+    }
+    
     @AllArgsConstructor
     @NoArgsConstructor
-    private static final class ReflectionFixture {
+    private static final class ReflectionFixture extends ReflectionParentFixture {
         
         @Getter
         @Setter(AccessLevel.PRIVATE)

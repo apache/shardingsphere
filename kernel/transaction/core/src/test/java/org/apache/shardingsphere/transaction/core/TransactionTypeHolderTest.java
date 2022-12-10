@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.core;
 
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 

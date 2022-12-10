@@ -22,12 +22,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
 /**
- * Apply dist SQL statement handler.
+ * Apply DistSQL statement handler.
  */
 public final class ApplyDistSQLHandler extends UpdatableRALBackendHandler<ApplyDistSQLStatement> {
     
     @Override
     protected void update(final ContextManager contextManager) {
-        // TODO Metadata support required
+        // TODO Meta data support required
     }
 }

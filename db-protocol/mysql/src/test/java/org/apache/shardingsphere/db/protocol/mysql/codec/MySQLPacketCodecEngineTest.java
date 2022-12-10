@@ -40,8 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -137,6 +137,29 @@ public final class MySQLPacketCodecEngineTest {
         verify(actualMessage).write(any(MySQLPacketPayload.class));
         verify(byteBuf).setMediumLE(0, 4);
         verify(byteBuf).setByte(3, 1);
+    }
+    
+    @Test
+    public void assertEncodePacketMoreThan16MB() {
+        CompositeByteBuf expected = new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, 6);
+        when(context.alloc().compositeBuffer(6)).thenReturn(expected);
+        when(context.alloc().ioBuffer(4, 4)).thenReturn(Unpooled.buffer(4, 4), Unpooled.buffer(4, 4), Unpooled.buffer(4, 4));
+        MySQLPacketCodecEngine engine = new MySQLPacketCodecEngine();
+        engine.encode(context, mock(MySQLPacket.class), prepareByteBufAlmost32MB());
+        verify(context).write(expected);
+        assertThat(expected.numComponents(), is(5));
+        assertThat(expected.component(0).getUnsignedByte(3), is((short) 0));
+        assertThat(expected.component(1).readableBytes(), is(0xFFFFFF));
+        assertThat(expected.component(2).getUnsignedByte(3), is((short) 1));
+        assertThat(expected.component(3).readableBytes(), is(0xFFFFFF));
+        assertThat(expected.component(4).getUnsignedByte(3), is((short) 2));
+    }
+    
+    private ByteBuf prepareByteBufAlmost32MB() {
+        int max = 0xFFFFFF << 1;
+        ByteBuf result = Unpooled.buffer(max + 4);
+        result.writerIndex(max);
+        return result.retain();
     }
     
     @Test

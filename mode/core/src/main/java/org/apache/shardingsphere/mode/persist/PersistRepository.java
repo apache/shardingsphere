@@ -32,16 +32,6 @@ public interface PersistRepository extends TypedSPI {
     String PATH_SEPARATOR = "/";
     
     /**
-     * Get data from registry center.
-     *
-     * <p>Maybe use cache if existed.</p>
-     *
-     * @param key key of data
-     * @return value of data
-     */
-    String get(String key);
-    
-    /**
      * Get value from registry center directly.
      *
      * @param key key

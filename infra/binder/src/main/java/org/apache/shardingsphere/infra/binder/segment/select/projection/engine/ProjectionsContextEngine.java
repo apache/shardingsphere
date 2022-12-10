@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -40,6 +36,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Projections context engine.
@@ -135,7 +135,7 @@ public final class ProjectionsContextEngine {
     public static Collection<Projection> expandProjection(final Projection projection) {
         Collection<Projection> result = new LinkedList<>();
         if (projection instanceof ShorthandProjection) {
-            result.addAll(((ShorthandProjection) projection).getActualColumns().values());
+            result.addAll(((ShorthandProjection) projection).getColumnProjections());
         } else if (!(projection instanceof DerivedProjection)) {
             result.add(projection);
         }

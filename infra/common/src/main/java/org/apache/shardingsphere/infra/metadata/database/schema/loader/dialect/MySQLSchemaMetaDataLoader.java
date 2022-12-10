@@ -48,8 +48,9 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
-    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION FROM information_schema.columns "
-            + "WHERE TABLE_SCHEMA=?";
+    private static final String TABLE_META_DATA_NO_ORDER =
+            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE FROM information_schema.columns "
+                    + "WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
     
@@ -123,13 +124,14 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
-        boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
+        boolean primaryKey = "PRI".equalsIgnoreCase(resultSet.getString("COLUMN_KEY"));
         String extra = resultSet.getString("EXTRA");
         boolean generated = "auto_increment".equals(extra);
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
-        boolean visible = !"INVISIBLE".equals(extra);
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible);
+        boolean visible = !"INVISIBLE".equalsIgnoreCase(extra);
+        boolean unsigned = resultSet.getString("COLUMN_TYPE").toUpperCase().contains("UNSIGNED");
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible, unsigned);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

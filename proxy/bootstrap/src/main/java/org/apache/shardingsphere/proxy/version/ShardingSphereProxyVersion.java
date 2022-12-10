@@ -21,15 +21,17 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.protocol.DatabaseProtocolFrontendEngineFactory;
 
 import javax.sql.DataSource;
-
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -45,8 +47,7 @@ public final class ShardingSphereProxyVersion {
      */
     public static void setVersion(final ContextManager contextManager) {
         CommonConstants.PROXY_VERSION.set(ShardingSphereProxyVersion.getProxyVersion());
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().keySet()
-                .forEach(each -> setDatabaseVersion(each, DataSourceStateManager.getInstance().getEnabledDataSourceMap(each, contextManager.getDataSourceMap(each))));
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().values().forEach(ShardingSphereProxyVersion::setDatabaseVersion);
     }
     
     private static String getProxyVersion() {
@@ -59,15 +60,20 @@ public final class ShardingSphereProxyVersion {
         return result;
     }
     
-    private static void setDatabaseVersion(final String databaseName, final Map<String, DataSource> dataSources) {
-        Optional<DataSource> dataSource = dataSources.values().stream().findFirst();
+    private static void setDatabaseVersion(final ShardingSphereDatabase database) {
+        Optional<DataSource> dataSource = findDataSourceByProtocolType(database.getName(), database.getResourceMetaData(), database.getProtocolType());
         if (!dataSource.isPresent()) {
             return;
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
-        log.info("{}, database name is `{}`", databaseServerInfo, databaseName);
+        log.info("{}, database name is `{}`", databaseServerInfo, database.getName());
         DatabaseProtocolFrontendEngineFactory
                 .newInstance(DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()))
-                .setDatabaseVersion(databaseName, databaseServerInfo.getDatabaseVersion());
+                .setDatabaseVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
+    }
+    
+    private static Optional<DataSource> findDataSourceByProtocolType(final String databaseName, final ShardingSphereResourceMetaData resourceMetaData, final DatabaseType protocolType) {
+        Optional<String> dataSourceName = resourceMetaData.getStorageTypes().entrySet().stream().filter(entry -> entry.getValue().equals(protocolType)).map(Entry::getKey).findFirst();
+        return dataSourceName.flatMap(optional -> Optional.ofNullable(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, resourceMetaData.getDataSources()).get(optional)));
     }
 }

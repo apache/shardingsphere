@@ -19,14 +19,12 @@ package org.apache.shardingsphere.encrypt.spi.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Encrypt context.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class EncryptContext {
     
     private final String databaseName;

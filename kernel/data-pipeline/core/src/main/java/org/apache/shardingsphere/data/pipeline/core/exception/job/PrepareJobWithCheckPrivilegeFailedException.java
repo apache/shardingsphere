@@ -30,6 +30,6 @@ public final class PrepareJobWithCheckPrivilegeFailedException extends PipelineS
     private static final long serialVersionUID = -8462039913248251254L;
     
     public PrepareJobWithCheckPrivilegeFailedException(final SQLException cause) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 89, "Check privileges failed on source data source, reason is: %s", cause.getMessage());
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 89, String.format("Check privileges failed on source data source, reason is: %s", cause.getMessage()), cause);
     }
 }

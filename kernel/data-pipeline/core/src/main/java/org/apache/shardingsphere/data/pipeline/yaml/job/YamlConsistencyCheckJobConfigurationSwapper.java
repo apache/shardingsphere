@@ -44,10 +44,10 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
     /**
      * Swap to job configuration from text.
      *
-     * @param jobParameter job parameter
+     * @param jobParam job parameter
      * @return job configuration
      */
-    public ConsistencyCheckJobConfiguration swapToObject(final String jobParameter) {
-        return null == jobParameter ? null : swapToObject(YamlEngine.unmarshal(jobParameter, YamlConsistencyCheckJobConfiguration.class, true));
+    public ConsistencyCheckJobConfiguration swapToObject(final String jobParam) {
+        return null == jobParam ? null : swapToObject(YamlEngine.unmarshal(jobParam, YamlConsistencyCheckJobConfiguration.class, true));
     }
 }

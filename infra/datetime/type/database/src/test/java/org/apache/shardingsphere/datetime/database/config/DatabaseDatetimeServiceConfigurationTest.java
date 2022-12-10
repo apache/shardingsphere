@@ -28,7 +28,7 @@ public final class DatabaseDatetimeServiceConfigurationTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDatabaseType().getType(), is("H2"));
+        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getStorageType().getType(), is("H2"));
         assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
     }
 }

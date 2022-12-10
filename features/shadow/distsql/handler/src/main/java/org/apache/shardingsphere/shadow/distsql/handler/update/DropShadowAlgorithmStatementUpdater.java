@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -59,7 +59,7 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     
     private void checkAlgorithm(final String databaseName, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
-        Collection<String> requireAlgorithms = sqlStatement.getAlgorithmNames();
+        Collection<String> requireAlgorithms = sqlStatement.getNames();
         String defaultShadowAlgorithmName = currentRuleConfig.getDefaultShadowAlgorithmName();
         if (!sqlStatement.isIfExists()) {
             ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new MissingRequiredAlgorithmException(SHADOW, databaseName, different));
@@ -82,12 +82,12 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         return null != currentRuleConfig
-                && !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig), sqlStatement.getAlgorithmNames()).isEmpty();
+                && !getIdenticalData(ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig), sqlStatement.getNames()).isEmpty();
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> algorithmNames = sqlStatement.getAlgorithmNames();
+        Collection<String> algorithmNames = sqlStatement.getNames();
         algorithmNames.forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
         currentRuleConfig.getTables().forEach((key, value) -> value.getShadowAlgorithmNames().removeIf(algorithmNames::contains));
         getEmptyTableRules(currentRuleConfig.getTables()).forEach(each -> currentRuleConfig.getTables().remove(each));

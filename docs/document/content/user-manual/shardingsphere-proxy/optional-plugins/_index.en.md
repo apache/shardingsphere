@@ -22,7 +22,7 @@ All built-in plugins are listed below in the form of `groupId:artifactId`.
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`, a PostgresSQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`, an openGauss implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-backend`, the backend for ShardingSphere Proxy
-- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper-curator`, the zookeeper implementation of the persistent definition of cluster mode configuration information
+- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, the zookeeper implementation of the persistent definition of cluster mode configuration information
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`, etcd implementation of persistent definition of cluster mode configuration information
 - `org.apache.shardingsphere:shardingsphere-jdbc-core`
 

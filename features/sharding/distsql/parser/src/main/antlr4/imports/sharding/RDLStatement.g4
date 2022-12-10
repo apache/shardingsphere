@@ -20,87 +20,59 @@ grammar RDLStatement;
 import BaseRule;
 
 createShardingTableRule
-    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 alterShardingTableRule
-    : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
+    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA_ tableName)*
     ;
 
-createShardingBindingTableRules
-    : CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
+createShardingTableReferenceRule
+    : CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
-alterShardingBindingTableRules
-    : ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
+alterShardingTableReferenceRule
+    : ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
-dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES ifExists? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
+dropShardingTableReferenceRule
+    : DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
-createShardingBroadcastTableRules
-    : CREATE SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
+createBroadcastTableRule
+    : CREATE BROADCAST TABLE RULE tableName (COMMA_ tableName)*
     ;
 
-alterShardingBroadcastTableRules
-    : ALTER SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
-    ;
-
-dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES ifExists? (tableName (COMMA tableName)*)?
-    ;
-
-createShardingAlgorithm
-    : CREATE SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA shardingAlgorithmDefinition)*
-    ;
-
-alterShardingAlgorithm
-    : ALTER SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA shardingAlgorithmDefinition)*
+dropBroadcastTableRule
+    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA_ tableName)*
     ;
 
 dropShardingAlgorithm
-    : DROP SHARDING ALGORITHM ifExists? shardingAlgorithmName (COMMA shardingAlgorithmName)*
+    : DROP SHARDING ALGORITHM ifExists? shardingAlgorithmName (COMMA_ shardingAlgorithmName)*
     ;
 
 createDefaultShardingStrategy
-    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP_ shardingStrategy RP_
     ;
 
 alterDefaultShardingStrategy
-    : ALTER DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP shardingStrategy RP
+    : ALTER DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP_ shardingStrategy RP_
     ;
 
 dropDefaultShardingStrategy
     : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY ifExists?
     ;
 
-createShardingKeyGenerator
-    : CREATE SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
-    ;
-
-alterShardingKeyGenerator
-    : ALTER SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
-    ;
-
 dropShardingKeyGenerator
-    : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA keyGeneratorName)*
-    ;
-
-createShardingAuditor
-    : CREATE SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
-    ;
-
-alterShardingAuditor
-    : ALTER SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
+    : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA_ keyGeneratorName)*
     ;
 
 dropShardingAuditor
-    : DROP SHARDING AUDITOR ifExists? auditorName (COMMA auditorName)*
+    : DROP SHARDING AUDITOR ifExists? auditorName (COMMA_ auditorName)*
     ;
 
 shardingTableRuleDefinition
@@ -108,43 +80,39 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
+    : tableName LP_ storageUnits COMMA_ autoShardingColumnDefinition COMMA_ algorithmDefinition (COMMA_ keyGenerateDefinition)? (COMMA_ auditDefinition)? RP_
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? (COMMA auditDeclaration)? RP
-    ;
-
-keyGeneratorDefinition
-    : keyGeneratorName LP algorithmDefinition RP
+    : tableName LP_ dataNodes (COMMA_ databaseStrategy)? (COMMA_ tableStrategy)? (COMMA_ keyGenerateDefinition)? (COMMA_ auditDefinition)? RP_
     ;
 
 keyGeneratorName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 auditorDefinition
-    : auditorName LP algorithmDefinition RP
+    : auditorName LP_ algorithmDefinition RP_
     ;
 
 auditorName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
-resources
-    : RESOURCES LP resource (COMMA resource)* RP
+storageUnits
+    : STORAGE_UNITS LP_ storageUnit (COMMA_ storageUnit)* RP_
     ;
 
-resource
-    : IDENTIFIER | STRING
+storageUnit
+    : IDENTIFIER_ | STRING_
     ;
 
 dataNodes
-    : DATANODES LP dataNode (COMMA dataNode)* RP
+    : DATANODES LP_ dataNode (COMMA_ dataNode)* RP_
     ;
 
 dataNode
-    : STRING
+    : STRING_
     ;
 
 autoShardingColumnDefinition
@@ -156,117 +124,67 @@ shardingColumnDefinition
     ;
 
 shardingColumn
-    : SHARDING_COLUMN EQ columnName
+    : SHARDING_COLUMN EQ_ columnName
     ;
 
 shardingColumns
-    : SHARDING_COLUMNS EQ columnName COMMA columnName (COMMA columnName)*
+    : SHARDING_COLUMNS EQ_ columnName COMMA_ columnName (COMMA_ columnName)*
     ;
 
 shardingAlgorithm
-    : existingAlgorithm | autoCreativeAlgorithm
-    ;
-
-existingAlgorithm
-    : SHARDING_ALGORITHM EQ shardingAlgorithmName
-    ;
-
-autoCreativeAlgorithm
-    : SHARDING_ALGORITHM LP algorithmDefinition RP
-    ;
-
-keyGenerator
-    : KEY_GENERATOR EQ shardingAlgorithmName
+    : SHARDING_ALGORITHM LP_ algorithmDefinition RP_
     ;
 
 shardingStrategy
-    : TYPE EQ strategyType COMMA shardingColumnDefinition COMMA shardingAlgorithm 
+    : TYPE EQ_ strategyType COMMA_ shardingColumnDefinition COMMA_ shardingAlgorithm
     ;
 
 databaseStrategy
-    : DATABASE_STRATEGY LP shardingStrategy RP
+    : DATABASE_STRATEGY LP_ shardingStrategy RP_
     ;
 
 tableStrategy
-    : TABLE_STRATEGY LP shardingStrategy RP
-    ;
-
-keyGenerateDeclaration
-    : keyGenerateDefinition | keyGenerateStrategy
+    : TABLE_STRATEGY LP_ shardingStrategy RP_
     ;
 
 keyGenerateDefinition
-    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA algorithmDefinition RP
-    ;
-
-keyGenerateStrategy
-    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA keyGenerator RP
-    ;
-
-auditDeclaration
-    : auditDefinition | auditStrategy
+    : KEY_GENERATE_STRATEGY LP_ COLUMN EQ_ columnName COMMA_ algorithmDefinition RP_
     ;
 
 auditDefinition
-    : AUDIT_STRATEGY LP LBT multiAuditDefinition RBT COMMA ALLOW_HINT_DISABLE EQ auditAllowHintDisable RP
+    : AUDIT_STRATEGY LP_ multiAuditDefinition COMMA_ ALLOW_HINT_DISABLE EQ_ auditAllowHintDisable RP_
     ;
 
 multiAuditDefinition
-    : singleAuditDefinition (COMMA singleAuditDefinition)*
+    : singleAuditDefinition (COMMA_ singleAuditDefinition)*
     ;
 
 singleAuditDefinition
-    : LP NAME EQ auditorName COMMA algorithmDefinition RP
-    ;
-
-auditStrategy
-    : AUDIT_STRATEGY LP AUDITORS EQ LBT auditorNames RBT COMMA ALLOW_HINT_DISABLE EQ auditAllowHintDisable RP
-    ;
-
-auditorNames
-    : auditorName (COMMA auditorName)*
+    : algorithmDefinition
     ;
 
 auditAllowHintDisable
     : TRUE | FALSE
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
 columnName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
-bindTableRulesDefinition
-    : LP tableName (COMMA tableName)* RP
-    ;
-
-shardingAlgorithmDefinition
-    : shardingAlgorithmName LP algorithmDefinition RP
-    ;
-
-algorithmTypeName
-    : STRING
+tableReferenceRuleDefinition
+    : ruleName LP_ tableName (COMMA_ tableName)* RP_
     ;
 
 strategyType
-    : STRING
+    : STRING_ | buildInStrategyType
     ;
 
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=STRING
+buildInStrategyType
+    : STANDARD
+    | COMPLEX
+    | HINT
     ;
 
 ifExists
     : IF EXISTS
-    ;
-
-withUnusedAlgorithmsClause
-    : WITH UNUSED ALGORITHMS
     ;

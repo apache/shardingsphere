@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -82,7 +82,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     private ShardingSphereResourceMetaData mockShardingSphereResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         when(result.getDataSources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()));
-        when(result.getDatabaseTypes()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new SQL92DatabaseType()));
+        when(result.getStorageTypes()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new SQL92DatabaseType()));
         return result;
     }
 }

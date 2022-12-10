@@ -38,18 +38,18 @@ public final class InsertSelectContext {
     
     private final SelectStatementContext selectStatementContext;
     
-    public InsertSelectContext(final SelectStatementContext selectStatementContext, final List<Object> parameters, final int parametersOffset) {
+    public InsertSelectContext(final SelectStatementContext selectStatementContext, final List<Object> params, final int parametersOffset) {
         parameterCount = selectStatementContext.getSqlStatement().getParameterCount();
         this.selectStatementContext = selectStatementContext;
-        this.parameters = getParameters(parameters, parametersOffset);
+        parameters = getParameters(params, parametersOffset);
     }
     
-    private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
-        if (parameters.isEmpty() || 0 == parameterCount) {
+    private List<Object> getParameters(final List<Object> params, final int parametersOffset) {
+        if (params.isEmpty() || 0 == parameterCount) {
             return Collections.emptyList();
         }
         List<Object> result = new ArrayList<>(parameterCount);
-        result.addAll(parameters.subList(parametersOffset, parametersOffset + parameterCount));
+        result.addAll(params.subList(parametersOffset, parametersOffset + parameterCount));
         return result;
     }
 }

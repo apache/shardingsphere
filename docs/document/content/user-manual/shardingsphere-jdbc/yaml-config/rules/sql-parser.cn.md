@@ -41,5 +41,3 @@ rules:
 
 ## 相关参考
 - [JAVA API：SQL 解析](/cn/user-manual/shardingsphere-jdbc/java-api/rules/sql-parser/)
-- [Spring Boot Starter：SQL 解析](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/sql-parser/)
-- [Spring 命名空间：SQl解析](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/sql-parser/)

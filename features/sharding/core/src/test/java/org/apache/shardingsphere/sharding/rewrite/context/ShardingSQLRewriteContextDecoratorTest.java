@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.sharding.rewrite.context;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,13 +35,10 @@ public final class ShardingSQLRewriteContextDecoratorTest {
     
     @Test
     public void assertDecorate() {
-        List<Object> parameters = new ArrayList<>();
-        parameters.add(new Object());
-        ShardingSQLRewriteContextDecorator decorator = new ShardingSQLRewriteContextDecorator();
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
-        when(sqlRewriteContext.getParameters()).thenReturn(parameters);
-        RouteContext routeContext = mock(RouteContext.class);
-        decorator.decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, routeContext);
+        when(sqlRewriteContext.getParameters()).thenReturn(Collections.singletonList(new Object()));
+        when(sqlRewriteContext.getSqlStatementContext()).thenReturn(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS));
+        new ShardingSQLRewriteContextDecorator().decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());
     }
 }

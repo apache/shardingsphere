@@ -47,7 +47,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
             when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("foo", "bar", "sharding_db", "other_db"));
             OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select datname, datcompatibility from pg_database where datname = 'sharding_db'");
             ConnectionSession connectionSession = mock(ConnectionSession.class);
-            when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+            when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
             executor.execute(connectionSession);
             QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
             assertThat(actualMetaData.getColumnCount(), is(2));
@@ -66,7 +66,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
             OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select VERSION()");
             ConnectionSession connectionSession = mock(ConnectionSession.class);
-            when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+            when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
             executor.execute(connectionSession);
             QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
             assertThat(actualMetaData.getColumnCount(), is(1));
@@ -83,7 +83,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
             OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select intervaltonum(gs_password_deadline())");
             ConnectionSession connectionSession = mock(ConnectionSession.class);
-            when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+            when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
             executor.execute(connectionSession);
             QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
             assertThat(actualMetaData.getColumnCount(), is(1));
@@ -100,7 +100,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
             OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select gs_password_notifytime()");
             ConnectionSession connectionSession = mock(ConnectionSession.class);
-            when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+            when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
             executor.execute(connectionSession);
             QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
             assertThat(actualMetaData.getColumnCount(), is(1));

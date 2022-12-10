@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
 import lombok.Setter;
-import lombok.ToString;
-
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -35,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Oracle select statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class OracleSelectStatement extends SelectStatement implements OracleStatement {
     
     private LockSegment lock;
@@ -52,7 +48,7 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
     select * from (select t.*, rownum r from (select * from a order by a.name)t ) where r<10 orde by name<br>
      */
     private Map<String, OracleSelectStatement> rowNumSelect = new ConcurrentHashMap<String, OracleSelectStatement>();
-
+    
     /**
      * Get lock segment.
      *
@@ -79,7 +75,7 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
     }
-
+    
     /**
      * get the select statement associated with rownum alias.
      * @return select statement associated with rownum alias.  

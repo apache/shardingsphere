@@ -72,14 +72,14 @@ public final class PipelineDDLGenerator {
      */
     public String generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
                                    final String schemaName, final String sourceTableName, final String targetTableName, final ShardingSphereSQLParserEngine parserEngine) throws SQLException {
-        log.info("generateLogicDDL, databaseType={}, schemaName={}, sourceTableName={}, targetTableName={}", databaseType.getType(), schemaName, sourceTableName, targetTableName);
         long startTimeMillis = System.currentTimeMillis();
         StringBuilder result = new StringBuilder();
         for (String each : CreateTableSQLGeneratorFactory.getInstance(databaseType).generate(sourceDataSource, schemaName, sourceTableName)) {
             Optional<String> queryContext = decorate(databaseType, sourceDataSource, schemaName, targetTableName, parserEngine, each);
             queryContext.ifPresent(ddlSQL -> result.append(ddlSQL).append(DELIMITER).append(System.lineSeparator()));
         }
-        log.info("generateLogicDDL cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        log.info("generateLogicDDL, databaseType={}, schemaName={}, sourceTableName={}, targetTableName={}, cost {} ms",
+                databaseType.getType(), schemaName, sourceTableName, targetTableName, System.currentTimeMillis() - startTimeMillis);
         return result.toString();
     }
     

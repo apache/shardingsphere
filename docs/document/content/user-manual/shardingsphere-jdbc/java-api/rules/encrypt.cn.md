@@ -44,9 +44,11 @@ weight = 5
 | logicColumn               | String   | 逻辑列名称     |
 | cipherColumn              | String   | 密文列名称     |
 | assistedQueryColumn (?)   | String   | 查询辅助列名称 |
+| likeQueryColumn (?)      | String   | 模糊查询列名称 |
 | plainColumn (?)           | String   | 原文列名称     |
 | encryptorName             | String   | 密文列加密算法名称   |
 | assistedQueryEncryptorName| String   | 查询辅助列加密算法名称   |
+| likeQueryEncryptorName   | String   | 模糊查询列加密算法名称   |
 | queryWithCipherColumn (?) | boolean                                             | 该列是否使用加密列进行查询 |
 
 ### 加解密算法配置
@@ -78,12 +80,13 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
     public DataSource getDataSource() {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor", null);
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor", null);
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "", "username_plain", "name_encryptor", null);
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "like_pwd", "", "pwd_encryptor", null);
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest), null);
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
         encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+        encryptAlgorithmConfigs.put("like_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);

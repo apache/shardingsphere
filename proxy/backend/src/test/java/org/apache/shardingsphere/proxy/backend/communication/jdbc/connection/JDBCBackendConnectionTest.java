@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,7 +103,6 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
-        backendStatement.setDatabaseType(connectionSession.getDatabaseType());
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
     }
@@ -121,7 +120,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
             result.put(name, database);
         }
         return result;
@@ -269,7 +268,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         Statement statement = mock(Statement.class);
         when(connection.createStatement()).thenReturn(statement);
         JDBCBackendStatement backendStatement = (JDBCBackendStatement) connectionSession.getStatementManager();
-        assertThat(backendStatement.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null), is(statement));
+        assertThat(backendStatement.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null, connectionSession.getProtocolType()), is(statement));
         verify(connection, times(1)).createStatement();
     }
     

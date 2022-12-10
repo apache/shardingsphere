@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
+
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 
 /**
  * Job item inventory tasks progress.
@@ -46,18 +46,5 @@ public final class JobItemInventoryTasksProgress {
         return inventoryTaskProgressMap.entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPosition()));
-    }
-    
-    /**
-     * Get inventory finished percentage.
-     *
-     * @return finished percentage
-     */
-    public int getInventoryFinishedPercentage() {
-        // TODO finished percentage is not accurate enough
-        long finished = inventoryTaskProgressMap.values().stream()
-                .filter(each -> each.getPosition() instanceof FinishedPosition)
-                .count();
-        return inventoryTaskProgressMap.isEmpty() ? 0 : (int) (finished * 100 / inventoryTaskProgressMap.size());
     }
 }

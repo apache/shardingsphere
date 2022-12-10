@@ -55,8 +55,8 @@ public interface MigrationJobPublicAPI extends InventoryIncrementalJobPublicAPI,
     /**
      * Create job migration config and start.
      *
-     * @param parameter create migration job parameter
+     * @param param create migration job parameter
      * @return job id
      */
-    String createJobAndStart(CreateMigrationJobParameter parameter);
+    String createJobAndStart(CreateMigrationJobParameter param);
 }

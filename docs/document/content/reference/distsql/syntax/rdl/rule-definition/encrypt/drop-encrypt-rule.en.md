@@ -1,6 +1,6 @@
 +++
 title = "DROP ENCRYPT RULE"
-weight = 2
+weight = 4
 +++
 
 ## Description
@@ -19,7 +19,7 @@ tableName ::=
 
 ### Example
 
-#### Drop an encrypt rule
+- Drop an encrypt rule
 
 ```sql
 DROP ENCRYPT RULE t_encrypt, t_encrypt_2;

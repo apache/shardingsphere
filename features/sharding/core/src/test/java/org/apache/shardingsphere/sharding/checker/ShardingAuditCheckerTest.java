@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.sharding.checker;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
+import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,13 +35,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -61,11 +61,7 @@ public final class ShardingAuditCheckerTest {
     @Mock
     private ShardingAuditStrategyConfiguration auditStrategy;
     
-    private final ShardingAuditChecker checker = new ShardingAuditChecker();
-    
-    private final Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>();
-    
-    private final List<Object> parameters = Collections.emptyList();
+    private final Map<String, ShardingSphereDatabase> databases = Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class));
     
     @Before
     public void setUp() {
@@ -75,34 +71,31 @@ public final class ShardingAuditCheckerTest {
         when(rule.findTableRule("foo_table")).thenReturn(Optional.of(tableRule));
         when(rule.getAuditStrategyConfiguration(tableRule)).thenReturn(auditStrategy);
         when(auditStrategy.getAuditorNames()).thenReturn(Collections.singleton("auditor_1"));
-        databases.put("foo_db", mock(ShardingSphereDatabase.class));
     }
     
     @Test
     public void assertCheckSQLStatementPass() {
-        when(rule.getAuditors().get("auditor_1").check(sqlStatementContext, parameters, grantee, databases.get("foo_db"))).thenReturn(new SQLCheckResult(true, ""));
-        assertCheckResult(checker.check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), true, "");
-        verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
+        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule);
+        verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
     }
     
     @Test
     public void assertSQCheckPassByDisableAuditNames() {
-        when(rule.getAuditors().get("auditor_1").check(sqlStatementContext, parameters, grantee, databases.get("foo_db"))).thenReturn(new SQLCheckResult(false, ""));
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
-        assertCheckResult(checker.check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), true, "");
-        verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
+        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule);
+        verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
     }
     
     @Test
     public void assertSQLCheckNotPass() {
-        when(rule.getAuditors().get("auditor_1").check(sqlStatementContext, parameters, grantee, databases.get("foo_db")))
-                .thenReturn(new SQLCheckResult(false, "Not allow DML operation without sharding conditions"));
-        assertCheckResult(checker.check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), false, "Not allow DML operation without sharding conditions");
-        verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
-    }
-    
-    private void assertCheckResult(final SQLCheckResult checkResult, final boolean isPassed, final String errorMessage) {
-        assertThat(checkResult.isPassed(), is(isPassed));
-        assertThat(checkResult.getErrorMessage(), is(errorMessage));
+        ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("auditor_1");
+        doThrow(new SQLCheckException("Not allow DML operation without sharding conditions"))
+                .when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
+        try {
+            new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule);
+        } catch (final SQLCheckException ex) {
+            assertThat(ex.getMessage(), is("SQL check failed, error message: Not allow DML operation without sharding conditions."));
+        }
+        verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
     }
 }

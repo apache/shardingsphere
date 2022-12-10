@@ -42,19 +42,23 @@
 #  privilege:
 #    type: ALL_PERMITTED
 #
-#rules:
-#  - !TRANSACTION
-#    defaultType: XA
-#    providerType: Atomikos
-#  - !SQL_PARSER
-#    sqlCommentParseEnabled: true
-#    sqlStatementCache:
-#      initialCapacity: 2000
-#      maximumSize: 65535
-#    parseTreeCache:
-#      initialCapacity: 128
-#      maximumSize: 1024
-
+#transaction:
+#  defaultType: XA
+#  providerType: Atomikos
+#
+#sqlParser:
+#  sqlCommentParseEnabled: true
+#  sqlStatementCache:
+#    initialCapacity: 2000
+#    maximumSize: 65535
+#  parseTreeCache:
+#    initialCapacity: 128
+#    maximumSize: 1024
+#
+#cdc:
+#  enabled: false
+#  port: 33071
+#
 #props:
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.

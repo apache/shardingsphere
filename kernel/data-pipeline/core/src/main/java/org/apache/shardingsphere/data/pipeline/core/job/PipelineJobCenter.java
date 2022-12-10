@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +43,6 @@ public final class PipelineJobCenter {
      * @param job job
      */
     public static void addJob(final String jobId, final PipelineJob job) {
-        log.info("add job, jobId={}", jobId);
         JOB_MAP.put(jobId, job);
     }
     
@@ -63,11 +64,9 @@ public final class PipelineJobCenter {
     public static void stop(final String jobId) {
         PipelineJob job = JOB_MAP.get(jobId);
         if (null == job) {
-            log.info("job is null, ignore, jobId={}", jobId);
             return;
         }
         job.stop();
-        log.info("remove job, jobId={}", jobId);
         JOB_MAP.remove(jobId);
     }
     
@@ -85,5 +84,16 @@ public final class PipelineJobCenter {
         }
         Optional<PipelineTasksRunner> tasksRunner = job.getTasksRunner(shardingItem);
         return tasksRunner.map(PipelineTasksRunner::getJobItemContext);
+    }
+    
+    /**
+     * Get sharding items.
+     *
+     * @param jobId job id
+     * @return sharding items.
+     */
+    public static Collection<Integer> getShardingItems(final String jobId) {
+        PipelineJob pipelineJob = JOB_MAP.get(jobId);
+        return null == pipelineJob ? Collections.emptyList() : pipelineJob.getShardingItems();
     }
 }

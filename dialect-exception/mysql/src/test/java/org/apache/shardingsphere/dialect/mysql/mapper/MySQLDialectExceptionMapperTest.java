@@ -54,7 +54,7 @@ public final class MySQLDialectExceptionMapperTest {
     private final VendorError vendorError;
     
     @Parameters(name = "{1} -> {0}")
-    public static Collection<Object[]> getParameters() {
+    public static Collection<Object[]> getTestParameters() {
         return Arrays.asList(new Object[][]{
                 {UnknownDatabaseException.class, MySQLVendorError.ER_NO_DB_ERROR},
                 {NoDatabaseSelectedException.class, MySQLVendorError.ER_NO_DB_ERROR},

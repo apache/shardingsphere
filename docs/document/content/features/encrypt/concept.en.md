@@ -5,15 +5,19 @@ weight = 1
 
 ## Logic column
 
-It is used to calculate the encryption and decryption columns and it is the logical identifier of the column in SQL. Logical columns contain ciphertext columns (mandatory), query-helper columns (optional), and plaintext columns (optional).
+It is used to calculate the encryption and decryption columns and it is the logical identifier of the column in SQL. Logical columns contain ciphertext columns (mandatory), query-helper columns (optional), like-query columns (optional), and plaintext columns (optional).
 
 ## Cipher column
 
 Encrypted data columns.
 
-## Query assistant column
+## Assisted query column
 
 It is a helper column used for queries. For some non-idempotent encryption algorithms with higher security levels, irreversible idempotent columns are provided for queries.
+
+## Like query column
+
+It is a helper column used for like queries. 
 
 ## Plain column
 

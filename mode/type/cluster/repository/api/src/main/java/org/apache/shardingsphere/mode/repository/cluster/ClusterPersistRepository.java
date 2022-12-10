@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-
-import java.util.concurrent.Executor;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 /**
  * Cluster persist repository.
@@ -32,62 +30,8 @@ public interface ClusterPersistRepository extends PersistRepository {
      * Initialize registry center.
      *
      * @param config cluster persist repository configuration
-     * @param instanceMetaData instance meta data
      */
-    void init(ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData);
-    
-    /**
-     * Get current time from registry center.
-     *
-     * @param key key
-     * @return current time from registry center
-     */
-    long getRegistryCenterTime(String key);
-    
-    /**
-     * Get raw client for registry center client.
-     **
-     * @return registry center raw client
-     */
-    Object getRawClient();
-    
-    /**
-     * Get children number.
-     *
-     * @param key key
-     * @return children number
-     */
-    int getNumChildren(String key);
-    
-    /**
-     * Add data to cache.
-     *
-     * @param cachePath cache path
-     */
-    void addCacheData(String cachePath);
-    
-    /**
-     * Evict data from cache.
-     *
-     * @param cachePath cache path
-     */
-    void evictCacheData(String cachePath);
-    
-    /**
-     * Get raw cache object of registry center.
-     *
-     * @param cachePath cache path
-     * @return raw cache object of registry center
-     */
-    Object getRawCache(String cachePath);
-    
-    /**
-     * Update data in transaction.
-     *
-     * @param key key
-     * @param value value
-     */
-    void updateInTransaction(String key, String value);
+    void init(ClusterPersistRepositoryConfiguration config);
     
     /**
      * Persist ephemeral data.
@@ -106,27 +50,17 @@ public interface ClusterPersistRepository extends PersistRepository {
     void persistExclusiveEphemeral(String key, String value);
     
     /**
-     * Try lock.
-     *
-     * @param lockKey lock key
-     * @param timeoutMillis timeout millis
-     * @return is locked or not
+     * Get distributed lock holder.
+     * 
+     * @return distributed lock holder
      */
-    boolean tryLock(String lockKey, long timeoutMillis);
-    
-    /**
-     * Unlock.
-     *
-     * @param lockKey lock key
-     */
-    void unlock(String lockKey);
+    DistributedLockHolder getDistributedLockHolder();
     
     /**
      * Watch key or path of governance server.
      *
      * @param key key of data
      * @param listener data changed event listener
-     * @param executor event notify executor
      */
-    void watch(String key, DataChangedEventListener listener, Executor executor);
+    void watch(String key, DataChangedEventListener listener);
 }

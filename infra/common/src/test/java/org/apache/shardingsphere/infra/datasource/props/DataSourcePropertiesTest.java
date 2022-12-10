@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -135,6 +135,15 @@ public final class DataSourcePropertiesTest {
     private Map<String, Object> createUserProperties(final String username) {
         Map<String, Object> result = new LinkedHashMap<>(1, 1);
         result.put("username", username);
+        result.put("dataSourceProperties", getDataSourceProperties());
+        return result;
+    }
+    
+    private Map<String, String> getDataSourceProperties() {
+        Map<String, String> result = new LinkedHashMap<>(3, 1);
+        result.put("maintainTimeStats", "false");
+        result.put("rewriteBatchedStatements", "true");
+        result.put("useLocalSessionState", "true");
         return result;
     }
 }

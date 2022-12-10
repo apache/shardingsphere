@@ -18,25 +18,28 @@ chapter = true
 
 ## 代码提交行为规范
 
- - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`mvn -T 1C clean install` 或者 `./mvnw -T 1C clean install`。执行目录有 2 种选择，根据自己的熟悉程度做选择：1）对项目还不太熟悉，在项目根目录执行构建，所有模块都会执行构建，2）明确知道这次改动会影响到哪些模块，在这些模块执行构建，可以大大缩短构建时间。
+ - 确保遵守编码规范。
+ - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Dmaven.javadoc.skip -Dmaven.jacoco.skip -e`。
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
- - 确保遵守编码规范。
- - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
  - 通过 Spotless 统一代码风格，执行 `mvn spotless:apply` 格式化代码。
+ - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
  
 ## 编码规范
 
  - 使用 linux 换行符。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 类、方法和变量的命名要做到顾名思义，类、方法名避免使用缩写，部分变量名可以使用缩写。
+   - 变量名 `arguments` 缩写为 `args`；
+   - 变量名 `parameters` 缩写为 `params`；
+   - 变量名 `environment` 缩写为 `env`；
    - 变量名 `properties` 缩写为 `props`；
    - 变量名 `configuration` 缩写为 `config`。
  - 三位以内字符的专有名词缩写使用大写，超过三位字符的缩写采用驼峰形式。
-   - 三位以内字符的类和方法名称缩写的示例：DBDiscoveryExampleScenario、SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
+   - 三位以内字符的类和方法名称缩写的示例：SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
    - 三位以上字符的类和方法名称缩写的示例：JdbcUrlAppender、YamlAgentConfigurationSwapper；
-   - 变量应使用小驼峰形式：dbName、mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
- - 返回值变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
+   - 变量应使用小驼峰形式：mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
+ - 除了直接返回方法入参，返回变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
  - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
  - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
  - 需要注释解释的代码尽量提成小方法，用方法名称解释。
@@ -49,16 +52,17 @@ chapter = true
  - 类和方法的访问权限控制为最小。
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
  - 方法入参和返回值不允许为 `null`。
- - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 日志与注释一律使用英文。
  - 注释只能包含 javadoc，todo 和 fixme。
- - 公开的类和方法必须有 javadoc，其他类和方法以及覆盖自父类的方法无需 javadoc。
- - 条件运算符（<表达式1> ? <表达式2> : <表达式3>）禁止 `嵌套使用`。
- - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
+ - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
+ - 优先使用三目运算符代替 if else 的返回和赋值语句。
+ - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
+ - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
+ - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
 
 ## 单元测试规范
 
@@ -73,15 +77,19 @@ chapter = true
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
  - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
- - 每个测试用例需精确断言。
+ - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
  - 只有 Mockito，junit `Assert`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
- - 单数据断言，应使用 `assertTrue`，`assertFalse`，`assertNull` 和 `assertNotNull`。
- - 多数据断言，应使用 `assertThat`。
- - 精确断言，尽量不使用 `not`，`containsString` 断言。
+ - 数据断言规范应遵循：
+    - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
+    - 空值断言应使用 `assertNull` 和 `assertNotNull`；
+    - 其他类型应使用 `assertThat`。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
- - 使用 Mockito mockStatic 和 mockConstruction 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
+ - 使用 Mockito `mockStatic` 和 `mockConstruction` 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
+ - 使用 `mock` 应遵循如下规范：
+   - 单元测试需要连接某个环境时，应使用 `mock`；
+   - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
 
 ## G4 编码规范
 
@@ -98,4 +106,3 @@ chapter = true
    - 如果一个规则的分支超过 `5` 个，则每个分支一行。
    - 规则命名采用 java 变量的驼峰形式。
    - 为每种 SQL 语句类型定义一个独立的语法文件，文件名称由 `数据库名称` + `语句类型名称` + `Statement`。例如：`MySQLDQLStatement.g4`。
-   - 每个 `SQLStatement` 和 `SQLSegment` 实现类，必须添加 lombok `@ToString` 注解，如果实现类继承了某个父类，则需要添加 `callSuper = true` 参数。

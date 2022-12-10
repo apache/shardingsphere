@@ -65,7 +65,7 @@ public final class OrderItemRepository {
     
     public void createTableIfNotExistsShadow() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order_item "
-            + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id)) /*shadow:true,foo:bar*/";
+            + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id)) /*SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -73,7 +73,7 @@ public final class OrderItemRepository {
     }
     
     public void dropTableShadow() throws SQLException {
-        String sql = "DROP TABLE t_order_item /*shadow:true,foo:bar*/";
+        String sql = "DROP TABLE t_order_item /*SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -81,7 +81,7 @@ public final class OrderItemRepository {
     }
     
     public void truncateTableShadow() throws SQLException {
-        String sql = "TRUNCATE TABLE t_order_item /*shadow:true,foo:bar*/";
+        String sql = "TRUNCATE TABLE t_order_item /*SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);

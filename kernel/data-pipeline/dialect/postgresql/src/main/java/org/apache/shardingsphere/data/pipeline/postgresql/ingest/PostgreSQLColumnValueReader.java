@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.BasicColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractColumnValueReader;
 import org.postgresql.util.PGobject;
 
 import java.sql.ResultSet;
@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Column value reader for PostgreSQL.
  */
-public final class PostgreSQLColumnValueReader extends BasicColumnValueReader {
+public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader {
     
     private static final Collection<String> TYPE_ALIASES = Collections.singletonList("openGauss");
     
@@ -39,18 +39,18 @@ public final class PostgreSQLColumnValueReader extends BasicColumnValueReader {
     private static final String PG_BIT_TYPE = "bit";
     
     @Override
-    public Object readValue(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
-        if (isPgMoneyType(resultSetMetaData, columnIndex)) {
+    protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        if (isPgMoneyType(metaData, columnIndex)) {
             return resultSet.getBigDecimal(columnIndex);
         }
-        if (isPgBitType(resultSetMetaData, columnIndex)) {
+        if (isPgBitType(metaData, columnIndex)) {
             PGobject result = new PGobject();
             result.setType("bit");
-            Object resultSetObject = resultSet.getObject(columnIndex);
-            result.setValue(null == resultSetObject ? null : (Boolean) resultSetObject ? "1" : "0");
+            Object bitValue = resultSet.getObject(columnIndex);
+            result.setValue(null == bitValue ? null : (Boolean) bitValue ? "1" : "0");
             return result;
         }
-        return super.readValue(resultSet, resultSetMetaData, columnIndex);
+        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
     }
     
     private boolean isPgMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {

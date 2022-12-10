@@ -34,14 +34,14 @@ public final class ConditionValue {
     
     private final int parameterMarkerIndex;
     
-    public ConditionValue(final ExpressionSegment expressionSegment, final List<Object> parameters) {
-        value = getValue(expressionSegment, parameters);
+    public ConditionValue(final ExpressionSegment expressionSegment, final List<Object> params) {
+        value = getValue(expressionSegment, params);
         parameterMarkerIndex = expressionSegment instanceof ParameterMarkerExpressionSegment ? ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex() : -1;
     }
     
-    private Comparable<?> getValue(final ExpressionSegment expressionSegment, final List<Object> parameters) {
+    private Comparable<?> getValue(final ExpressionSegment expressionSegment, final List<Object> params) {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            return getValue((ParameterMarkerExpressionSegment) expressionSegment, parameters);
+            return getValue((ParameterMarkerExpressionSegment) expressionSegment, params);
         }
         if (expressionSegment instanceof LiteralExpressionSegment) {
             return getValue((LiteralExpressionSegment) expressionSegment);
@@ -49,10 +49,10 @@ public final class ConditionValue {
         return null;
     }
     
-    private Comparable<?> getValue(final ParameterMarkerExpressionSegment expressionSegment, final List<Object> parameters) {
+    private Comparable<?> getValue(final ParameterMarkerExpressionSegment expressionSegment, final List<Object> params) {
         int parameterMarkerIndex = expressionSegment.getParameterMarkerIndex();
-        if (parameterMarkerIndex < parameters.size()) {
-            Object result = parameters.get(parameterMarkerIndex);
+        if (parameterMarkerIndex < params.size()) {
+            Object result = params.get(parameterMarkerIndex);
             Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
             return (Comparable<?>) result;
         }

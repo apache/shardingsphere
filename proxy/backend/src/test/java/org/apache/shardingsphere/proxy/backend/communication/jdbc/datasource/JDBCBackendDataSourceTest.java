@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -76,7 +77,10 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     private Map<String, ShardingSphereDatabase> createDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("schema");
-        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new H2DatabaseType());
+        Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1);
+        storageTypes.put("ds_0", new H2DatabaseType());
+        storageTypes.put("ds_1", new H2DatabaseType());
+        when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
         when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("schema", database);

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -31,7 +32,7 @@ public interface PipelineTask {
      *
      * @return future
      */
-    CompletableFuture<?> start();
+    Collection<CompletableFuture<?>> start();
     
     /**
      * Stop task.

@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,15 +51,14 @@ public final class ExecutionContextBuilderTest {
     @Test
     public void assertBuildGenericSQLRewriteResult() {
         String sql = "sql";
-        List<Object> parameters = Collections.singletonList("parameter");
-        GenericSQLRewriteResult genericSQLRewriteResult = new GenericSQLRewriteResult(new SQLRewriteUnit(sql, parameters));
+        GenericSQLRewriteResult genericSQLRewriteResult = new GenericSQLRewriteResult(new SQLRewriteUnit(sql, Collections.singletonList("foo_param")));
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         String firstDataSourceName = "firstDataSourceName";
         when(resourceMetaData.getAllInstanceDataSourceNames()).thenReturn(Arrays.asList(firstDataSourceName, "lastDataSourceName"));
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, ruleMetaData, buildDatabase());
         Collection<ExecutionUnit> actual = ExecutionContextBuilder.build(database, genericSQLRewriteResult, mock(SQLStatementContext.class));
-        Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, parameters)));
+        Collection<ExecutionUnit> expected = Collections.singletonList(new ExecutionUnit(firstDataSourceName, new SQLUnit(sql, Collections.singletonList("foo_param"))));
         assertThat(actual, is(expected));
     }
     
@@ -103,26 +101,26 @@ public final class ExecutionContextBuilderTest {
     
     private Map<String, ShardingSphereSchema> buildDatabaseWithoutPrimaryKey() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
-        tables.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true)), Collections.emptySet(), Collections.emptyList()));
+        tables.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)), Collections.emptySet(), Collections.emptyList()));
         tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true)), Collections.emptySet(), Collections.emptyList()));
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false)), Collections.emptySet(), Collections.emptyList()));
         return Collections.singletonMap("name", new ShardingSphereSchema(tables, Collections.emptyMap()));
     }
     
     private Map<String, ShardingSphereSchema> buildDatabase() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
-        tables.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true)), Collections.emptySet(), Collections.emptyList()));
-        tables.put("logicName2", new ShardingSphereTable("logicName2", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true),
-                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true),
-                new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true)), Collections.emptySet(), Collections.emptyList()));
+        tables.put("logicName1", new ShardingSphereTable("logicName1", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)), Collections.emptySet(), Collections.emptyList()));
+        tables.put("logicName2", new ShardingSphereTable("logicName2", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false),
+                new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true, false)), Collections.emptySet(), Collections.emptyList()));
         tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true)), Collections.emptySet(), Collections.emptyList()));
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false)), Collections.emptySet(), Collections.emptyList()));
         return Collections.singletonMap("name", new ShardingSphereSchema(tables, Collections.emptyMap()));
     }
 }

@@ -66,7 +66,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     private final ShardingSphereDatabase database;
     
     @Override
-    public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
@@ -77,16 +77,16 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
         List<ShardingCondition> result = new ArrayList<>();
         for (WhereSegment each : ((WhereAvailable) sqlStatementContext).getWhereSegments()) {
-            result.addAll(createShardingConditions(each.getExpr(), parameters, columnExpressionTableNames));
+            result.addAll(createShardingConditions(each.getExpr(), params, columnExpressionTableNames));
         }
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final ExpressionSegment expression, final List<Object> parameters, final Map<String, String> columnExpressionTableNames) {
+    private Collection<ShardingCondition> createShardingConditions(final ExpressionSegment expression, final List<Object> params, final Map<String, String> columnExpressionTableNames) {
         Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), parameters, columnExpressionTableNames);
+            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), params, columnExpressionTableNames);
             if (shardingConditionValues.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -99,7 +99,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     }
     
     private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates,
-                                                                                            final List<Object> parameters, final Map<String, String> columnTableNames) {
+                                                                                            final List<Object> params, final Map<String, String> columnTableNames) {
         Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
@@ -109,7 +109,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                     continue;
                 }
                 Column column = new Column(shardingColumn.get(), tableName.get());
-                Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, parameters);
+                Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params);
                 if (!shardingConditionValue.isPresent()) {
                     continue;
                 }

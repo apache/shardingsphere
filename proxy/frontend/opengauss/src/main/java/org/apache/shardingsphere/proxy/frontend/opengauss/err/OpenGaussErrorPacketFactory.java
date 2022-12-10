@@ -20,45 +20,21 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.err;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.opengauss.util.PSQLException;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Error packet factory for openGauss.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenGaussErrorPacketFactory {
-    
-    private static final Class<?> PSQL_EXCEPTION_CLASS;
-    
-    private static final Method GET_SERVER_ERROR_MESSAGE_METHOD;
-    
-    private static final Class<?> SERVER_ERROR_MESSAGE_CLASS;
-    
-    private static final Field MESSAGE_PARTS_FIELD;
-    
-    static {
-        try {
-            PSQL_EXCEPTION_CLASS = Class.forName("org.opengauss.util.PSQLException");
-            GET_SERVER_ERROR_MESSAGE_METHOD = PSQL_EXCEPTION_CLASS.getMethod("getServerErrorMessage");
-            SERVER_ERROR_MESSAGE_CLASS = Class.forName("org.opengauss.util.ServerErrorMessage");
-            MESSAGE_PARTS_FIELD = SERVER_ERROR_MESSAGE_CLASS.getDeclaredField("m_mesgParts");
-            MESSAGE_PARTS_FIELD.setAccessible(true);
-        } catch (final ClassNotFoundException | NoSuchMethodException | NoSuchFieldException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
     
     /**
      * Create new instance of openGauss error packet.
@@ -68,7 +44,7 @@ public final class OpenGaussErrorPacketFactory {
      */
     public static OpenGaussErrorResponsePacket newInstance(final Exception cause) {
         if (existsServerErrorMessage(cause)) {
-            return createErrorResponsePacket(getServerErrorMessageMap(cause));
+            return new OpenGaussErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }
         if (cause instanceof SQLException || cause instanceof ShardingSphereSQLException || cause instanceof SQLDialectException) {
             return createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, "PostgreSQL"));
@@ -77,15 +53,8 @@ public final class OpenGaussErrorPacketFactory {
         return createErrorResponsePacketForUnknownException(cause);
     }
     
-    @SneakyThrows({IllegalAccessException.class, IllegalArgumentException.class, InvocationTargetException.class})
     private static boolean existsServerErrorMessage(final Exception cause) {
-        return PSQL_EXCEPTION_CLASS.isInstance(cause) && null != GET_SERVER_ERROR_MESSAGE_METHOD.invoke(cause);
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows({IllegalAccessException.class, IllegalArgumentException.class, InvocationTargetException.class})
-    private static Map<Character, String> getServerErrorMessageMap(final Exception cause) {
-        return (Map<Character, String>) MESSAGE_PARTS_FIELD.get(GET_SERVER_ERROR_MESSAGE_METHOD.invoke(cause));
+        return cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage();
     }
     
     private static OpenGaussErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
@@ -93,10 +62,6 @@ public final class OpenGaussErrorPacketFactory {
         String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue() : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
         return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message);
-    }
-    
-    private static OpenGaussErrorResponsePacket createErrorResponsePacket(final Map<Character, String> serverErrorMessageMap) {
-        return new OpenGaussErrorResponsePacket(serverErrorMessageMap);
     }
     
     private static OpenGaussErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {

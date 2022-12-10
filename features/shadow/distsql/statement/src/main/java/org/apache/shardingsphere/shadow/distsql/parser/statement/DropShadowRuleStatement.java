@@ -28,10 +28,10 @@ import java.util.Collection;
 @Getter
 public final class DropShadowRuleStatement extends DropRuleStatement {
     
-    private final Collection<String> ruleNames;
+    private final Collection<String> names;
     
-    public DropShadowRuleStatement(final boolean ifExists, final Collection<String> ruleNames) {
+    public DropShadowRuleStatement(final boolean ifExists, final Collection<String> names) {
         super(ifExists);
-        this.ruleNames = ruleNames;
+        this.names = names;
     }
 }

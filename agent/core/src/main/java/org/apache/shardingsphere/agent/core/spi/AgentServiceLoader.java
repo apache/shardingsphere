@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.spi;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -75,6 +74,6 @@ public final class AgentServiceLoader<T> {
             return;
         }
         serviceMap.put(service, new LinkedList<>());
-        ServiceLoader.load(service, AgentPluginLoader.getInstance()).forEach(each -> serviceMap.get(service).add(each));
+        ServiceLoader.load(service).forEach(each -> serviceMap.get(service).add(each));
     }
 }

@@ -22,18 +22,18 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugins</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>test</module>
-        <module>jaeger</module>
-        <module>zipkin</module>
         <module>opentracing</module>
         <module>opentelemetry</module>
+        <module>jaeger</module>
+        <module>zipkin</module>
+        <module>test</module>
     </modules>
     
     <properties>

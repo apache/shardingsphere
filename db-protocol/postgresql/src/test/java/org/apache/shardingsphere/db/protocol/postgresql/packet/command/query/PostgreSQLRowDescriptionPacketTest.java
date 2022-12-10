@@ -41,7 +41,7 @@ public final class PostgreSQLRowDescriptionPacketTest {
     @Test
     public void assertWrite() {
         PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("name", 1, Types.VARCHAR, 4, null);
-        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(1, Collections.singletonList(description));
+        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.singletonList(description));
         packet.write(payload);
         verify(payload, times(2)).writeInt2(1);
         verify(payload).writeStringNul("name");
@@ -55,7 +55,7 @@ public final class PostgreSQLRowDescriptionPacketTest {
     
     @Test
     public void getMessageType() {
-        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(0, Collections.emptyList());
+        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.emptyList());
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.ROW_DESCRIPTION));
     }
 }

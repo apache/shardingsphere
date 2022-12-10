@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
@@ -35,8 +36,9 @@ public final class ShadowRuleStatementConverterTest {
     @Test
     public void assertConvert() {
         ShadowRuleConfiguration config = ShadowRuleStatementConverter.convert(Collections.singleton(createTableRuleSegment()));
-        assertThat(config.getDataSources().get("ruleName").getProductionDataSourceName(), is("source"));
-        assertThat(config.getDataSources().get("ruleName").getShadowDataSourceName(), is("shadow"));
+        ShadowDataSourceConfiguration shadowDataSourceConfiguration = config.getDataSources().iterator().next();
+        assertThat(shadowDataSourceConfiguration.getProductionDataSourceName(), is("source"));
+        assertThat(shadowDataSourceConfiguration.getShadowDataSourceName(), is("shadow"));
         assertThat(config.getTables().size(), is(1));
         assertThat(config.getShadowAlgorithms().size(), is(1));
         assertThat(config.getShadowAlgorithms().get("algorithmsName").getProps().getProperty("foo"), is("bar"));

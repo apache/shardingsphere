@@ -124,7 +124,7 @@ public final class ProxyContextTest extends ProxyContextRestorer {
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(database.getProtocolType()).thenReturn(new H2DatabaseType());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);
         return result;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -39,7 +40,10 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
                                                     final String schemaName, final DropTableStatement sqlStatement, final ConfigurationProperties props) {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> {
-            database.getSchema(schemaName).removeTable(each.getTableName().getIdentifier().getValue());
+            ShardingSphereSchema schema = database.getSchema(schemaName);
+            if (null != schema) {
+                schema.removeTable(each.getTableName().getIdentifier().getValue());
+            }
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });
         Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);

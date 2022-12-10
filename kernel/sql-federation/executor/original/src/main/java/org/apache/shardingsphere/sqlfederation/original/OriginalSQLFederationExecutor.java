@@ -70,7 +70,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     private ConfigurationProperties props;
     
-    private ShardingSphereData shardingSphereData;
+    private ShardingSphereData data;
     
     private JDBCExecutor jdbcExecutor;
     
@@ -90,12 +90,12 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     @Override
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,
-                     final ShardingSphereData shardingSphereData, final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
+                     final ShardingSphereData data, final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = OptimizerContextFactory.create(metaData.getDatabases(), metaData.getGlobalRuleMetaData());
         this.globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        this.shardingSphereData = shardingSphereData;
+        this.data = data;
         this.props = metaData.getProps();
         this.jdbcExecutor = jdbcExecutor;
         this.eventBusContext = eventBusContext;
@@ -113,7 +113,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                         final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
-        Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContexts().get(databaseName).getDialectProps());
+        Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContext(databaseName).getDialectProps());
         addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, federationContext);
         return result;
     }
@@ -122,16 +122,16 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData,
-                executorContext, shardingSphereData, eventBusContext);
-        FilterableDatabase database = new FilterableDatabase(federationContext.getDatabases().get(databaseName.toLowerCase()), JAVA_TYPE_FACTORY, executor);
+                executorContext, data, eventBusContext);
+        FilterableDatabase database = new FilterableDatabase(federationContext.getMetaData().getDatabase(databaseName), JAVA_TYPE_FACTORY, executor);
         // TODO support database.schema.table query when switch to AdvancedFederationExecutor, calcite jdbc just support schema.table query now
         connection.getRootSchema().add(schemaName, database.getSubSchema(schemaName));
         connection.setSchema(schemaName);
     }
     
-    private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
+    private void setParameters(final PreparedStatement preparedStatement, final List<Object> params) throws SQLException {
         int count = 1;
-        for (Object each : parameters) {
+        for (Object each : params) {
             preparedStatement.setObject(count, each);
             count++;
         }

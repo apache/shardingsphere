@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.sharding.factory;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.fixture.ShardingAuditAlgorithmFixture;
 import org.junit.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 public final class ShardingAuditAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
-        assertThat(ShardingAuditAlgorithmFactory.newInstance(configuration), instanceOf(ShardingAuditAlgorithmFixture.class));
+        assertThat(ShardingAuditAlgorithmFactory.newInstance(new AlgorithmConfiguration("FIXTURE", new Properties())), instanceOf(ShardingAuditAlgorithmFixture.class));
     }
     
     @Test

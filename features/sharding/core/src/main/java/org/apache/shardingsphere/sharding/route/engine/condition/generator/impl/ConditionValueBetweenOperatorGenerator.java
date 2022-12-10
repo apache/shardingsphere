@@ -39,9 +39,9 @@ import java.util.Optional;
 public final class ConditionValueBetweenOperatorGenerator implements ConditionValueGenerator<BetweenExpression> {
     
     @Override
-    public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final Column column, final List<Object> parameters) {
-        ConditionValue betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), parameters);
-        ConditionValue andConditionValue = new ConditionValue(predicate.getAndExpr(), parameters);
+    public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final Column column, final List<Object> params) {
+        ConditionValue betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), params);
+        ConditionValue andConditionValue = new ConditionValue(predicate.getAndExpr(), params);
         Optional<Comparable<?>> betweenValue = betweenConditionValue.getValue();
         Optional<Comparable<?>> andValue = andConditionValue.getValue();
         List<Integer> parameterMarkerIndexes = new ArrayList<>(2);

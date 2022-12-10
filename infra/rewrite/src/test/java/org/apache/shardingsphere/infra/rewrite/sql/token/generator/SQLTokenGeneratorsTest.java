@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,7 +56,7 @@ public final class SQLTokenGeneratorsTest {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         SQLTokenGenerator expectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
         SQLTokenGenerator unexpectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
-        Collection<SQLTokenGenerator> collection = new ArrayList<>();
+        Collection<SQLTokenGenerator> collection = new LinkedList<>();
         collection.add(expectedSqlTokenGenerator);
         collection.add(unexpectedSqlTokenGenerator);
         sqlTokenGenerators.addAll(collection);

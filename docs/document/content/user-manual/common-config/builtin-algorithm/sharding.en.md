@@ -218,7 +218,7 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t-order-inline
+          shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -227,7 +227,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t_order-item-inline
+          shardingAlgorithmName: t_order_item_inline
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -235,7 +235,7 @@ rules:
       actualDataNodes: ds_${0..1}.t_account_${0..1}
       tableStrategy:
         standard:
-          shardingAlgorithmName: t-account-inline
+          shardingAlgorithmName: t_account_inline
       keyGenerateStrategy:
         column: account_id
         keyGeneratorName: snowflake
@@ -247,24 +247,24 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database-inline
+      shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    database-inline:
+    database_inline:
       type: INLINE
       props:
         algorithm-expression: ds_${user_id % 2}
-    t-order-inline:
+    t_order_inline:
       type: INLINE
       props:
         algorithm-expression: t_order_${order_id % 2}
-    t_order-item-inline:
+    t_order_item_inline:
       type: INLINE
       props:
         algorithm-expression: t_order_item_${order_id % 2}
-    t-account-inline:
+    t_account_inline:
       type: INLINE
       props:
         algorithm-expression: t_account_${account_id % 2}

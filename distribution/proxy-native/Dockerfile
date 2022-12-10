@@ -19,7 +19,7 @@ FROM busybox AS prepare
 
 RUN mkdir -p /conf/
 
-FROM scratch
+FROM oraclelinux:9-slim
 
 MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 

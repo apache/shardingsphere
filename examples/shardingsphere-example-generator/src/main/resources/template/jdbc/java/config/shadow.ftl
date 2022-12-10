@@ -35,9 +35,9 @@
     
     private Collection<String> createShadowAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
-        result.add("user-id-insert-match-algorithm");
-        result.add("user-id-delete-match-algorithm");
-        result.add("user-id-select-match-algorithm");
+        result.add("order-type-insert-match-algorithm");
+        result.add("order-type-delete-match-algorithm");
+        result.add("order-type-select-match-algorithm");
         result.add("simple-hint-algorithm");
         return result;
     }
@@ -47,30 +47,30 @@
         result.add("shadow-data-source");
         return result;
     }
-
-    private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds_0", "ds_1"));
+    
+    private Collection<ShadowDataSourceConfiguration> createShadowDataSources() {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source", "ds_0", "ds_1"));
         return result;
     }
-
+    
     private Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
-        Properties userIdInsertProps = new Properties();
-        userIdInsertProps.setProperty("operation", "insert");
-        userIdInsertProps.setProperty("column", "order_type");
-        userIdInsertProps.setProperty("value", "1");
-        result.put("user-id-insert-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
-        Properties userIdDeleteProps = new Properties();
-        userIdDeleteProps.setProperty("operation", "delete");
-        userIdDeleteProps.setProperty("column", "order_type");
-        userIdDeleteProps.setProperty("value", "1");
-        result.put("user-id-delete-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", userIdDeleteProps));
-        Properties userIdSelectProps = new Properties();
-        userIdSelectProps.setProperty("operation", "select");
-        userIdSelectProps.setProperty("column", "order_type");
-        userIdSelectProps.setProperty("value", "1");
-        result.put("user-id-select-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
+        Properties orderTypeInsertProps = new Properties();
+        orderTypeInsertProps.setProperty("operation", "insert");
+        orderTypeInsertProps.setProperty("column", "order_type");
+        orderTypeInsertProps.setProperty("value", "1");
+        result.put("order-type-insert-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", orderTypeInsertProps));
+        Properties orderTypeDeleteProps = new Properties();
+        orderTypeDeleteProps.setProperty("operation", "delete");
+        orderTypeDeleteProps.setProperty("column", "order_type");
+        orderTypeDeleteProps.setProperty("value", "1");
+        result.put("order-type-delete-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", orderTypeDeleteProps));
+        Properties orderTypeSelectProps = new Properties();
+        orderTypeSelectProps.setProperty("operation", "select");
+        orderTypeSelectProps.setProperty("column", "order_type");
+        orderTypeSelectProps.setProperty("value", "1");
+        result.put("order-type-select-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", orderTypeSelectProps));
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");

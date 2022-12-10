@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -61,7 +61,8 @@ public final class CreateShadowRuleStatementUpdaterTest {
     @Before
     public void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", new ShadowDataSourceConfiguration("initDs0", "initDs0Shadow")));
+        when(database.getName()).thenReturn("aa");
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("initRuleName", "initDs0", "initDs0Shadow")));
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -72,7 +73,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicateRuleNameInMetaData() {
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("ruleName", null));
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("ruleName", "ds", "ds_shadow")));
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }
@@ -91,7 +92,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
         prop.setProperty("type", "value");
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
         CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
-                new ShadowRuleSegment("ruleName1", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
+                new ShadowRuleSegment("ruleName", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
@@ -105,11 +106,10 @@ public final class CreateShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, sqlStatement, null);
     }
     
-    @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteDuplicateAlgorithmInMetaData() {
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertInvalidAlgorithmConfiguration() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("algorithmName", new AlgorithmConfiguration("type", prop)));
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("type", prop));
         CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);

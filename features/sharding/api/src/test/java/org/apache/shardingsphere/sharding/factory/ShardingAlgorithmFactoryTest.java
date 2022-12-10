@@ -31,8 +31,7 @@ public final class ShardingAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
-        assertThat(ShardingAlgorithmFactory.newInstance(configuration), instanceOf(ShardingAlgorithmFixture.class));
+        assertThat(ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("FIXTURE", new Properties())), instanceOf(ShardingAlgorithmFixture.class));
     }
     
     @Test

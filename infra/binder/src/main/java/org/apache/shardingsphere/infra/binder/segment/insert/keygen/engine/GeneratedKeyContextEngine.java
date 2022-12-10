@@ -49,13 +49,13 @@ public final class GeneratedKeyContextEngine {
      *
      * @param insertColumnNames insert column names
      * @param valueExpressions value expressions
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return generate key context
      */
-    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final List<Object> parameters) {
+    public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final List<Object> params) {
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNames, optional)
-                ? findGeneratedKey(insertColumnNames, valueExpressions, parameters, optional)
+                ? findGeneratedKey(insertColumnNames, valueExpressions, params, optional)
                 : new GeneratedKeyContext(optional, true));
     }
     
@@ -91,15 +91,15 @@ public final class GeneratedKeyContextEngine {
     }
     
     private GeneratedKeyContext findGeneratedKey(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions,
-                                                 final List<Object> parameters, final String generateKeyColumnName) {
+                                                 final List<Object> params, final String generateKeyColumnName) {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
         for (ExpressionSegment each : findGenerateKeyExpressions(insertColumnNames, valueExpressions, generateKeyColumnName)) {
             if (each instanceof ParameterMarkerExpressionSegment) {
-                if (parameters.isEmpty()) {
+                if (params.isEmpty()) {
                     continue;
                 }
-                if (null != parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())) {
-                    result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
+                if (null != params.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())) {
+                    result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
                 }
             } else if (each instanceof LiteralExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) each).getLiterals());

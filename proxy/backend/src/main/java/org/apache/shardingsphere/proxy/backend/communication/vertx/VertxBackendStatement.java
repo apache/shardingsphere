@@ -22,6 +22,7 @@ import io.vertx.sqlclient.Query;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.SqlClient;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.ExecutorVertxStatementManager;
@@ -33,13 +34,14 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.vertx.VertxEx
 public final class VertxBackendStatement implements ExecutorVertxStatementManager {
     
     @Override
-    public Future<Query<RowSet<Row>>> createStorageResource(final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option) {
+    public Future<Query<RowSet<Row>>> createStorageResource(final Future<? extends SqlClient> connection, final ConnectionMode connectionMode, final VertxExecutionContext option,
+                                                            final DatabaseType databaseType) {
         return Future.failedFuture(new UnsupportedOperationException("Vert.x query is not like JDBC statement."));
     }
     
     @Override
     public Future<Query<RowSet<Row>>> createStorageResource(final ExecutionUnit executionUnit, final Future<? extends SqlClient> connection,
-                                                            final ConnectionMode connectionMode, final VertxExecutionContext option) {
+                                                            final ConnectionMode connectionMode, final VertxExecutionContext option, final DatabaseType databaseType) {
         return Future.failedFuture(new UnsupportedOperationException("Vert.x prepared query is not like JDBC prepared statement."));
     }
 }

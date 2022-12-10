@@ -14,21 +14,21 @@ CreateShadowRule ::=
   'CREATE' 'SHADOW' 'RULE' shadowDefinition ( ',' shadowDefinition )*
 
 shadowDefinition ::=
-  ruleName '(' resourceMapping shadowTableRule ( ',' shadowTableRule )* ')'
+  ruleName '(' storageUnitMapping shadowTableRule ( ',' shadowTableRule )* ')'
     
-resourceMapping ::=
-    'SOURCE' '=' resourceName ',' 'SHADOW' '=' resourceName
+storageUnitMapping ::=
+    'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
 
 shadowTableRule ::=
-    tableName '(' shadowAlgorithm ( ',' shadowAlgorithm )* ')'
+    tableName '(' shadowAlgorithm ')'
     
 shadowAlgorithm ::=
-    ( algorithmName ',' )? 'TYPE' '('  'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' ) ')'
+    'TYPE' '('  'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' ) ')'
 
 ruleName ::=
   identifier
 
-resourceName ::=
+storageUnitName ::=
   identifier
 
 tableName ::=
@@ -44,9 +44,9 @@ shadowAlgorithmType ::=
 ### Supplement
 
 - Duplicate `ruleName` cannot be created;
-- `resourceMapping` specifies the mapping relationship between the `source` database and the shadow library. You need to
-  use the resource managed by RDL, please refer
-  to [resource](https://shardingsphere.apache.org/document/current/en/reference/distsql/syntax/rdl/resource-definition/);
+- `storageUnitMapping` specifies the mapping relationship between the `source` database and the shadow library. You need to
+  use the storage unit managed by RDL, please refer
+  to [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/reference/distsql/syntax/rdl/storage-unit-definition/);
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time;
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
   and `shadowAlgorithmType`;
@@ -54,14 +54,14 @@ shadowAlgorithmType ::=
 
 ### Example
 
-#### Create a shadow rule
+- Create a shadow rule
 
 ```sql
 CREATE SHADOW RULE shadow_rule(
-  SOURCE=demo_ds,
-  SHADOW=demo_ds_shadow,
-  t_order((simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-  t_order_item((TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1'))))
+  SOURCE=demo_su,
+  SHADOW=demo_su_shadow,
+  t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
+  t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))
 );
 ```
 
@@ -72,3 +72,4 @@ CREATE SHADOW RULE shadow_rule(
 ### Related links
 
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/reference/distsql/syntax/rdl/storage-unit-definition/)

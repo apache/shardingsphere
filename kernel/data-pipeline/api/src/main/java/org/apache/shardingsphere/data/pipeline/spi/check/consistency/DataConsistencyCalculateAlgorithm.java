@@ -19,23 +19,23 @@ package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.util.spi.aware.SPIMetadataAware;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Data consistency calculate algorithm.
  */
-public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorithm, SPIMetadataAware {
+public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Calculate data for consistency check.
      *
-     * @param parameter data consistency calculate parameter
+     * @param param data consistency calculate parameter
      * @return calculated result
      */
-    Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter parameter);
+    Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter param);
     
     /**
      * Cancel calculation.
@@ -50,4 +50,11 @@ public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorit
      * @return canceling or not
      */
     boolean isCanceling();
+    
+    /**
+     * Get supported database types.
+     * 
+     * @return supported database types
+     */
+    Collection<String> getSupportedDatabaseTypes();
 }

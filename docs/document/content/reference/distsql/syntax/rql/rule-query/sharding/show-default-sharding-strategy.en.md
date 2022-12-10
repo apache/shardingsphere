@@ -70,7 +70,7 @@ mysql> SHOW DEFAULT SHARDING STRATEGY;
 
 ### Reserved word
 
-`SHOW`、`DEFAULT`、`SHARDING`、`STRATEGY`、`FROM`
+`SHOW`, `DEFAULT`, `SHARDING`, `STRATEGY`, `FROM`
 
 ### Related links
 

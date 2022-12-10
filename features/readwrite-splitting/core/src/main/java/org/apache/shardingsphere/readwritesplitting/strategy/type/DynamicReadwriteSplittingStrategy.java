@@ -24,7 +24,7 @@ import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingS
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,9 +52,6 @@ public final class DynamicReadwriteSplittingStrategy implements ReadwriteSplitti
     
     @Override
     public Collection<String> getAllDataSources() {
-        Collection<String> result = new LinkedList<>();
-        result.add(dynamicDataSource.getPrimaryDataSourceName(autoAwareDataSourceName));
-        result.addAll(dynamicDataSource.getReplicaDataSourceNames(autoAwareDataSourceName));
-        return result;
+        return Collections.singletonList(autoAwareDataSourceName);
     }
 }

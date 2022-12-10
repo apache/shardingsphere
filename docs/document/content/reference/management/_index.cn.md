@@ -19,10 +19,13 @@ namespace
    ├     ├     ├     ├     ├──tables          # 表结构配置
    ├     ├     ├     ├     ├     ├──${tableName} 
    ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├     ├──views          # 视图结构配置
+   ├     ├     ├     ├     ├     ├──${viewName} 
+   ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # 元数据版本列表      
    ├     ├     ├     ├──${versionNumber}      # 元数据版本号
-   ├     ├     ├     ├     ├──dataSources     # 数据源配置
+   ├     ├     ├     ├     ├──data_sources     # 数据源配置
    ├     ├     ├     ├     ├──rules           # 规则配置   
    ├     ├     ├     ├──...
    ├     ├     ├──active_version              # 激活的元数据版本号

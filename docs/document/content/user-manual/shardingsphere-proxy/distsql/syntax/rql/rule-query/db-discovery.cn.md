@@ -17,13 +17,13 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 
 ### DB Discovery Rule
 
-| 列                       | 说明            |
-| ------------------------ | -------------- |
-| group_name               | 规则名称         |
-| data_source_names        | 数据源名称列表    |
-| primary_data_source_name | 主数据源名称      |
-| discovery_type           | 数据库发现服务类型 |
-| discovery_heartbeat      | 数据库发现服务心跳 |
+| 列                        | 说明                |
+|---------------------------|--------------------|
+| group_name                | 规则名称            |
+| data_source_names         | 数据源名称列表       |
+| primary_data_source_name  | 主数据源名称         |
+| discovery_type            | 数据库发现服务类型    |
+| discovery_heartbeat       | 数据库发现服务心跳    |
 
 ### DB Discovery Type
 

@@ -17,12 +17,6 @@
 
 package org.apache.shardingsphere.parser.rule.builder;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Properties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -32,6 +26,13 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.util.HashMap;
+import java.util.Properties;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
+
 public final class SQLParserRuleBuilderTest {
     
     @Mock
@@ -39,9 +40,9 @@ public final class SQLParserRuleBuilderTest {
     
     @Test
     public void assertBuild() {
-        SQLParserRuleConfiguration configuration = new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7));
-        SQLParserRule actualResult = new SQLParserRuleBuilder().build(configuration, new HashMap<>(), instanceContext, new ConfigurationProperties(new Properties()));
-        assertThat(actualResult.getConfiguration(), is(configuration));
+        SQLParserRuleConfiguration ruleConfig = new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7));
+        SQLParserRule actualResult = new SQLParserRuleBuilder().build(ruleConfig, new HashMap<>(), instanceContext, new ConfigurationProperties(new Properties()));
+        assertThat(actualResult.getConfiguration(), is(ruleConfig));
         assertTrue(actualResult.isSqlCommentParseEnabled());
         assertThat(actualResult.getSqlStatementCache().getInitialCapacity(), is(4));
         assertThat(actualResult.getSqlStatementCache().getMaximumSize(), is(7L));

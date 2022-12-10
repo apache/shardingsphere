@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropOperatorFamilyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop operator family statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLDropOperatorFamilyStatement extends DropOperatorFamilyStatement implements PostgreSQLStatement {
 }

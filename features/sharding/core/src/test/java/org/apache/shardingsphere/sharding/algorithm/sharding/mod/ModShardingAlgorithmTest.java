@@ -93,17 +93,17 @@ public final class ModShardingAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertRangeDoShardingWithWrongArgumentForStartOffset() {
-        Properties properties = createZeroPaddingProperties();
-        properties.setProperty("start-offset", "-1");
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", properties));
+        Properties props = createZeroPaddingProperties();
+        props.setProperty("start-offset", "-1");
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", props));
         assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertRangeDoShardingWithWrongArgumentForStopOffset() {
-        Properties properties = createZeroPaddingProperties();
-        properties.setProperty("stop-offset", "-1");
-        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", properties));
+        Properties props = createZeroPaddingProperties();
+        props.setProperty("stop-offset", "-1");
+        ModShardingAlgorithm algorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", props));
         assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
     }
     

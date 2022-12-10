@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.metrics.api;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
-import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.Before;
 
 import java.io.File;

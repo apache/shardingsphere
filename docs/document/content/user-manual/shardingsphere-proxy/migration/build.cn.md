@@ -14,22 +14,9 @@ weight = 1
 
 ## 操作步骤
 
-1. 执行以下命令，编译生成 ShardingSphere-Proxy 二进制包：
+1. 获取 ShardingSphere-Proxy。详情请参见 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
 
-```
-git clone --depth 1 https://github.com/apache/shardingsphere.git
-cd shardingsphere
-mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
-```
-
-发布包：
-- /shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz
-
-或者通过[下载页面]( https://shardingsphere.apache.org/document/current/cn/downloads/ )获取安装包。
-
-2. 解压缩 proxy 发布包，修改配置文件 `conf/config-sharding.yaml`。详情请参见 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
-
-3. 修改配置文件 `conf/server.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
+2. 修改配置文件 `conf/server.yaml`，详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/)。
 
 目前 `mode` 必须是 `Cluster`，需要提前启动对应的注册中心。
 
@@ -48,7 +35,7 @@ mode:
       operationTimeoutMilliseconds: 500
 ```
 
-4. 引入 JDBC 驱动。
+3. 引入 JDBC 驱动。
 
 proxy 已包含 PostgreSQL JDBC 驱动。
 
@@ -59,15 +46,15 @@ proxy 已包含 PostgreSQL JDBC 驱动。
 | MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )                              | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
 | openGauss             | [opengauss-jdbc-3.0.0.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar ) |                                                                                                  |
 
-如果是异构迁移，源端支持范围更广的数据库，比如：Oracle。JDBC 驱动处理方式同上。
+如果是异构迁移，源端支持范围更广的数据库。JDBC 驱动处理方式同上。
 
-5. 启动 ShardingSphere-Proxy：
+4. 启动 ShardingSphere-Proxy：
 
 ```
 sh bin/start.sh
 ```
 
-6. 查看 proxy 日志 `logs/stdout.log`，看到日志中出现：
+5. 查看 proxy 日志 `logs/stdout.log`，看到日志中出现：
 
 ```
 [INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success
@@ -75,12 +62,12 @@ sh bin/start.sh
 
 确认启动成功。
 
-7. 按需配置迁移
+6. 按需配置迁移
 
-7.1. 查询配置。
+6.1. 查询配置。
 
 ```sql
-SHOW MIGRATION PROCESS CONFIGURATION;
+SHOW MIGRATION RULE;
 ```
 
 默认配置如下：
@@ -93,14 +80,14 @@ SHOW MIGRATION PROCESS CONFIGURATION;
 +--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
 ```
 
-7.2. 新建配置（可选）。
+6.2. 修改配置（可选）。
 
-不配置的话有默认值。
+因 migration rule 具有默认值，无需创建，仅提供 ALTER 语句。
 
 完整配置 DistSQL 示例：
 
 ```sql
-CREATE MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ(
   WORKER_THREAD=40,
   BATCH_SIZE=1000,
@@ -119,7 +106,7 @@ STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
 配置项说明：
 
 ```sql
-CREATE MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ( -- 数据读取配置。如果不配置则部分参数默认生效。
   WORKER_THREAD=40, -- 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
   BATCH_SIZE=1000, -- 一次查询操作返回的最大记录数。如果不配置则使用默认值。
@@ -153,7 +140,7 @@ PROPERTIES( -- 算法属性
 DistSQL 示例：配置 `READ` 限流。
 
 ```sql
-CREATE MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ(
   RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
 )
@@ -162,38 +149,23 @@ READ(
 
 配置读取数据限流，其它配置使用默认值。
 
-7.3. 修改配置。
+6.3. 恢复配置。
 
-`ALTER MIGRATION PROCESS CONFIGURATION`，内部结构和 `CREATE MIGRATION PROCESS CONFIGURATION` 一致。
-
-DistSQL 示例：调整限流参数
+如需恢复默认配置，也通过 ALTER 语句进行操作。
 
 ```sql
-ALTER MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
-)
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  SHARDING_SIZE=10000000,
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+),
+WRITE(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
+),
+STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
 );
----
-ALTER MIGRATION PROCESS CONFIGURATION (
-READ(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
-), WRITE(
-  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='1000')))
-)
-);
-```
-
-7.4. 清除配置。
-
-DistSQL 示例：清空 `READ` 配置、恢复为默认值。
-
-```sql
-DROP MIGRATION PROCESS CONFIGURATION '/READ';
-```
-
-DistSQL 示例：清空 `READ/RATE_LIMITER` 配置。
-
-```sql
-DROP MIGRATION PROCESS CONFIGURATION '/READ/RATE_LIMITER';
 ```

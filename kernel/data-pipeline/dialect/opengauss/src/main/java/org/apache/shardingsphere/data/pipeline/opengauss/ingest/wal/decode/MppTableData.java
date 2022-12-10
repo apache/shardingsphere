@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,27 +28,27 @@ import lombok.Setter;
 @Getter
 public final class MppTableData {
     
-    @SerializedName("table_name")
+    @JsonProperty("table_name")
     private String tableName;
     
-    @SerializedName("op_type")
+    @JsonProperty("op_type")
     private String opType;
     
-    @SerializedName("columns_name")
+    @JsonProperty("columns_name")
     private String[] columnsName;
     
-    @SerializedName("columns_type")
+    @JsonProperty("columns_type")
     private String[] columnsType;
     
-    @SerializedName("columns_val")
+    @JsonProperty("columns_val")
     private String[] columnsVal;
     
-    @SerializedName("old_keys_name")
+    @JsonProperty("old_keys_name")
     private String[] oldKeysName;
     
-    @SerializedName("old_keys_type")
+    @JsonProperty("old_keys_type")
     private String[] oldKeysType;
     
-    @SerializedName("old_keys_val")
+    @JsonProperty("old_keys_val")
     private String[] oldKeysVal;
 }

@@ -26,10 +26,10 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
     
-    private final long fixtureWorkerId;
+    private final int fixtureWorkerId;
     
     @Override
-    public long generate(final Properties props) {
+    public int generate(final Properties props) {
         Preconditions.checkArgument(fixtureWorkerId >= 0L && fixtureWorkerId <= MAX_WORKER_ID, "Illegal worker id.");
         return fixtureWorkerId;
     }

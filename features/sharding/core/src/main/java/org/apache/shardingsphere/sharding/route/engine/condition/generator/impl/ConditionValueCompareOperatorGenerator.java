@@ -56,13 +56,13 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     private static final Collection<String> OPERATORS = new HashSet<>(Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST));
     
     @Override
-    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> parameters) {
+    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> params) {
         String operator = predicate.getOperator();
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
         }
         ExpressionSegment valueExpression = predicate.getLeft() instanceof ColumnSegment ? predicate.getRight() : predicate.getLeft();
-        ConditionValue conditionValue = new ConditionValue(valueExpression, parameters);
+        ConditionValue conditionValue = new ConditionValue(valueExpression, params);
         Optional<Comparable<?>> value = conditionValue.getValue();
         if (value.isPresent()) {
             return generate(value.get(), column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));

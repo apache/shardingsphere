@@ -36,23 +36,37 @@ public final class EncryptColumn {
     
     private final String plainColumn;
     
+    private final String likeQueryColumn;
+    
     private final String encryptorName;
     
     private final String assistedQueryEncryptorName;
     
+    private final String likeQueryEncryptorName;
+    
     private final Boolean queryWithCipherColumn;
     
-    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName, final Boolean queryWithCipherColumn) {
-        this(cipherColumn, assistedQueryColumn, plainColumn, encryptorName, null, queryWithCipherColumn);
+    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String likeQueryColumn, final String plainColumn,
+                         final String encryptorName, final Boolean queryWithCipherColumn) {
+        this(cipherColumn, assistedQueryColumn, plainColumn, likeQueryColumn, encryptorName, null, null, queryWithCipherColumn);
     }
     
     /**
      * Get assisted query column.
-     * 
+     *
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn() {
         return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.empty() : Optional.of(assistedQueryColumn);
+    }
+    
+    /**
+     * Get like query column.
+     *
+     * @return like query column
+     */
+    public Optional<String> getLikeQueryColumn() {
+        return Strings.isNullOrEmpty(likeQueryColumn) ? Optional.empty() : Optional.of(likeQueryColumn);
     }
     
     /**

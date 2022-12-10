@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -65,35 +65,35 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetStorageType() throws SQLException {
+    public void assertGetStorageTypes() throws SQLException {
         DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_db", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
-        assertTrue(DatabaseTypeEngine.getStorageTypes(Collections.singletonMap("foo_db", databaseConfig)).containsKey("foo_db"));
-        assertThat(DatabaseTypeEngine.getStorageTypes(Collections.singletonMap("foo_db", databaseConfig)).get("foo_db"), instanceOf(MySQLDatabaseType.class));
+        assertTrue(DatabaseTypeEngine.getStorageTypes("foo_db", databaseConfig).containsKey("foo_db"));
+        assertThat(DatabaseTypeEngine.getStorageTypes("foo_db", databaseConfig).get("foo_db"), instanceOf(MySQLDatabaseType.class));
     }
     
     @Test
-    public void assertGetDatabaseTypeWithEmptyDataSources() {
-        assertThat(DatabaseTypeEngine.getDatabaseType(Collections.emptyList()).getType(), is("MySQL"));
+    public void assertGetStorageTypeWithEmptyDataSources() {
+        assertThat(DatabaseTypeEngine.getStorageType(Collections.emptyList()).getType(), is("MySQL"));
     }
     
     @Test
-    public void assertGetDatabaseTypeWithDataSources() throws SQLException {
+    public void assertGetStorageTypeWithDataSources() throws SQLException {
         Collection<DataSource> dataSources = Arrays.asList(mockDataSource(DatabaseTypeFactory.getInstance("H2")), mockDataSource(DatabaseTypeFactory.getInstance("H2")));
-        assertThat(DatabaseTypeEngine.getDatabaseType(dataSources).getType(), is("H2"));
+        assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertGetDatabaseTypeWithDifferentDataSourceTypes() throws SQLException {
+    @Test
+    public void assertGetStorageTypeWithDifferentDataSourceTypes() throws SQLException {
         Collection<DataSource> dataSources = Arrays.asList(mockDataSource(DatabaseTypeFactory.getInstance("H2")), mockDataSource(DatabaseTypeFactory.getInstance("MySQL")));
-        DatabaseTypeEngine.getDatabaseType(dataSources);
+        assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
     @Test(expected = SQLWrapperException.class)
-    public void assertGetDatabaseTypeWhenGetConnectionError() throws SQLException {
+    public void assertGetStorageTypeWhenGetConnectionError() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(SQLException.class);
-        DatabaseTypeEngine.getDatabaseType(Collections.singleton(dataSource));
+        DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource));
     }
     
     @Test

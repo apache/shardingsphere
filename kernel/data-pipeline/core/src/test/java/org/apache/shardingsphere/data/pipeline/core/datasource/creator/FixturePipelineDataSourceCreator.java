@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
+import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
+
 import javax.sql.DataSource;
 
 public final class FixturePipelineDataSourceCreator implements PipelineDataSourceCreator {

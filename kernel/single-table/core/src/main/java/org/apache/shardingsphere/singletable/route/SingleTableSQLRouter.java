@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.route.engine.SingleTableRouteEngineFactory;
-import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
-import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidatorFactory;
+import org.apache.shardingsphere.singletable.route.validator.SingleTableMetaDataValidator;
+import org.apache.shardingsphere.singletable.route.validator.SingleTableMetaDataValidatorFactory;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -61,7 +61,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         }
         RouteContext result = new RouteContext();
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
-        Optional<SingleTableMetadataValidator> validator = SingleTableMetadataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
+        Optional<SingleTableMetaDataValidator> validator = SingleTableMetaDataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
         validator.ifPresent(optional -> optional.validate(rule, sqlStatementContext, database));
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, result);
         if (!singleTableNames.isEmpty()) {

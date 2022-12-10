@@ -30,12 +30,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,36 +63,54 @@ public final class MergedEncryptShowColumnsMergedResultTest {
     @Test
     public void assertNextWithAssistedQuery() throws SQLException {
         when(queryResult.next()).thenReturn(true).thenReturn(false);
-        when(queryResult.getValue(1, String.class)).thenReturn("assistedQuery");
+        when(queryResult.getValue(1, String.class)).thenReturn("user_id_assisted");
         assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).next());
     }
     
     @Test
+    public void assertNextWithLikeQuery() throws SQLException {
+        when(queryResult.next()).thenReturn(true).thenReturn(false);
+        when(queryResult.getValue(1, String.class)).thenReturn("user_id_like");
+        assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).next());
+    }
+    
+    @Test
+    public void assertNextWithLikeQueryAndMultiColumns() throws SQLException {
+        when(queryResult.next()).thenReturn(true, true, true, false);
+        when(queryResult.getValue(1, String.class)).thenReturn("user_id_like", "order_id", "content");
+        MergedEncryptShowColumnsMergedResult actual = createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule());
+        assertTrue(actual.next());
+        assertTrue(actual.next());
+        assertFalse(actual.next());
+    }
+    
+    @Test
     public void assertGetValueWithCipherColumn() throws SQLException {
-        when(queryResult.getValue(1, String.class)).thenReturn("cipher");
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).getValue(1, String.class), is("id"));
+        when(queryResult.getValue(1, String.class)).thenReturn("user_id_cipher");
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mockEncryptRule()).getValue(1, String.class), is("user_id"));
     }
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(result.findEncryptTable("test")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singleton("assistedQuery"));
-        when(encryptTable.isCipherColumn("cipher")).thenReturn(true);
-        when(encryptTable.getLogicColumnByCipherColumn("cipher")).thenReturn("id");
+        when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singleton("user_id_assisted"));
+        when(encryptTable.getLikeQueryColumns()).thenReturn(Collections.singleton("user_id_like"));
+        when(encryptTable.isCipherColumn("user_id_cipher")).thenReturn(true);
+        when(encryptTable.getLogicColumnByCipherColumn("user_id_cipher")).thenReturn("user_id");
         return result;
     }
     
     @Test
     public void assertGetValueWithOtherColumn() throws SQLException {
-        when(queryResult.getValue(1, String.class)).thenReturn("assistedQuery");
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(1, String.class), is("assistedQuery"));
+        when(queryResult.getValue(1, String.class)).thenReturn("user_id_assisted");
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(1, String.class), is("user_id_assisted"));
     }
     
     @Test
     public void assertGetValueWithOtherIndex() throws SQLException {
-        when(queryResult.getValue(2, String.class)).thenReturn("id");
-        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(2, String.class), is("id"));
+        when(queryResult.getValue(2, String.class)).thenReturn("user_id");
+        assertThat(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getValue(2, String.class), is("user_id"));
     }
     
     @Test
@@ -97,12 +118,19 @@ public final class MergedEncryptShowColumnsMergedResultTest {
         assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).wasNull());
     }
     
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertGetCalendarValue() throws SQLException {
+        createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getCalendarValue(1, Date.class, Calendar.getInstance());
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertGetInputStream() throws SQLException {
+        createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getInputStream(1, "asc");
+    }
+    
     private MergedEncryptShowColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        IdentifierValue identifierValue = new IdentifierValue("test");
-        TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
-        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
+        when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
         return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
     }
 }

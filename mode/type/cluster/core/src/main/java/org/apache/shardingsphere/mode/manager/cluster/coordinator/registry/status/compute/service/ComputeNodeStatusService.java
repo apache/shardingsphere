@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -32,9 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -68,12 +67,22 @@ public final class ComputeNodeStatusService {
     }
     
     /**
+     * Persist instance state.
+     *
+     * @param instanceId instance id
+     * @param state state context
+     */
+    public void persistInstanceState(final String instanceId, final StateContext state) {
+        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), state.getCurrentState().name());
+    }
+    
+    /**
      * Persist instance worker id.
      *
      * @param instanceId instance id
      * @param workerId worker id
      */
-    public void persistInstanceWorkerId(final String instanceId, final Long workerId) {
+    public void persistInstanceWorkerId(final String instanceId, final Integer workerId) {
         repository.persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(workerId));
     }
     
@@ -96,9 +105,8 @@ public final class ComputeNodeStatusService {
      * @return status
      */
     @SuppressWarnings("unchecked")
-    public Collection<String> loadInstanceStatus(final String instanceId) {
-        String yamlContent = repository.getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
-        return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
+    public String loadInstanceStatus(final String instanceId) {
+        return repository.getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
     }
     
     /**
@@ -107,10 +115,10 @@ public final class ComputeNodeStatusService {
      * @param instanceId instance id
      * @return worker id
      */
-    public Optional<Long> loadInstanceWorkerId(final String instanceId) {
+    public Optional<Integer> loadInstanceWorkerId(final String instanceId) {
         try {
             String workerId = repository.getDirectly(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
-            return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Long.valueOf(workerId));
+            return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Integer.valueOf(workerId));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
         }
@@ -146,6 +154,7 @@ public final class ComputeNodeStatusService {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
         result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
         result.switchState(loadInstanceStatus(instanceMetaData.getId()));
+        loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
     
@@ -154,13 +163,13 @@ public final class ComputeNodeStatusService {
      *
      * @return assigned worker ids
      */
-    public Set<Long> getAssignedWorkerIds() {
-        Set<Long> result = new LinkedHashSet<>();
-        List<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+    public Collection<Integer> getAssignedWorkerIds() {
+        Collection<Integer> result = new LinkedHashSet<>();
+        Collection<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
         for (String each : childrenKeys) {
             String workerId = repository.getDirectly(ComputeNode.getInstanceWorkerIdNodePath(each));
             if (null != workerId) {
-                result.add(Long.parseLong(workerId));
+                result.add(Integer.parseInt(workerId));
             }
         }
         return result;

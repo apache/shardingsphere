@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -32,7 +32,7 @@ import java.util.Properties;
 /**
  * SM3 encrypt algorithm.
  */
-public final class SM3EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class SM3EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     static {
         Security.addProvider(new BouncyCastleProvider());

@@ -19,15 +19,12 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Pipeline SQL builder.
@@ -73,10 +70,9 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      *
      * @param schemaName schema name
      * @param dataRecord data record
-     * @param shardingColumnsMap sharding columns map
      * @return insert SQL
      */
-    String buildInsertSQL(String schemaName, DataRecord dataRecord, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    String buildInsertSQL(String schemaName, DataRecord dataRecord);
     
     /**
      * Build update SQL.
@@ -84,19 +80,17 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      * @param schemaName schema name
      * @param dataRecord data record
      * @param conditionColumns condition columns
-     * @param shardingColumnsMap sharding columns map
      * @return update SQL
      */
-    String buildUpdateSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    String buildUpdateSQL(String schemaName, DataRecord dataRecord, Collection<Column> conditionColumns);
     
     /**
      * Extract updated columns.
      *
      * @param record data record
-     * @param shardingColumnsMap sharding columns map
      * @return filtered columns
      */
-    List<Column> extractUpdatedColumns(DataRecord record, Map<LogicTableName, Set<String>> shardingColumnsMap);
+    List<Column> extractUpdatedColumns(DataRecord record);
     
     /**
      * Build delete SQL.

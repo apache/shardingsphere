@@ -20,55 +20,39 @@ grammar RDLStatement;
 import BaseRule;
 
 createReadwriteSplittingRule
-    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
+    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA_ readwriteSplittingRuleDefinition)*
     ;
 
 alterReadwriteSplittingRule
-    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
+    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA_ readwriteSplittingRuleDefinition)*
     ;
 
 dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE ifExists? ruleName (COMMA ruleName)*
+    : DROP READWRITE_SPLITTING RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
 readwriteSplittingRuleDefinition
-    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA algorithmDefinition)? RP
+    : ruleName LP_ (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA_ algorithmDefinition)? RP_
     ;
 
 staticReadwriteSplittingRuleDefinition
-    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP readResourceNames RP
+    : WRITE_STORAGE_UNIT EQ_ writeStorageUnitName COMMA_ READ_STORAGE_UNITS LP_ readStorageUnitsNames RP_
     ;
 
 dynamicReadwriteSplittingRuleDefinition
-    : AUTO_AWARE_RESOURCE EQ resourceName (COMMA WRITE_DATA_SOURCE_QUERY_ENABLED EQ writeDataSourceQueryEnabled)?
+    : AUTO_AWARE_RESOURCE EQ_ resourceName (COMMA_ WRITE_DATA_SOURCE_QUERY_ENABLED EQ_ writeDataSourceQueryEnabled)?
     ;
 
 ruleName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
-writeResourceName
-    : resourceName
+writeStorageUnitName
+    : storageUnitName
     ;
 
-readResourceNames
-    : resourceName (COMMA resourceName)*
-    ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=(NUMBER | INT | STRING)
+readStorageUnitsNames
+    : storageUnitName (COMMA_ storageUnitName)*
     ;
 
 ifExists

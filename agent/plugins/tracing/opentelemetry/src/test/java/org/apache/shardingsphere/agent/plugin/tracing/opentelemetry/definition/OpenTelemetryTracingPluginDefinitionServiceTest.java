@@ -26,6 +26,6 @@ public final class OpenTelemetryTracingPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        assertThat(new OpenTelemetryTracingPluginDefinitionService().install().size(), is(3));
+        assertThat(new OpenTelemetryTracingPluginDefinitionService().install(true).size(), is(3));
     }
 }

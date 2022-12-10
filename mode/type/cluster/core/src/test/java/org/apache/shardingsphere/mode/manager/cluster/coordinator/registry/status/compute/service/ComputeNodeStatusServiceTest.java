@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
+import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -67,11 +69,20 @@ public final class ComputeNodeStatusServiceTest {
     }
     
     @Test
+    public void assertPersistInstanceState() {
+        ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
+        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
+        final String instanceId = instanceMetaData.getId();
+        computeNodeStatusService.persistInstanceState(instanceId, new StateContext());
+        verify(repository, times(1)).persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), StateType.OK.name());
+    }
+    
+    @Test
     public void assertPersistInstanceWorkerId() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
-        new ComputeNodeStatusService(repository).persistInstanceWorkerId(instanceId, 100L);
-        verify(repository).persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100L));
+        new ComputeNodeStatusService(repository).persistInstanceWorkerId(instanceId, 100);
+        verify(repository).persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100));
     }
     
     @Test

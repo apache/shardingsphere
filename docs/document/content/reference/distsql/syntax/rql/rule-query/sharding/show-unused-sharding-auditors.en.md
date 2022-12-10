@@ -66,7 +66,7 @@ mysql> SHOW UNUSED SHARDING AUDITORS FROM test1;
 
 ### Reserved word
 
-`SHOW`、`UNUSED`、`SHARDING`、`AUDITORS`、`FROM`
+`SHOW`, `UNUSED`, `SHARDING`, `AUDITORS`, `FROM`
 
 ### Related links
 

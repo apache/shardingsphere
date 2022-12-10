@@ -74,18 +74,17 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlShardingStrategyConfiguration yamlShardingStrategyConfiguration = new YamlShardingStrategyConfiguration();
-        YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-        standard.setShardingColumn("col");
-        standard.setShardingAlgorithmName("foo_algorithm");
-        yamlShardingStrategyConfiguration.setStandard(standard);
-        YamlShardingAutoTableRuleConfiguration configuration = swapper.swapToYamlConfiguration(
-                new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"));
-        configuration.setShardingStrategy(yamlShardingStrategyConfiguration);
+        YamlShardingStrategyConfiguration yamlShardingStrategyConfig = new YamlShardingStrategyConfiguration();
+        YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfig = new YamlStandardShardingStrategyConfiguration();
+        yamlStandardShardingStrategyConfig.setShardingColumn("col");
+        yamlStandardShardingStrategyConfig.setShardingAlgorithmName("foo_algorithm");
+        yamlShardingStrategyConfig.setStandard(yamlStandardShardingStrategyConfig);
+        YamlShardingAutoTableRuleConfiguration yamlShardingAutoTableRuleConfig = swapper.swapToYamlConfiguration(new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"));
+        yamlShardingAutoTableRuleConfig.setShardingStrategy(yamlShardingStrategyConfig);
         YamlKeyGenerateStrategyConfiguration keyGenerateStrategy = new YamlKeyGenerateStrategyConfiguration();
         keyGenerateStrategy.setColumn("col");
-        configuration.setKeyGenerateStrategy(keyGenerateStrategy);
-        ShardingAutoTableRuleConfiguration actual = new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(configuration);
+        yamlShardingAutoTableRuleConfig.setKeyGenerateStrategy(keyGenerateStrategy);
+        ShardingAutoTableRuleConfiguration actual = new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(yamlShardingAutoTableRuleConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertNotNull(actual.getShardingStrategy());

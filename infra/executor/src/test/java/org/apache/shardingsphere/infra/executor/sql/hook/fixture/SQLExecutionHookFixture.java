@@ -30,7 +30,7 @@ public final class SQLExecutionHookFixture implements SQLExecutionHook {
     private static final Collection<String> ACTIONS = new LinkedList<>();
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters,
+    public void start(final String dataSourceName, final String sql, final List<Object> params,
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         ACTIONS.add("start");
     }

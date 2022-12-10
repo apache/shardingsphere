@@ -49,10 +49,10 @@ public final class ShardingRuleConfigurationCheckerTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertCheckTableConfigurationFailed() {
-        ShardingRuleConfiguration configuration = createRuleConfiguration();
-        configuration.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
-        configuration.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
-        getChecker(configuration).check("foo_db", configuration, Collections.emptyMap(), Collections.emptyList());
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
+        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

@@ -17,10 +17,18 @@
 
 lexer grammar Keyword;
 
-import Alphabet;
+import Alphabet, Symbol;
 
 WS
     : [ \t\r\n] + ->skip
+    ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
     ;
 
 CREATE
@@ -39,8 +47,8 @@ SHOW
     : S H O W
     ;
 
-RESOURCES
-    : R E S O U R C E S
+STORAGE_UNITS
+    : S T O R A G E UL_ U N I T S
     ;
 
 RULE
@@ -93,4 +101,8 @@ EXISTS
 
 COUNT
     : C O U N T
+    ;
+
+MYSQLMGR
+    : M Y S Q L DOT_ M G R
     ;

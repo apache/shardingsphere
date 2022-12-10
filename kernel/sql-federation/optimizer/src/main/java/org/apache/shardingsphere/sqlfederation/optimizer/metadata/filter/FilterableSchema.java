@@ -24,6 +24,7 @@ import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.impl.ViewTable;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
@@ -45,26 +46,26 @@ public final class FilterableSchema extends AbstractSchema {
     
     private final Map<String, Table> tableMap;
     
-    public FilterableSchema(final String schemaName, final ShardingSphereSchema schema, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
+    public FilterableSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
         name = schemaName;
-        tableMap = createTableMap(schema, javaTypeFactory, executor);
+        tableMap = createTableMap(schema, protocolType, javaTypeFactory, executor);
     }
     
-    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
+    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
         Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1);
         for (ShardingSphereTable each : schema.getTables().values()) {
             if (schema.containsView(each.getName())) {
-                result.put(each.getName(), getViewTable(schema, each, javaTypeFactory));
+                result.put(each.getName(), getViewTable(schema, protocolType, each, javaTypeFactory));
             } else {
                 // TODO implement table statistic logic after using custom operators
-                result.put(each.getName(), new FilterableTable(each, executor, new FederationStatistic()));
+                result.put(each.getName(), new FilterableTable(each, executor, new FederationStatistic(), protocolType));
             }
         }
         return result;
     }
     
-    private static ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final JavaTypeFactory javaTypeFactory) {
-        RelDataType relDataType = SQLFederationDataTypeUtil.createRelDataType(table, javaTypeFactory);
+    private static ViewTable getViewTable(final ShardingSphereSchema schema, final DatabaseType protocolType, final ShardingSphereTable table, final JavaTypeFactory javaTypeFactory) {
+        RelDataType relDataType = SQLFederationDataTypeUtil.createRelDataType(table, protocolType, javaTypeFactory);
         ShardingSphereView view = schema.getView(table.getName());
         return new ViewTable(javaTypeFactory.getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
     }

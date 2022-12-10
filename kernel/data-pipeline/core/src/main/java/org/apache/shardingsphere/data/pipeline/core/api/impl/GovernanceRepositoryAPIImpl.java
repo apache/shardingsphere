@@ -21,11 +21,11 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResultSwapper;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -51,6 +51,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public boolean isExisted(final String key) {
+        // TODO delegate to repository isExisted
         return null != repository.getDirectly(key);
     }
     
@@ -65,14 +66,18 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public Optional<String> getCheckLatestJobId(final String jobId) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId)));
+    public Optional<String> getLatestCheckJobId(final String parentJobId) {
+        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
     }
     
     @Override
-    public void persistCheckLatestJobId(final String jobId, final String checkJobId) {
-        log.info("persist check job id '{}' for job {}", checkJobId, jobId);
-        repository.persist(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId), String.valueOf(checkJobId));
+    public void persistLatestCheckJobId(final String parentJobId, final String checkJobId) {
+        repository.persist(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId), String.valueOf(checkJobId));
+    }
+    
+    @Override
+    public void deleteLatestCheckJobId(final String parentJobId) {
+        repository.delete(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId));
     }
     
     @SuppressWarnings("unchecked")
@@ -92,34 +97,30 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistCheckJobResult(final String jobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
+    public void persistCheckJobResult(final String parentJobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
         if (null == checkResultMap) {
-            log.warn("checkResultMap is null, jobId {}, checkJobId {}", jobId, checkJobId);
             return;
         }
-        log.info("persist check job result for job {}", checkJobId);
         Map<String, String> yamlCheckResultMap = new LinkedHashMap<>();
         for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
             YamlDataConsistencyCheckResult yamlCheckResult = new YamlDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
             yamlCheckResultMap.put(entry.getKey(), YamlEngine.marshal(yamlCheckResult));
         }
-        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId), YamlEngine.marshal(yamlCheckResultMap));
+        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId), YamlEngine.marshal(yamlCheckResultMap));
     }
     
     @Override
-    public void deleteCheckJobResult(final String jobId, final String checkJobId) {
-        log.info("deleteCheckJobResult, jobId={}, checkJobId={}", jobId, checkJobId);
-        repository.delete(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
+    public void deleteCheckJobResult(final String parentJobId, final String checkJobId) {
+        repository.delete(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
     }
     
     @Override
-    public Collection<String> listCheckJobIds(final String jobId) {
-        return repository.getChildrenKeys(PipelineMetaDataNode.getCheckJobIdsRootPath(jobId));
+    public Collection<String> listCheckJobIds(final String parentJobId) {
+        return repository.getChildrenKeys(PipelineMetaDataNode.getCheckJobIdsRootPath(parentJobId));
     }
     
     @Override
     public void deleteJob(final String jobId) {
-        log.info("delete job {}", jobId);
         repository.delete(PipelineMetaDataNode.getJobRootPath(jobId));
     }
     
@@ -130,7 +131,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        repository.watch(key, listener, null);
+        repository.watch(key, listener);
     }
     
     @Override
@@ -141,7 +142,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public List<Integer> getShardingItems(final String jobId) {
         List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
-        log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
     

@@ -109,7 +109,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         boolean isVisible = resultSet.getBoolean("IS_VISIBLE");
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, false, isVisible);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, false, isVisible, false);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

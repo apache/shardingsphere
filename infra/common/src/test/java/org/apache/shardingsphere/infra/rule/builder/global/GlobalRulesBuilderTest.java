@@ -73,7 +73,7 @@ public final class GlobalRulesBuilderTest {
     
     private WorkerIdGenerator createWorkerIdGenerator() {
         WorkerIdGenerator result = mock(WorkerIdGenerator.class);
-        when(result.generate(new Properties())).thenReturn(0L);
+        when(result.generate(new Properties())).thenReturn(0);
         return result;
     }
 }

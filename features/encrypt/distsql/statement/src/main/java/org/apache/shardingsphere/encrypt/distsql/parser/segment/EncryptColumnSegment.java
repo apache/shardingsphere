@@ -40,6 +40,8 @@ public final class EncryptColumnSegment implements ASTNode {
     
     private final String assistedQueryColumn;
     
+    private final String likeQueryColumn;
+    
     private String dataType;
     
     private String cipherDataType;
@@ -48,9 +50,13 @@ public final class EncryptColumnSegment implements ASTNode {
     
     private String assistedQueryDataType;
     
+    private String likeQueryDataType;
+    
     private final AlgorithmSegment encryptor;
     
     private final AlgorithmSegment assistedQueryEncryptor;
+    
+    private final AlgorithmSegment likeQueryEncryptor;
     
     /**
      * Is the data type correct.
@@ -60,7 +66,8 @@ public final class EncryptColumnSegment implements ASTNode {
     public boolean isCorrectDataType() {
         boolean requireDataType = !Strings.isNullOrEmpty(dataType);
         return isCorrectDataType(requireDataType, name, dataType) && isCorrectDataType(requireDataType, plainColumn, plainDataType)
-                && isCorrectDataType(requireDataType, cipherColumn, cipherDataType) && isCorrectDataType(requireDataType, assistedQueryColumn, assistedQueryDataType);
+                && isCorrectDataType(requireDataType, cipherColumn, cipherDataType) && isCorrectDataType(requireDataType, assistedQueryColumn, assistedQueryDataType)
+                && isCorrectDataType(requireDataType, likeQueryColumn, likeQueryDataType);
     }
     
     private boolean isCorrectDataType(final boolean requireDataType, final String field, final String fieldDataType) {

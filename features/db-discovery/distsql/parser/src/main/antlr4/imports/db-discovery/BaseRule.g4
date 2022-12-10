@@ -18,3 +18,31 @@
 grammar BaseRule;
 
 import Symbol, Keyword, Literals;
+
+literal
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
+    ;
+
+algorithmDefinition
+    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
+    ;
+
+algorithmTypeName
+    : STRING_ | buildInAlgorithmTypeName
+    ;
+
+buildInAlgorithmTypeName
+    : MYSQLMGR
+    ;
+
+propertiesDefinition
+    : PROPERTIES LP_ properties? RP_
+    ;
+
+properties
+    : property (COMMA_ property)*
+    ;
+
+property
+    : key=STRING_ EQ_ value=literal
+    ;

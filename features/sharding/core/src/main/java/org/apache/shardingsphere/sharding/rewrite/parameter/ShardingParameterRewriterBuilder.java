@@ -58,18 +58,18 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     }
     
     @SuppressWarnings("rawtypes")
-    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter toBeAddedParameterRewriter) {
-        if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchemas(schemas);
+    private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter toBeAddedParamRewriter) {
+        if (toBeAddedParamRewriter instanceof SchemaMetaDataAware) {
+            ((SchemaMetaDataAware) toBeAddedParamRewriter).setSchemas(schemas);
         }
-        if (toBeAddedParameterRewriter instanceof ShardingRuleAware) {
-            ((ShardingRuleAware) toBeAddedParameterRewriter).setShardingRule(shardingRule);
+        if (toBeAddedParamRewriter instanceof ShardingRuleAware) {
+            ((ShardingRuleAware) toBeAddedParamRewriter).setShardingRule(shardingRule);
         }
-        if (toBeAddedParameterRewriter instanceof RouteContextAware) {
-            ((RouteContextAware) toBeAddedParameterRewriter).setRouteContext(routeContext);
+        if (toBeAddedParamRewriter instanceof RouteContextAware) {
+            ((RouteContextAware) toBeAddedParamRewriter).setRouteContext(routeContext);
         }
-        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
-            parameterRewriters.add(toBeAddedParameterRewriter);
+        if (toBeAddedParamRewriter.isNeedRewrite(sqlStatementContext)) {
+            paramRewriters.add(toBeAddedParamRewriter);
         }
     }
 }

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.converter;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -39,28 +39,21 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     @Test
     public void assertConvert() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
-        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("definition_MySQL.MGR"));
+        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("definition_mysql_mgr"));
         assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("definition_heartbeat"));
         Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = iterator.next();
         assertThat(dataSourceRuleConfig.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
         assertThat(dataSourceRuleConfig.getGroupName(), is("definition"));
-        assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("definition_MySQL.MGR"));
+        assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("definition_mysql_mgr"));
         assertThat(dataSourceRuleConfig.getDiscoveryHeartbeatName(), is("definition_heartbeat"));
-        dataSourceRuleConfig = iterator.next();
-        assertThat(dataSourceRuleConfig.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
-        assertThat(dataSourceRuleConfig.getGroupName(), is("construction"));
-        assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("type"));
-        assertThat(dataSourceRuleConfig.getDiscoveryHeartbeatName(), is("heartbeat"));
     }
     
     private Collection<AbstractDatabaseDiscoverySegment> createDatabaseDiscoveryRuleSegments() {
         Properties props = createProperties();
         DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment =
                 new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", props), props);
-        DatabaseDiscoveryConstructionSegment databaseDiscoveryConstructionSegment =
-                new DatabaseDiscoveryConstructionSegment("construction", Arrays.asList("resource0", "resource1"), "type", "heartbeat");
-        return Arrays.asList(databaseDiscoveryConstructionSegment, databaseDiscoveryDefinitionSegment);
+        return Collections.singletonList(databaseDiscoveryDefinitionSegment);
     }
     
     private Properties createProperties() {

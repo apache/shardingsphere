@@ -83,10 +83,10 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
         switch (operationType) {
             case BEGIN:
                 if (connectionSession.getTransactionStatus().isInTransaction()) {
-                    if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
+                    if (connectionSession.getProtocolType() instanceof MySQLDatabaseType) {
                         return transactionManager.commit().compose(unused -> transactionManager.begin());
                     }
-                    if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+                    if (connectionSession.getProtocolType() instanceof PostgreSQLDatabaseType || connectionSession.getProtocolType() instanceof OpenGaussDatabaseType) {
                         return Future.failedFuture(new InTransactionException());
                     }
                 }
@@ -139,9 +139,9 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private void handleBegin() throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
+            if (connectionSession.getProtocolType() instanceof MySQLDatabaseType) {
                 backendTransactionManager.commit();
-            } else if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+            } else if (connectionSession.getProtocolType() instanceof PostgreSQLDatabaseType || connectionSession.getProtocolType() instanceof OpenGaussDatabaseType) {
                 throw new InTransactionException();
             }
         }
@@ -167,7 +167,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     }
     
     private boolean isPostgreSQLOrOpenGauss() {
-        return connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType;
+        return connectionSession.getProtocolType() instanceof PostgreSQLDatabaseType || connectionSession.getProtocolType() instanceof OpenGaussDatabaseType;
     }
     
     private SQLStatement getSQLStatementByCommit() {

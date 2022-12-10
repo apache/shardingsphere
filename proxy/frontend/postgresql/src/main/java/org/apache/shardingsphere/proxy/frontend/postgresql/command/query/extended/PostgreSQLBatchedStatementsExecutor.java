@@ -69,7 +69,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private final JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false);
+    private final JDBCExecutor jdbcExecutor;
     
     private final ConnectionSession connectionSession;
     
@@ -77,13 +77,14 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private final PostgreSQLServerPreparedStatement preparedStatement;
     
-    private final Map<ExecutionUnit, List<List<Object>>> executionUnitParameters = new HashMap<>();
+    private final Map<ExecutionUnit, List<List<Object>>> executionUnitParams = new HashMap<>();
     
     private final ExecutionContext anyExecutionContext;
     
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
     public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+        jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;
@@ -91,36 +92,37 @@ public final class PostgreSQLBatchedStatementsExecutor {
         SQLStatementContext<?> sqlStatementContext = null;
         ExecutionContext executionContext = null;
         if (parameterSetsIterator.hasNext()) {
-            List<Object> firstGroupOfParameter = parameterSetsIterator.next();
-            sqlStatementContext = createSQLStatementContext(firstGroupOfParameter);
-            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParameter));
+            List<Object> firstGroupOfParam = parameterSetsIterator.next();
+            sqlStatementContext = createSQLStatementContext(firstGroupOfParam);
+            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParam));
             for (ExecutionUnit each : executionContext.getExecutionUnits()) {
-                executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
+                executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
         anyExecutionContext = executionContext;
         prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext);
     }
     
-    private SQLStatementContext<?> createSQLStatementContext(final List<Object> parameters) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), parameters, preparedStatement.getSqlStatement(), connectionSession.getDatabaseName());
+    private SQLStatementContext<?> createSQLStatementContext(final List<Object> params) {
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), params, preparedStatement.getSqlStatementContext().getSqlStatement(),
+                connectionSession.getDatabaseName());
     }
     
-    private void prepareForRestOfParametersSet(final Iterator<List<Object>> parameterSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
-        while (parameterSetsIterator.hasNext()) {
-            List<Object> eachGroupOfParameter = parameterSetsIterator.next();
+    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
+        while (paramSetsIterator.hasNext()) {
+            List<Object> eachGroupOfParam = paramSetsIterator.next();
             if (sqlStatementContext instanceof ParameterAware) {
-                ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParameter);
+                ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParam);
             }
-            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParameter));
+            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParam));
             for (ExecutionUnit each : eachExecutionContext.getExecutionUnits()) {
-                executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
+                executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
     }
     
-    private QueryContext createQueryContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
+    private QueryContext createQueryContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
@@ -148,8 +150,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
                 metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(),
-                new StatementOption(false), rules, connectionSession.getDatabaseType());
-        executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParameters.keySet());
+                new StatementOption(false), rules, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
+        executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParams.keySet());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {
                 prepareJDBCExecutionUnit(each);
@@ -159,15 +161,15 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private void prepareJDBCExecutionUnit(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) jdbcExecutionUnit.getStorageResource();
-        for (List<Object> eachGroupParameter : executionUnitParameters.getOrDefault(jdbcExecutionUnit.getExecutionUnit(), Collections.emptyList())) {
-            ListIterator<Object> parametersIterator = eachGroupParameter.listIterator();
-            while (parametersIterator.hasNext()) {
-                int parameterIndex = parametersIterator.nextIndex() + 1;
-                Object value = parametersIterator.next();
+        for (List<Object> eachGroupParam : executionUnitParams.getOrDefault(jdbcExecutionUnit.getExecutionUnit(), Collections.emptyList())) {
+            ListIterator<Object> params = eachGroupParam.listIterator();
+            while (params.hasNext()) {
+                int paramIndex = params.nextIndex() + 1;
+                Object value = params.next();
                 if (value instanceof PostgreSQLTypeUnspecifiedSQLParameter) {
                     value = value.toString();
                 }
-                preparedStatement.setObject(parameterIndex, value);
+                preparedStatement.setObject(paramIndex, value);
             }
             preparedStatement.addBatch();
         }
@@ -176,9 +178,9 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
-        DatabaseType databaseType = database.getResourceMetaData().getDatabaseType();
+        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         DatabaseType protocolType = database.getProtocolType();
-        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
+        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, storageTypes, preparedStatement.getSqlStatementContext().getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
@@ -191,12 +193,12 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
-        BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(protocolType, databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
+        BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+            super(protocolType, storageTypes, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override
-        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
             try {
                 return statement.executeBatch();
             } finally {

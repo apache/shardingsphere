@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
@@ -33,6 +33,7 @@ import java.util.Optional;
  */
 public final class ConnectionTransaction {
     
+    @Getter
     private final TransactionType transactionType;
     
     private final String databaseName;

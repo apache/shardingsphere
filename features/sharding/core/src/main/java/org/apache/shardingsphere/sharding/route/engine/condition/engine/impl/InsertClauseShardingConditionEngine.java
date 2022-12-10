@@ -60,22 +60,22 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     private final ShardingSphereDatabase database;
     
     @Override
-    public List<ShardingCondition> createShardingConditions(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final InsertStatementContext sqlStatementContext, final List<Object> params) {
         List<ShardingCondition> result = null == sqlStatementContext.getInsertSelectContext()
-                ? createShardingConditionsWithInsertValues(sqlStatementContext, parameters)
-                : createShardingConditionsWithInsertSelect(sqlStatementContext, parameters);
+                ? createShardingConditionsWithInsertValues(sqlStatementContext, params)
+                : createShardingConditionsWithInsertSelect(sqlStatementContext, params);
         appendGeneratedKeyConditions(sqlStatementContext, result);
         return result;
     }
     
-    private List<ShardingCondition> createShardingConditionsWithInsertValues(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
+    private List<ShardingCondition> createShardingConditionsWithInsertValues(final InsertStatementContext sqlStatementContext, final List<Object> params) {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<String> columnNames = getColumnNames(sqlStatementContext);
         List<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts();
         List<ShardingCondition> result = new ArrayList<>(insertValueContexts.size());
         int rowNumber = 0;
         for (InsertValueContext each : insertValueContexts) {
-            result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters, ++rowNumber));
+            result.add(createShardingCondition(tableName, columnNames.iterator(), each, params, ++rowNumber));
         }
         return result;
     }
@@ -91,7 +91,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     }
     
     private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames,
-                                                      final InsertValueContext insertValueContext, final List<Object> parameters, final int rowNumber) {
+                                                      final InsertValueContext insertValueContext, final List<Object> params, final int rowNumber) {
         ShardingCondition result = new ShardingCondition();
         DatetimeService datetimeService = null;
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
@@ -106,7 +106,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment
                         ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())
                         : Collections.emptyList();
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters)),
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, params)),
                         parameterMarkerIndexes));
             } else if (each instanceof CommonExpressionSegment) {
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
@@ -122,27 +122,27 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         return result;
     }
     
-    private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition result, final String shardingColumn, final String tableName) {
+    private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition condition, final String shardingColumn, final String tableName) {
         try {
             Integer value = Integer.valueOf(expressionSegment.getText());
-            result.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(value)));
+            condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(value)));
         } catch (NumberFormatException ex) {
-            result.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(expressionSegment.getText())));
+            condition.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(expressionSegment.getText())));
         }
     }
     
     @SuppressWarnings("rawtypes")
-    private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
+    private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> params) {
         Object result = expressionSegment instanceof ParameterMarkerExpressionSegment
-                ? parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
+                ? params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
                 : ((LiteralExpressionSegment) expressionSegment).getLiterals();
         Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable");
         return (Comparable) result;
     }
     
-    private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> parameters) {
+    private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> params) {
         SelectStatementContext selectStatementContext = sqlStatementContext.getInsertSelectContext().getSelectStatementContext();
-        return new LinkedList<>(new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(selectStatementContext, parameters));
+        return new LinkedList<>(new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(selectStatementContext, params));
     }
     
     private void appendGeneratedKeyConditions(final InsertStatementContext sqlStatementContext, final List<ShardingCondition> shardingConditions) {

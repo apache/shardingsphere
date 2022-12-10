@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import org.apache.shardingsphere.transaction.xa.atomikos.manager.fixture.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +34,9 @@ import javax.transaction.Transaction;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,8 +58,8 @@ public final class AtomikosTransactionManagerProviderTest {
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setProperty(transactionManagerProvider, "transactionManager", userTransactionManager);
-        ReflectiveUtil.setProperty(transactionManagerProvider, "userTransactionService", userTransactionService);
+        ReflectiveUtil.setField(transactionManagerProvider, "transactionManager", userTransactionManager);
+        ReflectiveUtil.setField(transactionManagerProvider, "userTransactionService", userTransactionService);
     }
     
     @Test
@@ -89,5 +92,13 @@ public final class AtomikosTransactionManagerProviderTest {
     public void assertClose() {
         transactionManagerProvider.close();
         verify(userTransactionService).shutdown(true);
+    }
+    
+    @Test
+    public void assertInit() throws Exception {
+        transactionManagerProvider.init();
+        assertNull(transactionManagerProvider.getTransactionManager().getTransaction());
+        assertFalse(transactionManagerProvider.getTransactionManager().getForceShutdown());
+        assertTrue(transactionManagerProvider.getTransactionManager().getStartupTransactionService());
     }
 }

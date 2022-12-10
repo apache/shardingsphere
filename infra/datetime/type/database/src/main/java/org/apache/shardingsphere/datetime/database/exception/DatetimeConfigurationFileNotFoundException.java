@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.datetime.database.exception;
 
+import org.apache.shardingsphere.infra.exception.DataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.exception.ClusterSQLException;
 
 /**
  * Datetime configuration file not found exception.
  */
-public final class DatetimeConfigurationFileNotFoundException extends ClusterSQLException {
+public final class DatetimeConfigurationFileNotFoundException extends DataSQLException {
     
     private static final long serialVersionUID = 4820838154441059833L;
     

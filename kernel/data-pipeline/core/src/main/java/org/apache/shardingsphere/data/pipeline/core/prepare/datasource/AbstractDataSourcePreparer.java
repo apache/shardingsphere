@@ -49,16 +49,16 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
+    // TODO it's just used for openGauss
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
-        DatabaseType targetDatabaseType = parameter.getTargetDatabaseType();
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
+        DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         if (!targetDatabaseType.isSchemaAvailable()) {
-            log.info("prepareTargetSchemas, target database does not support schema, ignore, targetDatabaseType={}", targetDatabaseType);
             return;
         }
-        CreateTableConfiguration createTableConfig = parameter.getCreateTableConfig();
+        CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType).orElse(null);
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
         Collection<String> createdSchemaNames = new HashSet<>();
@@ -69,11 +69,10 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             }
             Optional<String> sql = sqlBuilder.buildCreateSchemaSQL(targetSchemaName);
             if (sql.isPresent()) {
-                executeCreateSchema(parameter.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
+                executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
                 createdSchemaNames.add(targetSchemaName);
             }
         }
-        log.info("prepareTargetSchemas, createdSchemaNames={}, defaultSchema={}", createdSchemaNames, defaultSchema);
     }
     
     private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) {
@@ -82,8 +81,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sql);
             }
-        } catch (final SQLException ignored) {
-            // TODO should not ignore the exception, if do not catch it, the scaling IT will fail.
+        } catch (final SQLException ex) {
+            log.warn("create schema failed, error: {}", ex.getMessage());
         }
     }
     
@@ -91,6 +90,13 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return dataSourceManager.getDataSource(dataSourceConfig);
     }
     
+    /**
+     * Execute target table SQL.
+     * 
+     * @param targetConnection target connection
+     * @param sql SQL
+     * @throws SQLException SQL exception
+     */
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
         log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
@@ -106,6 +112,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
+    /**
+     * Add if not exists for create table SQL.
+     * 
+     * @param createTableSQL create table SQL
+     * @return create table if not existed SQL
+     */
     protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;

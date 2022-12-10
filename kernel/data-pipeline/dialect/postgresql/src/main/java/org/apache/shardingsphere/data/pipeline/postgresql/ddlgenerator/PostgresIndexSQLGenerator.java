@@ -142,16 +142,16 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
         return executeByTemplate(param, "component/indexes/%s/column_details.ftl");
     }
     
-    private String getColumnPropertyDisplayData(final Map<String, Object> each, final Map<String, Object> indexData) throws SQLException {
-        String result = (String) each.get("attdef");
-        if (null != each.get("collnspname")) {
-            result += " COLLATE " + each.get("collnspname");
+    private String getColumnPropertyDisplayData(final Map<String, Object> columnDetail, final Map<String, Object> indexData) throws SQLException {
+        String result = (String) columnDetail.get("attdef");
+        if (null != columnDetail.get("collnspname")) {
+            result += " COLLATE " + columnDetail.get("collnspname");
         }
-        if (null != each.get("opcname")) {
-            result += " " + each.get("opcname");
+        if (null != columnDetail.get("opcname")) {
+            result += " " + columnDetail.get("opcname");
         }
         if ("btree".equals(indexData.get("amname"))) {
-            String[] options = (String[]) ((PgArray) each.get("options")).getArray();
+            String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
             if (options.length > 0) {
                 result += " " + options[0];
             }

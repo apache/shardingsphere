@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
@@ -44,17 +44,29 @@ public final class TransactionSetHandler implements ProxyBackendHandler {
     @Override
     public ResponseHeader execute() {
         ShardingSpherePreconditions.checkState(null != sqlStatement.getScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
-        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode()) {
+        setReadOnly();
+        setTransactionIsolationLevel();
+        return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    private void setReadOnly() {
+        if (!sqlStatement.getAccessMode().isPresent()) {
+            return;
+        }
+        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode().get()) {
             connectionSession.setReadOnly(true);
-        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode()) {
+        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode().get()) {
             connectionSession.setReadOnly(false);
         }
-        if (null != sqlStatement.getIsolationLevel()) {
-            connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
-                    ? TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
-                    : TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
-            connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel());
+    }
+    
+    private void setTransactionIsolationLevel() {
+        if (!sqlStatement.getIsolationLevel().isPresent()) {
+            return;
         }
-        return new UpdateResponseHeader(sqlStatement);
+        connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
+                ? TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
+                : TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
+        connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }

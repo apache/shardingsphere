@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,8 +40,8 @@ public final class EncryptTable {
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName(),
-                    each.getAssistedQueryEncryptorName(), each.getQueryWithCipherColumn()));
+            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getLikeQueryColumn(),
+                    each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
@@ -65,6 +64,16 @@ public final class EncryptTable {
      */
     public Optional<String> findAssistedQueryEncryptorName(final String logicColumn) {
         return columns.containsKey(logicColumn) ? Optional.ofNullable(columns.get(logicColumn).getAssistedQueryEncryptorName()) : Optional.empty();
+    }
+    
+    /**
+     * Find like query encrypt algorithm name.
+     *
+     * @param logicColumn column name
+     * @return like encrypt algorithm name
+     */
+    public Optional<String> findLikeQueryEncryptorName(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? Optional.ofNullable(columns.get(logicColumn).getLikeQueryEncryptorName()) : Optional.empty();
     }
     
     /**
@@ -142,6 +151,21 @@ public final class EncryptTable {
     }
     
     /**
+     * Get like query columns.
+     *
+     * @return like query columns
+     */
+    public Collection<String> getLikeQueryColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (EncryptColumn each : columns.values()) {
+            if (each.getLikeQueryColumn().isPresent()) {
+                result.add(each.getLikeQueryColumn().get());
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Find assisted query column.
      *
      * @param logicColumn column name
@@ -149,6 +173,16 @@ public final class EncryptTable {
      */
     public Optional<String> findAssistedQueryColumn(final String logicColumn) {
         return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQueryColumn() : Optional.empty();
+    }
+    
+    /**
+     * Find like query column.
+     *
+     * @param logicColumn column name
+     * @return like query column
+     */
+    public Optional<String> findLikeQueryColumn(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getLikeQueryColumn() : Optional.empty();
     }
     
     /**
@@ -182,7 +216,7 @@ public final class EncryptTable {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns() {
-        Map<String, String> result = new HashMap<>(columns.size(), 1);
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getCipherColumn());
         }

@@ -49,17 +49,17 @@ public final class TrafficExecutor implements AutoCloseable {
         return callback.execute(statement, sqlUnit.getSql());
     }
     
-    private void cacheStatement(final List<Object> parameters, final Statement statement) throws SQLException {
+    private void cacheStatement(final List<Object> params, final Statement statement) throws SQLException {
         this.statement = statement;
-        setParameters(statement, parameters);
+        setParameters(statement, params);
     }
     
-    private void setParameters(final Statement statement, final List<Object> parameters) throws SQLException {
+    private void setParameters(final Statement statement, final List<Object> params) throws SQLException {
         if (!(statement instanceof PreparedStatement)) {
             return;
         }
         int index = 1;
-        for (Object each : parameters) {
+        for (Object each : params) {
             ((PreparedStatement) statement).setObject(index++, each);
         }
     }

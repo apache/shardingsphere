@@ -104,6 +104,9 @@ public final class DataSourceProperties {
             if (!dataSourceProps.getAllLocalProperties().containsKey(entry.getKey())) {
                 continue;
             }
+            if (entry.getValue() instanceof Map) {
+                return entry.getValue().equals(dataSourceProps.getAllLocalProperties().get(entry.getKey()));
+            }
             if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProps.getAllLocalProperties().get(entry.getKey())))) {
                 return false;
             }

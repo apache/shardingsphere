@@ -42,4 +42,6 @@ public final class ShardingSphereColumn {
     private final boolean caseSensitive;
     
     private final boolean visible;
+    
+    private final boolean unsigned;
 }

@@ -62,7 +62,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         if (simpleTableSegment.isPresent()) {
             return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
         }
-        Collection<QualifiedTable> tableNames = IndexMetaDataUtil.getTableNames(database, database.getResourceMetaData().getDatabaseType(), indexSegments);
+        Collection<QualifiedTable> tableNames = IndexMetaDataUtil.getTableNames(database, database.getProtocolType(), indexSegments);
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     

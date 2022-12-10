@@ -31,8 +31,7 @@ public final class TrafficLoadBalanceAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
-        assertThat(TrafficLoadBalanceAlgorithmFactory.newInstance(configuration), instanceOf(TrafficLoadBalanceAlgorithmFixture.class));
+        assertThat(TrafficLoadBalanceAlgorithmFactory.newInstance(new AlgorithmConfiguration("FIXTURE", new Properties())), instanceOf(TrafficLoadBalanceAlgorithmFixture.class));
     }
     
     @Test
