@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.spi.definition;
 
-import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
+import org.apache.shardingsphere.agent.spi.AgentSPI;
 
 /**
  * Plugin definition service.
  */
-public interface PluginDefinitionService extends AgentTypedSPI {
+public interface PluginDefinitionService extends AgentSPI {
 }

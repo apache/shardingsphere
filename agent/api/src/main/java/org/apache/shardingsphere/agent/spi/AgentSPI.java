@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi.type;
+package org.apache.shardingsphere.agent.spi;
 
 /**
- * Agent typed SPI.
+ * Agent SPI.
  */
-public interface AgentTypedSPI {
+public interface AgentSPI {
     
     /**
      * Get type.
