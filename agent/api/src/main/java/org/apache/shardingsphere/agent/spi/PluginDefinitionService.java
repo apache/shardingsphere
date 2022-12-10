@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.spi;
 
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.spi.AgentSPI;
 
 import java.util.Collection;
 
