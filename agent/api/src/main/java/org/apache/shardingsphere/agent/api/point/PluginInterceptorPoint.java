@@ -75,13 +75,13 @@ public final class PluginInterceptorPoint {
     @RequiredArgsConstructor
     public static final class Builder {
         
+        private final String targetClassName;
+        
         private final List<ConstructorPoint> constructorPoints = new ArrayList<>();
         
         private final List<InstanceMethodPoint> instanceMethodPoints = new ArrayList<>();
         
         private final List<ClassStaticMethodPoint> classStaticMethodPoints = new ArrayList<>();
-        
-        private final String targetClassName;
         
         /**
          * Configure the intercepting point on constructor.
@@ -129,7 +129,7 @@ public final class PluginInterceptorPoint {
         public static final class InstanceMethodPointBuilder {
             
             private final Builder builder;
-    
+            
             private final ElementMatcher<? super MethodDescription> matcher;
             
             private String adviceClassName;
@@ -175,7 +175,7 @@ public final class PluginInterceptorPoint {
         public static final class StaticMethodPointBuilder {
             
             private final Builder builder;
-    
+            
             private final ElementMatcher<? super MethodDescription> matcher;
             
             private String adviceClassName;
