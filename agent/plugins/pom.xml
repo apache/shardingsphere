@@ -34,17 +34,6 @@
         <module>logging</module>
     </modules>
     
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-proxy-frontend-core</artifactId>
-                <version>${project.version}</version>
-                <scope>provided</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
