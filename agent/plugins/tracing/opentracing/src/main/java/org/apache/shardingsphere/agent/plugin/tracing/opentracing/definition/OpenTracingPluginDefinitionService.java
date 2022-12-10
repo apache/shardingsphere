@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 
 /**
  * Open tracing plugin definition service.

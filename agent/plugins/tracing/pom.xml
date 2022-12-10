@@ -51,13 +51,6 @@
         </dependencies>
     </dependencyManagement>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-api</artifactId>
-        </dependency>
-    </dependencies>
-    
     <build>
         <plugins>
             <plugin>
