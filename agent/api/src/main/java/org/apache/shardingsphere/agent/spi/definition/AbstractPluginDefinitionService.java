@@ -51,12 +51,12 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     
     protected abstract void defineJdbcInterceptors();
     
-    protected final Builder defineInterceptor(final String classNameOfTarget) {
-        if (interceptorPointMap.containsKey(classNameOfTarget)) {
-            return interceptorPointMap.get(classNameOfTarget);
+    protected final Builder defineInterceptor(final String targetClassName) {
+        if (interceptorPointMap.containsKey(targetClassName)) {
+            return interceptorPointMap.get(targetClassName);
         }
-        Builder builder = PluginInterceptorPoint.intercept(classNameOfTarget);
-        interceptorPointMap.put(classNameOfTarget, builder);
+        Builder builder = PluginInterceptorPoint.intercept(targetClassName);
+        interceptorPointMap.put(targetClassName, builder);
         return builder;
     }
 }
