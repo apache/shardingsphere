@@ -55,8 +55,8 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
         if (interceptorPointMap.containsKey(targetClassName)) {
             return interceptorPointMap.get(targetClassName);
         }
-        Builder builder = PluginInterceptorPoint.intercept(targetClassName);
-        interceptorPointMap.put(targetClassName, builder);
-        return builder;
+        Builder result = PluginInterceptorPoint.intercept(targetClassName);
+        interceptorPointMap.put(targetClassName, result);
+        return result;
     }
 }
