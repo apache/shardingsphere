@@ -56,9 +56,7 @@ public final class OpenTelemetryTracingPluginDefinitionService extends AbstractP
                 .implement(SQL_PARSER_ENGINE_ADVICE_CLASS)
                 .build();
         defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS)
-                .aroundInstanceMethod(
-                        ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME)
-                                .and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
+                .aroundInstanceMethod(ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME).and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
     }
