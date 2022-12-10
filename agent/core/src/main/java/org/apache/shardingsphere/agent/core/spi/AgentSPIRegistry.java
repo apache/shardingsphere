@@ -25,10 +25,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- *  Agent typed SPI registry.
+ *  Agent SPI registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentTypedSPIRegistry {
+public final class AgentSPIRegistry {
     
     /**
      * Get registered service.
