@@ -39,7 +39,7 @@ public class ExampleMain {
             ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.run();
         <#if transaction=="xa-narayana">
-            System.exit(1);
+            System.exit(0);
         </#if>
         }
     }
