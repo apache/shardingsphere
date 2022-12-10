@@ -20,11 +20,17 @@ package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+<#if framework?contains("jpa")>
+import org.springframework.orm.jpa.JpaTransactionManager;
+<#else>
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+</#if>
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+<#if !framework?contains("jpa")>
 
 import javax.sql.DataSource;
+</#if>
 
 /**
  * Spring boot tx configuration.
@@ -40,7 +46,13 @@ public class TransactionConfiguration {
      * @return platform transaction manager
      */
     @Bean
+<#if framework?contains("jpa")>
+    public JpaTransactionManager txManager() {
+       return new JpaTransactionManager();
+    } 
+<#else>
     public PlatformTransactionManager txManager(final DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
+</#if>
 }
