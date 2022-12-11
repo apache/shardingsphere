@@ -22,7 +22,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
@@ -34,11 +34,11 @@ import java.lang.reflect.Method;
  * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method with args override.
  */
 @RequiredArgsConstructor
-public class ClassStaticMethodInterceptorArgsOverride {
+public class StaticMethodInterceptorArgsOverride {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(ClassStaticMethodInterceptorArgsOverride.class);
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodInterceptorArgsOverride.class);
     
-    private final ClassStaticMethodAroundAdvice classStaticMethodAroundAdvice;
+    private final StaticMethodAroundAdvice staticMethodAroundAdvice;
     
     /**
      * Only intercept static method.
@@ -53,10 +53,10 @@ public class ClassStaticMethodInterceptorArgsOverride {
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @Morph final OverrideArgsInvoker callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
-        boolean adviceEnabled = classStaticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = staticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                classStaticMethodAroundAdvice.beforeMethod(klass, method, args, methodResult);
+                staticMethodAroundAdvice.beforeMethod(klass, method, args, methodResult);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -75,7 +75,7 @@ public class ClassStaticMethodInterceptorArgsOverride {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
+                    staticMethodAroundAdvice.onThrowing(klass, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
@@ -86,7 +86,7 @@ public class ClassStaticMethodInterceptorArgsOverride {
         } finally {
             try {
                 if (adviceEnabled) {
-                    classStaticMethodAroundAdvice.afterMethod(klass, method, args, methodResult);
+                    staticMethodAroundAdvice.afterMethod(klass, method, args, methodResult);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {

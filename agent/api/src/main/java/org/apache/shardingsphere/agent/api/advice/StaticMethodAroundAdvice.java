@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 /**
  * Weaving the advice around the static methods of target class.
  */
-public interface ClassStaticMethodAroundAdvice {
+public interface StaticMethodAroundAdvice {
     
     /**
      * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.

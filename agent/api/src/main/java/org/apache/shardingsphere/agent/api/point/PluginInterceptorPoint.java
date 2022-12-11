@@ -109,7 +109,7 @@ public final class PluginInterceptorPoint {
          * @param matcher constraints
          * @return static method point builder
          */
-        public StaticMethodPointBuilder aroundClassStaticMethod(final ElementMatcher<? super MethodDescription> matcher) {
+        public StaticMethodPointBuilder aroundStaticMethod(final ElementMatcher<? super MethodDescription> matcher) {
             return new StaticMethodPointBuilder(this, matcher);
         }
         

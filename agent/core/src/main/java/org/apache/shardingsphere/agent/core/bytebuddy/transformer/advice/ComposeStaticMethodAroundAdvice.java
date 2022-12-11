@@ -15,44 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Collection;
 
+/**
+ * Compose class static method around advice.
+ */
 @RequiredArgsConstructor
-@SuppressWarnings("unchecked")
-public final class MockClassStaticMethodAroundAdvice implements ClassStaticMethodAroundAdvice {
+public final class ComposeStaticMethodAroundAdvice implements StaticMethodAroundAdvice {
     
-    private final boolean rebase;
-    
-    public MockClassStaticMethodAroundAdvice() {
-        this(false);
-    }
+    private final Collection<StaticMethodAroundAdvice> advices;
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("before");
-        if (rebase) {
-            result.rebase("rebase static invocation method");
-        }
+        advices.forEach(each -> each.beforeMethod(clazz, method, args, result));
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("after");
+        advices.forEach(each -> each.afterMethod(clazz, method, args, result));
     }
     
     @Override
     public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("exception");
+        advices.forEach(each -> each.onThrowing(clazz, method, args, throwable));
     }
-    
 }

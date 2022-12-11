@@ -35,7 +35,7 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     @Override
     protected void defineProxyInterceptors() {
         defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
+                .aroundStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
     }
@@ -43,7 +43,7 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     @Override
     protected void defineJdbcInterceptors() {
         defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
+                .aroundStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
     }
