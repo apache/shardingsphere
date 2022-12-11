@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.entity;
+package org.apache.shardingsphere.agent.core.yaml.swapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.agent.core.yaml.entity.Interceptors;
+import org.yaml.snakeyaml.Yaml;
 
-import java.util.Collection;
+import java.io.InputStream;
 
 /**
- * Interceptors.
+ * Interceptors YAML swapper.
  */
-@Setter
-@Getter
-public final class Interceptors {
+public final class InterceptorsYamlSwapper {
     
-    private Collection<Interceptor> interceptors;
+    /**
+     * unmarshal interceptors.
+     * 
+     * @param inputStream input stream
+     * @return unmarshalled interceptors
+     */
+    public Interceptors unmarshal(final InputStream inputStream) {
+        return new Yaml().loadAs(inputStream, Interceptors.class);
+    }
 }
