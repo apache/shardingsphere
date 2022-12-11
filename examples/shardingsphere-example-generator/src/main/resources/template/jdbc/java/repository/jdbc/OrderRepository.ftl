@@ -51,7 +51,8 @@ public final class OrderRepository {
     }
     
     public void dropTable() throws SQLException {
-        String sql = "DROP TABLE t_order";
+        // todo fix in shadow
+        String sql = "DROP TABLE IF EXISTS t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -76,7 +77,7 @@ public final class OrderRepository {
     }
 
     public void dropTableShadow() throws SQLException {
-        String sql = "DROP TABLE t_order /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
+        String sql = "DROP TABLE IF EXISTS t_order /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
