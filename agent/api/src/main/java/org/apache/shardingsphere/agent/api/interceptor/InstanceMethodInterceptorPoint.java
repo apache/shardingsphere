@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.point;
+package org.apache.shardingsphere.agent.api.interceptor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Static method interceptor point.
+ * Instance method interceptor point.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StaticMethodInterceptorPoint {
+public final class InstanceMethodInterceptorPoint {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     
