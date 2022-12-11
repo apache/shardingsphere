@@ -68,7 +68,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
@@ -88,7 +88,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));

@@ -23,7 +23,7 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.api.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.api.MethodInvocationResult;
@@ -53,7 +53,7 @@ public class InstanceMethodInterceptorArgsOverride {
      */
     @RuntimeType
     public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @Morph final OverrideArgsInvoker callable) {
-        AdviceTargetObject instance = (AdviceTargetObject) target;
+        TargetAdviceObject instance = (TargetAdviceObject) target;
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
         boolean adviceEnabled = instanceMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();

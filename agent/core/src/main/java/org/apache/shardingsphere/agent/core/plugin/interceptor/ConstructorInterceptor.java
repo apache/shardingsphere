@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.api.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
@@ -44,7 +44,7 @@ public class ConstructorInterceptor {
      * @param args the all constructor arguments
      */
     @RuntimeType
-    public void intercept(@This final AdviceTargetObject target, @AllArguments final Object[] args) {
+    public void intercept(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
         try {
             boolean adviceEnabled = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
             if (adviceEnabled) {

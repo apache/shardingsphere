@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.api.advice;
 
-import org.apache.shardingsphere.agent.api.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ public interface InstanceMethodAroundAdvice extends AgentAdvice {
      * @param args all method arguments
      * @param result wrapped class of result to detect whether or not to execute the origin method
      */
-    default void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
     }
     
     /**
@@ -48,7 +48,7 @@ public interface InstanceMethodAroundAdvice extends AgentAdvice {
      * @param args all method arguments
      * @param result wrapped class of result to detect whether or not to execute the origin method.
      */
-    default void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
     }
     
     /**
@@ -59,6 +59,6 @@ public interface InstanceMethodAroundAdvice extends AgentAdvice {
      * @param args all method arguments
      * @param throwable exception from target method
      */
-    default void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    default void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
     }
 }

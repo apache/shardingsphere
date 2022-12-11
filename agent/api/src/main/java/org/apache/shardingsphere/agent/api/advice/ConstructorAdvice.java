@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.api.advice;
 
-import org.apache.shardingsphere.agent.api.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 
 /**
  * Weaving the advice around the constructor of target class.
@@ -31,5 +31,5 @@ public interface ConstructorAdvice extends AgentAdvice {
      * @param target intercepted target object
      * @param args all arguments of the intercepted constructor
      */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    void onConstructor(TargetAdviceObject target, Object[] args);
 }

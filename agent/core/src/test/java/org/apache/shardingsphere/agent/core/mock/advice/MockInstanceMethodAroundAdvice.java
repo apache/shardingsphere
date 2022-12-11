@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.mock.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ public final class MockInstanceMethodAroundAdvice implements InstanceMethodAroun
     }
     
     @Override
-    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queues = (List<String>) args[0];
         queues.add("before");
         if (rebase) {
@@ -45,13 +45,13 @@ public final class MockInstanceMethodAroundAdvice implements InstanceMethodAroun
     }
     
     @Override
-    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queues = (List<String>) args[0];
         queues.add("after");
     }
     
     @Override
-    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
         List<String> queues = (List<String>) args[0];
         queues.add("exception");
     }

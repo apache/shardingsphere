@@ -52,7 +52,7 @@ public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
         when(channelRead.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_READ);
         when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);
         when(channelInactive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_INACTIVE);
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         channelHandlerAdvice.beforeMethod(targetObject, channelRead, new Object[]{}, new MethodInvocationResult());
         channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
         channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());

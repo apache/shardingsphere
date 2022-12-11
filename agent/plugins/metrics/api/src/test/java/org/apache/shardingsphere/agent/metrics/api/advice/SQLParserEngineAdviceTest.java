@@ -102,7 +102,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         MethodInvocationResult result = new MethodInvocationResult();
         result.rebase(sqlStatement);
         new SQLParserEngineAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, result);

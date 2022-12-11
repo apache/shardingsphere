@@ -48,7 +48,7 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     public void assertMethod() {
         when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
         when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper commitWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_COMMIT).get();
