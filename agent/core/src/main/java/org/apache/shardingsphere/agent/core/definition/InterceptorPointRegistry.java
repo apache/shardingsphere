@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.definition;
 
-import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts;
-import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts.Builder;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
 
 import java.util.Collection;
 import java.util.Map;

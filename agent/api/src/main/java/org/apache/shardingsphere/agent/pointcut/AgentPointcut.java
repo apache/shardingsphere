@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.pointcut;
+package org.apache.shardingsphere.agent.pointcut;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Constructor Pointcut.
+ * Agent pointcut.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ConstructorPointcut implements AgentPointcut {
+public interface AgentPointcut {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    /**
+     * Get matcher.
+     * 
+     * @return matcher
+     */
+    ElementMatcher<? super MethodDescription> getMatcher();
     
-    private final String adviceClassName;
+    /**
+     * Get advice class name.
+     *
+     * @return advice class name
+     */
+    String getAdviceClassName();
 }

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.mock.advice;
 
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.List;

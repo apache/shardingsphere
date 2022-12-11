@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 

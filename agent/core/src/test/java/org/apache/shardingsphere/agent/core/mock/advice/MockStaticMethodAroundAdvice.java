@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.core.mock.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.List;

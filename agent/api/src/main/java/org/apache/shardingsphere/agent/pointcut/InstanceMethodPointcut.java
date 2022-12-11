@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api;
+package org.apache.shardingsphere.agent.pointcut;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Super(origin) method invoker for ByteBuddy only.
+ * Instance method pointcut.
  */
-public interface OverrideArgsInvoker {
+@RequiredArgsConstructor
+@Getter
+public final class InstanceMethodPointcut implements AgentPointcut {
     
-    /**
-     * Call invocation origin method.
-     *
-     * @param args the origin method arguments
-     * @return the result of the origin method
-     */
-    Object call(Object[] args);
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String adviceClassName;
+    
+    private final boolean overrideArgs;
 }

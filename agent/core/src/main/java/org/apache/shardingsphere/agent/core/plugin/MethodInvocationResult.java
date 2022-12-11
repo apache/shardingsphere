@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.pointcut;
+package org.apache.shardingsphere.agent.core.plugin;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Static method pointcut.
+ * The advice method invocation result.
  */
-@RequiredArgsConstructor
 @Getter
-public final class StaticMethodPointcut implements AgentPointcut {
+public final class MethodInvocationResult {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    private boolean rebased;
     
-    private final String adviceClassName;
+    private Object result;
     
-    private final boolean overrideArgs;
+    /**
+     * To replace the origin result.
+     *
+     * @param result rebase the origin result
+     */
+    public void rebase(final Object result) {
+        rebased = true;
+        this.result = result;
+    }
 }

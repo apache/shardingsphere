@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import org.apache.shardingsphere.agent.api.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.junit.Before;
 import org.junit.Test;
