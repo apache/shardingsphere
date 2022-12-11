@@ -43,8 +43,6 @@ import static org.junit.Assert.assertTrue;
 @Category(AgentPluginLoaderTest.class)
 public final class AgentPluginLoaderTest {
     
-    private static final AdviceInstanceLoader INSTANCE_LOADER = new AdviceInstanceLoader();
-    
     private static final AgentPluginLoader PLUGIN_LOADER = new AgentPluginLoader();
     
     private static final TypePool POOL = TypePool.Default.ofSystemLoader();
@@ -56,7 +54,7 @@ public final class AgentPluginLoaderTest {
     @BeforeClass
     @SuppressWarnings("unchecked")
     public static void setup() throws NoSuchFieldException, IllegalAccessException {
-        FieldReader objectPoolReader = new FieldReader(INSTANCE_LOADER, INSTANCE_LOADER.getClass().getDeclaredField("ADVICE_INSTANCE_CACHE"));
+        FieldReader objectPoolReader = new FieldReader(AdviceInstanceLoader.class, AdviceInstanceLoader.class.getDeclaredField("ADVICE_INSTANCE_CACHE"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
