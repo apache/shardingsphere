@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
-import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 
 /**
  * Base logging plugin definition service.

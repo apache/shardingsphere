@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi.boot;
+package org.apache.shardingsphere.agent.spi;
 
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.AgentSPI;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+
+import java.util.Collection;
 
 /**
- * Plugin boot service that the lifecycle is from the agent start to shutdown.
+ * Plugin definition service.
  */
-public interface PluginBootService extends AgentSPI, AutoCloseable {
+public interface PluginDefinitionService extends AgentSPI {
     
     /**
-     * Start plugin boot service.
+     * Install plugin interceptor points.
      *
-     * @param pluginConfig plugin configuration
      * @param isEnhancedForProxy is enhanced for proxy
+     * @return plugin interceptor points
      */
-    void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
+    Collection<PluginInterceptorPoint> install(boolean isEnhancedForProxy);
 }
