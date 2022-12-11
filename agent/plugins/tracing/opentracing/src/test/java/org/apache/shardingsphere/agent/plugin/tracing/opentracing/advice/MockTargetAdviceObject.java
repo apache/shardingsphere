@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-/**
- * Wrapped class for target and provide a context to store variable during invocation.
- */
-public interface AdviceTargetObject {
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
+
+public final class MockTargetAdviceObject implements TargetAdviceObject {
     
-    /**
-     * Get the variable from context.
-     *
-     * @return the attachment
-     */
-    Object getAttachment();
+    private Object object;
     
-    /**
-     * Store a variable into context.
-     *
-     * @param attachment what variable you want to store
-     */
-    void setAttachment(Object attachment);
+    @Override
+    public Object getAttachment() {
+        return object;
+    }
+    
+    @Override
+    public void setAttachment(final Object attachment) {
+        object = attachment;
+    }
 }

@@ -22,7 +22,7 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.junit.Before;
@@ -65,7 +65,7 @@ public final class CommandExecutorTaskAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
@@ -76,7 +76,7 @@ public final class CommandExecutorTaskAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());

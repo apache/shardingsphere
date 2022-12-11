@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
-
-import org.apache.shardingsphere.agent.api.TargetAdviceObject;
+package org.apache.shardingsphere.agent.api;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Super(origin) method invoker for ByteBuddy only.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+public interface OverrideArgsInvoker {
     
     /**
-     * Intercept the target's constructor.
-     * This method is weaved after the constructor execution.
+     * Call invocation origin method.
      *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * @param args the origin method arguments
+     * @return the result of the origin method
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    Object call(Object[] args);
 }

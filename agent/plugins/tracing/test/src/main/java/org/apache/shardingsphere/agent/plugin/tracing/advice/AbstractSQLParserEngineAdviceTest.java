@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import lombok.Getter;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.runner.RunWith;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 public abstract class AbstractSQLParserEngineAdviceTest implements AdviceTestBase {
     
     @Getter
-    private AdviceTargetObject targetObject;
+    private TargetAdviceObject targetObject;
     
     private Object attachment;
     
@@ -47,6 +47,6 @@ public abstract class AbstractSQLParserEngineAdviceTest implements AdviceTestBas
                     return invocation.callRealMethod();
             }
         });
-        targetObject = (AdviceTargetObject) parserEngine;
+        targetObject = (TargetAdviceObject) parserEngine;
     }
 }

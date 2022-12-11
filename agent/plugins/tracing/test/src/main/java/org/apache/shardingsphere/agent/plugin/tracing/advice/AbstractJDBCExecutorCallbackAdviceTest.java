@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTestBase {
     
     @Getter
-    private AdviceTargetObject targetObject;
+    private TargetAdviceObject targetObject;
     
     private Object attachment;
     
@@ -88,6 +88,6 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
         storageTypes.put("mock.db", new MySQLDatabaseType());
         ReflectiveUtil.setField(mock, "storageTypes", storageTypes);
-        targetObject = (AdviceTargetObject) mock;
+        targetObject = (TargetAdviceObject) mock;
     }
 }

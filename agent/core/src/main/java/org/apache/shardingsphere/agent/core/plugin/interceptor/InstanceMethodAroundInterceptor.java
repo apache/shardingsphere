@@ -24,9 +24,9 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
@@ -55,7 +55,7 @@ public class InstanceMethodAroundInterceptor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        AdviceTargetObject instance = (AdviceTargetObject) target;
+        TargetAdviceObject instance = (TargetAdviceObject) target;
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
         boolean adviceEnabled = instanceMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();

@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.api.advice;
 
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-
-public final class MockAdviceTargetObject implements AdviceTargetObject {
+/**
+ * Agent advice.
+ */
+public interface AgentAdvice {
     
-    private Object object;
-    
-    @Override
-    public Object getAttachment() {
-        return object;
-    }
-    
-    @Override
-    public void setAttachment(final Object attachment) {
-        object = attachment;
+    /**
+     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
+     *
+     * @return disable or not
+     */
+    default boolean disableCheck() {
+        return false;
     }
 }

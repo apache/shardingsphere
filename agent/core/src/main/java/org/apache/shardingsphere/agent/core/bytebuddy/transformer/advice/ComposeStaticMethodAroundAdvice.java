@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.Collection;

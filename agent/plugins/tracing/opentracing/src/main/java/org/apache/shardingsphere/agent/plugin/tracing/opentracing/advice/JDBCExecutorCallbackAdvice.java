@@ -22,9 +22,9 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -42,7 +42,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     
     @Override
     @SuppressWarnings("unchecked")
-    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if ((boolean) args[1]) {
@@ -61,12 +61,12 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     }
     
     @Override
-    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Scope) target.getAttachment()).close();
     }
     
     @Override
-    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
         OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

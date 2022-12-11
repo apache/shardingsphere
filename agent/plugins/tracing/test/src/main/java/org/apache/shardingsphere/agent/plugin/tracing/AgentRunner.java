@@ -25,7 +25,7 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AdviceTestBase;
 import org.apache.shardingsphere.agent.plugin.tracing.rule.CollectorRule;
 import org.junit.rules.TestRule;
@@ -67,7 +67,7 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (classes.contains(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                                .implement(AdviceTargetObject.class)
+                                .implement(TargetAdviceObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA));
                     }
                     return builder;

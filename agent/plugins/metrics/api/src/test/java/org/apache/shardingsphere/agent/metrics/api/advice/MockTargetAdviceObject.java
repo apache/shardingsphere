@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.result;
+package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import lombok.Getter;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 
-/**
- * The advice method invocation result.
- */
-@Getter
-public final class MethodInvocationResult {
+public final class MockTargetAdviceObject implements TargetAdviceObject {
     
-    private boolean rebased;
+    private Object object;
     
-    private Object result;
+    @Override
+    public Object getAttachment() {
+        return object;
+    }
     
-    /**
-     * To replace the origin result.
-     *
-     * @param result rebase the origin result
-     */
-    public void rebase(final Object result) {
-        rebased = true;
-        this.result = result;
+    @Override
+    public void setAttachment(final Object attachment) {
+        object = attachment;
     }
 }

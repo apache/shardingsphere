@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.junit.Before;
@@ -44,9 +44,9 @@ public final class ComposeConstructorAdviceTest {
     
     @Test
     public void assertOnConstructor() {
-        AdviceTargetObject adviceTargetObject = mock(AdviceTargetObject.class);
+        TargetAdviceObject targetAdviceObject = mock(TargetAdviceObject.class);
         Object[] args = new Object[2];
         args[0] = new LinkedList<String>();
-        actual.onConstructor(adviceTargetObject, args);
+        actual.onConstructor(targetAdviceObject, args);
     }
 }

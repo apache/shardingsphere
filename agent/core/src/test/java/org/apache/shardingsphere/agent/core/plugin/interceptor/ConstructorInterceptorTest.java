@@ -27,7 +27,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
@@ -65,7 +65,7 @@ public final class ConstructorInterceptorTest {
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                                .implement(AdviceTargetObject.class)
+                                .implement(TargetAdviceObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .constructor(ElementMatchers.isConstructor())
                                 .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorInterceptor(new MockConstructorAdvice(QUEUE)))));
@@ -78,7 +78,7 @@ public final class ConstructorInterceptorTest {
     
     @Test
     public void assertNoArgConstructor() {
-        assertThat(new ConstructorMaterial(), instanceOf(AdviceTargetObject.class));
+        assertThat(new ConstructorMaterial(), instanceOf(TargetAdviceObject.class));
     }
     
     @Test

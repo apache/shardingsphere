@@ -30,11 +30,11 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.advice.OverrideArgsInvoker;
+import org.apache.shardingsphere.agent.api.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.api.pointcut.StaticMethodPointcut;
 import org.apache.shardingsphere.agent.api.pointcut.ConstructorPointcut;
 import org.apache.shardingsphere.agent.api.pointcut.InstanceMethodPointcut;
@@ -75,7 +75,7 @@ public final class ShardingSphereTransformer implements Transformer {
         if (!pluginLoader.containsType(typeDescription)) {
             return builder;
         }
-        Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(AdviceTargetObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
+        Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
         PluginPointcuts pluginPointcuts = pluginLoader.loadPluginInterceptorPoint(typeDescription);
         result = interceptConstructor(typeDescription, pluginPointcuts.getConstructorPointcuts(), result, classLoader);
         result = interceptStaticMethod(typeDescription, pluginPointcuts.getStaticMethodPointcuts(), result, classLoader);

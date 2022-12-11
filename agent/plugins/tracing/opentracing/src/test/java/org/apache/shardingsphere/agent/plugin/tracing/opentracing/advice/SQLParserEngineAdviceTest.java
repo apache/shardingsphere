@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.Before;
@@ -62,7 +62,7 @@ public final class SQLParserEngineAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
@@ -73,7 +73,7 @@ public final class SQLParserEngineAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException());
         ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());

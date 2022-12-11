@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
@@ -47,7 +47,7 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertExecuteLatency() {
         when(run.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_RUN);
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         commandExecutorTaskAdvice.beforeMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
         try {
             Thread.sleep(500L);
@@ -63,7 +63,7 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertExecuteErrorTotal() {
         when(processException.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_EXCEPTION);
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         commandExecutorTaskAdvice.afterMethod(targetObject, processException, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).get();
         assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).isPresent());

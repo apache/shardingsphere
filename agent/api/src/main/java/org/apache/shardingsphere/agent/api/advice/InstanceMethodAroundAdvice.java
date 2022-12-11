@@ -17,44 +17,38 @@
 
 package org.apache.shardingsphere.agent.api.advice;
 
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 
 /**
  * Weaving the advice around the target method.
  */
-public interface InstanceMethodAroundAdvice {
+public interface InstanceMethodAroundAdvice extends AgentAdvice {
     
     /**
-     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
-     *
-     * @return disable or not
-     */
-    default boolean disableCheck() {
-        return false;
-    }
-    
-    /**
-     * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
+     * Intercept the target method and weave the method before origin method.
+     * It will invoke before the origin calling.
      *
      * @param target the target object
      * @param method the target method
      * @param args all method arguments
      * @param result wrapped class of result to detect whether or not to execute the origin method
      */
-    default void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
     }
     
     /**
-     * Intercept the target method and weave the method after origin method.  It will invoke after the origin calling
+     * Intercept the target method and weave the method after origin method.
+     * It will invoke after the origin calling
      *
      * @param target the target object
      * @param method the target method
      * @param args all method arguments
      * @param result wrapped class of result to detect whether or not to execute the origin method.
      */
-    default void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
     }
     
     /**
@@ -65,6 +59,6 @@ public interface InstanceMethodAroundAdvice {
      * @param args all method arguments
      * @param throwable exception from target method
      */
-    default void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    default void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
     }
 }

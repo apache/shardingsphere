@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
@@ -48,7 +48,7 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     public void assertMethod() {
         when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
         when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());
         FixtureWrapper commitWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_COMMIT).get();

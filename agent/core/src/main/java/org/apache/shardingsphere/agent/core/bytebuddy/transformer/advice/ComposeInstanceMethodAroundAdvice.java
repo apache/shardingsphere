@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -34,17 +34,17 @@ public final class ComposeInstanceMethodAroundAdvice implements InstanceMethodAr
     private final Collection<InstanceMethodAroundAdvice> advices;
     
     @Override
-    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         advices.forEach(each -> each.beforeMethod(target, method, args, result));
     }
     
     @Override
-    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         advices.forEach(each -> each.afterMethod(target, method, args, result));
     }
     
     @Override
-    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
         advices.forEach(each -> each.onThrowing(target, method, args, throwable));
     }
 }

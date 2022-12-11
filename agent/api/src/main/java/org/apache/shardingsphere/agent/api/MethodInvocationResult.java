@@ -15,18 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.api;
+
+import lombok.Getter;
 
 /**
- * Super(origin) method invoker for ByteBuddy only.
+ * The advice method invocation result.
  */
-public interface OverrideArgsInvoker {
+@Getter
+public final class MethodInvocationResult {
+    
+    private boolean rebased;
+    
+    private Object result;
     
     /**
-     * Call invocation origin method.
+     * To replace the origin result.
      *
-     * @param args the origin method arguments
-     * @return the result of the origin method
+     * @param result rebase the origin result
      */
-    Object call(Object[] args);
+    public void rebase(final Object result) {
+        rebased = true;
+        this.result = result;
+    }
 }

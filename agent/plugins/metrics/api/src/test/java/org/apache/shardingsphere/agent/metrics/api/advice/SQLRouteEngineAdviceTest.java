@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
@@ -70,7 +70,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     }
     
     public void assertRoute(final String metricIds, final QueryContext queryContext) {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, new MethodInvocationResult());
         FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(metricIds).get();
         assertTrue(MetricsPool.get(metricIds).isPresent());
@@ -79,7 +79,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertRouteDataSourceAndTable() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         RouteContext routeContext = new RouteContext();
         RouteMapper dsMapper = new RouteMapper("logic_db", "ds_0");
         RouteMapper tbMapper = new RouteMapper("t_order", "t_order_0");
