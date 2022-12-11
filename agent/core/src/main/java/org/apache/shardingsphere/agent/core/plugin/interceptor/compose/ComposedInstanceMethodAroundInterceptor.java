@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeClassStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.ClassStaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
 
 import java.util.Collection;
 
-public final class ComposeClassStaticMethodAroundInterceptor extends ClassStaticMethodAroundInterceptor {
+/**
+ * Composed instance method around interceptor.
+ */
+public final class ComposedInstanceMethodAroundInterceptor extends InstanceMethodAroundInterceptor {
     
-    public ComposeClassStaticMethodAroundInterceptor(final Collection<ClassStaticMethodAroundAdvice> instanceMethodAroundAdvices) {
-        super(new ComposeClassStaticMethodAroundAdvice(instanceMethodAroundAdvices));
+    public ComposedInstanceMethodAroundInterceptor(final Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
+        super(new ComposeInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
     }
 }

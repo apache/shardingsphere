@@ -53,7 +53,7 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints)).implement(each.getInstanceAdvice()).build();
             }
             if (staticPoints.length > 0) {
-                builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints)).implement(each.getStaticAdvice()).build();
+                builder.aroundStaticMethod(ElementMatchers.namedOneOf(staticPoints)).implement(each.getStaticAdvice()).build();
             }
         }
     }
