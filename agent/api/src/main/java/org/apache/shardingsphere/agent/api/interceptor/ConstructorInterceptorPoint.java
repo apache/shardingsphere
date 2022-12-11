@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.point;
+package org.apache.shardingsphere.agent.api.interceptor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
