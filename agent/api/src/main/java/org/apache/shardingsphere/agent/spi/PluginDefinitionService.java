@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.spi;
 
-import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
 
 import java.util.Collection;
 

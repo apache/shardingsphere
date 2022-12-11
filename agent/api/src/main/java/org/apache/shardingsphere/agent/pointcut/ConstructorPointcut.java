@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.pointcut;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Agent advice.
+ * Constructor Pointcut.
  */
-public interface AgentAdvice {
+@RequiredArgsConstructor
+@Getter
+public final class ConstructorPointcut implements AgentPointcut {
     
-    /**
-     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
-     *
-     * @return disable or not
-     */
-    default boolean disableCheck() {
-        return false;
-    }
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String adviceClassName;
 }

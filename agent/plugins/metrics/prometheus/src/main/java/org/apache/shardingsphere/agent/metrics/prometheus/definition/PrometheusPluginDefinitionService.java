@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts.Builder;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
 import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
 import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;

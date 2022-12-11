@@ -23,10 +23,10 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.api.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.OverrideArgsInvoker;
-import org.apache.shardingsphere.agent.api.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 

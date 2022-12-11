@@ -23,8 +23,8 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 

@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.pointcut;
-
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 /**
- * Agent pointcut.
+ * Agent advice.
  */
-public interface AgentPointcut {
+public interface AgentAdvice {
     
     /**
-     * Get matcher.
-     * 
-     * @return matcher
-     */
-    ElementMatcher<? super MethodDescription> getMatcher();
-    
-    /**
-     * Get advice class name.
+     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
      *
-     * @return advice class name
+     * @return disable or not
      */
-    String getAdviceClassName();
+    default boolean disableCheck() {
+        return false;
+    }
 }

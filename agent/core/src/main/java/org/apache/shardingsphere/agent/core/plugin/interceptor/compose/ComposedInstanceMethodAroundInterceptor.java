@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
 

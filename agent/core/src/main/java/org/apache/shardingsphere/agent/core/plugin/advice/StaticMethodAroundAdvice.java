@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
-import org.apache.shardingsphere.agent.api.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 

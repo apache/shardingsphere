@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import net.bytebuddy.description.type.TypeDescription;
-import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
 
 public interface PluginLoader {
     
