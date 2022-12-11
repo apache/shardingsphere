@@ -23,11 +23,11 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Configuration of instance method intercepting point.
+ * Static method interceptor point.
  */
-@Getter
 @RequiredArgsConstructor
-public final class InstanceMethodPoint {
+@Getter
+public final class StaticMethodInterceptorPoint {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     
