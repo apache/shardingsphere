@@ -22,6 +22,7 @@ import brave.sampler.BoundarySampler;
 import brave.sampler.RateLimitingSampler;
 import brave.sampler.Sampler;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.validator.PluginConfigurationValidator;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
@@ -58,7 +59,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        pluginConfig.validate("Zipkin");
+        PluginConfigurationValidator.validate(getType(), pluginConfig);
         Properties props = pluginConfig.getProps();
         String urlVersion = Optional.ofNullable(props.getProperty(KEY_URL_VERSION)).orElse(DEFAULT_URL_VERSION);
         String serviceName = Optional.ofNullable(props.getProperty(KEY_SERVICE_NAME)).orElse(DEFAULT_SERVICE_NAME);
