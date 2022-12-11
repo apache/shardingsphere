@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.AdviceTargetObject;
 
 public final class MockAdviceTargetObject implements AdviceTargetObject {
     

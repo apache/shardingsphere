@@ -17,26 +17,19 @@
 
 package org.apache.shardingsphere.agent.api.advice;
 
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 
 /**
  * Weaving the advice around the target method.
  */
-public interface InstanceMethodAroundAdvice {
+public interface InstanceMethodAroundAdvice extends AgentAdvice {
     
     /**
-     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
-     *
-     * @return disable or not
-     */
-    default boolean disableCheck() {
-        return false;
-    }
-    
-    /**
-     * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
+     * Intercept the target method and weave the method before origin method.
+     * It will invoke before the origin calling.
      *
      * @param target the target object
      * @param method the target method
@@ -47,7 +40,8 @@ public interface InstanceMethodAroundAdvice {
     }
     
     /**
-     * Intercept the target method and weave the method after origin method.  It will invoke after the origin calling
+     * Intercept the target method and weave the method after origin method.
+     * It will invoke after the origin calling
      *
      * @param target the target object
      * @param method the target method

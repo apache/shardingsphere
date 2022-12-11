@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 
 import java.util.Collection;

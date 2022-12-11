@@ -18,21 +18,16 @@
 package org.apache.shardingsphere.agent.api.advice;
 
 /**
- * Wrapped class for target and provide a context to store variable during invocation.
+ * Agent advice.
  */
-public interface AdviceTargetObject {
+public interface AgentAdvice {
     
     /**
-     * Get the variable from context.
+     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
      *
-     * @return the attachment
+     * @return disable or not
      */
-    Object getAttachment();
-    
-    /**
-     * Store a variable into context.
-     *
-     * @param attachment what variable you want to store
-     */
-    void setAttachment(Object attachment);
+    default boolean disableCheck() {
+        return false;
+    }
 }

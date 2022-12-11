@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.api;
 
 /**
- * Super(origin) method invoker for ByteBuddy only.
+ * Wrapped class for target and provide a context to store variable during invocation.
  */
-public interface OverrideArgsInvoker {
+public interface AdviceTargetObject {
     
     /**
-     * Call invocation origin method.
+     * Get the variable from context.
      *
-     * @param args the origin method arguments
-     * @return the result of the origin method
+     * @return the attachment
      */
-    Object call(Object[] args);
+    Object getAttachment();
+    
+    /**
+     * Store a variable into context.
+     *
+     * @param attachment what variable you want to store
+     */
+    void setAttachment(Object attachment);
 }
