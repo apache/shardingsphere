@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.pointcut;
 
-import org.apache.shardingsphere.agent.api.TargetAdviceObject;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Static method pointcut.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+@RequiredArgsConstructor
+@Getter
+public final class StaticMethodPointcut implements AgentPointcut {
     
-    /**
-     * Intercept the target's constructor.
-     * This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String adviceClassName;
+    
+    private final boolean overrideArgs;
 }

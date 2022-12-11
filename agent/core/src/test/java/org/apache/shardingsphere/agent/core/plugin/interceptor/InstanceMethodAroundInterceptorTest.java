@@ -27,7 +27,7 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
 import org.junit.AfterClass;

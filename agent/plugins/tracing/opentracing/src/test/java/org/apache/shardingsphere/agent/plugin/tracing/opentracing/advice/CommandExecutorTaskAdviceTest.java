@@ -22,7 +22,7 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.api.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.junit.Before;

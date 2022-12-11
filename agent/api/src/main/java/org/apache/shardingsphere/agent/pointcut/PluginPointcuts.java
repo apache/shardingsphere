@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.pointcut;
+package org.apache.shardingsphere.agent.pointcut;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
