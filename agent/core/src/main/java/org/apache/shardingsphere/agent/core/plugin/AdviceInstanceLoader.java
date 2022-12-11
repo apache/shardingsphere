@@ -36,9 +36,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdviceInstanceLoader {
     
-    private static final Map<String, Object> ADVICE_INSTANCE_CACHE = new ConcurrentHashMap();
+    private static final Map<String, Object> ADVICE_INSTANCE_CACHE = new ConcurrentHashMap<>();
     
-    private static final Map<ClassLoader, ClassLoader> PLUGIN_CLASSLOADERS = new HashMap();
+    private static final Map<ClassLoader, ClassLoader> PLUGIN_CLASSLOADERS = new HashMap<>();
     
     private static final ReentrantLock INIT_INSTANCE_LOCK = new ReentrantLock();
     
