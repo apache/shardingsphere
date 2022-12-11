@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi.definition;
+package org.apache.shardingsphere.agent.api.point;
 
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.spi.AgentSPI;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Plugin definition service.
+ * Static method interceptor point.
  */
-public interface PluginDefinitionService extends AgentSPI {
+@RequiredArgsConstructor
+@Getter
+public final class StaticMethodInterceptorPoint {
     
-    /**
-     * Install plugin interceptor points.
-     *
-     * @param isEnhancedForProxy is enhanced for proxy
-     * @return plugin interceptor points
-     */
-    Collection<PluginInterceptorPoint> install(boolean isEnhancedForProxy);
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String advice;
+    
+    private final boolean overrideArgs;
 }

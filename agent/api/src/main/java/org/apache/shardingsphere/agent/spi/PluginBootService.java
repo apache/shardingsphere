@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
+package org.apache.shardingsphere.agent.spi;
 
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeClassStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.ClassStaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 
-import java.util.Collection;
-
-public final class ComposeClassStaticMethodAroundInterceptor extends ClassStaticMethodAroundInterceptor {
+/**
+ * Plugin boot service that the lifecycle is from the agent start to shutdown.
+ */
+public interface PluginBootService extends AgentSPI, AutoCloseable {
     
-    public ComposeClassStaticMethodAroundInterceptor(final Collection<ClassStaticMethodAroundAdvice> instanceMethodAroundAdvices) {
-        super(new ComposeClassStaticMethodAroundAdvice(instanceMethodAroundAdvices));
-    }
+    /**
+     * Start plugin boot service.
+     *
+     * @param pluginConfig plugin configuration
+     * @param isEnhancedForProxy is enhanced for proxy
+     */
+    void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
 import org.apache.shardingsphere.agent.core.entity.Interceptor;
 import org.apache.shardingsphere.agent.core.entity.Interceptors;
 import org.apache.shardingsphere.agent.core.entity.TargetPoint;
-import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -53,7 +53,7 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
                 builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints)).implement(each.getInstanceAdvice()).build();
             }
             if (staticPoints.length > 0) {
-                builder.aroundClassStaticMethod(ElementMatchers.namedOneOf(staticPoints)).implement(each.getStaticAdvice()).build();
+                builder.aroundStaticMethod(ElementMatchers.namedOneOf(staticPoints)).implement(each.getStaticAdvice()).build();
             }
         }
     }

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
+import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,9 +109,9 @@ public final class AgentPluginLoader implements PluginLoader {
             String target = each.getTargetClassName();
             if (pointMap.containsKey(target)) {
                 PluginInterceptorPoint pluginInterceptorPoint = pointMap.get(target);
-                pluginInterceptorPoint.getConstructorPoints().addAll(each.getConstructorPoints());
-                pluginInterceptorPoint.getInstanceMethodPoints().addAll(each.getInstanceMethodPoints());
-                pluginInterceptorPoint.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
+                pluginInterceptorPoint.getConstructorInterceptorPoints().addAll(each.getConstructorInterceptorPoints());
+                pluginInterceptorPoint.getInstanceMethodInterceptorPoints().addAll(each.getInstanceMethodInterceptorPoints());
+                pluginInterceptorPoint.getStaticMethodInterceptorPoints().addAll(each.getStaticMethodInterceptorPoints());
             } else {
                 pointMap.put(target, each);
             }

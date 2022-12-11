@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi.boot;
+package org.apache.shardingsphere.agent.api.point;
 
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.AgentSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Plugin boot service that the lifecycle is from the agent start to shutdown.
+ * constructor interceptor point.
  */
-public interface PluginBootService extends AgentSPI, AutoCloseable {
+@RequiredArgsConstructor
+@Getter
+public final class ConstructorInterceptorPoint {
     
-    /**
-     * Start plugin boot service.
-     *
-     * @param pluginConfig plugin configuration
-     * @param isEnhancedForProxy is enhanced for proxy
-     */
-    void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String advice;
 }

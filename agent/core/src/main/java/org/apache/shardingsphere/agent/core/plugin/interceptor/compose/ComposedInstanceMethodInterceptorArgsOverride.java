@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.point;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
+
+import java.util.Collection;
 
 /**
- * Configuration of instance method intercepting point.
+ * Composed instance method interceptor args override.
  */
-@Getter
-@RequiredArgsConstructor
-public final class InstanceMethodPoint {
+public class ComposedInstanceMethodInterceptorArgsOverride extends InstanceMethodInterceptorArgsOverride {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
-    
-    private final String advice;
-    
-    private final boolean overrideArgs;
+    public ComposedInstanceMethodInterceptorArgsOverride(final Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
+        super(new ComposeInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
+    }
 }

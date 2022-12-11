@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
+package org.apache.shardingsphere.agent.api.point;
 
-import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeConstructorAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
-import java.util.Collection;
-
-public final class ComposeConstructorInterceptor extends ConstructorInterceptor {
+/**
+ * Instance method interceptor point.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class InstanceMethodInterceptorPoint {
     
-    public ComposeConstructorInterceptor(final Collection<ConstructorAdvice> constructorAdvices) {
-        super(new ComposeConstructorAdvice(constructorAdvices));
-    }
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String advice;
+    
+    private final boolean overrideArgs;
 }

@@ -15,39 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi.definition;
+package org.apache.shardingsphere.agent.core.definition;
 
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
+import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
- * Interceptor point registry.
+ * Abstract plugin definition service.
  */
-public final class InterceptorPointRegistry {
+public abstract class AbstractPluginDefinitionService implements PluginDefinitionService {
     
-    private final Map<String, Builder> builders = new ConcurrentHashMap<>();
+    private final InterceptorPointRegistry interceptorPointRegistry = new InterceptorPointRegistry();
     
-    /**
-     * Get interceptor point builder.
-     * 
-     * @param targetClassName target class name to be intercepted
-     * @return interceptor point builder
-     */
-    public Builder getInterceptorPointBuilder(final String targetClassName) {
-        return builders.computeIfAbsent(targetClassName, PluginInterceptorPoint::intercept);
+    @Override
+    public final Collection<PluginInterceptorPoint> install(final boolean isEnhancedForProxy) {
+        if (isEnhancedForProxy) {
+            defineProxyInterceptors();
+        } else {
+            defineJdbcInterceptors();
+        }
+        return interceptorPointRegistry.getAllInterceptorPoints();
     }
     
-    /**
-     * Get all interceptor points.
-     * 
-     * @return all interceptor points
-     */
-    public Collection<PluginInterceptorPoint> getAllInterceptorPoints() {
-        return builders.values().stream().map(Builder::install).collect(Collectors.toList());
+    protected abstract void defineProxyInterceptors();
+    
+    protected abstract void defineJdbcInterceptors();
+    
+    protected final Builder defineInterceptor(final String targetClassName) {
+        return interceptorPointRegistry.getInterceptorPointBuilder(targetClassName);
     }
 }

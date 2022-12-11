@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,16 +33,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ComposeClassStaticMethodAroundAdviceTest {
+public final class ComposeStaticMethodAroundAdviceTest {
     
     @Mock
-    private ClassStaticMethodAroundAdvice classStaticMethodAroundAdvice;
+    private StaticMethodAroundAdvice staticMethodAroundAdvice;
     
-    private ComposeClassStaticMethodAroundAdvice actual;
+    private ComposeStaticMethodAroundAdvice actual;
     
     @Before
     public void setUp() {
-        actual = new ComposeClassStaticMethodAroundAdvice(new ArrayList<>(Collections.singleton(classStaticMethodAroundAdvice)));
+        actual = new ComposeStaticMethodAroundAdvice(new ArrayList<>(Collections.singleton(staticMethodAroundAdvice)));
     }
     
     @Test
@@ -51,7 +51,7 @@ public final class ComposeClassStaticMethodAroundAdviceTest {
         Object[] args = new Object[2];
         MethodInvocationResult methodInvocationResult = mock(MethodInvocationResult.class);
         actual.beforeMethod(String.class, method, args, methodInvocationResult);
-        verify(classStaticMethodAroundAdvice).beforeMethod(String.class, method, args, methodInvocationResult);
+        verify(staticMethodAroundAdvice).beforeMethod(String.class, method, args, methodInvocationResult);
     }
     
     @Test
@@ -60,7 +60,7 @@ public final class ComposeClassStaticMethodAroundAdviceTest {
         Object[] args = new Object[2];
         MethodInvocationResult methodInvocationResult = mock(MethodInvocationResult.class);
         actual.afterMethod(String.class, method, args, methodInvocationResult);
-        verify(classStaticMethodAroundAdvice).afterMethod(String.class, method, args, methodInvocationResult);
+        verify(staticMethodAroundAdvice).afterMethod(String.class, method, args, methodInvocationResult);
     }
     
     @Test
@@ -69,6 +69,6 @@ public final class ComposeClassStaticMethodAroundAdviceTest {
         Object[] args = new Object[2];
         NullPointerException exception = new NullPointerException("");
         actual.onThrowing(String.class, method, args, exception);
-        verify(classStaticMethodAroundAdvice).onThrowing(String.class, method, args, exception);
+        verify(staticMethodAroundAdvice).onThrowing(String.class, method, args, exception);
     }
 }

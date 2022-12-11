@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base.service;
+package org.apache.shardingsphere.agent.core.config.validator;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 /**
- * Base logging plugin boot service.
+ * Plugin configuration validator.
  */
-public final class BaseLoggingPluginBootService implements PluginBootService {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PluginConfigurationValidator {
     
-    @Override
-    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-    }
-    
-    @Override
-    public void close() {
-    }
-    
-    @Override
-    public String getType() {
-        return "BaseLogging";
+    /**
+     * Validate plugin configuration.
+     * 
+     * @param type plugin type 
+     * @param pluginConfig to be validated plugin configuration
+     */
+    public static void validate(final String type, final PluginConfiguration pluginConfig) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(pluginConfig.getHost()), "Hostname of %s is required.", type);
+        Preconditions.checkArgument(pluginConfig.getPort() > 0, "Port `%s` of %s must be a positive number.", pluginConfig.getPort(), type);
     }
 }
