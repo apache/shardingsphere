@@ -281,6 +281,7 @@ helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
   - 依赖许可证的完整版全部在 `license` 目录；
   - 如果依赖的是 Apache 许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中。
+
 ### 3. 检查仓库制品
 
 添加仓库
@@ -290,7 +291,7 @@ helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
 helm search repo apache
 ```
 
-可以查询到三个制品即为发布成功,`helm repo add` 和 `helm search repo -l` 会根据 index.yaml 中的校验值进行校验 
+可以查询到三个制品即为发布成功，`helm repo add` 和 `helm search repo -l` 会根据 index.yaml 中的校验值进行校验 
 
 ```shell
 NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
@@ -362,13 +363,9 @@ Checklist for reference:
 
 [ ] Checksums and PGP signatures are valid.
 
-[ ] Source code distributions have correct names matching the current release.
-
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere on Cloud repo.
 
 [ ] All files have license headers if necessary.
-
-[ ] No compiled archives bundled in source archive.
 ```
 
 2. 宣布投票结果模板：
@@ -425,7 +422,7 @@ Website: https://shardingsphere.apache.org/
 ShardingSphere on Cloud Resources:
 - Issue: https://github.com/apache/shardingsphere-on-cloud/issues/
 - Mailing list: dev@shardingsphere.apache.org
-- Documents: https://shardingsphere.apache.org/document/current/
+- Documents: https://shardingsphere.apache.org/oncloud/current/en/overview/
 
 
 

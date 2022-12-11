@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class OpenTelemetryTracingPluginDefinitionServiceTest {
     
     @Test
-    public void assertDefine() {
+    public void assertInstall() {
         assertThat(new OpenTelemetryTracingPluginDefinitionService().install(true).size(), is(3));
     }
 }

@@ -73,7 +73,7 @@ public final class AgentPluginLoaderTest {
                 .build()
                 .install();
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), PLUGIN_LOADER, Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), PLUGIN_LOADER, Collections.singletonMap(interceptorPoint.getTargetClassName(), interceptorPoint));
     }
     
     @Test

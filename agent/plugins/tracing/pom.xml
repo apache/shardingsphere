@@ -40,24 +40,6 @@
         <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
     </properties>
     
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-tracing-test</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-api</artifactId>
-        </dependency>
-    </dependencies>
-    
     <build>
         <plugins>
             <plugin>

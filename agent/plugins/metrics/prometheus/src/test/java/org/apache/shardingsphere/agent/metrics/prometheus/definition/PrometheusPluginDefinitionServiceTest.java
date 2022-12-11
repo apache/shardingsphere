@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class PrometheusPluginDefinitionServiceTest {
     
     @Test
-    public void assertDefine() {
+    public void assertInstall() {
         assertThat(new PrometheusPluginDefinitionService().install(true).size(), is(5));
     }
 }

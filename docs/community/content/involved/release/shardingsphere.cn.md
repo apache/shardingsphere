@@ -491,8 +491,13 @@ I will process to publish the release and send ANNOUNCE.
 
 ### 1. 将源码、二进制包以及 KEYS 从 svn 的 dev 目录移动到 release 目录
 
+将发布内容移动到发布区：
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
+```
+
+如果 KEYS 有变动，则更新发布区的 KEYS 文件：
+```shell
 svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "delete KEYS"
 svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
@@ -552,13 +557,11 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 
 ### 6. 官网首页增加发布版本文档入口
 
-参考以下代码：
-- [英文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
-- [中文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
+参考 commit：https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430
 
 ### 7. 更新示例版本
 
-更新 examples 模块的 pom，将版本由 ${RELEASE.VERSION} 替换为 ${NEXT.DEVELOPMENT.VERSION}，并提交 PR 到发布分支。
+更新 examples 模块的 pom，将版本由 ${RELEASE.VERSION} 替换为 ${NEXT.DEVELOPMENT.VERSION}，并提交到发布分支。
 
 ### 8. 合并 GitHub 的 release 分支到 `master`，合并完成后删除 release 分支
 
