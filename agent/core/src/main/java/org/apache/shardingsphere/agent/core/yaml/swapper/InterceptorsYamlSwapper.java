@@ -28,9 +28,10 @@ public final class InterceptorsYamlSwapper {
     /**
      * unmarshal interceptors.
      * 
+     * @param fileName file name
      * @return unmarshalled interceptors
      */
-    public Interceptors unmarshal() {
-        return new Yaml().loadAs(this.getClass().getResourceAsStream("/interceptors.yaml"), Interceptors.class);
+    public Interceptors unmarshal(final String fileName) {
+        return new Yaml().loadAs(this.getClass().getResourceAsStream(fileName), Interceptors.class);
     }
 }

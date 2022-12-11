@@ -19,13 +19,10 @@ package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
-import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
-import org.apache.shardingsphere.agent.core.yaml.entity.Interceptors;
-import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
 import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.InputStream;
+import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
+import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
+import org.apache.shardingsphere.agent.core.yaml.swapper.InterceptorsYamlSwapper;
 
 /**
  * Metrics plugin definition service.
@@ -34,9 +31,7 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
     
     @Override
     protected void defineProxyInterceptors() {
-        InputStream inputStream = getClass().getResourceAsStream("/prometheus/interceptors.yaml");
-        Interceptors interceptors = new Yaml().loadAs(inputStream, Interceptors.class);
-        for (Interceptor each : interceptors.getInterceptors()) {
+        for (Interceptor each : new InterceptorsYamlSwapper().unmarshal("/prometheus/interceptors.yaml").getInterceptors()) {
             if (null == each.getTarget()) {
                 continue;
             }
