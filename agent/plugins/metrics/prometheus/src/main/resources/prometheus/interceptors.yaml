@@ -19,33 +19,33 @@ interceptors:
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.CommandExecutorTaskAdvice
     points:
-      - type: instance
-        name: run
-      - type: instance
-        name: processException
+      - name: run
+        type: instance
+      - name: processException
+        type: instance
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.ChannelHandlerAdvice
     points:
-      - type: instance
-        name: channelActive
-      - type: instance
-        name: channelRead
-      - type: instance
-        name: channelInactive
+      - name: channelActive
+        type: instance
+      - name: channelRead
+        type: instance
+      - name: channelInactive
+        type: instance
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.SQLRouteEngineAdvice
     points:
-      - type: instance
-        name: route
+      - name: route
+        type: instance
   - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice
     points:
-      - type: instance
-        name: commit
-      - type: instance
-        name: rollback
+      - name: commit
+        type: instance
+      - name: rollback
+        type: instance
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.SQLParserEngineAdvice
     points:
-      - type: instance
-        name: parse
+      - name: parse
+        type: instance
