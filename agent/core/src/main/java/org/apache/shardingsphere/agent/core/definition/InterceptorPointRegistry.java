@@ -39,7 +39,7 @@ public final class InterceptorPointRegistry {
      * @return interceptor point builder
      */
     public Builder getInterceptorPointBuilder(final String targetClassName) {
-        return builders.computeIfAbsent(targetClassName, PluginPointcuts::intercept);
+        return builders.computeIfAbsent(targetClassName, Builder::new);
     }
     
     /**
