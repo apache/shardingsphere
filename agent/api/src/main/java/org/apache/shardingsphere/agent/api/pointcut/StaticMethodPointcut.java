@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.interceptor;
+package org.apache.shardingsphere.agent.api.pointcut;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,15 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * constructor interceptor point.
+ * Static method pointcut.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConstructorInterceptorPoint {
+public final class StaticMethodPointcut implements AgentPointcut {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     
-    private final String advice;
+    private final String adviceClassName;
+    
+    private final boolean overrideArgs;
 }

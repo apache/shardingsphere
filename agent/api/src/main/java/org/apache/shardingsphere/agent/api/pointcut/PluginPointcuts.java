@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.interceptor;
+package org.apache.shardingsphere.agent.api.pointcut;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,35 +28,27 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Plugin interceptor point.
- *
- * {@code
- * PluginInterceptorPoint.intercept("Target.class")
- * .onConstructor(ElementMatchers.any()).implement("Advice.class").build()
- * .method(ElementMatchers.named("greet").implement("Advice.class").build()
- * .staticMethod(ElementMatchers.named("of").implement("OfAdvice.class").build()
- * .install();
- * }
+ * Plugin pointcuts.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PluginInterceptorPoint {
+public final class PluginPointcuts {
     
     private final String targetClassName;
     
-    private final List<ConstructorInterceptorPoint> constructorInterceptorPoints;
+    private final List<ConstructorPointcut> constructorPointcuts;
     
-    private final List<InstanceMethodInterceptorPoint> instanceMethodInterceptorPoints;
+    private final List<InstanceMethodPointcut> instanceMethodPointcuts;
     
-    private final List<StaticMethodInterceptorPoint> staticMethodInterceptorPoints;
+    private final List<StaticMethodPointcut> staticMethodPointcuts;
     
     /**
      * Create plugin interceptor point.
      *
      * @return plugin interceptor point
      */
-    public static PluginInterceptorPoint createDefault() {
-        return new PluginInterceptorPoint("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    public static PluginPointcuts createDefault() {
+        return new PluginPointcuts("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
     
     /**
@@ -77,11 +69,11 @@ public final class PluginInterceptorPoint {
         
         private final String targetClassName;
         
-        private final List<ConstructorInterceptorPoint> constructorInterceptorPoints = new ArrayList<>();
+        private final List<ConstructorPointcut> constructorPointcuts = new ArrayList<>();
         
-        private final List<InstanceMethodInterceptorPoint> instanceMethodInterceptorPoints = new ArrayList<>();
+        private final List<InstanceMethodPointcut> instanceMethodPointcuts = new ArrayList<>();
         
-        private final List<StaticMethodInterceptorPoint> staticMethodInterceptorPoints = new ArrayList<>();
+        private final List<StaticMethodPointcut> staticMethodPointcuts = new ArrayList<>();
         
         /**
          * Configure the intercepting point on constructor.
@@ -118,8 +110,8 @@ public final class PluginInterceptorPoint {
          *
          * @return plugin advice definition
          */
-        public PluginInterceptorPoint install() {
-            return new PluginInterceptorPoint(targetClassName, constructorInterceptorPoints, instanceMethodInterceptorPoints, staticMethodInterceptorPoints);
+        public PluginPointcuts install() {
+            return new PluginPointcuts(targetClassName, constructorPointcuts, instanceMethodPointcuts, staticMethodPointcuts);
         }
         
         /**
@@ -164,7 +156,7 @@ public final class PluginInterceptorPoint {
              * @return plugin advice builder
              */
             public Builder build() {
-                builder.instanceMethodInterceptorPoints.add(new InstanceMethodInterceptorPoint(matcher, adviceClassName, overrideArgs));
+                builder.instanceMethodPointcuts.add(new InstanceMethodPointcut(matcher, adviceClassName, overrideArgs));
                 return builder;
             }
         }
@@ -215,7 +207,7 @@ public final class PluginInterceptorPoint {
              * @return builder
              */
             public Builder build() {
-                builder.staticMethodInterceptorPoints.add(new StaticMethodInterceptorPoint(matcher, adviceClassName, overrideArgs));
+                builder.staticMethodPointcuts.add(new StaticMethodPointcut(matcher, adviceClassName, overrideArgs));
                 return builder;
             }
         }
@@ -253,7 +245,7 @@ public final class PluginInterceptorPoint {
              * @return plugin advice builder
              */
             public Builder build() {
-                builder.constructorInterceptorPoints.add(new ConstructorInterceptorPoint(matcher, adviceClassName));
+                builder.constructorPointcuts.add(new ConstructorPointcut(matcher, adviceClassName));
                 return builder;
             }
         }

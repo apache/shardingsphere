@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi;
+package org.apache.shardingsphere.agent.api.pointcut;
 
-import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts;
-
-import java.util.Collection;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Plugin definition service.
+ * Agent pointcut.
  */
-public interface PluginDefinitionService extends AgentSPI {
+public interface AgentPointcut {
     
     /**
-     * Install plugin interceptor points.
-     *
-     * @param isEnhancedForProxy is enhanced for proxy
-     * @return plugin interceptor points
+     * Get matcher.
+     * 
+     * @return matcher
      */
-    Collection<PluginPointcuts> install(boolean isEnhancedForProxy);
+    ElementMatcher<? super MethodDescription> getMatcher();
+    
+    /**
+     * Get advice class name.
+     *
+     * @return advice class name
+     */
+    String getAdviceClassName();
 }
