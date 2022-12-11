@@ -44,11 +44,11 @@ public final class PluginInterceptorPoint {
     
     private final String targetClassName;
     
-    private final List<ConstructorPoint> constructorPoints;
+    private final List<ConstructorInterceptorPoint> constructorInterceptorPoints;
     
-    private final List<InstanceMethodPoint> instanceMethodPoints;
+    private final List<InstanceMethodInterceptorPoint> instanceMethodInterceptorPoints;
     
-    private final List<ClassStaticMethodPoint> classStaticMethodPoints;
+    private final List<StaticMethodInterceptorPoint> staticMethodInterceptorPoints;
     
     /**
      * Create plugin interceptor point.
@@ -77,11 +77,11 @@ public final class PluginInterceptorPoint {
         
         private final String targetClassName;
         
-        private final List<ConstructorPoint> constructorPoints = new ArrayList<>();
+        private final List<ConstructorInterceptorPoint> constructorInterceptorPoints = new ArrayList<>();
         
-        private final List<InstanceMethodPoint> instanceMethodPoints = new ArrayList<>();
+        private final List<InstanceMethodInterceptorPoint> instanceMethodInterceptorPoints = new ArrayList<>();
         
-        private final List<ClassStaticMethodPoint> classStaticMethodPoints = new ArrayList<>();
+        private final List<StaticMethodInterceptorPoint> staticMethodInterceptorPoints = new ArrayList<>();
         
         /**
          * Configure the intercepting point on constructor.
@@ -119,7 +119,7 @@ public final class PluginInterceptorPoint {
          * @return plugin advice definition
          */
         public PluginInterceptorPoint install() {
-            return new PluginInterceptorPoint(targetClassName, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
+            return new PluginInterceptorPoint(targetClassName, constructorInterceptorPoints, instanceMethodInterceptorPoints, staticMethodInterceptorPoints);
         }
         
         /**
@@ -164,7 +164,7 @@ public final class PluginInterceptorPoint {
              * @return plugin advice builder
              */
             public Builder build() {
-                builder.instanceMethodPoints.add(new InstanceMethodPoint(matcher, adviceClassName, overrideArgs));
+                builder.instanceMethodInterceptorPoints.add(new InstanceMethodInterceptorPoint(matcher, adviceClassName, overrideArgs));
                 return builder;
             }
         }
@@ -215,7 +215,7 @@ public final class PluginInterceptorPoint {
              * @return builder
              */
             public Builder build() {
-                builder.classStaticMethodPoints.add(new ClassStaticMethodPoint(matcher, adviceClassName, overrideArgs));
+                builder.staticMethodInterceptorPoints.add(new StaticMethodInterceptorPoint(matcher, adviceClassName, overrideArgs));
                 return builder;
             }
         }
@@ -253,7 +253,7 @@ public final class PluginInterceptorPoint {
              * @return plugin advice builder
              */
             public Builder build() {
-                builder.constructorPoints.add(new ConstructorPoint(matcher, adviceClassName));
+                builder.constructorInterceptorPoints.add(new ConstructorInterceptorPoint(matcher, adviceClassName));
                 return builder;
             }
         }

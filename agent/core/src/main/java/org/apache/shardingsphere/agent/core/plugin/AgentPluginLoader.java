@@ -109,9 +109,9 @@ public final class AgentPluginLoader implements PluginLoader {
             String target = each.getTargetClassName();
             if (pointMap.containsKey(target)) {
                 PluginInterceptorPoint pluginInterceptorPoint = pointMap.get(target);
-                pluginInterceptorPoint.getConstructorPoints().addAll(each.getConstructorPoints());
-                pluginInterceptorPoint.getInstanceMethodPoints().addAll(each.getInstanceMethodPoints());
-                pluginInterceptorPoint.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
+                pluginInterceptorPoint.getConstructorInterceptorPoints().addAll(each.getConstructorInterceptorPoints());
+                pluginInterceptorPoint.getInstanceMethodInterceptorPoints().addAll(each.getInstanceMethodInterceptorPoints());
+                pluginInterceptorPoint.getStaticMethodInterceptorPoints().addAll(each.getStaticMethodInterceptorPoints());
             } else {
                 pointMap.put(target, each);
             }
