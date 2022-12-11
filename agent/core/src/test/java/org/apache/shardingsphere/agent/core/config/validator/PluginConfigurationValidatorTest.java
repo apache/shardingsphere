@@ -15,26 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config;
+package org.apache.shardingsphere.agent.core.config.validator;
 
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThrows;
 
-public final class PluginConfigurationTest {
+public final class PluginConfigurationValidatorTest {
+    
+    @Test
+    public void assertValidateSuccess() {
+        PluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null));
+    }
     
     @Test
     public void assertValidateWhenHostIsEmpty() {
-        assertThrows("Hostname of foo_host is required", IllegalArgumentException.class, () -> new PluginConfiguration("", 8080, "pwd", null).validate("foo_host"));
+        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class, () -> PluginConfigurationValidator.validate("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
     }
     
     @Test
     public void assertValidateWhenHostIsNull() {
-        assertThrows("Hostname of foo_host is required", IllegalArgumentException.class, () -> new PluginConfiguration(null, 8080, "pwd", null).validate("foo_host"));
+        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class, () -> PluginConfigurationValidator.validate("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
     }
     
     @Test
     public void assertValidateWhenPortLessThanOne() {
-        assertThrows("Port `0` of foo_host must be a positive number", IllegalArgumentException.class, () -> new PluginConfiguration("localhost", 0, "pwd", null).validate("foo_host"));
+        assertThrows("Port `0` of foo_host must be a positive number", IllegalArgumentException.class,
+                () -> PluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
     }
 }
