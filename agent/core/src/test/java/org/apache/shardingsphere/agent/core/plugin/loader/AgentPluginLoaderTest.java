@@ -20,12 +20,13 @@ package org.apache.shardingsphere.agent.core.plugin.loader;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -59,7 +60,7 @@ public final class AgentPluginLoaderTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
-        PluginPointcuts interceptorPoint = PluginPointcuts.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
+        PluginPointcuts pluginPointcuts = new Builder("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
                 .build()
@@ -71,7 +72,7 @@ public final class AgentPluginLoaderTest {
                 .build()
                 .install();
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), PLUGIN_LOADER, Collections.singletonMap(interceptorPoint.getTargetClassName(), interceptorPoint));
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, Collections.singletonMap(pluginPointcuts.getTargetClassName(), pluginPointcuts));
     }
     
     @Test

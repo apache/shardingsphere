@@ -24,7 +24,6 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,25 +40,6 @@ public final class PluginPointcuts {
     private final List<InstanceMethodPointcut> instanceMethodPointcuts;
     
     private final List<StaticMethodPointcut> staticMethodPointcuts;
-    
-    /**
-     * Create plugin interceptor point.
-     *
-     * @return plugin interceptor point
-     */
-    public static PluginPointcuts createDefault() {
-        return new PluginPointcuts("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    }
-    
-    /**
-     * Intercept target class.
-     *
-     * @param targetClassName target class name
-     * @return builder
-     */
-    public static Builder intercept(final String targetClassName) {
-        return new Builder(targetClassName);
-    }
     
     /**
      * Plugin advice definition configuration builder.
