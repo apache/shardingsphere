@@ -36,7 +36,7 @@ public final class InterceptorsYamlSwapperTest {
     
     @Test
     public void assertUnmarshal() {
-        Interceptors actual = new InterceptorsYamlSwapper().unmarshal("/interceptors.yaml");
+        Interceptors actual = new InterceptorsYamlSwapper().unmarshal(getClass().getResourceAsStream("/interceptors.yaml"));
         assertThat(actual.getInterceptors().size(), is(5));
         List<Interceptor> actualInterceptors = new ArrayList<>(actual.getInterceptors());
         assertInterceptor(actualInterceptors.get(0), createExpectedInterceptor("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask",

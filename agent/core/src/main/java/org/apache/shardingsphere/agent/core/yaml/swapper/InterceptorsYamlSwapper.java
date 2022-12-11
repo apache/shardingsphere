@@ -20,6 +20,8 @@ package org.apache.shardingsphere.agent.core.yaml.swapper;
 import org.apache.shardingsphere.agent.core.yaml.entity.Interceptors;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
+
 /**
  * Interceptors YAML swapper.
  */
@@ -28,10 +30,10 @@ public final class InterceptorsYamlSwapper {
     /**
      * unmarshal interceptors.
      * 
-     * @param fileName file name
+     * @param inputStream input stream
      * @return unmarshalled interceptors
      */
-    public Interceptors unmarshal(final String fileName) {
-        return new Yaml().loadAs(this.getClass().getResourceAsStream(fileName), Interceptors.class);
+    public Interceptors unmarshal(final InputStream inputStream) {
+        return new Yaml().loadAs(inputStream, Interceptors.class);
     }
 }
