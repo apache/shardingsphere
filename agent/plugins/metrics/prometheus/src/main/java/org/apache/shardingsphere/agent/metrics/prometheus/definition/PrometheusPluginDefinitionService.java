@@ -44,9 +44,6 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
             if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
                 builder.onConstructor(ElementMatchers.isConstructor()).implement(each.getConstructAdvice()).build();
             }
-            if (null == each.getPoints()) {
-                continue;
-            }
             String[] instancePoints = each.getPoints().stream().filter(i -> "instance".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
             String[] staticPoints = each.getPoints().stream().filter(i -> "static".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
             if (instancePoints.length > 0) {
