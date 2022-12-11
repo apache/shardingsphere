@@ -39,7 +39,7 @@ public final class InterceptorsYamlSwapperTest {
         Interceptors actual = new InterceptorsYamlSwapper().unmarshal("/interceptors.yaml");
         assertThat(actual.getInterceptors().size(), is(5));
         List<Interceptor> actualInterceptors = new ArrayList<>(actual.getInterceptors());
-        assertInterceptor(actualInterceptors.get(0), createExpectedInterceptor("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask", 
+        assertInterceptor(actualInterceptors.get(0), createExpectedInterceptor("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask",
                 "org.apache.shardingsphere.agent.metrics.api.advice.CommandExecutorTaskAdvice",
                 null, null, Arrays.asList(createExpectedTargetPoint("run", "instance"), createExpectedTargetPoint("processException", "instance"))));
         assertInterceptor(actualInterceptors.get(1), createExpectedInterceptor("org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler",
