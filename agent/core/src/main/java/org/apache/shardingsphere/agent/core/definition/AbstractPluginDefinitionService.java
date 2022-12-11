@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.definition;
 
-import org.apache.shardingsphere.agent.api.interceptor.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.api.interceptor.PluginInterceptorPoint.Builder;
+import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts.Builder;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     private final InterceptorPointRegistry interceptorPointRegistry = new InterceptorPointRegistry();
     
     @Override
-    public final Collection<PluginInterceptorPoint> install(final boolean isEnhancedForProxy) {
+    public final Collection<PluginPointcuts> install(final boolean isEnhancedForProxy) {
         if (isEnhancedForProxy) {
             defineProxyInterceptors();
         } else {

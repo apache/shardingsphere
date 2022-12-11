@@ -23,7 +23,7 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.interceptor.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
@@ -70,8 +70,8 @@ public final class ShardingSphereTransformerTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
-        Map<String, PluginInterceptorPoint> interceptorPointMap = new HashMap<>(2, 1);
-        PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
+        Map<String, PluginPointcuts> interceptorPointMap = new HashMap<>(2, 1);
+        PluginPointcuts interceptorPoint = PluginPointcuts.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
                 .build()
@@ -83,7 +83,7 @@ public final class ShardingSphereTransformerTest {
                 .build()
                 .install();
         interceptorPointMap.put(interceptorPoint.getTargetClassName(), interceptorPoint);
-        PluginInterceptorPoint interceptorPointInTwice = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial")
+        PluginPointcuts interceptorPointInTwice = PluginPointcuts.intercept("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
                 .build()

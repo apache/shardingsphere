@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.definition;
 
-import org.apache.shardingsphere.agent.api.interceptor.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.api.interceptor.PluginInterceptorPoint.Builder;
+import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.api.pointcut.PluginPointcuts.Builder;
 
 import java.util.Collection;
 import java.util.Map;
@@ -39,7 +39,7 @@ public final class InterceptorPointRegistry {
      * @return interceptor point builder
      */
     public Builder getInterceptorPointBuilder(final String targetClassName) {
-        return builders.computeIfAbsent(targetClassName, PluginInterceptorPoint::intercept);
+        return builders.computeIfAbsent(targetClassName, PluginPointcuts::intercept);
     }
     
     /**
@@ -47,7 +47,7 @@ public final class InterceptorPointRegistry {
      * 
      * @return all interceptor points
      */
-    public Collection<PluginInterceptorPoint> getAllInterceptorPoints() {
+    public Collection<PluginPointcuts> getAllInterceptorPoints() {
         return builders.values().stream().map(Builder::install).collect(Collectors.toList());
     }
 }
