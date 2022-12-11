@@ -19,9 +19,9 @@ package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint.Builder;
-import org.apache.shardingsphere.agent.core.entity.Interceptor;
-import org.apache.shardingsphere.agent.core.entity.Interceptors;
-import org.apache.shardingsphere.agent.core.entity.TargetPoint;
+import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
+import org.apache.shardingsphere.agent.core.yaml.entity.Interceptors;
+import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
 import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 import org.yaml.snakeyaml.Yaml;
 
@@ -43,9 +43,6 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
             Builder builder = defineInterceptor(each.getTarget());
             if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
                 builder.onConstructor(ElementMatchers.isConstructor()).implement(each.getConstructAdvice()).build();
-            }
-            if (null == each.getPoints()) {
-                continue;
             }
             String[] instancePoints = each.getPoints().stream().filter(i -> "instance".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
             String[] staticPoints = each.getPoints().stream().filter(i -> "static".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.entity;
+package org.apache.shardingsphere.agent.core.yaml.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -37,5 +38,5 @@ public final class Interceptor {
     
     private String constructAdvice;
     
-    private LinkedList<TargetPoint> points;
+    private Collection<TargetPoint> points = new LinkedList<>();
 }

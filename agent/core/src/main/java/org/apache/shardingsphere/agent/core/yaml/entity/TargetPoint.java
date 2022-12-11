@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.entity;
+package org.apache.shardingsphere.agent.core.yaml.entity;
 
-import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.junit.Assert.assertFalse;
-
-public final class InterceptorConvertTest {
+/**
+ * Target function.
+ */
+@Getter
+@Setter
+public final class TargetPoint {
     
-    @Test
-    public void assertConvert() {
-        Yaml yaml = new Yaml();
-        Interceptors interceptors = yaml.loadAs(this.getClass().getResourceAsStream("/interceptors.yaml"), Interceptors.class);
-        assertFalse(interceptors.getInterceptors().isEmpty());
-    }
+    private String name;
+    
+    private String type;
 }
