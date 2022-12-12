@@ -40,7 +40,7 @@ public final class PrometheusPluginDefinitionService implements PluginDefinition
             if (null == each.getTarget()) {
                 continue;
             }
-            ClassPointcuts classPointcuts = engine.defineInterceptor(each.getTarget());
+            ClassPointcuts classPointcuts = engine.getClassPointcuts(each.getTarget());
             if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
                 classPointcuts.getConstructorPointcuts().add(new ConstructorPointcut(ElementMatchers.isConstructor(), each.getConstructAdvice()));
             }

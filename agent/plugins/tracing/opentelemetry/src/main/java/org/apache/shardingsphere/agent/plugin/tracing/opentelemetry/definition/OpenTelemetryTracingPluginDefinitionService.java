@@ -50,11 +50,11 @@ public final class OpenTelemetryTracingPluginDefinitionService implements Plugin
     @Override
     public void installProxyInterceptors() {
         PluginDefinitionServiceEngine engine = new PluginDefinitionServiceEngine(this);
-        engine.defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS).getInstanceMethodPointcuts()
+        engine.getClassPointcuts(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS).getInstanceMethodPointcuts()
                 .add(new InstanceMethodPointcut(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME), COMMAND_EXECUTOR_TASK_ADVICE_CLASS));
-        engine.defineInterceptor(SQL_PARSER_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
+        engine.getClassPointcuts(SQL_PARSER_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
                 .add(new InstanceMethodPointcut(ElementMatchers.named(SQL_PARSER_ENGINE_METHOD_NAME), SQL_PARSER_ENGINE_ADVICE_CLASS));
-        engine.defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
+        engine.getClassPointcuts(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
                 .add(new InstanceMethodPointcut(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS)), JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS));
     }
     

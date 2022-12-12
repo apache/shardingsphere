@@ -38,7 +38,7 @@ public final class BaseLoggingPluginDefinitionService implements PluginDefinitio
     @Override
     public void installProxyInterceptors() {
         PluginDefinitionServiceEngine engine = new PluginDefinitionServiceEngine(this);
-        engine.defineInterceptor(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
+        engine.getClassPointcuts(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
                 .add(new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
     }
     

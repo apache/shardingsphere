@@ -32,12 +32,12 @@ public final class PluginDefinitionServiceEngine {
     private final PluginDefinitionService pluginDefinitionService;
     
     /**
-     * Define interceptor.
+     * Get class pointcuts.
      *
-     * @param targetClassName target class name.
+     * @param targetClassName target class name
      * @return class pointcuts
      */
-    public ClassPointcuts defineInterceptor(final String targetClassName) {
+    public ClassPointcuts getClassPointcuts(final String targetClassName) {
         return ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getClassPointcuts(targetClassName);
     }
     
