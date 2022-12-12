@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
+import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class OpenTelemetryTracingPluginDefinitionServiceTest {
     
     @Test
-    public void assertInstall() {
-        assertThat(new OpenTelemetryTracingPluginDefinitionService().install(true).size(), is(3));
+    public void assertInstallProxyInterceptors() {
+        new OpenTelemetryTracingPluginDefinitionService().installProxyInterceptors();
+        assertThat(ClassPointcutsRegistryFactory.getRegistry("OpenTelemetry").getAllClassPointcuts().size(), is(3));
     }
 }

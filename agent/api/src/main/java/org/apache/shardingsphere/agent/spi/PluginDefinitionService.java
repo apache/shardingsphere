@@ -17,20 +17,18 @@
 
 package org.apache.shardingsphere.agent.spi;
 
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-
-import java.util.Collection;
-
 /**
  * Plugin definition service.
  */
 public interface PluginDefinitionService extends AgentSPI {
     
     /**
-     * Install class pointcuts.
-     *
-     * @param isEnhancedForProxy is enhanced for proxy
-     * @return installed class pointcuts
+     * Install Proxy Interceptors.
      */
-    Collection<ClassPointcuts> install(boolean isEnhancedForProxy);
+    void installProxyInterceptors();
+    
+    /**
+     * Install JDBC Interceptors.
+     */
+    void installJdbcInterceptors();
 }
