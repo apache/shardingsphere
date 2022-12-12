@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
-import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.plugin.tracing.common.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.SQLParserEngineAdvice;
-import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 /**
@@ -30,41 +28,14 @@ import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
  */
 public final class OpenTracingPluginDefinitionService implements PluginDefinitionService {
     
-    private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
-    
-    private static final String COMMAND_EXECUTOR_METHOD_NAME = "run";
-    
-    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = CommandExecutorTaskAdvice.class.getName();
-    
-    private static final String SQL_PARSER_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine";
-    
-    private static final String SQL_PARSER_ENGINE_METHOD_NAME = "parse";
-    
-    private static final String SQL_PARSER_ENGINE_ADVICE_CLASS = SQLParserEngineAdvice.class.getName();
-    
-    private static final String JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback";
-    
-    private static final String JDBC_EXECUTOR_METHOD_NAME = "execute";
-    
-    private static final String JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit";
-    
-    private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = JDBCExecutorCallbackAdvice.class.getName();
-    
     @Override
     public void installProxyInterceptors() {
-        PluginDefinitionServiceEngine engine = new PluginDefinitionServiceEngine(this);
-        engine.getClassPointcuts(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS).getInstanceMethodPointcuts()
-                .add(new InstanceMethodPointcut(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME), COMMAND_EXECUTOR_TASK_ADVICE_CLASS));
-        engine.getClassPointcuts(SQL_PARSER_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
-                .add(new InstanceMethodPointcut(ElementMatchers.named(SQL_PARSER_ENGINE_METHOD_NAME), SQL_PARSER_ENGINE_ADVICE_CLASS));
-        engine.getClassPointcuts(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
-                .add(new InstanceMethodPointcut(ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME).and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))),
-                        JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS));
+        new TracingAdviceEngine(new PluginDefinitionServiceEngine(this)).adviceProxyTracing(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override
     public void installJdbcInterceptors() {
-        // TODO add JDBC related interception
+        new TracingAdviceEngine(new PluginDefinitionServiceEngine(this)).adviceJDBCTracing();
     }
     
     @Override
