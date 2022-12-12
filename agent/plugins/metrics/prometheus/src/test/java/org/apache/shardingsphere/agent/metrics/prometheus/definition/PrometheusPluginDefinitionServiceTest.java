@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
+import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class PrometheusPluginDefinitionServiceTest {
     
     @Test
-    public void assertInstall() {
-        assertThat(new PrometheusPluginDefinitionService().install(true).size(), is(5));
+    public void assertInstallProxyInterceptors() {
+        PrometheusPluginDefinitionService pluginDefinitionService = new PrometheusPluginDefinitionService();
+        pluginDefinitionService.installProxyInterceptors();
+        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(5));
     }
 }

@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
+import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 /**
  * Open tracing plugin definition service.
  */
-public final class OpenTracingPluginDefinitionService extends AbstractPluginDefinitionService {
+public final class OpenTracingPluginDefinitionService implements PluginDefinitionService {
     
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
     
@@ -47,18 +48,19 @@ public final class OpenTracingPluginDefinitionService extends AbstractPluginDefi
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice";
     
     @Override
-    protected void defineProxyInterceptors() {
-        defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS).getInstanceMethodPointcuts()
+    public void installProxyInterceptors() {
+        PluginDefinitionServiceEngine engine = new PluginDefinitionServiceEngine(this);
+        engine.getClassPointcuts(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS).getInstanceMethodPointcuts()
                 .add(new InstanceMethodPointcut(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME), COMMAND_EXECUTOR_TASK_ADVICE_CLASS));
-        defineInterceptor(SQL_PARSER_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
+        engine.getClassPointcuts(SQL_PARSER_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
                 .add(new InstanceMethodPointcut(ElementMatchers.named(SQL_PARSER_ENGINE_METHOD_NAME), SQL_PARSER_ENGINE_ADVICE_CLASS));
-        defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
+        engine.getClassPointcuts(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
                 .add(new InstanceMethodPointcut(ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME).and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))),
                         JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS));
     }
     
     @Override
-    protected void defineJdbcInterceptors() {
+    public void installJdbcInterceptors() {
         // TODO add JDBC related interception
     }
     

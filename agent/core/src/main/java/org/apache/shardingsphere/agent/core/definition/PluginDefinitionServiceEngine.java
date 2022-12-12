@@ -17,33 +17,42 @@
 
 package org.apache.shardingsphere.agent.core.definition;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.util.Collection;
 
 /**
- * Abstract plugin definition service.
+ * Plugin definition service engine.
  */
-public abstract class AbstractPluginDefinitionService implements PluginDefinitionService {
+@RequiredArgsConstructor
+public final class PluginDefinitionServiceEngine {
     
-    private final InterceptorPointRegistry interceptorPointRegistry = new InterceptorPointRegistry();
+    private final PluginDefinitionService pluginDefinitionService;
     
-    @Override
-    public final Collection<ClassPointcuts> install(final boolean isEnhancedForProxy) {
-        if (isEnhancedForProxy) {
-            defineProxyInterceptors();
-        } else {
-            defineJdbcInterceptors();
-        }
-        return interceptorPointRegistry.getAllInterceptorPoints();
+    /**
+     * Get class pointcuts.
+     *
+     * @param targetClassName target class name
+     * @return class pointcuts
+     */
+    public ClassPointcuts getClassPointcuts(final String targetClassName) {
+        return ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getClassPointcuts(targetClassName);
     }
     
-    protected abstract void defineProxyInterceptors();
-    
-    protected abstract void defineJdbcInterceptors();
-    
-    protected final ClassPointcuts defineInterceptor(final String targetClassName) {
-        return interceptorPointRegistry.getInterceptorPointBuilder(targetClassName);
+    /**
+     * Install plugins.
+     * 
+     * @param isEnhancedForProxy is enhanced for proxy
+     * @return class pointcuts
+     */
+    public Collection<ClassPointcuts> install(final boolean isEnhancedForProxy) {
+        if (isEnhancedForProxy) {
+            pluginDefinitionService.installProxyInterceptors();
+        } else {
+            pluginDefinitionService.installJdbcInterceptors();
+        }
+        return ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts();
     }
 }

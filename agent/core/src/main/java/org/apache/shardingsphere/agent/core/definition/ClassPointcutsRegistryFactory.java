@@ -17,35 +17,27 @@
 
 package org.apache.shardingsphere.agent.core.definition;
 
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Interceptor point registry.
+ * Class pointcuts registry factory.
  */
-public final class InterceptorPointRegistry {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ClassPointcutsRegistryFactory {
     
-    private final Map<String, ClassPointcuts> pointcutsMap = new ConcurrentHashMap<>();
-    
-    /**
-     * Get class pointcuts.
-     * 
-     * @param targetClassName target class name to be intercepted
-     * @return class pointcuts
-     */
-    public ClassPointcuts getInterceptorPointBuilder(final String targetClassName) {
-        return pointcutsMap.computeIfAbsent(targetClassName, ClassPointcuts::new);
-    }
+    private static final Map<String, ClassPointcutsRegistry> REGISTRIES = new ConcurrentHashMap<>();
     
     /**
-     * Get all class pointcuts.
+     * Get class pointcuts registry.
      * 
-     * @return all class pointcuts
+     * @param key registry key
+     * @return class pointcuts registry
      */
-    public Collection<ClassPointcuts> getAllInterceptorPoints() {
-        return pointcutsMap.values();
+    public static ClassPointcutsRegistry getRegistry(final String key) {
+        return REGISTRIES.computeIfAbsent(key, each -> new ClassPointcutsRegistry());
     }
 }
