@@ -25,7 +25,7 @@ import zipkin2.Span;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class ZipkinCollector extends ExternalResource implements CollectorRule {
+public final class ZipkinCollector extends ExternalResource implements CollectorRule {
     
     private static final ConcurrentLinkedDeque<Span> SPANS = new ConcurrentLinkedDeque<>();
     
