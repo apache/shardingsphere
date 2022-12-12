@@ -20,7 +20,8 @@ package org.apache.shardingsphere.data.pipeline.cdc.config.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 
 import java.util.List;
 
@@ -43,7 +44,15 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final String sourceDatabaseType;
     
-    private final PipelineDataSourceConfiguration dataSourceConfiguration;
+    private final ShardingSpherePipelineDataSourceConfiguration dataSourceConfig;
+    
+    private final JobDataNodeLine tablesFirstDataNodes;
+    
+    private final List<JobDataNodeLine> jobShardingDataNodes;
+    
+    private final int concurrency;
+    
+    private final int retryTimes;
     
     @Override
     public int getJobShardingCount() {
