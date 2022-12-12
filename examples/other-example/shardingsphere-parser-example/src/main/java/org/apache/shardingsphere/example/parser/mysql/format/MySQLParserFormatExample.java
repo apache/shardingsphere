@@ -52,12 +52,12 @@ public final class MySQLParserFormatExample {
     }
     
     public static void main(String[] args) {
-        MYSQL_FORMAT_SQL_LIST.forEach(sql -> {
+        MYSQL_FORMAT_SQL_LIST.forEach(each -> {
             Properties props = new Properties();
-            props.setProperty("parameterized", "false");
-            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            props.setProperty("parameterized", Boolean.FALSE.toString());
+            CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
-            ParseASTNode parseASTNode = parserEngine.parse(sql, false);
+            ParseASTNode parseASTNode = parserEngine.parse(each, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
             String result = visitorEngine.visit(parseASTNode);
             System.out.println(result);

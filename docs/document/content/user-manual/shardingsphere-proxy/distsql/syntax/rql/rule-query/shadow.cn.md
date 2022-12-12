@@ -6,11 +6,11 @@ weight = 6
 ## 语法说明
 
 ```sql
-SHOW SHADOW shadowRule | RULES [FROM schemaName]
+SHOW SHADOW shadowRule | RULES [FROM databaseName]
 
-SHOW SHADOW TABLE RULES [FROM schemaName]
+SHOW SHADOW TABLE RULES [FROM databaseName]
 
-SHOW SHADOW ALGORITHMS [FROM schemaName]
+SHOW SHADOW ALGORITHMS [FROM databaseName]
 
 shadowRule: 
     RULE ruleName
@@ -32,32 +32,26 @@ shadowRule:
 
 ### Shadow Table Rule
 
-| 列                     | 说明           |
-| ----------------------| ---------------|
-| shadow_table          | 影子表          |
-| shadow_algorithm_name | 影子算法名称     |
+| 列                     | 说明       |
+| --------------------- | ---------- |
+| shadow_table          | 影子表      |
+| shadow_algorithm_name | 影子算法名称 |
 
 ### Shadow Algorithms
 
-| 列                    | 说明          |
-| -------------------   | ------------ |
-| shadow_algorithm_name | 影子算法名称   |
-| type                  | 算法类型      |
-| props                 | 算法参数      |
-| is_default            | 是否默认      |
-
-### Shadow Rule status
-
-| 列                    | 说明          |
-| -------------------   | ------------ |
-| status                | 是否启用      |
+| 列                    | 说明        |
+| -------------------   | ---------- |
+| shadow_algorithm_name | 影子算法名称 |
+| type                  | 算法类型    |
+| props                 | 算法参数    |
+| is_default            | 是否默认    |
 
 ## 示例
 
 *SHOW SHADOW RULES*
 
 ```sql
-mysql> show shadow rules;
+mysql> SHOW SHADOW RULES;
 +--------------------+-------------+-------------+--------------+
 | rule_name          | source_name | shadow_name | shadow_table |
 +--------------------+-------------+-------------+--------------+
@@ -69,7 +63,7 @@ mysql> show shadow rules;
 *SHOW SHADOW RULE ruleName*
 
 ```sql
-mysql> show shadow rule shadow_rule_1;
+mysql> SHOW SHADOW RULE shadow_rule_1;
 +------------------+-------------+-------------+--------------+
 | rule_name        | source_name | shadow_name | shadow_table |
 +------------------+-------------+-------------+--------------+
@@ -81,11 +75,11 @@ mysql> show shadow rule shadow_rule_1;
 *SHOW SHADOW TABLE RULES*
 
 ```sql
-mysql> show shadow table rules;
+mysql> SHOW SHADOW TABLE RULES;
 +--------------+--------------------------------------------------------------------------------+
 | shadow_table | shadow_algorithm_name                                                          |
 +--------------+--------------------------------------------------------------------------------+
-| t_order_1    | user_id_match_algorithm,simple_note_algorithm_1                                |  
+| t_order_1    | user_id_match_algorithm,simple_hint_algorithm_1                                |  
 +--------------+--------------------------------------------------------------------------------+
 1 rows in set (0.01 sec)
 ```
@@ -93,12 +87,12 @@ mysql> show shadow table rules;
 *SHOW SHADOW ALGORITHMS*
 
 ```sql
-mysql> show shadow algorithms;
+mysql> SHOW SHADOW ALGORITHMS;
 +-------------------------+--------------------+-------------------------------------------+----------------+
 | shadow_algorithm_name   | type               | props                                     | is_default     |
 +-------------------------+--------------------+-------------------------------------------+----------------+
-| user_id_match_algorithm | COLUMN_REGEX_MATCH | operation=insert,column=user_id,regex=[1] | false          |
-| simple_note_algorithm_1 | SIMPLE_NOTE        | shadow=true,foo=bar                       | false          |
+| user_id_match_algorithm | REGEX_MATCH        | operation=insert,column=user_id,regex=[1] | false          |
+| simple_hint_algorithm_1 | SIMPLE_HINT        | shadow=true,foo=bar                       | false          |
 +-------------------------+--------------------+-------------------------------------------+----------------+
 2 rows in set (0.01 sec)
 ```

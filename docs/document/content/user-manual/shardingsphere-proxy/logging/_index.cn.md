@@ -1,58 +1,65 @@
 +++
-title = "Logging"
-weight = 4
+title = "日志配置"
+weight = 8
 +++
 
-本章将介绍日志记录的详细语法，当使用者需要在日志中区分 schema 或用户时，可以在 logback.xml 中添加以下配置。
+## 背景信息
 
-## 区分同一日志中的 schema
+ShardingSphere 使用 Logback 进行日志管理，内部采用 Java SPI 提供默认日志配置，用户可以使用 XML 文件来配置自定义日志输出，Proxy 将优先读取 `conf` 目录下的 `logback.xml` 提供的日志配置。
 
-```
-<appender name="schemaConsole" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-        <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{schema}] %logger{36} - %msg%n</pattern>
-    </encoder>
-</appender>
+下面将介绍如何自定义日志配置。
 
-<logger name="ShardingSphere-SQL" level="info" additivity="false">
-    <appender-ref ref="schemaConsole" />
-</logger>
-```
+## 操作步骤
 
-## 区分同一日志中的 schema 和用户
+1. 新建 `conf/logback.xml`
 
-```
-<appender name="schemaConsole" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-        <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{schema}] [%X{user}] %logger{36} - %msg%n</pattern>
-    </encoder>
-</appender>
+根据需求自定义 logger 级别、pattern 等。
+> 建议在配置示例的基础上进行修改
 
-<logger name="ShardingSphere-SQL" level="info" additivity="false">
-    <appender-ref ref="schemaConsole" />
-</logger>
-```
+2. 查看日志
 
-## 拆分为不同的日志文件
+ShardingSphere-Proxy 启动后，日志将输出到 `logs` 目录下，选择目标日志文件进行查看。
 
-```
-<appender name="SiftingFile" class="ch.qos.logback.classic.sift.SiftingAppender">
-    <discriminator>
-        <key>schema</key>
-        <defaultValue>none</defaultValue>
-    </discriminator>
-    <sift>
-        <appender name="File-${taskId}" class="ch.qos.logback.core.FileAppender">
-            <file>logs/${schema}.log</file>
-            <append>true</append>
-            <encoder charset="UTF-8">
-                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{user}] %logger{36} - %msg%n</pattern>
-            </encoder>
-        </appender>
-    </sift>
-</appender>
+### 配置示例
 
-<logger name="ShardingSphere-SQL" level="info" additivity="false">
-    <appender-ref ref="SiftingFile" />
-</logger>
+```xml
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="com.zaxxer.hikari" level="error" />
+    
+    <logger name="com.atomikos" level="error" />
+    
+    <logger name="io.netty" level="error" />
+    
+    <root>
+        <level value="info" />
+        <appender-ref ref="console" />
+    </root>
+</configuration>
 ```

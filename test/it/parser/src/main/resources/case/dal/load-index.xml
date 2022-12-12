@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <load-index sql-case-id="load_index_single_table_all_partition">
+        <table-index start-index="22" stop-index="44">
+            <table name="t_order" start-index="22" stop-index="28" />
+        </table-index>
+    </load-index>
+    <load-index sql-case-id="load_index_single_table_multiple_partition">
+        <table-index start-index="22" stop-index="47">
+            <table name="t_order" start-index="22" stop-index="28" />
+            <partition name="p0" start-index="41" stop-index="42" />
+            <partition name="p1" start-index="45" stop-index="46" />
+        </table-index>
+    </load-index>
+    <load-index sql-case-id="load_index_multiple_table_multiple_partition">
+        <table-index start-index="22" stop-index="47">
+            <table name="t_order" start-index="22" stop-index="28" />
+            <partition name="p0" start-index="41" stop-index="42" />
+            <partition name="p1" start-index="45" stop-index="46" />
+        </table-index>
+        <table-index start-index="50" stop-index="74">
+            <table name="t_user" start-index="50" stop-index="55" />
+            <partition name="p2" start-index="68" stop-index="69" />
+            <partition name="p3" start-index="72" stop-index="73" />
+        </table-index>
+    </load-index>
+    <load-index sql-case-id="load_index_single_table_multiple_index">
+        <table-index start-index="22" stop-index="49">
+            <table name="t_order" start-index="22" stop-index="28" />
+            <index name="idx_a" start-index="37" stop-index="41" />
+            <index name="idx_b" start-index="44" stop-index="48" />
+        </table-index>
+    </load-index>
+    <load-index sql-case-id="load_index_multiple_table_multiple_index">
+        <table-index start-index="22" stop-index="61">
+            <table name="t_order" start-index="22" stop-index="28" />
+            <index name="idx_order_1" start-index="37" stop-index="47" />
+            <index name="idx_order_2" start-index="50" stop-index="60" />
+        </table-index>
+        <table-index start-index="64" stop-index="100">
+            <table name="t_user" start-index="64" stop-index="69" />
+            <index name="idx_user_1" start-index="78" stop-index="87" />
+            <index name="idx_user_2" start-index="90" stop-index="99" />
+        </table-index>
+    </load-index>
+    <load-index sql-case-id="load_index_ignore_leaves">
+        <table-index start-index="22" stop-index="42">
+            <table name="t_order" start-index="22" stop-index="28" />
+        </table-index>
+        <table-index start-index="45" stop-index="64">
+            <table name="t_user" start-index="45" stop-index="50" />
+        </table-index>
+    </load-index>
+</sql-parser-test-cases>

@@ -17,40 +17,39 @@
 
 version: '3'
 services:
-  mysql:
-    ## for different MySQL version, you could get more at here : https://hub.docker.com/_/mysql?tab=tags
-    image: "mysql:5.7"
-    ## port binding to 3306, you could change to 13306:3306 or any other available port you want
+  postgres:
+    ## for different postgres version, you could get more at here : https://hub.docker.com/_/postgres?tab=tags
+    image: "postgres:latest"
+    ## port binding to 5432, you could change to 15432:5432 or any other available port you want
     ports:
-      - "3306:3306"
-    container_name: shardingsphere-example-mysql
-    ## launch MySQL without password
-    ## you could access MySQL like `mysql -h127.0.0.1 -P3306 -uroot`
-    ## if you insist to access MySQL with password, remove `MYSQL_ALLOW_EMPTY_PASSWORD=yes` and then use MYSQL_ROOT_PASSWORD argument
-    #  - MYSQL_ROOT_PASSWORD=root
+      - "5432:5432"
+    container_name: shardingsphere-example-postgres
+    ## you could access Postgres like `psql -d your_database_name -h 127.0.0.1 -U root -p 5432 -W`
     environment:
-     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-    ## copy the manual_schema.sql to /docker-entrypoint-initdb.d/ . this will init the sql file when the MySQL in container start up
+     - TZ=Asia/Shanghai
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+    ## copy the manual_schema.sql to /docker-entrypoint-initdb.d/ . this will init the sql file when the Postgres in container start up
     volumes:
       - ../../../src/resources/manual_schema.sql:/docker-entrypoint-initdb.d/manual_schema.sql
 
   proxy:
-    ## get more versions of proxy here : https://hub.docker.com/r/apache/sharding-proxy/tags
-    image: "apache/sharding-proxy:4.1.1"
+    ## get more versions of proxy here : https://hub.docker.com/r/apache/shardingsphere-proxy/tags
+    image: "apache/shardingsphere-proxy:latest"
     container_name: shardingsphere-example-proxy
     depends_on:
-     - mysql
-    ## wait-for-it.sh will make proxy entry point wait until MySQL container 3306 port open
+     - postgres
+    ## wait-for-it.sh will make proxy entry point wait until Postgres container 5432 port open
     entrypoint: >
-     /bin/sh -c "/opt/wait-for-it.sh shardingsphere-example-mysql:3306 --timeout=20 --strict --
-     && /opt/sharding-proxy/bin/start.sh 3308 
-     && tail -f /opt/sharding-proxy/logs/stdout.log"
+     /bin/sh -c "/opt/wait-for-it.sh shardingsphere-example-postgres:5432 --timeout=20 --strict --
+     && /opt/shardingsphere-proxy/bin/start.sh 3308 
+     && tail -f /opt/shardingsphere-proxy/logs/stdout.log"
     ports: 
      - "3308:3308"
     links:
-     - "mysql:mysql"
+     - "postgres:postgres"
     volumes:
-     - ./conf/:/opt/sharding-proxy/conf
+     - ./conf/:/opt/shardingsphere-proxy/conf
      - ../../tools/wait-for-it.sh:/opt/wait-for-it.sh
     environment:
      - JVM_OPTS="-Djava.awt.headless=true"

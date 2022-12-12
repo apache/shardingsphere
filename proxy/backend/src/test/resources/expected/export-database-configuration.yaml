@@ -1,0 +1,52 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+databaseName: normal_db
+dataSources:
+  ds_0:
+    password: 
+    url: jdbc:mock://127.0.0.1/demo_ds_0
+    username: root
+    minPoolSize: 1
+    maxPoolSize: 50
+  ds_1:
+    password: 
+    url: jdbc:mock://127.0.0.1/demo_ds_1
+    username: root
+    minPoolSize: 1
+    maxPoolSize: 50
+rules:
+- !SHARDING
+  defaultDatabaseStrategy:
+    standard:
+      shardingAlgorithmName: ds_inline
+      shardingColumn: order_id
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+  shardingAlgorithms:
+    ds_inline:
+      props:
+        algorithm-expression: ds_${order_id % 2}
+      type: INLINE
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+      logicTable: t_order

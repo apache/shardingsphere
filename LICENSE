@@ -215,4 +215,4 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is the standard Apache 2.0 license.
 
-    Maven Wrapper(mvnw, mvnw.cmd files in root path), https://github.com/takari/maven-wrapper   Apache 2.0
+    Maven Wrapper(mvnw, mvnw.cmd files in root path), https://github.com/apache/maven-wrapper, Apache 2.0

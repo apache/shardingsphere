@@ -17,53 +17,54 @@
 
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
+import com.google.common.base.Preconditions;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 /**
  * Example configuration validator.
  */
 public final class YamlExampleConfigurationValidator {
-
+    
     /**
      * Verify the entrance.
      *
-     * @param configuration configuration
+     * @param config Yaml example configuration
      */
-    public static void validate(final YamlExampleConfiguration configuration) {
-        Map<String, List<String>> configurationMap = Maps.newHashMap();
-        configurationMap.put("products", configuration.getProducts());
-        configurationMap.put("modes", configuration.getModes());
-        configurationMap.put("transactions", configuration.getTransactions());
-        configurationMap.put("features", configuration.getFeatures());
-        configurationMap.put("frameworks", configuration.getFrameworks());
-        validateConfigurationValues(configurationMap);
-        validateAccountConfigProps(configuration.getProps());
+    public static void validate(final YamlExampleConfiguration config) {
+        Map<String, List<String>> configMap = new HashMap<>(5, 1);
+        configMap.put("products", config.getProducts());
+        configMap.put("modes", config.getModes());
+        configMap.put("transactions", config.getTransactions());
+        configMap.put("features", config.getFeatures());
+        configMap.put("frameworks", config.getFrameworks());
+        validateConfigurationValues(configMap);
+        validateAccountConfigProperties(config.getProps());
     }
-
-    private static void validateConfigurationValues(final Map<String, List<String>> configurationMap) {
-        configurationMap.forEach((configItem, configValues) -> {
-            YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(configItem);
+    
+    private static void validateConfigurationValues(final Map<String, List<String>> configMap) {
+        configMap.forEach((key, value) -> {
+            YamlExampleConfigurationSupportedValue supportedValueEnum = YamlExampleConfigurationSupportedValue.of(key);
             Set<String> supportedValues = supportedValueEnum.getSupportedValues();
-            configValues.stream().forEach(v -> Preconditions.checkArgument(supportedValues.contains(v), getConfigValueErrorMessage(configItem, supportedValues, v)));
+            value.forEach(each -> Preconditions.checkArgument(supportedValues.contains(each), getConfigValueErrorMessage(key, supportedValues, each)));
         });
     }
-
-    private static void validateAccountConfigProps(final Properties props) {
-        List<String> accountConfigItemList = Lists.newArrayList("host", "port", "username", "password");
-        accountConfigItemList.forEach(item -> Preconditions.checkArgument(props.get(item) != null, getConfigItemErrorMessage(item)));
+    
+    private static void validateAccountConfigProperties(final Properties props) {
+        Collection<String> accountConfigItems = Arrays.asList("host", "port", "username", "password");
+        accountConfigItems.forEach(each -> Preconditions.checkArgument(null != props.get(each), getConfigItemErrorMessage(each)));
     }
-
+    
     private static String getConfigValueErrorMessage(final String configItem, final Set<String> supportedValues, final String errorValue) {
         return "Example configuration(in the config.yaml) error in the \"" + configItem + "\"" + ",it only supports:" + supportedValues.toString() + ",the currently configured value:" + errorValue;
     }
-
+    
     private static String getConfigItemErrorMessage(final String configItem) {
         return "Example configuration(in the config.yaml) error in the \"" + configItem + "\"" + ",the configuration item missed or its value is null";
     }

@@ -3,12 +3,12 @@ title = "Core Concept"
 weight = 1
 +++
 
-## high Availability Type
+## High Availability Type
 
-Apache ShardingSphere does not provide high availability solution of database, it reuses 3rd party high availability solution and auto-detect switch of primary and replica databases.
-Specifically, the ability of Apache ShardingSphere provided is database discovery, detect the primary and replica databases automatically, and updates the connection of compute nodes to the databases.
+Apache ShardingSphere does not provide database high availability capability. It senses the change of databases' primary-secondary relationship through a third-party provided high availability solution.
+Specifically, ShardingSphere is capable of finding databases, automatically sensing the primary/secondary database relationship, and correcting compute nodes' connections to databases.
 
-## Dynamic Readwrite-Splitting
+## Dynamic Read/Write Splitting
 
-When high availability and readwrite-splitting are used together, there is unnecessary to configure specific primary and replica databases for readwrite-splitting.
-Highly available data sources will update the primary and replica databases of readwrite-splitting dynamically, and route the query and update SQL correctly.
+When high availability and read/write splitting are adopted together, it is not necessary to configure specific primary and secondary databases for read/write splitting. 
+Highly available data sources dynamically correct the primary/secondary relationship of read/write splitting and properly channel read/write traffic.

@@ -3,19 +3,23 @@ title = "Hint"
 weight = 1
 +++
 
-## Introduction
+## Background
 
-Apache ShardingSphere uses ThreadLocal to manage sharding key value or hint route. 
-Users can add sharding values to HintManager, and those values only take effect within the current thread.  
-Apache ShardingSphere is able to add special comments in SQL to hint route too.
+Apache ShardingSphere uses ThreadLocal to manage sharding key values for mandatory routing. A sharding value can be added by programming to the HintManager that takes effect only within the current thread.
+Apache ShardingSphere can also do mandatory routing by adding comments to SQL.
 
-Usage of hint:
+Main application scenarios for Hint:
+- The sharding fields do not exist in the SQL and database table structure but in the external business logic.
+- Certain data operations are forced to be performed in given databases.
 
-* Sharding columns are not in SQL and table definition, but in external business logic.
-* Some operations forced to do in the primary database.
-* Some operations forced to do in the database chosen by yourself.
+## Procedure
 
-## Usage
+1. Call HintManager.getInstance() to obtain an instance of HintManager.
+2. Use HintManager.addDatabaseShardingValue, HintManager.addTableShardingValue to set the sharding key value.
+3. Execute SQL statements to complete routing and execution.
+4. Call HintManager.close to clean up the contents of ThreadLocal.
+
+## Sample
 
 ### Sharding with Hint
 
@@ -59,7 +63,7 @@ HintManager hintManager = HintManager.getInstance();
 - Use `hintManager.addDatabaseShardingValue` to add sharding key value of data source.
 - Use `hintManager.addTableShardingValue` to add sharding key value of table.
 
-> Users can use `hintManager.setDatabaseShardingValue` to add sharding in hint route to some certain sharding database without sharding tables.
+> Users can use `hintManager.setDatabaseShardingValue` to set sharding value in hint route to some certain sharding database without sharding tables.
 
 #### Clean Hint Values
 
@@ -98,87 +102,26 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
-### Primary Route with Hint
-
-#### Use manual programming
-
-##### Get HintManager
-
-Be the same as sharding based on hint.
-
-##### Configure Primary Database Route
-
-- Use `hintManager.setWriteRouteOnly` to configure primary database route.
-
-##### Clean Hint Value
-
-Be the same as data sharding based on hint.
-
-##### Codes:
-
-```java
-String sql = "SELECT * FROM t_order";
-try (HintManager hintManager = HintManager.getInstance();
-     Connection conn = dataSource.getConnection();
-     PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    hintManager.setWriteRouteOnly();
-    try (ResultSet rs = preparedStatement.executeQuery()) {
-        while (rs.next()) {
-            // ...
-        }
-    }
-}
-```
-
 #### Use special SQL comments
 
 ##### Terms of Use
 
 To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`.
-The comment format only supports `/* */` for now. The content needs to start with `ShardingSphere hint:`, and the attribute name needs to be `writeRouteOnly`.
+The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and optional attributes include:
+
+- `{table}.SHARDING_DATABASE_VALUE`: used to add the data source sharding value corresponding to `{table}` table, multiple attributes are separated by commas;
+- `{table}.SHARDING_TABLE_VALUE`: used to add the table sharding value corresponding to `{table}` table, multiple attributes are separated by commas.
+
+> Users can use `SHARDING_DATABASE_VALUE` to set sharding value in hint route to some certain sharding database without sharding tables.
 
 ##### Codes:
+
 ```sql
-/* ShardingSphere hint: writeRouteOnly=true */
+/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=1, t_order.SHARDING_TABLE_VALUE=1 */
 SELECT * FROM t_order;
 ```
-### Route to the specified database with Hint
 
-#### Use manual programming
+## Related References
 
-##### Get HintManager
-
-Be the same as sharding based on hint.
-
-##### Configure Database Route
-
-- Use `hintManager.setDataSourceName` to configure database route.
-
-##### Codes:
-
-```java
-String sql = "SELECT * FROM t_order";
-try (HintManager hintManager = HintManager.getInstance();
-     Connection conn = dataSource.getConnection();
-     PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    hintManager.setDataSourceName("ds_0");
-    try (ResultSet rs = preparedStatement.executeQuery()) {
-        while (rs.next()) {
-            // ...
-        }
-    }
-}
-```
-
-#### Use special SQL comments
-
-##### Terms of Use
-
-To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`. Currently, only support routing to one data source.
-The comment format only supports `/* */` for now. The content needs to start with `ShardingSphere hint:`, and the attribute name needs to be `dataSourceName`.
-
-##### Codes:
-```sql
-/* ShardingSphere hint: dataSourceName=ds_0 */
-SELECT * FROM t_order;
-```
+- [Core Feature: Data Sharding](/en/features/sharding/)
+- [Developer Guide: Data Sharding](/en/dev-manual/sharding/)

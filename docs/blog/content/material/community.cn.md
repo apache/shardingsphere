@@ -94,8 +94,8 @@ Apache 软件基金会提供了一个社区成熟度的评估模型，从代码�
 
 官网网址：https://shardingsphere.apache.org
 
-官网网址（中文）：https://shardingsphere.apache.org/index\_zh.html
+官网网址（中文）：https://shardingsphere.apache.org/index_zh.html
 
-GitHub：https://github.com/apache/incubator-shardingsphere
+GitHub：https://github.com/apache/shardingsphere
 
 订阅邮箱：dev-subscribe@shardingsphere.apache.org

@@ -52,7 +52,7 @@ public final class GenerateUtil {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void generateDirs(final Configuration templateConfig, final Map<String, String> dataModel, final Collection<String> paths, final String outputPath) throws IOException, TemplateException {
-        if (null == paths || 0 == paths.size()) {
+        if (null == paths || paths.isEmpty()) {
             new File(generatePath(templateConfig, dataModel, outputPath)).mkdirs();
             return;
         }
@@ -123,7 +123,7 @@ public final class GenerateUtil {
         for (int i = 0, size = 1 << len; i < size; i++) {
             StringBuilder eachCombBuilder = new StringBuilder();
             for (int j = 0; j < len; j++) {
-                if (((1 << j) & i) != 0) {
+                if (0 != ((1 << j) & i)) {
                     eachCombBuilder.append(combinations.get(j)).append(",");
                 }
             }

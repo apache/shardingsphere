@@ -1,55 +1,66 @@
 +++
-title = "Logging"
-weight = 4
+title = "Logging Configuration"
+weight = 8
 +++
 
-This chapter will introduce the detailed syntax of Logging which is used when users need to distinguish schemas or users in the log. To achieve a specific goal, following configurations can be added to logback.xml:
+## Background
 
-## To distinguish schemas in the same log
-```
-<appender name="schemaConsole" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-        <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{schema}] %logger{36} - %msg%n</pattern>
-    </encoder>
-</appender>
+ShardingSphere uses Logback for log management, and the Java SPI internally to provide default log configuration. Users can use XML files to configure customized log output. Proxy will preferentially read the log configuration provided in `logback.xml` in the `/conf` directory.
 
-<logger name="ShardingSphere-SQL" level="info" additivity="false">
-    <appender-ref ref="schemaConsole" />
-</logger>
-```
+The following steps describe how to customize the log configuration.
 
-## To distinguish schemas and users in the same log
-```
-<appender name="schemaConsole" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-        <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{schema}] [%X{user}] %logger{36} - %msg%n</pattern>
-    </encoder>
-</appender>
+## Procedure
 
-<logger name="ShardingSphere-SQL" level="info" additivity="false">
-    <appender-ref ref="schemaConsole" />
-</logger>
-```
+1. Create file `conf/logback.xml`
 
-## To split into different log files
-```
-<appender name="SiftingFile" class="ch.qos.logback.classic.sift.SiftingAppender">
-    <discriminator>
-        <key>schema</key>
-        <defaultValue>none</defaultValue>
-    </discriminator>
-    <sift>
-        <appender name="File-${taskId}" class="ch.qos.logback.core.FileAppender">
-            <file>logs/${schema}.log</file>
-            <append>true</append>
-            <encoder charset="UTF-8">
-                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{user}] %logger{36} - %msg%n</pattern>
-            </encoder>
-        </appender>
-    </sift>
-</appender>
+Customize the logger level and pattern, etc. according to your needs.
+> It is recommended to make modifications based on the configuration example
 
-<logger name="ShardingSphere-SQL" level="info" additivity="false">
-    <appender-ref ref="SiftingFile" />
-</logger>
+2. View logs
+
+After ShardingSphere-Proxy starts, the log will be output to the `logs` directory, select the target log file to view.
+
+### Sample
+
+```xml
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="com.zaxxer.hikari" level="error" />
+    
+    <logger name="com.atomikos" level="error" />
+    
+    <logger name="io.netty" level="error" />
+    
+    <root>
+        <level value="info" />
+        <appender-ref ref="console" />
+    </root>
+</configuration>
+
 ```

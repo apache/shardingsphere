@@ -16,5 +16,4 @@
 #
 
 <#assign package = feature?replace('-', '')?replace(',', '.') />
-
 org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.TestQueryAssistedShardingEncryptAlgorithm

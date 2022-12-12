@@ -15,10 +15,32 @@
   ~ limitations under the License.
   -->
   - !SHADOW
-    column: shadow
-    sourceDataSourceNames:
-      - ds
-      - ds1
-    shadowDataSourceNames:
-      - shadow_ds
-      - shadow_ds1
+    dataSources:
+      shadowDataSource:
+        productionDataSourceName: ds
+        shadowDataSourceName: shadow_ds
+    tables:
+      t_order:
+        dataSourceNames:
+          - shadowDataSource
+        shadowAlgorithmNames:
+          - user-id-insert-match-algorithm
+          - user-id-select-match-algorithm
+          - simple-hint-algorithm
+    shadowAlgorithms:
+      user-id-insert-match-algorithm:
+        type: REGEX_MATCH
+        props:
+          operation: insert
+          column: user_id
+          regex: "[1]"
+      user-id-select-match-algorithm:
+        type: REGEX_MATCH
+        props:
+          operation: insert
+          column: user_id
+          regex: "[1]"
+      simple-hint-algorithm:
+        type: SIMPLE_HINT
+        props:
+          foo: bar

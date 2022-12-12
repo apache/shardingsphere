@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="drop_cast_if_exists_integer_as_no_such_schema" value="DROP CAST IF EXISTS (INTEGER AS no_such_schema.bar) CASCADE;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_integer_as_no_such_type2" value="DROP CAST IF EXISTS (INTEGER AS no_such_type2) RESTRICT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_no_such_schema_as_integer" value="DROP CAST IF EXISTS (no_such_schema.foo AS INTEGER);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_no_such_type1_as_integer" value="DROP CAST IF EXISTS (no_such_type1 AS INTEGER);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_if_exists_text_as_text" value="DROP CAST IF EXISTS (text AS text);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_int4_as_casttesttype" value="DROP CAST (int4 AS casttesttype);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_text_as_casttesttype" value="DROP CAST (text AS casttesttype);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_cast_text_as_text" value="DROP CAST (text AS text);" db-types="PostgreSQL,openGauss" />
+</sql-cases>

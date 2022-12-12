@@ -155,7 +155,7 @@ AutoTable aims to be your butler for sharding configuration. All you need to do 
 
 To use AutoTable, you better configure rules first and then use `CREATE TABLE` to create tables. Old habits die hard but please change your old habit: create tables first and then configure rules. Now ShardingSphere is more like an access point of your distributed database, instead of middleware.
 
-**My Datasource Names Are Non-Contiguous or I Have Too Many Datasource Names. Can I Use AutoTable?**
+**My Data Source Names Are Non-Contiguous or I Have Too Many Data Source Names. Can I Use AutoTable?**
 
 Yes, you can. When you specify your datasources, their names are not required to be continuous. To solve the problem, you can use enumeration-expression and inline-expression at the same time:
 
@@ -190,7 +190,7 @@ ShardingSphere Twitter: [https://twitter.com/ShardingSphere]()
 
 ShardingSphere Slack Channel: [apacheshardingsphere.slack.com]()
 
-Contributor Guide：[https://shardingsphere.apache.org/community/en/contribute/]()
+Contributor Guide：[https://shardingsphere.apache.org/community/en/involved/]()
 
 ## Author
 

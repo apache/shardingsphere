@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-examples</artifactId>
         <version>${revision}</version>
     </parent>
     <artifactId>example-core</artifactId>
@@ -36,7 +36,7 @@
         <module>example-spring-mybatis</module>
         <module>example-spring-jpa</module>
     </modules>
-
+    
     <build>
         <pluginManagement>
             <plugins>
@@ -57,7 +57,7 @@
                                     </goals>
                                 </pluginExecutionFilter>
                                 <action>
-                                    <ignore></ignore>
+                                    <ignore />
                                 </action>
                             </pluginExecution>
                         </pluginExecutions>
@@ -66,5 +66,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>

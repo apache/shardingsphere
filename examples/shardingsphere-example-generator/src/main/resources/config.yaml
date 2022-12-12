@@ -15,17 +15,21 @@
 # limitations under the License.
 #
 
-# supported: jdbc,proxy
+# supported: JDBC, PROXY
 products:
   - jdbc
 
-# supported: memory,cluster-zookeeper,cluster-etcd,standalone-file
+# supported: cluster-zookeeper,cluster-etcd,standalone
 modes: 
-  - memory
+  - standalone
 
-# supported: local
+# supported: local, xa-atomikos, xa-narayana, base-seata
 transactions: 
   - local
+  - xa-atomikos
+  - xa-narayana
+  - xa-bitronix
+  - base-seata
 
 # supported: sharding,readwrite-splitting,encrypt,shadow,db-discovery
 features: 
@@ -49,4 +53,4 @@ props:
   host: localhost
   port: 3306
   username: root
-  password: root
+  password: 123456

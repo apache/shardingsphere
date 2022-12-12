@@ -3,17 +3,23 @@ title = "Route Engine"
 weight = 2
 +++
 
-It refers to the sharding strategy that matches databases and tables according to the parsing context and generates route path. SQL with sharding keys can be divided into single-sharding route (equal mark as the operator of sharding key), multiple-sharding route (IN as the operator of sharding key) and range sharding route (BETWEEN as the operator of sharding key). SQL without sharding key adopts broadcast route.
+Sharding strategies for databases and tables are matched based on the parsing context, and routing paths are generated. SQL with shard keys can be divided into the single-shard router (the shard key operator is equal), multi-shard router (the shard key operator is IN), and range router (the shard key operator is BETWEEN). SQL that does not carry shard keys adopts broadcast routing.
 
-Sharding strategies can usually be set in the database or by users. Strategies built in the database are relatively simple and can generally be divided into last number modulo, hash, range, tag, time and so on. More flexible, sharding strategies set by users can be customized according to their needs. Together with automatic data migration, database middle layer can automatically shard and balance the data without users paying attention to sharding strategies, and thereby the distributed database can have the elastic scaling-out ability. In ShardingSphere's roadmap, elastic scaling-out ability will start from 4.x version.
+Sharding strategies can usually be configured either by the built-in database or by the user. The built-in database scheme is relatively simple, and the built-in sharding strategy can be roughly divided into mantissa modulo, hash, range, label, time, etc.
+
+The sharding strategies configured by the user are more flexible. You can customize the compound sharding strategy based on the user's requirements. If it is used with automatic data migration, users do not need to work on the sharding strategies. 
+
+Sharding and data balancing can be automatically achieved by the middle layer of the database, and distributed databases can achieve elastic scalability. In the planning of ShardingSphere, the elastic scaling function will be available at V4.x.
 
 ## Sharding Route
 
-It is used in the situation to route according to the sharding key, and can be sub-divided into 3 types, direct route, standard route and Cartesian product route.
+The scenario that is routed based on shard keys is divided into three types: direct route, standard route, and Cartesian route. 
 
 ### Direct Route
-The conditions for direct route are relatively strict. It requires to shard through Hint (use HintAPI to appoint the route to databases and tables directly). On the premise of having database sharding but not table sharding, SQL parsing and the following result merging can be avoided. Therefore, with the highest compatibility, it can execute any SQL in complex situations, including sub-queries, self-defined functions. 
-Direct route can also be used in the situation where sharding keys are not in SQL. For example, set sharding key as `3`.
+
+The requirement for direct route is relatively harsh. It needs to be sharded by Hint (using HintAPI to specify routes to databases and tables), and it can avoid SQL parsing and subsequent result merge on the premise of having database shards but not table shards. 
+
+Therefore, it is the most compatible one and can execute any SQL in complex scenarios including sub-queries and custom functions. The direct route can also be used when shard keys are not in SQL. For example, set the key for database sharding to `3`,
 
 ```java
 hintManager.setDatabaseShardingValue(3);
@@ -38,37 +44,42 @@ try (
 ```
 
 ### Standard Route
-Standard route is ShardingSphere's most recommended sharding method. Its application range is the SQL that does not include joint query or only includes joint query between binding tables. When the sharding operator is equal mark, the route result will fall into a single database (table); when sharding operators are BETWEEN or IN, the route result will not necessarily fall into the only database (table). So one logic SQL can finally be split into multiple real SQL to execute. For example, if sharding is according to the odd number or even number of `order_id`, a single table query SQL is as the following:
+
+The standard route is the most recommended sharding method, and it is applicable to SQL that does not contain an associated query or only contains the associated query between binding tables. 
+
+When the sharding operator is equal, the routing result will fall into a single database (table). When the sharding operator is BETWEEN or IN, the routing result will not necessarily fall into a unique database (table).
+
+Therefore, logical SQL may eventually be split into multiple real SQL to be executed. For example, if the data sharding is carried out according to the odd and even numbers of order_id, the SQL for a single table query is as follows:
 
 ```sql
 SELECT * FROM t_order WHERE order_id IN (1, 2);
 ```
 
-The route result will be:
+Then the routing result should be:
 
 ```sql
 SELECT * FROM t_order_0 WHERE order_id IN (1, 2);
 SELECT * FROM t_order_1 WHERE order_id IN (1, 2);
 ```
 
-The complexity and performance of the joint query are comparable with those of single-table query. 
-For instance, if a joint query SQL that contains binding tables is as this:
+An associated query for a binding table is as complex as a single table query and they have the same performance. For example, if the SQL of an associated query that contains binding tables is as follows:
 
 ```sql
 SELECT * FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id  WHERE order_id IN (1, 2);
 ```
 
-Then, the route result will be:
+Then the routing result should be:
 
 ```sql
 SELECT * FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id  WHERE order_id IN (1, 2);
 SELECT * FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id  WHERE order_id IN (1, 2);
 ```
 
-It can be seen that, the number of divided SQL is the same as the number of single tables.
+As you can see, the number of SQL splits is consistent with that of a single table.
 
 ### Cartesian Route
-Cartesian route has the most complex situation, it cannot locate sharding rules according to the binding table relationship, so the joint query between non-binding tables needs to be split into Cartesian product combination to execute. If SQL in the last case is not configured with binding table relationship, the route result will be:
+
+The Cartesian route is the most complex one because it cannot locate sharding rules according to the relationship between binding tables, so associated queries between unbound tables need to be disassembled and executed as cartesian product combinations. If the SQL in the previous example was not configured with binding table relationships, the routing result would be:
 
 ```sql
 SELECT * FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id  WHERE order_id IN (1, 2);
@@ -77,21 +88,21 @@ SELECT * FROM t_order_1 o JOIN t_order_item_0 i ON o.order_id=i.order_id  WHERE 
 SELECT * FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id  WHERE order_id IN (1, 2);
 ```
 
-Cartesian product route has a relatively low performance, so it should be careful to use.
+The Cartesian route query has low performance, so think carefully when you use it.
 
 ## Broadcast Route
 
-For SQL without sharding key, broadcast route is used. According to SQL types, it can be divided into five types, schema & table route, database schema route, database instance route, unicast route and ignore route.
+For SQL that does not carry shard keys, broadcast routes are used. According to the SQL type, it can be further divided into five types: full database and table route, full database route, full instance route, unicast route, and block route.
 
-### Schema & Table Route
+### Full database and table route
 
-Schema & table route is used to deal with all the operations of physical tables related to its logic table, including DQL and DML without sharding key and DDL, etc. For example.
+The full database table route is used to handle operations on all real tables related to its logical tables in the database, including DQL and DML without shard keys, as well as DDL, etc. For example:
 
 ```sql
 SELECT * FROM t_order WHERE good_prority IN (1, 10);
 ```
 
-It will traverse all the tables in all the databases, match the logical table and the physical table name one by one and execute them if succeeded. After routing, they are:
+All tables in all databases will be traversed, matching logical tables and real table names one by one. The table that can be matched will be executed. The routing result would be:
 
 ```sql
 SELECT * FROM t_order_0 WHERE good_prority IN (1, 10);
@@ -100,45 +111,50 @@ SELECT * FROM t_order_2 WHERE good_prority IN (1, 10);
 SELECT * FROM t_order_3 WHERE good_prority IN (1, 10);
 ```
 
-### Database Schema Route
+### Full database route
 
-Database schema route is used to deal with database operations, including the SET database management order used to set the database and transaction control statement as TCL. In this case, all physical databases matched with the name are traversed according to logical database name, and the command is executed in the physical database. For example:
+The full database route is used to handle operations on the database, including database management commands of type SET for database settings and transaction control statements such as TCL. 
+
+In this case, all real database matching names are traversed based on the logical database name, and the command is executed in the real database. For example: 
 
 ```sql
 SET autocommit=0;
 ```
 
-If this command is executed in `t_order`, `t_order` will have 2 physical databases. And it will actually be executed in both `t_order_0` and `t_order_1`.
+If the command is executed in `t_order`, `t_order` which has two real databases, it is actually executed on both `t_order_0` and `t_order_1`.
 
-### Database Instance Route
+### Full instance route
 
-Database instance route is used in DCL operation, whose authorization statement aims at database instances. No matter how many schemas are included in one instance, each one of them can only be executed once. For example:
+Full instance route is used for DCL operations, and authorized statements are used for database instances. 
+
+No matter how many schemas are contained in an instance, each database instance is executed only once. For example: 
 
 ```sql
 CREATE USER customer@127.0.0.1 identified BY '123';
 ```
 
-This command will be executed in all the physical database instances to ensure customer users have access to each instance.
+This command will be executed on all real database instances to ensure that users can access each instance.
 
 ### Unicast Route
 
-Unicast route is used in the scenario of acquiring the information from some certain physical table. It only requires to acquire data from any physical table in any database. For example:
+The unicast route is used to obtain the information of a real table. It only needs to obtain data from any real table in any database. For example: 
 
 ```sql
 DESCRIBE t_order;
 ```
 
-The descriptions of the two physical tables, t_order_0 and t_order_1 of t_order have the same structure, so this command is executed once on any physical table.
+`t_order_0` and `t_order_1`, the two real tables of `t_order`, have the same description structure, so this command is executed only once on any real table.
 
-### Ignore Route
+### Block Route
 
-Ignore route is used to block the operation of SQL to the database. For example:
+Block route is used to block SQL operations on the database, for example:
 
 ```sql
 USE order_db;
 ```
-This command will not be executed in physical database. Because ShardingSphere uses logic Schema, there is no need to send the Schema shift order to the database.
 
-The overall structure of route engine is as the following:
+This command will not be executed in a real database because ShardingSphere uses the logical Schema and there is no need to send the Schema shift command to the database.
+
+The overall structure of the routing engine is as follows.
 
 ![Route Engine](https://shardingsphere.apache.org/document/current/img/sharding/route_architecture_en.png)

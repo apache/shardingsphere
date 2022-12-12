@@ -99,7 +99,7 @@ Combined with ShardingSphere’s remarkable pluggable architecture, developers c
 
 [ShardingSphere Slack Channel](https://apacheshardingsphere.slack.com/join/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 **Author**
 

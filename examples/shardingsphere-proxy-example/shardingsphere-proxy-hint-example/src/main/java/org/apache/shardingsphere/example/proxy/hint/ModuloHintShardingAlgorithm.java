@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.example.proxy.hint;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
+@Getter
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<String> {
     
+    private Properties props;
+    
     @Override
-    public void init() {
+    public void init(final Properties props) {
+        this.props = props;
     }
     
     @Override

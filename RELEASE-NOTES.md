@@ -1,3 +1,628 @@
+## 5.3.0
+
+### API Changes
+
+1. DistSQL: Refactor syntax API, please refer to the user manual
+1. Proxy: Change the configuration style of global rule, remove the exclamation mark
+1. Proxy: Allow zero-configuration startup, enable the default account root/root when there is no Authority configuration
+1. Proxy: Remove the default logback.xml and use API initialization
+1. JDBC: Remove the Spring configuration and use Driver + YAML configuration instead
+
+### Enhancements
+
+1. DistSQL: New syntax REFRESH DATABASE METADATA, refresh logic database metadata
+1. Kernel: Support DistSQL REFRESH DATABASE METADATA to load configuration from the governance center and rebuild MetaDataContext
+1. Support postgresql/openGauss setting transaction isolation level
+1. Scaling: Increase inventory task progress update frequency
+1. Scaling: DATA_MATCH consistency check support breakpoint resume
+1. Scaling: Support drop consistency check job via DistSQL
+1. Scaling: Rename column from sharding_total_count to job_item_count in job list DistSQL response
+1. Scaling: Add sharding column in incremental task SQL to avoid broadcast routing
+1. Scaling: Sharding column could be updated when generating SQL
+1. Scaling: Improve column value reader for DATA_MATCH consistency check
+1. DistSQL: Encrypt DistSQL syntax optimization, support like query algorithm
+1. DistSQL: Add properties value check when REGISTER STORAGE UNIT
+1. DistSQL: Remove useless algorithms at the same time when DROP RULE
+1. DistSQL: EXPORT DATABASE CONFIGURATION supports broadcast tables
+1. DistSQL: REGISTER STORAGE UNIT supports heterogeneous data sources
+1. Encrypt: Support Encrypt LIKE feature
+1. Automatically start distributed transactions when executing DML statements across multiple shards
+1. Kernel: Support client \d for PostgreSQL and openGauss
+1. Kernel: Support select group by, order by statement when column contains null values
+1. Kernel: Support parse RETURNING clause of PostgreSQL/openGauss Insert
+1. Kernel: SQL HINT performance improvement
+1. Kernel: Support mysql case when then statement parse
+1. Kernel: Supporting data source level heterogeneous database gateway
+1. (Experimental) Sharding: Add sharding cache plugin
+1. Proxy: Support more PostgreSQL datetime formats
+1. Proxy: Support MySQL COM_RESET_CONNECTION
+1. Scaling: Improve MySQLBinlogEventType.valueOf to support unknown event type
+1. Kernel: Support case when for federation
+
+### Bug Fix
+
+1. Scaling: Fix barrier node created at job deletion
+1. Scaling: Fix part of columns value might be ignored in DATA_MATCH consistency check
+1. Scaling: Fix jdbc url parameters are not updated in consistency check
+1. Scaling: Fix tables sharding algorithm type INLINE is case-sensitive
+1. Scaling: Fix incremental task on MySQL require mysql system database permission
+1. Proxy: Fix the NPE when executing select SQL without storage node
+1. Proxy: Support DATABASE_PERMITTED permission verification in unicast scenarios
+1. Kernel: Fix the wrong value of worker-id in show compute nodes
+1. Kernel: Fix route error when the number of readable data sources and weight configurations of the Weight algorithm are not equal
+1. Kernel: Fix multiple groups of readwrite-splitting refer to the same load balancer name, and the load balancer fails problem
+1. Kernel: Fix can not disable and enable compute node problem
+1. JDBC: Fix data source is closed in ShardingSphereDriver cluster mode when startup problem
+1. Kernel: Fix wrong rewrite result when part of logical table name of the binding table is consistent with the actual table name, and some are inconsistent
+1. Kernel: Fix startup exception when use SpringBoot without configuring rules
+1. Encrypt: Fix null pointer exception when Encrypt value is null
+1. Kernel: Fix oracle parsing does not support varchar2 specified type
+1. Kernel: Fix serial flag judgment error within the transaction
+1. Kernel: Fix cursor fetch error caused by wasNull change
+1. Kernel: Fix alter transaction rule error when refresh metadata
+1. Encrypt: Fix EncryptRule cast to TransparentRule exception that occurs when the call procedure statement is executed in the Encrypt scenario
+1. Encrypt: Fix exception which caused by ExpressionProjection in shorthand projection
+1. Proxy: Fix PostgreSQL Proxy int2 negative value decoding incorrect
+1. Proxy: PostgreSQL/openGauss support describe insert returning clause
+1. Proxy: Fix gsql 3.0 may be stuck when connecting Proxy
+1. Proxy: Fix parameters are missed when checking SQL in Proxy backend
+1. Proxy: Enable MySQL Proxy to encode large packets
+1. Kernel: Fix oracle parse comment without whitespace error
+1. DistSQL: Fix show create table for encrypt table
+
+### Refactor
+
+1. Scaling: Reverse table name and column name when generating SQL if it's SQL keyword
+1. Scaling: Improve increamental task failure handling
+1. Kernel: Governance center node adjustment, unified hump to underscore
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/22)
+
+
+## 5.2.1
+
+### New Feature
+
+1. Add ShardingSphere default system database to support global metadata management
+1. Support asynchronous data consistency check
+1. Added support for Consul governance center
+1. Added support for Nacos governance center
+1. Added support for the view function in the governance center
+
+### Enhancement
+
+1. SQL Federation engine adds ADVANCED executor and adapts to openGauss database
+1. Support ShardingSphere Proxy startup after read-write splitting read database is disabled
+1. SQL HINT supports force sharding route
+1. Show processlist supports showing Proxy connections (sleep, active)
+1. Optimized ShardingSphere-JDBC data source configuration error message
+1. ShardingSphere-JDBC supports SpringBoot 3.x version
+1. Support load MySQL, PostgreSQL, openGauss and SQLServer view metadata
+1. Update Snakeyaml to 1.33 and open YAML 3MB limit
+1. Reuse cached connections as possible when unicast sharding
+1. Support Parsing ALTER ROLE in Oracle
+1. Add support of ALTER RESOURCE COST for Oracle
+1. Support parsing Drop Materialized View in Oracle
+1. Support parsing DROP LIBRARY in Oracle
+1. Support parsing DROP JAVA in Oracle
+1. Support parsing DROP PLUGGABLE DATABASE in Oracle
+1. Support parsing DROP INDEX TYPE in Oracle
+1. Support Parsing ALTER PACKAGE in openGauss
+1. Support openGauss select offset, count statement parse and remove useless syntax in PostgreSQL grammar
+1. Add max_size to openGauss syntax
+1. Optimize alter view/drop view parse logic and fix alter view refresher bug
+1. Add sql parser error detail to ParseCancellationException
+1. Add support for parse OptOnConflict for postgres
+1. Enhance support for ALTER TABLE and ALTER VIEW in PostgreSQL
+1. Add a missing keyword in PostgreSQL Declare Statement
+1. Add json function support to mysql parser
+1. ShardingSphere-Proxy automatically adapts to cgroup memory limits in Docker environment
+1. Show migration status DistSQL respond new added error_message column
+1. Show migration status respond new added processed_records_count column
+1. Support MySQL 8 caching_sha2_password authentication in incremental dump
+1. Improve drop pipeline process configuration
+1. Support unique key table migration
+1. Support migrate table to new name table
+1. Improve thread pool usage in pipeline task and runner
+1. Support cancelable data consistency check
+1. DistSQL: When creating or altering readwrite-splitting rule, check duplicate write or read resources
+1. DistSQL: Add validity check for `ALTER SHARDING BINDING TABLE RULES`
+1. Standalone mode H2 support persistent metadata 
+1. Fix openGauss cursor execution in xa transaction
+1. Added transaction related exceptions
+
+### Bug Fix
+
+1. Generate proper placeholder for PostgreSQL when rewriting
+1. Fix opengauss update set parse exception
+1. Fix parse exception when execute insert statement with negative value
+1. Fix wrong connectDescriptorUrlPattern in OracleDataSourceMetaData
+1. Fix insert SQL garbled after sharding rewrote in special rules
+1. Fix exception when execute select * from information_schema.tables
+1. Fix exception when execute alter view rename
+1. Fix PostgreSQL check data source permission when using rolsuper
+1. DistSQL: fix NPE for `REFRESH TABLE METADATA` when there is no resource
+1. Fix Unmodified table metadata when modify rules
+1. Fix database discovery
+1. The MySQL.NORMAL_REPLICATION algorithm cannot find primary node"
+1. Fixed using etcd to build a cluster event not aware
+1. Fix NPE occurred when transaction management is not created
+1. Fix routing exception that occurs when the sharding value of the InlineShardingAlgorithm algorithm exceeds Integer
+
+### API Changes
+
+1. SQL HINT syntax format adjust to SQL-style format
+1. DistSQL: Remove syntax `COUNT DATABASE RULES`
+1. ShardingSphere mode remove overwrite configuration
+1. Agent: Optimize configuration of agent.yaml
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/21)
+
+## 5.2.0
+
+### New Feature
+
+1. Support SQL audit for sharding feature
+1. Support MySQL show processlist and kill process list id feature
+1. Scaling: Add dedicated DistSQL for data migration
+1. Scaling: Basic support migrate data to heterogeneous database
+1. DistSQL: New syntax `CREATE MIGRATION PROCESS CONFIGURATION`
+1. DistSQL: New syntax `ALTER MIGRATION PROCESS CONFIGURATION`
+1. DistSQL: New syntax `SHOW MIGRATION PROCESS CONFIGURATION`
+1. DistSQL: New syntax  `ADD MIGRATION SOURCE RESOURCE`
+1. DistSQL: New syntax `SHOW SQL_TRANSLATOR RULE`
+1. DistSQL: New syntax `CREATE SHARDING AUDITOR`
+1. DistSQL: New syntax `ALTER SHARDING AUDITOR`
+1. DistSQL: New syntax `SHOW SHARDING AUDIT ALGORITHMS`
+
+### Enhancement
+
+1. Support column visible feature for MySQL, Oracle, SQLServer and H2
+1. Support cartesian product configuration for read write splitting
+1. Support spring namespace and spring boot usage for sql translator
+1. Support JSR-310 Year and Month in IntervalShardingAlgorithm
+1. Support broadcast table update/delete limit statement
+1. Support create index on table(column) statement rewrite when config encrypt
+1. Support openGauss cursor, fetch, move, close statement for sharding, readwrite-splitting
+1. Support encrypt column rewrite when execute column is null in predicate
+1. Support encrypt show create table return logic columns
+1. Support create table with index statement rewrite when config encrypt
+1. Support PostgreSQL create operator statement parse
+1. Support PostgreSQL create materialized view statement parse
+1. Support PostgreSQL nested comments parse
+1. Support PostgreSQL alter subscription statement parse
+1. Support PostgreSQL create group statement parse
+1. Support PostgreSQL alter statictics statement parse
+1. Support PostgreSQL create foreign table statement parse
+1. Support PostgreSQL alter server statement parse
+1. Support PostgreSQL create foreign data wrapper statement parse
+1. Support PostgreSQL create event trigger statement parse
+1. Support PostgreSQL security label statement parse
+1. Support PostgreSQL reindex statement parse
+1. Support PostgreSQL reassign owned statement and refresh materialized view statement parse
+1. Support PostgreSQL prepare transaction statement parse
+1. Support PostgreSQL create collation statement parse
+1. Support PostgreSQL lock statement parse
+1. Support PostgreSQL alter rule statement parse
+1. Support PostgreSQL notify statement parse
+1. Support PostgreSQL unlisten statement parse
+1. Support Oracle alter function and alter hierarchy statement parse
+1. Support Oracle alter pluggable database statement parse
+1. Support Oracle alter materialized view log statement parse
+1. Support Oracle alter diskgroup statement parse
+1. Support Oracle alter operator statement parse
+1. Support oracle alter cluster statement parse
+1. Support oracle alter audit policy statement parse
+1. Support Oracle alter index type statement parse
+1. Support Oracle lock table statement parse
+1. Support Oracle alter java statement parse
+1. Support Oracle inline constraint statement parse
+1. Support openGauss geometric operator statement parse
+1. Optimize MySQL visible/invisible parse of create/alter table statements
+1. Support scope of variable prefixed with @@ in MySQL SET statement parse
+1. Support MySQL create procedure with create view parse
+1. Support column segments parse in create index on table statement
+1. Support openGauss cursor, fetch, move, close statement for sharding, readwrite-splitting
+1. Support encrypt column rewrite when execute column is null in predicate
+1. Support encrypt show create table return logic columns
+1. Support create table with index statement rewrite when config encrypt
+1. Support parsing ALTER LOCKDOWN PROFILE in Oracle
+1. Support parsing ALTER MATERIALIZED VIEW in Oracle
+1. Support parsing ALTER MATERIALIZED ZONEMAP in Oracle
+1. Support parsing ALTER LIBRARY in Oracle
+1. Support parsing ALTER INMEMORY JOIN GROUP in Oracle
+1. Support parsing DROP OPERATOR in Oracle
+1. Support parsing DROP RESTORE POINT in Oracle
+1. Support parsing CREATE RESTORE POINT in Oracle
+1. Support parsing DROP INMEMORY JOIN GROUP in Oracle
+1. Support parsing create_bit_xor_table in MySQL
+1. Support parsing MySQL DO statement
+1. Support parsing DropServer in openGauss
+1. Support parsing CREATE AGGREGATE In openGauss
+1. Support parsing ALTER ROUTINE in PostgreSQL
+1. Add PostgreSQL Create Cast Statement
+1. Add PostgreSQL Create Aggregate Statement
+1. Support fetch/move/close cursor statement in PostgreSQL
+1. Support Parsing ALTER PUBLICATION in PostgreSQL
+1. Add PostgreSQL Create Access Method Statement
+1. Support Parsing ALTER POLICY in PostgreSQL
+1. Support parsing ALTER OPERATOR in PostgreSQL
+1. Add PostgreSQL Copy Statement
+1. Add PostgreSQL Comment Statement
+1. Support listen statement in postgreSQL
+1. Support DECLARE cursor statement
+1. Add default serverConfig in helm charts
+1. Assemble openGauss JDBC Driver into Proxy distribution
+1. ShardingSphere-Proxy listen on specified IP addresses
+1. Support COM_STMT_SEND_LONG_DATA in MySQL Proxy
+1. SELECT VERSION() support alias in MySQL Proxy
+1. Fix openGauss Proxy could not be connected if no resource defined
+1. Support using JRE defined in JAVA_HOME in ShardingSphere-Proxy's startup script
+1. Avoid client blocked when OOM occurred in ShardingSphere-Proxy
+1. Support using c3p0 in ShardingSphere-JDBC
+1. Support SET NAMES with value quoted by double-quote
+1. Connection.prepareStatement with columns arguments is available in ShardingSphere-JDBC
+1. Scaling: Improve MySQL connect and reconnect
+1. Scaling: Fix MySQL json column may cause leak at incremental task
+1. Scaling: Add permission check for PostgreSQL data sources
+1. Scaling: Incremental migration support for MySQL MGR mode
+1. Scaling: Improve job progress persistence
+1. Scaling: Start job DistSQL execute and return synchronously
+1. Scaling: Inventory migration support table has primary key and unique key
+1. Scaling: Close unerlying ElasticJob when stopping job
+1. Scaling: Improve logical replication slot name generation for PostgreSQL and openGauss
+1. Scaling: Make query DistSQL could be executed when no database selected
+1. DistSQL: Add worker_id to the result set of `SHOW INSTANCE LIST` & `SHOW INSTANCE INFO`
+1. DistSQL: Improve the result of `EXPORT DATABASE CONFIG`
+1. DistSQL: Support more databases for `FORMAT SQL`
+1. DistSQL: Optimize the execution logic of `CREATE TRAFFIC RULE`
+1. DistSQL: Add paramter `writeDataSourceQueryEnabled` for RDL READWRITE_SPLITTING RULE.
+1. DistSQL: Support `assistEncryptor` for Encrypt RDL
+1. DistSQL: Add sharding algorithm type check when `CREATE SHARDING TABLE RULE`
+1. Support database discovery to configure multiple groups of high availability under the same logic database
+1. Support ShardingSphere-Proxy to start up under empty logic library
+1. Support for isolating EventBus events by instance
+1. Support the database to detect changes in the master node and restart the detection heartbeat task
+1. Support ShardingSphere-Proxy to generate new worker-id when re-registering in cluster mode
+1. Thrown exception when inserting expression value in shadow column on executing insert
+1. Support distributed transactions across multiple logical databases
+1. Support executing truncate in XA & PostgreSQL
+1. Support alter local transaction rule with DistSQL
+1. Support global transaction manager
+1. Delete support for branch transaction on proxy
+
+### Bug Fix
+
+1. Fix single table metadata refresh error caused by filtering DataSourceContainedRule
+1. Fix parsing exception caused by the null value of MySQL blob type
+1. Fix PostgreSQL/openGauss reset statement parse error
+1. Fix wrong parameter rewrite when use sharding and encrypt
+1. Fix the failed conversion of Month related classes on IntervalShardingAlgorithm
+1. Fix NullPointerException when execute select union statement contains subquery
+1. Fix wrong encrypt rewrite result due to incorrect order of metadata
+1. Fix MySQL trim function parse error
+1. Fix MySQL insert values with _binary parse error
+1. Fix MySQL syntax error cannot be thrown to client
+1. Avoid EventLoop blocked because of closing JDBC resources
+1. Correct server status flags returned by MySQL Proxy
+1. Fix a possible connection leak issue if Proxy client disconnected in transaction
+1. Fixed a possible consistency issue with the statement being executed when the Proxy client is disconnected
+1. Avoid pooled connection polluted by executing SET statements
+1. Make SHOW TABLES FROM work in ShardingSphere-Proxy
+1. Fix PostgreSQL DDL could not be executed by Extended Query
+1. Fix SHOW VARIABLES could not be executed in PostgreSQL Proxy without resource
+1. Fix FileNotFoundException when use ShardingSphere Driver with SpringBoot fatjar
+1. Scaling: Fix the problem that the table contains both primary key and unique index at inventory migration
+1. Scaling: Improve incremental migration, support the latest position in the middle of batch insert event
+1. Scaling: Fix the error caused by null field value in openGauss incremental migration
+1. DistSQL: Fix incorrect strategy name in result of `SHOW SHARDING TABLE RULES`
+1. DistSQL: Fix current rule config is modified in advance when `ALTER SHARDING TABLE RULE`
+1. DistSQL: Fix connection leak when `ALTER RESOURCE`
+1. DistSQL: Fix `CREATE TRAFFIC RULE` failed when load balance algorithm is null
+1. Fix that the monitoring heartbeat task was not stopped when the database was discovered and the logical library was deleted
+1. Fix cluster mode ShardingSphere-JDBC load all logic database
+1. Fix worker-id generated by SnowflakeKeyGenerateAlgorithm in cluster mode may exceed the maximum value
+1. Fix `DistSQL` adding shadow algorithm exception without shadow data source
+1. Fix cross-database data source confusion caused by same data source name in multiple logical databases
+1. Fix RUL DistSQL execution failure in transaction
+1. Fix begin for PostgreSQL & openGauss
+1. Agent: Fixed the error of null value in contextManager when collecting metric data
+
+### API Changes
+
+1. Remove SQL passthrough to data source feature
+1. Add new assistedQueryEncryptorName and remove QueryAssistedEncryptAlgorithm interface
+1. Refactor readwrite-splitting api to improve user experience
+1. Remove check-duplicate-table-enabled configuration
+1. Remove useless config item show-process-list-enabled configuration
+1. Scaling: Change keyword for part of data migration DistSQL
+1. Scaling: Redesign part of data migration DistSQL
+1. DistSQL: Unify parameter type specification
+1. DistSQL: Split `SHOW INSTANCE MODE` to `SHOW MODE INFO` and `SHOW INSTANCE INFO`
+1. DistSQL: Change `DROP SCALING jobId` to `CLEAN MIGRATION jobId`
+1. DistSQL: Remove `COUNT INSTANCE RULES`
+1. Add database found that high availability supports all the slave libraries to go offline, and the main library undertakes the read traffic configuration
+1. SnowflakeKeyGenerateAlgorithm supports configuring worker-id in standalone mode
+1. Replace `sourceDataSourceName` with `productionDataSourceName` in Shadow API Configuration
+1. Authority: Remove deprecated native authority provider
+
+### Refactor
+
+1. ShardingSphere metadata refactoring for splitting actual metadata and logical metadata
+1. Use ConnectionContext, QueryContext to remove ThreadLocal in FetchOrderByValueQueuesHolder, TrafficContextHolder, SQLStatementDatabaseHolder and TransactionHolder
+1. Modify the default value of the ShardingSphere-Proxy version in the helm chart
+1. Docker container will exit if ShardingSphere-Proxy failed to startup
+1. Helm Charts in ShardingSphere repository are transferred to sub-project shardingsphere-on-cloud
+1. Scaling: Plenty of refactor for better code reuse
+1. DistSQL: Add a new category named RUL
+1. Refactor the schedule module and split it into cluster schedule and standalone schedule
+1. Remove memory mode, keep standalone mode and cluster mode
+1. Refactoring metadata table loading logic and persistence logic
+1. Refactoring distributed locks to retain the most concise interface design
+1. Refactor : Unify The Creation for Proxy Containers in IT from ENV Modules
+1. Refactor : Unify The Configuration for container created by testcontainer
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/20)
+
+## 5.1.2
+
+### New Feature
+
+1. Kernel: Alpha version to support SQL dialect translate for MySQL and PostgreSQL
+1. Kernel: Support custom schema for PostgreSQL and openGauss
+1. Kernel: Support create/alter/drop view statement for PostgreSQL and openGauss
+1. Kernel: Support openGauss cursor statement
+1. Kernel: Support use customize system database
+1. Kernel: Support get openGauss and MySQL create SQL
+1. Kernel: Support get postgres create SQL
+1. Proxy: Official support for quickly deploying a ShardingSphere-Proxy cluster with a ZooKeeper cluster in Kubernetes using Helm
+1. JDBC: Support ShardingSphere JDBC Driver
+1. Scaling: Support PostgreSQL auto create table
+1. Scaling: Support scaling for table with customized schema in PostgreSQL and openGauss
+1. Scaling: Support scaling for table with text primary key and without integer primary key
+1. Mode: Registry center supports PG/openGauss three-level structure
+1. Mode: Registry center supports database-level distributed lock
+
+### Enhancement
+
+1. Kernel: Support copy statement for PostgreSQL and openGauss
+1. Kernel: Support alter/drop index statement for PostgreSQL
+1. Kernel: Support update force index statement for MySQL
+1. Kernel: Support create/alter/drop schema for openGauss
+1. Kernel: Optimize RoundRobinReplicaLoadBalanceAlgorithm and RoundRobinTrafficLoadBalanceAlgorithm logic
+1. Kernel: Optimize metadata loading logic when frontendDatabaseType and backendDatabaseType are different
+1. Kernel: Refactor meta data load logic
+1. Kernel: Optimize show processlist statement
+1. Kernel: Improve performance about large tables loaded
+1. Kernel: Support execute comment statement
+1. Kernel: Support view in sharding rule
+1. Kernel: Support parsing CREATE ROLLBACK SEGMENT in Oracle
+1. Kernel: Support Parsing DROP TYPE in openGauss
+1. Kernel: Support Parsing ALTER TYPE in openGauss
+1. Kernel: Support parsing DROP DISKGROUP in Oracle
+1. Kernel: Support parsing CREATE DISKGROUP in Oracle
+1. Kernel: Support parsing DROP FLASHBACK ARCHIVE in Oracle
+1. Kernel: Support Parsing CHECKPOINT in openGauss
+1. Kernel: Support parsing CREATE FLASHBACK ARCHIVE in Oracle
+1. Kernel: Add PostgreSQL Close Statement
+1. Kernel: Support Parsing DROP CAST in openGauss
+1. Kernel: Support parsing CREATE CAST in openGauss
+1. Kernel: Support parsing CREATE CONTROL FILE in Oracle
+1. Kernel: Support Parsing DROP DIRECTORY in openGauss
+1. Kernel: Support parsing ALTER DIRECTORY in openGauss
+1. Kernel: Support parsing CREATE DIRECTORY in openGauss
+1. Kernel: Add PostgreSQL Checkpoint Statement
+1. Kernel: Support parsing DROP SYNONYM in openGauss
+1. Kernel: Support parsing CREATE SYNONYM in openGauss
+1. Kernel: Support parsing ALTER SYNONYM in openGauss
+1. Kernel: Add PostgreSQL CALL Statement
+1. Kernel: Support parsing CREATE PFILE in Oracle
+1. Kernel: Support parsing CREATE SPFILE in Oracle
+1. Kernel: Support parsing ALTER SEQUENCE in Oracle
+1. Kernel: Support parsing CREATE CONTEXT in Oracle
+1. Kernel: Support Parsing ALTER PACKAGE in oracle
+1. Kernel: Support parsing CREATE SEQUENCE in Oracle
+1. Kernel: Support parsing ALTER ATTRIBUTE DIMENSION in Oracle
+1. Kernel: Support parsing ALTER ANALYTIC VIEW in Oracle
+1. Kernel: Use ShardingSphere SPI in SQLVisitorFacade
+1. Kernel: Use ShardingSphere SPI in DatabaseTypedSQLParserFacade
+1. Kernel: Support parsing ALTER OUTLINE in Oracle
+1. Kernel: Support parsing DROP OUTLINE in Oracle
+1. Kernel: Support parsing drop edition in oracle
+1. Kernel: Support WITH Common Table Expression of SQLServer
+1. Kernel: Exclude parenthesis from SubquerySegment's start and stop index in withClause
+1. Kernel: Refactor JoinTableSegment
+1. Kernel: Support parsing DROP SYNONYM in Oracle
+1. Kernel: Support parsing CREATE DIRECTORY in Oracle
+1. Kernel: Support parsing CREATE SYNONYM in Oracle
+1. Kernel: Support for XmlNamespaces Clause of SQLServer SELECT Statement
+1. Kernel: Support parsing Alter Database Dictionary in Oracle
+1. Kernel: Support FOR Clause of SQLServer SELECT Statement
+1. Kernel: Support Parsing ALTER DATABASE LINK in Oracle
+1. Kernel: Support CREATE EDITION Parsing in Oracle
+1. Kernel: Support parsing ALTER TRIGGER in Oracle
+1. Kernel: Add SQLServer REVERT Statement
+1. Kernel: Support Parsing DROP TEXT SEARCH in PostgreSQL
+1. Kernel: Add drop server for PostgreSQL
+1. Kernel: Support Parsing ALTER VIEW in Oracle
+1. Kernel: Add drop access method for PostgreSQL
+1. Kernel: Support Parsing DROP ROUTINE in PostgreSQL
+1. Kernel: Proofread SQLServer DROP USER Statement
+1. Kernel: Support parsing DROP TRIGGER in Oracle
+1. Kernel: Support parsing Drop subscription in PostgreSQL
+1. Kernel: Add drop operator class for PostgreSQL
+1. Kernel: Support parsing DROP PUBLICATION in PostgreSQL
+1. Kernel: Support Parsing DROP VIEW in Oracle
+1. Kernel: Support Parsing DROP TRIGGER in PostgreSQL
+1. Kernel: Support Parsing DROP DIRECTORY in Oracle
+1. Kernel: Support Parsing DROP STATISTICS for PostgreSQL
+1. Kernel: Add drop type SQL parser for PostgreSQL
+1. Kernel: Support Parsing DROP RULE in PostgreSQL
+1. Kernel: Proofread SQLServer ALTER LOGIN Statement
+1. Kernel: Support parsing PostgreSQL DROP FOREIGN DATA WRAPPER
+1. Kernel: Small changes to PostgreSQL DROP EVENT TRIGGER statement
+1. Proxy: ShardingSphere-Proxy MySQL supports receiving MySQL packet more than 16 MB
+1. Proxy: Supports netty parameter ChannelOption.SO_BACKLOG configurable in ShardingSphere-Proxy
+1. Proxy: Optimize so-reuseaddr in netty to solve the problem of port occupied
+1. Proxy: Docker image of ShardingSphere-Proxy supports aarch64 platform
+1. Proxy: Make server version configurable in ShardingSphere-Proxy MySQL
+1. Proxy: Supports more character sets in ShardingSphere-Proxy PostgreSQL/openGauss
+1. Proxy: Make default port configurable in ShardingSphere-Proxy
+1. Scaling: Compatible with HA ports for openGauss:3.0 when thread_pool enabled
+1. Scaling: Optimize ZooKeeper event handling in PipelineJobExecutor to avoid blocking ZooKeeper events
+1. Scaling: Make table name case-insensitive in whole process
+1. Scaling: Improve replication slot cleanup for PostgreSQL and openGauss
+1. Scaling: Improve lock protection for job preparation
+1. Scaling: Support PostgreSQL insert on conflict do update
+1. Scaling: Do not cache data source in GlobalDataSourceRegistry to avoid possible shared resource close issue
+1. Scaling: Reuse data source pool as more as possible to reduce working database connections
+1. DistSQL: `REFRESH TABLE METADATA` supports specifying PostgreSQL's schema
+1. DistSQL: `ALTER SHARDING TABLE RULE` add validation of binding table
+1. Mode: ShardingSphere-JDBC supports configuring database connection name
+1. Distributed Transaction: DistSQL is prohibited from executing within a transaction
+1. Distributed Transaction: autocommit = 0, DDL part of DML will automatically open the transaction
+
+### Bug Fix
+
+1. Kernel: Fix parsing error about show statement for PostgreSQL and openGauss
+1. Kernel: Fix parsing error about time extract function for for PostgreSQL and openGauss
+1. Kernel: Fix parsing error about select mod function for for PostgreSQL and openGauss
+1. Kernel: Fix PSQLException when execute join statement with multi schema in readwrite scenario
+1. Kernel: Fix wrong route result when execute create schema statement in encrypt scenario
+1. Kernel: Fix npe when execute drop schema if exist statement
+1. Kernel: Fix wrong route result when execute SELECT LAST_INSERT_ID() AS id; statement
+1. Kernel: Fix npe when execute use database when database doesn't contains datasource
+1. Kernel: Fix create function with set var
+1. Proxy: Fix NPE caused by column's case unmatched in PostgreSQLComDescribeExecutor
+1. Proxy: Complete command tags for schema DDL in ShardingSphere-Proxy PostgreSQL / openGauss
+1. Scaling: Fix MySQL unsigned type null value cause error during increment task
+1. Scaling: Fix resource leak caused by error occurred when creating DataSource in ShardingSphere-Scaling
+1. Scaling: Fix ShardingSphereDataSource creation ignoring other rules
+1. Scaling: Fix on preparation job could not be stopped
+1. Scaling: Fix data source property url and jdbcUrl compatibility
+1. Scaling: Fix openGauss logical replication slot creation, avoid possible incremental data loss
+1. Scaling: Update local job status before persisting job status to registry center, make sure it won't be overwritten later
+1. Scaling: Handling null value in TestDecodingPlugin for PostgreSQL
+1. DistSQL: Fix `SET VARIABLE` modification not taking effect in stand-alone and memory mode
+1. DistSQL: Fix the inconsistency between `SHOW INSTANCE LIST` display data and actual data
+1. DistSQL: Fix capitalization sensitivity in sharding DistSQL
+1. Mode: Fix the new version metadata lost data after the Scaling changes the table sharding rules
+1. Distributed Transaction: Fix getIndexInfo with catalog
+
+### API Changes
+
+1. DistSQL: Change `EXPORT SCHEMA CONFIG`  to `EXPORT DATABASE CONFIG`
+1. DistSQL: Change `IMPORT SCHEMA CONFIG` to `IMPORT DATABASE CONFIG`
+1. DistSQL: Change `SHOW SCHEMA  RESOURCES` to `SHOW DATABASE RESOURCES`
+1. DistSQL: Change `COUNT SCHEMA RULES` to `COUNT DATABASE RULES`
+1. Mode: Adjust db-discovery algorithm configuration
+1. Authority: Authority provider `ALL_PRIVILEGES_PERMITTED` updated to `ALL_PERMITTED`
+1. Authority: Authority provider `SCHEMA_PRIVILEGES_PERMITTED` updated to `DATABASE_PERMITTED`
+
+### Refactor
+
+1. Scaling: Refactor JobConfiguration, prepare for different types of jobs reuse and extension
+1. Mode: Optimize compute node structure of the registry center
+1. Mode: Use uuid instead of ip@port as instance id
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/19)
+
+## 5.1.1
+
+### New Feature
+1. Kernel: support alter materialized view for PostgreSQL
+1. Kernel: support declare for PostgreSQL
+1. Kernel: support discard for PostgreSQL
+1. Kernel: Add mode to parser to support $$ in PostgreSQL
+1. Kernel: Support MySQL create tablespace statement parse
+1. Scaling: Implement stop source writing and restore source writing
+1. Scaling: Support partial tables scale-out
+1. DistSQL: New DistSQL syntax: `SHOW UNUSED RESOURCES`
+1. Mode: Added persistent `XA Recovery Id` to Governance Center
+1. Mode: Database discovery adds delayed master-slave delay function
+1. Distributed Transaction: Add savepoint support for ShardingSphere proxy
+1. Distributed Transaction: Support auto rollback when report exception in transaction block for PostgreSQL and openGauss
+1. Distributed Transaction: Make it is easy to use with Narayana
+1. Distributed Transaction: Add savepoint support for ShardingSphere-JDBC
+
+### Enhancement
+1. Kernel: Refactor kernel to improve performance
+1. Proxy: Reduce Docker image size of ShardingSphere-Proxy
+1. Proxy: ShardingSphere-Proxy supports set names statements
+1. Proxy: ShardingSphere-Proxy MySQL supports multi statements
+1. Scaling: Only one proxy node could do data consistency check in proxy cluster
+1. Scaling: Replace scaling input and output config fields type from int to Integer
+1. Scaling: Update MySQL checksum SQL
+1. Scaling: Improve scaling job progress deletion in reset and progress check before starting job
+1. Scaling: Improve `FinishCheckJob` data consistency check when target tables already have the same data as source tables
+1. Scaling: Break scaling job ASAP when there is unsupported table since primary key
+1. Scaling: Reuse `ClusterPersistRepository` of proxy in `PipelineAPIFactory`
+1. Scaling: Update jobId generation algorithm, and make it support idempotency
+1. DistSQL: Support configuration data type and length when CREATE/ALTER ENCRYPT RULE
+1. DistSQL: Unify the display results of `SHOW ALL VARIABLES` and `SHOW VARIABLE`
+1. DistSQL: Remove the effect of binding order when `DROP BINDING TABLE RULES`
+1. DistSQL: Add column `mode_type` in the result of `SHOW INSTANCE LIST`
+1. DistSQL: Add validation to the mode when `ENABLE/DISABLE INSTANCE`
+1. DistSQL: Check if the rule is in used when `DROP READWRITE_SPLITTING RULE`
+1. DistSQL: Check duplicate resource names when `CREATE READWRITE_SPLITTING RULE`
+1. DistSQL: Add column `delay_time` to the result of `SHOW READWRITE_SPLITTING READ RESOURCES`
+1. DistSQL: Support `IF EXISTS` when `DROP RULE`
+1. DistSQL: Optimize the prompt information of connection failure when `ADD/ALTER RESOURCE`
+1. Mode: Add schema-level global distributed locks
+1. Mode: Add schema version number to support batch execution of DistSQL
+1. Mode: Persistent metadata optimization in cluster mode
+1. Mode: The database discovery add the `schemaName` identifier when create a JOB
+
+### Refactor
+
+1. Kernel: Refactor test case for encrypt
+1. Kernel: Refactor metadata to support PostgreSQL database and schema
+1. Scaling: Remove HikariCP dependency in pipeline modules
+1. Mode: Refactor governance center storage node structure
+1. Mode: Refactor governance center meta data structure
+1. Mode: Adjust the database discovery MGR module to MySQL module
+
+### Bug Fix
+1. Kernel: Fix function with no parameter
+1. Kernel: Fix `InsertValueContext.getValue` cast exception
+1. Kernel: Fix aggregate distinct column error
+1. Kernel: Fix NPE when rewrite parameter with schema
+1. Kernel: Fix NPE caused by `GeneratedKeysResultSet` not return `columnName` in read-write splitting
+1. Kernel: Fix show tables statement loses part of the single table
+1. Kernel: Fix ModShardingAlgorithm wrong route result when exist same suffix table
+1. Kernel: Fix sql parse error when contains key in assignment clause and optimize index parse
+1. Kernel: Fix NumberFormatException when sharding algorithm config number props
+1. Kernel: Fix wrong metadata when config single dataSource for read-write splitting
+1. Kernel: Fix statement close exception when use `BatchPreparedStatementExecutor`
+1. Kernel: Fix rewrite lowercase logic when sql contains shorthand projection
+1. Kernel: Fix NullPointerException when start up proxy with memory mode
+1. Proxy: Fix literals may be replaced by mistake in PostgreSQL/openGauss protocol
+1. Proxy: Fix ShardingSphere-Proxy PostgreSQL with multi-schema cannot be connected by PostgreSQL JDBC Driver 42.3.x
+1. Proxy: Fix timestamp nanos inaccurate in ShardingSphere-Proxy MySQL
+1. Proxy: Complete ShardingSphere-Proxy PostgreSQL codec for numeric in binary format
+1. Proxy: Potential performance issue and risk of OOM in ShardingSphere-JDBC
+1. Proxy: Fix Operation not allowed after ResultSet closed occasionally happens in ShardingSphere-Proxy MySQL
+1. Proxy: Fix NPE causes by ShardingSphere-JDBC executeBatch without addBatch
+1. Scaling: Fix failed or stopped job could not be started by DistSQL except restarting proxy
+1. DistSQL: Fix parsing exception for inline expression when `CREATE SHARDING TABLE RULE`
+1. DistSQL: Fix parsing exception when password is keyword `password` in `ADD RESOURCE` statement
+1. Mode: Fixed loss of compute nodes due to ZooKeeper session timeout
+1. Mode: Fixed the case of the table name in the governance center
+1. Mode: DistSQL enable disable instance refresh in-memory compute node status
+1. Mode: Fixed database discovery unable to create Rule through DistSQL
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/18)
+
 ## 5.1.0
 
 ### New feature

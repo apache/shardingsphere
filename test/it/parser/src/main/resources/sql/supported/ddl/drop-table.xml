@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="drop_table" value="DROP TABLE t_log" />
+    <sql-case id="drop_table_if_exists" value="DROP TABLE IF EXISTS t_log" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="drop_temporary_table_if_exists" value="DROP TEMPORARY TABLE IF EXISTS t_temp_log" db-types="MySQL" />
+    <sql-case id="drop_table_restrict" value="DROP TABLE t_log RESTRICT" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="drop_table_cascade" value="DROP TABLE t_log CASCADE" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="drop_table_cascade_constraints_and_purge" value="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" db-types="Oracle" />
+    <sql-case id="drop_table_purge_with_schema" value="DROP TABLE sharding_db.t_log PURGE" db-types="Oracle" />
+    <sql-case id="drop_table_with_space" value="    DROP TABLE
+        t_order    " />
+    <sql-case id="drop_table_with_back_quota" value="DROP TABLE `t_order`" left-delimiter="`" right-delimiter="`" db-types="MySQL" />
+    <sql-case id="drop_tables" value="DROP TABLE t_order_item, t_order" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_order" db-types="MySQL" />
+    <sql-case id="drop_table_with_quota" value="DROP TABLE &quot;t_order&quot;" db-types="Oracle" />
+    <sql-case id="drop_table_with_double_quota" value="DROP TABLE &quot;t_order&quot;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_table_with_bracket" value="DROP TABLE [t_order]" db-types="SQLServer" />
+    <sql-case id="drop_bit_xor_table" value="drop table BIT_XOR" db-types="MySQL" />
+</sql-cases>

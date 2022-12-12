@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <cache-index sql-case-id="cache_index_single_table" name="hot_cache_index">
+        <table-index start-index="12" stop-index="18">
+            <table name="t_order" start-index="12" stop-index="18" />
+        </table-index>
+    </cache-index>
+    <cache-index sql-case-id="cache_index_multiple_table" name="hot_cache_index">
+        <table-index start-index="12" stop-index="18">
+            <table name="t_order" start-index="12" stop-index="18" />
+        </table-index>
+        <table-index start-index="21" stop-index="26">
+            <table name="t_user" start-index="21" stop-index="26" />
+        </table-index>
+    </cache-index>
+    <cache-index sql-case-id="cache_index_single_table_multiple_index" name="hot_cache_index">
+        <table-index start-index="12" stop-index="39">
+            <table name="t_order" start-index="12" stop-index="18" />
+            <index name="idx_a" start-index="27" stop-index="31" />
+            <index name="idx_b" start-index="34" stop-index="38" />
+        </table-index>
+    </cache-index>
+    <cache-index sql-case-id="cache_index_multiple_table_multiple_index" name="hot_cache_index">
+        <table-index start-index="12" stop-index="36">
+            <table name="t_order" start-index="12" stop-index="18" />
+            <index name="idx_order" start-index="27" stop-index="35" />
+        </table-index>
+        <table-index start-index="39" stop-index="61">
+            <table name="t_user" start-index="39" stop-index="44" />
+            <index name="idx_user" start-index="53" stop-index="60" />
+        </table-index>
+    </cache-index>
+    <cache-index sql-case-id="cache_index_all_partition" name="hot_cache_index">
+        <partition-definition start-index="12" stop-index="33">
+            <table name="t_order" start-index="12" stop-index="18" />
+        </partition-definition>
+    </cache-index>
+    <cache-index sql-case-id="cache_index_multiple_partition" name="hot_cache_index">
+        <partition-definition start-index="12" stop-index="36">
+            <table name="t_order" start-index="12" stop-index="18" />
+            <partition name="p0" start-index="31" stop-index="32" />
+            <partition name="p1" start-index="35" stop-index="36" />
+        </partition-definition>
+    </cache-index>
+</sql-parser-test-cases>

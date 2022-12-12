@@ -286,7 +286,7 @@ Apache ShardingSphere 在 2016 年 1 月 17 日在 GitHub 平台首次开源，�
 
 **项目地址：**
 
-https://github.com/apache/incubator-shardingsphere
+https://github.com/apache/shardingsphere
 
 ### 6 作者介绍
 

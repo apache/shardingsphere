@@ -26,8 +26,8 @@ function getScrollBarWidth() {
 };
 
 function setMenuHeight() {
-    $('#sidebar .highlightable').height($('#sidebar').innerHeight() - $('#header-wrapper').height() - 40);
-    $('#sidebar .highlightable').perfectScrollbar('update');
+    $('#sidebar .leftMenu').height($(window).innerHeight() - $('#header-wrapper').height() - 240);
+    $('#sidebar .leftMenu').perfectScrollbar('update');
 }
 
 function fallbackMessage(action) {
@@ -49,7 +49,7 @@ function fallbackMessage(action) {
 
 // for the window resize
 $(window).resize(function() {
-    // setMenuHeight();
+    setMenuHeight();
 });
 
 // debouncing function from John Hann
@@ -90,8 +90,8 @@ jQuery(document).ready(function() {
     });
 
     var sidebarStatus = searchStatus = 'open';
-    $('#sidebar .highlightable').perfectScrollbar();
-    // setMenuHeight();
+    $('#sidebar .leftMenu').perfectScrollbar();
+    setMenuHeight();
 
     jQuery('#overlay').on('click', function() {
         jQuery(document.body).toggleClass('sidebar-hidden');
@@ -376,7 +376,40 @@ $(function() {
         root: 'section#body'
     });
 
-   
+    var logo = $('header img')
+    var logosrc = logo.attr('src')
+    var loadTheme = localStorage.getItem('ss-theme')
+    if(loadTheme){
+        $('body').attr("class", loadTheme+'-theme');
+        $('.change-theme span').removeClass('active')
+        $('.change-theme span[data-item='+loadTheme+']').addClass('active')
+        $('.change-theme span[data-item='+loadTheme+']').addClass(loadTheme)
+    }  
+    if(/dark|deep/.test(loadTheme)){
+        logo.attr('src', logosrc.replace('logo_v3','logo_v2'))
+    }else{
+        logo.attr('src', logosrc.replace('logo_v2','logo_v3'))
+    }
+
+    $('.change-theme span').click(function(){
+        var _this = $(this),
+        theme =  _this.data('item')
+        if(theme){
+            $('body').attr("class", theme+'-theme');
+            localStorage.setItem('ss-theme', theme)
+        }else{
+            $('body').attr("class", '');
+            localStorage.setItem('ss-theme', '')
+        }
+        if(/dark|deep/.test(theme)){
+            logo.attr('src', logosrc.replace('logo_v3','logo_v2'))
+        }else{
+            logo.attr('src', logosrc.replace('logo_v2','logo_v3'))
+        }
+        _this.addClass('active')
+        _this.addClass(theme)
+        _this.siblings().attr('class','')
+    })
 });
 
 window.onload = function(){

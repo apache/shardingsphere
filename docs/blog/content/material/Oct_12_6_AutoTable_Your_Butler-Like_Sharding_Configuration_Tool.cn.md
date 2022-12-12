@@ -141,7 +141,7 @@ AutoTable 支持全部的自动分片算法，包括：
 * AUTO_INTERVAL：自动时间段分片算法
 
 关于以上算法的更多详细信息，请阅读 **Apache ShardingSphere 官方文档-自动分片算法：**
-https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/
+https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/sharding/
 
 除内置算法外，用户也可以通过 SPI 扩展的方式加载自定义的分片算法，满足更加定制化的分片需求。
 
@@ -196,4 +196,4 @@ https://github.com/apache/shardingsphere/issues
 
 **贡献指南：**
 
-https://shardingsphere.apache.org/community/cn/contribute/
+https://shardingsphere.apache.org/community/cn/involved/

@@ -8,7 +8,7 @@ chapter = true
 
 Apache ShardingSphere is an Apache Top-Level project and is one of the most popular open-source big data projects. It was started about 5 years ago, and now ShardingSphere has over 14K+ stars and 270+ contributors in its community.
 
-The successful project has already launched and updated many versions. Apache ShardingSphere now supports many powerful features and keeps optimizing its configuration rules. We want to help users understand all features and configuration rules, to help them quickly test and run components，and ultimately help them achieve best performance, so we decide to start the shardingsphere-example project.
+The successful project has already launched and updated many versions. Apache ShardingSphere now supports many powerful features and keeps optimizing its configuration rules. We want to help users understand all features and configuration rules, to help them quickly test and run components, and ultimately help them achieve best performance, so we decide to start the shardingsphere-example project.
 
 shardingsphere-example is an independent Maven project. It’s preserved in the “examples” file of Apache ShardingSphere. Link:
 
@@ -214,7 +214,7 @@ There are many modules in the project shardingsphere-example. But for now, we on
 cd shardingsphere
 mvn clean install -Prelease
 
-3. Import the shardingsphere-example project to your IDE;、
+3. Import the shardingsphere-example project to your IDE;
 
 4. Prepare a manageable database environment, such as local MySQL examples;
 

@@ -3,19 +3,15 @@ title = "Core Concept"
 weight = 1
 +++
 
-## Primary Database
+## Primary database
+The primary database is used to add, update, and delete data operations. Currently, only single primary database is supported.
 
-It refers to the database used in data insertion, update and deletion. It only supports single primary database for now.
+## Secondary database
+The secondary database is used to query data operations and multi-secondary databases are supported.
 
-## Replica Database
+## Primary-Secondary synchronization
+It refers to the operation of asynchronously synchronizing data from a primary database to a secondary database. Due to the asynchronism of primary-secondary synchronization,
+data from the primary and secondary databases may be inconsistent for a short time.
 
-It refers to the database used in data query. It supports multiple replica databases.
-
-## Primary Replica Replication
-
-It refers to the operation to asynchronously replicate data from the primary database to the replica database. 
-Because of the asynchrony of primary-replica synchronization, there may be short-time data inconsistency between them.  
-
-## Load Balance Strategy
-
-Through this strategy, queries separated to different replica databases.
+## Load balancer policy
+Channel query requests to different secondary databases through load balancer policy.

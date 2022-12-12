@@ -22,7 +22,6 @@ import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkE
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -42,16 +41,15 @@ public final class SpringNamespaceJdbcExampleScenario implements FrameworkExampl
     
     @Override
     public Map<String, String> getResourceTemplateMap() {
-        Map<String, String> result = new HashMap<>(1, 1);
+        Map<String, String> result = new HashMap<>(2, 1);
         result.put("resources/xml/application.ftl", "application.xml");
+        result.put("resources/yaml/config.ftl", "config.yaml");
         return result;
     }
     
     @Override
     public Collection<String> getJavaClassPaths() {
-        Collection<String> result = new HashSet<>();
-        result.add("repository");
-        return result;
+        return Collections.singleton("repository");
     }
     
     @Override

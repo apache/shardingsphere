@@ -1,0 +1,89 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: VIEWS
+columns:
+  table_catalog:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_CATALOG
+    primaryKey: false
+    visible: true
+  table_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_SCHEMA
+    primaryKey: false
+    visible: true
+  table_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    primaryKey: false
+    visible: true
+  view_definition:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: VIEW_DEFINITION
+    primaryKey: false
+    visible: true
+  check_option:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHECK_OPTION
+    primaryKey: false
+    visible: true
+  is_updatable:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_UPDATABLE
+    primaryKey: false
+    visible: true
+  definer:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DEFINER
+    primaryKey: false
+    visible: true
+  security_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SECURITY_TYPE
+    primaryKey: false
+    visible: true
+  character_set_client:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_CLIENT
+    primaryKey: false
+    visible: true
+  collation_connection:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION_CONNECTION
+    primaryKey: false
+    visible: true

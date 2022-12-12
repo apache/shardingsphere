@@ -19,6 +19,10 @@
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Order;
+<#if transaction?contains("xa")>
+import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+</#if>
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -47,7 +51,8 @@ public final class OrderRepository {
     }
     
     public void dropTable() throws SQLException {
-        String sql = "DROP TABLE t_order";
+        // todo fix in shadow
+        String sql = "DROP TABLE IF EXISTS t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -64,7 +69,7 @@ public final class OrderRepository {
 <#if feature?contains("shadow")>
 
     public void createTableIfNotExistsShadow() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)) /*shadow:true,foo:bar*/";
+        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)) /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -72,7 +77,7 @@ public final class OrderRepository {
     }
 
     public void dropTableShadow() throws SQLException {
-        String sql = "DROP TABLE t_order /*shadow:true,foo:bar*/";
+        String sql = "DROP TABLE IF EXISTS t_order /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -80,7 +85,7 @@ public final class OrderRepository {
     }
 
     public void truncateTableShadow() throws SQLException {
-        String sql = "TRUNCATE TABLE t_order /*shadow:true,foo:bar*/";
+        String sql = "TRUNCATE TABLE t_order /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -104,8 +109,16 @@ public final class OrderRepository {
     
     public Long insert(final Order order) throws SQLException {
         String sql = "INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (?, ?, ?, ?)";
+    <#if transaction?contains("xa")>
+        TransactionTypeHolder.set(TransactionType.XA);
+    <#elseif transaction?contains("base")>
+        TransactionTypeHolder.set(TransactionType.BASE);
+    </#if>
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        <#if transaction!="local">
+            connection.setAutoCommit(false);
+        </#if>
             preparedStatement.setInt(1, order.getUserId());
             preparedStatement.setInt(2, order.getOrderType());
             preparedStatement.setLong(3, order.getAddressId());
@@ -116,7 +129,13 @@ public final class OrderRepository {
                     order.setOrderId(resultSet.getLong(1));
                 }
             }
+        <#if transaction!="local">
+            connection.commit();
+        </#if>
+        }<#if transaction!="local"> finally {
+            TransactionTypeHolder.clear();
         }
+        </#if>
         return order.getOrderId();
     }
     

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: sql_hint
+databaseName: sql_hint
 
 dataSources:
   ds_0:

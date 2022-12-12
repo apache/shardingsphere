@@ -165,7 +165,7 @@ ShardingSphere Slack Channel:https://join.slack.com/t/apacheshardingsphere/share
 
 GitHub Issues: https://github.com/apache/shardingsphere/issues
 
-Contributor Guide:https://shardingsphere.apache.org/community/cn/contribute/
+Contributor Guide:https://shardingsphere.apache.org/community/cn/involved/
 
 GitHub: https://github.com/apache/shardingsphere
 

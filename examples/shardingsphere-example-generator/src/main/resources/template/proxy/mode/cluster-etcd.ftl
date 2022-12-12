@@ -22,4 +22,3 @@ mode:
     props:
       namespace: demo_yaml
       server-lists: localhost:2379
-  overwrite: false

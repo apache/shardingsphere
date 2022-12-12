@@ -29,7 +29,7 @@ import java.util.Properties;
 
 public final class OracleParserStatementExample {
     
-    private static final String DML_SELECT_SQL = "SELECT t.id, t.name, t.age FROM table1 AS t ORDER BY t.id DESC;";
+    private static final String DML_SELECT_SQL = "SELECT t.id, t.name, t.age FROM table1 t ORDER BY t.id DESC;";
     
     private static final String DML_INSERT_SQL = "INSERT INTO table1 (name, age) VALUES ('z', 18);";
     
@@ -52,7 +52,7 @@ public final class OracleParserStatementExample {
     
     public static void main(String[] args) {
         ORACLE_PARSER_STATEMENT_LIST.forEach(sql -> {
-            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("Oracle", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("Oracle", "STATEMENT", false, new Properties());

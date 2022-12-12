@@ -30,7 +30,7 @@ import java.sql.SQLException;
  * 1. Copy resources/conf/*.yaml to ShardingSphere-Proxy conf folder and overwrite original file.
  *    
  *    If you want to use sharding, please select config-sharding.yaml
- *    If you want to use replica-query, please select config-readwrite-splitting.yaml
+ *    If you want to use readwrite-splitting, please select config-readwrite-splitting.yaml
  *
  * 2. Please make sure ShardingSphere-Proxy is running before you run this example.
  */

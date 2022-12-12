@@ -1,0 +1,299 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+databaseName: sharding_and_shadow
+
+dataSources:
+  db_0:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_0
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_1:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_1
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_2:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_2
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_3:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_3
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_4:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_4
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_5:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_5
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_6:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_6
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_7:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_7
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_8:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_8
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  db_9:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/db_9
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_0:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_0
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_1:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_1
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_2:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_2
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_3:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_3
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_4:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_4
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_5:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_5
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_6:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_6
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_7:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_7
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_8:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_8
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  shadow_db_9:
+    url: jdbc:opengauss://opengauss.sharding_and_shadow.host:5432/shadow_db_9
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+
+rules:
+  - !SHARDING
+    tables:
+      t_shadow:
+        actualDataNodes: shadowDataSource_${0..9}.t_shadow_${0..9}
+        databaseStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: it_standard_fixture
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: it_standard_fixture
+
+    shardingAlgorithms:
+      it_standard_fixture:
+        type: IT.STANDARD.FIXTURE
+
+  - !SHADOW
+    dataSources:
+      shadowDataSource_0:
+        productionDataSourceName: db_0
+        shadowDataSourceName: shadow_db_0
+      shadowDataSource_1:
+        productionDataSourceName: db_1
+        shadowDataSourceName: shadow_db_1
+      shadowDataSource_2:
+        productionDataSourceName: db_2
+        shadowDataSourceName: shadow_db_2
+      shadowDataSource_3:
+        productionDataSourceName: db_3
+        shadowDataSourceName: shadow_db_3
+      shadowDataSource_4:
+        productionDataSourceName: db_4
+        shadowDataSourceName: shadow_db_4
+      shadowDataSource_5:
+        productionDataSourceName: db_5
+        shadowDataSourceName: shadow_db_5
+      shadowDataSource_6:
+        productionDataSourceName: db_6
+        shadowDataSourceName: shadow_db_6
+      shadowDataSource_7:
+        productionDataSourceName: db_7
+        shadowDataSourceName: shadow_db_7
+      shadowDataSource_8:
+        productionDataSourceName: db_8
+        shadowDataSourceName: shadow_db_8
+      shadowDataSource_9:
+        productionDataSourceName: db_9
+        shadowDataSourceName: shadow_db_9
+    tables:
+      t_shadow:
+        dataSourceNames:
+          - shadowDataSource_0
+          - shadowDataSource_1
+          - shadowDataSource_2
+          - shadowDataSource_3
+          - shadowDataSource_4
+          - shadowDataSource_5
+          - shadowDataSource_6
+          - shadowDataSource_7
+          - shadowDataSource_8
+          - shadowDataSource_9
+        shadowAlgorithmNames:
+          - user-id-insert-match-algorithm
+          - user-id-update-match-algorithm
+          - user-id-delete-match-algorithm
+          - user-id-select-match-algorithm
+          - simple-hint-algorithm
+    shadowAlgorithms:
+      user-id-insert-match-algorithm:
+        type: VALUE_MATCH
+        props:
+          operation: insert
+          column: user_id
+          value: 0
+      user-id-update-match-algorithm:
+        type: VALUE_MATCH
+        props:
+          operation: update
+          column: user_id
+          value: 0
+      user-id-delete-match-algorithm:
+        type: VALUE_MATCH
+        props:
+          operation: delete
+          column: user_id
+          value: 0
+      user-id-select-match-algorithm:
+        type: VALUE_MATCH
+        props:
+          operation: select
+          column: user_id
+          value: 0
+      simple-hint-algorithm:
+        type: SIMPLE_HINT
+        props:
+          foo: bar

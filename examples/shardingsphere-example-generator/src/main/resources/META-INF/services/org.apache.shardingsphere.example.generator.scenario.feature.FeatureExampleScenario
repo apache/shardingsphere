@@ -19,3 +19,4 @@ org.apache.shardingsphere.example.generator.scenario.feature.type.ShardingExampl
 org.apache.shardingsphere.example.generator.scenario.feature.type.ReadwriteSplittingExampleScenario
 org.apache.shardingsphere.example.generator.scenario.feature.type.EncryptExampleScenario
 org.apache.shardingsphere.example.generator.scenario.feature.type.ShadowExampleScenario
+org.apache.shardingsphere.example.generator.scenario.feature.type.DBDiscoveryExampleScenario

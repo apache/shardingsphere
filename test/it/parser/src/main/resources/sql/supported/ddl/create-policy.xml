@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_policy_using_expr" value="CREATE POLICY P ON tbl1 TO regress_rls_eve, regress_rls_frank USING (true);" db-types="PostgreSQL" />
+    <sql-case id="create_policy_using_comparison_expr" value="CREATE POLICY coll_p ON coll_t USING (c &lt; (&apos;foo&apos;::text COLLATE &quot;C&quot;));" db-types="PostgreSQL" />
+    <sql-case id="create_policy_using_select_expr" value="CREATE POLICY d1 ON dependent FOR ALL TO PUBLIC USING (x = (SELECT d.x FROM dependee d WHERE d.y = y));" db-types="PostgreSQL" />
+    <sql-case id="create_policy" value="CREATE POLICY genpol ON addr_nsp.gentable;" db-types="PostgreSQL" />
+    <sql-case id="create_policy_for_all_using_expr" value="CREATE POLICY p0 ON x1 FOR ALL USING (c = current_user);" db-types="PostgreSQL" />
+    <sql-case id="create_policy_for_select_using_expr" value="CREATE POLICY p1 ON x1 FOR SELECT USING (a % 2 = 0);" db-types="PostgreSQL" />
+    <sql-case id="create_policy_as_restrictive_using_expr" value="CREATE POLICY p1r ON document AS RESTRICTIVE TO regress_rls_dave USING (cid &lt;&gt; 44);" db-types="PostgreSQL" />
+    <sql-case id="create_policy_for_delete_using_expr" value="CREATE POLICY p2 ON current_check FOR DELETE USING (currentid = 4 AND rlsuser = current_user);" db-types="PostgreSQL" />
+    <sql-case id="create_policy_for_insert_with_check_expr" value="CREATE POLICY p2 ON document FOR INSERT WITH CHECK (dauthor = current_user);" db-types="PostgreSQL" />
+    <sql-case id="create_policy_as_permissive_using_expr" value="CREATE POLICY seeall ON range_parted AS PERMISSIVE FOR SELECT USING (true);" db-types="PostgreSQL" />
+</sql-cases>

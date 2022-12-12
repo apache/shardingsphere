@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_space" value="    ALTER INDEX
+        order_index
+    REBUILD PARALLEL    " db-types="Oracle" />
+    <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;order_index&quot; REBUILD PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_parallel" value="ALTER INDEX order_index PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_compile" value="ALTER INDEX order_index COMPILE" db-types="Oracle" />
+    <sql-case id="alter_index_with_disable" value="ALTER INDEX order_index DISABLE" db-types="Oracle" />
+    <sql-case id="alter_index_with_unusable" value="ALTER INDEX order_index UNUSABLE ONLINE IMMEDIATE INVALIDATION" db-types="Oracle" />
+    <sql-case id="alter_index_with_visable" value="ALTER INDEX order_index VISIBLE" db-types="Oracle" />
+    <sql-case id="alter_index_with_rename" value="ALTER INDEX order_index RENAME TO order_index_new" db-types="Oracle" />
+    <sql-case id="alter_index_with_coalesce" value="ALTER INDEX order_index COALESCE CLEANUP ONLY PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_usage" value="ALTER INDEX order_index MONITORING USAGE" db-types="Oracle" />
+    <sql-case id="alter_index_with_update" value="ALTER INDEX order_index UPDATE BLOCK REFERENCES" db-types="Oracle" />
+    <sql-case id="alter_index_rebuild" value="ALTER INDEX order_index ON t_order REBUILD" db-types="SQLServer" />
+    <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" db-types="SQLServer" />
+    <sql-case id="alter_index_with_reorganize" value="ALTER INDEX order_index ON t_order REORGANIZE WITH (COMPRESS_ALL_ROW_GROUPS = ON)" db-types="SQLServer" />
+    <sql-case id="alter_index_set_tablespace" value="ALTER INDEX distributors SET TABLESPACE fasttablespace" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_index_with_schema" value="ALTER INDEX public.t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
+</sql-cases>

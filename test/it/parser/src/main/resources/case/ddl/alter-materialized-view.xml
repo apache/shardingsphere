@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-materialized-view sql-case-id="alter_materialized_view_alter" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_set" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_refresh_fast" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_refresh_next" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_refresh_consider_fresh" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_refresh_complete_refresh" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_refresh_enable_query_rewrite" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_refresh_with_primary_key" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_compile" />
+</sql-parser-test-cases>

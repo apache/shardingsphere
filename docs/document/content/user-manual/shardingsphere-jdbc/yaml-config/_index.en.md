@@ -1,6 +1,6 @@
 +++
 title = "YAML Configuration"
-weight = 2
+weight = 1
 chapter = true
 +++
 
@@ -8,6 +8,9 @@ chapter = true
 
 YAML configuration provides interaction with ShardingSphere JDBC through configuration files.
 When used with the governance module together, the configuration of persistence in the configuration center is YAML format.
+
+Note:
+The YAML configuration file supports more than 3MB of configuration content.
 
 YAML configuration is the most common configuration mode, which can omit the complexity of programming and simplify user configuration.
 
@@ -25,15 +28,14 @@ YAML configuration is the most common configuration mode, which can omit the com
 
 ### YAML Format
 
-ShardingSphere-JDBC YAML file consists of schema name, mode configuration, data source map, rule configurations and properties.
+ShardingSphere-JDBC YAML file consists of database name, mode configuration, data source map, rule configurations and properties.
 
 Note: The example connection pool is HikariCP, which can be replaced with other connection pools according to business scenarios.
 
 ```yaml
-# Alias of the datasource in JDBC.
-# Through this parameter to connect, ShardingSphere-JDBC and ShardingSphere-Proxy.
+# JDBC logic database name. Through this parameter to connect ShardingSphere-JDBC and ShardingSphere-Proxy.
 # Default value: logic_db
-schemaName (?):
+databaseName (?):
 
 mode:
 

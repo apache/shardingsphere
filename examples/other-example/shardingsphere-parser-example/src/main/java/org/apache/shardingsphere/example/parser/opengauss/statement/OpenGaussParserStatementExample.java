@@ -52,7 +52,7 @@ public final class OpenGaussParserStatementExample {
     
     public static void main(String[] args) {
         OPEN_GAUSS_PARSER_STATEMENT_LIST.forEach(sql -> {
-            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("openGauss", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("openGauss", "STATEMENT", false, new Properties());

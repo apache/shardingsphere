@@ -1,82 +1,85 @@
 +++
-pre = "<b>7.1. </b>"
+pre = "<b>7.3. </b>"
 title = "Management"
-weight = 1
+weight = 3
 +++
 
 ## Data Structure in Registry Center
 
-Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML, modifying nodes can dynamically refresh configurations. `nodes` node persist the runtime node of database access object, to distinguish different database access instances.
+Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations. `nodes` node persist the runtime node of database access object, to distinguish different database access instances.
 
 ```
 namespace
    ├──rules                                   # Global rule configuration
    ├──props                                   # Properties configuration
    ├──metadata                                # Metadata configuration
-   ├     ├──${schema_1}                       # Schema name 1
-   ├     ├     ├──dataSources                 # Datasource configuration
-   ├     ├     ├──rules                       # Rule configuration
-   ├     ├     ├──tables                      # Table configuration
-   ├     ├     ├     ├──t_1 
-   ├     ├     ├     ├──t_2      
-   ├     ├──${schema_2}                       # Schema name 2
-   ├     ├     ├──dataSources                 # Datasource configuration
-   ├     ├     ├──rules                       # Rule configuration
-   ├     ├     ├──tables                      # Table configuration
+   ├     ├──${databaseName}                   # Logic database name
+   ├     ├     ├──schemas                     # Schema list   
+   ├     ├     ├     ├──${schemaName}         # Logic schema name
+   ├     ├     ├     ├     ├──tables          # Table configuration
+   ├     ├     ├     ├     ├     ├──${tableName} 
+   ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├     ├──views          # View configuration
+   ├     ├     ├     ├     ├     ├──${viewName} 
+   ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├──...    
+   ├     ├     ├──versions                    # Metadata version list      
+   ├     ├     ├     ├──${versionNumber}      # Metadata version
+   ├     ├     ├     ├     ├──data_sources     # Data source configuration
+   ├     ├     ├     ├     ├──rules           # Rule configuration  
+   ├     ├     ├     ├──...
+   ├     ├     ├──active_version              # Active metadata version
+   ├     ├──...      
    ├──nodes
    ├    ├──compute_nodes
    ├    ├     ├──online
    ├    ├     ├     ├──proxy
-   ├    ├     ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
-   ├    ├     ├     ├     ├──${your_instance_ip_b}@${your_instance_port_y}
+   ├    ├     ├     ├     ├──UUID             # Proxy instance identifier
    ├    ├     ├     ├     ├──....
    ├    ├     ├     ├──jdbc
-   ├    ├     ├     ├     ├──${your_instance_ip_a}@${your_instance_pid_x}
-   ├    ├     ├     ├     ├──${your_instance_ip_b}@${your_instance_pid_y}
+   ├    ├     ├     ├     ├──UUID             # JDBC instance identifier
    ├    ├     ├     ├     ├──....   
-   ├    ├     ├──attributies
-   ├    ├     ├     ├──${your_instance_ip_a}@${your_instance_port_x}
-   ├    ├     ├     ├     ├──status
-   ├    ├     ├     ├     ├──label    
-   ├    ├     ├     ├──${your_instance_ip_b}@${your_instance_pid_y}
-   ├    ├     ├     ├     ├──status   
+   ├    ├     ├──status
+   ├    ├     ├     ├──UUID                   
    ├    ├     ├     ├──....
-   ├    ├──storage_nodes
-   ├    ├     ├──disable
-   ├    ├     ├      ├──${schema_1.ds_0}
-   ├    ├     ├      ├──${schema_1.ds_1}
-   ├    ├     ├      ├──....
-   ├    ├     ├──primary
-   ├    ├     ├      ├──${schema_2.ds_0}
-   ├    ├     ├      ├──${schema_2.ds_1}
-   ├    ├     ├      ├──....
+   ├    ├     ├──worker_id
+   ├    ├     ├     ├──UUID
+   ├    ├     ├     ├──....
+   ├    ├     ├──process_trigger
+   ├    ├     ├     ├──process_list_id:UUID
+   ├    ├     ├     ├──....
+   ├    ├     ├──labels                      
+   ├    ├     ├     ├──UUID
+   ├    ├     ├     ├──....               
+   ├    ├──storage_nodes                       
+   ├    ├     ├──${databaseName.groupName.ds} 
+   ├    ├     ├──${databaseName.groupName.ds}
 ```
 
 ### /rules
 
-global rule configurations， including configure the username and password for ShardingSphere-Proxy.
+Global rule configuration, which can include transaction configuration, SQL parser configuration, etc.
 
 ```yaml
-- !AUTHORITY
-users:
-  - root@%:root
-  - sharding@127.0.0.1:sharding
-provider:
-  type: ALL_PRIVILEGES_PERMITTED
+- !TRANSACTION
+  defaultType: XA
+  providerType: Atomikos
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 ### /props
 
-Properties configuration. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/props/) for more details.
+Properties configuration. Please refer to the [Configuration Manual](/en/user-manual/shardingsphere-jdbc/props/) for more details.
 
 ```yaml
 kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${schemaName}/dataSources
+### /metadata/${databaseName}/versions/${versionNumber}/dataSources
 
-A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
+A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by the users themselves.
 
 ```yaml
 ds_0:
@@ -109,9 +112,9 @@ ds_1:
   poolName: HikariPool-2
 ```
 
-### /metadata/${schemaName}/rules
+### /metadata/${databaseName}/versions/${versionNumber}/rules
 
-Rule configurations, including sharding, readwrite-splitting, data encryption, shadow DB configurations.
+Rule configurations, including sharding, read/write splitting, data encryption, and shadow DB configurations.
 
 ```yaml
 - !SHARDING
@@ -124,7 +127,7 @@ Rule configurations, including sharding, readwrite-splitting, data encryption, s
   xxx
 ```
 
-### /metadata/${schemaName}/tables
+### /metadata/${databaseName}/schemas/${schemaName}/tables
 
 Use separate node storage for each table, dynamic modification of metadata content is not supported currently.
 
@@ -150,8 +153,10 @@ indexs:                                   # Index
 
 ### /nodes/compute_nodes
 
-It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which consist of IP and PORT. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
+It includes running instance information of database access object, with sub-nodes as the identifiers of theh currently running instance, which is automatically generated at each startup using UUID. 
+
+The identifiers are temporary nodes, which are registered when instances are online and cleared when instances are offline. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
 ### /nodes/storage_nodes
 
-It is able to orchestrate replica database, delete or disable data dynamically.
+It can orchestrate replica database, and delete or disable data dynamically.

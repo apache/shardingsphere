@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
+    <rewrite-assertion id="select_with_encrypt_left_join_table" db-types="MySQL">
+        <input sql="SELECT a.* FROM t_account a left join t_account_bak b on a.password = b.account_id left join t_account_detail c on a.password = c.password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_0 a left join t_account_bak_0 b on a.assisted_query_password = b.account_id left join t_account_detail_0 c on a.assisted_query_password = c.assisted_query_password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_0 a left join t_account_bak_1 b on a.assisted_query_password = b.account_id left join t_account_detail_0 c on a.assisted_query_password = c.assisted_query_password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_1 a left join t_account_bak_0 b on a.assisted_query_password = b.account_id left join t_account_detail_1 c on a.assisted_query_password = c.assisted_query_password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_1 a left join t_account_bak_1 b on a.assisted_query_password = b.account_id left join t_account_detail_1 c on a.assisted_query_password = c.assisted_query_password" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_encrypt_right_join_table" db-types="MySQL">
+        <input sql="SELECT a.* FROM t_account a right join t_account_detail b on a.password = b.password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_0 a right join t_account_detail_0 b on a.assisted_query_password = b.assisted_query_password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_1 a right join t_account_detail_1 b on a.assisted_query_password = b.assisted_query_password" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_encrypt_join_table" db-types="MySQL">
+        <input sql="SELECT a.* FROM t_account a join t_account_detail b on a.password = b.password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_0 a join t_account_detail_0 b on a.assisted_query_password = b.assisted_query_password" />
+        <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount` FROM t_account_1 a join t_account_detail_1 b on a.assisted_query_password = b.assisted_query_password" />
+    </rewrite-assertion>
+</rewrite-assertions>

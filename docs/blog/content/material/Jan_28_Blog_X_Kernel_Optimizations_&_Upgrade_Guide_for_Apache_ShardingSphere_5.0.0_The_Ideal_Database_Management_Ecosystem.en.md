@@ -368,7 +368,7 @@ The new API also supports a variety of matching algorithms, such as column value
         column: user_id
         regex: "[1]"
     simple-hint-algorithm:
-      type: SIMPLE_NOTE
+      type: SIMPLE_HINT
       props:
         shadow: true
         foo: bar           
@@ -480,7 +480,7 @@ Since the `t_order_item` table does not require encryption or decryption, its ro
 As for the `t_order` table and the `t_user` table, we use the following SQL statements and manually create encrypt/decrypt tables on the underlying database of the routing result.
 
 ```
-# ds_0 Creare t_order_0、t_order_1 and t_user
+# ds_0 Creare t_order_0, t_order_1 and t_user
 CREATE TABLE t_order_0(order_id INT(11) PRIMARY KEY, user_id INT(11), content_plain VARCHAR(100), content_cipher VARCHAR(100))
 CREATE TABLE t_order_1(order_id INT(11) PRIMARY KEY, user_id INT(11), content_plain VARCHAR(100), content_cipher VARCHAR(100))
 CREATE TABLE t_user(user_id INT(11) PRIMARY KEY, telephone_plain VARCHAR(100), telephone_cipher VARCHAR(100))
@@ -684,7 +684,7 @@ As always, you’re welcome to join us in developing the Apache ShardingSphere p
 
 3. Automatic Sharding Strategies for Databases and Tables：https://github.com/apache/shardingsphere/issues/5937
 
-4. Contributor Guide：https://shardingsphere.apache.org/community/en/contribute/
+4. Contributor Guide：https://shardingsphere.apache.org/community/en/involved/
 
 5. https://docs.oracle.com/en/
 
@@ -703,8 +703,7 @@ ShardingSphere Slack Channel:https://join.slack.com/t/apacheshardingsphere/share
 
 GitHub Issues: https://github.com/apache/shardingsphere/issues
 
-Contributor Guide:https://shardingsphere.apache.org/community/cn/contribute/
-
+Contributor Guide:https://shardingsphere.apache.org/community/cn/involved/
 
 ### Author
 

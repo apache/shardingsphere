@@ -5,22 +5,17 @@ weight = 1
 
 ## Production Database
 
-The database used for production data.
+Database for production data
 
 ## Shadow Database
 
-The database for pressure testing data isolation.
+The Database for stress test data isolation. Configurations should be the same as the Production Database.
 
 ## Shadow Algorithm
 
-The shadow algorithms are closely related to business, there are 2 types of shadow algorithms provided.
+Shadow Algorithm, which is closely related to business operations, currently has 2 types.
 
 - Column based shadow algorithm
-
-Recognize data from SQL and route to shadow databases.
-Suitable for test data driven scenario.
-
+Routing to shadow database by recognizing data from SQL. Suitable for stress test scenario that has an emphasis on data list.
 - Hint based shadow algorithm
-
-Recognize comment from SQL and route to shadow databases.
-Suitable for identify passed by upstream system scenario.
+Routing to shadow database by recognizing comments from SQL. Suitable for stress test driven by the identification of upstream system passage.

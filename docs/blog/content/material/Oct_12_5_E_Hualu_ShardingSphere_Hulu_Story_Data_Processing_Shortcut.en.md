@@ -5,7 +5,7 @@ chapter = true
 +++
 
 > “ShardingSphere has greatly simplified sharding development and maintenance, which has played a very important role in our rapid product release. We estimate that ShardingSphere has saved us at least 4 months of R&D costs.”                                                
-*— Shi Moxuan, Technical Director，E-Hualu*
+*— Shi Moxuan, Technical Director, E-Hualu*
 
 At the beginning of this year, E-hualu officially launched its cloud service product “Hulu App” that targets non-business users. Since then, its architecture’s data stress has increased on a daily basis.
 

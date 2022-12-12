@@ -17,40 +17,40 @@
 
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
-import java.util.Set;
-
-import com.google.common.collect.Sets;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Configuration values supported by yaml sample.
  */
+@RequiredArgsConstructor
 @Getter
-@AllArgsConstructor
 public enum YamlExampleConfigurationSupportedValue {
-
-    PRODUCTS("products", Sets.newHashSet("jdbc", "proxy")),
-
-    MODES("modes", Sets.newHashSet("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone-file")),
-
-    TRANSACTIONS("transactions", Sets.newHashSet("local")),
-
-    FEATURES("features", Sets.newHashSet("shadow", "sharding", "readwrite-splitting", "encrypt", "db-discovery")),
-
-    FRAMEWORKS("frameworks", Sets.newHashSet("jdbc", "spring-boot-starter-jdbc", "spring-boot-starter-jpa", "spring-boot-starter-mybatis", "spring-namespace-jdbc", "spring-namespace-jpa", "spring-namespace-mybatis"));
-
-    private String configItem;
-
-    private Set<String> supportedValues;
-
+    
+    PRODUCTS("products", new HashSet<>(Arrays.asList("jdbc", "proxy"))),
+    
+    MODES("modes", new HashSet<>(Arrays.asList("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone"))),
+    
+    TRANSACTIONS("transactions", new HashSet<>(Arrays.asList("local", "xa-atomikos", "xa-narayana", "xa-bitronix", "base-seata"))),
+    
+    FEATURES("features", new HashSet<>(Arrays.asList("shadow", "sharding", "readwrite-splitting", "encrypt", "db-discovery"))),
+    
+    FRAMEWORKS("frameworks", new HashSet<>(Arrays.asList("jdbc", "spring-boot-starter-jdbc", "spring-boot-starter-jpa", "spring-boot-starter-mybatis", "spring-namespace-jdbc", "spring-namespace-jpa", "spring-namespace-mybatis")));
+    
+    private final String configItem;
+    
+    private final Set<String> supportedValues;
+    
     public static YamlExampleConfigurationSupportedValue of(String configItem) {
-        for (YamlExampleConfigurationSupportedValue exampleSupportedValues : values()) {
-            if (exampleSupportedValues.getConfigItem().equals(configItem)) {
-                return exampleSupportedValues;
+        for (YamlExampleConfigurationSupportedValue each : values()) {
+            if (each.getConfigItem().equals(configItem)) {
+                return each;
             }
         }
-        return null;
+        throw new IllegalArgumentException(configItem);
     }
 }
