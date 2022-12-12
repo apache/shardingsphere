@@ -24,6 +24,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,11 +36,11 @@ public final class PluginPointcuts {
     
     private final String targetClassName;
     
-    private final List<ConstructorPointcut> constructorPointcuts;
+    private final Collection<ConstructorPointcut> constructorPointcuts;
     
-    private final List<InstanceMethodPointcut> instanceMethodPointcuts;
+    private final Collection<InstanceMethodPointcut> instanceMethodPointcuts;
     
-    private final List<StaticMethodPointcut> staticMethodPointcuts;
+    private final Collection<StaticMethodPointcut> staticMethodPointcuts;
     
     /**
      * Plugin advice definition configuration builder.
