@@ -25,49 +25,42 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
 
-/**
- * KEEP_FIRST_N_LAST_M test.
- */
 public final class KeepFirstNLastMMaskAlgorithmTest {
     
-    private KeepFirstNLastMMaskAlgorithm keepFirstNLastMMaskAlgorithm;
+    private KeepFirstNLastMMaskAlgorithm maskAlgorithm;
     
     @Before
     public void setUp() {
-        keepFirstNLastMMaskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
-        keepFirstNLastMMaskAlgorithm.init(initProperties());
+        maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
+        maskAlgorithm.init(createProperties("2", "5", "*"));
     }
     
-    private Properties initProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("n", "2");
-        properties.setProperty("m", "5");
-        properties.setProperty("replace-char", "*");
-        return properties;
+    private Properties createProperties(final String firstN, final String lastM, final String replaceChar) {
+        Properties result = new Properties();
+        result.setProperty("first-n", firstN);
+        result.setProperty("last-m", lastM);
+        result.setProperty("replace-char", replaceChar);
+        return result;
     }
     
     @Test
-    public void testMask() {
-        String actual = keepFirstNLastMMaskAlgorithm.mask("abc123456");
+    public void assertMask() {
+        String actual = maskAlgorithm.mask("abc123456");
         assertThat(actual, is("ab**23456"));
     }
     
     @Test
-    public void testMaskIfPlainValueIsLess() {
-        String actual = keepFirstNLastMMaskAlgorithm.mask("abc");
+    public void assertMaskWhenPlainValueLengthLessThenFirstNLastMSum() {
+        String actual = maskAlgorithm.mask("abc");
         assertThat(actual, is("abc"));
     }
     
-    @Test
-    public void testNotSetStartIndex() {
-        KeepFirstNLastMMaskAlgorithm keepFirstNLastMMaskAlgorithm1 = new KeepFirstNLastMMaskAlgorithm();
-        Properties wrongProperties = new Properties();
-        wrongProperties.setProperty("m", "5");
-        wrongProperties.setProperty("replace-char", "*");
-        assertThrows(IllegalArgumentException.class, () -> {
-            keepFirstNLastMMaskAlgorithm1.init(wrongProperties);
-        });
+    @Test(expected = IllegalArgumentException.class)
+    public void assertInitWhenConfigWrongProps() {
+        KeepFirstNLastMMaskAlgorithm maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
+        maskAlgorithm.init(createProperties("", "3", "+"));
+        maskAlgorithm.init(createProperties("2", "", "+"));
+        maskAlgorithm.init(createProperties("2", "5", ""));
     }
 }

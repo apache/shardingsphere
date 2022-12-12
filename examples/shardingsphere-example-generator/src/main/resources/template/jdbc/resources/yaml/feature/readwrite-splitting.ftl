@@ -22,7 +22,7 @@
         readDataSourceNames:
           - ds_1
           - ds_2
-        loadBalancerName: round_robin
-    loadBalancers:
-      round_robin:
-        type: ROUND_ROBIN
+      loadBalancerName: round_robin
+  loadBalancers:
+    round_robin:
+      type: ROUND_ROBIN

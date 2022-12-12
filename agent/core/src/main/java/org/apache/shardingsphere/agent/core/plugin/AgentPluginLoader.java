@@ -23,14 +23,14 @@ import lombok.Setter;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public final class AgentPluginLoader implements PluginLoader {
     
     private final Collection<PluginJar> pluginJars = new LinkedList<>();
     
-    private Map<String, PluginInterceptorPoint> interceptorPointMap;
+    private Map<String, PluginPointcuts> pointcuts;
     
     @Getter
     @Setter
@@ -83,9 +83,9 @@ public final class AgentPluginLoader implements PluginLoader {
     
     private void loadAllPluginInterceptorPoint(final ClassLoader classLoader) {
         Collection<String> pluginNames = getPluginNames();
-        Map<String, PluginInterceptorPoint> pointMap = new HashMap<>();
+        Map<String, PluginPointcuts> pointMap = new HashMap<>();
         loadPluginDefinitionServices(pluginNames, pointMap, classLoader);
-        interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
+        pointcuts = ImmutableMap.<String, PluginPointcuts>builder().putAll(pointMap).build();
     }
     
     private Collection<String> getPluginNames() {
@@ -97,21 +97,21 @@ public final class AgentPluginLoader implements PluginLoader {
         return result;
     }
     
-    private void loadPluginDefinitionServices(final Collection<String> pluginNames, final Map<String, PluginInterceptorPoint> pointMap, final ClassLoader classLoader) {
+    private void loadPluginDefinitionServices(final Collection<String> pluginNames, final Map<String, PluginPointcuts> pointMap, final ClassLoader classLoader) {
         PluginServiceLoader.newServiceInstances(PluginDefinitionService.class, classLoader)
                 .stream()
                 .filter(each -> pluginNames.contains(each.getType()))
                 .forEach(each -> buildPluginInterceptorPointMap(each, pointMap));
     }
     
-    private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginInterceptorPoint> pointMap) {
+    private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginPointcuts> pointMap) {
         pluginDefinitionService.install(isEnhancedForProxy).forEach(each -> {
             String target = each.getTargetClassName();
             if (pointMap.containsKey(target)) {
-                PluginInterceptorPoint pluginInterceptorPoint = pointMap.get(target);
-                pluginInterceptorPoint.getConstructorPoints().addAll(each.getConstructorPoints());
-                pluginInterceptorPoint.getInstanceMethodPoints().addAll(each.getInstanceMethodPoints());
-                pluginInterceptorPoint.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
+                PluginPointcuts pluginPointcuts = pointMap.get(target);
+                pluginPointcuts.getConstructorPointcuts().addAll(each.getConstructorPointcuts());
+                pluginPointcuts.getInstanceMethodPointcuts().addAll(each.getInstanceMethodPointcuts());
+                pluginPointcuts.getStaticMethodPointcuts().addAll(each.getStaticMethodPointcuts());
             } else {
                 pointMap.put(target, each);
             }
@@ -128,7 +128,7 @@ public final class AgentPluginLoader implements PluginLoader {
             
             @Override
             public boolean matches(final TypeDescription target) {
-                return interceptorPointMap.containsKey(target.getTypeName());
+                return pointcuts.containsKey(target.getTypeName());
             }
             
             @Override
@@ -145,12 +145,12 @@ public final class AgentPluginLoader implements PluginLoader {
     
     @Override
     public boolean containsType(final TypeDescription typeDescription) {
-        return interceptorPointMap.containsKey(typeDescription.getTypeName());
+        return pointcuts.containsKey(typeDescription.getTypeName());
     }
     
     @Override
-    public PluginInterceptorPoint loadPluginInterceptorPoint(final TypeDescription typeDescription) {
-        return interceptorPointMap.getOrDefault(typeDescription.getTypeName(), PluginInterceptorPoint.createDefault());
+    public PluginPointcuts loadPluginInterceptorPoint(final TypeDescription typeDescription) {
+        return pointcuts.getOrDefault(typeDescription.getTypeName(), new PluginPointcuts(""));
     }
     
     @Override

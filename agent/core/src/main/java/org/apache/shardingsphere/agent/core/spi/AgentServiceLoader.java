@@ -50,14 +50,13 @@ public final class AgentServiceLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> AgentServiceLoader<T> getServiceLoader(final Class<T> service) {
-        Preconditions.checkNotNull(service, "Extension clazz is null");
-        Preconditions.checkArgument(service.isInterface(), "Extension clazz `%s` is not interface", service);
+        Preconditions.checkNotNull(service, "Extension clazz is null.");
+        Preconditions.checkArgument(service.isInterface(), "Extension clazz `%s` is not interface.", service);
         AgentServiceLoader<T> agentServiceLoader = (AgentServiceLoader<T>) LOADERS.get(service);
         if (null != agentServiceLoader) {
             return agentServiceLoader;
         }
-        LOADERS.putIfAbsent(service, new AgentServiceLoader<>(service));
-        return (AgentServiceLoader<T>) LOADERS.get(service);
+        return (AgentServiceLoader<T>) LOADERS.computeIfAbsent(service, AgentServiceLoader::new);
     }
     
     /**

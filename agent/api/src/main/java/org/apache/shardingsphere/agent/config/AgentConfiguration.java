@@ -25,8 +25,8 @@ import java.util.Map;
 /**
  * Agent configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class AgentConfiguration {
     
     private final Map<String, PluginConfiguration> plugins;

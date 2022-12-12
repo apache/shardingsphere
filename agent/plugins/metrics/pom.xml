@@ -36,11 +36,4 @@
     <properties>
         <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
     </properties>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-api</artifactId>
-        </dependency>
-    </dependencies>
 </project>

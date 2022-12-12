@@ -26,55 +26,48 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
 
-/**
- * KEEP_FROM_X_TO_Y test.
- */
 public final class KeepFromXToYMaskAlgorithmTest {
     
-    private KeepFromXToYMaskAlgorithm keepFromXToYMaskAlgorithm;
+    private KeepFromXToYMaskAlgorithm maskAlgorithm;
     
     @Before
     public void setUp() {
-        keepFromXToYMaskAlgorithm = new KeepFromXToYMaskAlgorithm();
-        keepFromXToYMaskAlgorithm.init(initProperties());
+        maskAlgorithm = new KeepFromXToYMaskAlgorithm();
+        maskAlgorithm.init(createProperties("2", "5", "*"));
     }
     
-    private Properties initProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("x", "2");
-        properties.setProperty("y", "5");
-        properties.setProperty("replace-char", "*");
-        return properties;
+    private Properties createProperties(final String fromX, final String toY, final String replaceChar) {
+        Properties result = new Properties();
+        result.setProperty("from-x", fromX);
+        result.setProperty("to-y", toY);
+        result.setProperty("replace-char", replaceChar);
+        return result;
     }
     
     @Test
-    public void testMask() {
-        String actual = keepFromXToYMaskAlgorithm.mask("abc123456");
+    public void assertMask() {
+        String actual = maskAlgorithm.mask("abc123456");
         assertThat(actual, is("**c123***"));
     }
     
     @Test
-    public void testMaskIfPlainValueIsLess() {
-        String actual = keepFromXToYMaskAlgorithm.mask("abc");
+    public void assertMaskWhenPlainValueLengthLessThanToY() {
+        String actual = maskAlgorithm.mask("abc");
         assertThat(actual, is("**c"));
     }
     
     @Test
-    public void testMaskIfPlainValueIsOne() {
-        String actual = keepFromXToYMaskAlgorithm.mask("a");
+    public void assertMaskWhenPlainValueLengthLessThanFromX() {
+        String actual = maskAlgorithm.mask("a");
         assertThat(actual, is("a"));
     }
     
-    @Test
-    public void testNotSetStartIndex() {
-        KeepFirstNLastMMaskAlgorithm keepFirstNLastMMaskAlgorithm1 = new KeepFirstNLastMMaskAlgorithm();
-        Properties wrongProperties = new Properties();
-        wrongProperties.setProperty("m", "5");
-        wrongProperties.setProperty("replace-char", "*");
-        assertThrows(IllegalArgumentException.class, () -> {
-            keepFirstNLastMMaskAlgorithm1.init(wrongProperties);
-        });
+    @Test(expected = IllegalArgumentException.class)
+    public void assertInitWhenConfigWrongProps() {
+        KeepFirstNLastMMaskAlgorithm maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
+        maskAlgorithm.init(createProperties("", "3", "+"));
+        maskAlgorithm.init(createProperties("2", "", "+"));
+        maskAlgorithm.init(createProperties("2", "5", ""));
     }
 }
