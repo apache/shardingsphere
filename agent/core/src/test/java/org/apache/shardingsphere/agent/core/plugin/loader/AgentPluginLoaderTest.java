@@ -25,8 +25,10 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAround
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.pointcut.ConstructorPointcut;
+import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
 import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
+import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -60,17 +62,10 @@ public final class AgentPluginLoaderTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
-        PluginPointcuts pluginPointcuts = new Builder("org.apache.shardingsphere.agent.core.mock.material.Material")
-                .aroundInstanceMethod(ElementMatchers.named("mock"))
-                .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
-                .build()
-                .aroundStaticMethod(ElementMatchers.named("staticMock"))
-                .implement(MockStaticMethodAroundAdvice.class.getTypeName())
-                .build()
-                .onConstructor(ElementMatchers.takesArguments(1))
-                .implement(MockConstructorAdvice.class.getTypeName())
-                .build()
-                .install();
+        PluginPointcuts pluginPointcuts = new PluginPointcuts("org.apache.shardingsphere.agent.core.mock.material.Material");
+        pluginPointcuts.getConstructorPointcuts().add(new ConstructorPointcut(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
+        pluginPointcuts.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        pluginPointcuts.getStaticMethodPointcuts().add(new StaticMethodPointcut(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, Collections.singletonMap(pluginPointcuts.getTargetClassName(), pluginPointcuts));
     }

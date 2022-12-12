@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
+import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
 
 /**
  * Base logging plugin definition service.
@@ -34,18 +35,14 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     
     @Override
     protected void defineProxyInterceptors() {
-        defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
-                .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
-                .build();
+        defineInterceptor(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
+                .add(new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
     }
     
     @Override
     protected void defineJdbcInterceptors() {
-        defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
-                .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
-                .build();
+        defineInterceptor(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
+                .add(new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
     }
     
     @Override

@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
 import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
 import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
 import org.apache.shardingsphere.agent.core.yaml.swapper.InterceptorsYamlSwapper;
+import org.apache.shardingsphere.agent.pointcut.ConstructorPointcut;
+import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
 
 /**
  * Metrics plugin definition service.
@@ -35,17 +38,17 @@ public final class PrometheusPluginDefinitionService extends AbstractPluginDefin
             if (null == each.getTarget()) {
                 continue;
             }
-            Builder builder = defineInterceptor(each.getTarget());
+            PluginPointcuts pluginPointcuts = defineInterceptor(each.getTarget());
             if (null != each.getConstructAdvice() && !("".equals(each.getConstructAdvice()))) {
-                builder.onConstructor(ElementMatchers.isConstructor()).implement(each.getConstructAdvice()).build();
+                pluginPointcuts.getConstructorPointcuts().add(new ConstructorPointcut(ElementMatchers.isConstructor(), each.getConstructAdvice()));
             }
             String[] instancePoints = each.getPoints().stream().filter(i -> "instance".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
-            String[] staticPoints = each.getPoints().stream().filter(i -> "static".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
             if (instancePoints.length > 0) {
-                builder.aroundInstanceMethod(ElementMatchers.namedOneOf(instancePoints)).implement(each.getInstanceAdvice()).build();
+                pluginPointcuts.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.namedOneOf(instancePoints), each.getInstanceAdvice()));
             }
+            String[] staticPoints = each.getPoints().stream().filter(i -> "static".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
             if (staticPoints.length > 0) {
-                builder.aroundStaticMethod(ElementMatchers.namedOneOf(staticPoints)).implement(each.getStaticAdvice()).build();
+                pluginPointcuts.getStaticMethodPointcuts().add(new StaticMethodPointcut(ElementMatchers.namedOneOf(staticPoints), each.getStaticAdvice()));
             }
         }
     }

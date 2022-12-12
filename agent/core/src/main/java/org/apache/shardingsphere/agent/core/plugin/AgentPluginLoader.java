@@ -35,7 +35,6 @@ import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -151,7 +150,7 @@ public final class AgentPluginLoader implements PluginLoader {
     
     @Override
     public PluginPointcuts loadPluginInterceptorPoint(final TypeDescription typeDescription) {
-        return pointcuts.getOrDefault(typeDescription.getTypeName(), new PluginPointcuts("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return pointcuts.getOrDefault(typeDescription.getTypeName(), new PluginPointcuts(""));
     }
     
     @Override

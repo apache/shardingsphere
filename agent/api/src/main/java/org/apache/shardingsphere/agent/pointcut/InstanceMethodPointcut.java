@@ -34,4 +34,8 @@ public final class InstanceMethodPointcut implements AgentPointcut {
     private final String adviceClassName;
     
     private final boolean overrideArgs;
+    
+    public InstanceMethodPointcut(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
+        this(matcher, adviceClassName, false);
+    }
 }
