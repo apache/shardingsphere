@@ -27,7 +27,7 @@ import net.bytebuddy.matcher.ElementMatcher;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConstructorPointcut implements AgentPointcut {
+public final class ConstructorPointcut {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     

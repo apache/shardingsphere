@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import net.bytebuddy.description.type.TypeDescription;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 
 public interface PluginLoader {
     
@@ -36,7 +36,7 @@ public interface PluginLoader {
      * @param typeDescription type description
      * @return plugin interceptor point
      */
-    PluginPointcuts loadPluginInterceptorPoint(TypeDescription typeDescription);
+    ClassPointcuts loadPluginInterceptorPoint(TypeDescription typeDescription);
     
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
