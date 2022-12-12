@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class ZipkinPluginDefinitionServiceTest {
     
     @Test
-    public void assertDefine() {
+    public void assertInstall() {
         assertThat(new ZipkinPluginDefinitionService().install(true).size(), is(3));
     }
 }

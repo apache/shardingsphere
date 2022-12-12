@@ -23,16 +23,25 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
+<#if transaction?contains("xa")>
+import org.springframework.context.annotation.Import;
+</#if>
 import java.sql.SQLException;
 
 @EntityScan(basePackages = "org.apache.shardingsphere.example.${package}.spring.boot.starter.jpa.entity")
 @SpringBootApplication
+<#if transaction?contains("xa")>
+@Import(TransactionConfiguration.class)
+</#if>
 public class ExampleMain {
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
             ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.run();
+        <#if transaction=="xa-narayana">
+            System.exit(0);
+        </#if>
         }
     }
 }

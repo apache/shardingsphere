@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.nested;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Nested transaction test case.
@@ -41,19 +43,19 @@ public class NestedTransactionTestCase extends BaseTransactionTestCase {
     @Override
     protected void executeTest() throws SQLException {
         ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
-        Assert.assertFalse(connection.isHoldTransaction());
+        assertFalse(connection.isHoldTransaction());
         connection.setAutoCommit(false);
-        Assert.assertTrue(connection.isHoldTransaction());
+        assertTrue(connection.isHoldTransaction());
         requiresNewTransaction();
-        Assert.assertTrue(connection.isHoldTransaction());
+        assertTrue(connection.isHoldTransaction());
         connection.commit();
     }
     
     private void requiresNewTransaction() throws SQLException {
         ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
-        Assert.assertFalse(connection.isHoldTransaction());
+        assertFalse(connection.isHoldTransaction());
         connection.setAutoCommit(false);
-        Assert.assertTrue(connection.isHoldTransaction());
+        assertTrue(connection.isHoldTransaction());
         connection.commit();
     }
 }

@@ -20,12 +20,13 @@ package org.apache.shardingsphere.agent.core.plugin.loader;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,8 +44,6 @@ import static org.junit.Assert.assertTrue;
 @Category(AgentPluginLoaderTest.class)
 public final class AgentPluginLoaderTest {
     
-    private static final AdviceInstanceLoader INSTANCE_LOADER = new AdviceInstanceLoader();
-    
     private static final AgentPluginLoader PLUGIN_LOADER = new AgentPluginLoader();
     
     private static final TypePool POOL = TypePool.Default.ofSystemLoader();
@@ -56,24 +55,24 @@ public final class AgentPluginLoaderTest {
     @BeforeClass
     @SuppressWarnings("unchecked")
     public static void setup() throws NoSuchFieldException, IllegalAccessException {
-        FieldReader objectPoolReader = new FieldReader(INSTANCE_LOADER, INSTANCE_LOADER.getClass().getDeclaredField("ADVICE_INSTANCE_CACHE"));
+        FieldReader objectPoolReader = new FieldReader(AdviceInstanceLoader.class, AdviceInstanceLoader.class.getDeclaredField("ADVICE_INSTANCE_CACHE"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
-        objectPool.put(MockClassStaticMethodAroundAdvice.class.getTypeName(), new MockClassStaticMethodAroundAdvice());
-        PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
+        objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
+        PluginPointcuts pluginPointcuts = new Builder("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
                 .build()
-                .aroundClassStaticMethod(ElementMatchers.named("staticMock"))
-                .implement(MockClassStaticMethodAroundAdvice.class.getTypeName())
+                .aroundStaticMethod(ElementMatchers.named("staticMock"))
+                .implement(MockStaticMethodAroundAdvice.class.getTypeName())
                 .build()
                 .onConstructor(ElementMatchers.takesArguments(1))
                 .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), PLUGIN_LOADER, Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, Collections.singletonMap(pluginPointcuts.getTargetClassName(), pluginPointcuts));
     }
     
     @Test

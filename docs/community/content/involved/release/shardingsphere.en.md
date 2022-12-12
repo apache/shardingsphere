@@ -498,8 +498,13 @@ I will process to publish the release and send ANNOUNCE.
 
 ### 1. Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
 
+Move release candidates to release area:
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
+```
+
+If KEYS has changed, update the KEYS file in the release area:
+```shell
 svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "delete KEYS"
 svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
@@ -562,13 +567,11 @@ Refer to [Release Download Pages for Projects](https://infra.apache.org/release-
 
 ### 6. Add entrance of documents of the new release into home page
 
-Refer to:
-- [English home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
-- [Chinese home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
+Refer to commit: https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430
 
 ### 7. Update Example Version
 
-Update the POM of the module examples, changing the version from ${RELEASE.VERSION} to ${NEXT.DEVELOPMENT.VERSION}, and submit a PR to release branch.
+Update the POM of the module examples, changing the version from ${RELEASE.VERSION} to ${NEXT.DEVELOPMENT.VERSION}, and commit changes to release branch.
 
 ### 8. Merge release branch to `master` and delete release branch on GitHub
 

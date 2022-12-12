@@ -27,7 +27,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Set read only transaction integration test.
@@ -43,9 +43,7 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
         assertQueryBalance(connection);
         executeUpdateWithLog(connection, "update account set balance = 101 where id = 2;");
         ResultSet resultSet = executeQueryWithLog(connection, "select * from account where id = 2");
-        if (!resultSet.next()) {
-            fail("Should have a result.");
-        }
+        assertTrue(resultSet.next());
         int balanceResult = resultSet.getInt("balance");
         assertThat(String.format("Balance is %s, should be 101.", balanceResult), balanceResult, is(101));
     }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;

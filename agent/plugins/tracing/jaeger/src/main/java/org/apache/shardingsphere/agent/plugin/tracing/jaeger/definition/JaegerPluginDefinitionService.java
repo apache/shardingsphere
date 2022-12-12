@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 
 /**
  * Jaeger plugin definition service.
@@ -46,7 +46,7 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.JDBCExecutorCallbackAdvice";
     
     @Override
-    public void defineProxyInterceptors() {
+    protected void defineProxyInterceptors() {
         defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -56,15 +56,13 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
                 .implement(SQL_PARSER_ENGINE_ADVICE_CLASS)
                 .build();
         defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS)
-                .aroundInstanceMethod(
-                        ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME)
-                                .and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
+                .aroundInstanceMethod(ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME).and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
     }
     
     @Override
-    public void defineJdbcInterceptors() {
+    protected void defineJdbcInterceptors() {
         // TODO add JDBC related interception
     }
     
