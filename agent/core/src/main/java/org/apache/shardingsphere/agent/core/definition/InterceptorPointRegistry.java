@@ -18,19 +18,17 @@
 package org.apache.shardingsphere.agent.core.definition;
 
 import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Interceptor point registry.
  */
 public final class InterceptorPointRegistry {
     
-    private final Map<String, Builder> builders = new ConcurrentHashMap<>();
+    private final Map<String, PluginPointcuts> pointcutsMap = new ConcurrentHashMap<>();
     
     /**
      * Get interceptor point builder.
@@ -38,8 +36,8 @@ public final class InterceptorPointRegistry {
      * @param targetClassName target class name to be intercepted
      * @return interceptor point builder
      */
-    public Builder getInterceptorPointBuilder(final String targetClassName) {
-        return builders.computeIfAbsent(targetClassName, Builder::new);
+    public PluginPointcuts getInterceptorPointBuilder(final String targetClassName) {
+        return pointcutsMap.computeIfAbsent(targetClassName, PluginPointcuts::new);
     }
     
     /**
@@ -48,6 +46,6 @@ public final class InterceptorPointRegistry {
      * @return all interceptor points
      */
     public Collection<PluginPointcuts> getAllInterceptorPoints() {
-        return builders.values().stream().map(Builder::install).collect(Collectors.toList());
+        return pointcutsMap.values();
     }
 }

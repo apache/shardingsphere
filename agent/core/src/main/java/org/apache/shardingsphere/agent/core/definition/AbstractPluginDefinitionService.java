@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.definition;
 
 import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.util.Collection;
@@ -44,7 +43,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     
     protected abstract void defineJdbcInterceptors();
     
-    protected final Builder defineInterceptor(final String targetClassName) {
+    protected final PluginPointcuts defineInterceptor(final String targetClassName) {
         return interceptorPointRegistry.getInterceptorPointBuilder(targetClassName);
     }
 }

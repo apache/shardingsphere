@@ -23,18 +23,20 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundRepeatedAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
 import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts.Builder;
+import org.apache.shardingsphere.agent.pointcut.ConstructorPointcut;
+import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
+import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -72,26 +74,9 @@ public final class ShardingSphereTransformerTest {
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
         Map<String, PluginPointcuts> pointcutsMap = new HashMap<>(2, 1);
-        PluginPointcuts pluginPointcuts = new Builder("org.apache.shardingsphere.agent.core.mock.material.Material")
-                .aroundInstanceMethod(ElementMatchers.named("mock"))
-                .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
-                .build()
-                .aroundStaticMethod(ElementMatchers.named("staticMock"))
-                .implement(MockStaticMethodAroundAdvice.class.getTypeName())
-                .build()
-                .onConstructor(ElementMatchers.takesArguments(1))
-                .implement(MockConstructorAdvice.class.getTypeName())
-                .build()
-                .install();
+        PluginPointcuts pluginPointcuts = createPluginPointcuts();
         pointcutsMap.put(pluginPointcuts.getTargetClassName(), pluginPointcuts);
-        PluginPointcuts pluginPointcutsInTwice = new Builder("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial")
-                .aroundInstanceMethod(ElementMatchers.named("mock"))
-                .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
-                .build()
-                .aroundInstanceMethod(ElementMatchers.named("mock"))
-                .implement(MockInstanceMethodAroundRepeatedAdvice.class.getTypeName())
-                .build()
-                .install();
+        PluginPointcuts pluginPointcutsInTwice = createPluginPointcutsInTwice();
         pointcutsMap.put(pluginPointcutsInTwice.getTargetClassName(), pluginPointcutsInTwice);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, pointcutsMap);
@@ -104,6 +89,21 @@ public final class ShardingSphereTransformerTest {
                 .transform(new ShardingSphereTransformer(PLUGIN_LOADER))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
+    }
+    
+    private static PluginPointcuts createPluginPointcuts() {
+        PluginPointcuts result = new PluginPointcuts("org.apache.shardingsphere.agent.core.mock.material.Material");
+        result.getConstructorPointcuts().add(new ConstructorPointcut(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
+        result.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        result.getStaticMethodPointcuts().add(new StaticMethodPointcut(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
+        return result;
+    }
+    
+    private static PluginPointcuts createPluginPointcutsInTwice() {
+        PluginPointcuts result = new PluginPointcuts("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial");
+        result.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        result.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundRepeatedAdvice.class.getTypeName()));
+        return result;
     }
     
     @Test

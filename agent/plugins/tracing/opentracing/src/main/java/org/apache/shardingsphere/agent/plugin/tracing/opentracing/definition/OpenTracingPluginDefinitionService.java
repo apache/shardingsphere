@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
 
 /**
  * Open tracing plugin definition service.
@@ -47,18 +48,13 @@ public final class OpenTracingPluginDefinitionService extends AbstractPluginDefi
     
     @Override
     protected void defineProxyInterceptors() {
-        defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
-                .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
-                .build();
-        defineInterceptor(SQL_PARSER_ENGINE_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(SQL_PARSER_ENGINE_METHOD_NAME))
-                .implement(SQL_PARSER_ENGINE_ADVICE_CLASS)
-                .build();
-        defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME).and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
-                .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
-                .build();
+        defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS).getInstanceMethodPointcuts()
+                .add(new InstanceMethodPointcut(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME), COMMAND_EXECUTOR_TASK_ADVICE_CLASS));
+        defineInterceptor(SQL_PARSER_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
+                .add(new InstanceMethodPointcut(ElementMatchers.named(SQL_PARSER_ENGINE_METHOD_NAME), SQL_PARSER_ENGINE_ADVICE_CLASS));
+        defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
+                .add(new InstanceMethodPointcut(ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME).and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))),
+                        JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS));
     }
     
     @Override
