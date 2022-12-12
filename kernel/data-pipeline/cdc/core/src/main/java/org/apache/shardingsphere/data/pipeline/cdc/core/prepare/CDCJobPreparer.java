@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import java.util.List;
 
 /**
- * CDC job prepare.
+ * CDC job preparer.
  */
 @Slf4j
 public final class CDCJobPreparer {
