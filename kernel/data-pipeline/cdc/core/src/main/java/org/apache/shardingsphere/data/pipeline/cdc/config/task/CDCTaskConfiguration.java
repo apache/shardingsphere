@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
+package org.apache.shardingsphere.data.pipeline.cdc.config.task;
 
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class JaegerPluginDefinitionServiceTest {
+/**
+ * CDC task configuration.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CDCTaskConfiguration implements PipelineTaskConfiguration {
     
-    @Test
-    public void assertInstallProxyInterceptors() {
-        JaegerPluginDefinitionService pluginDefinitionService = new JaegerPluginDefinitionService();
-        pluginDefinitionService.installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
-    }
+    private final DumperConfiguration dumperConfig;
+    
+    private final ImporterConfiguration importerConfig;
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
+import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
@@ -105,7 +106,7 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, ClassPointcuts> pointMap) {
-        pluginDefinitionService.install(isEnhancedForProxy).forEach(each -> {
+        new PluginDefinitionServiceEngine(pluginDefinitionService).install(isEnhancedForProxy).forEach(each -> {
             String target = each.getTargetClassName();
             if (pointMap.containsKey(target)) {
                 ClassPointcuts classPointcuts = pointMap.get(target);

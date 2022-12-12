@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
+package org.apache.shardingsphere.data.pipeline.cdc.context;
 
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.AbstractInventoryIncrementalProcessContext;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class JaegerPluginDefinitionServiceTest {
+/**
+ * CDC process context.
+ */
+public final class CDCProcessContext extends AbstractInventoryIncrementalProcessContext {
     
-    @Test
-    public void assertInstallProxyInterceptors() {
-        JaegerPluginDefinitionService pluginDefinitionService = new JaegerPluginDefinitionService();
-        pluginDefinitionService.installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
+    public CDCProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
+        super(jobId, originalProcessConfig);
     }
 }
