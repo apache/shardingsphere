@@ -24,33 +24,33 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import java.util.Properties;
 
 /**
- * MASK_FROM_X_TO_Y.
+ * Mask from x to y mask algorithm.
  */
 public final class MaskFromXToYMaskAlgorithm implements MaskAlgorithm<Object, String> {
     
-    private static final String X = "x";
+    private static final String FROM_X = "from-x";
     
-    private static final String Y = "y";
+    private static final String TO_Y = "to-y";
     
     private static final String REPLACE_CHAR = "replace-char";
+    
+    private Integer fromX;
+    
+    private Integer toY;
+    
+    private Character replaceChar;
     
     @Getter
     private Properties props;
     
-    private Integer x;
-    
-    private Integer y;
-    
-    private Character replaceChar;
-    
     @Override
     public String mask(final Object plainValue) {
         String value = plainValue == null ? "" : plainValue.toString();
-        if ("".equals(value) || value.length() <= x || y < x) {
+        if ("".equals(value) || value.length() <= fromX || toY < fromX) {
             return value;
         }
         char[] chars = value.toCharArray();
-        for (int i = x, len = Math.min(y, chars.length - 1); i <= len; i++) {
+        for (int i = fromX, len = Math.min(toY, chars.length - 1); i <= len; i++) {
             chars[i] = replaceChar;
         }
         return new String(chars);
@@ -59,24 +59,24 @@ public final class MaskFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
     @Override
     public void init(final Properties props) {
         this.props = props;
-        this.x = getX(props);
-        this.y = getY(props);
+        this.fromX = getX(props);
+        this.toY = getY(props);
         this.replaceChar = getReplaceChar(props);
     }
     
     private Integer getX(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(X), "%s can not be null.", X);
-        return Integer.parseInt(props.getProperty(X));
+        Preconditions.checkArgument(props.containsKey(FROM_X), "%s can not be null.", FROM_X);
+        return Integer.parseInt(props.getProperty(FROM_X));
     }
     
     private Integer getY(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(Y), "%s can not be null.", Y);
-        return Integer.parseInt(props.getProperty(Y));
+        Preconditions.checkArgument(props.containsKey(TO_Y), "%s can not be null.", TO_Y);
+        return Integer.parseInt(props.getProperty(TO_Y));
     }
     
     private Character getReplaceChar(final Properties props) {
         Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
-        Preconditions.checkArgument(props.getProperty(REPLACE_CHAR).length() == 1, "%s length must be 1.", REPLACE_CHAR);
+        Preconditions.checkArgument(1 == props.getProperty(REPLACE_CHAR).length(), "%s length must be 1.", REPLACE_CHAR);
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     

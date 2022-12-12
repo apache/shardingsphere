@@ -25,9 +25,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * MASK_FROM_X_TO_Y.
- */
 public final class MaskFromXToYMaskAlgorithmTest {
     
     private MaskFromXToYMaskAlgorithm algorithm;
@@ -35,15 +32,7 @@ public final class MaskFromXToYMaskAlgorithmTest {
     @Before
     public void setUp() {
         algorithm = new MaskFromXToYMaskAlgorithm();
-        algorithm.init(createProperties());
-    }
-    
-    private Properties createProperties() {
-        Properties props = new Properties();
-        props.setProperty("x", "3");
-        props.setProperty("y", "5");
-        props.setProperty("replace-char", "*");
-        return props;
+        algorithm.init(createProperties("3", "5", "*"));
     }
     
     @Test
@@ -59,13 +48,14 @@ public final class MaskFromXToYMaskAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertMaskWithInvalidProperties() {
-        algorithm.init(createInvalidProperties());
+        algorithm.init(createProperties("5", "", "*"));
     }
     
-    private Properties createInvalidProperties() {
-        Properties props = new Properties();
-        props.setProperty("x", "5");
-        props.setProperty("replace-char", "*");
-        return props;
+    private Properties createProperties(final String fromX, final String toY, final String replaceChar) {
+        Properties result = new Properties();
+        result.setProperty("from-x", fromX);
+        result.setProperty("to-y", toY);
+        result.setProperty("replace-char", replaceChar);
+        return result;
     }
 }

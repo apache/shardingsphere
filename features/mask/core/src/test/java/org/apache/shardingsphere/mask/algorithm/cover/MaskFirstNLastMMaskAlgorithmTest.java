@@ -25,9 +25,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * MASK_FIRST_N_LAST_M.
- */
 public final class MaskFirstNLastMMaskAlgorithmTest {
     
     private MaskFirstNLastMMaskAlgorithm algorithm;
@@ -35,15 +32,7 @@ public final class MaskFirstNLastMMaskAlgorithmTest {
     @Before
     public void setUp() {
         algorithm = new MaskFirstNLastMMaskAlgorithm();
-        algorithm.init(createProperties());
-    }
-    
-    private Properties createProperties() {
-        Properties props = new Properties();
-        props.setProperty("n", "3");
-        props.setProperty("m", "5");
-        props.setProperty("replace-char", "*");
-        return props;
+        algorithm.init(createProperties("3", "5", "*"));
     }
     
     @Test
@@ -58,13 +47,14 @@ public final class MaskFirstNLastMMaskAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertMaskWithInvalidProperties() {
-        algorithm.init(createInvalidProperties());
+        algorithm.init(createProperties("", "5", "*"));
     }
     
-    private Properties createInvalidProperties() {
-        Properties props = new Properties();
-        props.setProperty("m", "5");
-        props.setProperty("replace-char", "*");
-        return props;
+    private Properties createProperties(final String firstN, final String lastM, final String replaceChar) {
+        Properties result = new Properties();
+        result.setProperty("first-n", firstN);
+        result.setProperty("last-m", lastM);
+        result.setProperty("replace-char", replaceChar);
+        return result;
     }
 }

@@ -18,42 +18,43 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
 
 /**
- * MASK_FIRST_N_LAST_M.
+ * Mask first n last m mask algorithm.
  */
 public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object, String> {
     
-    private static final String N = "n";
+    private static final String FIRST_N = "first-n";
     
-    private static final String M = "m";
+    private static final String LAST_M = "last-m";
     
     private static final String REPLACE_CHAR = "replace-char";
+    
+    private Integer firstN;
+    
+    private Integer lastM;
+    
+    private Character replaceChar;
     
     @Getter
     private Properties props;
     
-    private Integer n;
-    
-    private Integer m;
-    
-    private Character replaceChar;
-    
     @Override
     public String mask(final Object plainValue) {
-        String value = plainValue == null ? "" : plainValue.toString();
-        if ("".equals(value)) {
-            return value;
+        String result = String.valueOf(plainValue);
+        if (Strings.isNullOrEmpty(result)) {
+            return result;
         }
-        char[] chars = value.toCharArray();
-        for (int i = 0, len = Math.min(n, chars.length); i < len; i++) {
+        char[] chars = result.toCharArray();
+        for (int i = 0, len = Math.min(firstN, chars.length); i < len; i++) {
             chars[i] = replaceChar;
         }
-        for (int i = chars.length - Math.min(m, chars.length); i < chars.length; i++) {
+        for (int i = chars.length - Math.min(lastM, chars.length); i < chars.length; i++) {
             chars[i] = replaceChar;
         }
         return new String(chars);
@@ -62,24 +63,24 @@ public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     @Override
     public void init(final Properties props) {
         this.props = props;
-        this.n = getN(props);
-        this.m = getM(props);
+        this.firstN = getN(props);
+        this.lastM = getM(props);
         this.replaceChar = getReplaceChar(props);
     }
     
     private Integer getN(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(N), "%s can not be null.", N);
-        return Integer.parseInt(props.getProperty(N));
+        Preconditions.checkArgument(props.containsKey(FIRST_N), "%s can not be null.", FIRST_N);
+        return Integer.parseInt(props.getProperty(FIRST_N));
     }
     
     private Integer getM(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(M), "%s can not be null.", M);
-        return Integer.parseInt(props.getProperty(M));
+        Preconditions.checkArgument(props.containsKey(LAST_M), "%s can not be null.", LAST_M);
+        return Integer.parseInt(props.getProperty(LAST_M));
     }
     
     private Character getReplaceChar(final Properties props) {
         Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
-        Preconditions.checkArgument(props.getProperty(REPLACE_CHAR).length() == 1, "%s length must be 1.", REPLACE_CHAR);
+        Preconditions.checkArgument(1 == props.getProperty(REPLACE_CHAR).length(), "%s length must be 1.", REPLACE_CHAR);
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     
