@@ -15,38 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.transaction.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Resource ID generator.
+ * XA unique resource name length exceeded exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceIDGenerator {
+public final class XAResourceNameLengthExceededException extends TransactionSQLException {
     
-    private static final ResourceIDGenerator INSTANCE = new ResourceIDGenerator();
+    private static final long serialVersionUID = 6190231034576044165L;
     
-    private final AtomicInteger count = new AtomicInteger();
-    
-    /**
-     * Get instance.
-     *
-     * @return instance
-     */
-    public static ResourceIDGenerator getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * Next unique resource id.
-     *
-     * @return next ID
-     */
-    String nextId() {
-        return String.format("%d-", count.incrementAndGet());
+    public XAResourceNameLengthExceededException(final String uniqueResourceName) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 202, String.format("Max length of xa unique resource name `%s` exceeded: should be less than 45.", uniqueResourceName));
     }
 }
