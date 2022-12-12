@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.repository.cluster.etcd.ConsulRepository
+org.apache.shardingsphere.mode.repository.cluster.consul.ConsulRepository
