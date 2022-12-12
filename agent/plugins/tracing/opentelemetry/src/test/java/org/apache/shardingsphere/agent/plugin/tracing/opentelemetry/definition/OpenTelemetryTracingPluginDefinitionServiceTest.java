@@ -27,7 +27,8 @@ public final class OpenTelemetryTracingPluginDefinitionServiceTest {
     
     @Test
     public void assertInstallProxyInterceptors() {
-        new OpenTelemetryTracingPluginDefinitionService().installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry("OpenTelemetry").getAllClassPointcuts().size(), is(3));
+        OpenTelemetryTracingPluginDefinitionService pluginDefinitionService = new OpenTelemetryTracingPluginDefinitionService();
+        pluginDefinitionService.installProxyInterceptors();
+        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
     }
 }

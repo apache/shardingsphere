@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
+import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class ZipkinPluginDefinitionServiceTest {
     
     @Test
-    public void assertInstall() {
-        assertThat(new ZipkinPluginDefinitionService().install(true).size(), is(3));
+    public void assertInstallProxyInterceptors() {
+        ZipkinPluginDefinitionService pluginDefinitionService = new ZipkinPluginDefinitionService();
+        pluginDefinitionService.installProxyInterceptors();
+        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
     }
 }

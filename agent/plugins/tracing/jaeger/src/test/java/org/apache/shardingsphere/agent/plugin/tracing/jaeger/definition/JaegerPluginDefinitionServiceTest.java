@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
+import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class JaegerPluginDefinitionServiceTest {
     
     @Test
-    public void assertInstall() {
-        assertThat(new JaegerPluginDefinitionService().install(true).size(), is(3));
+    public void assertInstallProxyInterceptors() {
+        JaegerPluginDefinitionService pluginDefinitionService = new JaegerPluginDefinitionService();
+        pluginDefinitionService.installProxyInterceptors();
+        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
     }
 }

@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class OpenTracingPluginDefinitionServiceTest {
     
     @Test
-    public void assertInstall() {
+    public void assertInstallProxyInterceptors() {
         OpenTracingPluginDefinitionService pluginDefinitionService = new OpenTracingPluginDefinitionService();
         pluginDefinitionService.installProxyInterceptors();
         assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
