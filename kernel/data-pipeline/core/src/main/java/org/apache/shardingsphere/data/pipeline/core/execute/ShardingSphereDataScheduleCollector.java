@@ -65,7 +65,7 @@ public final class ShardingSphereDataScheduleCollector {
     }
     
     @RequiredArgsConstructor
-    private static final class ShardingSphereDataCollectorRunnable implements Runnable {
+    protected static final class ShardingSphereDataCollectorRunnable implements Runnable {
         
         private final ContextManager contextManager;
         

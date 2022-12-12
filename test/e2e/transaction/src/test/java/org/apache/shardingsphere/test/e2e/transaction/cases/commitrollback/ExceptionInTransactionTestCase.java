@@ -63,7 +63,6 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             }
         }
         Thread queryThread = new Thread(() -> {
-            log.info("Execute query in new thread.");
             try (Connection connection2 = getDataSource().getConnection()) {
                 assertAccountRowCount(connection2, 0);
             } catch (final SQLException ignored) {
@@ -72,7 +71,6 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
         queryThread.start();
         try {
             queryThread.join();
-            log.info("ExceptionInTransactionTestCase test over.");
         } catch (final InterruptedException ignored) {
         }
     }

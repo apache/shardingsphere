@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
+import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -62,7 +62,7 @@ import static org.mockito.Mockito.when;
 public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
-    private DataSourcePropertiesValidator validator;
+    private DataSourcePropertiesValidateHandler validateHandler;
     
     @Mock
     private RegisterStorageUnitStatement registerStorageUnitStatement;
@@ -88,16 +88,16 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
     private RegisterStorageUnitBackendHandler registerStorageUnitBackendHandler;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws ReflectiveOperationException {
         when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(readwriteSplittingRule));
         registerStorageUnitBackendHandler = new RegisterStorageUnitBackendHandler(registerStorageUnitStatement, connectionSession);
-        Field field = registerStorageUnitBackendHandler.getClass().getDeclaredField("validator");
+        Field field = registerStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler");
         field.setAccessible(true);
-        field.set(registerStorageUnitBackendHandler, validator);
+        field.set(registerStorageUnitBackendHandler, validateHandler);
     }
     
     @Test

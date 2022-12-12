@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
-import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
+import org.apache.shardingsphere.agent.core.definition.AbstractPluginDefinitionService;
 
 /**
  * Base logging plugin definition service.
@@ -33,17 +33,17 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
-    public void defineProxyInterceptors() {
+    protected void defineProxyInterceptors() {
         defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
+                .aroundStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
     }
     
     @Override
-    public void defineJdbcInterceptors() {
+    protected void defineJdbcInterceptors() {
         defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
+                .aroundStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
     }

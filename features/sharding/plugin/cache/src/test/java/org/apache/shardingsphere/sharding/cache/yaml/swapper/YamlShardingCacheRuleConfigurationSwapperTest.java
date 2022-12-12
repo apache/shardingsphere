@@ -70,6 +70,6 @@ public final class YamlShardingCacheRuleConfigurationSwapperTest {
     
     @Test
     public void assertGetOrder() {
-        assertThat(new YamlShardingCacheRuleConfigurationSwapper().getOrder(), is(-8));
+        assertThat(new YamlShardingCacheRuleConfigurationSwapper().getOrder(), is(-9));
     }
 }

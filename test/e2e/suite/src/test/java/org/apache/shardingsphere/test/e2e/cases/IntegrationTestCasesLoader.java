@@ -65,8 +65,7 @@ public final class IntegrationTestCasesLoader {
      * @return integration test case contexts
      */
     public Collection<IntegrationTestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
-        testCaseContexts.putIfAbsent(sqlCommandType, loadIntegrationTestCaseContexts(sqlCommandType));
-        return testCaseContexts.get(sqlCommandType);
+        return testCaseContexts.computeIfAbsent(sqlCommandType, this::loadIntegrationTestCaseContexts);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})

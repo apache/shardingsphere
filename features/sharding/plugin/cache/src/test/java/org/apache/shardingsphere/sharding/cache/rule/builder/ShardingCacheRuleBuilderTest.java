@@ -52,7 +52,7 @@ public final class ShardingCacheRuleBuilderTest {
     
     @Test
     public void assertGetOrder() {
-        assertThat(new ShardingCacheRuleBuilder().getOrder(), is(-8));
+        assertThat(new ShardingCacheRuleBuilder().getOrder(), is(-9));
     }
     
     @Test

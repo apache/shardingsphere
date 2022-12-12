@@ -25,12 +25,20 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -38,8 +46,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public final class ShardingSQLFederationDeciderTest {
@@ -58,15 +68,31 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenContainsPagination() {
+    public void assertDecideWhenContainsSameShardingCondition() {
         SelectStatementContext select = createStatementContext();
-        when(select.getPaginationContext().isHasPagination()).thenReturn(true);
+        when(select.isContainsSubquery()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         ShardingSQLFederationDecider federationDecider = new ShardingSQLFederationDecider();
-        federationDecider.decide(actual, queryContext, createDatabase(), createShardingRule(), new ConfigurationProperties(new Properties()));
+        try (MockedStatic<ShardingConditionEngineFactory> shardingConditionEngineFactory = mockStatic(ShardingConditionEngineFactory.class)) {
+            WhereClauseShardingConditionEngine shardingConditionEngine = mock(WhereClauseShardingConditionEngine.class);
+            when(shardingConditionEngine.createShardingConditions(any(), any())).thenReturn(createShardingConditions());
+            shardingConditionEngineFactory.when(() -> ShardingConditionEngineFactory.createShardingConditionEngine(any(QueryContext.class), any(), any())).thenReturn(shardingConditionEngine);
+            federationDecider.decide(actual, queryContext, createDatabase(), createShardingRule(), new ConfigurationProperties(new Properties()));
+        }
         assertThat(actual.getDataNodes().size(), is(4));
         assertFalse(actual.isUseSQLFederation());
+    }
+    
+    private List<ShardingCondition> createShardingConditions() {
+        List<ShardingCondition> result = new ArrayList<>();
+        ShardingCondition shardingCondition1 = new ShardingCondition();
+        shardingCondition1.getValues().add(new ListShardingConditionValue<>("order_id", "t_order", Collections.singletonList(1)));
+        result.add(shardingCondition1);
+        ShardingCondition shardingCondition2 = new ShardingCondition();
+        shardingCondition2.getValues().add(new ListShardingConditionValue<>("order_id", "t_order_item", Collections.singletonList(1)));
+        result.add(shardingCondition2);
+        return result;
     }
     
     @Test
@@ -198,6 +224,11 @@ public final class ShardingSQLFederationDeciderTest {
                 new DataNode("ds_0", "t_order"), new DataNode("ds_1", "t_order"),
                 new DataNode("ds_0", "t_order_item"), new DataNode("ds_1", "t_order_item")));
         when(result.findTableRule("t_order")).thenReturn(Optional.of(tableRule));
+        BindingTableRule bindingTableRule = mock(BindingTableRule.class);
+        when(bindingTableRule.hasLogicTable("t_order")).thenReturn(true);
+        when(bindingTableRule.hasLogicTable("t_order_item")).thenReturn(true);
+        when(result.findBindingTableRule("t_order")).thenReturn(Optional.of(bindingTableRule));
+        when(result.findBindingTableRule("t_order_item")).thenReturn(Optional.of(bindingTableRule));
         return result;
     }
 }
