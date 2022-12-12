@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
@@ -37,14 +36,17 @@ public final class BaseLoggingPluginDefinitionService implements PluginDefinitio
     
     @Override
     public void installProxyInterceptors() {
-        PluginDefinitionServiceEngine engine = new PluginDefinitionServiceEngine(this);
-        engine.getClassPointcuts(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
-                .add(new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
+        installInterceptors();
     }
     
     @Override
     public void installJdbcInterceptors() {
-        ClassPointcutsRegistryFactory.getRegistry(getType()).getClassPointcuts(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
+        installInterceptors();
+    }
+    
+    private void installInterceptors() {
+        PluginDefinitionServiceEngine engine = new PluginDefinitionServiceEngine(this);
+        engine.getClassPointcuts(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
                 .add(new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
     }
     
