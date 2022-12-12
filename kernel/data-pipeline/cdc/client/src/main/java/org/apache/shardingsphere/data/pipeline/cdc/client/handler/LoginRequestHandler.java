@@ -65,7 +65,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         CDCResponse response = (CDCResponse) msg;
         if (response.hasServerGreetingResult()) {
             ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
-            log.info("Server greeting result, server version: {}, min protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
+            log.info("Server greeting result, server version: {}, protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
             sendLoginRequest(ctx);
             return;
         }
