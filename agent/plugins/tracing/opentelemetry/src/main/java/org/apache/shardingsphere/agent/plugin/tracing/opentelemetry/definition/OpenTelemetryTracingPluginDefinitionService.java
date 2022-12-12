@@ -19,6 +19,9 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.CommandExecutorTaskAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.JDBCExecutorCallbackAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.SQLParserEngineAdvice;
 import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
@@ -31,13 +34,13 @@ public final class OpenTelemetryTracingPluginDefinitionService implements Plugin
     
     private static final String COMMAND_EXECUTOR_METHOD_NAME = "run";
     
-    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.CommandExecutorTaskAdvice";
+    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = CommandExecutorTaskAdvice.class.getName();
     
     private static final String SQL_PARSER_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine";
     
     private static final String SQL_PARSER_ENGINE_METHOD_NAME = "parse";
     
-    private static final String SQL_PARSER_ENGINE_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.SQLParserEngineAdvice";
+    private static final String SQL_PARSER_ENGINE_ADVICE_CLASS = SQLParserEngineAdvice.class.getName();
     
     private static final String JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback";
     
@@ -45,7 +48,7 @@ public final class OpenTelemetryTracingPluginDefinitionService implements Plugin
     
     private static final String JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit";
     
-    private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.JDBCExecutorCallbackAdvice";
+    private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = JDBCExecutorCallbackAdvice.class.getName();
     
     @Override
     public void installProxyInterceptors() {
@@ -55,7 +58,8 @@ public final class OpenTelemetryTracingPluginDefinitionService implements Plugin
         engine.getClassPointcuts(SQL_PARSER_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
                 .add(new InstanceMethodPointcut(ElementMatchers.named(SQL_PARSER_ENGINE_METHOD_NAME), SQL_PARSER_ENGINE_ADVICE_CLASS));
         engine.getClassPointcuts(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS).getInstanceMethodPointcuts()
-                .add(new InstanceMethodPointcut(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS)), JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS));
+                .add(new InstanceMethodPointcut(ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME).and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))),
+                        JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS));
     }
     
     @Override
