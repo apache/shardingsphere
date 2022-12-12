@@ -11,8 +11,30 @@ chapter = true
 [![GitHub watchers](https://img.shields.io/github/watchers/apache/shardingsphere.svg?style=social&label=Watch)](https://github.com/apache/shardingsphere/watchers)
 
 **Stargazers Over Time**
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```
+DropShardingTableRule ::=
+  'DROP' 'SHARDING' 'TABLE' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+
+shardingRuleName ::=
+  identifier
+
+databaseName ::=
+  identifier
+  
+```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 
 [![Stargazers Over Time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere)
+
+**Test Tabs**
+
 
 **Contributors Over Time**
 

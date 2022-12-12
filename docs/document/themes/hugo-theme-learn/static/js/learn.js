@@ -242,7 +242,7 @@ jQuery(document).ready(function() {
                 });
 
                 var inPre;
-                clip.on('success', function(e) {
+                clip.on('success', function(e) {console.log(text)
                     e.clearSelection();
                     inPre = $(e.trigger).parent().prop('tagName') == 'PRE';
                     $(e.trigger).attr('aria-label', 'Copied to clipboard!').addClass('tooltipped tooltipped-' + (inPre ? 'w' : 's'));
@@ -399,6 +399,69 @@ jQuery(document).ready(function() {
 
         $(document).ready($.proxy(anchorScrolls, 'init'));
     })(window.document, window.history, window.location);
+
+
+    //railroad diagram
+    
+    if($('.tab-panel').length) {
+        var codeStr = $('.tab-panel code').text()
+        var diagram = $('#diagram')
+
+        function appendFormElement(tagName, type, name, value, parentEl){
+            var el = document.createElement(tagName)
+            el.type = type
+            el.name = name
+            el.value = value,
+            parentEl.appendChild(el)
+        }
+
+        var form = document.createElement('form')
+        form.name = "data2"
+        form.method = "post"
+        form.action = "https://www.sphere-ex.com/rrdg"
+        form.enctype="multipart/form-data"
+
+        appendFormElement('input', 'hidden', 'task', 'VIEW', form)
+        appendFormElement('input', 'hidden', 'frame', '', form)
+        appendFormElement('input', 'hidden', 'name', 'ui', form)
+        
+        // 可增加
+        appendFormElement('input', 'hidden', 'color', '#4065ff', form)
+
+        appendFormElement('textarea', 'hidden', 'text', codeStr, form)
+     
+        appendFormElement('input', 'hidden', 'width', '700', form)
+        appendFormElement('input', 'hidden', 'padding', '10', form)
+        appendFormElement('input', 'hidden', 'strokewidth', '1', form)
+
+        document.body.appendChild(form)
+
+        document.forms.data2.target = 'diagram';
+        document.forms.data2.frame.value = 'diagram';
+        // document.forms.data2.time.value = new Date().getTime();
+
+        
+
+        document.forms.data2.submit();
+
+        document.body.removeChild(form)
+
+        diagram.on('load', function(){
+            console.log('loaded', this.contentWindow)
+            // var _h
+            
+            //         _h =  this.contentWindow.document.documentElement.scrollHeight;
+            
+                
+            
+            
+            //         _h = this.contentDocument.body.scrollHeight;
+            
+                           
+            // console.log(_h) 
+            diagram.height('500px')
+        })
+    }
 
 });
 
