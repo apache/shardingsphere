@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguratio
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
         result.setSubscriptionName(data.getSubscriptionName());
         result.setSubscriptionMode(data.getSubscriptionMode());
         result.setSourceDatabaseType(data.getSourceDatabaseType());
-        result.setDataSourceConfiguration(dataSourceConfigSwapper.swapToYamlConfiguration(data.getDataSourceConfiguration()));
+        result.setDataSourceConfiguration(dataSourceConfigSwapper.swapToYamlConfiguration(data.getDataSourceConfig()));
         result.setTablesFirstDataNodes(null == data.getTablesFirstDataNodes() ? null : data.getTablesFirstDataNodes().marshal());
         List<String> jobShardingDataNodes = null == data.getJobShardingDataNodes() ? null : data.getJobShardingDataNodes().stream().map(JobDataNodeLine::marshal).collect(Collectors.toList());
         result.setJobShardingDataNodes(jobShardingDataNodes);
@@ -54,10 +55,13 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
     
     @Override
     public CDCJobConfiguration swapToObject(final YamlCDCJobConfiguration yamlConfig) {
-        List<JobDataNodeLine> jobShardingDataNodes = yamlConfig.getJobShardingDataNodes().stream().map(JobDataNodeLine::unmarshal).collect(Collectors.toList());
+        List<JobDataNodeLine> jobShardingDataNodes = null == yamlConfig.getJobShardingDataNodes()
+                ? Collections.emptyList()
+                : yamlConfig.getJobShardingDataNodes().stream().map(JobDataNodeLine::unmarshal).collect(Collectors.toList());
+        JobDataNodeLine tablesFirstDataNodes = null == yamlConfig.getTablesFirstDataNodes() ? null : JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes());
         return new CDCJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabase(), yamlConfig.getTableNames(), yamlConfig.getSubscriptionName(), yamlConfig.getSubscriptionMode(),
-                yamlConfig.getSourceDatabaseType(), (ShardingSpherePipelineDataSourceConfiguration) dataSourceConfigSwapper.swapToObject(yamlConfig.getDataSourceConfiguration()),
-                JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes()), jobShardingDataNodes, yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
+                yamlConfig.getSourceDatabaseType(), (ShardingSpherePipelineDataSourceConfiguration) dataSourceConfigSwapper.swapToObject(yamlConfig.getDataSourceConfiguration()), tablesFirstDataNodes,
+                jobShardingDataNodes, yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
     
     /**

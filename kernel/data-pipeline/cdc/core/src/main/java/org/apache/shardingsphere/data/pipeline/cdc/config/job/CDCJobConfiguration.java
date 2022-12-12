@@ -44,7 +44,7 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final String sourceDatabaseType;
     
-    private final ShardingSpherePipelineDataSourceConfiguration dataSourceConfiguration;
+    private final ShardingSpherePipelineDataSourceConfiguration dataSourceConfig;
     
     private final JobDataNodeLine tablesFirstDataNodes;
     

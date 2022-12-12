@@ -18,12 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.prepare;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
@@ -31,19 +26,16 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfigurat
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * CDC job prepare.
  */
 @Slf4j
-public final class CDCJobPrepare {
+public final class CDCJobPreparer {
     
     private final CDCJobAPI jobAPI = CDCJobAPIFactory.getInstance();
     
@@ -71,25 +63,6 @@ public final class CDCJobPrepare {
         InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), inventoryDumperConfig, taskConfig.getImporterConfig());
         List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         jobItemContext.getInventoryTasks().addAll(allInventoryTasks);
-    }
-    
-    private Collection<InventoryDumperConfiguration> generateInventoryDumperConfigurations(final DumperConfiguration dumperConfig, final PipelineTableMetaDataLoader pipelineTableMetaDataLoader) {
-        Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        dumperConfig.getTableNameMap().forEach((key, value) -> {
-            InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
-            // use original table name, for metadata loader, since some database table name case-sensitive
-            inventoryDumperConfig.setActualTableName(key.getOriginal());
-            inventoryDumperConfig.setLogicTableName(value.getOriginal());
-            inventoryDumperConfig.setPosition(new PlaceholderPosition());
-            String schemaName = inventoryDumperConfig.getSchemaName(new LogicTableName(value.getOriginal()));
-            String actualTableName = inventoryDumperConfig.getActualTableName();
-            PipelineColumnMetaData uniqueKeyColumn = PipelineTableMetaDataUtil.getUniqueKeyColumn(schemaName, actualTableName, pipelineTableMetaDataLoader);
-            inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());
-            inventoryDumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
-            
-            result.add(inventoryDumperConfig);
-        });
-        return result;
     }
     
     private void initIncrementalTasks(final CDCJobItemContext jobItemContext) {

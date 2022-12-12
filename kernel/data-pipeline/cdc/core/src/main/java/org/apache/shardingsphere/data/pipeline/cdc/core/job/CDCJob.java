@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguratio
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPrepare;
+import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
@@ -46,7 +46,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     private final CDCJobAPI jobAPI = CDCJobAPIFactory.getInstance();
     
-    private final CDCJobPrepare jobPreparer = new CDCJobPrepare();
+    private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     

@@ -97,9 +97,8 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
-    
+        // TODO to be implemented
     }
-    
     
     /**
      * Get source data source.
@@ -124,7 +123,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public void updateInventoryRecordsCount(final long recordsCount) {
-    
+        // TODO to be implemented
     }
     
     @Override
