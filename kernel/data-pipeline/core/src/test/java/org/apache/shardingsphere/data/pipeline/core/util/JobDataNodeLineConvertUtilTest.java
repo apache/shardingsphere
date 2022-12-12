@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,18 +52,15 @@ public final class JobDataNodeLineConvertUtilTest {
     }
     
     @Test
-    public void assertConvertDataNodesToLinesWith() {
+    public void assertConvertDataNodesToLinesWithMultipleDataSource() {
         Map<String, List<DataNode>> mockDataNodes = new LinkedHashMap<>();
-        List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0", "t_order_0"), new DataNode("ds_0", "t_order_1"));
-        List<DataNode> itemDataNodes = Collections.singletonList(new DataNode("ds_0", "t_order_item_0"));
+        List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0", "t_order_0"), new DataNode("ds_0", "t_order_2"), new DataNode("ds_1", "t_order_1"), new DataNode("ds_1", "t_order_3"));
         mockDataNodes.put("t_order", dataNodes);
-        mockDataNodes.put("t_order_item", itemDataNodes);
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtil.convertDataNodesToLines(mockDataNodes);
-        assertThat(jobDataNodeLines.size(), is(1));
-        List<JobDataNodeEntry> actualNodeEntry = new ArrayList<>(jobDataNodeLines.get(0).getEntries());
-        assertThat(actualNodeEntry.get(0).getLogicTableName(), is("t_order"));
-        assertThat(actualNodeEntry.get(0).getDataNodes().size(), is(2));
-        assertThat(actualNodeEntry.get(1).getLogicTableName(), is("t_order_item"));
-        assertThat(actualNodeEntry.get(1).getDataNodes().size(), is(1));
+        assertThat(jobDataNodeLines.size(), is(2));
+        JobDataNodeEntry jobDataNodeEntry = jobDataNodeLines.get(0).getEntries().iterator().next();
+        assertThat(jobDataNodeEntry.getDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toList()), is(Arrays.asList("t_order_0", "t_order_2")));
+        jobDataNodeEntry = jobDataNodeLines.get(1).getEntries().iterator().next();
+        assertThat(jobDataNodeEntry.getDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toList()), is(Arrays.asList("t_order_1", "t_order_3")));
     }
 }
