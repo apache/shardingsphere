@@ -25,7 +25,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class YamlCDCJobConfigurationSwapperTest {
+public final class YamlCDCJobConfigurationSwapperTest {
     
     @Test
     public void assertSwapToObject() {
