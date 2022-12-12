@@ -38,7 +38,7 @@ import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
 import org.apache.shardingsphere.agent.pointcut.ConstructorPointcut;
 import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
@@ -76,10 +76,10 @@ public final class ShardingSphereTransformer implements Transformer {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        PluginPointcuts pluginPointcuts = pluginLoader.loadPluginInterceptorPoint(typeDescription);
-        result = interceptConstructor(typeDescription, pluginPointcuts.getConstructorPointcuts(), result, classLoader);
-        result = interceptStaticMethod(typeDescription, pluginPointcuts.getStaticMethodPointcuts(), result, classLoader);
-        result = interceptInstanceMethod(typeDescription, pluginPointcuts.getInstanceMethodPointcuts(), result, classLoader);
+        ClassPointcuts classPointcuts = pluginLoader.loadPluginInterceptorPoint(typeDescription);
+        result = interceptConstructor(typeDescription, classPointcuts.getConstructorPointcuts(), result, classLoader);
+        result = interceptStaticMethod(typeDescription, classPointcuts.getStaticMethodPointcuts(), result, classLoader);
+        result = interceptInstanceMethod(typeDescription, classPointcuts.getInstanceMethodPointcuts(), result, classLoader);
         return result;
     }
     

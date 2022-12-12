@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.definition;
 
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.util.Collection;
@@ -30,7 +30,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     private final InterceptorPointRegistry interceptorPointRegistry = new InterceptorPointRegistry();
     
     @Override
-    public final Collection<PluginPointcuts> install(final boolean isEnhancedForProxy) {
+    public final Collection<ClassPointcuts> install(final boolean isEnhancedForProxy) {
         if (isEnhancedForProxy) {
             defineProxyInterceptors();
         } else {
@@ -43,7 +43,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     
     protected abstract void defineJdbcInterceptors();
     
-    protected final PluginPointcuts defineInterceptor(final String targetClassName) {
+    protected final ClassPointcuts defineInterceptor(final String targetClassName) {
         return interceptorPointRegistry.getInterceptorPointBuilder(targetClassName);
     }
 }

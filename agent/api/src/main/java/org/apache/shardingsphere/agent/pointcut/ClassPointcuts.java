@@ -24,11 +24,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Plugin pointcuts.
+ * Class pointcuts.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PluginPointcuts {
+public final class ClassPointcuts {
     
     private final String targetClassName;
     

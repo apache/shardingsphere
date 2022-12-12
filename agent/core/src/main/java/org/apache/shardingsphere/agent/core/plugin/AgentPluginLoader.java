@@ -29,7 +29,7 @@ import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.pointcut.PluginPointcuts;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
 
 import java.io.File;
@@ -52,7 +52,7 @@ public final class AgentPluginLoader implements PluginLoader {
     
     private final Collection<PluginJar> pluginJars = new LinkedList<>();
     
-    private Map<String, PluginPointcuts> pointcuts;
+    private Map<String, ClassPointcuts> pointcuts;
     
     @Getter
     @Setter
@@ -83,9 +83,9 @@ public final class AgentPluginLoader implements PluginLoader {
     
     private void loadAllPluginInterceptorPoint(final ClassLoader classLoader) {
         Collection<String> pluginNames = getPluginNames();
-        Map<String, PluginPointcuts> pointMap = new HashMap<>();
+        Map<String, ClassPointcuts> pointMap = new HashMap<>();
         loadPluginDefinitionServices(pluginNames, pointMap, classLoader);
-        pointcuts = ImmutableMap.<String, PluginPointcuts>builder().putAll(pointMap).build();
+        pointcuts = ImmutableMap.<String, ClassPointcuts>builder().putAll(pointMap).build();
     }
     
     private Collection<String> getPluginNames() {
@@ -97,21 +97,21 @@ public final class AgentPluginLoader implements PluginLoader {
         return result;
     }
     
-    private void loadPluginDefinitionServices(final Collection<String> pluginNames, final Map<String, PluginPointcuts> pointMap, final ClassLoader classLoader) {
+    private void loadPluginDefinitionServices(final Collection<String> pluginNames, final Map<String, ClassPointcuts> pointMap, final ClassLoader classLoader) {
         PluginServiceLoader.newServiceInstances(PluginDefinitionService.class, classLoader)
                 .stream()
                 .filter(each -> pluginNames.contains(each.getType()))
                 .forEach(each -> buildPluginInterceptorPointMap(each, pointMap));
     }
     
-    private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginPointcuts> pointMap) {
+    private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, ClassPointcuts> pointMap) {
         pluginDefinitionService.install(isEnhancedForProxy).forEach(each -> {
             String target = each.getTargetClassName();
             if (pointMap.containsKey(target)) {
-                PluginPointcuts pluginPointcuts = pointMap.get(target);
-                pluginPointcuts.getConstructorPointcuts().addAll(each.getConstructorPointcuts());
-                pluginPointcuts.getInstanceMethodPointcuts().addAll(each.getInstanceMethodPointcuts());
-                pluginPointcuts.getStaticMethodPointcuts().addAll(each.getStaticMethodPointcuts());
+                ClassPointcuts classPointcuts = pointMap.get(target);
+                classPointcuts.getConstructorPointcuts().addAll(each.getConstructorPointcuts());
+                classPointcuts.getInstanceMethodPointcuts().addAll(each.getInstanceMethodPointcuts());
+                classPointcuts.getStaticMethodPointcuts().addAll(each.getStaticMethodPointcuts());
             } else {
                 pointMap.put(target, each);
             }
@@ -149,8 +149,8 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     @Override
-    public PluginPointcuts loadPluginInterceptorPoint(final TypeDescription typeDescription) {
-        return pointcuts.getOrDefault(typeDescription.getTypeName(), new PluginPointcuts(""));
+    public ClassPointcuts loadPluginInterceptorPoint(final TypeDescription typeDescription) {
+        return pointcuts.getOrDefault(typeDescription.getTypeName(), new ClassPointcuts(""));
     }
     
     @Override
