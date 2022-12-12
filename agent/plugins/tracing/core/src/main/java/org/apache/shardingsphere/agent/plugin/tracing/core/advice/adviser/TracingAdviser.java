@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.common.advice.adviser;
+package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser;
 
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 

@@ -24,6 +24,6 @@
         <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-tracing-common</artifactId>
+    <artifactId>shardingsphere-agent-tracing-core</artifactId>
     <name>${project.artifactId}</name>
 </project>

@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.common.advice.adviser.impl;
+package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.common.advice.adviser.TracingAdviser;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.TracingAdviser;
 import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
 
 /**
- * JDBC executor callback adviser.
+ * SQL parser engine adviser.
  */
 @RequiredArgsConstructor
-public final class JDBCExecutorCallbackAdviser implements TracingAdviser {
+public final class SQLParserEngineAdviser implements TracingAdviser {
     
-    private static final String TARGET_CLASS = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback";
+    private static final String TARGET_CLASS = "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine";
     
-    private static final String TARGET_METHOD = "execute";
-    
-    private static final String TARGET_METHOD_FIRST_PARAM = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit";
+    private static final String TARGET_METHOD = "parse";
     
     private final PluginDefinitionServiceEngine engine;
     
     @Override
-    public void advice(final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
+    public void advice(final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice) {
         engine.getClassPointcuts(TARGET_CLASS).getInstanceMethodPointcuts()
-                .add(new InstanceMethodPointcut(ElementMatchers.named(TARGET_METHOD).and(ElementMatchers.takesArgument(0, ElementMatchers.named(TARGET_METHOD_FIRST_PARAM))),
-                        jdbcExecutorCallbackAdvice.getName()));
+                .add(new InstanceMethodPointcut(ElementMatchers.named(TARGET_METHOD), sqlParserEngineAdvice.getName()));
     }
 }

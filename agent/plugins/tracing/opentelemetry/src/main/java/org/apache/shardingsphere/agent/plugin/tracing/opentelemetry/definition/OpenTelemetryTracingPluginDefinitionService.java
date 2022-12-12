@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
 import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
-import org.apache.shardingsphere.agent.plugin.tracing.common.advice.TracingAdviceEngine;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.JDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;

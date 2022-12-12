@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>common</module>
+        <module>core</module>
         <module>opentracing</module>
         <module>opentelemetry</module>
         <module>jaeger</module>

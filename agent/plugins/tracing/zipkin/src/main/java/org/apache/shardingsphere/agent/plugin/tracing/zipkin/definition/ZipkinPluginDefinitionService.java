@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
 import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
-import org.apache.shardingsphere.agent.plugin.tracing.common.advice.TracingAdviceEngine;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.JDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
