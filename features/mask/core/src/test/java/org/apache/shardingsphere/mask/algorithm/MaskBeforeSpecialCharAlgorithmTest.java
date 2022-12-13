@@ -55,6 +55,12 @@ public final class MaskBeforeSpecialCharAlgorithmTest {
     }
     
     @Test
+    public void assertMaskEmptyString() {
+        String actual = maskAlgorithm.mask("");
+        assertThat(actual, is(""));
+    }
+    
+    @Test
     public void assertMaskWhenPlainValueNotMatchedSpecialCharacters() {
         String actual = maskAlgorithm.mask("abcd234");
         assertThat(actual, is("abcd234"));

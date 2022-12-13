@@ -50,12 +50,10 @@ public final class MaskBeforeSpecialCharAlgorithm implements MaskAlgorithm<Objec
     @Override
     public String mask(final Object plainValue) {
         String result = null == plainValue ? null : String.valueOf(plainValue);
-        final int index = result.indexOf(specialCharacters);
+        int index = result.indexOf(specialCharacters);
         char[] chars = result.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (i < index) {
-                chars[i] = '*';
-            }
+        for (int i = 0; i < index; i++) {
+            chars[i] = '*';
         }
         return new String(chars);
     }
