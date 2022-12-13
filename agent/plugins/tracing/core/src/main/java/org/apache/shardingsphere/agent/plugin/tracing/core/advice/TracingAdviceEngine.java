@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.CommandExecutorTaskAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.JDBCExecutorCallbackAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.SQLParserEngineAdviser;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +34,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class TracingAdviceEngine {
     
-    private final AdvisorDefinitionServiceEngine engine;
+    private final String type;
     
     /**
      * Get proxy tracing advisors.
@@ -50,9 +49,9 @@ public final class TracingAdviceEngine {
                                                      final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
         // TODO load from YAML, please ref metrics
         Collection<ClassAdvisor> result = new LinkedList<>();
-        result.add(new CommandExecutorTaskAdviser(engine).getAdvisor(commandExecutorTaskAdvice));
-        result.add(new SQLParserEngineAdviser(engine).getAdvisor(sqlParserEngineAdvice));
-        result.add(new JDBCExecutorCallbackAdviser(engine).getAdvisor(jdbcExecutorCallbackAdvice));
+        result.add(new CommandExecutorTaskAdviser(type).getAdvisor(commandExecutorTaskAdvice));
+        result.add(new SQLParserEngineAdviser(type).getAdvisor(sqlParserEngineAdvice));
+        result.add(new JDBCExecutorCallbackAdviser(type).getAdvisor(jdbcExecutorCallbackAdvice));
         return result;
     }
     
