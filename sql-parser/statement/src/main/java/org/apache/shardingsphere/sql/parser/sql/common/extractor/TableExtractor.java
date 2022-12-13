@@ -74,7 +74,7 @@ public final class TableExtractor {
      * @param selectStatement select statement
      */
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
-        if (null != selectStatement.getFrom()) {
+        if (null != selectStatement.getFrom() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromTableSegment(selectStatement.getFrom());
         }
         if (selectStatement.getWhere().isPresent()) {
