@@ -31,7 +31,7 @@ import java.util.Collection;
  */
 public final class JaegerAdvisorDefinitionService implements AdvisorDefinitionService {
     
-    private final TracingAdviceEngine engine = new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this));
+    private final TracingAdviceEngine engine = new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(getType()));
     
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {

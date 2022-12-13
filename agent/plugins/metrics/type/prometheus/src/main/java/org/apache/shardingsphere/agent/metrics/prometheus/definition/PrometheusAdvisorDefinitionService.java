@@ -37,7 +37,7 @@ import java.util.LinkedList;
  */
 public final class PrometheusAdvisorDefinitionService implements AdvisorDefinitionService {
     
-    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
+    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(getType());
     
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {

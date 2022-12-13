@@ -38,7 +38,7 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
-    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
+    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(getType());
     
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {

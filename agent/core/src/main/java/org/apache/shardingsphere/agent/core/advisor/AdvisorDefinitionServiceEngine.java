@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.core.advisor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
-import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 /**
  * Advisor definition service engine.
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 @RequiredArgsConstructor
 public final class AdvisorDefinitionServiceEngine {
     
-    private final AdvisorDefinitionService advisorDefinitionService;
+    private final String type;
     
     /**
      * Get advisor.
@@ -36,6 +35,6 @@ public final class AdvisorDefinitionServiceEngine {
      * @return advisor
      */
     public ClassAdvisor getAdvisor(final String targetClassName) {
-        return ClassAdvisorRegistryFactory.getRegistry(advisorDefinitionService.getType()).getAdvisor(targetClassName);
+        return ClassAdvisorRegistryFactory.getRegistry(type).getAdvisor(targetClassName);
     }
 }
