@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.definition;
 
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 
 import java.util.Collection;
 import java.util.Map;
@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ClassPointcutsRegistry {
     
-    private final Map<String, ClassPointcuts> pointcutsMap = new ConcurrentHashMap<>();
+    private final Map<String, ClassAdvisor> pointcutsMap = new ConcurrentHashMap<>();
     
     /**
      * Get class pointcuts.
@@ -36,8 +36,8 @@ public final class ClassPointcutsRegistry {
      * @param targetClassName target class name to be intercepted
      * @return class pointcuts
      */
-    public ClassPointcuts getClassPointcuts(final String targetClassName) {
-        return pointcutsMap.computeIfAbsent(targetClassName, ClassPointcuts::new);
+    public ClassAdvisor getClassPointcuts(final String targetClassName) {
+        return pointcutsMap.computeIfAbsent(targetClassName, ClassAdvisor::new);
     }
     
     /**
@@ -45,7 +45,7 @@ public final class ClassPointcutsRegistry {
      * 
      * @return all class pointcuts
      */
-    public Collection<ClassPointcuts> getAllClassPointcuts() {
+    public Collection<ClassAdvisor> getAllClassPointcuts() {
         return pointcutsMap.values();
     }
 }

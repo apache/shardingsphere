@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRe
 import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
 
 import java.io.File;
@@ -55,7 +55,7 @@ public final class AgentPluginLoader implements PluginLoader {
     
     private final Collection<PluginJar> pluginJars = new LinkedList<>();
     
-    private Map<String, ClassPointcuts> pointcuts;
+    private Map<String, ClassAdvisor> pointcuts;
     
     @Getter
     @Setter
@@ -84,16 +84,16 @@ public final class AgentPluginLoader implements PluginLoader {
         PluginJarHolder.setPluginJars(pluginJars);
     }
     
-    private Map<String, ClassPointcuts> loadClassPointcuts(final ClassLoader classLoader) {
-        Map<String, ClassPointcuts> result = new HashMap<>();
+    private Map<String, ClassAdvisor> loadClassPointcuts(final ClassLoader classLoader) {
+        Map<String, ClassAdvisor> result = new HashMap<>();
         Collection<String> pluginNames = getPluginNames();
         for (PointcutDefinitionService each : PluginServiceLoader.newServiceInstances(PointcutDefinitionService.class, classLoader)) {
             if (pluginNames.contains(each.getType())) {
                 result.putAll(
-                        new PointcutDefinitionServiceEngine(each).getAllPointcuts(isEnhancedForProxy).stream().collect(Collectors.toMap(ClassPointcuts::getTargetClassName, Function.identity())));
+                        new PointcutDefinitionServiceEngine(each).getAllPointcuts(isEnhancedForProxy).stream().collect(Collectors.toMap(ClassAdvisor::getTargetClassName, Function.identity())));
             }
         }
-        return ImmutableMap.<String, ClassPointcuts>builder().putAll(result).build();
+        return ImmutableMap.<String, ClassAdvisor>builder().putAll(result).build();
     }
     
     private Collection<String> getPluginNames() {
@@ -136,8 +136,8 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     @Override
-    public ClassPointcuts loadPluginPointcuts(final TypeDescription typeDescription) {
-        return pointcuts.getOrDefault(typeDescription.getTypeName(), new ClassPointcuts(""));
+    public ClassAdvisor loadPluginPointcuts(final TypeDescription typeDescription) {
+        return pointcuts.getOrDefault(typeDescription.getTypeName(), new ClassAdvisor(""));
     }
     
     @Override

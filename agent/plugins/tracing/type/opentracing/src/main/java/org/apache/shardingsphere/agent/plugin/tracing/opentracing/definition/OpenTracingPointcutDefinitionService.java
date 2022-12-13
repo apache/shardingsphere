@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionService
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
 
 import java.util.Collection;
@@ -32,12 +32,12 @@ import java.util.Collection;
 public final class OpenTracingPointcutDefinitionService implements PointcutDefinitionService {
     
     @Override
-    public Collection<ClassPointcuts> getProxyPointcuts() {
+    public Collection<ClassAdvisor> getProxyPointcuts() {
         return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceProxy(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override
-    public Collection<ClassPointcuts> getJDBCPointcuts() {
+    public Collection<ClassAdvisor> getJDBCPointcuts() {
         return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceJDBC();
     }
     

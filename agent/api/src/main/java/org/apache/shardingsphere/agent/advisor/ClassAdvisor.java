@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.pointcut;
+package org.apache.shardingsphere.agent.advisor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Instance method pointcut.
+ * Class advisor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InstanceMethodPointcut {
+public final class ClassAdvisor {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    private final String targetClassName;
     
-    private final String adviceClassName;
+    private final Collection<ConstructorAdvisor> constructorAdvisors = new LinkedList<>();
     
-    private final boolean overrideArgs;
+    private final Collection<InstanceMethodAdvisor> instanceMethodAdvisors = new LinkedList<>();
     
-    public InstanceMethodPointcut(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
-        this(matcher, adviceClassName, false);
-    }
+    private final Collection<StaticMethodAdvisor> staticMethodAdvisors = new LinkedList<>();
 }

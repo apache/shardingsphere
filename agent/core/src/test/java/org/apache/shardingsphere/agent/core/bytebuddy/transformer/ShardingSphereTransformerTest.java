@@ -33,10 +33,10 @@ import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
 import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
-import org.apache.shardingsphere.agent.pointcut.ConstructorPointcut;
-import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
+import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
+import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -73,11 +73,11 @@ public final class ShardingSphereTransformerTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
-        Map<String, ClassPointcuts> pointcutsMap = new HashMap<>(2, 1);
-        ClassPointcuts classPointcuts = createPluginPointcuts();
-        pointcutsMap.put(classPointcuts.getTargetClassName(), classPointcuts);
-        ClassPointcuts classPointcutsInTwice = createPluginPointcutsInTwice();
-        pointcutsMap.put(classPointcutsInTwice.getTargetClassName(), classPointcutsInTwice);
+        Map<String, ClassAdvisor> pointcutsMap = new HashMap<>(2, 1);
+        ClassAdvisor classAdvisor = createPluginPointcuts();
+        pointcutsMap.put(classAdvisor.getTargetClassName(), classAdvisor);
+        ClassAdvisor classAdvisorInTwice = createPluginPointcutsInTwice();
+        pointcutsMap.put(classAdvisorInTwice.getTargetClassName(), classAdvisorInTwice);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, pointcutsMap);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
@@ -91,18 +91,18 @@ public final class ShardingSphereTransformerTest {
                 .installOnByteBuddyAgent();
     }
     
-    private static ClassPointcuts createPluginPointcuts() {
-        ClassPointcuts result = new ClassPointcuts("org.apache.shardingsphere.agent.core.mock.material.Material");
-        result.getConstructorPointcuts().add(new ConstructorPointcut(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
-        result.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
-        result.getStaticMethodPointcuts().add(new StaticMethodPointcut(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
+    private static ClassAdvisor createPluginPointcuts() {
+        ClassAdvisor result = new ClassAdvisor("org.apache.shardingsphere.agent.core.mock.material.Material");
+        result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
+        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        result.getStaticMethodAdvisors().add(new StaticMethodAdvisor(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
         return result;
     }
     
-    private static ClassPointcuts createPluginPointcutsInTwice() {
-        ClassPointcuts result = new ClassPointcuts("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial");
-        result.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
-        result.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundRepeatedAdvice.class.getTypeName()));
+    private static ClassAdvisor createPluginPointcutsInTwice() {
+        ClassAdvisor result = new ClassAdvisor("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial");
+        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundRepeatedAdvice.class.getTypeName()));
         return result;
     }
     

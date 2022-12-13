@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.definition;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
 
 import java.util.Collection;
@@ -37,7 +37,7 @@ public final class PointcutDefinitionServiceEngine {
      * @param targetClassName target class name
      * @return pointcuts
      */
-    public ClassPointcuts getAllPointcuts(final String targetClassName) {
+    public ClassAdvisor getAllPointcuts(final String targetClassName) {
         return ClassPointcutsRegistryFactory.getRegistry(pointcutDefinitionService.getType()).getClassPointcuts(targetClassName);
     }
     
@@ -47,7 +47,7 @@ public final class PointcutDefinitionServiceEngine {
      * @param isEnhancedForProxy is enhanced for proxy
      * @return all pointcuts
      */
-    public Collection<ClassPointcuts> getAllPointcuts(final boolean isEnhancedForProxy) {
+    public Collection<ClassAdvisor> getAllPointcuts(final boolean isEnhancedForProxy) {
         return isEnhancedForProxy ? pointcutDefinitionService.getProxyPointcuts() : pointcutDefinitionService.getJDBCPointcuts();
     }
 }

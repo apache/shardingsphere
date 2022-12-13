@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.pointcut;
+package org.apache.shardingsphere.agent.advisor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Constructor Pointcut.
+ * Constructor advisor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConstructorPointcut {
+public final class ConstructorAdvisor {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     

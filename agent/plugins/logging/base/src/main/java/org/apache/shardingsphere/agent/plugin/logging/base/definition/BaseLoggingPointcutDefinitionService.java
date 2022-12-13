@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
 import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
 
 import java.util.Collection;
@@ -39,22 +39,22 @@ public final class BaseLoggingPointcutDefinitionService implements PointcutDefin
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
-    public Collection<ClassPointcuts> getProxyPointcuts() {
+    public Collection<ClassAdvisor> getProxyPointcuts() {
         return getClassPointcuts();
     }
     
     @Override
-    public Collection<ClassPointcuts> getJDBCPointcuts() {
+    public Collection<ClassAdvisor> getJDBCPointcuts() {
         return getClassPointcuts();
     }
     
-    private Collection<ClassPointcuts> getClassPointcuts() {
-        Collection<ClassPointcuts> result = new LinkedList<>();
+    private Collection<ClassAdvisor> getClassPointcuts() {
+        Collection<ClassAdvisor> result = new LinkedList<>();
         PointcutDefinitionServiceEngine engine = new PointcutDefinitionServiceEngine(this);
-        ClassPointcuts classPointcuts = engine.getAllPointcuts(SCHEMA_METADATA_LOADER_CLASS);
-        classPointcuts.getStaticMethodPointcuts().add(
-                new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
-        result.add(classPointcuts);
+        ClassAdvisor classAdvisor = engine.getAllPointcuts(SCHEMA_METADATA_LOADER_CLASS);
+        classAdvisor.getStaticMethodAdvisors().add(
+                new StaticMethodAdvisor(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
+        result.add(classAdvisor);
         return result;
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.spi;
 
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 
 import java.util.Collection;
 
@@ -31,12 +31,12 @@ public interface PointcutDefinitionService extends AgentSPI {
      * 
      * @return proxy pointcuts
      */
-    Collection<ClassPointcuts> getProxyPointcuts();
+    Collection<ClassAdvisor> getProxyPointcuts();
     
     /**
      * Get JDBC pointcuts.
      * 
      * @return JDBC pointcuts
      */
-    Collection<ClassPointcuts> getJDBCPointcuts();
+    Collection<ClassAdvisor> getJDBCPointcuts();
 }

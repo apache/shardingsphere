@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAd
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.CommandExecutorTaskAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.JDBCExecutorCallbackAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.SQLParserEngineAdviser;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,10 +45,10 @@ public final class TracingAdviceEngine {
      * @param jdbcExecutorCallbackAdvice JDBC executor callback advice
      * @return class pointcuts
      */
-    public Collection<ClassPointcuts> adviceProxy(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice, final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice,
-                                                  final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
+    public Collection<ClassAdvisor> adviceProxy(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice, final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice,
+                                                final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
         // TODO load from YAML, please ref metrics
-        Collection<ClassPointcuts> result = new LinkedList<>();
+        Collection<ClassAdvisor> result = new LinkedList<>();
         result.add(new CommandExecutorTaskAdviser(engine).advice(commandExecutorTaskAdvice));
         result.add(new SQLParserEngineAdviser(engine).advice(sqlParserEngineAdvice));
         result.add(new JDBCExecutorCallbackAdviser(engine).advice(jdbcExecutorCallbackAdvice));
@@ -60,7 +60,7 @@ public final class TracingAdviceEngine {
      * 
      * @return class pointcuts
      */
-    public Collection<ClassPointcuts> adviceJDBC() {
+    public Collection<ClassAdvisor> adviceJDBC() {
         // TODO
         return Collections.emptyList();
     }

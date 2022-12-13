@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.pointcut;
+package org.apache.shardingsphere.agent.advisor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Static method pointcut.
+ * Instance method advisor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StaticMethodPointcut {
+public final class InstanceMethodAdvisor {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     
@@ -35,7 +35,7 @@ public final class StaticMethodPointcut {
     
     private final boolean overrideArgs;
     
-    public StaticMethodPointcut(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
+    public InstanceMethodAdvisor(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
         this(matcher, adviceClassName, false);
     }
 }
