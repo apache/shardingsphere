@@ -29,6 +29,7 @@ import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
@@ -50,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public final class AgentPluginLoader {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
     
     private final Collection<PluginJar> pluginJars = new LinkedList<>();
     
