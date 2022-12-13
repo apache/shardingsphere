@@ -31,14 +31,16 @@ import java.util.Collection;
  */
 public final class ZipkinAdvisorDefinitionService implements AdvisorDefinitionService {
     
+    private final TracingAdviceEngine engine = new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this));
+    
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {
-        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getProxyAdvisors(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
+        return engine.getProxyAdvisors(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override
     public Collection<ClassAdvisor> getJDBCAdvisors() {
-        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getJDBCAdvisors();
+        return engine.getJDBCAdvisors();
     }
     
     @Override

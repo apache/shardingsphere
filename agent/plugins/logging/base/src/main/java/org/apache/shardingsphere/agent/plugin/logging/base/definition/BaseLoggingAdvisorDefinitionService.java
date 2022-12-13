@@ -38,6 +38,8 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
+    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
+    
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {
         return getAdvisors();
@@ -50,7 +52,6 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     private Collection<ClassAdvisor> getAdvisors() {
         Collection<ClassAdvisor> result = new LinkedList<>();
-        AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
         ClassAdvisor classAdvisor = engine.getAdvisors(SCHEMA_METADATA_LOADER_CLASS);
         classAdvisor.getStaticMethodAdvisors().add(
                 new StaticMethodAdvisor(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
