@@ -67,8 +67,8 @@ public final class AgentPluginLoader implements PluginLoader {
      */
     public void load() throws IOException {
         loadPluginJars();
-        AgentClassLoader.initDefaultPluginClassLoader(pluginJars);
-        advisors = loadAdvisors(AgentClassLoader.getDefaultPluginClassloader());
+        AgentClassLoader.init(pluginJars);
+        advisors = loadAdvisors(AgentClassLoader.getClassLoader());
     }
     
     private void loadPluginJars() throws IOException {

@@ -67,7 +67,7 @@ public final class AgentTransformerTest {
     @SuppressWarnings("unchecked")
     public static void setup() throws ReflectiveOperationException {
         ByteBuddyAgent.install();
-        AgentClassLoader.initDefaultPluginClassLoader(Collections.emptyList());
+        AgentClassLoader.init(Collections.emptyList());
         FieldReader objectPoolReader = new FieldReader(AdviceInstanceLoader.class, AdviceInstanceLoader.class.getDeclaredField("ADVICE_INSTANCE_CACHE"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());

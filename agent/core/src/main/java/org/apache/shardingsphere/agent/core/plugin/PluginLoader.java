@@ -42,7 +42,7 @@ public interface PluginLoader {
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      * 
      * @param adviceClassName class name of advice
-     * @param classLoader classloader
+     * @param classLoader class loader
      * @param <T> advice type
      * @return instance
      */

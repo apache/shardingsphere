@@ -78,7 +78,7 @@ public final class ShardingSphereAgent {
     }
     
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
-        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getDefaultPluginClassloader(), true);
+        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getClassLoader(), true);
         Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     

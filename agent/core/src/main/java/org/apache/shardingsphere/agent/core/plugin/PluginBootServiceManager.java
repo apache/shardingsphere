@@ -40,7 +40,7 @@ public final class PluginBootServiceManager {
      * Start all services.
      *
      * @param pluginConfigMap plugin configuration map
-     * @param classLoader classLoader
+     * @param classLoader class loader
      * @param isEnhancedForProxy is enhanced for proxy
      */
     public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigMap, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
