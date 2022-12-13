@@ -63,5 +63,47 @@ SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommen
 SELECT * FROM t_order;
 ```
 
+### 使用 Hint 路由至指定数据库
+
+#### 使用手动编程的方式
+
+##### 获取 HintManager
+
+与基于 Hint 的数据分片相同。
+
+##### 设置路由至指定数据库
+
+- 使用 `hintManager.setDataSourceName` 设置数据库名称。
+
+##### 完整代码示例
+
+```java
+String sql = "SELECT * FROM t_order";
+try (HintManager hintManager = HintManager.getInstance();
+     Connection conn = dataSource.getConnection();
+     PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    hintManager.setDataSourceName("ds_0");
+    try (ResultSet rs = preparedStatement.executeQuery()) {
+        while (rs.next()) {
+            // ...
+        }
+    }
+}
+```
+
+#### 使用 SQL 注释的方式
+
+##### 使用规范
+
+SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`，目前只支持路由至一个数据源。
+注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `DATA_SOURCE_NAME`。
+如果使用 `MySQL` 客户端连接需要添加 `-c` 选项保留注释，客户端默认是 `--skip-comments` 过滤注释。
+
+##### 完整示例
+```sql
+/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_0 */
+SELECT * FROM t_order;
+```
+
 - [核心特性：读写分离](/cn/features/readwrite-splitting/)
 - [开发者指南：读写分离](/cn/dev-manual/readwrite-splitting/)
