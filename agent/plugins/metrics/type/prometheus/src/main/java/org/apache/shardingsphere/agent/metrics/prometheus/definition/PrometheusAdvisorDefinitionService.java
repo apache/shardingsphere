@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
-import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
-import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
-import org.apache.shardingsphere.agent.core.yaml.swapper.InterceptorsYamlSwapper;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
 import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
+import org.apache.shardingsphere.agent.core.advisor.ClassAdvisorRegistryFactory;
+import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
+import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
+import org.apache.shardingsphere.agent.core.yaml.swapper.InterceptorsYamlSwapper;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
@@ -36,8 +36,6 @@ import java.util.LinkedList;
  * Prometheus advisor definition service.
  */
 public final class PrometheusAdvisorDefinitionService implements AdvisorDefinitionService {
-    
-    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
     
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {
@@ -51,7 +49,7 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
     }
     
     private ClassAdvisor createClassAdvisor(final Interceptor interceptor) {
-        ClassAdvisor result = engine.getAdvisors(interceptor.getTarget());
+        ClassAdvisor result = ClassAdvisorRegistryFactory.getRegistry(getType()).getAdvisor(interceptor.getTarget());
         if (null != interceptor.getConstructAdvice() && !("".equals(interceptor.getConstructAdvice()))) {
             result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.isConstructor(), interceptor.getConstructAdvice()));
         }

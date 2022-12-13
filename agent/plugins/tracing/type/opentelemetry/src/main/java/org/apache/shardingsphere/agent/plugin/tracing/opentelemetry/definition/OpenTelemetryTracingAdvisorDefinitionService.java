@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
-import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.JDBCExecutorCallbackAdvice;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
@@ -31,7 +30,7 @@ import java.util.Collection;
  */
 public final class OpenTelemetryTracingAdvisorDefinitionService implements AdvisorDefinitionService {
     
-    private final TracingAdviceEngine engine = new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this));
+    private final TracingAdviceEngine engine = new TracingAdviceEngine(getType());
     
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {

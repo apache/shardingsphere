@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
-import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
+import org.apache.shardingsphere.agent.core.advisor.ClassAdvisorRegistryFactory;
+import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
@@ -38,8 +38,6 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
-    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
-    
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {
         return getAdvisors();
@@ -52,7 +50,7 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     private Collection<ClassAdvisor> getAdvisors() {
         Collection<ClassAdvisor> result = new LinkedList<>();
-        ClassAdvisor classAdvisor = engine.getAdvisors(SCHEMA_METADATA_LOADER_CLASS);
+        ClassAdvisor classAdvisor = ClassAdvisorRegistryFactory.getRegistry(getType()).getAdvisor(SCHEMA_METADATA_LOADER_CLASS);
         classAdvisor.getStaticMethodAdvisors().add(
                 new StaticMethodAdvisor(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
         result.add(classAdvisor);

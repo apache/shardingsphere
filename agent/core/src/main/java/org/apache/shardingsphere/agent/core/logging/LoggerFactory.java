@@ -45,7 +45,6 @@ public final class LoggerFactory {
      * @return logger
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("unchecked")
     public static Logger getLogger(final Class<?> clazz) {
         Class<?> factoryClazz = getClassLoader().loadClass("org.slf4j.LoggerFactory");
         Method method = factoryClazz.getMethod("getLogger", Class.class);
@@ -137,7 +136,6 @@ public final class LoggerFactory {
         }
         
         @SneakyThrows(ReflectiveOperationException.class)
-        @SuppressWarnings("unchecked")
         private void invokeMethod(final String methodName, final String msg) {
             Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
             Method method = logicLogger.getMethod(methodName, String.class);
@@ -145,7 +143,6 @@ public final class LoggerFactory {
         }
         
         @SneakyThrows(ReflectiveOperationException.class)
-        @SuppressWarnings("unchecked")
         private void invokeMethod(final String methodName, final String msg, final Object... arguments) {
             Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
             Method method = logicLogger.getMethod(methodName, String.class, Object[].class);
