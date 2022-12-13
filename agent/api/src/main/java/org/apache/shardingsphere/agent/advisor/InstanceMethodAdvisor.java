@@ -29,13 +29,13 @@ import net.bytebuddy.matcher.ElementMatcher;
 @Getter
 public final class InstanceMethodAdvisor {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    private final ElementMatcher<? super MethodDescription> pointcut;
     
     private final String adviceClassName;
     
     private final boolean overrideArgs;
     
-    public InstanceMethodAdvisor(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
-        this(matcher, adviceClassName, false);
+    public InstanceMethodAdvisor(final ElementMatcher<? super MethodDescription> pointcut, final String adviceClassName) {
+        this(pointcut, adviceClassName, false);
     }
 }

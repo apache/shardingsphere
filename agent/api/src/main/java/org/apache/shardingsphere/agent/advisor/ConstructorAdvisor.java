@@ -29,7 +29,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 @Getter
 public final class ConstructorAdvisor {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    private final ElementMatcher<? super MethodDescription> pointcut;
     
     private final String adviceClassName;
 }
