@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.common;
+package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -45,7 +45,7 @@ public final class AgentClassLoader extends ClassLoader {
     }
     
     @Getter
-    private static volatile AgentClassLoader defaultPluginClassloader;
+    private static volatile AgentClassLoader classLoader;
     
     private final Collection<PluginJar> pluginJars;
     
@@ -55,15 +55,15 @@ public final class AgentClassLoader extends ClassLoader {
     }
     
     /**
-     * Initialize default plugin class loader.
+     * Initialize agent class loader.
      * 
      * @param pluginJars plugin jars
      */
-    public static void initDefaultPluginClassLoader(final Collection<PluginJar> pluginJars) {
-        if (null == defaultPluginClassloader) {
+    public static void init(final Collection<PluginJar> pluginJars) {
+        if (null == classLoader) {
             synchronized (AgentClassLoader.class) {
-                if (null == defaultPluginClassloader) {
-                    defaultPluginClassloader = new AgentClassLoader(AgentPluginLoader.class.getClassLoader(), pluginJars);
+                if (null == classLoader) {
+                    classLoader = new AgentClassLoader(AgentPluginLoader.class.getClassLoader(), pluginJars);
                 }
             }
         }
@@ -71,35 +71,38 @@ public final class AgentClassLoader extends ClassLoader {
     
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
-        String path = classNameToPath(name);
+        String path = convertClassNameToPath(name);
         for (PluginJar each : pluginJars) {
             ZipEntry entry = each.getJarFile().getEntry(path);
-            if (Objects.isNull(entry)) {
+            if (null == entry) {
                 continue;
             }
             try {
-                int index = name.lastIndexOf('.');
-                if (index != -1) {
-                    String packageName = name.substring(0, index);
-                    definePackageInternal(packageName, each.getJarFile().getManifest());
-                }
-                byte[] data = ByteStreams.toByteArray(each.getJarFile().getInputStream(entry));
-                return defineClass(name, data, 0, data.length);
+                definePackage(name, each);
+                return defineClass(name, each, entry);
             } catch (final IOException ex) {
-                throw new ClassNotFoundException(String.format("Class name is %s not found", name));
+                throw new ClassNotFoundException(name);
             }
         }
-        throw new ClassNotFoundException(String.format("Class name is %s not found", name));
+        throw new ClassNotFoundException(name);
     }
     
-    private String classNameToPath(final String className) {
+    private String convertClassNameToPath(final String className) {
         return String.join("", className.replace(".", "/"), ".class");
     }
     
-    private void definePackageInternal(final String packageName, final Manifest manifest) {
-        if (null != getPackage(packageName)) {
+    private void definePackage(final String className, final PluginJar pluginJar) throws IOException {
+        int index = className.lastIndexOf('.');
+        if (-1 == index) {
             return;
         }
+        String packageName = className.substring(0, index);
+        if (null == getPackage(packageName)) {
+            definePackage(packageName, pluginJar.getJarFile().getManifest());
+        }
+    }
+    
+    private void definePackage(final String packageName, final Manifest manifest) {
         Attributes attributes = manifest.getMainAttributes();
         String specTitle = attributes.getValue(Attributes.Name.SPECIFICATION_TITLE);
         String specVersion = attributes.getValue(Attributes.Name.SPECIFICATION_VERSION);
@@ -110,32 +113,34 @@ public final class AgentClassLoader extends ClassLoader {
         definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
+    private Class<?> defineClass(final String name, final PluginJar each, final ZipEntry entry) throws IOException {
+        byte[] data = ByteStreams.toByteArray(each.getJarFile().getInputStream(entry));
+        return defineClass(name, data, 0, data.length);
+    }
+    
     @Override
     protected Enumeration<URL> findResources(final String name) {
-        Collection<URL> resources = new LinkedList<>();
+        Collection<URL> result = new LinkedList<>();
         for (PluginJar each : pluginJars) {
-            JarEntry entry = each.getJarFile().getJarEntry(name);
-            if (Objects.nonNull(entry)) {
-                try {
-                    resources.add(new URL(String.format("jar:file:%s!/%s", each.getSourcePath().getAbsolutePath(), name)));
-                } catch (final MalformedURLException ignored) {
-                }
-            }
+            findResource(name, each).ifPresent(result::add);
         }
-        return Collections.enumeration(resources);
+        return Collections.enumeration(result);
     }
     
     @Override
     protected URL findResource(final String name) {
-        for (PluginJar each : pluginJars) {
-            JarEntry entry = each.getJarFile().getJarEntry(name);
-            if (Objects.nonNull(entry)) {
-                try {
-                    return new URL(String.format("jar:file:%s!/%s", each.getSourcePath().getAbsolutePath(), name));
-                } catch (final MalformedURLException ignored) {
-                }
-            }
+        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().map(Optional::get).orElse(null);
+    }
+    
+    private Optional<URL> findResource(final String name, final PluginJar pluginJar) {
+        JarEntry entry = pluginJar.getJarFile().getJarEntry(name);
+        if (null == entry) {
+            return Optional.empty();
         }
-        return null;
+        try {
+            return Optional.of(new URL(String.format("jar:file:%s!/%s", pluginJar.getSourcePath().getAbsolutePath(), name)));
+        } catch (final MalformedURLException ignored) {
+        }
+        return Optional.empty();
     }
 }

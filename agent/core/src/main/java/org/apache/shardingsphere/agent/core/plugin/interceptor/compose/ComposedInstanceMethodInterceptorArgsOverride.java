@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
 
 import java.util.Collection;
@@ -29,6 +29,6 @@ import java.util.Collection;
 public class ComposedInstanceMethodInterceptorArgsOverride extends InstanceMethodInterceptorArgsOverride {
     
     public ComposedInstanceMethodInterceptorArgsOverride(final Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
-        super(new ComposeInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
+        super(new ComposedInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
     }
 }

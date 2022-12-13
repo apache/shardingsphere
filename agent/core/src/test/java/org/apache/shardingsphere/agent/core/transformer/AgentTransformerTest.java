@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
+package org.apache.shardingsphere.agent.core.transformer;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
@@ -23,8 +23,8 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.logging.LoggingListener;
+import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundRepeatedAdvice;
@@ -55,7 +55,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 
-public final class ShardingSphereTransformerTest {
+public final class AgentTransformerTest {
     
     private static final AgentPluginLoader PLUGIN_LOADER = new AgentPluginLoader();
     
@@ -67,7 +67,7 @@ public final class ShardingSphereTransformerTest {
     @SuppressWarnings("unchecked")
     public static void setup() throws ReflectiveOperationException {
         ByteBuddyAgent.install();
-        AgentClassLoader.initDefaultPluginClassLoader(Collections.emptyList());
+        AgentClassLoader.init(Collections.emptyList());
         FieldReader objectPoolReader = new FieldReader(AdviceInstanceLoader.class, AdviceInstanceLoader.class.getDeclaredField("ADVICE_INSTANCE_CACHE"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
@@ -86,7 +86,7 @@ public final class ShardingSphereTransformerTest {
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
                 .type(PLUGIN_LOADER.typeMatcher())
-                .transform(new ShardingSphereTransformer(PLUGIN_LOADER))
+                .transform(new AgentTransformer(PLUGIN_LOADER))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }

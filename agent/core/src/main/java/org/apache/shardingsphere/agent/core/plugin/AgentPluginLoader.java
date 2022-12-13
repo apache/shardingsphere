@@ -25,10 +25,11 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
@@ -48,9 +49,9 @@ import java.util.stream.Collectors;
 /**
  * Agent plugin loader.
  */
-public final class AgentPluginLoader implements PluginLoader {
+public final class AgentPluginLoader {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
     
     private final Collection<PluginJar> pluginJars = new LinkedList<>();
     
@@ -67,8 +68,8 @@ public final class AgentPluginLoader implements PluginLoader {
      */
     public void load() throws IOException {
         loadPluginJars();
-        AgentClassLoader.initDefaultPluginClassLoader(pluginJars);
-        advisors = loadAdvisors(AgentClassLoader.getDefaultPluginClassloader());
+        AgentClassLoader.init(pluginJars);
+        advisors = loadAdvisors(AgentClassLoader.getClassLoader());
     }
     
     private void loadPluginJars() throws IOException {
@@ -112,16 +113,19 @@ public final class AgentPluginLoader implements PluginLoader {
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return new Junction<TypeDescription>() {
             
+            @SuppressWarnings("NullableProblems")
             @Override
             public boolean matches(final TypeDescription target) {
                 return advisors.containsKey(target.getTypeName());
             }
             
+            @SuppressWarnings("NullableProblems")
             @Override
             public <U extends TypeDescription> Junction<U> and(final ElementMatcher<? super U> other) {
                 return null;
             }
             
+            @SuppressWarnings("NullableProblems")
             @Override
             public <U extends TypeDescription> Junction<U> or(final ElementMatcher<? super U> other) {
                 return null;
@@ -129,17 +133,34 @@ public final class AgentPluginLoader implements PluginLoader {
         };
     }
     
-    @Override
+    /**
+     * To detect the type whether or not exists.
+     *
+     * @param typeDescription type description
+     * @return contains when it is true
+     */
     public boolean containsType(final TypeDescription typeDescription) {
         return advisors.containsKey(typeDescription.getTypeName());
     }
     
-    @Override
+    /**
+     * Load plugin advisor by type description.
+     *
+     * @param typeDescription type description
+     * @return plugin advisor
+     */
     public ClassAdvisor loadPluginAdvisor(final TypeDescription typeDescription) {
         return advisors.getOrDefault(typeDescription.getTypeName(), new ClassAdvisor(""));
     }
     
-    @Override
+    /**
+     * To get or create instance of the advice class. Create new one and caching when it is not exist.
+     *
+     * @param adviceClassName class name of advice
+     * @param classLoader class loader
+     * @param <T> advice type
+     * @return instance
+     */
     public <T> T getOrCreateInstance(final String adviceClassName, final ClassLoader classLoader) {
         return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, isEnhancedForProxy);
     }

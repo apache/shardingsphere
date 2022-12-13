@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
+package org.apache.shardingsphere.agent.core.transformer.advice;
 
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedStaticMethodAroundAdvice;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,16 +34,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ComposeStaticMethodAroundAdviceTest {
+public final class ComposedStaticMethodAroundAdviceTest {
     
     @Mock
     private StaticMethodAroundAdvice staticMethodAroundAdvice;
     
-    private ComposeStaticMethodAroundAdvice actual;
+    private ComposedStaticMethodAroundAdvice actual;
     
     @Before
     public void setUp() {
-        actual = new ComposeStaticMethodAroundAdvice(new ArrayList<>(Collections.singleton(staticMethodAroundAdvice)));
+        actual = new ComposedStaticMethodAroundAdvice(new ArrayList<>(Collections.singleton(staticMethodAroundAdvice)));
     }
     
     @Test

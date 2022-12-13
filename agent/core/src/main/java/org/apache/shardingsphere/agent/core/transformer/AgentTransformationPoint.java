@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.exception;
+package org.apache.shardingsphere.agent.core.transformer;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
 
 /**
- * Agent service provider not found exception.
+ * Agent transformer point.
  */
-public final class AgentServiceProviderNotFoundException extends RuntimeException {
+@RequiredArgsConstructor
+@Getter
+public final class AgentTransformationPoint<T> {
     
-    private static final long serialVersionUID = -3730257541332863235L;
+    private final MethodDescription description;
     
-    public AgentServiceProviderNotFoundException(final Class<?> clazz, final String type) {
-        super(String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
-    }
+    private final T interceptor;
 }

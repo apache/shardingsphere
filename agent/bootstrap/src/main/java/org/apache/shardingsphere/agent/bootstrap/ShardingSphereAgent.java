@@ -25,9 +25,9 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ShardingSphereTransformer;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.logging.LoggingListener;
+import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
+import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
@@ -72,13 +72,13 @@ public final class ShardingSphereAgent {
                 .ignore(ElementMatchers.isSynthetic())
                 .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
         agentBuilder.type(pluginLoader.typeMatcher())
-                .transform(new ShardingSphereTransformer(pluginLoader))
+                .transform(new AgentTransformer(pluginLoader))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener()).installOn(instrumentation);
     }
     
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
-        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getDefaultPluginClassloader(), true);
+        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getClassLoader(), true);
         Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     

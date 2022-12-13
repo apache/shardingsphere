@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
+package org.apache.shardingsphere.agent.core.plugin.advice.composed;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
+
+import java.util.Collection;
 
 /**
- * ShardingSphere transformer point.
+ * Composed Constructor advice.
  */
 @RequiredArgsConstructor
-@Getter
-public class ShardingSphereTransformationPoint<T> {
+public final class ComposedConstructorAdvice implements ConstructorAdvice {
     
-    private final MethodDescription description;
+    private final Collection<ConstructorAdvice> advices;
     
-    private final T interceptor;
+    @Override
+    public void onConstructor(final TargetAdviceObject target, final Object[] args) {
+        advices.forEach(each -> each.onConstructor(target, args));
+    }
 }

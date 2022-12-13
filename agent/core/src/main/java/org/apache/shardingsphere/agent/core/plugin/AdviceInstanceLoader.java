@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public final class AdviceInstanceLoader {
      *
      * @param <T> expected type
      * @param className class name
-     * @param classLoader classloader
+     * @param classLoader class loader
      * @param isEnhancedForProxy is enhanced for proxy
      * @return the type reference
      */
@@ -68,7 +68,7 @@ public final class AdviceInstanceLoader {
             INIT_INSTANCE_LOCK.lock();
             adviceInstance = ADVICE_INSTANCE_CACHE.get(className);
             if (Objects.isNull(adviceInstance)) {
-                adviceInstance = Class.forName(className, true, AgentClassLoader.getDefaultPluginClassloader()).getDeclaredConstructor().newInstance();
+                adviceInstance = Class.forName(className, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
                 ADVICE_INSTANCE_CACHE.put(className, adviceInstance);
             }
             return (T) adviceInstance;
