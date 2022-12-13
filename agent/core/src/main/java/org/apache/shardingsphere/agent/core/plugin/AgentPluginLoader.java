@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Agent plugin loader.
  */
-public final class AgentPluginLoader implements PluginLoader {
+public final class AgentPluginLoader {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
     
@@ -132,17 +132,34 @@ public final class AgentPluginLoader implements PluginLoader {
         };
     }
     
-    @Override
+    /**
+     * To detect the type whether or not exists.
+     *
+     * @param typeDescription type description
+     * @return contains when it is true
+     */
     public boolean containsType(final TypeDescription typeDescription) {
         return advisors.containsKey(typeDescription.getTypeName());
     }
     
-    @Override
+    /**
+     * Load plugin advisor by type description.
+     *
+     * @param typeDescription type description
+     * @return plugin advisor
+     */
     public ClassAdvisor loadPluginAdvisor(final TypeDescription typeDescription) {
         return advisors.getOrDefault(typeDescription.getTypeName(), new ClassAdvisor(""));
     }
     
-    @Override
+    /**
+     * To get or create instance of the advice class. Create new one and caching when it is not exist.
+     *
+     * @param adviceClassName class name of advice
+     * @param classLoader class loader
+     * @param <T> advice type
+     * @return instance
+     */
     public <T> T getOrCreateInstance(final String adviceClassName, final ClassLoader classLoader) {
         return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, isEnhancedForProxy);
     }
