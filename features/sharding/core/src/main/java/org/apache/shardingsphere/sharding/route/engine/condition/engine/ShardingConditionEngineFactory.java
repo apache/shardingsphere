@@ -21,10 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
@@ -54,6 +52,8 @@ public final class ShardingConditionEngineFactory {
      * @return created instance
      */
     public static ShardingConditionEngine<?> createShardingConditionEngine(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database, final ShardingRule rule) {
-        return sqlStatementContext instanceof InsertStatementContext ? new InsertClauseShardingConditionEngine(rule, database) : new WhereClauseShardingConditionEngine(rule, database);
+        ShardingConditionEngine conditionEngine = RequiredSPIRegistry.getRegisteredService(ShardingConditionEngine.class);
+        conditionEngine.init(rule, database);
+        return conditionEngine;
     }
 }
