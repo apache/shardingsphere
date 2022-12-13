@@ -21,34 +21,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-plugins</artifactId>
+        <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-agent-tracing-core</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>core</module>
-        <module>type</module>
-        <module>test</module>
-    </modules>
-    
-    <properties>
-        <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
-    </properties>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <outputFile>${tracing.target.directory}/${project.build.finalName}.jar</outputFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

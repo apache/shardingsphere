@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.opentelemetry;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+@Slf4j
 public final class OpenTelemetryPluginE2EIT extends BasePluginE2EIT {
     
     private static final String ROOT_INVOKE = "/shardingsphere/rootinvoke/";
@@ -54,6 +56,8 @@ public final class OpenTelemetryPluginE2EIT extends BasePluginE2EIT {
         } catch (final InterruptedException ignore) {
         }
         String url = props.getProperty("opentelemetry.zipkin.url") + props.getProperty("opentelemetry.servername");
+        log.error("=======url=======" + url);
+        log.error("=======OkHttpUtils.getInstance().get(url))=======" + OkHttpUtils.getInstance().get(url));
         JsonArray array = JsonParser.parseString(OkHttpUtils.getInstance().get(url)).getAsJsonArray().get(0).getAsJsonArray();
         Gson gson = new Gson();
         Collection<TracingResult> traces = new LinkedList<>();

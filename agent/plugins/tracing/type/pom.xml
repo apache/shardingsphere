@@ -21,22 +21,31 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-plugins</artifactId>
+        <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
+    <artifactId>shardingsphere-agent-tracing-type</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>core</module>
-        <module>type</module>
-        <module>test</module>
+        <module>opentracing</module>
+        <module>opentelemetry</module>
+        <module>jaeger</module>
+        <module>zipkin</module>
     </modules>
     
     <properties>
-        <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
+        <tracing.target.directory>${project.basedir}/../../target/plugins</tracing.target.directory>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-tracing-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
     
     <build>
         <plugins>
