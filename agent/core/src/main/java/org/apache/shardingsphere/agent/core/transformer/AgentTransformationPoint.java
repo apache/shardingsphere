@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
+package org.apache.shardingsphere.agent.core.transformer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 
 /**
- * ShardingSphere transformer point.
+ * Agent transformer point.
  */
 @RequiredArgsConstructor
 @Getter
-public class ShardingSphereTransformationPoint<T> {
+public final class AgentTransformationPoint<T> {
     
     private final MethodDescription description;
     

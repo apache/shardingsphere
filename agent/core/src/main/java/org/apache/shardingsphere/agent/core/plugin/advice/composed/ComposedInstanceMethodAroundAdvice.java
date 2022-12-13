@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
+package org.apache.shardingsphere.agent.core.plugin.advice.composed;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
@@ -26,10 +26,10 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
- * Compose instance method around advice.
+ * Composed instance method around advice.
  */
 @RequiredArgsConstructor
-public final class ComposeInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
+public final class ComposedInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
     
     private final Collection<InstanceMethodAroundAdvice> advices;
     

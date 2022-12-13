@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
+package org.apache.shardingsphere.agent.core.transformer.advice;
 
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedConstructorAdvice;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,15 +32,15 @@ import java.util.LinkedList;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ComposeConstructorAdviceTest {
+public final class ComposedConstructorAdviceTest {
     
     private final ConstructorAdvice constructorAdvice = new MockConstructorAdvice();
     
-    private ComposeConstructorAdvice actual;
+    private ComposedConstructorAdvice actual;
     
     @Before
     public void setUp() {
-        actual = new ComposeConstructorAdvice(Collections.singleton(constructorAdvice));
+        actual = new ComposedConstructorAdvice(Collections.singleton(constructorAdvice));
     }
     
     @Test

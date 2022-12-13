@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodInterceptorArgsOverride;
 
 import java.util.Collection;
@@ -29,6 +29,6 @@ import java.util.Collection;
 public final class ComposedStaticMethodInterceptorArgsOverride extends StaticMethodInterceptorArgsOverride {
     
     public ComposedStaticMethodInterceptorArgsOverride(final Collection<StaticMethodAroundAdvice> instanceMethodAroundAdvices) {
-        super(new ComposeStaticMethodAroundAdvice(instanceMethodAroundAdvices));
+        super(new ComposedStaticMethodAroundAdvice(instanceMethodAroundAdvices));
     }
 }

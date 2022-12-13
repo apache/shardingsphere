@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
-import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 
 import java.util.Collection;
@@ -29,6 +29,6 @@ import java.util.Collection;
 public final class ComposedConstructorInterceptor extends ConstructorInterceptor {
     
     public ComposedConstructorInterceptor(final Collection<ConstructorAdvice> constructorAdvices) {
-        super(new ComposeConstructorAdvice(constructorAdvices));
+        super(new ComposedConstructorAdvice(constructorAdvices));
     }
 }

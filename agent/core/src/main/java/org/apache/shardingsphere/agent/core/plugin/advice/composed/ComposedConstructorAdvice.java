@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
+package org.apache.shardingsphere.agent.core.plugin.advice.composed;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
@@ -24,10 +24,10 @@ import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import java.util.Collection;
 
 /**
- * Compose Constructor advice.
+ * Composed Constructor advice.
  */
 @RequiredArgsConstructor
-public final class ComposeConstructorAdvice implements ConstructorAdvice {
+public final class ComposedConstructorAdvice implements ConstructorAdvice {
     
     private final Collection<ConstructorAdvice> advices;
     
