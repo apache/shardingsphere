@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
-import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Base logging pointcut definition service.
+ * Base logging advisor definition service.
  */
-public final class BaseLoggingPointcutDefinitionService implements PointcutDefinitionService {
+public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinitionService {
     
     private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory";
     
@@ -39,22 +39,22 @@ public final class BaseLoggingPointcutDefinitionService implements PointcutDefin
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
-    public Collection<ClassPointcuts> getProxyPointcuts() {
-        return getClassPointcuts();
+    public Collection<ClassAdvisor> getProxyAdvisors() {
+        return getAdvisors();
     }
     
     @Override
-    public Collection<ClassPointcuts> getJDBCPointcuts() {
-        return getClassPointcuts();
+    public Collection<ClassAdvisor> getJDBCAdvisors() {
+        return getAdvisors();
     }
     
-    private Collection<ClassPointcuts> getClassPointcuts() {
-        Collection<ClassPointcuts> result = new LinkedList<>();
-        PointcutDefinitionServiceEngine engine = new PointcutDefinitionServiceEngine(this);
-        ClassPointcuts classPointcuts = engine.getAllPointcuts(SCHEMA_METADATA_LOADER_CLASS);
-        classPointcuts.getStaticMethodPointcuts().add(
-                new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
-        result.add(classPointcuts);
+    private Collection<ClassAdvisor> getAdvisors() {
+        Collection<ClassAdvisor> result = new LinkedList<>();
+        AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
+        ClassAdvisor classAdvisor = engine.getAdvisors(SCHEMA_METADATA_LOADER_CLASS);
+        classAdvisor.getStaticMethodAdvisors().add(
+                new StaticMethodAdvisor(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
+        result.add(classAdvisor);
         return result;
     }
     

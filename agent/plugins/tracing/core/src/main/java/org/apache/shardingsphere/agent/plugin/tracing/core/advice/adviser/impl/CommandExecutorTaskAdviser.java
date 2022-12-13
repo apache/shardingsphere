@@ -19,11 +19,11 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.TracingAdviser;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
 
 /**
  * Command executor task adviser.
@@ -35,12 +35,12 @@ public final class CommandExecutorTaskAdviser implements TracingAdviser {
     
     private static final String TARGET_METHOD = "run";
     
-    private final PointcutDefinitionServiceEngine engine;
+    private final AdvisorDefinitionServiceEngine engine;
     
     @Override
-    public ClassPointcuts advice(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice) {
-        ClassPointcuts result = engine.getAllPointcuts(TARGET_CLASS);
-        result.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named(TARGET_METHOD), commandExecutorTaskAdvice.getName()));
+    public ClassAdvisor getAdvisor(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice) {
+        ClassAdvisor result = engine.getAdvisors(TARGET_CLASS);
+        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named(TARGET_METHOD), commandExecutorTaskAdvice.getName()));
         return result;
     }
 }

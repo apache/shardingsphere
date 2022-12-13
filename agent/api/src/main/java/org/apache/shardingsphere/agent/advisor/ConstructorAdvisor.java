@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.definition;
+package org.apache.shardingsphere.agent.advisor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Class pointcuts registry factory.
+ * Constructor advisor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ClassPointcutsRegistryFactory {
+@RequiredArgsConstructor
+@Getter
+public final class ConstructorAdvisor {
     
-    private static final Map<String, ClassPointcutsRegistry> REGISTRIES = new ConcurrentHashMap<>();
+    private final ElementMatcher<? super MethodDescription> matcher;
     
-    /**
-     * Get class pointcuts registry.
-     * 
-     * @param key registry key
-     * @return class pointcuts registry
-     */
-    public static ClassPointcutsRegistry getRegistry(final String key) {
-        return REGISTRIES.computeIfAbsent(key, each -> new ClassPointcutsRegistry());
-    }
+    private final String adviceClassName;
 }

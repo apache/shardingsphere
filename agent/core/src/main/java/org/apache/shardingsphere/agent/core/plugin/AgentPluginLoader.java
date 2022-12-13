@@ -27,11 +27,11 @@ import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,21 +55,21 @@ public final class AgentPluginLoader implements PluginLoader {
     
     private final Collection<PluginJar> pluginJars = new LinkedList<>();
     
-    private Map<String, ClassPointcuts> pointcuts;
+    private Map<String, ClassAdvisor> advisors;
     
     @Getter
     @Setter
     private boolean isEnhancedForProxy = true;
     
     /**
-     * Load plugin jars and interceptor points.
+     * Load plugin jars and advisors.
      *
      * @throws IOException IO exception
      */
     public void load() throws IOException {
         loadPluginJars();
         AgentClassLoader.initDefaultPluginClassLoader(pluginJars);
-        pointcuts = loadClassPointcuts(AgentClassLoader.getDefaultPluginClassloader());
+        advisors = loadAdvisors(AgentClassLoader.getDefaultPluginClassloader());
     }
     
     private void loadPluginJars() throws IOException {
@@ -84,16 +84,16 @@ public final class AgentPluginLoader implements PluginLoader {
         PluginJarHolder.setPluginJars(pluginJars);
     }
     
-    private Map<String, ClassPointcuts> loadClassPointcuts(final ClassLoader classLoader) {
-        Map<String, ClassPointcuts> result = new HashMap<>();
+    private Map<String, ClassAdvisor> loadAdvisors(final ClassLoader classLoader) {
+        Map<String, ClassAdvisor> result = new HashMap<>();
         Collection<String> pluginNames = getPluginNames();
-        for (PointcutDefinitionService each : PluginServiceLoader.newServiceInstances(PointcutDefinitionService.class, classLoader)) {
+        for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, classLoader)) {
             if (pluginNames.contains(each.getType())) {
                 result.putAll(
-                        new PointcutDefinitionServiceEngine(each).getAllPointcuts(isEnhancedForProxy).stream().collect(Collectors.toMap(ClassPointcuts::getTargetClassName, Function.identity())));
+                        new AdvisorDefinitionServiceEngine(each).getAllAdvisors(isEnhancedForProxy).stream().collect(Collectors.toMap(ClassAdvisor::getTargetClassName, Function.identity())));
             }
         }
-        return ImmutableMap.<String, ClassPointcuts>builder().putAll(result).build();
+        return ImmutableMap.<String, ClassAdvisor>builder().putAll(result).build();
     }
     
     private Collection<String> getPluginNames() {
@@ -106,7 +106,7 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     /**
-     * To find all intercepting target classes then to build TypeMatcher.
+     * To find all intercepting target classes then to build type matcher.
      *
      * @return type matcher
      */
@@ -115,7 +115,7 @@ public final class AgentPluginLoader implements PluginLoader {
             
             @Override
             public boolean matches(final TypeDescription target) {
-                return pointcuts.containsKey(target.getTypeName());
+                return advisors.containsKey(target.getTypeName());
             }
             
             @Override
@@ -132,12 +132,12 @@ public final class AgentPluginLoader implements PluginLoader {
     
     @Override
     public boolean containsType(final TypeDescription typeDescription) {
-        return pointcuts.containsKey(typeDescription.getTypeName());
+        return advisors.containsKey(typeDescription.getTypeName());
     }
     
     @Override
-    public ClassPointcuts loadPluginInterceptorPoint(final TypeDescription typeDescription) {
-        return pointcuts.getOrDefault(typeDescription.getTypeName(), new ClassPointcuts(""));
+    public ClassAdvisor loadPluginAdvisor(final TypeDescription typeDescription) {
+        return advisors.getOrDefault(typeDescription.getTypeName(), new ClassAdvisor(""));
     }
     
     @Override

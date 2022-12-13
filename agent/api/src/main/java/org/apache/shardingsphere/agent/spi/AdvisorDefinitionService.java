@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.pointcut;
+package org.apache.shardingsphere.agent.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+
+import java.util.Collection;
 
 /**
- * Static method pointcut.
+ * Advisor definition service.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StaticMethodPointcut {
+public interface AdvisorDefinitionService extends AgentSPI {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    /**
+     * Get proxy advisors.
+     * 
+     * @return proxy advisors
+     */
+    Collection<ClassAdvisor> getProxyAdvisors();
     
-    private final String adviceClassName;
-    
-    private final boolean overrideArgs;
-    
-    public StaticMethodPointcut(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
-        this(matcher, adviceClassName, false);
-    }
+    /**
+     * Get JDBC advisors.
+     * 
+     * @return JDBC advisors
+     */
+    Collection<ClassAdvisor> getJDBCAdvisors();
 }

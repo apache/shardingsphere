@@ -15,39 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.definition;
+package org.apache.shardingsphere.agent.core.advisor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
 
 /**
- * Pointcut definition service engine.
+ * Advisor definition service engine.
  */
 @RequiredArgsConstructor
-public final class PointcutDefinitionServiceEngine {
+public final class AdvisorDefinitionServiceEngine {
     
-    private final PointcutDefinitionService pointcutDefinitionService;
+    private final AdvisorDefinitionService advisorDefinitionService;
     
     /**
-     * Get pointcuts.
+     * Get advisors.
      *
      * @param targetClassName target class name
-     * @return pointcuts
+     * @return advisors
      */
-    public ClassPointcuts getAllPointcuts(final String targetClassName) {
-        return ClassPointcutsRegistryFactory.getRegistry(pointcutDefinitionService.getType()).getClassPointcuts(targetClassName);
+    public ClassAdvisor getAdvisors(final String targetClassName) {
+        return ClassAdvisorRegistryFactory.getRegistry(advisorDefinitionService.getType()).getAdvisor(targetClassName);
     }
     
     /**
-     * Get all pointcuts.
+     * Get all advisors.
      * 
      * @param isEnhancedForProxy is enhanced for proxy
-     * @return all pointcuts
+     * @return all advisors
      */
-    public Collection<ClassPointcuts> getAllPointcuts(final boolean isEnhancedForProxy) {
-        return isEnhancedForProxy ? pointcutDefinitionService.getProxyPointcuts() : pointcutDefinitionService.getJDBCPointcuts();
+    public Collection<ClassAdvisor> getAllAdvisors(final boolean isEnhancedForProxy) {
+        return isEnhancedForProxy ? advisorDefinitionService.getProxyAdvisors() : advisorDefinitionService.getJDBCAdvisors();
     }
 }

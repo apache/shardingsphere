@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
 
 /**
- * Open tracing pointcut definition service.
+ * OpenTracing advisor definition service.
  */
-public final class OpenTracingPointcutDefinitionService implements PointcutDefinitionService {
+public final class OpenTracingAdvisorDefinitionService implements AdvisorDefinitionService {
     
     @Override
-    public Collection<ClassPointcuts> getProxyPointcuts() {
-        return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceProxy(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
+    public Collection<ClassAdvisor> getProxyAdvisors() {
+        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getProxyAdvisors(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override
-    public Collection<ClassPointcuts> getJDBCPointcuts() {
-        return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceJDBC();
+    public Collection<ClassAdvisor> getJDBCAdvisors() {
+        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getJDBCAdvisors();
     }
     
     @Override

@@ -20,15 +20,15 @@ package org.apache.shardingsphere.agent.core.plugin.loader;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
+import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
-import org.apache.shardingsphere.agent.pointcut.ConstructorPointcut;
-import org.apache.shardingsphere.agent.pointcut.InstanceMethodPointcut;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
+import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
+import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -62,12 +62,12 @@ public final class AgentPluginLoaderTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
-        ClassPointcuts classPointcuts = new ClassPointcuts("org.apache.shardingsphere.agent.core.mock.material.Material");
-        classPointcuts.getConstructorPointcuts().add(new ConstructorPointcut(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
-        classPointcuts.getInstanceMethodPointcuts().add(new InstanceMethodPointcut(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
-        classPointcuts.getStaticMethodPointcuts().add(new StaticMethodPointcut(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
+        ClassAdvisor classAdvisor = new ClassAdvisor("org.apache.shardingsphere.agent.core.mock.material.Material");
+        classAdvisor.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
+        classAdvisor.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        classAdvisor.getStaticMethodAdvisors().add(new StaticMethodAdvisor(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, Collections.singletonMap(classPointcuts.getTargetClassName(), classPointcuts));
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("advisors"), PLUGIN_LOADER, Collections.singletonMap(classAdvisor.getTargetClassName(), classAdvisor));
     }
     
     @Test
@@ -83,7 +83,7 @@ public final class AgentPluginLoaderTest {
     }
     
     @Test
-    public void assertLoadPluginInterceptorPoint() {
-        assertNotNull(PLUGIN_LOADER.loadPluginInterceptorPoint(MATERIAL));
+    public void assertLoadPluginAdvisor() {
+        assertNotNull(PLUGIN_LOADER.loadPluginAdvisor(MATERIAL));
     }
 }

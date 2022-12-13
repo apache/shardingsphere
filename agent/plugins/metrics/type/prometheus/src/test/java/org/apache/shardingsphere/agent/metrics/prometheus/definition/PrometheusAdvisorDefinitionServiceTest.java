@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.pointcut;
+package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Class pointcuts.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ClassPointcuts {
+public final class PrometheusAdvisorDefinitionServiceTest {
     
-    private final String targetClassName;
-    
-    private final Collection<ConstructorPointcut> constructorPointcuts = new LinkedList<>();
-    
-    private final Collection<InstanceMethodPointcut> instanceMethodPointcuts = new LinkedList<>();
-    
-    private final Collection<StaticMethodPointcut> staticMethodPointcuts = new LinkedList<>();
+    @Test
+    public void assertGetProxyAdvisors() {
+        assertThat(new PrometheusAdvisorDefinitionService().getProxyAdvisors().size(), is(5));
+    }
 }

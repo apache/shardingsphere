@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.JDBCExecutorCallbackAdvice;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
 
 /**
- * OpenTelemetry pointcut definition service.
+ * OpenTelemetry advisor definition service.
  */
-public final class OpenTelemetryTracingPointcutDefinitionService implements PointcutDefinitionService {
+public final class OpenTelemetryTracingAdvisorDefinitionService implements AdvisorDefinitionService {
     
     @Override
-    public Collection<ClassPointcuts> getProxyPointcuts() {
-        return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceProxy(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
+    public Collection<ClassAdvisor> getProxyAdvisors() {
+        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getProxyAdvisors(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override
-    public Collection<ClassPointcuts> getJDBCPointcuts() {
-        return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceJDBC();
+    public Collection<ClassAdvisor> getJDBCAdvisors() {
+        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getJDBCAdvisors();
     }
     
     @Override

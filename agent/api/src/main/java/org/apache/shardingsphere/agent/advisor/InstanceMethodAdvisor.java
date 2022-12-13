@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.definition;
+package org.apache.shardingsphere.agent.advisor;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class PrometheusPointcutDefinitionServiceTest {
+/**
+ * Instance method advisor.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class InstanceMethodAdvisor {
     
-    @Test
-    public void assertGetProxyClassPointcuts() {
-        assertThat(new PrometheusPointcutDefinitionService().getProxyPointcuts().size(), is(5));
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String adviceClassName;
+    
+    private final boolean overrideArgs;
+    
+    public InstanceMethodAdvisor(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
+        this(matcher, adviceClassName, false);
     }
 }

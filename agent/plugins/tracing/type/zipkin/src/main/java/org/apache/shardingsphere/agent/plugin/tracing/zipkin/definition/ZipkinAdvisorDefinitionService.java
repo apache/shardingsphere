@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.JDBCExecutorCallbackAdvice;
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
 
 /**
- * Zipkin pointcut definition service.
+ * Zipkin advisor definition service.
  */
-public final class ZipkinPointcutDefinitionService implements PointcutDefinitionService {
+public final class ZipkinAdvisorDefinitionService implements AdvisorDefinitionService {
     
     @Override
-    public Collection<ClassPointcuts> getProxyPointcuts() {
-        return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceProxy(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
+    public Collection<ClassAdvisor> getProxyAdvisors() {
+        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getProxyAdvisors(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override
-    public Collection<ClassPointcuts> getJDBCPointcuts() {
-        return new TracingAdviceEngine(new PointcutDefinitionServiceEngine(this)).adviceJDBC();
+    public Collection<ClassAdvisor> getJDBCAdvisors() {
+        return new TracingAdviceEngine(new AdvisorDefinitionServiceEngine(this)).getJDBCAdvisors();
     }
     
     @Override

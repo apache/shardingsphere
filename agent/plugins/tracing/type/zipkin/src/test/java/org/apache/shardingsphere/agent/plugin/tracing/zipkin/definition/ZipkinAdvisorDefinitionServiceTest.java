@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.pointcut;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+import org.junit.Test;
 
-/**
- * Constructor Pointcut.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ConstructorPointcut {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class ZipkinAdvisorDefinitionServiceTest {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
-    
-    private final String adviceClassName;
+    @Test
+    public void assertGetProxyAdvisors() {
+        assertThat(new ZipkinAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
+    }
 }

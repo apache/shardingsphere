@@ -15,37 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.definition;
+package org.apache.shardingsphere.agent.core.advisor;
 
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class pointcuts registry.
+ * Class advisor registry factory.
  */
-public final class ClassPointcutsRegistry {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ClassAdvisorRegistryFactory {
     
-    private final Map<String, ClassPointcuts> pointcutsMap = new ConcurrentHashMap<>();
-    
-    /**
-     * Get class pointcuts.
-     * 
-     * @param targetClassName target class name to be intercepted
-     * @return class pointcuts
-     */
-    public ClassPointcuts getClassPointcuts(final String targetClassName) {
-        return pointcutsMap.computeIfAbsent(targetClassName, ClassPointcuts::new);
-    }
+    private static final Map<String, ClassAdvisorRegistry> REGISTRIES = new ConcurrentHashMap<>();
     
     /**
-     * Get all class pointcuts.
+     * Get class advisor registry.
      * 
-     * @return all class pointcuts
+     * @param key registry key
+     * @return class advisor registry
      */
-    public Collection<ClassPointcuts> getAllClassPointcuts() {
-        return pointcutsMap.values();
+    public static ClassAdvisorRegistry getRegistry(final String key) {
+        return REGISTRIES.computeIfAbsent(key, each -> new ClassAdvisorRegistry());
     }
 }

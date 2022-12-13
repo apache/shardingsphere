@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
+package org.apache.shardingsphere.agent.advisor;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class OpenTracingPointcutDefinitionServiceTest {
+/**
+ * Static method advisor.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class StaticMethodAdvisor {
     
-    @Test
-    public void assertGetProxyClassPointcuts() {
-        assertThat(new OpenTracingPointcutDefinitionService().getProxyPointcuts().size(), is(3));
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String adviceClassName;
+    
+    private final boolean overrideArgs;
+    
+    public StaticMethodAdvisor(final ElementMatcher<? super MethodDescription> matcher, final String adviceClassName) {
+        this(matcher, adviceClassName, false);
     }
 }

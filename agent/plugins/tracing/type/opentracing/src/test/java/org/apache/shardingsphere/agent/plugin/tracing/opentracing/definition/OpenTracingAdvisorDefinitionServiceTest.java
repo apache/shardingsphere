@@ -15,28 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
-import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+import org.junit.Test;
 
-import java.util.Collection;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Pointcut definition service.
- */
-public interface PointcutDefinitionService extends AgentSPI {
+public final class OpenTracingAdvisorDefinitionServiceTest {
     
-    /**
-     * Get proxy pointcuts.
-     * 
-     * @return proxy pointcuts
-     */
-    Collection<ClassPointcuts> getProxyPointcuts();
-    
-    /**
-     * Get JDBC pointcuts.
-     * 
-     * @return JDBC pointcuts
-     */
-    Collection<ClassPointcuts> getJDBCPointcuts();
+    @Test
+    public void assertGetProxyAdvisors() {
+        assertThat(new OpenTracingAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
+    }
 }
