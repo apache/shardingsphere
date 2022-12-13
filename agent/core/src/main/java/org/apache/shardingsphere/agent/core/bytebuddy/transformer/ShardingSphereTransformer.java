@@ -107,7 +107,7 @@ public final class ShardingSphereTransformer implements Transformer {
     private ShardingSphereTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(final Collection<ConstructorAdvisor> constructorAdvisors,
                                                                                                               final InDefinedShape methodDescription, final ClassLoader classLoader) {
         List<ConstructorAdvisor> matchedConstructorAdvisors = constructorAdvisors
-                .stream().filter(each -> each.getMatcher().matches(methodDescription)).collect(Collectors.toList());
+                .stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
         if (matchedConstructorAdvisors.isEmpty()) {
             return null;
         }
@@ -148,16 +148,16 @@ public final class ShardingSphereTransformer implements Transformer {
         return result;
     }
     
-    private ShardingSphereTransformationPoint<?> getMatchedStaticMethodPoint(final Collection<StaticMethodAdvisor> staticMethodAroundPoints,
+    private ShardingSphereTransformationPoint<?> getMatchedStaticMethodPoint(final Collection<StaticMethodAdvisor> staticMethodAdvisors,
                                                                              final InDefinedShape methodDescription, final ClassLoader classLoader) {
-        List<StaticMethodAdvisor> staticMethodAdvisors = staticMethodAroundPoints.stream().filter(each -> each.getMatcher().matches(methodDescription)).collect(Collectors.toList());
-        if (staticMethodAdvisors.isEmpty()) {
+        List<StaticMethodAdvisor> matchedAdvisors = staticMethodAdvisors.stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
+        if (matchedAdvisors.isEmpty()) {
             return null;
         }
-        if (1 == staticMethodAdvisors.size()) {
-            return getSingleStaticMethodPoint(methodDescription, staticMethodAdvisors.get(0), classLoader);
+        if (1 == matchedAdvisors.size()) {
+            return getSingleStaticMethodPoint(methodDescription, matchedAdvisors.get(0), classLoader);
         }
-        return getComposedStaticMethodPoint(methodDescription, staticMethodAdvisors, classLoader);
+        return getComposedStaticMethodPoint(methodDescription, matchedAdvisors, classLoader);
     }
     
     private ShardingSphereTransformationPoint<?> getSingleStaticMethodPoint(final InDefinedShape methodDescription,
@@ -213,7 +213,7 @@ public final class ShardingSphereTransformer implements Transformer {
     private ShardingSphereTransformationPoint<?> getMatchedInstanceMethodPoint(final Collection<InstanceMethodAdvisor> instanceMethodAroundPoints,
                                                                                final InDefinedShape methodDescription, final ClassLoader classLoader) {
         List<InstanceMethodAdvisor> instanceMethodAdvisors = instanceMethodAroundPoints
-                .stream().filter(each -> each.getMatcher().matches(methodDescription)).collect(Collectors.toList());
+                .stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
         if (instanceMethodAdvisors.isEmpty()) {
             return null;
         }
