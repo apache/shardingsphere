@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class AlterSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IdentifierValue schemaName;

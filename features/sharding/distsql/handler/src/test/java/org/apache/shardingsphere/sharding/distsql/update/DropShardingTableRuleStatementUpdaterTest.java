@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -81,7 +81,8 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     @Test
     public void assertUpdate() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
+        assertFalse(new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig));
+        assertTrue(new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement("t_order"), new ShardingRuleConfiguration()));
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
     }

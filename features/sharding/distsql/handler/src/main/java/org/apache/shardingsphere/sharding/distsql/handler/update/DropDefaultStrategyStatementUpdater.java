@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -80,7 +80,8 @@ public final class DropDefaultStrategyStatementUpdater extends AbstractDropShard
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
         dropUnusedAlgorithm(currentRuleConfig);
-        return false;
+        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty() && currentRuleConfig.getBroadcastTables().isEmpty()
+                && null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
     }
     
     @Override

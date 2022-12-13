@@ -30,9 +30,4 @@ public final class ShadowOrder {
      * Shadow order.
      */
     public static final int ORDER = 50;
-    
-    /**
-     * Algorithm provider shadow order.
-     */
-    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
 }

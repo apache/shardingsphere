@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.infra.binder.segment.insert.values.expression;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * Derived parameter marker expression segment.
  */
 @Getter
-@ToString(callSuper = true)
 public final class DerivedParameterMarkerExpressionSegment extends ParameterMarkerExpressionSegment implements DerivedSimpleExpressionSegment {
     
     public DerivedParameterMarkerExpressionSegment(final int parameterMarkerIndex) {

@@ -1,0 +1,108 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="id" assertion="false" />
+        <column name="logic_database_name" />
+        <column name="logic_table_name" />
+        <column name="actual_database_name" />
+        <column name="actual_table_name" />
+        <column name="row_count" assertion="false" />
+        <column name="size" assertion="false" />
+    </metadata>
+    <row values=" | empty_rules | t_user_item | write_ds_0 | t_user_item_20 | | " />
+    <row values=" | empty_rules | t_user | write_ds_6 | t_user_16 | | " />
+    <row values=" | empty_rules | t_user | write_ds_0 | t_user_30 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_5 | t_user_item_35 | | " />
+    <row values=" | empty_rules | t_user | write_ds_0 | t_user_10 | | " />
+    <row values=" | empty_rules | t_user | write_ds_3 | t_user_13 | | " />
+    <row values=" | empty_rules | t_user | write_ds_5 | t_user_35 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_0 | t_user_item_10 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_1 | t_user_item_1 | | " />
+    <row values=" | empty_rules | t_user | write_ds_8 | t_user_8 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_1 | t_user_item_11 | | " />
+    <row values=" | empty_rules | t_user | write_ds_5 | t_user_25 | | " />
+    <row values=" | empty_rules | t_user | write_ds_2 | t_user_22 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_7 | t_user_item_27 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_0 | t_user_item_0 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_5 | t_user_item_25 | | " />
+    <row values=" | empty_rules | t_user | write_ds_4 | t_user_34 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_8 | t_user_item_28 | | " />
+    <row values=" | empty_rules | t_user | write_ds_1 | t_user_1 | | " />
+    <row values=" | empty_rules | t_user | write_ds_9 | t_user_29 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_5 | t_user_item_5 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_8 | t_user_item_38 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_2 | t_user_item_32 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_2 | t_user_item_2 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_6 | t_user_item_36 | | " />
+    <row values=" | empty_rules | t_user | write_ds_1 | t_user_11 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_7 | t_user_item_7 | | " />
+    <row values=" | empty_rules | t_user | write_ds_5 | t_user_15 | | " />
+    <row values=" | empty_rules | t_user | write_ds_8 | t_user_38 | | " />
+    <row values=" | empty_rules | t_user | write_ds_2 | t_user_12 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_7 | t_user_item_37 | | " />
+    <row values=" | empty_rules | t_user | write_ds_0 | t_user_0 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_8 | t_user_item_18 | | " />
+    <row values=" | empty_rules | t_user | write_ds_2 | t_user_32 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_4 | t_user_item_34 | | " />
+    <row values=" | empty_rules | t_user | write_ds_3 | t_user_3 | | " />
+    <row values=" | empty_rules | t_user | write_ds_1 | t_user_31 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_4 | t_user_item_14 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_9 | t_user_item_19 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_4 | t_user_item_24 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_9 | t_user_item_29 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_9 | t_user_item_39 | | " />
+    <row values=" | empty_rules | t_user | write_ds_4 | t_user_24 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_3 | t_user_item_33 | | " />
+    <row values=" | empty_rules | t_user | write_ds_9 | t_user_9 | | " />
+    <row values=" | empty_rules | t_user | write_ds_9 | t_user_39 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_2 | t_user_item_12 | | " />
+    <row values=" | empty_rules | t_user | write_ds_9 | t_user_19 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_7 | t_user_item_17 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_3 | t_user_item_13 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_9 | t_user_item_9 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_4 | t_user_item_4 | | " />
+    <row values=" | empty_rules | t_user | write_ds_1 | t_user_21 | | " />
+    <row values=" | empty_rules | t_user | write_ds_4 | t_user_4 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_8 | t_user_item_8 | | " />
+    <row values=" | empty_rules | t_user | write_ds_4 | t_user_14 | | " />
+    <row values=" | empty_rules | t_user | write_ds_8 | t_user_28 | | " />
+    <row values=" | empty_rules | t_user | write_ds_0 | t_user_20 | | " />
+    <row values=" | empty_rules | t_user | write_ds_6 | t_user_26 | | " />
+    <row values=" | empty_rules | t_user | write_ds_6 | t_user_6 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_0 | t_user_item_30 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_3 | t_user_item_23 | | " />
+    <row values=" | empty_rules | t_user | write_ds_3 | t_user_23 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_3 | t_user_item_3 | | " />
+    <row values=" | empty_rules | t_user | write_ds_7 | t_user_17 | | " />
+    <row values=" | empty_rules | t_user | write_ds_7 | t_user_7 | | " />
+    <row values=" | empty_rules | t_user | write_ds_5 | t_user_5 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_6 | t_user_item_6 | | " />
+    <row values=" | empty_rules | t_user | write_ds_7 | t_user_27 | | " />
+    <row values=" | empty_rules | t_user | write_ds_8 | t_user_18 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_5 | t_user_item_15 | | " />
+    <row values=" | empty_rules | t_user | write_ds_3 | t_user_33 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_2 | t_user_item_22 | | " />
+    <row values=" | empty_rules | t_user | write_ds_7 | t_user_37 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_1 | t_user_item_21 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_6 | t_user_item_16 | | " />
+    <row values=" | empty_rules | t_user | write_ds_6 | t_user_36 | | " />
+    <row values=" | empty_rules | t_user | write_ds_2 | t_user_2 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_1 | t_user_item_31 | | " />
+    <row values=" | empty_rules | t_user_item | write_ds_6 | t_user_item_26 | | " />
+</dataset>

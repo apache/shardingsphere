@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss start transaction statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussStartTransactionStatement extends StartTransactionStatement implements OpenGaussStatement {
 }

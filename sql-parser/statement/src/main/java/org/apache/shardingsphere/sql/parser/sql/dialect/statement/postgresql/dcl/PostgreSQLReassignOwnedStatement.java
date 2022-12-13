@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.ReassignOwnedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL reassign owned statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLReassignOwnedStatement extends ReassignOwnedStatement implements PostgreSQLStatement {
 }

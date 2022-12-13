@@ -45,7 +45,7 @@ public final class ShardingCacheRuleBuilder implements DatabaseRuleBuilder<Shard
     
     @Override
     public int getOrder() {
-        return ShardingOrder.ALGORITHM_PROVIDER_ORDER + 1;
+        return ShardingOrder.ORDER + 1;
     }
     
     @Override

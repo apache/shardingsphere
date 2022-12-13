@@ -5,7 +5,7 @@ weight = 9
 
 ## 背景信息
 
-ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、高可用、数据脱敏等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 JAVA API 的配置示例。
+ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、高可用、数据加密等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 JAVA API 的配置示例。
 
 ## 配置示例
 
@@ -71,7 +71,7 @@ private static Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscov
     return result;
 }
 
-// 数据脱敏配置
+// 数据加密配置
 public EncryptRuleConfiguration createEncryptRuleConfiguration() {
     Properties props = new Properties();
     props.setProperty("aes-key-value", "123456");

@@ -689,25 +689,21 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return visit(ctx.queryPrimary());
         }
         if (null != ctx.queryExpressionBody()) {
-            MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
-            CombineSegment combineSegment = (CombineSegment) visitCombineClause(ctx.combineClause());
-            if (result.getCombine().isPresent()) {
-                result.getCombine().get().getSelectStatement().setCombine(combineSegment);
-            } else {
-                result.setCombine(combineSegment);
-            }
+            MySQLSelectStatement result = new MySQLSelectStatement();
+            MySQLSelectStatement left = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
+            result.setProjections(left.getProjections());
+            result.setFrom(left.getFrom());
+            left.getTable().ifPresent(result::setTable);
+            result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
-        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        result.setCombine((CombineSegment) visitCombineClause(ctx.combineClause()));
-        return result;
+        return visit(ctx.queryExpressionParens());
     }
     
-    @Override
-    public ASTNode visitCombineClause(final CombineClauseContext ctx) {
+    private CombineSegment createCombineSegment(final CombineClauseContext ctx, final MySQLSelectStatement left) {
         CombineType combineType = (null != ctx.combineOption() && null != ctx.combineOption().ALL()) ? CombineType.UNION_ALL : CombineType.UNION;
-        MySQLSelectStatement statement = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), combineType, statement);
+        MySQLSelectStatement right = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+        return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }
     
     @Override

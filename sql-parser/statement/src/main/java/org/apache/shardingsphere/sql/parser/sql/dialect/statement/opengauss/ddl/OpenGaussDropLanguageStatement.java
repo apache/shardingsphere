@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropLanguageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss drop language statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussDropLanguageStatement extends DropLanguageStatement implements OpenGaussStatement {
 }

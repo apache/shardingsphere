@@ -20,7 +20,7 @@ package org.apache.shardingsphere.singletable.route.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.exception.UnsupportedDropCascadeTableException;
-import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
+import org.apache.shardingsphere.singletable.route.validator.SingleTableMetaDataValidator;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableStatementHandler;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableSta
 /**
  * Single table drop table validator.
  */
-public final class SingleTableDropTableValidator implements SingleTableMetadataValidator<DropTableStatement> {
+public final class SingleTableDropTableValidator implements SingleTableMetaDataValidator<DropTableStatement> {
     
     @Override
     public void validate(final SingleTableRule rule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final ShardingSphereDatabase database) {

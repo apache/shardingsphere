@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugins</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
     <packaging>pom</packaging>
@@ -30,17 +30,6 @@
     
     <modules>
         <module>api</module>
-        <module>prometheus</module>
+        <module>type</module>
     </modules>
-    
-    <properties>
-        <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
-    </properties>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-api</artifactId>
-        </dependency>
-    </dependencies>
 </project>

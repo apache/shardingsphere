@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropRoutineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop routine statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLDropRoutineStatement extends DropRoutineStatement implements PostgreSQLStatement {
 }

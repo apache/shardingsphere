@@ -11,28 +11,24 @@ weight = 15
 
 ```sql
 DropShardingTableReferenceRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  (tableName (',' tableName)* )?
+  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
 
-tableName ::=
+ruleName ::=
   identifier
 ```
 
-### 补充说明
-
-- 未指定 `SHARDING TABLE REFERENCE RULE` 时，默认删除所有关联规则。
-
 ### 示例
 
-- 删除指定关联规则
+- 删除单个关联规则
  
 ```sql
-DROP SHARDING TABLE REFERENCE RULE (t_order, t_order_item);
+DROP SHARDING TABLE REFERENCE RULE ref_0;
 ```
 
-- 删除全部关联规则
+- 删除多个关联规则
 
 ```sql
-DROP SHARDING TABLE REFERENCE RULE;
+DROP SHARDING TABLE REFERENCE RULE ref_0, ref_1;
 ```
 
 ### 保留字

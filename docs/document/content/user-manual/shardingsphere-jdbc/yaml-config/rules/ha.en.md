@@ -19,22 +19,22 @@ rules:
 
 - !DB_DISCOVERY
   dataSources:
-    <data-source-name> (+): # Logic data source name
+    <data_source_name> (+): # Logic data source name
       dataSourceNames: # Data source names
-        - <data-source>
-        - <data-source>
+        - <data_source>
+        - <data_source>
       discoveryHeartbeatName: # Detect heartbeat name
       discoveryTypeName: # Database discovery type name
   
   # Heartbeat Configuration
   discoveryHeartbeats:
-    <discovery-heartbeat-name> (+): # heartbeat name
+    <discovery_heartbeat_name> (+): # heartbeat name
       props:
         keep-alive-cron: # This is cron expression, such as：'0/5 * * * * ?'
   
   # Database Discovery Configuration
   discoveryTypes:
-    <discovery-type-name> (+): # Database discovery type name
+    <discovery_type_name> (+): # Database discovery type name
       type: # Database discovery type, such as: MySQL.MGR, MySQL.NORMAL_REPLICATION, openGauss.NORMAL_REPLICATION
       props (?):
         group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # Required parameters for database discovery types, such as MGR's group-name
@@ -75,33 +75,31 @@ dataSources:
     minPoolSize: 1
 
 rules:
-  - !READWRITE_SPLITTING
-    dataSources:
-      replica_ds:
-        dynamicStrategy:
-          autoAwareDataSourceName: readwrite_ds
-  - !DB_DISCOVERY
-    dataSources:
-      readwrite_ds:
-        dataSourceNames:
-          - ds_0
-          - ds_1
-          - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
-        discoveryTypeName: mgr
-    discoveryHeartbeats:
-      mgr-heartbeat:
-        props:
-          keep-alive-cron: '0/5 * * * * ?'
-    discoveryTypes:
-      mgr:
-        type: MySQL.MGR
-        props:
-          group-name: 558edd3c-02ec-11ea-9bb3-080027e39bd2
+- !READWRITE_SPLITTING
+  dataSources:
+    replica_ds:
+      dynamicStrategy:
+        autoAwareDataSourceName: readwrite_ds
+- !DB_DISCOVERY
+  dataSources:
+    readwrite_ds:
+      dataSourceNames:
+        - ds_0
+        - ds_1
+        - ds_2
+      discoveryHeartbeatName: mgr_heartbeat
+      discoveryTypeName: mgr
+  discoveryHeartbeats:
+    mgr_heartbeat:
+      props:
+        keep-alive-cron: '0/5 * * * * ?'
+  discoveryTypes:
+    mgr:
+      type: MySQL.MGR
+      props:
+        group-name: 558edd3c-02ec-11ea-9bb3-080027e39bd2
 ```
 ## Related References
 
 - [Feature Description of HA](/en/features/ha/)
 - [JAVA API: HA](/en/user-manual/shardingsphere-jdbc/java-api/rules/ha/)
-- [Spring Boot Starter: HA](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha/)
-- [Spring Namespace: HA](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha/)

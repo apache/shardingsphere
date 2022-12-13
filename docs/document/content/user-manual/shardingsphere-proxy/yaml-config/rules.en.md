@@ -5,16 +5,16 @@ weight = 3
 
 ## Background
 
-This section describes how to configure the rules for ShardingSphere-Proxy.
+This section explains how to configure the ShardingSphere-Proxy rules.
 
 ## Parameters Explained
 
-Rules configuration of ShardingSphere-Proxy is the same as that of ShardingSphere-JDBC.
+Rules configuration for ShardingSphere-Proxy is the same as ShardingSphere-JDBC.
 For details, please refer to [ShardingSphere-JDBC Rules Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/).
 
 ## Notice
 
-Unlike ShardingSphere-JDBC, the following rules need to be configured in `server.yaml` of ShardingSphere-Proxy:
+Unlike ShardingSphere-JDBC, the following rules need to be configured in ShardingSphere-Proxy's `server.yaml`:
 
 * [SQL Parsing](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/)
 ```yaml

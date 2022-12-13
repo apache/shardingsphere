@@ -36,7 +36,7 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 public final class ConsistencyCheckJob extends AbstractSimplePipelineJob {
     
     @Override
-    protected ConsistencyCheckJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
+    public ConsistencyCheckJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         ConsistencyCheckJobItemProgress jobItemProgress = (ConsistencyCheckJobItemProgress) getJobAPI().getJobItemProgress(jobConfig.getJobId(), shardingContext.getShardingItem());
         return new ConsistencyCheckJobItemContext(jobConfig, shardingContext.getShardingItem(), JobStatus.RUNNING, jobItemProgress);

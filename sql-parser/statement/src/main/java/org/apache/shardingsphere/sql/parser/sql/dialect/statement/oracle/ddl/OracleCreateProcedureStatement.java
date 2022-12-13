@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
@@ -26,6 +25,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
  * Oracle create procedure statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
 }

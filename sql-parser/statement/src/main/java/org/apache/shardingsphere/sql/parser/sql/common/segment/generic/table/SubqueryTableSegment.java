@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
 import java.util.Optional;
 
@@ -31,7 +30,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class SubqueryTableSegment implements TableSegment {
     
     private final SubquerySegment subquery;

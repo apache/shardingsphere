@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublic
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.InventoryIncrementalProcessConfigurationSegmentConverter;
 
 /**

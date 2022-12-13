@@ -55,7 +55,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether validate table meta data consistency when application startup or updated.
      */
-    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    CHECK_TABLE_META_DATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * SQL federation type.
@@ -122,12 +122,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy instance type.
      */
-    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true),
-    
-    /**
-     * Proxy metadata collector enabled.
-     */
-    PROXY_METADATA_COLLECTOR_ENABLED("proxy-metadata-collector-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
+    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true);
     
     private final String key;
     

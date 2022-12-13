@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle drop role statement.
  */
-@ToString(callSuper = true)
 public final class OracleDropRoleStatement extends DropRoleStatement implements OracleStatement {
 }

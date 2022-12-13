@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
@@ -31,11 +33,12 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Advice instance loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdviceInstanceLoader {
     
-    private static final Map<String, Object> ADVICE_INSTANCE_CACHE = new ConcurrentHashMap();
+    private static final Map<String, Object> ADVICE_INSTANCE_CACHE = new ConcurrentHashMap<>();
     
-    private static final Map<ClassLoader, ClassLoader> PLUGIN_CLASSLOADERS = new HashMap();
+    private static final Map<ClassLoader, ClassLoader> PLUGIN_CLASSLOADERS = new HashMap<>();
     
     private static final ReentrantLock INIT_INSTANCE_LOCK = new ReentrantLock();
     

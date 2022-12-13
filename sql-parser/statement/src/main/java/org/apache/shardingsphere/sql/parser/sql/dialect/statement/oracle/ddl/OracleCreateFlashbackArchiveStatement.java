@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create flashback archive statement.
  */
-@ToString(callSuper = true)
 public class OracleCreateFlashbackArchiveStatement extends CreateFlashbackArchiveStatement implements OracleStatement {
 }

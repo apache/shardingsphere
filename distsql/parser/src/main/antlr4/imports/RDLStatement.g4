@@ -20,55 +20,55 @@ grammar RDLStatement;
 import BaseRule;
 
 registerStorageUnit
-    : REGISTER STORAGE UNIT storageUnitDefinition (COMMA storageUnitDefinition)*
+    : REGISTER STORAGE UNIT storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
 
 alterStorageUnit
-    : ALTER STORAGE UNIT storageUnitDefinition (COMMA storageUnitDefinition)*
+    : ALTER STORAGE UNIT storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
 
 unregisterStorageUnit
-    : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA storageUnitName)* ignoreSingleTables?
+    : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA_ storageUnitName)* ignoreSingleTables?
     ;
 
 setDefaultSingleTableStorageUnit
-    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ (storageUnitName | RANDOM)
+    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
     ;
 
 storageUnitDefinition
-    : storageUnitName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
+    : storageUnitName LP_ (simpleSource | urlSource) COMMA_ USER EQ_ user (COMMA_ PASSWORD EQ_ password)? (COMMA_ propertiesDefinition)? RP_
     ;
 
 simpleSource
-    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
+    : HOST EQ_ hostname COMMA_ PORT EQ_ port COMMA_ DB EQ_ dbName
     ;
 
 urlSource
-    : URL EQ url
+    : URL EQ_ url
     ;
 
 hostname
-    : STRING
+    : STRING_
     ;
 
 port
-    : INT
+    : INT_
     ;
 
 dbName
-    : STRING
+    : STRING_
     ;
 
 url
-    : STRING
+    : STRING_
     ;
 
 user
-    : STRING
+    : STRING_
     ;
 
 password
-    : STRING
+    : STRING_
     ;
 
 ignoreSingleTables

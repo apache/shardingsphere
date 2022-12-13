@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 
 import java.util.Collection;
 
@@ -32,7 +32,7 @@ public final class ComposeConstructorAdvice implements ConstructorAdvice {
     private final Collection<ConstructorAdvice> advices;
     
     @Override
-    public void onConstructor(final AdviceTargetObject target, final Object[] args) {
+    public void onConstructor(final TargetAdviceObject target, final Object[] args) {
         advices.forEach(each -> each.onConstructor(target, args));
     }
 }

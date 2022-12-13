@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderFactory;
@@ -134,5 +134,10 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
         if (null != xaTransactionManagerProvider) {
             xaTransactionManagerProvider.close();
         }
+    }
+    
+    @Override
+    public boolean containsProviderType(final String providerType) {
+        return XATransactionManagerProviderFactory.contains(providerType);
     }
 }

@@ -35,19 +35,19 @@ public final class ServiceController {
     private static final String EPHEMERAL_SERVICE_NAME = "EPHEMERAL";
     
     @Getter
-    private final ServiceMetadata persistentService = new ServiceMetadata(PERSISTENT_SERVICE_NAME, false);
+    private final ServiceMetaData persistentService = new ServiceMetaData(PERSISTENT_SERVICE_NAME, false);
     
     @Getter
-    private final ServiceMetadata ephemeralService = new ServiceMetadata(EPHEMERAL_SERVICE_NAME, true);
+    private final ServiceMetaData ephemeralService = new ServiceMetaData(EPHEMERAL_SERVICE_NAME, true);
     
-    private final Map<Boolean, ServiceMetadata> serviceMap = Stream.of(persistentService, ephemeralService).collect(Collectors.toMap(ServiceMetadata::isEphemeral, Function.identity()));
+    private final Map<Boolean, ServiceMetaData> serviceMap = Stream.of(persistentService, ephemeralService).collect(Collectors.toMap(ServiceMetaData::isEphemeral, Function.identity()));
     
     /**
      * Get all services.
      * 
      * @return all services
      */
-    public Collection<ServiceMetadata> getAllServices() {
+    public Collection<ServiceMetaData> getAllServices() {
         return serviceMap.values();
     }
     
@@ -57,7 +57,7 @@ public final class ServiceController {
      * @param ephemeral is ephemeral service
      * @return ephemeral service or persistent service
      */
-    public ServiceMetadata getService(final boolean ephemeral) {
+    public ServiceMetaData getService(final boolean ephemeral) {
         return serviceMap.get(ephemeral);
     }
 }

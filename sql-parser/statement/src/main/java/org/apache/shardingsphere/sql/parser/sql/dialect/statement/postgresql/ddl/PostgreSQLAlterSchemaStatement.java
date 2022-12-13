@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dd
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -31,7 +30,6 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class PostgreSQLAlterSchemaStatement extends AlterSchemaStatement implements PostgreSQLStatement {
     
     private IdentifierValue renameSchema;

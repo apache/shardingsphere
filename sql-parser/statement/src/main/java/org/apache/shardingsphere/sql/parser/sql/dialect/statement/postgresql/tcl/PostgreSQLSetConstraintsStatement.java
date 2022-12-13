@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL set constraints statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLSetConstraintsStatement extends SetConstraintsStatement implements PostgreSQLStatement {
 }

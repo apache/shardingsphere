@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

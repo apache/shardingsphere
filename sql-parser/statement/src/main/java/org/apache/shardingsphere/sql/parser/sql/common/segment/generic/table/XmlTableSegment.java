@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
@@ -32,7 +31,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class XmlTableSegment implements TableSegment {
     
     private final int startIndex;

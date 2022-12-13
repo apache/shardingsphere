@@ -55,6 +55,10 @@
 #    initialCapacity: 128
 #    maximumSize: 1024
 #
+#cdc:
+#  enabled: false
+#  port: 33071
+#
 #props:
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.

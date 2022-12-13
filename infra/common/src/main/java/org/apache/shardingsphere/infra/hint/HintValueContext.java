@@ -33,6 +33,8 @@ public final class HintValueContext {
     
     private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
     
+    private String dataSourceName = "";
+    
     private boolean databaseShardingOnly;
     
     private boolean writeRouteOnly;
