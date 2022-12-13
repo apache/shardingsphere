@@ -30,10 +30,6 @@
     
     <modules>
         <module>api</module>
-        <module>prometheus</module>
+        <module>type</module>
     </modules>
-    
-    <properties>
-        <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
-    </properties>
 </project>
