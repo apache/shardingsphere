@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusPluginDefinitionServiceTest {
+public final class ZipkinPointcutDefinitionServiceTest {
     
     @Test
-    public void assertInstallProxyInterceptors() {
-        PrometheusPluginDefinitionService pluginDefinitionService = new PrometheusPluginDefinitionService();
-        pluginDefinitionService.installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(5));
+    public void assertGetProxyClassPointcuts() {
+        assertThat(new ZipkinPointcutDefinitionService().getProxyPointcuts().size(), is(3));
     }
 }

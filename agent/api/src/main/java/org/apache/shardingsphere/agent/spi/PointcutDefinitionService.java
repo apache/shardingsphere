@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
+package org.apache.shardingsphere.agent.spi;
 
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
 
-public final class JaegerPluginDefinitionServiceTest {
+/**
+ * Pointcut definition service.
+ */
+public interface PointcutDefinitionService extends AgentSPI {
     
-    @Test
-    public void assertInstallProxyInterceptors() {
-        JaegerPluginDefinitionService pluginDefinitionService = new JaegerPluginDefinitionService();
-        pluginDefinitionService.installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
-    }
+    /**
+     * Get proxy pointcuts.
+     * 
+     * @return proxy pointcuts
+     */
+    Collection<ClassPointcuts> getProxyPointcuts();
+    
+    /**
+     * Get JDBC pointcuts.
+     * 
+     * @return JDBC pointcuts
+     */
+    Collection<ClassPointcuts> getJDBCPointcuts();
 }

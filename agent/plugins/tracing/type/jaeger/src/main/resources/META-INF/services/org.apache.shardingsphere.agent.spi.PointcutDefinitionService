@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition.ZipkinPluginDefinitionService
+org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition.JaegerPointcutDefinitionService

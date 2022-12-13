@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenTracingPluginDefinitionServiceTest {
+public final class OpenTelemetryTracingPointcutDefinitionServiceTest {
     
     @Test
-    public void assertInstallProxyInterceptors() {
-        OpenTracingPluginDefinitionService pluginDefinitionService = new OpenTracingPluginDefinitionService();
-        pluginDefinitionService.installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
+    public void assertGetProxyClassPointcuts() {
+        assertThat(new OpenTelemetryTracingPointcutDefinitionService().getProxyPointcuts().size(), is(3));
     }
 }

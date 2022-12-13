@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser;
 
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 
 /**
  * Tracing adviser.
@@ -28,6 +29,7 @@ public interface TracingAdviser {
      * Advice.
      * 
      * @param instanceMethodAroundAdvice instance method around advice
+     * @return class pointcuts
      */
-    void advice(Class<? extends InstanceMethodAroundAdvice> instanceMethodAroundAdvice);
+    ClassPointcuts advice(Class<? extends InstanceMethodAroundAdvice> instanceMethodAroundAdvice);
 }

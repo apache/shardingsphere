@@ -19,40 +19,35 @@ package org.apache.shardingsphere.agent.core.definition;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
-import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
+import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
 
 import java.util.Collection;
 
 /**
- * Plugin definition service engine.
+ * Pointcut definition service engine.
  */
 @RequiredArgsConstructor
-public final class PluginDefinitionServiceEngine {
+public final class PointcutDefinitionServiceEngine {
     
-    private final PluginDefinitionService pluginDefinitionService;
+    private final PointcutDefinitionService pointcutDefinitionService;
     
     /**
-     * Get class pointcuts.
+     * Get pointcuts.
      *
      * @param targetClassName target class name
-     * @return class pointcuts
+     * @return pointcuts
      */
-    public ClassPointcuts getClassPointcuts(final String targetClassName) {
-        return ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getClassPointcuts(targetClassName);
+    public ClassPointcuts getAllPointcuts(final String targetClassName) {
+        return ClassPointcutsRegistryFactory.getRegistry(pointcutDefinitionService.getType()).getClassPointcuts(targetClassName);
     }
     
     /**
-     * Install plugins.
+     * Get all pointcuts.
      * 
      * @param isEnhancedForProxy is enhanced for proxy
-     * @return class pointcuts
+     * @return all pointcuts
      */
-    public Collection<ClassPointcuts> install(final boolean isEnhancedForProxy) {
-        if (isEnhancedForProxy) {
-            pluginDefinitionService.installProxyInterceptors();
-        } else {
-            pluginDefinitionService.installJdbcInterceptors();
-        }
-        return ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts();
+    public Collection<ClassPointcuts> getAllPointcuts(final boolean isEnhancedForProxy) {
+        return isEnhancedForProxy ? pointcutDefinitionService.getProxyPointcuts() : pointcutDefinitionService.getJDBCPointcuts();
     }
 }

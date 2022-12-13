@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.metrics.prometheus.definition.PrometheusPluginDefinitionService
+org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition.ZipkinPointcutDefinitionService

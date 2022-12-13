@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
 import org.apache.shardingsphere.agent.pointcut.StaticMethodPointcut;
-import org.apache.shardingsphere.agent.spi.PluginDefinitionService;
+import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Base logging plugin definition service.
+ * Base logging pointcut definition service.
  */
-public final class BaseLoggingPluginDefinitionService implements PluginDefinitionService {
+public final class BaseLoggingPointcutDefinitionService implements PointcutDefinitionService {
     
     private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory";
     
@@ -35,19 +39,23 @@ public final class BaseLoggingPluginDefinitionService implements PluginDefinitio
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
-    public void installProxyInterceptors() {
-        installInterceptors();
+    public Collection<ClassPointcuts> getProxyPointcuts() {
+        return getClassPointcuts();
     }
     
     @Override
-    public void installJdbcInterceptors() {
-        installInterceptors();
+    public Collection<ClassPointcuts> getJDBCPointcuts() {
+        return getClassPointcuts();
     }
     
-    private void installInterceptors() {
-        PluginDefinitionServiceEngine engine = new PluginDefinitionServiceEngine(this);
-        engine.getClassPointcuts(SCHEMA_METADATA_LOADER_CLASS).getStaticMethodPointcuts()
-                .add(new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
+    private Collection<ClassPointcuts> getClassPointcuts() {
+        Collection<ClassPointcuts> result = new LinkedList<>();
+        PointcutDefinitionServiceEngine engine = new PointcutDefinitionServiceEngine(this);
+        ClassPointcuts classPointcuts = engine.getAllPointcuts(SCHEMA_METADATA_LOADER_CLASS);
+        classPointcuts.getStaticMethodPointcuts().add(
+                new StaticMethodPointcut(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
+        result.add(classPointcuts);
+        return result;
     }
     
     @Override
