@@ -20,6 +20,9 @@ package org.apache.shardingsphere.agent.core.plugin;
 import net.bytebuddy.description.type.TypeDescription;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 
+/**
+ * Plugin loader.
+ */
 public interface PluginLoader {
     
     /**

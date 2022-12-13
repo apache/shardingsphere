@@ -70,6 +70,7 @@ public final class AgentTransformer implements Transformer {
     
     private final PluginLoader pluginLoader;
     
+    @SuppressWarnings("NullableProblems")
     @Override
     public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
         if (!pluginLoader.containsType(typeDescription)) {
@@ -132,12 +133,11 @@ public final class AgentTransformer implements Transformer {
         Builder<?> result = builder;
         for (AgentTransformationPoint<?> each : staticMethodAdvicePoints) {
             try {
-                if (each.getInterceptor() instanceof StaticMethodInterceptorArgsOverride || each.getInterceptor() instanceof ComposedStaticMethodInterceptorArgsOverride) {
+                if (each.getInterceptor() instanceof StaticMethodInterceptorArgsOverride) {
                     result = result.method(ElementMatchers.is(each.getDescription()))
                             .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(each.getInterceptor()));
                 } else {
-                    result = result.method(ElementMatchers.is(each.getDescription()))
-                            .intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
+                    result = result.method(ElementMatchers.is(each.getDescription())).intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
@@ -194,12 +194,11 @@ public final class AgentTransformer implements Transformer {
         Builder<?> result = builder;
         for (AgentTransformationPoint<?> each : instanceMethodAdviceComposePoints) {
             try {
-                if (each.getInterceptor() instanceof InstanceMethodInterceptorArgsOverride || each.getInterceptor() instanceof ComposedInstanceMethodInterceptorArgsOverride) {
+                if (each.getInterceptor() instanceof InstanceMethodInterceptorArgsOverride) {
                     result = result.method(ElementMatchers.is(each.getDescription()))
                             .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(each.getInterceptor()));
                 } else {
-                    result = result.method(ElementMatchers.is(each.getDescription()))
-                            .intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
+                    result = result.method(ElementMatchers.is(each.getDescription())).intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
