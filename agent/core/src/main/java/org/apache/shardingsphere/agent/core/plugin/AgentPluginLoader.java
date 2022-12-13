@@ -25,7 +25,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
@@ -112,16 +112,19 @@ public final class AgentPluginLoader implements PluginLoader {
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return new Junction<TypeDescription>() {
             
+            @SuppressWarnings("NullableProblems")
             @Override
             public boolean matches(final TypeDescription target) {
                 return advisors.containsKey(target.getTypeName());
             }
             
+            @SuppressWarnings("NullableProblems")
             @Override
             public <U extends TypeDescription> Junction<U> and(final ElementMatcher<? super U> other) {
                 return null;
             }
             
+            @SuppressWarnings("NullableProblems")
             @Override
             public <U extends TypeDescription> Junction<U> or(final ElementMatcher<? super U> other) {
                 return null;

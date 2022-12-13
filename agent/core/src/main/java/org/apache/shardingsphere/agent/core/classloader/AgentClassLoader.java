@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.common;
+package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
