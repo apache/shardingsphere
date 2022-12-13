@@ -27,28 +27,32 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MaskFromXToYMaskAlgorithmTest {
     
-    private MaskFromXToYMaskAlgorithm algorithm;
+    private MaskFromXToYMaskAlgorithm maskAlgorithm;
     
     @Before
     public void setUp() {
-        algorithm = new MaskFromXToYMaskAlgorithm();
-        algorithm.init(createProperties("3", "5", "*"));
+        maskAlgorithm = new MaskFromXToYMaskAlgorithm();
+        maskAlgorithm.init(createProperties("3", "5", "*"));
     }
     
     @Test
     public void assertMask() {
-        assertThat(algorithm.mask("abc12345"), is("abc***45"));
+        assertThat(maskAlgorithm.mask("abc12345"), is("abc***45"));
     }
     
     @Test
-    public void assertMaskWithShortPlainValue() {
-        assertThat(algorithm.mask("ab"), is("ab"));
-        assertThat(algorithm.mask("abc1"), is("abc*"));
+    public void assertMaskWhenPlainValueLengthLessThanFromX() {
+        assertThat(maskAlgorithm.mask("ab"), is("ab"));
+    }
+    
+    @Test
+    public void assertMaskWhenPlainValueLengthLessThanToY() {
+        assertThat(maskAlgorithm.mask("abc1"), is("abc*"));
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertMaskWithInvalidProperties() {
-        algorithm.init(createProperties("5", "", "*"));
+    public void assertInitWhenConfigWrongProps() {
+        maskAlgorithm.init(createProperties("5", "", "+"));
     }
     
     private Properties createProperties(final String fromX, final String toY, final String replaceChar) {

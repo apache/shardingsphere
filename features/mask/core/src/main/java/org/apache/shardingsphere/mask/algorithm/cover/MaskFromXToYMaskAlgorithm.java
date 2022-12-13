@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -44,40 +45,43 @@ public final class MaskFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
     private Properties props;
     
     @Override
-    public String mask(final Object plainValue) {
-        String value = plainValue == null ? "" : plainValue.toString();
-        if ("".equals(value) || value.length() <= fromX || toY < fromX) {
-            return value;
-        }
-        char[] chars = value.toCharArray();
-        for (int i = fromX, len = Math.min(toY, chars.length - 1); i <= len; i++) {
-            chars[i] = replaceChar;
-        }
-        return new String(chars);
-    }
-    
-    @Override
     public void init(final Properties props) {
         this.props = props;
-        this.fromX = getX(props);
-        this.toY = getY(props);
-        this.replaceChar = getReplaceChar(props);
+        this.fromX = createFromX(props);
+        this.toY = createToY(props);
+        this.replaceChar = createReplaceChar(props);
     }
     
-    private Integer getX(final Properties props) {
+    private Integer createFromX(final Properties props) {
         Preconditions.checkArgument(props.containsKey(FROM_X), "%s can not be null.", FROM_X);
         return Integer.parseInt(props.getProperty(FROM_X));
     }
     
-    private Integer getY(final Properties props) {
+    private Integer createToY(final Properties props) {
         Preconditions.checkArgument(props.containsKey(TO_Y), "%s can not be null.", TO_Y);
         return Integer.parseInt(props.getProperty(TO_Y));
     }
     
-    private Character getReplaceChar(final Properties props) {
+    private Character createReplaceChar(final Properties props) {
         Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
-        Preconditions.checkArgument(1 == props.getProperty(REPLACE_CHAR).length(), "%s length must be 1.", REPLACE_CHAR);
+        Preconditions.checkArgument(1 == props.getProperty(REPLACE_CHAR).length(), "%s's length must be one.", REPLACE_CHAR);
         return props.getProperty(REPLACE_CHAR).charAt(0);
+    }
+    
+    @Override
+    public String mask(final Object plainValue) {
+        String result = null == plainValue ? null : String.valueOf(plainValue);
+        if (Strings.isNullOrEmpty(result)) {
+            return result;
+        }
+        if (result.length() <= fromX || toY < fromX) {
+            return result;
+        }
+        char[] chars = result.toCharArray();
+        for (int i = fromX, minLength = Math.min(toY, chars.length - 1); i <= minLength; i++) {
+            chars[i] = replaceChar;
+        }
+        return new String(chars);
     }
     
     @Override

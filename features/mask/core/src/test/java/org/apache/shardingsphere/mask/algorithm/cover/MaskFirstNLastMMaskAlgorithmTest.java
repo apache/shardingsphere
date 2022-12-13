@@ -27,27 +27,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MaskFirstNLastMMaskAlgorithmTest {
     
-    private MaskFirstNLastMMaskAlgorithm algorithm;
+    private MaskFirstNLastMMaskAlgorithm maskAlgorithm;
     
     @Before
     public void setUp() {
-        algorithm = new MaskFirstNLastMMaskAlgorithm();
-        algorithm.init(createProperties("3", "5", "*"));
+        maskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
+        maskAlgorithm.init(createProperties("3", "5", "*"));
     }
     
     @Test
     public void assertMask() {
-        assertThat(algorithm.mask("abc12345678"), is("***123*****"));
+        assertThat(maskAlgorithm.mask("abc12345678"), is("***123*****"));
     }
     
     @Test
-    public void assertMaskWithShortPlainValue() {
-        assertThat(algorithm.mask("ab"), is("**"));
+    public void assertMaskWhenPlainValueLengthLessThanFirstN() {
+        assertThat(maskAlgorithm.mask("ab"), is("**"));
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertMaskWithInvalidProperties() {
-        algorithm.init(createProperties("", "5", "*"));
+    public void assertInitWhenConfigWrongProps() {
+        maskAlgorithm.init(createProperties("", "3", "+"));
     }
     
     private Properties createProperties(final String firstN, final String lastM, final String replaceChar) {
