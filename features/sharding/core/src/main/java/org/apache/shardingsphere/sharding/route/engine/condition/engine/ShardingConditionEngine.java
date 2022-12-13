@@ -29,13 +29,15 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
  * Sharding condition engine.
  */
 public interface ShardingConditionEngine<T extends SQLStatementContext<?>> extends RequiredSPI {
-    /*
-     * Initialize the sharding condition engine
+    
+    /**
+     * Initialize the sharding condition engine.
      *
-     * @param rule     Sharding rule
+     * @param rule Sharding rule
      * @param database Sharding database
      */
     void init(ShardingRule rule, ShardingSphereDatabase database);
+    
     /**
      * Create sharding conditions.
      *

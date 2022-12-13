@@ -64,6 +64,13 @@ public final class WhereClauseShardingConditionEngine {
     
     private final ShardingSphereDatabase database;
     
+    /**
+     * Create sharding conditions.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param params SQL parameters
+     * @return sharding conditions
+     */
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();

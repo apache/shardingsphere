@@ -36,7 +36,7 @@ public final class ShardingConditionEngineFactory {
      *
      * @param queryContext query context
      * @param database database
-     * @param rule sharding rule 
+     * @param rule sharding rule
      * @return created instance
      */
     public static ShardingConditionEngine<?> createShardingConditionEngine(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {

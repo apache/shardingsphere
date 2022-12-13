@@ -58,6 +58,13 @@ public final class InsertClauseShardingConditionEngine {
     
     private final ShardingSphereDatabase database;
     
+    /**
+     * Create sharding conditions.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param params SQL parameters
+     * @return sharding conditions
+     */
     public List<ShardingCondition> createShardingConditions(final InsertStatementContext sqlStatementContext, final List<Object> params) {
         List<ShardingCondition> result = null == sqlStatementContext.getInsertSelectContext()
                 ? createShardingConditionsWithInsertValues(sqlStatementContext, params)
