@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropDefaultShadowAlgorithmStatementUpdater;
@@ -28,8 +29,11 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
@@ -55,12 +59,15 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Test
     public void assertUpdate() {
+        String algorithmName = "default";
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.setDefaultShadowAlgorithmName("default");
+        ruleConfig.getShadowAlgorithms().put(algorithmName, mock(AlgorithmConfiguration.class));
+        ruleConfig.setDefaultShadowAlgorithmName(algorithmName);
         DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement(false);
         updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
         assertTrue(updater.hasAnyOneToBeDropped(statement, ruleConfig));
         updater.updateCurrentRuleConfiguration(statement, ruleConfig);
         assertNull(ruleConfig.getDefaultShadowAlgorithmName());
+        assertThat(ruleConfig.getShadowAlgorithms().size(), is(0));
     }
 }
