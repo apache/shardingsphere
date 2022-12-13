@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.definition;
+package org.apache.shardingsphere.agent.core.advisor;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class pointcuts registry.
+ * Advisor definition service engine.
  */
-public final class ClassPointcutsRegistry {
+@RequiredArgsConstructor
+public final class AdvisorDefinitionServiceEngine {
     
-    private final Map<String, ClassAdvisor> pointcutsMap = new ConcurrentHashMap<>();
+    private final AdvisorDefinitionService advisorDefinitionService;
     
     /**
-     * Get class pointcuts.
-     * 
-     * @param targetClassName target class name to be intercepted
-     * @return class pointcuts
+     * Get advisors.
+     *
+     * @param targetClassName target class name
+     * @return advisors
      */
-    public ClassAdvisor getClassPointcuts(final String targetClassName) {
-        return pointcutsMap.computeIfAbsent(targetClassName, ClassAdvisor::new);
+    public ClassAdvisor getAdvisors(final String targetClassName) {
+        return ClassAdvisorRegistryFactory.getRegistry(advisorDefinitionService.getType()).getAdvisor(targetClassName);
     }
     
     /**
-     * Get all class pointcuts.
+     * Get all advisors.
      * 
-     * @return all class pointcuts
+     * @param isEnhancedForProxy is enhanced for proxy
+     * @return all advisors
      */
-    public Collection<ClassAdvisor> getAllClassPointcuts() {
-        return pointcutsMap.values();
+    public Collection<ClassAdvisor> getAllAdvisors(final boolean isEnhancedForProxy) {
+        return isEnhancedForProxy ? advisorDefinitionService.getProxyAdvisors() : advisorDefinitionService.getJDBCAdvisors();
     }
 }

@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
+package org.apache.shardingsphere.agent.core.advisor;
 
-import org.junit.Test;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public final class ZipkinPointcutDefinitionServiceTest {
+/**
+ * Class advisor registry.
+ */
+public final class ClassAdvisorRegistry {
     
-    @Test
-    public void assertGetProxyClassPointcuts() {
-        assertThat(new ZipkinPointcutDefinitionService().getProxyPointcuts().size(), is(3));
+    private final Map<String, ClassAdvisor> advisors = new ConcurrentHashMap<>();
+    
+    /**
+     * Get class advisor.
+     * 
+     * @param targetClassName target class name to be intercepted
+     * @return class advisor
+     */
+    public ClassAdvisor getAdvisor(final String targetClassName) {
+        return advisors.computeIfAbsent(targetClassName, ClassAdvisor::new);
     }
 }

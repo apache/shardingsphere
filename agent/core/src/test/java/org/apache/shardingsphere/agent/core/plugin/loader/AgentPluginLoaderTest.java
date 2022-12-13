@@ -67,7 +67,7 @@ public final class AgentPluginLoaderTest {
         classAdvisor.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
         classAdvisor.getStaticMethodAdvisors().add(new StaticMethodAdvisor(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, Collections.singletonMap(classAdvisor.getTargetClassName(), classAdvisor));
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("advisors"), PLUGIN_LOADER, Collections.singletonMap(classAdvisor.getTargetClassName(), classAdvisor));
     }
     
     @Test
@@ -83,7 +83,7 @@ public final class AgentPluginLoaderTest {
     }
     
     @Test
-    public void assertLoadPluginPointcuts() {
-        assertNotNull(PLUGIN_LOADER.loadPluginPointcuts(MATERIAL));
+    public void assertLoadPluginAdvisor() {
+        assertNotNull(PLUGIN_LOADER.loadPluginAdvisor(MATERIAL));
     }
 }

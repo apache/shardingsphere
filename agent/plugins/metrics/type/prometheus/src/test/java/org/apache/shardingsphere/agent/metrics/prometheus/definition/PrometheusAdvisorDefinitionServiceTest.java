@@ -22,10 +22,10 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusPointcutDefinitionServiceTest {
+public final class PrometheusAdvisorDefinitionServiceTest {
     
     @Test
-    public void assertGetProxyClassPointcuts() {
-        assertThat(new PrometheusPointcutDefinitionService().getProxyPointcuts().size(), is(5));
+    public void assertGetProxyAdvisors() {
+        assertThat(new PrometheusAdvisorDefinitionService().getProxyAdvisors().size(), is(5));
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
 import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
 import org.apache.shardingsphere.agent.core.yaml.swapper.InterceptorsYamlSwapper;
@@ -26,31 +26,31 @@ import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
 import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
-import org.apache.shardingsphere.agent.spi.PointcutDefinitionService;
+import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Metrics pointcut definition service.
+ * Prometheus advisor definition service.
  */
-public final class PrometheusPointcutDefinitionService implements PointcutDefinitionService {
+public final class PrometheusAdvisorDefinitionService implements AdvisorDefinitionService {
     
     @Override
-    public Collection<ClassAdvisor> getProxyPointcuts() {
+    public Collection<ClassAdvisor> getProxyAdvisors() {
         Collection<ClassAdvisor> result = new LinkedList<>();
-        PointcutDefinitionServiceEngine engine = new PointcutDefinitionServiceEngine(this);
+        AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
         for (Interceptor each : new InterceptorsYamlSwapper().unmarshal(getClass().getResourceAsStream("/prometheus/interceptors.yaml")).getInterceptors()) {
             if (null != each.getTarget()) {
-                result.add(createClassPointcuts(engine, each));
+                result.add(createClassAdvisor(engine, each));
             }
         }
         return result;
     }
     
-    private ClassAdvisor createClassPointcuts(final PointcutDefinitionServiceEngine engine, final Interceptor interceptor) {
-        ClassAdvisor result = engine.getAllPointcuts(interceptor.getTarget());
+    private ClassAdvisor createClassAdvisor(final AdvisorDefinitionServiceEngine engine, final Interceptor interceptor) {
+        ClassAdvisor result = engine.getAdvisors(interceptor.getTarget());
         if (null != interceptor.getConstructAdvice() && !("".equals(interceptor.getConstructAdvice()))) {
             result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.isConstructor(), interceptor.getConstructAdvice()));
         }
@@ -66,7 +66,7 @@ public final class PrometheusPointcutDefinitionService implements PointcutDefini
     }
     
     @Override
-    public Collection<ClassAdvisor> getJDBCPointcuts() {
+    public Collection<ClassAdvisor> getJDBCAdvisors() {
         // TODO add JDBC related interceptors
         return Collections.emptyList();
     }

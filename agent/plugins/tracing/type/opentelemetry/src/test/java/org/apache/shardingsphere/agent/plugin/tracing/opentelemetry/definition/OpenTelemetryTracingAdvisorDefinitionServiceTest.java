@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class JaegerPointcutDefinitionServiceTest {
+public final class OpenTelemetryTracingAdvisorDefinitionServiceTest {
     
     @Test
-    public void assertGetProxyClassPointcuts() {
-        assertThat(new JaegerPointcutDefinitionService().getProxyPointcuts().size(), is(3));
+    public void assertGetProxyAdvisors() {
+        assertThat(new OpenTelemetryTracingAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
     }
 }

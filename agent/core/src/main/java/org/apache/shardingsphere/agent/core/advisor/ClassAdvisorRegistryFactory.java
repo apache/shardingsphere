@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser;
+package org.apache.shardingsphere.agent.core.advisor;
 
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Tracing adviser.
+ * Class advisor registry factory.
  */
-public interface TracingAdviser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ClassAdvisorRegistryFactory {
+    
+    private static final Map<String, ClassAdvisorRegistry> REGISTRIES = new ConcurrentHashMap<>();
     
     /**
-     * Get advisor.
+     * Get class advisor registry.
      * 
-     * @param instanceMethodAroundAdvice instance method around advice
-     * @return advisor
+     * @param key registry key
+     * @return class advisor registry
      */
-    ClassAdvisor getAdvisor(Class<? extends InstanceMethodAroundAdvice> instanceMethodAroundAdvice);
+    public static ClassAdvisorRegistry getRegistry(final String key) {
+        return REGISTRIES.computeIfAbsent(key, each -> new ClassAdvisorRegistry());
+    }
 }

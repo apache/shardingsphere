@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.Test;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Class pointcuts registry factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ClassPointcutsRegistryFactory {
+public final class OpenTracingAdvisorDefinitionServiceTest {
     
-    private static final Map<String, ClassPointcutsRegistry> REGISTRIES = new ConcurrentHashMap<>();
-    
-    /**
-     * Get class pointcuts registry.
-     * 
-     * @param key registry key
-     * @return class pointcuts registry
-     */
-    public static ClassPointcutsRegistry getRegistry(final String key) {
-        return REGISTRIES.computeIfAbsent(key, each -> new ClassPointcutsRegistry());
+    @Test
+    public void assertGetProxyAdvisors() {
+        assertThat(new OpenTracingAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
     }
 }

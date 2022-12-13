@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenTracingPointcutDefinitionServiceTest {
+public final class ZipkinAdvisorDefinitionServiceTest {
     
     @Test
-    public void assertGetProxyClassPointcuts() {
-        assertThat(new OpenTracingPointcutDefinitionService().getProxyPointcuts().size(), is(3));
+    public void assertGetProxyAdvisors() {
+        assertThat(new ZipkinAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
     }
 }

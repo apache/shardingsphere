@@ -22,21 +22,21 @@ import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import java.util.Collection;
 
 /**
- * Pointcut definition service.
+ * Advisor definition service.
  */
-public interface PointcutDefinitionService extends AgentSPI {
+public interface AdvisorDefinitionService extends AgentSPI {
     
     /**
-     * Get proxy pointcuts.
+     * Get proxy advisors.
      * 
-     * @return proxy pointcuts
+     * @return proxy advisors
      */
-    Collection<ClassAdvisor> getProxyPointcuts();
+    Collection<ClassAdvisor> getProxyAdvisors();
     
     /**
-     * Get JDBC pointcuts.
+     * Get JDBC advisors.
      * 
-     * @return JDBC pointcuts
+     * @return JDBC advisors
      */
-    Collection<ClassAdvisor> getJDBCPointcuts();
+    Collection<ClassAdvisor> getJDBCAdvisors();
 }

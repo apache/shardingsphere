@@ -73,13 +73,13 @@ public final class ShardingSphereTransformerTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
-        Map<String, ClassAdvisor> pointcutsMap = new HashMap<>(2, 1);
-        ClassAdvisor classAdvisor = createPluginPointcuts();
-        pointcutsMap.put(classAdvisor.getTargetClassName(), classAdvisor);
-        ClassAdvisor classAdvisorInTwice = createPluginPointcutsInTwice();
-        pointcutsMap.put(classAdvisorInTwice.getTargetClassName(), classAdvisorInTwice);
+        Map<String, ClassAdvisor> classAdvisors = new HashMap<>(2, 1);
+        ClassAdvisor classAdvisor = createClassAdvisor();
+        classAdvisors.put(classAdvisor.getTargetClassName(), classAdvisor);
+        ClassAdvisor classAdvisorInTwice = createClassAdvisorsInTwice();
+        classAdvisors.put(classAdvisorInTwice.getTargetClassName(), classAdvisorInTwice);
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("pointcuts"), PLUGIN_LOADER, pointcutsMap);
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("advisors"), PLUGIN_LOADER, classAdvisors);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))
@@ -91,7 +91,7 @@ public final class ShardingSphereTransformerTest {
                 .installOnByteBuddyAgent();
     }
     
-    private static ClassAdvisor createPluginPointcuts() {
+    private static ClassAdvisor createClassAdvisor() {
         ClassAdvisor result = new ClassAdvisor("org.apache.shardingsphere.agent.core.mock.material.Material");
         result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
         result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
@@ -99,7 +99,7 @@ public final class ShardingSphereTransformerTest {
         return result;
     }
     
-    private static ClassAdvisor createPluginPointcutsInTwice() {
+    private static ClassAdvisor createClassAdvisorsInTwice() {
         ClassAdvisor result = new ClassAdvisor("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial");
         result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
         result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundRepeatedAdvice.class.getTypeName()));

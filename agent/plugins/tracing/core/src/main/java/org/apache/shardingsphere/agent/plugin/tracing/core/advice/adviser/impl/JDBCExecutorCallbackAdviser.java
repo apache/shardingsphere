@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.TracingAdviser;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
@@ -37,11 +37,11 @@ public final class JDBCExecutorCallbackAdviser implements TracingAdviser {
     
     private static final String TARGET_METHOD_FIRST_PARAM = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit";
     
-    private final PointcutDefinitionServiceEngine engine;
+    private final AdvisorDefinitionServiceEngine engine;
     
     @Override
-    public ClassAdvisor advice(final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
-        ClassAdvisor result = engine.getAllPointcuts(TARGET_CLASS);
+    public ClassAdvisor getAdvisor(final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
+        ClassAdvisor result = engine.getAdvisors(TARGET_CLASS);
         result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(
                 ElementMatchers.named(TARGET_METHOD).and(ElementMatchers.takesArgument(0, ElementMatchers.named(TARGET_METHOD_FIRST_PARAM))), jdbcExecutorCallbackAdvice.getName()));
         return result;
