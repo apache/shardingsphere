@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
+package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenTelemetryTracingPluginDefinitionServiceTest {
+public final class PrometheusPointcutDefinitionServiceTest {
     
     @Test
-    public void assertInstallProxyInterceptors() {
-        OpenTelemetryTracingPluginDefinitionService pluginDefinitionService = new OpenTelemetryTracingPluginDefinitionService();
-        pluginDefinitionService.installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
+    public void assertGetProxyClassPointcuts() {
+        assertThat(new PrometheusPointcutDefinitionService().getProxyPointcuts().size(), is(5));
     }
 }

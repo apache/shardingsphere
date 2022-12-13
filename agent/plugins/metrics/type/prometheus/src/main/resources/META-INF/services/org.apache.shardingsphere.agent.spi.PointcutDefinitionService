@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition.JaegerPluginDefinitionService
+org.apache.shardingsphere.agent.metrics.prometheus.definition.PrometheusPointcutDefinitionService

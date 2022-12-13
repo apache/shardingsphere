@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
-import org.apache.shardingsphere.agent.core.definition.ClassPointcutsRegistryFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ZipkinPluginDefinitionServiceTest {
+public final class JaegerPointcutDefinitionServiceTest {
     
     @Test
-    public void assertInstallProxyInterceptors() {
-        ZipkinPluginDefinitionService pluginDefinitionService = new ZipkinPluginDefinitionService();
-        pluginDefinitionService.installProxyInterceptors();
-        assertThat(ClassPointcutsRegistryFactory.getRegistry(pluginDefinitionService.getType()).getAllClassPointcuts().size(), is(3));
+    public void assertGetProxyClassPointcuts() {
+        assertThat(new JaegerPointcutDefinitionService().getProxyPointcuts().size(), is(3));
     }
 }

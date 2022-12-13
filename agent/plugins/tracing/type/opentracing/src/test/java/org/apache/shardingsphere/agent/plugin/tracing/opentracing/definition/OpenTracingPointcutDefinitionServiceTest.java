@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
-/**
- * Plugin definition service.
- */
-public interface PluginDefinitionService extends AgentSPI {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class OpenTracingPointcutDefinitionServiceTest {
     
-    /**
-     * Install Proxy Interceptors.
-     */
-    void installProxyInterceptors();
-    
-    /**
-     * Install JDBC Interceptors.
-     */
-    void installJdbcInterceptors();
+    @Test
+    public void assertGetProxyClassPointcuts() {
+        assertThat(new OpenTracingPointcutDefinitionService().getProxyPointcuts().size(), is(3));
+    }
 }

@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.definition.PluginDefinitionServiceEngine;
+import org.apache.shardingsphere.agent.core.definition.PointcutDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.CommandExecutorTaskAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.JDBCExecutorCallbackAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.SQLParserEngineAdviser;
+import org.apache.shardingsphere.agent.pointcut.ClassPointcuts;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Tracing advice engine.
@@ -30,7 +35,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.S
 @RequiredArgsConstructor
 public final class TracingAdviceEngine {
     
-    private final PluginDefinitionServiceEngine engine;
+    private final PointcutDefinitionServiceEngine engine;
     
     /**
      * Advice proxy tracing.
@@ -38,18 +43,25 @@ public final class TracingAdviceEngine {
      * @param commandExecutorTaskAdvice command executor task advice
      * @param sqlParserEngineAdvice SQL parser engine advice
      * @param jdbcExecutorCallbackAdvice JDBC executor callback advice
+     * @return class pointcuts
      */
-    public void adviceProxyTracing(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice,
-                                   final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice, final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
-        new CommandExecutorTaskAdviser(engine).advice(commandExecutorTaskAdvice);
-        new SQLParserEngineAdviser(engine).advice(sqlParserEngineAdvice);
-        new JDBCExecutorCallbackAdviser(engine).advice(jdbcExecutorCallbackAdvice);
+    public Collection<ClassPointcuts> adviceProxy(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice, final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice,
+                                                  final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
+        // TODO load from YAML, please ref metrics
+        Collection<ClassPointcuts> result = new LinkedList<>();
+        result.add(new CommandExecutorTaskAdviser(engine).advice(commandExecutorTaskAdvice));
+        result.add(new SQLParserEngineAdviser(engine).advice(sqlParserEngineAdvice));
+        result.add(new JDBCExecutorCallbackAdviser(engine).advice(jdbcExecutorCallbackAdvice));
+        return result;
     }
     
     /**
      * Advice JDBC tracing.
+     * 
+     * @return class pointcuts
      */
-    public void adviceJDBCTracing() {
+    public Collection<ClassPointcuts> adviceJDBC() {
         // TODO
+        return Collections.emptyList();
     }
 }
