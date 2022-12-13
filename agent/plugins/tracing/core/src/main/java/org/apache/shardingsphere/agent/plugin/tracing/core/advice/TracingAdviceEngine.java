@@ -45,7 +45,8 @@ public final class TracingAdviceEngine {
      * @param jdbcExecutorCallbackAdvice JDBC executor callback advice
      * @return got advisors
      */
-    public Collection<ClassAdvisor> getProxyAdvisors(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice, final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice,
+    public Collection<ClassAdvisor> getProxyAdvisors(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice,
+                                                     final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice,
                                                      final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
         // TODO load from YAML, please ref metrics
         Collection<ClassAdvisor> result = new LinkedList<>();
