@@ -34,10 +34,10 @@ public final class ClassAdvisorRegistryFactory {
     /**
      * Get class advisor registry.
      * 
-     * @param key registry key
+     * @param type registry type
      * @return class advisor registry
      */
-    public static ClassAdvisorRegistry getRegistry(final String key) {
-        return REGISTRIES.computeIfAbsent(key, each -> new ClassAdvisorRegistry());
+    public static ClassAdvisorRegistry getRegistry(final String type) {
+        return REGISTRIES.computeIfAbsent(type, each -> new ClassAdvisorRegistry());
     }
 }
