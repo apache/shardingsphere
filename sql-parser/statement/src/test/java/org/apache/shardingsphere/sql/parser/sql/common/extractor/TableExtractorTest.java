@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -118,5 +121,26 @@ public final class TableExtractorTest {
         Optional<String> actualTableName = Optional.ofNullable(actual.getTableName()).map(TableNameSegment::getIdentifier).map(IdentifierValue::getValue);
         assertTrue(actualTableName.isPresent());
         assertThat(actualTableName.get(), is(expectedTableName));
+    }
+    
+    @Test
+    public void assertExtractTablesFromCombineSegment() {
+        MySQLSelectStatement selectStatement = createSelectStatement("t_order");
+        selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatement("t_order"), CombineType.UNION, createSelectStatement("t_order_item")));
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        Iterator<SimpleTableSegment> iterator = actual.iterator();
+        assertTableSegment(iterator.next(), 0, 0, "t_order");
+        assertTableSegment(iterator.next(), 0, 0, "t_order_item");
+    }
+    
+    private static MySQLSelectStatement createSelectStatement(final String tableName) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        result.setProjections(projections);
+        result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName))));
+        return result;
     }
 }
