@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.algorithm;
+package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.algorithm.cover.KeepFirstNLastMMaskAlgorithm;
-import org.apache.shardingsphere.mask.algorithm.cover.KeepFromXToYMaskAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 

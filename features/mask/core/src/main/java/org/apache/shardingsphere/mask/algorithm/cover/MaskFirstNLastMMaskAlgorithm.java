@@ -45,8 +45,32 @@ public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     private Properties props;
     
     @Override
+    public void init(final Properties props) {
+        this.props = props;
+        this.firstN = createFirstN(props);
+        this.lastM = createLastM(props);
+        this.replaceChar = createReplaceChar(props);
+    }
+    
+    private Integer createFirstN(final Properties props) {
+        Preconditions.checkArgument(props.containsKey(FIRST_N), "%s can not be null.", FIRST_N);
+        return Integer.parseInt(props.getProperty(FIRST_N));
+    }
+    
+    private Integer createLastM(final Properties props) {
+        Preconditions.checkArgument(props.containsKey(LAST_M), "%s can not be null.", LAST_M);
+        return Integer.parseInt(props.getProperty(LAST_M));
+    }
+    
+    private Character createReplaceChar(final Properties props) {
+        Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
+        Preconditions.checkArgument(1 == props.getProperty(REPLACE_CHAR).length(), "%s's length must be one.", REPLACE_CHAR);
+        return props.getProperty(REPLACE_CHAR).charAt(0);
+    }
+    
+    @Override
     public String mask(final Object plainValue) {
-        String result = String.valueOf(plainValue);
+        String result = null == plainValue ? null : String.valueOf(plainValue);
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
@@ -58,30 +82,6 @@ public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
             chars[i] = replaceChar;
         }
         return new String(chars);
-    }
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-        this.firstN = getN(props);
-        this.lastM = getM(props);
-        this.replaceChar = getReplaceChar(props);
-    }
-    
-    private Integer getN(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(FIRST_N), "%s can not be null.", FIRST_N);
-        return Integer.parseInt(props.getProperty(FIRST_N));
-    }
-    
-    private Integer getM(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(LAST_M), "%s can not be null.", LAST_M);
-        return Integer.parseInt(props.getProperty(LAST_M));
-    }
-    
-    private Character getReplaceChar(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
-        Preconditions.checkArgument(1 == props.getProperty(REPLACE_CHAR).length(), "%s length must be 1.", REPLACE_CHAR);
-        return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     
     @Override

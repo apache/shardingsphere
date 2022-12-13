@@ -70,7 +70,7 @@ public final class KeepFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
     
     @Override
     public String mask(final Object plainValue) {
-        String result = String.valueOf(plainValue);
+        String result = null == plainValue ? null : String.valueOf(plainValue);
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
