@@ -31,12 +31,12 @@ public interface PluginLoader {
     boolean containsType(TypeDescription typeDescription);
     
     /**
-     * Load plugin interceptor point by type description.
+     * Load plugin pointcuts by type description.
      *
      * @param typeDescription type description
-     * @return plugin interceptor point
+     * @return plugin pointcuts
      */
-    ClassPointcuts loadPluginInterceptorPoint(TypeDescription typeDescription);
+    ClassPointcuts loadPluginPointcuts(TypeDescription typeDescription);
     
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.

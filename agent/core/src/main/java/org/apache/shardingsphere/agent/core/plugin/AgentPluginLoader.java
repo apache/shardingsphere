@@ -62,7 +62,7 @@ public final class AgentPluginLoader implements PluginLoader {
     private boolean isEnhancedForProxy = true;
     
     /**
-     * Load plugin jars and interceptor points.
+     * Load plugin jars and pointcuts.
      *
      * @throws IOException IO exception
      */
@@ -106,7 +106,7 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     /**
-     * To find all intercepting target classes then to build TypeMatcher.
+     * To find all intercepting target classes then to build type matcher.
      *
      * @return type matcher
      */
@@ -136,7 +136,7 @@ public final class AgentPluginLoader implements PluginLoader {
     }
     
     @Override
-    public ClassPointcuts loadPluginInterceptorPoint(final TypeDescription typeDescription) {
+    public ClassPointcuts loadPluginPointcuts(final TypeDescription typeDescription) {
         return pointcuts.getOrDefault(typeDescription.getTypeName(), new ClassPointcuts(""));
     }
     

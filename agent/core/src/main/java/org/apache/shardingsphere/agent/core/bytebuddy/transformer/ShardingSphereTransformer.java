@@ -76,7 +76,7 @@ public final class ShardingSphereTransformer implements Transformer {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        ClassPointcuts classPointcuts = pluginLoader.loadPluginInterceptorPoint(typeDescription);
+        ClassPointcuts classPointcuts = pluginLoader.loadPluginPointcuts(typeDescription);
         result = interceptConstructor(typeDescription, classPointcuts.getConstructorPointcuts(), result, classLoader);
         result = interceptStaticMethod(typeDescription, classPointcuts.getStaticMethodPointcuts(), result, classLoader);
         result = interceptInstanceMethod(typeDescription, classPointcuts.getInstanceMethodPointcuts(), result, classLoader);

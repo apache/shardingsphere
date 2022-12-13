@@ -83,7 +83,7 @@ public final class AgentPluginLoaderTest {
     }
     
     @Test
-    public void assertLoadPluginInterceptorPoint() {
-        assertNotNull(PLUGIN_LOADER.loadPluginInterceptorPoint(MATERIAL));
+    public void assertLoadPluginPointcuts() {
+        assertNotNull(PLUGIN_LOADER.loadPluginPointcuts(MATERIAL));
     }
 }
