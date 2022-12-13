@@ -51,7 +51,7 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
     }
     
     private ClassAdvisor createClassAdvisor(final Interceptor interceptor) {
-        ClassAdvisor result = engine.getAdvisors(interceptor.getTarget());
+        ClassAdvisor result = engine.getAdvisor(interceptor.getTarget());
         if (null != interceptor.getConstructAdvice() && !("".equals(interceptor.getConstructAdvice()))) {
             result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.isConstructor(), interceptor.getConstructAdvice()));
         }

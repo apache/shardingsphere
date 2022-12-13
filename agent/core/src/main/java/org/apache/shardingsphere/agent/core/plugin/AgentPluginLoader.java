@@ -23,14 +23,13 @@ import lombok.Setter;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
-import org.apache.shardingsphere.agent.core.advisor.AdvisorDefinitionServiceEngine;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.io.File;
@@ -89,8 +88,8 @@ public final class AgentPluginLoader implements PluginLoader {
         Collection<String> pluginNames = getPluginNames();
         for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, classLoader)) {
             if (pluginNames.contains(each.getType())) {
-                result.putAll(
-                        new AdvisorDefinitionServiceEngine(each).getAllAdvisors(isEnhancedForProxy).stream().collect(Collectors.toMap(ClassAdvisor::getTargetClassName, Function.identity())));
+                Collection<ClassAdvisor> advisors = isEnhancedForProxy ? each.getProxyAdvisors() : each.getJDBCAdvisors();
+                result.putAll(advisors.stream().collect(Collectors.toMap(ClassAdvisor::getTargetClassName, Function.identity())));
             }
         }
         return ImmutableMap.<String, ClassAdvisor>builder().putAll(result).build();

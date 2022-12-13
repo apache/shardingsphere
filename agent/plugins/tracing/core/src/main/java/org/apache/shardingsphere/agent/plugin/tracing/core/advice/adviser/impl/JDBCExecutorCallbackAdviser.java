@@ -41,7 +41,7 @@ public final class JDBCExecutorCallbackAdviser implements TracingAdviser {
     
     @Override
     public ClassAdvisor getAdvisor(final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
-        ClassAdvisor result = engine.getAdvisors(TARGET_CLASS);
+        ClassAdvisor result = engine.getAdvisor(TARGET_CLASS);
         result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(
                 ElementMatchers.named(TARGET_METHOD).and(ElementMatchers.takesArgument(0, ElementMatchers.named(TARGET_METHOD_FIRST_PARAM))), jdbcExecutorCallbackAdvice.getName()));
         return result;

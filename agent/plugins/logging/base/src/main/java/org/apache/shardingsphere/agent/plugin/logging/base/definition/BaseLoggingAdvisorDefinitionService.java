@@ -52,7 +52,7 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     private Collection<ClassAdvisor> getAdvisors() {
         Collection<ClassAdvisor> result = new LinkedList<>();
-        ClassAdvisor classAdvisor = engine.getAdvisors(SCHEMA_METADATA_LOADER_CLASS);
+        ClassAdvisor classAdvisor = engine.getAdvisor(SCHEMA_METADATA_LOADER_CLASS);
         classAdvisor.getStaticMethodAdvisors().add(
                 new StaticMethodAdvisor(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
         result.add(classAdvisor);

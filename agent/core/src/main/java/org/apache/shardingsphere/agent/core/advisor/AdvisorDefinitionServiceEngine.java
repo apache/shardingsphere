@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
-import java.util.Collection;
-
 /**
  * Advisor definition service engine.
  */
@@ -32,22 +30,12 @@ public final class AdvisorDefinitionServiceEngine {
     private final AdvisorDefinitionService advisorDefinitionService;
     
     /**
-     * Get advisors.
+     * Get advisor.
      *
      * @param targetClassName target class name
-     * @return advisors
+     * @return advisor
      */
-    public ClassAdvisor getAdvisors(final String targetClassName) {
+    public ClassAdvisor getAdvisor(final String targetClassName) {
         return ClassAdvisorRegistryFactory.getRegistry(advisorDefinitionService.getType()).getAdvisor(targetClassName);
-    }
-    
-    /**
-     * Get all advisors.
-     * 
-     * @param isEnhancedForProxy is enhanced for proxy
-     * @return all advisors
-     */
-    public Collection<ClassAdvisor> getAllAdvisors(final boolean isEnhancedForProxy) {
-        return isEnhancedForProxy ? advisorDefinitionService.getProxyAdvisors() : advisorDefinitionService.getJDBCAdvisors();
     }
 }
