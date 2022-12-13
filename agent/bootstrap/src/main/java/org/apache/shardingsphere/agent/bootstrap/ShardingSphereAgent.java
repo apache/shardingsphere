@@ -71,7 +71,6 @@ public final class ShardingSphereAgent {
         AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
                 .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        
         agentBuilder.type(pluginLoader.typeMatcher())
                 .transform(new ShardingSphereTransformer(pluginLoader))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)

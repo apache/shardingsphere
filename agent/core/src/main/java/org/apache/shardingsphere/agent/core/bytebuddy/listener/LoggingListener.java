@@ -36,7 +36,7 @@ public final class LoggingListener implements Listener {
     
     @Override
     public void onTransformation(final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final DynamicType dynamicType) {
-        LOGGER.debug("On transformation class {}", typeDescription.getTypeName());
+        LOGGER.debug("On transformation class {}.", typeDescription.getTypeName());
     }
     
     @Override
@@ -45,7 +45,7 @@ public final class LoggingListener implements Listener {
     
     @Override
     public void onError(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final Throwable throwable) {
-        LOGGER.error("Failed to instrument {}", typeName, throwable);
+        LOGGER.error("Failed to instrument {}.", typeName, throwable);
     }
     
     @Override
