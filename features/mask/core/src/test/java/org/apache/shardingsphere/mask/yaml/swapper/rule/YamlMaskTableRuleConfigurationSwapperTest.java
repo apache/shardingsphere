@@ -71,6 +71,5 @@ public final class YamlMaskTableRuleConfigurationSwapperTest {
         MaskColumnRuleConfiguration actualMaskColumnRuleConfig = actualColumns.iterator().next();
         assertThat(actualMaskColumnRuleConfig.getLogicColumn(), is("mask_column"));
         assertThat(actualMaskColumnRuleConfig.getMaskAlgorithm(), is("md5_mask"));
-        
     }
 }

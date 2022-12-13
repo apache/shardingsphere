@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlMaskRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlMaskRuleConfiguration implements YamlRuleConfiguration {
     
     private Map<String, YamlMaskTableRuleConfiguration> tables = new LinkedHashMap<>();
     

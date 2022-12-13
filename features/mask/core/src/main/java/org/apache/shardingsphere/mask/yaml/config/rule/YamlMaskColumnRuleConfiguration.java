@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
  */
 @Getter
 @Setter
-public class YamlMaskColumnRuleConfiguration implements YamlConfiguration {
+public final class YamlMaskColumnRuleConfiguration implements YamlConfiguration {
     
     private String logicColumn;
     

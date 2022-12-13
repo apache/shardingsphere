@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlMaskTableRuleConfiguration implements YamlConfiguration {
+public final class YamlMaskTableRuleConfiguration implements YamlConfiguration {
     
     private String name;
     

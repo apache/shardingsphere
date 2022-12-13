@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * YAML mask table rule configuration swapper.
  */
-public class YamlMaskTableRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlMaskTableRuleConfiguration, MaskTableRuleConfiguration> {
+public final class YamlMaskTableRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlMaskTableRuleConfiguration, MaskTableRuleConfiguration> {
     
     private final YamlMaskColumnRuleConfigurationSwapper columnSwapper = new YamlMaskColumnRuleConfigurationSwapper();
     

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfigu
 /**
  * YAML mask column rule configuration swapper.
  */
-public class YamlMaskColumnRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlMaskColumnRuleConfiguration, MaskColumnRuleConfiguration> {
+public final class YamlMaskColumnRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlMaskColumnRuleConfiguration, MaskColumnRuleConfiguration> {
     
     @Override
     public YamlMaskColumnRuleConfiguration swapToYamlConfiguration(final MaskColumnRuleConfiguration data) {
