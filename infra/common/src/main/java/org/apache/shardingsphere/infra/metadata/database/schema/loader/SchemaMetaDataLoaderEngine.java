@@ -84,7 +84,7 @@ public final class SchemaMetaDataLoaderEngine {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                log.error("Dialect load schema meta data error.", ex);
+                log.debug("Dialect load schema meta data error.", ex);
             }
         }
         return loadByDefault(material);
