@@ -37,19 +37,20 @@ import java.util.LinkedList;
  */
 public final class PrometheusAdvisorDefinitionService implements AdvisorDefinitionService {
     
+    private final AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
+    
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {
         Collection<ClassAdvisor> result = new LinkedList<>();
-        AdvisorDefinitionServiceEngine engine = new AdvisorDefinitionServiceEngine(this);
         for (Interceptor each : new InterceptorsYamlSwapper().unmarshal(getClass().getResourceAsStream("/prometheus/interceptors.yaml")).getInterceptors()) {
             if (null != each.getTarget()) {
-                result.add(createClassAdvisor(engine, each));
+                result.add(createClassAdvisor(each));
             }
         }
         return result;
     }
     
-    private ClassAdvisor createClassAdvisor(final AdvisorDefinitionServiceEngine engine, final Interceptor interceptor) {
+    private ClassAdvisor createClassAdvisor(final Interceptor interceptor) {
         ClassAdvisor result = engine.getAdvisors(interceptor.getTarget());
         if (null != interceptor.getConstructAdvice() && !("".equals(interceptor.getConstructAdvice()))) {
             result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.isConstructor(), interceptor.getConstructAdvice()));
