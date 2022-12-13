@@ -82,5 +82,4 @@ public final class AgentPathBuilder {
     private static File buildAgentConfigPath() {
         return new File(String.join("/", agentPath.getPath(), "conf"));
     }
-    
 }
