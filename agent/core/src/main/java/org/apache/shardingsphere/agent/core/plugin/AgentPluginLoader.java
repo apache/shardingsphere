@@ -42,7 +42,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * Agent plugin loader.
@@ -67,7 +69,7 @@ public final class AgentPluginLoader implements PluginLoader {
     public void load() throws IOException {
         loadPluginJars();
         AgentClassLoader.initDefaultPluginClassLoader(pluginJars);
-        loadAllPluginInterceptorPoint(AgentClassLoader.getDefaultPluginClassloader());
+        pointcuts = loadClassPointcuts(AgentClassLoader.getDefaultPluginClassloader());
     }
     
     private void loadPluginJars() throws IOException {
@@ -82,11 +84,16 @@ public final class AgentPluginLoader implements PluginLoader {
         PluginJarHolder.setPluginJars(pluginJars);
     }
     
-    private void loadAllPluginInterceptorPoint(final ClassLoader classLoader) {
+    private Map<String, ClassPointcuts> loadClassPointcuts(final ClassLoader classLoader) {
+        Map<String, ClassPointcuts> result = new HashMap<>();
         Collection<String> pluginNames = getPluginNames();
-        Map<String, ClassPointcuts> pointMap = new HashMap<>();
-        loadPluginDefinitionServices(pluginNames, pointMap, classLoader);
-        pointcuts = ImmutableMap.<String, ClassPointcuts>builder().putAll(pointMap).build();
+        for (PointcutDefinitionService each : PluginServiceLoader.newServiceInstances(PointcutDefinitionService.class, classLoader)) {
+            if (pluginNames.contains(each.getType())) {
+                result.putAll(
+                        new PointcutDefinitionServiceEngine(each).getAllPointcuts(isEnhancedForProxy).stream().collect(Collectors.toMap(ClassPointcuts::getTargetClassName, Function.identity())));
+            }
+        }
+        return ImmutableMap.<String, ClassPointcuts>builder().putAll(result).build();
     }
     
     private Collection<String> getPluginNames() {
@@ -96,27 +103,6 @@ public final class AgentPluginLoader implements PluginLoader {
             result.addAll(agentConfig.getPlugins().keySet());
         }
         return result;
-    }
-    
-    private void loadPluginDefinitionServices(final Collection<String> pluginNames, final Map<String, ClassPointcuts> pointMap, final ClassLoader classLoader) {
-        PluginServiceLoader.newServiceInstances(PointcutDefinitionService.class, classLoader)
-                .stream()
-                .filter(each -> pluginNames.contains(each.getType()))
-                .forEach(each -> buildPluginInterceptorPointMap(each, pointMap));
-    }
-    
-    private void buildPluginInterceptorPointMap(final PointcutDefinitionService pointcutDefinitionService, final Map<String, ClassPointcuts> pointMap) {
-        new PointcutDefinitionServiceEngine(pointcutDefinitionService).getAllPointcuts(isEnhancedForProxy).forEach(each -> {
-            String target = each.getTargetClassName();
-            if (pointMap.containsKey(target)) {
-                ClassPointcuts classPointcuts = pointMap.get(target);
-                classPointcuts.getConstructorPointcuts().addAll(each.getConstructorPointcuts());
-                classPointcuts.getInstanceMethodPointcuts().addAll(each.getInstanceMethodPointcuts());
-                classPointcuts.getStaticMethodPointcuts().addAll(each.getStaticMethodPointcuts());
-            } else {
-                pointMap.put(target, each);
-            }
-        });
     }
     
     /**
