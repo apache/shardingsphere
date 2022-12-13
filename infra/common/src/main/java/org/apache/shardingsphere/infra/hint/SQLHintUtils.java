@@ -105,6 +105,9 @@ public final class SQLHintUtils {
         }
         String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
         Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
+        if (hintProperties.containsKey(SQLHintPropertiesKey.DATASOURCE_NAME_KEY.getKey())) {
+            result.setDataSourceName(hintProperties.getProperty(SQLHintPropertiesKey.DATASOURCE_NAME_KEY.getKey()));
+        }
         if (hintProperties.containsKey(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())) {
             result.setWriteRouteOnly(Boolean.parseBoolean(hintProperties.getProperty(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())));
         }

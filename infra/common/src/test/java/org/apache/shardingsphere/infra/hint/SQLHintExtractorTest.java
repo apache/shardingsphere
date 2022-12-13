@@ -25,9 +25,11 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -109,5 +111,29 @@ public final class SQLHintExtractorTest {
     @Test
     public void assertSQLHintShadowWithCommentString() {
         assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */").isHintWriteRouteOnly());
+    }
+    
+    @Test
+    public void assertFindHintDataSourceNameExist() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_1 */", 0, 0)));
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        assertTrue(dataSourceName.isPresent());
+        assertThat(dataSourceName.get(), is("ds_1"));
+    }
+    
+    @Test
+    public void assertFindHintDataSourceNameNotExist() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* no hint */", 0, 0)));
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        assertFalse(dataSourceName.isPresent());
+    }
+    
+    @Test
+    public void assertFindHintDataSourceNameNotExistWithoutComment() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        assertFalse(dataSourceName.isPresent());
     }
 }
