@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ClassAdvisorRegistryFactoryTest {
-
+    
     @Test
     public void assertGetRegistryWithType() {
         assertThat(ClassAdvisorRegistryFactory.getRegistry("test"), instanceOf(ClassAdvisorRegistry.class));
