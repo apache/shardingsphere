@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class AgentAdvisorsTest {
     
-    private static final AgentAdvisors AGENT_ADVISORS = new AgentAdvisors(Collections.emptyList(), true);
+    private static final AgentAdvisors AGENT_ADVISORS = new AgentAdvisors(Collections.emptyList());
     
     private static final TypePool POOL = TypePool.Default.ofSystemLoader();
     

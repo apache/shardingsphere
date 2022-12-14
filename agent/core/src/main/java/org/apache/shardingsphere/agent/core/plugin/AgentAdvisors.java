@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
+import lombok.Setter;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
@@ -43,12 +45,13 @@ public final class AgentAdvisors {
     
     private final Map<String, ClassAdvisor> advisors;
     
-    private final boolean isEnhancedForProxy;
+    @Getter
+    @Setter
+    private boolean isEnhancedForProxy = true;
     
-    public AgentAdvisors(final Collection<PluginJar> pluginJars, final boolean isEnhancedForProxy) {
+    public AgentAdvisors(final Collection<PluginJar> pluginJars) {
         AgentClassLoader.init(pluginJars);
         advisors = getAllAdvisors(AgentClassLoader.getClassLoader());
-        this.isEnhancedForProxy = isEnhancedForProxy;
     }
     
     private Map<String, ClassAdvisor> getAllAdvisors(final ClassLoader classLoader) {
