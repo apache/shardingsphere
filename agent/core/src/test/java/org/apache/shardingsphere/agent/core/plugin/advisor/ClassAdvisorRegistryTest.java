@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin.advisor;
 
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
-import org.apache.shardingsphere.agent.core.plugin.advisor.ClassAdvisorRegistry;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
