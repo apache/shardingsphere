@@ -54,17 +54,20 @@ public final class ShardingSphereAgent {
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfig);
-        AgentAdvisors agentAdvisors = loadAgentAdvisors();
+        AgentAdvisors agentAdvisors = new AgentAdvisors(new AgentPluginLoader().load(), isEnhancedForProxy());
         setUpAgentBuilder(instrumentation, agentAdvisors);
         if (agentAdvisors.isEnhancedForProxy()) {
             setupPluginBootService(agentConfig.getPlugins());
         }
     }
     
-    private static AgentAdvisors loadAgentAdvisors() throws IOException {
-        AgentAdvisors result = new AgentAdvisors(new AgentPluginLoader().load());
-        result.setEnhancedForProxy(isEnhancedForProxy());
-        return result;
+    private static boolean isEnhancedForProxy() {
+        try {
+            Class.forName("org.apache.shardingsphere.proxy.Bootstrap");
+        } catch (final ClassNotFoundException ignored) {
+            return false;
+        }
+        return true;
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentAdvisors agentAdvisors) {
@@ -80,14 +83,5 @@ public final class ShardingSphereAgent {
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
         PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getClassLoader(), true);
         Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
-    }
-    
-    private static boolean isEnhancedForProxy() {
-        try {
-            Class.forName("org.apache.shardingsphere.proxy.Bootstrap");
-        } catch (final ClassNotFoundException ignored) {
-            return false;
-        }
-        return true;
     }
 }
