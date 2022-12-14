@@ -50,7 +50,7 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.Composed
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodInterceptorArgsOverride;
-import org.apache.shardingsphere.agent.core.plugin.AgentAdvisors;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
 
 import java.util.Collection;
 import java.util.LinkedList;

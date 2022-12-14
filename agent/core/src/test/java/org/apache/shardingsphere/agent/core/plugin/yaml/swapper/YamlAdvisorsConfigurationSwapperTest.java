@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.swapper;
+package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
-import org.apache.shardingsphere.agent.core.yaml.entity.YamlAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.yaml.entity.YamlAdvisorsConfiguration;
-import org.apache.shardingsphere.agent.core.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;
 import org.junit.Test;
 
 import java.util.ArrayList;

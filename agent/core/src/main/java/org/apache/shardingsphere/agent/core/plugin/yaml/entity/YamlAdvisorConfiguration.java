@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor;
+package org.apache.shardingsphere.agent.core.plugin.yaml.entity;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
+import java.util.LinkedList;
 
-public final class ClassAdvisorRegistryFactoryTest {
-
-    @Test
-    public void assertGetRegistryWithType() {
-        assertThat(ClassAdvisorRegistryFactory.getRegistry("test"), instanceOf(ClassAdvisorRegistry.class));
-    }
+/**
+ * YAML advisor configuration.
+ */
+@Getter
+@Setter
+public final class YamlAdvisorConfiguration {
+    
+    private String target;
+    
+    private String instanceAdvice;
+    
+    private String staticAdvice;
+    
+    private String constructAdvice;
+    
+    private Collection<YamlPointcutConfiguration> pointcuts = new LinkedList<>();
 }

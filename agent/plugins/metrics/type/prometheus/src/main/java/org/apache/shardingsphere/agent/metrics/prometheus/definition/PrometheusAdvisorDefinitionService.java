@@ -22,10 +22,10 @@ import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
 import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
-import org.apache.shardingsphere.agent.core.advisor.ClassAdvisorRegistryFactory;
-import org.apache.shardingsphere.agent.core.yaml.entity.YamlAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.yaml.entity.YamlPointcutConfiguration;
-import org.apache.shardingsphere.agent.core.yaml.swapper.YamlAdvisorsConfigurationSwapper;
+import org.apache.shardingsphere.agent.core.plugin.advisor.ClassAdvisorRegistryFactory;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
