@@ -14,6 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-org.apache.shardingsphere.mask.algorithm.cover.KeepFirstNLastMMaskAlgorithm
-org.apache.shardingsphere.mask.algorithm.cover.KeepFromXToYMaskAlgorithm
-org.apache.shardingsphere.mask.algorithm.hash.MD5MaskAlgorithm
+
+org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper
