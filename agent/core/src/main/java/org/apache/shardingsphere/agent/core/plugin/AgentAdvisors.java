@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.Getter;
 import lombok.Setter;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -45,7 +44,6 @@ public final class AgentAdvisors {
     
     private final Map<String, ClassAdvisor> advisors;
     
-    @Getter
     @Setter
     private boolean isEnhancedForProxy = true;
     
