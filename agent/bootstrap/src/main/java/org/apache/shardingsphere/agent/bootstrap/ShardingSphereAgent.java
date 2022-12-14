@@ -54,9 +54,9 @@ public final class ShardingSphereAgent {
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfig);
-        AgentAdvisors agentAdvisors = new AgentAdvisors(new AgentPluginLoader().load(), isEnhancedForProxy());
-        setUpAgentBuilder(instrumentation, agentAdvisors);
-        if (agentAdvisors.isEnhancedForProxy()) {
+        boolean isEnhancedForProxy = isEnhancedForProxy();
+        setUpAgentBuilder(instrumentation, new AgentAdvisors(new AgentPluginLoader().load(), isEnhancedForProxy));
+        if (isEnhancedForProxy) {
             setupPluginBootService(agentConfig.getPlugins());
         }
     }

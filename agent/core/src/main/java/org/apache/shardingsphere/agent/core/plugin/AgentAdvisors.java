@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.Getter;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
@@ -34,7 +33,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,20 +43,19 @@ public final class AgentAdvisors {
     
     private final Map<String, ClassAdvisor> advisors;
     
-    @Getter
     private final boolean isEnhancedForProxy;
     
     public AgentAdvisors(final Collection<PluginJar> pluginJars, final boolean isEnhancedForProxy) {
         AgentClassLoader.init(pluginJars);
-        advisors = loadAdvisors(AgentClassLoader.getClassLoader());
+        advisors = getAllAdvisors(AgentClassLoader.getClassLoader());
         this.isEnhancedForProxy = isEnhancedForProxy;
     }
     
-    private Map<String, ClassAdvisor> loadAdvisors(final ClassLoader classLoader) {
+    private Map<String, ClassAdvisor> getAllAdvisors(final ClassLoader classLoader) {
         Map<String, ClassAdvisor> result = new HashMap<>();
-        Collection<String> pluginNames = getPluginNames();
+        Collection<String> pluginTypes = getPluginTypes();
         for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, classLoader)) {
-            if (pluginNames.contains(each.getType())) {
+            if (pluginTypes.contains(each.getType())) {
                 Collection<ClassAdvisor> advisors = isEnhancedForProxy ? each.getProxyAdvisors() : each.getJDBCAdvisors();
                 result.putAll(advisors.stream().collect(Collectors.toMap(ClassAdvisor::getTargetClassName, Function.identity())));
             }
@@ -66,9 +63,9 @@ public final class AgentAdvisors {
         return ImmutableMap.<String, ClassAdvisor>builder().putAll(result).build();
     }
     
-    private Collection<String> getPluginNames() {
+    private Collection<String> getPluginTypes() {
         AgentConfiguration agentConfig = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class);
-        Set<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>();
         if (null != agentConfig && null != agentConfig.getPlugins()) {
             result.addAll(agentConfig.getPlugins().keySet());
         }
