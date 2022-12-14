@@ -29,8 +29,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -59,15 +57,14 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Test
     public void assertUpdate() {
-        String algorithmName = "default";
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getShadowAlgorithms().put(algorithmName, mock(AlgorithmConfiguration.class));
-        ruleConfig.setDefaultShadowAlgorithmName(algorithmName);
+        ruleConfig.setDefaultShadowAlgorithmName("default");
+        ruleConfig.getShadowAlgorithms().put(ruleConfig.getDefaultShadowAlgorithmName(), mock(AlgorithmConfiguration.class));
         DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement(false);
         updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
         assertTrue(updater.hasAnyOneToBeDropped(statement, ruleConfig));
         updater.updateCurrentRuleConfiguration(statement, ruleConfig);
         assertNull(ruleConfig.getDefaultShadowAlgorithmName());
-        assertThat(ruleConfig.getShadowAlgorithms().size(), is(0));
+        assertTrue(ruleConfig.getShadowAlgorithms().isEmpty());
     }
 }
