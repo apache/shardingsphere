@@ -35,7 +35,6 @@ import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
 import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
@@ -51,6 +50,7 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedI
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedInstanceMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedStaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedStaticMethodInterceptorArgsOverride;
+import org.apache.shardingsphere.agent.core.plugin.AgentAdvisors;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -68,16 +68,16 @@ public final class AgentTransformer implements Transformer {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private final AgentPluginLoader agentPluginLoader;
+    private final AgentAdvisors agentAdvisors;
     
     @SuppressWarnings("NullableProblems")
     @Override
     public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-        if (!agentPluginLoader.containsType(typeDescription)) {
+        if (!agentAdvisors.containsType(typeDescription)) {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        ClassAdvisor classAdvisor = agentPluginLoader.loadPluginAdvisor(typeDescription);
+        ClassAdvisor classAdvisor = agentAdvisors.getPluginAdvisor(typeDescription);
         result = interceptConstructor(typeDescription, classAdvisor.getConstructorAdvisors(), result, classLoader);
         result = interceptStaticMethod(typeDescription, classAdvisor.getStaticMethodAdvisors(), result, classLoader);
         result = interceptInstanceMethod(typeDescription, classAdvisor.getInstanceMethodAdvisors(), result, classLoader);
@@ -114,11 +114,11 @@ public final class AgentTransformer implements Transformer {
         }
         if (1 == matchedConstructorAdvisors.size()) {
             return new AgentTransformationPoint<>(
-                    methodDescription, new ConstructorInterceptor(agentPluginLoader.getOrCreateInstance(matchedConstructorAdvisors.get(0).getAdviceClassName(), classLoader)));
+                    methodDescription, new ConstructorInterceptor(agentAdvisors.getOrCreateInstance(matchedConstructorAdvisors.get(0).getAdviceClassName(), classLoader)));
         }
         Collection<ConstructorAdvice> constructorAdvices = matchedConstructorAdvisors.stream()
                 .map(ConstructorAdvisor::getAdviceClassName)
-                .map(each -> (ConstructorAdvice) agentPluginLoader.getOrCreateInstance(each, classLoader))
+                .map(each -> (ConstructorAdvice) agentAdvisors.getOrCreateInstance(each, classLoader))
                 .collect(Collectors.toList());
         return new AgentTransformationPoint<>(methodDescription, new ComposedConstructorInterceptor(constructorAdvices));
     }
@@ -162,7 +162,7 @@ public final class AgentTransformer implements Transformer {
     
     private AgentTransformationPoint<?> getSingleStaticMethodPoint(final InDefinedShape methodDescription,
                                                                    final StaticMethodAdvisor staticMethodAdvisor, final ClassLoader classLoader) {
-        StaticMethodAroundAdvice staticMethodAroundAdvice = agentPluginLoader.getOrCreateInstance(staticMethodAdvisor.getAdviceClassName(), classLoader);
+        StaticMethodAroundAdvice staticMethodAroundAdvice = agentAdvisors.getOrCreateInstance(staticMethodAdvisor.getAdviceClassName(), classLoader);
         return staticMethodAdvisor.isOverrideArgs()
                 ? new AgentTransformationPoint<>(methodDescription, new StaticMethodInterceptorArgsOverride(staticMethodAroundAdvice))
                 : new AgentTransformationPoint<>(methodDescription, new StaticMethodAroundInterceptor(staticMethodAroundAdvice));
@@ -177,7 +177,7 @@ public final class AgentTransformer implements Transformer {
                 isArgsOverride = true;
             }
             if (null != each.getAdviceClassName()) {
-                staticMethodAroundAdvices.add(agentPluginLoader.getOrCreateInstance(each.getAdviceClassName(), classLoader));
+                staticMethodAroundAdvices.add(agentAdvisors.getOrCreateInstance(each.getAdviceClassName(), classLoader));
             }
         }
         return isArgsOverride ? new AgentTransformationPoint<>(methodDescription, new ComposedStaticMethodInterceptorArgsOverride(staticMethodAroundAdvices))
@@ -224,7 +224,7 @@ public final class AgentTransformer implements Transformer {
     
     private AgentTransformationPoint<?> getSingleInstanceMethodPoint(final InDefinedShape methodDescription,
                                                                      final InstanceMethodAdvisor instanceMethodAdvisor, final ClassLoader classLoader) {
-        InstanceMethodAroundAdvice instanceMethodAroundAdvice = agentPluginLoader.getOrCreateInstance(instanceMethodAdvisor.getAdviceClassName(), classLoader);
+        InstanceMethodAroundAdvice instanceMethodAroundAdvice = agentAdvisors.getOrCreateInstance(instanceMethodAdvisor.getAdviceClassName(), classLoader);
         return instanceMethodAdvisor.isOverrideArgs()
                 ? new AgentTransformationPoint<>(methodDescription, new InstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvice))
                 : new AgentTransformationPoint<>(methodDescription, new InstanceMethodAroundInterceptor(instanceMethodAroundAdvice));
@@ -239,7 +239,7 @@ public final class AgentTransformer implements Transformer {
                 isArgsOverride = true;
             }
             if (null != each.getAdviceClassName()) {
-                instanceMethodAroundAdvices.add(agentPluginLoader.getOrCreateInstance(each.getAdviceClassName(), classLoader));
+                instanceMethodAroundAdvices.add(agentAdvisors.getOrCreateInstance(each.getAdviceClassName(), classLoader));
             }
         }
         return isArgsOverride

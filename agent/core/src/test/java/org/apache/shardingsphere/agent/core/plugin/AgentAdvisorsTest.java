@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.loader;
+package org.apache.shardingsphere.agent.core.plugin;
 
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
+import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
-import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
-import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.plugins.MemberAccessor;
@@ -43,10 +41,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@Category(AgentPluginLoaderTest.class)
-public final class AgentPluginLoaderTest {
+public final class AgentAdvisorsTest {
     
-    private static final AgentPluginLoader PLUGIN_LOADER = new AgentPluginLoader();
+    private static final AgentAdvisors AGENT_ADVISORS = new AgentAdvisors(Collections.emptyList());
     
     private static final TypePool POOL = TypePool.Default.ofSystemLoader();
     
@@ -67,23 +64,23 @@ public final class AgentPluginLoaderTest {
         classAdvisor.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
         classAdvisor.getStaticMethodAdvisors().add(new StaticMethodAdvisor(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("advisors"), PLUGIN_LOADER, Collections.singletonMap(classAdvisor.getTargetClassName(), classAdvisor));
+        accessor.set(AGENT_ADVISORS.getClass().getDeclaredField("advisors"), AGENT_ADVISORS, Collections.singletonMap(classAdvisor.getTargetClassName(), classAdvisor));
     }
     
     @Test
     public void assertTypeMatcher() {
-        assertTrue(PLUGIN_LOADER.typeMatcher().matches(MATERIAL));
-        assertFalse(PLUGIN_LOADER.typeMatcher().matches(FAKE));
+        assertTrue(AGENT_ADVISORS.createTypeMatcher().matches(MATERIAL));
+        assertFalse(AGENT_ADVISORS.createTypeMatcher().matches(FAKE));
     }
     
     @Test
     public void assertContainsType() {
-        assertTrue(PLUGIN_LOADER.containsType(MATERIAL));
-        assertFalse(PLUGIN_LOADER.containsType(FAKE));
+        assertTrue(AGENT_ADVISORS.containsType(MATERIAL));
+        assertFalse(AGENT_ADVISORS.containsType(FAKE));
     }
     
     @Test
-    public void assertLoadPluginAdvisor() {
-        assertNotNull(PLUGIN_LOADER.loadPluginAdvisor(MATERIAL));
+    public void assertGetPluginAdvisor() {
+        assertNotNull(AGENT_ADVISORS.getPluginAdvisor(MATERIAL));
     }
 }

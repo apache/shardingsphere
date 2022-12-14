@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.plugin.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,6 +23,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
+import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
+import org.apache.shardingsphere.agent.core.plugin.PluginJarHolder;
 
 import java.util.HashMap;
 import java.util.Map;

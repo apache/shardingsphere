@@ -26,62 +26,33 @@ import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
-import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 /**
- * Agent plugin loader.
+ * Agent advisors.
  */
-public final class AgentPluginLoader {
+public final class AgentAdvisors {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
-    
-    private final Collection<PluginJar> pluginJars = new LinkedList<>();
-    
-    private Map<String, ClassAdvisor> advisors;
+    private final Map<String, ClassAdvisor> advisors;
     
     @Getter
     @Setter
     private boolean isEnhancedForProxy = true;
     
-    /**
-     * Load plugin jars and advisors.
-     *
-     * @throws IOException IO exception
-     */
-    public void load() throws IOException {
-        loadPluginJars();
+    public AgentAdvisors(final Collection<PluginJar> pluginJars) {
         AgentClassLoader.init(pluginJars);
         advisors = loadAdvisors(AgentClassLoader.getClassLoader());
-    }
-    
-    private void loadPluginJars() throws IOException {
-        File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(each -> each.getName().endsWith(".jar"));
-        if (Objects.isNull(jarFiles)) {
-            return;
-        }
-        for (File each : jarFiles) {
-            pluginJars.add(new PluginJar(new JarFile(each, true), each));
-            LOGGER.info("Loaded jar:{}", each.getName());
-        }
-        PluginJarHolder.setPluginJars(pluginJars);
     }
     
     private Map<String, ClassAdvisor> loadAdvisors(final ClassLoader classLoader) {
@@ -110,7 +81,7 @@ public final class AgentPluginLoader {
      *
      * @return type matcher
      */
-    public ElementMatcher<? super TypeDescription> typeMatcher() {
+    public ElementMatcher<? super TypeDescription> createTypeMatcher() {
         return new Junction<TypeDescription>() {
             
             @SuppressWarnings("NullableProblems")
@@ -149,7 +120,7 @@ public final class AgentPluginLoader {
      * @param typeDescription type description
      * @return plugin advisor
      */
-    public ClassAdvisor loadPluginAdvisor(final TypeDescription typeDescription) {
+    public ClassAdvisor getPluginAdvisor(final TypeDescription typeDescription) {
         return advisors.getOrDefault(typeDescription.getTypeName(), new ClassAdvisor(""));
     }
     
