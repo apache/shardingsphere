@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -50,6 +51,9 @@ public final class MaskBeforeSpecialCharAlgorithm implements MaskAlgorithm<Objec
     @Override
     public String mask(final Object plainValue) {
         String result = null == plainValue ? null : String.valueOf(plainValue);
+        if (Strings.isNullOrEmpty(result)) {
+            return result;
+        }
         int index = result.indexOf(specialCharacters);
         char[] chars = result.toCharArray();
         for (int i = 0; i < index; i++) {
