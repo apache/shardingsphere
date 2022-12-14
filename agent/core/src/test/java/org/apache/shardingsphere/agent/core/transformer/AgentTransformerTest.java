@@ -85,7 +85,7 @@ public final class AgentTransformerTest {
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
-                .type(PLUGIN_LOADER.typeMatcher())
+                .type(PLUGIN_LOADER.createTypeMatcher())
                 .transform(new AgentTransformer(PLUGIN_LOADER))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();

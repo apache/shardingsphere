@@ -77,7 +77,7 @@ public final class AgentTransformer implements Transformer {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        ClassAdvisor classAdvisor = agentPluginLoader.loadPluginAdvisor(typeDescription);
+        ClassAdvisor classAdvisor = agentPluginLoader.getPluginAdvisor(typeDescription);
         result = interceptConstructor(typeDescription, classAdvisor.getConstructorAdvisors(), result, classLoader);
         result = interceptStaticMethod(typeDescription, classAdvisor.getStaticMethodAdvisors(), result, classLoader);
         result = interceptInstanceMethod(typeDescription, classAdvisor.getInstanceMethodAdvisors(), result, classLoader);

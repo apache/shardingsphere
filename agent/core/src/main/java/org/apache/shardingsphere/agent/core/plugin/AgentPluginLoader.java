@@ -36,11 +36,11 @@ import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.jar.JarFile;
@@ -67,21 +67,23 @@ public final class AgentPluginLoader {
      * @throws IOException IO exception
      */
     public void load() throws IOException {
-        loadPluginJars();
+        pluginJars.addAll(loadPluginJars());
+        PluginJarHolder.setPluginJars(pluginJars);
         AgentClassLoader.init(pluginJars);
         advisors = loadAdvisors(AgentClassLoader.getClassLoader());
     }
     
-    private void loadPluginJars() throws IOException {
+    private Collection<PluginJar> loadPluginJars() throws IOException {
         File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(each -> each.getName().endsWith(".jar"));
-        if (Objects.isNull(jarFiles)) {
-            return;
+        if (null == jarFiles) {
+            return Collections.emptyList();
         }
+        Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
-            pluginJars.add(new PluginJar(new JarFile(each, true), each));
-            LOGGER.info("Loaded jar:{}", each.getName());
+            result.add(new PluginJar(new JarFile(each, true), each));
+            LOGGER.info("Loaded jar: {}", each.getName());
         }
-        PluginJarHolder.setPluginJars(pluginJars);
+        return result;
     }
     
     private Map<String, ClassAdvisor> loadAdvisors(final ClassLoader classLoader) {
@@ -110,7 +112,7 @@ public final class AgentPluginLoader {
      *
      * @return type matcher
      */
-    public ElementMatcher<? super TypeDescription> typeMatcher() {
+    public ElementMatcher<? super TypeDescription> createTypeMatcher() {
         return new Junction<TypeDescription>() {
             
             @SuppressWarnings("NullableProblems")
@@ -149,7 +151,7 @@ public final class AgentPluginLoader {
      * @param typeDescription type description
      * @return plugin advisor
      */
-    public ClassAdvisor loadPluginAdvisor(final TypeDescription typeDescription) {
+    public ClassAdvisor getPluginAdvisor(final TypeDescription typeDescription) {
         return advisors.getOrDefault(typeDescription.getTypeName(), new ClassAdvisor(""));
     }
     

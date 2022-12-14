@@ -72,8 +72,8 @@ public final class AgentPluginLoaderTest {
     
     @Test
     public void assertTypeMatcher() {
-        assertTrue(PLUGIN_LOADER.typeMatcher().matches(MATERIAL));
-        assertFalse(PLUGIN_LOADER.typeMatcher().matches(FAKE));
+        assertTrue(PLUGIN_LOADER.createTypeMatcher().matches(MATERIAL));
+        assertFalse(PLUGIN_LOADER.createTypeMatcher().matches(FAKE));
     }
     
     @Test
@@ -83,7 +83,7 @@ public final class AgentPluginLoaderTest {
     }
     
     @Test
-    public void assertLoadPluginAdvisor() {
-        assertNotNull(PLUGIN_LOADER.loadPluginAdvisor(MATERIAL));
+    public void assertGetPluginAdvisor() {
+        assertNotNull(PLUGIN_LOADER.getPluginAdvisor(MATERIAL));
     }
 }
