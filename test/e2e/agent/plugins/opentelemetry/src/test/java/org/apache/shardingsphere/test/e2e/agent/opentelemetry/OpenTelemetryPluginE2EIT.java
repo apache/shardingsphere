@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.opentelemetry;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import jdk.internal.joptsimple.internal.Strings;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
@@ -50,11 +51,19 @@ public final class OpenTelemetryPluginE2EIT extends BasePluginE2EIT {
         super.assertProxyWithAgent();
         Properties props = E2ETestEnvironment.getInstance().getProps();
         try {
-            Thread.sleep(Long.parseLong(props.getProperty("opentelemetry.waitMs", "100000")));
+            Thread.sleep(Long.parseLong(props.getProperty("opentelemetry.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
         String url = props.getProperty("opentelemetry.zipkin.url") + props.getProperty("opentelemetry.servername");
-        JsonArray array = JsonParser.parseString(OkHttpUtils.getInstance().get(url)).getAsJsonArray().get(0).getAsJsonArray();
+        String content = OkHttpUtils.getInstance().get(url);
+        while (Strings.isNullOrEmpty(content)) {
+            try {
+                Thread.sleep(500L);
+            } catch (final InterruptedException ignore) {
+            }
+            content = OkHttpUtils.getInstance().get(url);
+        }
+        JsonArray array = JsonParser.parseString(content).getAsJsonArray().get(0).getAsJsonArray();
         Gson gson = new Gson();
         Collection<TracingResult> traces = new LinkedList<>();
         array.forEach(each -> traces.add(gson.fromJson(each, TracingResult.class)));
