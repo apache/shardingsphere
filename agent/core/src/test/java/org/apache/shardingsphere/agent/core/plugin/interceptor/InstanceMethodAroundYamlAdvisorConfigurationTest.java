@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -24,76 +25,98 @@ import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.logging.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
-import org.junit.After;
+import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ConstructorInterceptorTest {
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
+public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial";
-    
-    private static final List<String> QUEUE = new LinkedList<>();
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial";
     
     private static ResettableClassFileTransformer byteBuddyAgent;
+    
+    private final boolean rebase;
+    
+    private final String methodName;
+    
+    private final String result;
+    
+    private final String[] expected;
+    
+    @Parameters
+    public static Collection<Object[]> prepareData() {
+        return Arrays.asList(
+                new Object[]{false, "mock", "invocation", new String[]{"before", "on", "after"}},
+                new Object[]{true, "mock", "rebase invocation method", new String[]{"before", "after"}},
+                new Object[]{false, "mockWithException", null, new String[]{"before", "exception", "after"}});
+    }
     
     @BeforeClass
     public static void setup() {
         ByteBuddyAgent.install();
-        byteBuddyAgent = new AgentBuilder.Default()
-                .with(new ByteBuddy().with(TypeValidation.ENABLED))
-                .ignore(ElementMatchers.isSynthetic())
-                .with(new LoggingListener())
-                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+        byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .with(new ByteBuddy())
                 .type(ElementMatchers.named(CLASS_PATH))
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetAdviceObject.class)
-                                .intercept(FieldAccessor.ofField(EXTRA_DATA))
-                                .constructor(ElementMatchers.isConstructor())
-                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorInterceptor(new MockConstructorAdvice(QUEUE)))));
+                                .intercept(FieldAccessor.ofField(EXTRA_DATA));
                     }
                     return builder;
-                })
-                .asTerminalTransformation()
+                }).asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }
     
     @Test
-    public void assertNoArgConstructor() {
-        assertThat(new ConstructorMaterial(), instanceOf(TargetAdviceObject.class));
-    }
-    
-    @Test
-    public void assertConstructor() {
-        new ConstructorMaterial(QUEUE);
-        assertArrayEquals(new String[]{"constructor", "on constructor"}, QUEUE.toArray());
-    }
-    
-    @After
-    public void cleanup() {
-        QUEUE.clear();
+    public void assertInterceptedMethod() throws ReflectiveOperationException {
+        InstanceMaterial material = new ByteBuddy()
+                .subclass(InstanceMaterial.class)
+                .method(ElementMatchers.named(methodName))
+                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAroundInterceptor(new MockInstanceMethodAroundAdvice(rebase))))
+                .make()
+                .load(new MockClassLoader())
+                .getLoaded()
+                .getDeclaredConstructor().newInstance();
+        List<String> queues = new LinkedList<>();
+        if ("mockWithException".equals(methodName)) {
+            try {
+                material.mockWithException(queues);
+            } catch (IOException ignored) {
+            }
+        } else {
+            assertThat(material.mock(queues), is(result));
+        }
+        assertArrayEquals(expected, queues.toArray());
     }
     
     @AfterClass
     public static void destroy() {
         byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+    }
+    
+    private static class MockClassLoader extends ClassLoader {
     }
 }

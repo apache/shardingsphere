@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.composed;
 
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedInstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
 
 import java.util.Collection;
 
 /**
- * Composed instance method around interceptor.
+ * Composed instance method interceptor args override.
  */
-public final class ComposedInstanceMethodAroundInterceptor extends InstanceMethodAroundInterceptor {
+public class ComposedInstanceMethodInterceptorArgsOverride extends InstanceMethodInterceptorArgsOverride {
     
-    public ComposedInstanceMethodAroundInterceptor(final Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
+    public ComposedInstanceMethodInterceptorArgsOverride(final Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
         super(new ComposedInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
     }
 }

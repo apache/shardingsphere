@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.entity;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.composed;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodInterceptorArgsOverride;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Interceptor.
+ * Composed static method interceptor args override.
  */
-@Getter
-@Setter
-public final class Interceptor {
+public final class ComposedStaticMethodInterceptorArgsOverride extends StaticMethodInterceptorArgsOverride {
     
-    private String target;
-    
-    private String instanceAdvice;
-    
-    private String staticAdvice;
-    
-    private String constructAdvice;
-    
-    private Collection<TargetPoint> points = new LinkedList<>();
+    public ComposedStaticMethodInterceptorArgsOverride(final Collection<StaticMethodAroundAdvice> instanceMethodAroundAdvices) {
+        super(new ComposedStaticMethodAroundAdvice(instanceMethodAroundAdvices));
+    }
 }

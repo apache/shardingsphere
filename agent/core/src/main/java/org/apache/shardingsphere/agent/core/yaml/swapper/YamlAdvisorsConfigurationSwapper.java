@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.entity;
+package org.apache.shardingsphere.agent.core.yaml.swapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.agent.core.yaml.entity.YamlAdvisorsConfiguration;
+import org.yaml.snakeyaml.Yaml;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.io.InputStream;
 
 /**
- * Interceptors.
+ * YAML advisors configuration swapper.
  */
-@Setter
-@Getter
-public final class Interceptors {
+public final class YamlAdvisorsConfigurationSwapper {
     
-    private Collection<Interceptor> interceptors = new LinkedList<>();
+    /**
+     * unmarshal advisors configuration.
+     * 
+     * @param inputStream input stream
+     * @return unmarshalled advisors configuration
+     */
+    public YamlAdvisorsConfiguration unmarshal(final InputStream inputStream) {
+        return new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
+    }
 }

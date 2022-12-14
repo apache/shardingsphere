@@ -45,8 +45,8 @@ public class ConstructorInterceptor {
      */
     @RuntimeType
     public void intercept(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
+        boolean adviceEnabled = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
-            boolean adviceEnabled = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
             if (adviceEnabled) {
                 constructorAdvice.onConstructor(target, args);
             }

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
 import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
 import org.apache.shardingsphere.agent.core.advisor.ClassAdvisorRegistryFactory;
-import org.apache.shardingsphere.agent.core.yaml.entity.Interceptor;
-import org.apache.shardingsphere.agent.core.yaml.entity.TargetPoint;
-import org.apache.shardingsphere.agent.core.yaml.swapper.InterceptorsYamlSwapper;
+import org.apache.shardingsphere.agent.core.yaml.entity.YamlAdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.core.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 
 import java.util.Collection;
@@ -40,7 +40,7 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
     @Override
     public Collection<ClassAdvisor> getProxyAdvisors() {
         Collection<ClassAdvisor> result = new LinkedList<>();
-        for (Interceptor each : new InterceptorsYamlSwapper().unmarshal(getClass().getResourceAsStream("/prometheus/interceptors.yaml")).getInterceptors()) {
+        for (YamlAdvisorConfiguration each : new YamlAdvisorsConfigurationSwapper().unmarshal(getClass().getResourceAsStream("/prometheus/advisors.yaml")).getAdvisors()) {
             if (null != each.getTarget()) {
                 result.add(createClassAdvisor(each));
             }
@@ -48,18 +48,18 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
         return result;
     }
     
-    private ClassAdvisor createClassAdvisor(final Interceptor interceptor) {
-        ClassAdvisor result = ClassAdvisorRegistryFactory.getRegistry(getType()).getAdvisor(interceptor.getTarget());
-        if (null != interceptor.getConstructAdvice() && !("".equals(interceptor.getConstructAdvice()))) {
-            result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.isConstructor(), interceptor.getConstructAdvice()));
+    private ClassAdvisor createClassAdvisor(final YamlAdvisorConfiguration yamlAdvisorConfiguration) {
+        ClassAdvisor result = ClassAdvisorRegistryFactory.getRegistry(getType()).getAdvisor(yamlAdvisorConfiguration.getTarget());
+        if (null != yamlAdvisorConfiguration.getConstructAdvice() && !("".equals(yamlAdvisorConfiguration.getConstructAdvice()))) {
+            result.getConstructorAdvisors().add(new ConstructorAdvisor(ElementMatchers.isConstructor(), yamlAdvisorConfiguration.getConstructAdvice()));
         }
-        String[] instancePoints = interceptor.getPoints().stream().filter(i -> "instance".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
-        if (instancePoints.length > 0) {
-            result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.namedOneOf(instancePoints), interceptor.getInstanceAdvice()));
+        String[] instancePointcuts = yamlAdvisorConfiguration.getPointcuts().stream().filter(i -> "instance".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
+        if (instancePointcuts.length > 0) {
+            result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisor(ElementMatchers.namedOneOf(instancePointcuts), yamlAdvisorConfiguration.getInstanceAdvice()));
         }
-        String[] staticPoints = interceptor.getPoints().stream().filter(i -> "static".equals(i.getType())).map(TargetPoint::getName).toArray(String[]::new);
-        if (staticPoints.length > 0) {
-            result.getStaticMethodAdvisors().add(new StaticMethodAdvisor(ElementMatchers.namedOneOf(staticPoints), interceptor.getStaticAdvice()));
+        String[] staticPointcuts = yamlAdvisorConfiguration.getPointcuts().stream().filter(i -> "static".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
+        if (staticPointcuts.length > 0) {
+            result.getStaticMethodAdvisors().add(new StaticMethodAdvisor(ElementMatchers.namedOneOf(staticPointcuts), yamlAdvisorConfiguration.getStaticAdvice()));
         }
         return result;
     }

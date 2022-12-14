@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -25,66 +24,51 @@ import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
+import org.apache.shardingsphere.agent.core.logging.LoggingListener;
+import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
+import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
-public final class StaticMethodAroundInterceptorTest {
+public final class ConstructorYamlAdvisorConfigurationTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.StaticMaterial";
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial";
+    
+    private static final List<String> QUEUE = new LinkedList<>();
     
     private static ResettableClassFileTransformer byteBuddyAgent;
-    
-    private final String methodName;
-    
-    private final String result;
-    
-    private final String[] expected;
-    
-    @Parameters
-    public static Collection<Object[]> prepareData() {
-        return Arrays.asList(
-                new Object[]{"staticMock", "rebase static invocation method", new String[]{"before", "after"}},
-                new Object[]{"staticMockWithException", null, new String[]{"before", "exception", "after"}});
-    }
     
     @BeforeClass
     public static void setup() {
         ByteBuddyAgent.install();
-        byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
-                .with(new ByteBuddy())
+        byteBuddyAgent = new AgentBuilder.Default()
+                .with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .ignore(ElementMatchers.isSynthetic())
+                .with(new LoggingListener())
+                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .type(ElementMatchers.named(CLASS_PATH))
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetAdviceObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
-                                .method(ElementMatchers.named("staticMockWithException"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(false))))
-                                .method(ElementMatchers.named("staticMock"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(true))));
+                                .constructor(ElementMatchers.isConstructor())
+                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorInterceptor(new MockConstructorAdvice(QUEUE)))));
                     }
                     return builder;
                 })
@@ -93,17 +77,19 @@ public final class StaticMethodAroundInterceptorTest {
     }
     
     @Test
-    public void assertInterceptedMethod() {
-        List<String> queues = new LinkedList<>();
-        if ("staticMockWithException".equals(methodName)) {
-            try {
-                StaticMaterial.staticMockWithException(queues);
-            } catch (final IOException ignored) {
-            }
-        } else {
-            assertThat(StaticMaterial.staticMock(queues), is(result));
-        }
-        assertArrayEquals(expected, queues.toArray());
+    public void assertNoArgConstructor() {
+        assertThat(new ConstructorMaterial(), instanceOf(TargetAdviceObject.class));
+    }
+    
+    @Test
+    public void assertConstructor() {
+        new ConstructorMaterial(QUEUE);
+        assertArrayEquals(new String[]{"constructor", "on constructor"}, QUEUE.toArray());
+    }
+    
+    @After
+    public void cleanup() {
+        QUEUE.clear();
     }
     
     @AfterClass

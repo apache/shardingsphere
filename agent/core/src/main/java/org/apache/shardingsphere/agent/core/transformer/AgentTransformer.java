@@ -45,11 +45,11 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAro
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodInterceptorArgsOverride;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedConstructorInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedInstanceMethodAroundInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedInstanceMethodInterceptorArgsOverride;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedStaticMethodAroundInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposedStaticMethodInterceptorArgsOverride;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedConstructorInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodInterceptorArgsOverride;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.AgentAdvisors;
 
 import java.util.Collection;
