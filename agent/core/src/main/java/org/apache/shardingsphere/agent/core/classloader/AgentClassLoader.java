@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
 import java.io.IOException;
