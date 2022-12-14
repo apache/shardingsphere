@@ -17,9 +17,9 @@
 
 <dataset>
     <metadata>
-        <column name="sql_comment_parse_enable" />
-        <column name="parse_tree_cache" />
-        <column name="sql_statement_cache" />
+        <column name="rule_name" />
+        <column name="database" />
+        <column name="count" />
     </metadata>
-    <row values="true| initialCapacity: 128, maximumSize: 1024| initialCapacity: 2000, maximumSize: 65535" />
+    <row values="readwrite_splitting| readwrite_splitting| 1" />
 </dataset>
