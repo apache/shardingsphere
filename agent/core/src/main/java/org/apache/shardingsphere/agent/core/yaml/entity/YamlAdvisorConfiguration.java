@@ -20,14 +20,23 @@ package org.apache.shardingsphere.agent.core.yaml.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
- * Target function.
+ * YAML advisor configuration.
  */
 @Getter
 @Setter
-public final class TargetPoint {
+public final class YamlAdvisorConfiguration {
     
-    private String name;
+    private String target;
     
-    private String type;
+    private String instanceAdvice;
+    
+    private String staticAdvice;
+    
+    private String constructAdvice;
+    
+    private Collection<YamlPointcutConfiguration> pointcuts = new LinkedList<>();
 }

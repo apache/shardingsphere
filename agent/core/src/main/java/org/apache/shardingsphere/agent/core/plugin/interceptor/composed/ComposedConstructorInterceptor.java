@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.composed;
 
-import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodInterceptorArgsOverride;
+import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 
 import java.util.Collection;
 
 /**
- * Composed static method interceptor args override.
+ * Composed constructor interceptor.
  */
-public final class ComposedStaticMethodInterceptorArgsOverride extends StaticMethodInterceptorArgsOverride {
+public final class ComposedConstructorInterceptor extends ConstructorInterceptor {
     
-    public ComposedStaticMethodInterceptorArgsOverride(final Collection<StaticMethodAroundAdvice> instanceMethodAroundAdvices) {
-        super(new ComposedStaticMethodAroundAdvice(instanceMethodAroundAdvices));
+    public ComposedConstructorInterceptor(final Collection<ConstructorAdvice> constructorAdvices) {
+        super(new ComposedConstructorAdvice(constructorAdvices));
     }
 }

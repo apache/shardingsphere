@@ -15,17 +15,17 @@
 # limitations under the License.
 #
 
-interceptors:
+advisors:
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.CommandExecutorTaskAdvice
-    points:
+    pointcuts:
       - name: run
         type: instance
       - name: processException
         type: instance
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.ChannelHandlerAdvice
-    points:
+    pointcuts:
       - name: channelActive
         type: instance
       - name: channelRead
@@ -34,18 +34,18 @@ interceptors:
         type: instance
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.SQLRouteEngineAdvice
-    points:
+    pointcuts:
       - name: route
         type: instance
-  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
+  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice
-    points:
+    pointcuts:
       - name: commit
         type: instance
       - name: rollback
         type: instance
-  - target: org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecoratorHelper
-    staticAdvice: org.apache.shardingsphere.agent.metrics.api.advice.DataSourceAdvice
-    points:
-      - name: decorate
-        type: static
+  - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
+    instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.SQLParserEngineAdvice
+    pointcuts:
+      - name: parse
+        type: instance

@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.swapper;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.composed;
 
-import org.apache.shardingsphere.agent.core.yaml.entity.Interceptors;
-import org.yaml.snakeyaml.Yaml;
+import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
 
-import java.io.InputStream;
+import java.util.Collection;
 
 /**
- * Interceptors YAML swapper.
+ * Composed static method around interceptor.
  */
-public final class InterceptorsYamlSwapper {
+public final class ComposedStaticMethodAroundInterceptor extends StaticMethodAroundInterceptor {
     
-    /**
-     * unmarshal interceptors.
-     * 
-     * @param inputStream input stream
-     * @return unmarshalled interceptors
-     */
-    public Interceptors unmarshal(final InputStream inputStream) {
-        return new Yaml().loadAs(inputStream, Interceptors.class);
+    public ComposedStaticMethodAroundInterceptor(final Collection<StaticMethodAroundAdvice> instanceMethodAroundAdvices) {
+        super(new ComposedStaticMethodAroundAdvice(instanceMethodAroundAdvices));
     }
 }

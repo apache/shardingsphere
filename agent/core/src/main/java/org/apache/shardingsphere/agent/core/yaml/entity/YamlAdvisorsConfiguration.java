@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
+package org.apache.shardingsphere.agent.core.yaml.entity;
 
-import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Composed static method around interceptor.
+ * YAML advisors configuration.
  */
-public final class ComposedStaticMethodAroundInterceptor extends StaticMethodAroundInterceptor {
+@Setter
+@Getter
+public final class YamlAdvisorsConfiguration {
     
-    public ComposedStaticMethodAroundInterceptor(final Collection<StaticMethodAroundAdvice> instanceMethodAroundAdvices) {
-        super(new ComposedStaticMethodAroundAdvice(instanceMethodAroundAdvices));
-    }
+    private Collection<YamlAdvisorConfiguration> advisors = new LinkedList<>();
 }

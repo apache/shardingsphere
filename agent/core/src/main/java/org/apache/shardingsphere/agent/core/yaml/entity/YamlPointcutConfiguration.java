@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
+package org.apache.shardingsphere.agent.core.yaml.entity;
 
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.advice.composed.ComposedInstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Composed instance method interceptor args override.
+ * Yaml pointcut configuration.
  */
-public class ComposedInstanceMethodInterceptorArgsOverride extends InstanceMethodInterceptorArgsOverride {
+@Getter
+@Setter
+public final class YamlPointcutConfiguration {
     
-    public ComposedInstanceMethodInterceptorArgsOverride(final Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
-        super(new ComposedInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
-    }
+    private String name;
+    
+    private String type;
 }
