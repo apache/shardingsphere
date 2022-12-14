@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -30,6 +31,10 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingConditionEngineFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(ShardingConditionEngine.class);
+    }
     
     /**
      * Create new instance of sharding condition engine.
