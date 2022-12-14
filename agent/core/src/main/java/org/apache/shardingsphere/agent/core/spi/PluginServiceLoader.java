@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -40,7 +39,7 @@ public final class PluginServiceLoader {
      * @return service instances
      */
     public static <T> Collection<T> newServiceInstances(final Class<T> service, final ClassLoader classLoader) {
-        List<T> result = new LinkedList<>();
+        Collection<T> result = new LinkedList<>();
         ServiceLoader.load(service, classLoader).forEach(result::add);
         return result;
     }
