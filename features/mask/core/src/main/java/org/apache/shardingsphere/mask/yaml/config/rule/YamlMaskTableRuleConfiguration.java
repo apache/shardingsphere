@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.spi;
+package org.apache.shardingsphere.mask.yaml.config.rule;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.ServiceLoader;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Plugin service loader.
+ * Mask table rule configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PluginServiceLoader {
+@Getter
+@Setter
+public final class YamlMaskTableRuleConfiguration implements YamlConfiguration {
     
-    /**
-     * New service instances.
-     *
-     * @param service service type
-     * @param <T> type of class
-     * @param classLoader class loader
-     * @return service instances
-     */
-    public static <T> Collection<T> newServiceInstances(final Class<T> service, final ClassLoader classLoader) {
-        Collection<T> result = new LinkedList<>();
-        ServiceLoader.load(service, classLoader).forEach(result::add);
-        return result;
-    }
+    private String name;
+    
+    private Map<String, YamlMaskColumnRuleConfiguration> columns = new LinkedHashMap<>();
 }

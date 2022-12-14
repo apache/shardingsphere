@@ -25,13 +25,14 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.logging.LoggingListener;
-import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
+import org.apache.shardingsphere.agent.core.plugin.AgentAdvisors;
+import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -53,33 +54,18 @@ public final class ShardingSphereAgent {
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfig);
-        AgentPluginLoader pluginLoader = createPluginLoader();
-        setUpAgentBuilder(instrumentation, pluginLoader);
-        if (pluginLoader.isEnhancedForProxy()) {
+        boolean isEnhancedForProxy = isEnhancedForProxy();
+        AgentAdvisors agentAdvisors = loadAgentAdvisors(isEnhancedForProxy);
+        setUpAgentBuilder(instrumentation, agentAdvisors);
+        if (isEnhancedForProxy) {
             setupPluginBootService(agentConfig.getPlugins());
         }
     }
     
-    private static AgentPluginLoader createPluginLoader() throws IOException {
-        AgentPluginLoader result = new AgentPluginLoader();
-        result.setEnhancedForProxy(isEnhancedForProxy());
-        result.load();
+    private static AgentAdvisors loadAgentAdvisors(final boolean isEnhancedForProxy) throws IOException {
+        AgentAdvisors result = new AgentAdvisors(new AgentPluginLoader().load());
+        result.setEnhancedForProxy(isEnhancedForProxy);
         return result;
-    }
-    
-    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentPluginLoader pluginLoader) {
-        AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
-                .ignore(ElementMatchers.isSynthetic())
-                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        agentBuilder.type(pluginLoader.typeMatcher())
-                .transform(new AgentTransformer(pluginLoader))
-                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .with(new LoggingListener()).installOn(instrumentation);
-    }
-    
-    private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
-        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getClassLoader(), true);
-        Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     
     private static boolean isEnhancedForProxy() {
@@ -89,5 +75,20 @@ public final class ShardingSphereAgent {
             return false;
         }
         return true;
+    }
+    
+    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentAdvisors agentAdvisors) {
+        AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .ignore(ElementMatchers.isSynthetic())
+                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
+        agentBuilder.type(agentAdvisors.createTypeMatcher())
+                .transform(new AgentTransformer(agentAdvisors))
+                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+                .with(new LoggingListener()).installOn(instrumentation);
+    }
+    
+    private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
+        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getClassLoader(), true);
+        Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
 }

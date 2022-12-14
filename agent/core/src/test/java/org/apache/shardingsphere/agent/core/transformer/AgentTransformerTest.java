@@ -23,20 +23,20 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.logging.LoggingListener;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
+import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
+import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundRepeatedAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
-import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
-import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
-import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
-import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
+import org.apache.shardingsphere.agent.core.plugin.AgentAdvisors;
+import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -57,7 +57,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public final class AgentTransformerTest {
     
-    private static final AgentPluginLoader PLUGIN_LOADER = new AgentPluginLoader();
+    private static final AgentAdvisors AGENT_ADVISORS = new AgentAdvisors(Collections.emptyList());
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     
@@ -79,14 +79,14 @@ public final class AgentTransformerTest {
         ClassAdvisor classAdvisorInTwice = createClassAdvisorsInTwice();
         classAdvisors.put(classAdvisorInTwice.getTargetClassName(), classAdvisorInTwice);
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("advisors"), PLUGIN_LOADER, classAdvisors);
+        accessor.set(AGENT_ADVISORS.getClass().getDeclaredField("advisors"), AGENT_ADVISORS, classAdvisors);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
-                .type(PLUGIN_LOADER.typeMatcher())
-                .transform(new AgentTransformer(PLUGIN_LOADER))
+                .type(AGENT_ADVISORS.createTypeMatcher())
+                .transform(new AgentTransformer(AGENT_ADVISORS))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }
