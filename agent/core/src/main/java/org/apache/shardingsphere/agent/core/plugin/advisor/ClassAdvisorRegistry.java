@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class advisor registry factory.
+ * Class advisor registry.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ClassAdvisorRegistryFactory {
+public final class ClassAdvisorRegistry {
     
-    private static final Map<String, ClassAdvisorRegistry> REGISTRIES = new ConcurrentHashMap<>();
+    private final Map<String, ClassAdvisor> advisors = new ConcurrentHashMap<>();
     
     /**
-     * Get class advisor registry.
+     * Get class advisor.
      * 
-     * @param type registry type
-     * @return class advisor registry
+     * @param targetClassName target class name to be intercepted
+     * @return class advisor
      */
-    public static ClassAdvisorRegistry getRegistry(final String type) {
-        return REGISTRIES.computeIfAbsent(type, each -> new ClassAdvisorRegistry());
+    public ClassAdvisor getAdvisor(final String targetClassName) {
+        return advisors.computeIfAbsent(targetClassName, ClassAdvisor::new);
     }
 }

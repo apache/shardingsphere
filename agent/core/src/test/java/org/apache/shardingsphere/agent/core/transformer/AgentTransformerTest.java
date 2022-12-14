@@ -35,7 +35,7 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAround
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
-import org.apache.shardingsphere.agent.core.plugin.AgentAdvisors;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
 import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.junit.After;
 import org.junit.AfterClass;

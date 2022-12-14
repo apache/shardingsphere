@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.entity;
+package org.apache.shardingsphere.agent.core.plugin.yaml.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,19 +24,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * YAML advisor configuration.
+ * YAML advisors configuration.
  */
-@Getter
 @Setter
-public final class YamlAdvisorConfiguration {
+@Getter
+public final class YamlAdvisorsConfiguration {
     
-    private String target;
-    
-    private String instanceAdvice;
-    
-    private String staticAdvice;
-    
-    private String constructAdvice;
-    
-    private Collection<YamlPointcutConfiguration> pointcuts = new LinkedList<>();
+    private Collection<YamlAdvisorConfiguration> advisors = new LinkedList<>();
 }

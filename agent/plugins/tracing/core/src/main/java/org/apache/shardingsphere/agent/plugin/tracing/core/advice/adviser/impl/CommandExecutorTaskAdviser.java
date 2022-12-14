@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
-import org.apache.shardingsphere.agent.core.advisor.ClassAdvisorRegistryFactory;
+import org.apache.shardingsphere.agent.core.plugin.advisor.ClassAdvisorRegistryFactory;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.TracingAdviser;
 

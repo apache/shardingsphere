@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
 import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
-import org.apache.shardingsphere.agent.core.advisor.ClassAdvisorRegistryFactory;
+import org.apache.shardingsphere.agent.core.plugin.advisor.ClassAdvisorRegistryFactory;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
 

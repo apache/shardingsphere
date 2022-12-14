@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.swapper;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import org.apache.shardingsphere.agent.core.yaml.entity.YamlAdvisorsConfiguration;
-import org.yaml.snakeyaml.Yaml;
+import org.junit.Test;
 
-import java.io.InputStream;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * YAML advisors configuration swapper.
- */
-public final class YamlAdvisorsConfigurationSwapper {
+public final class ClassAdvisorRegistryFactoryTest {
     
-    /**
-     * unmarshal advisors configuration.
-     * 
-     * @param inputStream input stream
-     * @return unmarshalled advisors configuration
-     */
-    public YamlAdvisorsConfiguration unmarshal(final InputStream inputStream) {
-        return new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
+    @Test
+    public void assertGetRegistryWithType() {
+        assertThat(ClassAdvisorRegistryFactory.getRegistry("test"), instanceOf(ClassAdvisorRegistry.class));
     }
 }

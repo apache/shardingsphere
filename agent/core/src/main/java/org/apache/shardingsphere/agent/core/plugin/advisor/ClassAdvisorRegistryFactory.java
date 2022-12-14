@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.entity;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * YAML advisors configuration.
+ * Class advisor registry factory.
  */
-@Setter
-@Getter
-public final class YamlAdvisorsConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ClassAdvisorRegistryFactory {
     
-    private Collection<YamlAdvisorConfiguration> advisors = new LinkedList<>();
+    private static final Map<String, ClassAdvisorRegistry> REGISTRIES = new ConcurrentHashMap<>();
+    
+    /**
+     * Get class advisor registry.
+     * 
+     * @param type registry type
+     * @return class advisor registry
+     */
+    public static ClassAdvisorRegistry getRegistry(final String type) {
+        return REGISTRIES.computeIfAbsent(type, each -> new ClassAdvisorRegistry());
+    }
 }

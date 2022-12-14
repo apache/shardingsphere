@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoad
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
-import org.apache.shardingsphere.agent.core.plugin.AgentAdvisors;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
 import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 

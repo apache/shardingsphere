@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
 import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.junit.Test;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Class advisor registry.
- */
-public final class ClassAdvisorRegistry {
+public final class ClassAdvisorRegistryTest {
     
-    private final Map<String, ClassAdvisor> advisors = new ConcurrentHashMap<>();
-    
-    /**
-     * Get class advisor.
-     * 
-     * @param targetClassName target class name to be intercepted
-     * @return class advisor
-     */
-    public ClassAdvisor getAdvisor(final String targetClassName) {
-        return advisors.computeIfAbsent(targetClassName, ClassAdvisor::new);
+    @Test
+    public void assertGetAdvisor() {
+        assertThat(new ClassAdvisorRegistry().getAdvisor("test"), instanceOf(ClassAdvisor.class));
     }
 }
