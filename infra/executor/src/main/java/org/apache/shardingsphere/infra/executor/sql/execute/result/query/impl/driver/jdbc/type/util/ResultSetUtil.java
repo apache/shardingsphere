@@ -86,7 +86,11 @@ public final class ResultSetUtil {
         if (String.class.equals(convertType)) {
             return value.toString();
         }
-        throw new SQLFeatureNotSupportedException("getObject with type");
+        try {
+            return convertType.cast(value);
+        } catch (ClassCastException cce) {
+            throw new SQLFeatureNotSupportedException("getObject with type");
+        }
     }
     
     private static Object convertURL(final Object value) {
@@ -135,6 +139,9 @@ public final class ResultSetUtil {
         if (Timestamp.class.equals(convertType)) {
             return Timestamp.valueOf(localDateTime);
         }
+        if (String.class.equals(convertType)) {
+            return value.toString();
+        }
         return value;
     }
     
@@ -151,6 +158,9 @@ public final class ResultSetUtil {
         }
         if (OffsetDateTime.class.equals(convertType)) {
             return timestamp.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        }
+        if (String.class.equals(convertType)) {
+            return value.toString();
         }
         return value;
     }
