@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 public final class RemotePluginConfigurationValidator {
     
     /**
-     * Validate plugin configuration.
+     * Validate remote plugin configuration.
      * 
      * @param type plugin type 
      * @param pluginConfig to be validated plugin configuration

@@ -31,12 +31,14 @@ public final class RemotePluginConfigurationValidatorTest {
     
     @Test
     public void assertValidateWhenHostIsEmpty() {
-        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class, () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
+        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
+                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
     }
     
     @Test
     public void assertValidateWhenHostIsNull() {
-        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class, () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
+        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
+                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
     }
     
     @Test
