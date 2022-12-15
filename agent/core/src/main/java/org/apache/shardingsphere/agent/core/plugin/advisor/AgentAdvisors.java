@@ -23,16 +23,13 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
-import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,14 +44,13 @@ public final class AgentAdvisors {
     @Setter
     private boolean isEnhancedForProxy = true;
     
-    public AgentAdvisors(final Collection<PluginJar> pluginJars) {
+    public AgentAdvisors(final Collection<String> pluginTypes, final Collection<PluginJar> pluginJars) {
         AgentClassLoader.init(pluginJars);
-        advisorConfigs = getAllAdvisorConfigurations(AgentClassLoader.getClassLoader());
+        advisorConfigs = getAllAdvisorConfigurations(pluginTypes, AgentClassLoader.getClassLoader());
     }
     
-    private Map<String, ClassAdvisorConfiguration> getAllAdvisorConfigurations(final ClassLoader classLoader) {
+    private Map<String, ClassAdvisorConfiguration> getAllAdvisorConfigurations(final Collection<String> pluginTypes, final ClassLoader classLoader) {
         Map<String, ClassAdvisorConfiguration> result = new HashMap<>();
-        Collection<String> pluginTypes = getPluginTypes();
         for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, classLoader)) {
             if (pluginTypes.contains(each.getType())) {
                 Collection<ClassAdvisorConfiguration> advisorConfigs = isEnhancedForProxy ? each.getProxyAdvisorConfigurations() : each.getJDBCAdvisorConfigurations();
@@ -62,15 +58,6 @@ public final class AgentAdvisors {
             }
         }
         return ImmutableMap.<String, ClassAdvisorConfiguration>builder().putAll(result).build();
-    }
-    
-    private Collection<String> getPluginTypes() {
-        AgentConfiguration agentConfig = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class);
-        Collection<String> result = new HashSet<>();
-        if (null != agentConfig && null != agentConfig.getPlugins()) {
-            result.addAll(agentConfig.getPlugins().keySet());
-        }
-        return result;
     }
     
     /**

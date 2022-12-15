@@ -57,7 +57,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public final class AgentTransformerTest {
     
-    private static final AgentAdvisors AGENT_ADVISORS = new AgentAdvisors(Collections.emptyList());
+    private static final AgentAdvisors AGENT_ADVISORS = new AgentAdvisors(Collections.emptySet(), Collections.emptyList());
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     

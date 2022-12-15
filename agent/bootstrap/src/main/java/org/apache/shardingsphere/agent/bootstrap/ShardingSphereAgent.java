@@ -36,6 +36,7 @@ import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -55,14 +56,14 @@ public final class ShardingSphereAgent {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfig);
         boolean isEnhancedForProxy = isEnhancedForProxy();
-        setUpAgentBuilder(instrumentation, loadAgentAdvisors(isEnhancedForProxy), isEnhancedForProxy);
+        setUpAgentBuilder(instrumentation, loadAgentAdvisors(agentConfig.getPlugins().keySet(), isEnhancedForProxy), isEnhancedForProxy);
         if (isEnhancedForProxy) {
             setupPluginBootService(agentConfig.getPlugins());
         }
     }
     
-    private static AgentAdvisors loadAgentAdvisors(final boolean isEnhancedForProxy) throws IOException {
-        AgentAdvisors result = new AgentAdvisors(new AgentPluginLoader().load());
+    private static AgentAdvisors loadAgentAdvisors(final Collection<String> pluginTypes, final boolean isEnhancedForProxy) throws IOException {
+        AgentAdvisors result = new AgentAdvisors(pluginTypes, new AgentPluginLoader().load());
         result.setEnhancedForProxy(isEnhancedForProxy);
         return result;
     }
