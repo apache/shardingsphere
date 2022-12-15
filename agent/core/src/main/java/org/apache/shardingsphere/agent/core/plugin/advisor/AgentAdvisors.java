@@ -27,7 +27,6 @@ import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
-import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
@@ -120,17 +119,5 @@ public final class AgentAdvisors {
      */
     public ClassAdvisorConfiguration getClassAdvisorConfiguration(final TypeDescription typeDescription) {
         return advisorConfigs.getOrDefault(typeDescription.getTypeName(), new ClassAdvisorConfiguration(""));
-    }
-    
-    /**
-     * To get or create instance of the advice class. Create new one and caching when it is not exist.
-     *
-     * @param adviceClassName class name of advice
-     * @param classLoader class loader
-     * @param <T> advice type
-     * @return instance
-     */
-    public <T> T getOrCreateInstance(final String adviceClassName, final ClassLoader classLoader) {
-        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, isEnhancedForProxy);
     }
 }
