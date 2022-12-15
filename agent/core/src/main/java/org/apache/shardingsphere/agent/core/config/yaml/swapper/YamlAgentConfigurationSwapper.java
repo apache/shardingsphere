@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginCategoryConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlAgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginCategoryConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlAgentConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
 
