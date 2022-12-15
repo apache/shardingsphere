@@ -30,7 +30,7 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.InstanceMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
@@ -41,7 +41,6 @@ import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
@@ -57,6 +56,7 @@ import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -72,21 +72,21 @@ public final class AgentTransformer implements Transformer {
     
     private final AgentConfiguration agentConfig;
     
-    private final AgentAdvisors agentAdvisors;
+    private final Map<String, AdvisorConfiguration> advisorConfigs;
     
     private final boolean isEnhancedForProxy;
     
     @SuppressWarnings("NullableProblems")
     @Override
     public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-        if (!agentAdvisors.containsType(typeDescription)) {
+        if (!advisorConfigs.containsKey(typeDescription.getTypeName())) {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        ClassAdvisorConfiguration classAdvisorConfig = agentAdvisors.getClassAdvisorConfiguration(typeDescription);
-        result = interceptConstructor(typeDescription, classAdvisorConfig.getConstructorAdvisors(), result, classLoader);
-        result = interceptStaticMethod(typeDescription, classAdvisorConfig.getStaticMethodAdvisors(), result, classLoader);
-        result = interceptInstanceMethod(typeDescription, classAdvisorConfig.getInstanceMethodAdvisors(), result, classLoader);
+        AdvisorConfiguration advisorConfig = advisorConfigs.getOrDefault(typeDescription.getTypeName(), new AdvisorConfiguration(""));
+        result = interceptConstructor(typeDescription, advisorConfig.getConstructorAdvisors(), result, classLoader);
+        result = interceptStaticMethod(typeDescription, advisorConfig.getStaticMethodAdvisors(), result, classLoader);
+        result = interceptInstanceMethod(typeDescription, advisorConfig.getInstanceMethodAdvisors(), result, classLoader);
         return result;
     }
     

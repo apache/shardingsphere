@@ -22,10 +22,10 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ClassAdvisorConfigurationRegistryFactoryTest {
+public final class AdvisorConfigurationRegistryFactoryTest {
     
     @Test
     public void assertGetRegistryWithType() {
-        assertThat(ClassAdvisorRegistryFactory.getRegistry("test"), instanceOf(ClassAdvisorConfigurationRegistry.class));
+        assertThat(AdvisorConfigurationRegistryFactory.getRegistry("test"), instanceOf(AdvisorConfigurationRegistry.class));
     }
 }

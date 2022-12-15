@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.spi.advisor;
 
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.spi.AgentSPI;
 
 import java.util.Collection;
@@ -32,12 +32,12 @@ public interface AdvisorDefinitionService extends AgentSPI {
      * 
      * @return proxy advisor configurations
      */
-    Collection<ClassAdvisorConfiguration> getProxyAdvisorConfigurations();
+    Collection<AdvisorConfiguration> getProxyAdvisorConfigurations();
     
     /**
      * Get JDBC advisors configuration.
      * 
      * @return JDBC advisor configurations
      */
-    Collection<ClassAdvisorConfiguration> getJDBCAdvisorConfigurations();
+    Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations();
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
 
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.CommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice;
@@ -33,12 +33,12 @@ public final class OpenTracingAdvisorDefinitionService implements AdvisorDefinit
     private final TracingAdviceEngine engine = new TracingAdviceEngine(getType());
     
     @Override
-    public Collection<ClassAdvisorConfiguration> getProxyAdvisorConfigurations() {
+    public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
         return engine.getProxyAdvisorConfigurations(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override
-    public Collection<ClassAdvisorConfiguration> getJDBCAdvisorConfigurations() {
+    public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
         return engine.getJDBCAdvisorConfigurations();
     }
     

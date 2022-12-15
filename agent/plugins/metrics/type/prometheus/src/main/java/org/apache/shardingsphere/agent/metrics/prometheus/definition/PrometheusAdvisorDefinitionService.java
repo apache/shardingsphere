@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.InstanceMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.ClassAdvisorRegistryFactory;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
@@ -38,18 +38,18 @@ import java.util.LinkedList;
 public final class PrometheusAdvisorDefinitionService implements AdvisorDefinitionService {
     
     @Override
-    public Collection<ClassAdvisorConfiguration> getProxyAdvisorConfigurations() {
-        Collection<ClassAdvisorConfiguration> result = new LinkedList<>();
+    public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
+        Collection<AdvisorConfiguration> result = new LinkedList<>();
         for (YamlAdvisorConfiguration each : new YamlAdvisorsConfigurationSwapper().unmarshal(getClass().getResourceAsStream("/prometheus/advisors.yaml")).getAdvisors()) {
             if (null != each.getTarget()) {
-                result.add(createClassAdvisorConfiguration(each));
+                result.add(createAdvisorConfiguration(each));
             }
         }
         return result;
     }
     
-    private ClassAdvisorConfiguration createClassAdvisorConfiguration(final YamlAdvisorConfiguration yamlAdvisorConfig) {
-        ClassAdvisorConfiguration result = ClassAdvisorRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
+    private AdvisorConfiguration createAdvisorConfiguration(final YamlAdvisorConfiguration yamlAdvisorConfig) {
+        AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
         if (null != yamlAdvisorConfig.getConstructAdvice() && !("".equals(yamlAdvisorConfig.getConstructAdvice()))) {
             result.getConstructorAdvisors().add(new ConstructorAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getConstructAdvice()));
         }
@@ -65,7 +65,7 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
     }
     
     @Override
-    public Collection<ClassAdvisorConfiguration> getJDBCAdvisorConfigurations() {
+    public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
         // TODO add JDBC related interceptors
         return Collections.emptyList();
     }
