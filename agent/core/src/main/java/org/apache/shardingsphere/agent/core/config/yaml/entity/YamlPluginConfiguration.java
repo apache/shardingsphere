@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config.yaml;
+package org.apache.shardingsphere.agent.core.config.yaml.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Properties;
+
 /**
- * YAML agent configuration.
+ * YAML plugin configuration.
  */
 @Getter
 @Setter
-public final class YamlAgentConfiguration {
+public final class YamlPluginConfiguration {
     
-    private YamlPluginCategoryConfiguration plugins;
+    private String host;
+    
+    private int port;
+    
+    private String password;
+    
+    private Properties props = new Properties();
 }

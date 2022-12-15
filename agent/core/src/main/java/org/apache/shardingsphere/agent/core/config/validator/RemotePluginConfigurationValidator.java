@@ -24,13 +24,13 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 
 /**
- * Plugin configuration validator.
+ * Remote plugin configuration validator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PluginConfigurationValidator {
+public final class RemotePluginConfigurationValidator {
     
     /**
-     * Validate plugin configuration.
+     * Validate remote plugin configuration.
      * 
      * @param type plugin type 
      * @param pluginConfig to be validated plugin configuration

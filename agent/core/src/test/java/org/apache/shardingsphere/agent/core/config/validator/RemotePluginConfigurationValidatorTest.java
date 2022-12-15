@@ -22,26 +22,28 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertThrows;
 
-public final class PluginConfigurationValidatorTest {
+public final class RemotePluginConfigurationValidatorTest {
     
     @Test
     public void assertValidateSuccess() {
-        PluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null));
+        RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null));
     }
     
     @Test
     public void assertValidateWhenHostIsEmpty() {
-        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class, () -> PluginConfigurationValidator.validate("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
+        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
+                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
     }
     
     @Test
     public void assertValidateWhenHostIsNull() {
-        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class, () -> PluginConfigurationValidator.validate("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
+        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
+                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
     }
     
     @Test
     public void assertValidateWhenPortLessThanOne() {
         assertThrows("Port `0` of foo_host must be a positive number", IllegalArgumentException.class,
-                () -> PluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
+                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
     }
 }

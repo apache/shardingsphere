@@ -22,8 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlAgentConfigurationSwapper;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginsConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlPluginsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
 
 import java.io.File;
@@ -46,11 +46,11 @@ public final class PluginConfigurationLoader {
      */
     public static Map<String, PluginConfiguration> load() throws IOException {
         File configFile = new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH);
-        return YamlAgentConfigurationSwapper.swap(load(configFile));
+        return YamlPluginsConfigurationSwapper.swap(load(configFile));
     }
     
-    private static YamlAgentConfiguration load(final File yamlFile) throws IOException {
-        YamlAgentConfiguration result = YamlEngine.unmarshal(yamlFile, YamlAgentConfiguration.class);
+    private static YamlPluginsConfiguration load(final File yamlFile) throws IOException {
+        YamlPluginsConfiguration result = YamlEngine.unmarshal(yamlFile, YamlPluginsConfiguration.class);
         Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid.", yamlFile.getName());
         return result;
     }

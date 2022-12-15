@@ -20,19 +20,19 @@ package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginCategoryConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginsConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginCategoryConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * YAML agent configuration swapper.
+ * YAML plugins configuration swapper.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlAgentConfigurationSwapper {
+public final class YamlPluginsConfigurationSwapper {
     
     /**
      * Swap YAML agent configuration to plugin configurations.
@@ -40,7 +40,7 @@ public final class YamlAgentConfigurationSwapper {
      * @param yamlConfig YAML agent configuration
      * @return plugin configurations
      */
-    public static Map<String, PluginConfiguration> swap(final YamlAgentConfiguration yamlConfig) {
+    public static Map<String, PluginConfiguration> swap(final YamlPluginsConfiguration yamlConfig) {
         Map<String, PluginConfiguration> result = new LinkedHashMap<>();
         YamlPluginCategoryConfiguration plugins = yamlConfig.getPlugins();
         if (null != plugins) {
