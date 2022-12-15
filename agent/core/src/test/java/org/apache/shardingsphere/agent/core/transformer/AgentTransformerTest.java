@@ -36,15 +36,12 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAround
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
 import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.plugins.MemberAccessor;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,8 +54,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 
 public final class AgentTransformerTest {
-    
-    private static final AgentAdvisors AGENT_ADVISORS = new AgentAdvisors(Collections.emptySet(), Collections.emptyList());
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     
@@ -74,20 +69,18 @@ public final class AgentTransformerTest {
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
-        Map<String, ClassAdvisorConfiguration> classAdvisorConfigs = new HashMap<>(2, 1);
-        ClassAdvisorConfiguration classAdvisorConfig = createClassAdvisorConfiguration();
-        classAdvisorConfigs.put(classAdvisorConfig.getTargetClassName(), classAdvisorConfig);
-        ClassAdvisorConfiguration classAdvisorConfigInTwice = createClassAdvisorConfigurationInTwice();
-        classAdvisorConfigs.put(classAdvisorConfigInTwice.getTargetClassName(), classAdvisorConfigInTwice);
-        MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(AGENT_ADVISORS.getClass().getDeclaredField("advisorConfigs"), AGENT_ADVISORS, classAdvisorConfigs);
+        Map<String, ClassAdvisorConfiguration> advisorConfigs = new HashMap<>(2, 1);
+        ClassAdvisorConfiguration advisorConfig = createClassAdvisorConfiguration();
+        advisorConfigs.put(advisorConfig.getTargetClassName(), advisorConfig);
+        ClassAdvisorConfiguration advisorConfigInTwice = createClassAdvisorConfigurationInTwice();
+        advisorConfigs.put(advisorConfigInTwice.getTargetClassName(), advisorConfigInTwice);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
-                .type(AGENT_ADVISORS.createTypeMatcher())
-                .transform(new AgentTransformer(new AgentConfiguration(Collections.emptyMap()), AGENT_ADVISORS, true))
+                .type(new AgentJunction(advisorConfigs))
+                .transform(new AgentTransformer(new AgentConfiguration(Collections.emptyMap()), advisorConfigs, true))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }
