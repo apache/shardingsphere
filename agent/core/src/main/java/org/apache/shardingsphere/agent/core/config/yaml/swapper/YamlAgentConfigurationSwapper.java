@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginCategoryConfiguration;
@@ -36,20 +35,20 @@ import java.util.Map.Entry;
 public final class YamlAgentConfigurationSwapper {
     
     /**
-     * Swap YAML agent configuration to agent configuration.
+     * Swap YAML agent configuration to plugin configurations.
      *
      * @param yamlConfig YAML agent configuration
-     * @return agent configuration
+     * @return plugin configurations
      */
-    public static AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
-        Map<String, PluginConfiguration> pluginConfigs = new LinkedHashMap<>();
+    public static Map<String, PluginConfiguration> swap(final YamlAgentConfiguration yamlConfig) {
+        Map<String, PluginConfiguration> result = new LinkedHashMap<>();
         YamlPluginCategoryConfiguration plugins = yamlConfig.getPlugins();
         if (null != plugins) {
-            pluginConfigs.putAll(transformPluginConfigurationMap(plugins.getLogging()));
-            pluginConfigs.putAll(transformPluginConfigurationMap(plugins.getMetrics()));
-            pluginConfigs.putAll(transformPluginConfigurationMap(plugins.getTracing()));
+            result.putAll(transformPluginConfigurationMap(plugins.getLogging()));
+            result.putAll(transformPluginConfigurationMap(plugins.getMetrics()));
+            result.putAll(transformPluginConfigurationMap(plugins.getTracing()));
         }
-        return new AgentConfiguration(pluginConfigs);
+        return result;
     }
     
     private static Map<String, PluginConfiguration> transformPluginConfigurationMap(final Map<String, YamlPluginConfiguration> yamlConfigurationMap) {

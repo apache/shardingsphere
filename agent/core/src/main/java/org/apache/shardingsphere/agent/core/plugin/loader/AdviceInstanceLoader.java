@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.core.plugin.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
+import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.PluginJarHolder;
@@ -51,12 +51,12 @@ public final class AdviceInstanceLoader {
      * @param <T> expected type
      * @param className class name
      * @param classLoader class loader
-     * @param agentConfig agent configuration
+     * @param pluginConfigs plugin configurations
      * @param isEnhancedForProxy is enhanced for proxy
      * @return the type reference
      */
-    public static <T> T loadAdviceInstance(final String className, final ClassLoader classLoader, final AgentConfiguration agentConfig, final boolean isEnhancedForProxy) {
-        return isEnhancedForProxy ? loadAdviceInstanceForProxy(className) : loadAdviceInstanceForJdbc(className, classLoader, agentConfig);
+    public static <T> T loadAdviceInstance(final String className, final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs, final boolean isEnhancedForProxy) {
+        return isEnhancedForProxy ? loadAdviceInstanceForProxy(className) : loadAdviceInstanceForJdbc(className, classLoader, pluginConfigs);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -81,7 +81,7 @@ public final class AdviceInstanceLoader {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    private static <T> T loadAdviceInstanceForJdbc(final String className, final ClassLoader classLoader, final AgentConfiguration agentConfig) {
+    private static <T> T loadAdviceInstanceForJdbc(final String className, final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs) {
         String adviceInstanceCacheKey = String.format("%s_%s@%s", className, classLoader.getClass().getName(), Integer.toHexString(classLoader.hashCode()));
         Object adviceInstance = ADVICE_INSTANCE_CACHE.get(adviceInstanceCacheKey);
         if (Objects.nonNull(adviceInstance)) {
@@ -99,19 +99,19 @@ public final class AdviceInstanceLoader {
                 adviceInstance = Class.forName(className, true, pluginClassLoader).getDeclaredConstructor().newInstance();
                 ADVICE_INSTANCE_CACHE.put(adviceInstanceCacheKey, adviceInstance);
             }
-            setupPluginBootService(pluginClassLoader, agentConfig);
+            setupPluginBootService(pluginClassLoader, pluginConfigs);
             return (T) adviceInstance;
         } finally {
             INIT_INSTANCE_LOCK.unlock();
         }
     }
     
-    private static void setupPluginBootService(final ClassLoader classLoader, final AgentConfiguration agentConfig) {
+    private static void setupPluginBootService(final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs) {
         if (isStarted) {
             return;
         }
         try {
-            PluginBootServiceManager.startAllServices(agentConfig.getPlugins(), classLoader, false);
+            PluginBootServiceManager.startAllServices(pluginConfigs, classLoader, false);
             Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
         } finally {
             isStarted = true;

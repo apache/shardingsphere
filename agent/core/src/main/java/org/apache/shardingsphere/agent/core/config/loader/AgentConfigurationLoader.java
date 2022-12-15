@@ -20,14 +20,15 @@ package org.apache.shardingsphere.agent.core.config.loader;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
+import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlAgentConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Agent configuration loader.
@@ -43,7 +44,7 @@ public final class AgentConfigurationLoader {
      * @return configuration of ShardingSphere agent
      * @throws IOException IO exception
      */
-    public static AgentConfiguration load() throws IOException {
+    public static Map<String, PluginConfiguration> load() throws IOException {
         File configFile = new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH);
         return YamlAgentConfigurationSwapper.swap(load(configFile));
     }
