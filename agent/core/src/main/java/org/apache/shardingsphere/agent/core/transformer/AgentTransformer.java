@@ -84,17 +84,17 @@ public final class AgentTransformer implements Transformer {
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
         AdvisorConfiguration advisorConfig = advisorConfigs.get(typeDescription.getTypeName());
-        result = interceptConstructor(typeDescription, advisorConfig.getConstructorAdvisors(), result, classLoader);
-        result = interceptStaticMethod(typeDescription, advisorConfig.getStaticMethodAdvisors(), result, classLoader);
-        result = interceptInstanceMethod(typeDescription, advisorConfig.getInstanceMethodAdvisors(), result, classLoader);
+        result = interceptConstructor(result, typeDescription, classLoader, advisorConfig.getConstructorAdvisors());
+        result = interceptStaticMethod(result, typeDescription, classLoader, advisorConfig.getStaticMethodAdvisors());
+        result = interceptInstanceMethod(result, typeDescription, classLoader, advisorConfig.getInstanceMethodAdvisors());
         return result;
     }
     
-    private Builder<?> interceptConstructor(final TypeDescription description,
-                                            final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs, final Builder<?> builder, final ClassLoader classLoader) {
+    private Builder<?> interceptConstructor(final Builder<?> builder, final TypeDescription description,
+                                            final ClassLoader classLoader, final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs) {
         Collection<AgentTransformationPoint<? extends ConstructorInterceptor>> constructorAdviceComposePoints = description.getDeclaredMethods().stream()
                 .filter(MethodDescription::isConstructor)
-                .map(each -> getMatchedTransformationPoint(constructorAdvisorConfigs, each, classLoader))
+                .map(each -> getMatchedTransformationPoint(each, classLoader, constructorAdvisorConfigs))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -111,8 +111,8 @@ public final class AgentTransformer implements Transformer {
         return result;
     }
     
-    private AgentTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs,
-                                                                                                     final InDefinedShape methodDescription, final ClassLoader classLoader) {
+    private AgentTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(final InDefinedShape methodDescription, final ClassLoader classLoader,
+                                                                                                     final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs) {
         List<ConstructorAdvisorConfiguration> matchedConstructorAdvisorConfigs = constructorAdvisorConfigs
                 .stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
         if (matchedConstructorAdvisorConfigs.isEmpty()) {
@@ -129,8 +129,8 @@ public final class AgentTransformer implements Transformer {
         return new AgentTransformationPoint<>(methodDescription, new ComposedConstructorInterceptor(constructorAdvices));
     }
     
-    private Builder<?> interceptStaticMethod(final TypeDescription description, final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs,
-                                             final Builder<?> builder, final ClassLoader classLoader) {
+    private Builder<?> interceptStaticMethod(final Builder<?> builder, final TypeDescription description,
+                                             final ClassLoader classLoader, final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs) {
         Collection<AgentTransformationPoint<?>> staticMethodAdvicePoints = description.getDeclaredMethods().stream()
                 .filter(each -> each.isStatic() && !(each.isAbstract() || each.isSynthetic()))
                 .map(each -> getMatchedStaticMethodPoint(staticMethodAdvisorConfigs, each, classLoader))
@@ -190,8 +190,8 @@ public final class AgentTransformer implements Transformer {
                 : new AgentTransformationPoint<>(methodDescription, new ComposedStaticMethodAroundInterceptor(staticMethodAroundAdvices));
     }
     
-    private Builder<?> interceptInstanceMethod(final TypeDescription description,
-                                               final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs, final Builder<?> builder, final ClassLoader classLoader) {
+    private Builder<?> interceptInstanceMethod(final Builder<?> builder, final TypeDescription description,
+                                               final ClassLoader classLoader, final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs) {
         Collection<AgentTransformationPoint<?>> instanceMethodAdviceComposePoints = description.getDeclaredMethods().stream()
                 .filter(each -> !(each.isAbstract() || each.isSynthetic()))
                 .map(each -> getMatchedInstanceMethodPoint(instanceMethodAdvisorConfigs, each, classLoader))
