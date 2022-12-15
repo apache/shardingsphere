@@ -40,6 +40,7 @@ import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
@@ -50,7 +51,7 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.Composed
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodInterceptorArgsOverride;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
+import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -69,6 +70,8 @@ public final class AgentTransformer implements Transformer {
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
     private final AgentAdvisors agentAdvisors;
+    
+    private final boolean isEnhancedForProxy;
     
     @SuppressWarnings("NullableProblems")
     @Override
@@ -114,11 +117,11 @@ public final class AgentTransformer implements Transformer {
         }
         if (1 == matchedConstructorAdvisorConfigs.size()) {
             return new AgentTransformationPoint<>(
-                    methodDescription, new ConstructorInterceptor(agentAdvisors.getOrCreateInstance(matchedConstructorAdvisorConfigs.get(0).getAdviceClassName(), classLoader)));
+                    methodDescription, new ConstructorInterceptor(loadAdviceInstance(matchedConstructorAdvisorConfigs.get(0).getAdviceClassName(), classLoader)));
         }
         Collection<ConstructorAdvice> constructorAdvices = matchedConstructorAdvisorConfigs.stream()
                 .map(ConstructorAdvisorConfiguration::getAdviceClassName)
-                .map(each -> (ConstructorAdvice) agentAdvisors.getOrCreateInstance(each, classLoader))
+                .map(each -> (ConstructorAdvice) loadAdviceInstance(each, classLoader))
                 .collect(Collectors.toList());
         return new AgentTransformationPoint<>(methodDescription, new ComposedConstructorInterceptor(constructorAdvices));
     }
@@ -162,7 +165,7 @@ public final class AgentTransformer implements Transformer {
     
     private AgentTransformationPoint<?> getSingleStaticMethodPoint(final InDefinedShape methodDescription,
                                                                    final StaticMethodAdvisorConfiguration staticMethodAdvisorConfig, final ClassLoader classLoader) {
-        StaticMethodAroundAdvice staticMethodAroundAdvice = agentAdvisors.getOrCreateInstance(staticMethodAdvisorConfig.getAdviceClassName(), classLoader);
+        StaticMethodAroundAdvice staticMethodAroundAdvice = loadAdviceInstance(staticMethodAdvisorConfig.getAdviceClassName(), classLoader);
         return staticMethodAdvisorConfig.isOverrideArgs()
                 ? new AgentTransformationPoint<>(methodDescription, new StaticMethodInterceptorArgsOverride(staticMethodAroundAdvice))
                 : new AgentTransformationPoint<>(methodDescription, new StaticMethodAroundInterceptor(staticMethodAroundAdvice));
@@ -177,7 +180,7 @@ public final class AgentTransformer implements Transformer {
                 isArgsOverride = true;
             }
             if (null != each.getAdviceClassName()) {
-                staticMethodAroundAdvices.add(agentAdvisors.getOrCreateInstance(each.getAdviceClassName(), classLoader));
+                staticMethodAroundAdvices.add(loadAdviceInstance(each.getAdviceClassName(), classLoader));
             }
         }
         return isArgsOverride ? new AgentTransformationPoint<>(methodDescription, new ComposedStaticMethodInterceptorArgsOverride(staticMethodAroundAdvices))
@@ -224,7 +227,7 @@ public final class AgentTransformer implements Transformer {
     
     private AgentTransformationPoint<?> getSingleInstanceMethodPoint(final InDefinedShape methodDescription,
                                                                      final InstanceMethodAdvisorConfiguration instanceMethodAdvisorConfig, final ClassLoader classLoader) {
-        InstanceMethodAroundAdvice instanceMethodAroundAdvice = agentAdvisors.getOrCreateInstance(instanceMethodAdvisorConfig.getAdviceClassName(), classLoader);
+        InstanceMethodAroundAdvice instanceMethodAroundAdvice = loadAdviceInstance(instanceMethodAdvisorConfig.getAdviceClassName(), classLoader);
         return instanceMethodAdvisorConfig.isOverrideArgs()
                 ? new AgentTransformationPoint<>(methodDescription, new InstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvice))
                 : new AgentTransformationPoint<>(methodDescription, new InstanceMethodAroundInterceptor(instanceMethodAroundAdvice));
@@ -239,11 +242,15 @@ public final class AgentTransformer implements Transformer {
                 isArgsOverride = true;
             }
             if (null != each.getAdviceClassName()) {
-                instanceMethodAroundAdvices.add(agentAdvisors.getOrCreateInstance(each.getAdviceClassName(), classLoader));
+                instanceMethodAroundAdvices.add(loadAdviceInstance(each.getAdviceClassName(), classLoader));
             }
         }
         return isArgsOverride
                 ? new AgentTransformationPoint<>(methodDescription, new ComposedInstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvices))
                 : new AgentTransformationPoint<>(methodDescription, new ComposedInstanceMethodAroundInterceptor(instanceMethodAroundAdvices));
+    }
+    
+    private <T> T loadAdviceInstance(final String adviceClassName, final ClassLoader classLoader) {
+        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, isEnhancedForProxy);
     }
 }

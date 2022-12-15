@@ -86,7 +86,7 @@ public final class AgentTransformerTest {
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
                 .type(AGENT_ADVISORS.createTypeMatcher())
-                .transform(new AgentTransformer(AGENT_ADVISORS))
+                .transform(new AgentTransformer(AGENT_ADVISORS, true))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }
