@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi;
+package org.apache.shardingsphere.agent.spi.advisor;
 
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.spi.AgentSPI;
+
+import java.util.Collection;
 
 /**
- * Plugin boot service that the lifecycle is from the agent start to shutdown.
+ * Advisor definition service.
  */
-public interface PluginBootService extends AgentSPI, AutoCloseable {
+public interface AdvisorDefinitionService extends AgentSPI {
     
     /**
-     * Start plugin boot service.
-     *
-     * @param pluginConfig plugin configuration
-     * @param isEnhancedForProxy is enhanced for proxy
+     * Get proxy advisors configuration.
+     * 
+     * @return proxy advisor configurations
      */
-    void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
+    Collection<ClassAdvisorConfiguration> getProxyAdvisorConfigurations();
+    
+    /**
+     * Get JDBC advisors configuration.
+     * 
+     * @return JDBC advisor configurations
+     */
+    Collection<ClassAdvisorConfiguration> getJDBCAdvisorConfigurations();
 }

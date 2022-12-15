@@ -28,7 +28,7 @@ import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCol
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.MetaDataInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.ProxyInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

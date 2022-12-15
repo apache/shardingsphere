@@ -29,7 +29,7 @@ import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRe
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
+import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
 import java.util.HashMap;
