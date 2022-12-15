@@ -42,14 +42,14 @@ public final class YamlAgentConfigurationSwapper {
      * @return agent configuration
      */
     public static AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
-        Map<String, PluginConfiguration> configurationMap = new LinkedHashMap<>();
+        Map<String, PluginConfiguration> pluginConfigs = new LinkedHashMap<>();
         YamlPluginCategoryConfiguration plugins = yamlConfig.getPlugins();
         if (null != plugins) {
-            configurationMap.putAll(transformPluginConfigurationMap(plugins.getLogging()));
-            configurationMap.putAll(transformPluginConfigurationMap(plugins.getMetrics()));
-            configurationMap.putAll(transformPluginConfigurationMap(plugins.getTracing()));
+            pluginConfigs.putAll(transformPluginConfigurationMap(plugins.getLogging()));
+            pluginConfigs.putAll(transformPluginConfigurationMap(plugins.getMetrics()));
+            pluginConfigs.putAll(transformPluginConfigurationMap(plugins.getTracing()));
         }
-        return new AgentConfiguration(configurationMap);
+        return new AgentConfiguration(pluginConfigs);
     }
     
     private static Map<String, PluginConfiguration> transformPluginConfigurationMap(final Map<String, YamlPluginConfiguration> yamlConfigurationMap) {
