@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.ClassAdvisorRegistryFactory;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
-import org.apache.shardingsphere.agent.spi.AdvisorDefinitionService;
+import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
 import java.util.LinkedList;
