@@ -17,27 +17,25 @@
 
 package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class advisor registry factory.
+ * Advisor configuration registry.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ClassAdvisorRegistryFactory {
+public final class AdvisorConfigurationRegistry {
     
-    private static final Map<String, ClassAdvisorConfigurationRegistry> REGISTRIES = new ConcurrentHashMap<>();
+    private final Map<String, AdvisorConfiguration> advisors = new ConcurrentHashMap<>();
     
     /**
-     * Get class advisor registry.
+     * Get advisor configuration.
      * 
-     * @param type registry type
-     * @return class advisor registry
+     * @param targetClassName to be advised class name
+     * @return advisor configuration
      */
-    public static ClassAdvisorConfigurationRegistry getRegistry(final String type) {
-        return REGISTRIES.computeIfAbsent(type, each -> new ClassAdvisorConfigurationRegistry());
+    public AdvisorConfiguration getAdvisorConfiguration(final String targetClassName) {
+        return advisors.computeIfAbsent(targetClassName, AdvisorConfiguration::new);
     }
 }

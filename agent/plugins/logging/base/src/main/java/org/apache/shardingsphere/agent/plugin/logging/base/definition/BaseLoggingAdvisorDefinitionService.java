@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.ClassAdvisorRegistryFactory;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
@@ -39,21 +39,21 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
-    public Collection<ClassAdvisorConfiguration> getProxyAdvisorConfigurations() {
+    public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
         return getAdvisorConfigurations();
     }
     
     @Override
-    public Collection<ClassAdvisorConfiguration> getJDBCAdvisorConfigurations() {
+    public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
         return getAdvisorConfigurations();
     }
     
-    private Collection<ClassAdvisorConfiguration> getAdvisorConfigurations() {
-        Collection<ClassAdvisorConfiguration> result = new LinkedList<>();
-        ClassAdvisorConfiguration classAdvisorConfig = ClassAdvisorRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(SCHEMA_METADATA_LOADER_CLASS);
-        classAdvisorConfig.getStaticMethodAdvisors().add(
+    private Collection<AdvisorConfiguration> getAdvisorConfigurations() {
+        Collection<AdvisorConfiguration> result = new LinkedList<>();
+        AdvisorConfiguration advisorConfig = AdvisorConfigurationRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(SCHEMA_METADATA_LOADER_CLASS);
+        advisorConfig.getStaticMethodAdvisors().add(
                 new StaticMethodAdvisorConfiguration(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
-        result.add(classAdvisorConfig);
+        result.add(advisorConfig);
         return result;
     }
     

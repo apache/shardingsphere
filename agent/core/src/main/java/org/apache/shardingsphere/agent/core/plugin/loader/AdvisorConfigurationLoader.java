@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.core.plugin.loader;
 import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
@@ -46,15 +46,15 @@ public final class AdvisorConfigurationLoader {
      * @param isEnhancedForProxy is enhanced for proxy
      * @return loaded advisor configurations
      */
-    public static Map<String, ClassAdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
-        Map<String, ClassAdvisorConfiguration> result = new HashMap<>();
+    public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
+        Map<String, AdvisorConfiguration> result = new HashMap<>();
         AgentClassLoader.init(pluginJars);
         for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, AgentClassLoader.getClassLoader())) {
             if (pluginTypes.contains(each.getType())) {
-                Collection<ClassAdvisorConfiguration> advisorConfigs = isEnhancedForProxy ? each.getProxyAdvisorConfigurations() : each.getJDBCAdvisorConfigurations();
-                result.putAll(advisorConfigs.stream().collect(Collectors.toMap(ClassAdvisorConfiguration::getTargetClassName, Function.identity())));
+                Collection<AdvisorConfiguration> advisorConfigs = isEnhancedForProxy ? each.getProxyAdvisorConfigurations() : each.getJDBCAdvisorConfigurations();
+                result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
             }
         }
-        return ImmutableMap.<String, ClassAdvisorConfiguration>builder().putAll(result).build();
+        return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
     }
 }

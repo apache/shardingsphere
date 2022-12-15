@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class AgentJunction implements Junction<TypeDescription> {
     
-    private final Map<String, ClassAdvisorConfiguration> advisorConfigs;
+    private final Map<String, AdvisorConfiguration> advisorConfigs;
     
     @Override
     public boolean matches(final TypeDescription target) {

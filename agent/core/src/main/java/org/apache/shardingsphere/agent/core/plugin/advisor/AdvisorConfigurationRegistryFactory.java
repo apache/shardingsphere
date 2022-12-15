@@ -17,16 +17,27 @@
 
 package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public final class ClassAdvisorConfigurationRegistryTest {
+/**
+ * Advisor configuration registry factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AdvisorConfigurationRegistryFactory {
     
-    @Test
-    public void assertGetAdvisorConfiguration() {
-        assertThat(new ClassAdvisorConfigurationRegistry().getAdvisorConfiguration("test"), instanceOf(ClassAdvisorConfiguration.class));
+    private static final Map<String, AdvisorConfigurationRegistry> REGISTRIES = new ConcurrentHashMap<>();
+    
+    /**
+     * Get advisor configuration registry.
+     * 
+     * @param type registry type
+     * @return advisor configuration registry
+     */
+    public static AdvisorConfigurationRegistry getRegistry(final String type) {
+        return REGISTRIES.computeIfAbsent(type, each -> new AdvisorConfigurationRegistry());
     }
 }

@@ -30,7 +30,7 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.InstanceMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
@@ -72,7 +72,7 @@ public final class AgentTransformer implements Transformer {
     
     private final AgentConfiguration agentConfig;
     
-    private final Map<String, ClassAdvisorConfiguration> advisorConfigs;
+    private final Map<String, AdvisorConfiguration> advisorConfigs;
     
     private final boolean isEnhancedForProxy;
     
@@ -83,10 +83,10 @@ public final class AgentTransformer implements Transformer {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        ClassAdvisorConfiguration classAdvisorConfig = advisorConfigs.getOrDefault(typeDescription.getTypeName(), new ClassAdvisorConfiguration(""));
-        result = interceptConstructor(typeDescription, classAdvisorConfig.getConstructorAdvisors(), result, classLoader);
-        result = interceptStaticMethod(typeDescription, classAdvisorConfig.getStaticMethodAdvisors(), result, classLoader);
-        result = interceptInstanceMethod(typeDescription, classAdvisorConfig.getInstanceMethodAdvisors(), result, classLoader);
+        AdvisorConfiguration advisorConfig = advisorConfigs.getOrDefault(typeDescription.getTypeName(), new AdvisorConfiguration(""));
+        result = interceptConstructor(typeDescription, advisorConfig.getConstructorAdvisors(), result, classLoader);
+        result = interceptStaticMethod(typeDescription, advisorConfig.getStaticMethodAdvisors(), result, classLoader);
+        result = interceptInstanceMethod(typeDescription, advisorConfig.getInstanceMethodAdvisors(), result, classLoader);
         return result;
     }
     

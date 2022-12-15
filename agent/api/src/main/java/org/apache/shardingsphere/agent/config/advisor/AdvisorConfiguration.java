@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advisor;
+package org.apache.shardingsphere.agent.config.advisor;
 
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Class advisor configuration registry.
+ * Advisor configuration.
  */
-public final class ClassAdvisorConfigurationRegistry {
+@RequiredArgsConstructor
+@Getter
+public final class AdvisorConfiguration {
     
-    private final Map<String, ClassAdvisorConfiguration> advisors = new ConcurrentHashMap<>();
+    private final String targetClassName;
     
-    /**
-     * Get class advisor configuration.
-     * 
-     * @param targetClassName target class name to be intercepted
-     * @return class advisor configuration
-     */
-    public ClassAdvisorConfiguration getAdvisorConfiguration(final String targetClassName) {
-        return advisors.computeIfAbsent(targetClassName, ClassAdvisorConfiguration::new);
-    }
+    private final Collection<ConstructorAdvisorConfiguration> constructorAdvisors = new LinkedList<>();
+    
+    private final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisors = new LinkedList<>();
+    
+    private final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisors = new LinkedList<>();
 }
