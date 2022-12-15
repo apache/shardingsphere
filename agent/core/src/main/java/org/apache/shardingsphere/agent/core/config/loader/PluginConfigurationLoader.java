@@ -31,17 +31,17 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Agent configuration loader.
+ * Plugin configuration loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentConfigurationLoader {
+public final class PluginConfigurationLoader {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
     /**
-     * Load configuration of ShardingSphere agent.
+     * Load plugin configurations.
      *
-     * @return configuration of ShardingSphere agent
+     * @return plugin configurations
      * @throws IOException IO exception
      */
     public static Map<String, PluginConfiguration> load() throws IOException {
@@ -51,7 +51,7 @@ public final class AgentConfigurationLoader {
     
     private static YamlAgentConfiguration load(final File yamlFile) throws IOException {
         YamlAgentConfiguration result = YamlEngine.unmarshal(yamlFile, YamlAgentConfiguration.class);
-        Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid", yamlFile.getName());
+        Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid.", yamlFile.getName());
         return result;
     }
 }

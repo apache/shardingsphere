@@ -28,18 +28,18 @@ import java.net.URLDecoder;
 
 import static org.junit.Assert.assertNotNull;
 
-public final class AgentConfigurationLoaderTest {
+public final class PluginConfigurationLoaderTest {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
     @Test
     public void assertLoad() throws IOException {
         ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
-        assertNotNull(AgentConfigurationLoader.load());
+        assertNotNull(PluginConfigurationLoader.load());
     }
     
     private String getResourceUrl() {
-        URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
+        URL url = PluginConfigurationLoader.class.getClassLoader().getResource("");
         return null == url ? DEFAULT_CONFIG_PATH : URLDecoder.decode(url.getFile());
     }
 }
