@@ -23,7 +23,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
@@ -55,7 +55,7 @@ public final class ShardingSphereAgent {
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         boolean isEnhancedForProxy = isEnhancedForProxy();
-        Map<String, ClassAdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(AgentPluginLoader.load(), agentConfig.getPlugins().keySet(), isEnhancedForProxy);
+        Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(AgentPluginLoader.load(), agentConfig.getPlugins().keySet(), isEnhancedForProxy);
         setUpAgentBuilder(instrumentation, agentConfig, advisorConfigs, isEnhancedForProxy);
         if (isEnhancedForProxy) {
             setupPluginBootService(agentConfig.getPlugins());
@@ -72,7 +72,7 @@ public final class ShardingSphereAgent {
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation,
-                                          final AgentConfiguration agentConfig, final Map<String, ClassAdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {
+                                          final AgentConfiguration agentConfig, final Map<String, AdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {
         AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
                 .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));

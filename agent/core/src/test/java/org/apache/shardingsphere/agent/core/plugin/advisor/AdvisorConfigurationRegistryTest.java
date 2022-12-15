@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config.advisor;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Class advisor configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ClassAdvisorConfiguration {
+public final class AdvisorConfigurationRegistryTest {
     
-    private final String targetClassName;
-    
-    private final Collection<ConstructorAdvisorConfiguration> constructorAdvisors = new LinkedList<>();
-    
-    private final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisors = new LinkedList<>();
-    
-    private final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisors = new LinkedList<>();
+    @Test
+    public void assertGetAdvisorConfiguration() {
+        assertThat(new AdvisorConfigurationRegistry().getAdvisorConfiguration("test"), instanceOf(AdvisorConfiguration.class));
+    }
 }
