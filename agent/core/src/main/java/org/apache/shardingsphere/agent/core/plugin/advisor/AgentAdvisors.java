@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.agent.core.plugin.advisor;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
 import lombok.Setter;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
@@ -39,6 +37,7 @@ import java.util.stream.Collectors;
  */
 public final class AgentAdvisors {
     
+    @Getter
     private final Map<String, ClassAdvisorConfiguration> advisorConfigs;
     
     @Setter
@@ -58,53 +57,5 @@ public final class AgentAdvisors {
             }
         }
         return ImmutableMap.<String, ClassAdvisorConfiguration>builder().putAll(result).build();
-    }
-    
-    /**
-     * To find all intercepting target classes then to build type matcher.
-     *
-     * @return type matcher
-     */
-    public ElementMatcher<? super TypeDescription> createTypeMatcher() {
-        return new Junction<TypeDescription>() {
-            
-            @SuppressWarnings("NullableProblems")
-            @Override
-            public boolean matches(final TypeDescription target) {
-                return advisorConfigs.containsKey(target.getTypeName());
-            }
-            
-            @SuppressWarnings("NullableProblems")
-            @Override
-            public <U extends TypeDescription> Junction<U> and(final ElementMatcher<? super U> other) {
-                return null;
-            }
-            
-            @SuppressWarnings("NullableProblems")
-            @Override
-            public <U extends TypeDescription> Junction<U> or(final ElementMatcher<? super U> other) {
-                return null;
-            }
-        };
-    }
-    
-    /**
-     * To detect the type whether or not exists.
-     *
-     * @param typeDescription type description
-     * @return contains when it is true
-     */
-    public boolean containsType(final TypeDescription typeDescription) {
-        return advisorConfigs.containsKey(typeDescription.getTypeName());
-    }
-    
-    /**
-     * Get class advisor configuration.
-     *
-     * @param typeDescription type description
-     * @return class advisor configuration
-     */
-    public ClassAdvisorConfiguration getClassAdvisorConfiguration(final TypeDescription typeDescription) {
-        return advisorConfigs.getOrDefault(typeDescription.getTypeName(), new ClassAdvisorConfiguration(""));
     }
 }

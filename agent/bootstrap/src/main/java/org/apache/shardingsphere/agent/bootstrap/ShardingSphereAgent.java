@@ -23,6 +23,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
 import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.transformer.AgentJunction;
 import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 
 import java.io.IOException;
@@ -60,10 +62,10 @@ public final class ShardingSphereAgent {
         }
     }
     
-    private static AgentAdvisors loadAgentAdvisors(final Collection<String> pluginTypes, final boolean isEnhancedForProxy) throws IOException {
+    private static Map<String, ClassAdvisorConfiguration> loadAgentAdvisors(final Collection<String> pluginTypes, final boolean isEnhancedForProxy) throws IOException {
         AgentAdvisors result = new AgentAdvisors(pluginTypes, new AgentPluginLoader().load());
         result.setEnhancedForProxy(isEnhancedForProxy);
-        return result;
+        return result.getAdvisorConfigs();
     }
     
     private static boolean isEnhancedForProxy() {
@@ -75,11 +77,11 @@ public final class ShardingSphereAgent {
         return true;
     }
     
-    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentConfiguration agentConfig, final AgentAdvisors agentAdvisors, final boolean isEnhancedForProxy) {
+    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentConfiguration agentConfig, final Map<String, ClassAdvisorConfiguration> agentAdvisors, final boolean isEnhancedForProxy) {
         AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
                 .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        agentBuilder.type(agentAdvisors.createTypeMatcher())
+        agentBuilder.type(new AgentJunction(agentAdvisors))
                 .transform(new AgentTransformer(agentConfig, agentAdvisors, isEnhancedForProxy))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener()).installOn(instrumentation);
