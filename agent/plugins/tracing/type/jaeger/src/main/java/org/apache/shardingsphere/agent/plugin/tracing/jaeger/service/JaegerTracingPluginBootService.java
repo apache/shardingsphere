@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.config.validator.PluginConfigurationValidator;
+import org.apache.shardingsphere.agent.core.config.validator.RemotePluginConfigurationValidator;
 import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
 import java.util.Optional;
@@ -39,7 +39,7 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     @SuppressWarnings("AccessOfSystemProperties")
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        PluginConfigurationValidator.validate(getType(), pluginConfig);
+        RemotePluginConfigurationValidator.validate(getType(), pluginConfig);
         pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
