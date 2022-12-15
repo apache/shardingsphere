@@ -29,7 +29,7 @@ shadowAlgorithmType ::=
 - 创建默认影子库压测算法
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
 ```
 
 ### 保留字

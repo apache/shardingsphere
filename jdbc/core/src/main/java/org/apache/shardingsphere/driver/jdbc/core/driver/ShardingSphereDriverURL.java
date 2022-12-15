@@ -73,7 +73,7 @@ public final class ShardingSphereDriverURL {
         }
     }
     
-    private InputStream getResourceAsStream(final String resource) throws IOException {
+    private InputStream getResourceAsStream(final String resource) {
         ClassLoader[] classLoaders = new ClassLoader[]{
                 Thread.currentThread().getContextClassLoader(), getClass().getClassLoader(), ClassLoader.getSystemClassLoader(),
         };

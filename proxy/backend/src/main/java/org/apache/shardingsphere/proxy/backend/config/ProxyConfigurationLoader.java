@@ -128,11 +128,11 @@ public final class ProxyConfigurationLoader {
         return Optional.of(result);
     }
     
-    private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigurations, final File yamlFile) {
-        if (ruleConfigurations.isEmpty()) {
+    private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigs, final File yamlFile) {
+        if (ruleConfigs.isEmpty()) {
             return;
         }
-        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigurations.stream()
+        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigs.stream()
                 .collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
         Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfig = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
         if (duplicateRuleConfig.isPresent()) {

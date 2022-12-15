@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAlgorithmException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.DuplicateAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -66,12 +66,12 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        checkExist(database.getName(), sqlStatement, currentRuleConfig);
+        checkExist(database.getName(), currentRuleConfig);
         checkAlgorithmCompleteness(Collections.singleton(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment()));
         checkAlgorithmType(sqlStatement);
     }
     
-    private void checkExist(final String databaseName, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> requireAlgorithmNames = Collections.singleton(DEFAULT_ALGORITHM_NAME);
         Collection<String> currentAlgorithmNames = null == currentRuleConfig ? Collections.emptyList() : currentRuleConfig.getShadowAlgorithms().keySet();
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames, currentAlgorithmNames, different -> new DuplicateAlgorithmException(SHADOW, databaseName, different));

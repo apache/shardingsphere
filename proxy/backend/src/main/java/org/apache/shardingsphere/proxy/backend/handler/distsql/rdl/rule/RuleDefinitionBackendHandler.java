@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdaterFactory;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionUpdaterFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;

@@ -29,7 +29,7 @@ shadowAlgorithmType ::=
 - Create default shadow algorithm
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
 ```
 
 ### Reserved word

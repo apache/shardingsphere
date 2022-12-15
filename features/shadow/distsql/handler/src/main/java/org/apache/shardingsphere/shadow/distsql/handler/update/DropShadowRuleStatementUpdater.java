@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;

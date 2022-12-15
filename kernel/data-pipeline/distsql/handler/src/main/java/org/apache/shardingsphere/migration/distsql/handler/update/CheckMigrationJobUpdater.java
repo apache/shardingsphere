@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 
 import java.sql.SQLException;

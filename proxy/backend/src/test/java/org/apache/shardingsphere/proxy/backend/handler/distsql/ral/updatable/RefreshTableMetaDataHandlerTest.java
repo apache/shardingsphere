@@ -22,8 +22,8 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.distsql.exception.resource.EmptyResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.EmptyResourceException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;

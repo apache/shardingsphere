@@ -87,8 +87,7 @@ public final class MetaDataPersistService {
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             String databaseName = entry.getKey();
             Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
-            Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
-            if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
+            if (dataSourcePropertiesMap.isEmpty() && entry.getValue().getRuleConfigurations().isEmpty()) {
                 databaseMetaDataService.addDatabase(databaseName);
             } else {
                 dataSourceService.conditionalPersist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()));

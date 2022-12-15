@@ -65,6 +65,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 25000     | 14100       | JDBC does not support operations across multiple logical databases in transaction. |
 | 25000     | 14200       | Can not start new XA transaction in a active transaction. |
 | 25000     | 14201       | Failed to create \`%s\` XA data source. |
+| 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45. |
 
 ### Lock
 
@@ -78,6 +79,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 44000     | 16000       | SQL check failed, error message: %s |
+| 44000     | 16001       | Hint datasource: %s is not exist. |
 
 ### Cluster
 

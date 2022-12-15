@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query;
 
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.fixture.QueryableScalingFixtureQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.fixture.QueryableScalingFixtureResultSet;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.fixture.QueryableScalingFixtureRALStatement;
 import org.junit.Test;
 
@@ -28,6 +28,6 @@ public final class QueryableScalingRALBackendHandlerFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(QueryableScalingRALBackendHandlerFactory.newInstance(new QueryableScalingFixtureRALStatement()), instanceOf(QueryableScalingFixtureQueryResultSet.class));
+        assertThat(QueryableScalingRALBackendHandlerFactory.newInstance(new QueryableScalingFixtureRALStatement()), instanceOf(QueryableScalingFixtureResultSet.class));
     }
 }
