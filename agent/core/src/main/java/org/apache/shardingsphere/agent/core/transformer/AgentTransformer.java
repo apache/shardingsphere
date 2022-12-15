@@ -72,18 +72,18 @@ public final class AgentTransformer implements Transformer {
     
     private final AgentConfiguration agentConfig;
     
-    private final Map<String, ClassAdvisorConfiguration> agentAdvisors;
+    private final Map<String, ClassAdvisorConfiguration> advisorConfigs;
     
     private final boolean isEnhancedForProxy;
     
     @SuppressWarnings("NullableProblems")
     @Override
     public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-        if (!agentAdvisors.containsKey(typeDescription.getTypeName())) {
+        if (!advisorConfigs.containsKey(typeDescription.getTypeName())) {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        ClassAdvisorConfiguration classAdvisorConfig = agentAdvisors.getOrDefault(typeDescription.getTypeName(), new ClassAdvisorConfiguration(""));
+        ClassAdvisorConfiguration classAdvisorConfig = advisorConfigs.getOrDefault(typeDescription.getTypeName(), new ClassAdvisorConfiguration(""));
         result = interceptConstructor(typeDescription, classAdvisorConfig.getConstructorAdvisors(), result, classLoader);
         result = interceptStaticMethod(typeDescription, classAdvisorConfig.getStaticMethodAdvisors(), result, classLoader);
         result = interceptInstanceMethod(typeDescription, classAdvisorConfig.getInstanceMethodAdvisors(), result, classLoader);

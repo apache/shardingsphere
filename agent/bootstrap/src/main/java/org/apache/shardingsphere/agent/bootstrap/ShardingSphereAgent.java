@@ -72,12 +72,12 @@ public final class ShardingSphereAgent {
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation,
-                                          final AgentConfiguration agentConfig, final Map<String, ClassAdvisorConfiguration> agentAdvisors, final boolean isEnhancedForProxy) {
+                                          final AgentConfiguration agentConfig, final Map<String, ClassAdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {
         AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
                 .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        agentBuilder.type(new AgentJunction(agentAdvisors))
-                .transform(new AgentTransformer(agentConfig, agentAdvisors, isEnhancedForProxy))
+        agentBuilder.type(new AgentJunction(advisorConfigs))
+                .transform(new AgentTransformer(agentConfig, advisorConfigs, isEnhancedForProxy))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener()).installOn(instrumentation);
     }
