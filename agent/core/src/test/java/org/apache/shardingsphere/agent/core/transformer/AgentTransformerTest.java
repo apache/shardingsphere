@@ -27,6 +27,7 @@ import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.InstanceMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
@@ -86,7 +87,7 @@ public final class AgentTransformerTest {
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
                 .type(AGENT_ADVISORS.createTypeMatcher())
-                .transform(new AgentTransformer(AGENT_ADVISORS, true))
+                .transform(new AgentTransformer(new AgentConfiguration(Collections.emptyMap()), AGENT_ADVISORS, true))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }

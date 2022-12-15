@@ -27,7 +27,6 @@ import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
@@ -54,9 +53,8 @@ public final class ShardingSphereAgent {
      */
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
-        AgentConfigurationRegistry.INSTANCE.put(agentConfig);
         boolean isEnhancedForProxy = isEnhancedForProxy();
-        setUpAgentBuilder(instrumentation, loadAgentAdvisors(agentConfig.getPlugins().keySet(), isEnhancedForProxy), isEnhancedForProxy);
+        setUpAgentBuilder(instrumentation, agentConfig, loadAgentAdvisors(agentConfig.getPlugins().keySet(), isEnhancedForProxy), isEnhancedForProxy);
         if (isEnhancedForProxy) {
             setupPluginBootService(agentConfig.getPlugins());
         }
@@ -77,12 +75,12 @@ public final class ShardingSphereAgent {
         return true;
     }
     
-    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentAdvisors agentAdvisors, final boolean isEnhancedForProxy) {
+    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentConfiguration agentConfig, final AgentAdvisors agentAdvisors, final boolean isEnhancedForProxy) {
         AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
                 .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
         agentBuilder.type(agentAdvisors.createTypeMatcher())
-                .transform(new AgentTransformer(agentAdvisors, isEnhancedForProxy))
+                .transform(new AgentTransformer(agentConfig, agentAdvisors, isEnhancedForProxy))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener()).installOn(instrumentation);
     }

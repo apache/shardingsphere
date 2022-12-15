@@ -34,6 +34,7 @@ import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.InstanceMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
@@ -68,6 +69,8 @@ public final class AgentTransformer implements Transformer {
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(AgentTransformer.class);
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
+    
+    private final AgentConfiguration agentConfig;
     
     private final AgentAdvisors agentAdvisors;
     
@@ -251,6 +254,6 @@ public final class AgentTransformer implements Transformer {
     }
     
     private <T> T loadAdviceInstance(final String adviceClassName, final ClassLoader classLoader) {
-        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, isEnhancedForProxy);
+        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, agentConfig, isEnhancedForProxy);
     }
 }
