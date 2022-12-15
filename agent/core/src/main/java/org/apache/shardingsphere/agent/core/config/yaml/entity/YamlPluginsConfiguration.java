@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * YAML agent configuration.
+ * YAML plugins configuration.
  */
 @Getter
 @Setter
-public final class YamlAgentConfiguration {
+public final class YamlPluginsConfiguration {
     
     private YamlPluginCategoryConfiguration plugins;
 }
