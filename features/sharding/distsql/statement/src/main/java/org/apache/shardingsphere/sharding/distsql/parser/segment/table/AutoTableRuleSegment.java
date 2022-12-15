@@ -47,13 +47,4 @@ public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
         this.shardingColumn = shardingColumn;
         this.shardingAlgorithmSegment = shardingAlgorithm;
     }
-    
-    /**
-     * Determine whether sharding algorithm completed.
-     *
-     * @return completed sharding algorithm or not
-     */
-    public boolean isShardingAlgorithmCompleted() {
-        return null != shardingColumn && null != shardingAlgorithmSegment;
-    }
 }

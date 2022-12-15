@@ -222,6 +222,22 @@ public final class ShardingRuleStatementCheckerTest {
         ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
     }
     
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckAutoTableRuleWithStandardShardingAlgoithm() {
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("INLINE", newProperties("algorithm-expression", "ds_${product_id% 2}")));
+        List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+    }
+    
+    @Test
+    public void assertCheckAutoTableRuleWithAutoShardingAlgoithm() {
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("MOD", newProperties("sharding-count", "4")));
+        List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+    }
+    
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order${0..1}");
