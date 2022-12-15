@@ -78,7 +78,7 @@ public final class InventoryTaskSplitterTest {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         ReflectionUtil.setFieldValue(jobConfig, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
         jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
-        dataSourceManager = jobItemContext.getDataSourceManager();
+        dataSourceManager = (PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector();
         taskConfig = jobItemContext.getTaskConfig();
     }
     

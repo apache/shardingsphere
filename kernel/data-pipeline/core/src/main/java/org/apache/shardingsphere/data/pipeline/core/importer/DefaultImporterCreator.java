@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,9 +37,9 @@ public final class DefaultImporterCreator implements ImporterCreator {
     
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig,
-                                   final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                                   final ImporterConnector importerConnector, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener) {
-        return new DefaultImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+        return new DefaultImporter(importerConfig, importerConnector, channel, jobProgressListener);
     }
     
     @Override
