@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.agent.core.config.loader;
 
-import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 
@@ -38,8 +39,8 @@ public final class PluginConfigurationLoaderTest {
         assertNotNull(PluginConfigurationLoader.load());
     }
     
-    private String getResourceUrl() {
+    private String getResourceUrl() throws UnsupportedEncodingException {
         URL url = PluginConfigurationLoader.class.getClassLoader().getResource("");
-        return null == url ? DEFAULT_CONFIG_PATH : URLDecoder.decode(url.getFile());
+        return null == url ? DEFAULT_CONFIG_PATH : URLDecoder.decode(url.getFile(), "UTF8");
     }
 }

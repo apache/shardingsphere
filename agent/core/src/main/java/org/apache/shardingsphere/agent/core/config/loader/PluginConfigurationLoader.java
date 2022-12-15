@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginsConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlPluginsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
@@ -36,7 +36,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginConfigurationLoader {
     
-    private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
+    private static final String CONFIG_PATH = "/conf/agent.yaml";
     
     /**
      * Load plugin configurations.
@@ -45,7 +45,7 @@ public final class PluginConfigurationLoader {
      * @throws IOException IO exception
      */
     public static Map<String, PluginConfiguration> load() throws IOException {
-        File configFile = new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH);
+        File configFile = new File(AgentPathBuilder.getAgentPath(), CONFIG_PATH);
         return YamlPluginsConfigurationSwapper.swap(load(configFile));
     }
     
