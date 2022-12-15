@@ -30,10 +30,10 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
-import org.apache.shardingsphere.agent.advisor.ConstructorAdvisor;
-import org.apache.shardingsphere.agent.advisor.InstanceMethodAdvisor;
-import org.apache.shardingsphere.agent.advisor.StaticMethodAdvisor;
+import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.InstanceMethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
@@ -77,18 +77,18 @@ public final class AgentTransformer implements Transformer {
             return builder;
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        ClassAdvisor classAdvisor = agentAdvisors.getPluginAdvisor(typeDescription);
-        result = interceptConstructor(typeDescription, classAdvisor.getConstructorAdvisors(), result, classLoader);
-        result = interceptStaticMethod(typeDescription, classAdvisor.getStaticMethodAdvisors(), result, classLoader);
-        result = interceptInstanceMethod(typeDescription, classAdvisor.getInstanceMethodAdvisors(), result, classLoader);
+        ClassAdvisorConfiguration classAdvisorConfig = agentAdvisors.getClassAdvisorConfiguration(typeDescription);
+        result = interceptConstructor(typeDescription, classAdvisorConfig.getConstructorAdvisors(), result, classLoader);
+        result = interceptStaticMethod(typeDescription, classAdvisorConfig.getStaticMethodAdvisors(), result, classLoader);
+        result = interceptInstanceMethod(typeDescription, classAdvisorConfig.getInstanceMethodAdvisors(), result, classLoader);
         return result;
     }
     
     private Builder<?> interceptConstructor(final TypeDescription description,
-                                            final Collection<ConstructorAdvisor> constructorAdvisors, final Builder<?> builder, final ClassLoader classLoader) {
+                                            final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs, final Builder<?> builder, final ClassLoader classLoader) {
         Collection<AgentTransformationPoint<? extends ConstructorInterceptor>> constructorAdviceComposePoints = description.getDeclaredMethods().stream()
                 .filter(MethodDescription::isConstructor)
-                .map(each -> getMatchedTransformationPoint(constructorAdvisors, each, classLoader))
+                .map(each -> getMatchedTransformationPoint(constructorAdvisorConfigs, each, classLoader))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -105,29 +105,29 @@ public final class AgentTransformer implements Transformer {
         return result;
     }
     
-    private AgentTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(final Collection<ConstructorAdvisor> constructorAdvisors,
+    private AgentTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs,
                                                                                                      final InDefinedShape methodDescription, final ClassLoader classLoader) {
-        List<ConstructorAdvisor> matchedConstructorAdvisors = constructorAdvisors
+        List<ConstructorAdvisorConfiguration> matchedConstructorAdvisorConfigs = constructorAdvisorConfigs
                 .stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
-        if (matchedConstructorAdvisors.isEmpty()) {
+        if (matchedConstructorAdvisorConfigs.isEmpty()) {
             return null;
         }
-        if (1 == matchedConstructorAdvisors.size()) {
+        if (1 == matchedConstructorAdvisorConfigs.size()) {
             return new AgentTransformationPoint<>(
-                    methodDescription, new ConstructorInterceptor(agentAdvisors.getOrCreateInstance(matchedConstructorAdvisors.get(0).getAdviceClassName(), classLoader)));
+                    methodDescription, new ConstructorInterceptor(agentAdvisors.getOrCreateInstance(matchedConstructorAdvisorConfigs.get(0).getAdviceClassName(), classLoader)));
         }
-        Collection<ConstructorAdvice> constructorAdvices = matchedConstructorAdvisors.stream()
-                .map(ConstructorAdvisor::getAdviceClassName)
+        Collection<ConstructorAdvice> constructorAdvices = matchedConstructorAdvisorConfigs.stream()
+                .map(ConstructorAdvisorConfiguration::getAdviceClassName)
                 .map(each -> (ConstructorAdvice) agentAdvisors.getOrCreateInstance(each, classLoader))
                 .collect(Collectors.toList());
         return new AgentTransformationPoint<>(methodDescription, new ComposedConstructorInterceptor(constructorAdvices));
     }
     
-    private Builder<?> interceptStaticMethod(final TypeDescription description, final Collection<StaticMethodAdvisor> staticMethodAdvisors,
+    private Builder<?> interceptStaticMethod(final TypeDescription description, final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs,
                                              final Builder<?> builder, final ClassLoader classLoader) {
         Collection<AgentTransformationPoint<?>> staticMethodAdvicePoints = description.getDeclaredMethods().stream()
                 .filter(each -> each.isStatic() && !(each.isAbstract() || each.isSynthetic()))
-                .map(each -> getMatchedStaticMethodPoint(staticMethodAdvisors, each, classLoader))
+                .map(each -> getMatchedStaticMethodPoint(staticMethodAdvisorConfigs, each, classLoader))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -148,9 +148,9 @@ public final class AgentTransformer implements Transformer {
         return result;
     }
     
-    private AgentTransformationPoint<?> getMatchedStaticMethodPoint(final Collection<StaticMethodAdvisor> staticMethodAdvisors,
+    private AgentTransformationPoint<?> getMatchedStaticMethodPoint(final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs,
                                                                     final InDefinedShape methodDescription, final ClassLoader classLoader) {
-        List<StaticMethodAdvisor> matchedAdvisors = staticMethodAdvisors.stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
+        List<StaticMethodAdvisorConfiguration> matchedAdvisors = staticMethodAdvisorConfigs.stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
         if (matchedAdvisors.isEmpty()) {
             return null;
         }
@@ -161,18 +161,18 @@ public final class AgentTransformer implements Transformer {
     }
     
     private AgentTransformationPoint<?> getSingleStaticMethodPoint(final InDefinedShape methodDescription,
-                                                                   final StaticMethodAdvisor staticMethodAdvisor, final ClassLoader classLoader) {
-        StaticMethodAroundAdvice staticMethodAroundAdvice = agentAdvisors.getOrCreateInstance(staticMethodAdvisor.getAdviceClassName(), classLoader);
-        return staticMethodAdvisor.isOverrideArgs()
+                                                                   final StaticMethodAdvisorConfiguration staticMethodAdvisorConfig, final ClassLoader classLoader) {
+        StaticMethodAroundAdvice staticMethodAroundAdvice = agentAdvisors.getOrCreateInstance(staticMethodAdvisorConfig.getAdviceClassName(), classLoader);
+        return staticMethodAdvisorConfig.isOverrideArgs()
                 ? new AgentTransformationPoint<>(methodDescription, new StaticMethodInterceptorArgsOverride(staticMethodAroundAdvice))
                 : new AgentTransformationPoint<>(methodDescription, new StaticMethodAroundInterceptor(staticMethodAroundAdvice));
     }
     
     private AgentTransformationPoint<?> getComposedStaticMethodPoint(final InDefinedShape methodDescription,
-                                                                     final Collection<StaticMethodAdvisor> staticMethodAdvisors, final ClassLoader classLoader) {
+                                                                     final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs, final ClassLoader classLoader) {
         Collection<StaticMethodAroundAdvice> staticMethodAroundAdvices = new LinkedList<>();
         boolean isArgsOverride = false;
-        for (StaticMethodAdvisor each : staticMethodAdvisors) {
+        for (StaticMethodAdvisorConfiguration each : staticMethodAdvisorConfigs) {
             if (each.isOverrideArgs()) {
                 isArgsOverride = true;
             }
@@ -184,11 +184,11 @@ public final class AgentTransformer implements Transformer {
                 : new AgentTransformationPoint<>(methodDescription, new ComposedStaticMethodAroundInterceptor(staticMethodAroundAdvices));
     }
     
-    private Builder<?> interceptInstanceMethod(final TypeDescription description, final Collection<InstanceMethodAdvisor> instanceMethodAdvisors,
-                                               final Builder<?> builder, final ClassLoader classLoader) {
+    private Builder<?> interceptInstanceMethod(final TypeDescription description,
+                                               final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs, final Builder<?> builder, final ClassLoader classLoader) {
         Collection<AgentTransformationPoint<?>> instanceMethodAdviceComposePoints = description.getDeclaredMethods().stream()
                 .filter(each -> !(each.isAbstract() || each.isSynthetic()))
-                .map(each -> getMatchedInstanceMethodPoint(instanceMethodAdvisors, each, classLoader))
+                .map(each -> getMatchedInstanceMethodPoint(instanceMethodAdvisorConfigs, each, classLoader))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -209,32 +209,32 @@ public final class AgentTransformer implements Transformer {
         return result;
     }
     
-    private AgentTransformationPoint<?> getMatchedInstanceMethodPoint(final Collection<InstanceMethodAdvisor> instanceMethodAroundPoints,
+    private AgentTransformationPoint<?> getMatchedInstanceMethodPoint(final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAroundPoints,
                                                                       final InDefinedShape methodDescription, final ClassLoader classLoader) {
-        List<InstanceMethodAdvisor> instanceMethodAdvisors = instanceMethodAroundPoints
+        List<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs = instanceMethodAroundPoints
                 .stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
-        if (instanceMethodAdvisors.isEmpty()) {
+        if (instanceMethodAdvisorConfigs.isEmpty()) {
             return null;
         }
-        if (1 == instanceMethodAdvisors.size()) {
-            return getSingleInstanceMethodPoint(methodDescription, instanceMethodAdvisors.get(0), classLoader);
+        if (1 == instanceMethodAdvisorConfigs.size()) {
+            return getSingleInstanceMethodPoint(methodDescription, instanceMethodAdvisorConfigs.get(0), classLoader);
         }
-        return getComposeInstanceMethodPoint(methodDescription, instanceMethodAdvisors, classLoader);
+        return getComposeInstanceMethodPoint(methodDescription, instanceMethodAdvisorConfigs, classLoader);
     }
     
     private AgentTransformationPoint<?> getSingleInstanceMethodPoint(final InDefinedShape methodDescription,
-                                                                     final InstanceMethodAdvisor instanceMethodAdvisor, final ClassLoader classLoader) {
-        InstanceMethodAroundAdvice instanceMethodAroundAdvice = agentAdvisors.getOrCreateInstance(instanceMethodAdvisor.getAdviceClassName(), classLoader);
-        return instanceMethodAdvisor.isOverrideArgs()
+                                                                     final InstanceMethodAdvisorConfiguration instanceMethodAdvisorConfig, final ClassLoader classLoader) {
+        InstanceMethodAroundAdvice instanceMethodAroundAdvice = agentAdvisors.getOrCreateInstance(instanceMethodAdvisorConfig.getAdviceClassName(), classLoader);
+        return instanceMethodAdvisorConfig.isOverrideArgs()
                 ? new AgentTransformationPoint<>(methodDescription, new InstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvice))
                 : new AgentTransformationPoint<>(methodDescription, new InstanceMethodAroundInterceptor(instanceMethodAroundAdvice));
     }
     
     private AgentTransformationPoint<?> getComposeInstanceMethodPoint(final InDefinedShape methodDescription,
-                                                                      final Collection<InstanceMethodAdvisor> instanceMethodAdvisors, final ClassLoader classLoader) {
+                                                                      final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs, final ClassLoader classLoader) {
         Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices = new LinkedList<>();
         boolean isArgsOverride = false;
-        for (InstanceMethodAdvisor each : instanceMethodAdvisors) {
+        for (InstanceMethodAdvisorConfiguration each : instanceMethodAdvisorConfigs) {
             if (each.isOverrideArgs()) {
                 isArgsOverride = true;
             }

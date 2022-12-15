@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
+import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.CommandExecutorTaskAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.JDBCExecutorCallbackAdviser;
@@ -37,30 +37,30 @@ public final class TracingAdviceEngine {
     private final String type;
     
     /**
-     * Get proxy tracing advisors.
+     * Get proxy tracing advisor configurations.
      * 
      * @param commandExecutorTaskAdvice command executor task advice
      * @param sqlParserEngineAdvice SQL parser engine advice
      * @param jdbcExecutorCallbackAdvice JDBC executor callback advice
-     * @return got advisors
+     * @return got configurations
      */
-    public Collection<ClassAdvisor> getProxyAdvisors(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice,
-                                                     final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice,
-                                                     final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
+    public Collection<ClassAdvisorConfiguration> getProxyAdvisorConfigurations(final Class<? extends InstanceMethodAroundAdvice> commandExecutorTaskAdvice,
+                                                                               final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice,
+                                                                               final Class<? extends InstanceMethodAroundAdvice> jdbcExecutorCallbackAdvice) {
         // TODO load from YAML, please ref metrics
-        Collection<ClassAdvisor> result = new LinkedList<>();
-        result.add(new CommandExecutorTaskAdviser(type).getAdvisor(commandExecutorTaskAdvice));
-        result.add(new SQLParserEngineAdviser(type).getAdvisor(sqlParserEngineAdvice));
-        result.add(new JDBCExecutorCallbackAdviser(type).getAdvisor(jdbcExecutorCallbackAdvice));
+        Collection<ClassAdvisorConfiguration> result = new LinkedList<>();
+        result.add(new CommandExecutorTaskAdviser(type).getAdvisorConfiguration(commandExecutorTaskAdvice));
+        result.add(new SQLParserEngineAdviser(type).getAdvisorConfiguration(sqlParserEngineAdvice));
+        result.add(new JDBCExecutorCallbackAdviser(type).getAdvisorConfiguration(jdbcExecutorCallbackAdvice));
         return result;
     }
     
     /**
-     * Get JDBC tracing advisors.
+     * Get JDBC tracing advisor configurations.
      * 
-     * @return got advisors
+     * @return got configurations
      */
-    public Collection<ClassAdvisor> getJDBCAdvisors() {
+    public Collection<ClassAdvisorConfiguration> getJDBCAdvisorConfigurations() {
         // TODO
         return Collections.emptyList();
     }

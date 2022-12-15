@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advisor;
+package org.apache.shardingsphere.agent.config.advisor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Class advisor.
+ * Constructor advisor configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ClassAdvisor {
+public final class ConstructorAdvisorConfiguration {
     
-    private final String targetClassName;
+    private final ElementMatcher<? super MethodDescription> pointcut;
     
-    private final Collection<ConstructorAdvisor> constructorAdvisors = new LinkedList<>();
-    
-    private final Collection<InstanceMethodAdvisor> instanceMethodAdvisors = new LinkedList<>();
-    
-    private final Collection<StaticMethodAdvisor> staticMethodAdvisors = new LinkedList<>();
+    private final String adviceClassName;
 }

@@ -26,6 +26,6 @@ public final class JaegerAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new JaegerAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
+        assertThat(new JaegerAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
     }
 }

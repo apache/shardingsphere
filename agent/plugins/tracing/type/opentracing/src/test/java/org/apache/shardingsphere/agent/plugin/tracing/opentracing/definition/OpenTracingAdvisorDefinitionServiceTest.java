@@ -26,6 +26,6 @@ public final class OpenTracingAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new OpenTracingAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
+        assertThat(new OpenTracingAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
     }
 }

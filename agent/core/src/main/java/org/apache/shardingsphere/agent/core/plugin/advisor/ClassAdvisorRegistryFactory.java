@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClassAdvisorRegistryFactory {
     
-    private static final Map<String, ClassAdvisorRegistry> REGISTRIES = new ConcurrentHashMap<>();
+    private static final Map<String, ClassAdvisorConfigurationRegistry> REGISTRIES = new ConcurrentHashMap<>();
     
     /**
      * Get class advisor registry.
@@ -37,7 +37,7 @@ public final class ClassAdvisorRegistryFactory {
      * @param type registry type
      * @return class advisor registry
      */
-    public static ClassAdvisorRegistry getRegistry(final String type) {
-        return REGISTRIES.computeIfAbsent(type, each -> new ClassAdvisorRegistry());
+    public static ClassAdvisorConfigurationRegistry getRegistry(final String type) {
+        return REGISTRIES.computeIfAbsent(type, each -> new ClassAdvisorConfigurationRegistry());
     }
 }

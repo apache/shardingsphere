@@ -15,18 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advisor;
+package org.apache.shardingsphere.agent.config.advisor;
 
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class ClassAdvisorRegistryTest {
+/**
+ * Instance method advisor configuration.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class InstanceMethodAdvisorConfiguration {
     
-    @Test
-    public void assertGetAdvisor() {
-        assertThat(new ClassAdvisorRegistry().getAdvisor("test"), instanceOf(ClassAdvisor.class));
+    private final ElementMatcher<? super MethodDescription> pointcut;
+    
+    private final String adviceClassName;
+    
+    private final boolean overrideArgs;
+    
+    public InstanceMethodAdvisorConfiguration(final ElementMatcher<? super MethodDescription> pointcut, final String adviceClassName) {
+        this(pointcut, adviceClassName, false);
     }
 }
