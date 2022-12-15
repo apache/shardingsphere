@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin.loader;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
@@ -33,6 +35,7 @@ import java.util.jar.JarFile;
 /**
  * Agent plugin loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AgentPluginLoader {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
@@ -43,7 +46,7 @@ public final class AgentPluginLoader {
      * @return plugin jars
      * @throws IOException IO exception
      */
-    public Collection<PluginJar> load() throws IOException {
+    public static Collection<PluginJar> load() throws IOException {
         File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(each -> each.getName().endsWith(".jar"));
         if (null == jarFiles) {
             return Collections.emptyList();

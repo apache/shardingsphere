@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advisor;
+package org.apache.shardingsphere.agent.core.plugin.loader;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
@@ -33,24 +33,23 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Agent advisors.
+ * Advisor configuration loader.
  */
-public final class AgentAdvisors {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AdvisorConfigurationLoader {
     
-    @Getter
-    private final Map<String, ClassAdvisorConfiguration> advisorConfigs;
-    
-    @Setter
-    private boolean isEnhancedForProxy = true;
-    
-    public AgentAdvisors(final Collection<String> pluginTypes, final Collection<PluginJar> pluginJars) {
-        AgentClassLoader.init(pluginJars);
-        advisorConfigs = getAllAdvisorConfigurations(pluginTypes, AgentClassLoader.getClassLoader());
-    }
-    
-    private Map<String, ClassAdvisorConfiguration> getAllAdvisorConfigurations(final Collection<String> pluginTypes, final ClassLoader classLoader) {
+    /**
+     * Load advisor configurations.
+     * 
+     * @param pluginTypes plugin types
+     * @param pluginJars plugin jars
+     * @param isEnhancedForProxy is enhanced for proxy
+     * @return loaded advisor configurations
+     */
+    public static Map<String, ClassAdvisorConfiguration> load(final Collection<String> pluginTypes, final Collection<PluginJar> pluginJars, final boolean isEnhancedForProxy) {
         Map<String, ClassAdvisorConfiguration> result = new HashMap<>();
-        for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, classLoader)) {
+        AgentClassLoader.init(pluginJars);
+        for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, AgentClassLoader.getClassLoader())) {
             if (pluginTypes.contains(each.getType())) {
                 Collection<ClassAdvisorConfiguration> advisorConfigs = isEnhancedForProxy ? each.getProxyAdvisorConfigurations() : each.getJDBCAdvisorConfigurations();
                 result.putAll(advisorConfigs.stream().collect(Collectors.toMap(ClassAdvisorConfiguration::getTargetClassName, Function.identity())));

@@ -30,14 +30,13 @@ import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AgentAdvisors;
+import org.apache.shardingsphere.agent.core.plugin.loader.AdvisorConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.transformer.AgentJunction;
 import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -56,16 +55,11 @@ public final class ShardingSphereAgent {
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         boolean isEnhancedForProxy = isEnhancedForProxy();
-        setUpAgentBuilder(instrumentation, agentConfig, loadAgentAdvisors(agentConfig.getPlugins().keySet(), isEnhancedForProxy), isEnhancedForProxy);
+        Map<String, ClassAdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(agentConfig.getPlugins().keySet(), AgentPluginLoader.load(), isEnhancedForProxy);
+        setUpAgentBuilder(instrumentation, agentConfig, advisorConfigs, isEnhancedForProxy);
         if (isEnhancedForProxy) {
             setupPluginBootService(agentConfig.getPlugins());
         }
-    }
-    
-    private static Map<String, ClassAdvisorConfiguration> loadAgentAdvisors(final Collection<String> pluginTypes, final boolean isEnhancedForProxy) throws IOException {
-        AgentAdvisors result = new AgentAdvisors(pluginTypes, new AgentPluginLoader().load());
-        result.setEnhancedForProxy(isEnhancedForProxy);
-        return result.getAdvisorConfigs();
     }
     
     private static boolean isEnhancedForProxy() {
