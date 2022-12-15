@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  * Default importer.
  */
 @Slf4j
-public final class DefaultImporter extends AbstractLifecycleExecutor implements Importer {
+public final class DataSourceImporter extends AbstractLifecycleExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
@@ -80,8 +80,8 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     
     private volatile Statement batchDeleteStatement;
     
-    public DefaultImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                           final PipelineJobProgressListener jobProgressListener) {
+    public DataSourceImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+                              final PipelineJobProgressListener jobProgressListener) {
         this.importerConfig = importerConfig;
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         this.dataSourceManager = (PipelineDataSourceManager) importerConnector.getConnector();

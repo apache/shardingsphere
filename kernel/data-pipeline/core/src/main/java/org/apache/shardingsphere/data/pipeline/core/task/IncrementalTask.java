@@ -95,8 +95,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
                                                  final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < concurrency; i++) {
-            result.add(ImporterCreatorFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType()).createImporter(importerConfig, importerConnector, channel,
-                    jobProgressListener));
+            result.add(ImporterCreatorFactory.getInstance(importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener));
         }
         return result;
     }

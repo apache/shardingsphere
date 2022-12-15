@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer.connector;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
-/**
- * Default importer connector.
- */
-
-@RequiredArgsConstructor
-public final class DefaultImporterConnector implements ImporterConnector {
-    
-    private final PipelineDataSourceManager pipelineDataSourceManager;
+public final class FixtureImporterConnector implements ImporterConnector {
     
     @Override
     public Object getConnector() {
-        return pipelineDataSourceManager;
+        return null;
     }
     
     @Override
     public String getType() {
-        return "DEFAULT";
+        return "FIXTURE";
     }
 }

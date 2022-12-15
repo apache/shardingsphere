@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
@@ -25,19 +25,19 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 /**
- * Fixture importer creator.
+ * Data source importer creator.
  */
-public final class FixtureImporterCreator implements ImporterCreator {
+public final class DataSourceImporterCreator implements ImporterCreator {
     
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig,
                                    final ImporterConnector importerConnector, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener) {
-        return new FixtureImporter(importerConfig, importerConnector, channel, jobProgressListener);
+        return new DataSourceImporter(importerConfig, importerConnector, channel, jobProgressListener);
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "DataSource";
     }
 }

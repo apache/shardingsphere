@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer.connector;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
+
+import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 
 /**
- * Importer connector.
+ * CDC importer.
  */
-public interface ImporterConnector {
+public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
     
-    /**
-     * Get connector.
-     *
-     * @return connector
-     */
-    Object getConnector();
+    @Override
+    protected void runBlocking() {
+        // TODO to be implemented
+    }
     
-    /**
-     * Connector type.
-     *
-     * @return connector type
-     */
-    String getType();
+    @Override
+    protected void doStop() {
+        // TODO to be implemented
+    }
 }

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.importer.connector.DefaultImporterConnector;
+import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -157,7 +157,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     private ImporterConnector mockImporterConnector() {
-        return new DefaultImporterConnector(new DefaultPipelineDataSourceManager());
+        return new DataSourceImporterConnector(new DefaultPipelineDataSourceManager());
     }
     
     private IncrementalTask mockIncrementalTask(final MigrationTaskConfiguration taskConfig) {

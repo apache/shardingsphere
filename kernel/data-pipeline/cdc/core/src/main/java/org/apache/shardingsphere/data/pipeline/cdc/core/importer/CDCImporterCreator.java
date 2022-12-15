@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
@@ -24,31 +24,19 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * Default importer creator.
+ * CDC importer creator.
  */
-public final class DefaultImporterCreator implements ImporterCreator {
-    
-    private static final Collection<String> TYPE_ALIASES = Collections.unmodifiableList(Arrays.asList("PostgreSQL", "openGauss"));
+public final class CDCImporterCreator implements ImporterCreator {
     
     @Override
-    public Importer createImporter(final ImporterConfiguration importerConfig,
-                                   final ImporterConnector importerConnector, final PipelineChannel channel,
+    public Importer createImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener) {
-        return new DefaultImporter(importerConfig, importerConnector, channel, jobProgressListener);
+        return new CDCImporter();
     }
     
     @Override
     public String getType() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return TYPE_ALIASES;
+        return "CDC";
     }
 }
