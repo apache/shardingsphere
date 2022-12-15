@@ -9,6 +9,8 @@ The `SHOW TABLE METADATA` syntax is used to query tabe metadata.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowTableMetadata ::=
   'SHOW' 'TABLE' 'METADATA' tableName (',' tableName)* ('FROM' databaseName)?
@@ -19,6 +21,11 @@ tableName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

@@ -9,6 +9,8 @@ The `ALTER ENCRYPT RULE` syntax is used to alter an encryption rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterEncryptRule ::=
   'ALTER' 'ENCRYPT' 'RULE' encryptDefinition ( ',' encryptDefinition )*
@@ -34,6 +36,11 @@ cipherColumnName ::=
 encryptAlgorithmType ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

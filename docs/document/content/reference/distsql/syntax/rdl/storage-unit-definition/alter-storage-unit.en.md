@@ -9,6 +9,8 @@ The `ALTER STORAGE UNIT` syntax is used to alter storage units for the currently
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterResource ::=
   'ALTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
@@ -49,6 +51,11 @@ key ::=
 value ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

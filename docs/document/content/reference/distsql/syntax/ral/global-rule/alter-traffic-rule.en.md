@@ -9,6 +9,8 @@ The `ALTER TRAFFIC RULE` syntax is used to alter dual routing rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterTrafficRule ::=
   'ALTER' 'TRAFFIC' 'RULE'  '(' 'LABELS' '(' lableName ')' ',' trafficAlgorithmDefination ',' loadBalancerDefination ')'
@@ -17,10 +19,10 @@ lableName ::=
   identifier
 
 trafficAlgorithmDefination ::=
-  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' = trafficAlgorithmTypeName (',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')')? ')' ')'
+  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' trafficAlgorithmTypeName (',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')')? ')' ')'
 
 loadBalancerDefination ::=
-  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' = loadBalancerName (',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')')? ')' ')'
+  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' '=' loadBalancerName (',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')')? ')' ')'
 
 trafficAlgorithmTypeName ::=
   string
@@ -33,7 +35,13 @@ key ::=
 
 value ::=
   string
+
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

@@ -92,3 +92,13 @@ jQuery(document).ready(function() {
     $(element).parent().replaceWith('<div class="mermaid" align="center">' + content + '</div>');
   });
 });
+
+jQuery(document).ready(function(){
+	$("#sidebar .topics li svg").click(function(event){   
+		event.preventDefault();
+		event.stopPropagation();
+		var that=$(this);
+    that.toggle().siblings('svg').toggle()
+		that.closest("li").children("ul").slideToggle('fast',"linear");
+	});
+})

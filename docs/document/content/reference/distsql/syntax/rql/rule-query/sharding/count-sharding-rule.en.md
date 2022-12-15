@@ -9,6 +9,8 @@ The `COUNT SHARDING RULE` syntax is used to query the number of sharding rules f
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountShardingRule::=
   'COUNT' 'SHARDING' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountShardingRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

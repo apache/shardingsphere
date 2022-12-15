@@ -9,10 +9,17 @@ The `SHOW MIGRATION RULE` syntax is used to query migration check algorithm.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowMigrationCheckAlgorithm ::=
   'SHOW' 'MIGRATION' 'CHECK' 'ALGORITHMS'
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

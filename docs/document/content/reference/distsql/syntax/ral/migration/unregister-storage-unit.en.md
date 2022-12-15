@@ -9,6 +9,8 @@ The `UNREGISTER MIGRATION SOURCE STORAGE UNIT` syntax is used to unregister migr
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 UnregisterStorageUnit ::=
   'DROP' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* 
@@ -16,6 +18,11 @@ UnregisterStorageUnit ::=
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

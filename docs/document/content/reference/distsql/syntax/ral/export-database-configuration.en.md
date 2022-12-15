@@ -9,6 +9,8 @@ The `EXPORT DATABASE CONFIGURATION` syntax is used to export storage units and r
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ExportDatabaseConfiguration ::=
   'EXPORT' 'DATABASE' 'CONFIGURATION' ('FROM' databaseName)? ('TO' 'FILE' filePath)?
@@ -19,6 +21,11 @@ databaseName ::=
 filePath ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

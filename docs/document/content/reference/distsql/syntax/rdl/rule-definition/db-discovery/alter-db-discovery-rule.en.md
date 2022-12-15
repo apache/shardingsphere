@@ -9,6 +9,8 @@ The `ALTER DB_DISCOVERY RULE` syntax is used to alter a database discovery rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterDatabaseDiscoveryRule ::=
   'ALTER' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition ( ',' databaseDiscoveryDefinition)*
@@ -28,6 +30,11 @@ typeName ::=
 discoveryHeartbeatName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

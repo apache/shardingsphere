@@ -86,11 +86,11 @@ function switchTab(tabGroup, tabId) {
 function restoreTabSelections() {
     if(window.localStorage){
         var selectionsJSON = window.localStorage.getItem("tabSelections");
-        if(selectionsJSON){
-          var tabSelections = JSON.parse(selectionsJSON);
-        }else{
+        // if(selectionsJSON){
+        //   var tabSelections = JSON.parse(selectionsJSON);
+        // }else{
           var tabSelections = {};
-        }
+        // }
         Object.keys(tabSelections).forEach(function(tabGroup) {
           var tabItem = tabSelections[tabGroup];
           switchTab(tabGroup, tabItem);
@@ -405,6 +405,7 @@ jQuery(document).ready(function() {
     
     if($('.tab-panel').length) {
         var codeStr = $('.tab-panel code').text()
+        var _h = $('.tab-panel code').height()
         var diagram = $('#diagram')
 
         function appendFormElement(tagName, type, name, value, parentEl){
@@ -441,25 +442,15 @@ jQuery(document).ready(function() {
         // document.forms.data2.time.value = new Date().getTime();
 
         
+        diagram.before('<p id="testLoading">Loading ...</p>')
 
         document.forms.data2.submit();
 
         document.body.removeChild(form)
 
         diagram.on('load', function(){
-            console.log('loaded', this.contentWindow)
-            // var _h
-            
-            //         _h =  this.contentWindow.document.documentElement.scrollHeight;
-            
-                
-            
-            
-            //         _h = this.contentDocument.body.scrollHeight;
-            
-                           
-            // console.log(_h) 
-            diagram.height('500px')
+            $('#testLoading').remove()
+            diagram.height(_h > 500 ? _h+'px' : '500px')
         })
     }
 
@@ -468,6 +459,21 @@ jQuery(document).ready(function() {
 
 
 jQuery(window).on('load', function() {
+    function adjustForScrollbar() {
+        if ((parseInt(jQuery('#body-inner').height()) + 83) >= jQuery('#body').height()) {
+            jQuery('.nav.nav-next').css({ 'margin-right': getScrollBarWidth() });
+        } else {
+            jQuery('.nav.nav-next').css({ 'margin-right': 0 });
+        }
+    }
+
+    // adjust sidebar for scrollbar
+    adjustForScrollbar();
+
+    jQuery(window).smartresize(function() {
+        adjustForScrollbar();
+    });
+
     // store this page in session
     sessionStorage.setItem(jQuery('body').data('url'), 1);
 
