@@ -81,7 +81,7 @@ public final class StandardJdbcUrlParserTest {
     public void assertParseIncorrectURL() {
         new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
     }
-
+    
     @Test
     public void assertParseTestContainersJDBCUrl() {
         assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:mysql:5.7.34:///demo_ds").getDatabase(), is("demo_ds"));
