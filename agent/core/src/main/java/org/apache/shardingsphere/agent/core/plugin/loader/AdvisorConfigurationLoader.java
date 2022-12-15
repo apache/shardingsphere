@@ -41,12 +41,12 @@ public final class AdvisorConfigurationLoader {
     /**
      * Load advisor configurations.
      * 
-     * @param pluginTypes plugin types
      * @param pluginJars plugin jars
+     * @param pluginTypes plugin types
      * @param isEnhancedForProxy is enhanced for proxy
      * @return loaded advisor configurations
      */
-    public static Map<String, ClassAdvisorConfiguration> load(final Collection<String> pluginTypes, final Collection<PluginJar> pluginJars, final boolean isEnhancedForProxy) {
+    public static Map<String, ClassAdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, ClassAdvisorConfiguration> result = new HashMap<>();
         AgentClassLoader.init(pluginJars);
         for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, AgentClassLoader.getClassLoader())) {
