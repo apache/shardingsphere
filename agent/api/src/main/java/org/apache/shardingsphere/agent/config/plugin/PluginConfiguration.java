@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advisor;
+package org.apache.shardingsphere.agent.config.plugin;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+
+import java.util.Properties;
 
 /**
- * Static method advisor.
+ * Plugin configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StaticMethodAdvisor {
+public final class PluginConfiguration {
     
-    private final ElementMatcher<? super MethodDescription> pointcut;
+    private final String host;
     
-    private final String adviceClassName;
+    private final int port;
     
-    private final boolean overrideArgs;
+    private final String password;
     
-    public StaticMethodAdvisor(final ElementMatcher<? super MethodDescription> pointcut, final String adviceClassName) {
-        this(pointcut, adviceClassName, false);
-    }
+    private final Properties props;
 }

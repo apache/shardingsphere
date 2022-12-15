@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advisor;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Constructor advisor.
+ * Class advisor configuration registry.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ConstructorAdvisor {
+public final class ClassAdvisorConfigurationRegistry {
     
-    private final ElementMatcher<? super MethodDescription> pointcut;
+    private final Map<String, ClassAdvisorConfiguration> advisors = new ConcurrentHashMap<>();
     
-    private final String adviceClassName;
+    /**
+     * Get class advisor configuration.
+     * 
+     * @param targetClassName target class name to be intercepted
+     * @return class advisor configuration
+     */
+    public ClassAdvisorConfiguration getAdvisorConfiguration(final String targetClassName) {
+        return advisors.computeIfAbsent(targetClassName, ClassAdvisorConfiguration::new);
+    }
 }

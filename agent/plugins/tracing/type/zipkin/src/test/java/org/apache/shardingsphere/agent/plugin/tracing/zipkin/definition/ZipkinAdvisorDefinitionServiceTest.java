@@ -26,6 +26,6 @@ public final class ZipkinAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new ZipkinAdvisorDefinitionService().getProxyAdvisors().size(), is(3));
+        assertThat(new ZipkinAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
     }
 }

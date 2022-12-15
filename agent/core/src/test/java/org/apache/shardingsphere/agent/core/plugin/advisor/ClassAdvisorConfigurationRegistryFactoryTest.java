@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Plugin configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PluginConfiguration {
+public final class ClassAdvisorConfigurationRegistryFactoryTest {
     
-    private final String host;
-    
-    private final int port;
-    
-    private final String password;
-    
-    private final Properties props;
+    @Test
+    public void assertGetRegistryWithType() {
+        assertThat(ClassAdvisorRegistryFactory.getRegistry("test"), instanceOf(ClassAdvisorConfigurationRegistry.class));
+    }
 }

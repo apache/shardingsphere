@@ -26,6 +26,6 @@ public final class PrometheusAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new PrometheusAdvisorDefinitionService().getProxyAdvisors().size(), is(5));
+        assertThat(new PrometheusAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(5));
     }
 }

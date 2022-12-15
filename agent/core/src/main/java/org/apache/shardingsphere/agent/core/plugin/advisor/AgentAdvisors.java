@@ -22,8 +22,8 @@ import lombok.Setter;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.advisor.ClassAdvisor;
-import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.ClassAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.plugin.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
@@ -43,26 +43,26 @@ import java.util.stream.Collectors;
  */
 public final class AgentAdvisors {
     
-    private final Map<String, ClassAdvisor> advisors;
+    private final Map<String, ClassAdvisorConfiguration> advisorConfigs;
     
     @Setter
     private boolean isEnhancedForProxy = true;
     
     public AgentAdvisors(final Collection<PluginJar> pluginJars) {
         AgentClassLoader.init(pluginJars);
-        advisors = getAllAdvisors(AgentClassLoader.getClassLoader());
+        advisorConfigs = getAllAdvisorConfigurations(AgentClassLoader.getClassLoader());
     }
     
-    private Map<String, ClassAdvisor> getAllAdvisors(final ClassLoader classLoader) {
-        Map<String, ClassAdvisor> result = new HashMap<>();
+    private Map<String, ClassAdvisorConfiguration> getAllAdvisorConfigurations(final ClassLoader classLoader) {
+        Map<String, ClassAdvisorConfiguration> result = new HashMap<>();
         Collection<String> pluginTypes = getPluginTypes();
         for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, classLoader)) {
             if (pluginTypes.contains(each.getType())) {
-                Collection<ClassAdvisor> advisors = isEnhancedForProxy ? each.getProxyAdvisors() : each.getJDBCAdvisors();
-                result.putAll(advisors.stream().collect(Collectors.toMap(ClassAdvisor::getTargetClassName, Function.identity())));
+                Collection<ClassAdvisorConfiguration> advisorConfigs = isEnhancedForProxy ? each.getProxyAdvisorConfigurations() : each.getJDBCAdvisorConfigurations();
+                result.putAll(advisorConfigs.stream().collect(Collectors.toMap(ClassAdvisorConfiguration::getTargetClassName, Function.identity())));
             }
         }
-        return ImmutableMap.<String, ClassAdvisor>builder().putAll(result).build();
+        return ImmutableMap.<String, ClassAdvisorConfiguration>builder().putAll(result).build();
     }
     
     private Collection<String> getPluginTypes() {
@@ -85,7 +85,7 @@ public final class AgentAdvisors {
             @SuppressWarnings("NullableProblems")
             @Override
             public boolean matches(final TypeDescription target) {
-                return advisors.containsKey(target.getTypeName());
+                return advisorConfigs.containsKey(target.getTypeName());
             }
             
             @SuppressWarnings("NullableProblems")
@@ -109,17 +109,17 @@ public final class AgentAdvisors {
      * @return contains when it is true
      */
     public boolean containsType(final TypeDescription typeDescription) {
-        return advisors.containsKey(typeDescription.getTypeName());
+        return advisorConfigs.containsKey(typeDescription.getTypeName());
     }
     
     /**
-     * Load plugin advisor by type description.
+     * Get class advisor configuration.
      *
      * @param typeDescription type description
-     * @return plugin advisor
+     * @return class advisor configuration
      */
-    public ClassAdvisor getPluginAdvisor(final TypeDescription typeDescription) {
-        return advisors.getOrDefault(typeDescription.getTypeName(), new ClassAdvisor(""));
+    public ClassAdvisorConfiguration getClassAdvisorConfiguration(final TypeDescription typeDescription) {
+        return advisorConfigs.getOrDefault(typeDescription.getTypeName(), new ClassAdvisorConfiguration(""));
     }
     
     /**
