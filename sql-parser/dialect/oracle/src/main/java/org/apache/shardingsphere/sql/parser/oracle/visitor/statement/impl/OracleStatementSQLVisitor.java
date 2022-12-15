@@ -795,7 +795,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
-        NullsOrderType nullsOrderType = generateNullsOrderType(ctx, orderDirection);
+        NullsOrderType nullsOrderType = generateNullsOrderType(ctx);
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
             return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderType);
@@ -808,9 +808,9 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
                 getOriginalText(ctx.expr()), orderDirection, nullsOrderType, (ExpressionSegment) visit(ctx.expr()));
     }
     
-    private NullsOrderType generateNullsOrderType(final OrderByItemContext ctx, final OrderDirection orderDirection) {
+    private NullsOrderType generateNullsOrderType(final OrderByItemContext ctx) {
         if (null == ctx.FIRST() && null == ctx.LAST()) {
-            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
+            return null;
         }
         return null == ctx.FIRST() ? NullsOrderType.LAST : NullsOrderType.FIRST;
     }
