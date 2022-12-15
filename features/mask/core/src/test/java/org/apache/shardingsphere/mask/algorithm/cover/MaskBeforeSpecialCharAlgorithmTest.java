@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.algorithm;
+package org.apache.shardingsphere.mask.algorithm.cover;
 
-import org.apache.shardingsphere.mask.algorithm.cover.MaskBeforeSpecialCharAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MaskBeforeSpecialCharAlgorithmTest {
@@ -58,6 +58,12 @@ public final class MaskBeforeSpecialCharAlgorithmTest {
     public void assertMaskEmptyString() {
         String actual = maskAlgorithm.mask("");
         assertThat(actual, is(""));
+    }
+    
+    @Test
+    public void assertMaskNull() {
+        String actual = maskAlgorithm.mask(null);
+        assertThat(actual, is(nullValue()));
     }
     
     @Test
