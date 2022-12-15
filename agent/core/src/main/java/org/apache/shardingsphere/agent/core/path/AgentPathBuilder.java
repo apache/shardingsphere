@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config.path;
+package org.apache.shardingsphere.agent.core.path;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
