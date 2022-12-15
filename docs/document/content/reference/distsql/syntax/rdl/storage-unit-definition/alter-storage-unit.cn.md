@@ -47,7 +47,7 @@ key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### 补充说明
@@ -59,8 +59,7 @@ value ::=
 - `storageUnitName` 区分大小写；
 - `storageUnitName` 在当前逻辑库中需要唯一；
 - `storageUnitName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
-- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致，`value` 支持 int 和 String 类型；
-- 当 `password` 包含特殊字符时，建议使用 string 形式；例如 `password@123`的 string 形式为 `"password@123"`。
+- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致。
 
 ### 示例
 
