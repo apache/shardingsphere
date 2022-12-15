@@ -20,5 +20,5 @@
         <column name="variable_name" />
         <column name="variable_value" />
     </metadata>
-    <row values=" sql_show | false " />
+    <row values="sql_show| false" />
 </dataset>

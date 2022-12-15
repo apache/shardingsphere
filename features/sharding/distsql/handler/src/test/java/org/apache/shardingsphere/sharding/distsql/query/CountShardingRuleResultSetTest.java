@@ -20,20 +20,23 @@ package org.apache.shardingsphere.sharding.distsql.query;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CountShardingRuleStatement;
-import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -75,10 +78,15 @@ public final class CountShardingRuleResultSetTest {
     }
     
     private ShardingRule mockShardingRule() {
+        Map<String, TableRule> tableRules = new LinkedHashMap<>();
+        tableRules.put("t_order_item", mock(TableRule.class));
+        tableRules.put("t_order", mock(TableRule.class));
+        ShardingRuleConfiguration ruleConfiguration = new ShardingRuleConfiguration();
+        ShardingTableReferenceRuleConfiguration shardingTableReferenceRuleConfiguration = new ShardingTableReferenceRuleConfiguration("refRule", "ref");
+        ruleConfiguration.getBindingTableGroups().add(shardingTableReferenceRuleConfiguration);
         ShardingRule result = mock(ShardingRule.class);
-        when(result.getConfiguration()).thenReturn(mock(ShardingRuleConfiguration.class));
-        when(result.getTables()).thenReturn(Arrays.asList("sharding_table", "sharding_auto_table"));
-        when(result.getBindingTableRules()).thenReturn(Collections.singletonMap("binding_table", mock(BindingTableRule.class)));
+        when(result.getTableRules()).thenReturn(tableRules);
+        when(result.getConfiguration()).thenReturn(ruleConfiguration);
         when(result.getBroadcastTables()).thenReturn(Arrays.asList("broadcast_table_1", "broadcast_table_2"));
         return result;
     }
