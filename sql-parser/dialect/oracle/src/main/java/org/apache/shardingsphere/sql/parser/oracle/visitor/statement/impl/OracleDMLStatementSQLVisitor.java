@@ -105,7 +105,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -998,15 +997,14 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         ASTNode expression = visit(ctx);
         if (expression instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) expression;
-            return new ColumnOrderByItemSegment(column, OrderDirection.ASC, NullsOrderType.LAST);
+            return new ColumnOrderByItemSegment(column, OrderDirection.ASC, null);
         }
         if (expression instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
             return new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
-                    SQLUtil.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC, NullsOrderType.LAST);
+                    SQLUtil.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC, null);
         }
-        return new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderType.LAST,
-                (ExpressionSegment) expression);
+        return new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null, (ExpressionSegment) expression);
     }
     
     private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromRollupCubeClause(final RollupCubeClauseContext ctx) {

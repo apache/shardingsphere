@@ -599,7 +599,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     @Override
     public final ASTNode visitSortby(final SortbyContext ctx) {
         OrderDirection orderDirection = null != ctx.ascDesc() ? generateOrderDirection(ctx.ascDesc()) : OrderDirection.ASC;
-        NullsOrderType nullsOrderType = generateNullsOrderType(ctx.nullsOrder(), orderDirection);
+        NullsOrderType nullsOrderType = generateNullsOrderType(ctx.nullsOrder());
         ASTNode expr = visit(ctx.aExpr());
         if (expr instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) expr;
@@ -616,9 +616,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, nullsOrderType);
     }
     
-    private NullsOrderType generateNullsOrderType(final NullsOrderContext ctx, final OrderDirection orderDirection) {
+    private NullsOrderType generateNullsOrderType(final NullsOrderContext ctx) {
         if (null == ctx) {
-            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
+            return null;
         }
         return null == ctx.FIRST() ? NullsOrderType.LAST : NullsOrderType.FIRST;
     }
@@ -984,16 +984,16 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.aExpr()) {
             ASTNode astNode = visit(ctx.aExpr());
             if (astNode instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC, NullsOrderType.LAST);
+                return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC, null);
             }
             if (astNode instanceof LiteralExpressionSegment) {
                 LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
-                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC, NullsOrderType.LAST);
+                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC, null);
             }
-            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderType.LAST);
+            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null);
         }
-        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderType.LAST);
+        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null);
     }
     
     @Override
