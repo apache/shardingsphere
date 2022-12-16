@@ -24,9 +24,7 @@ import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.ConstructorAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.InstanceMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.StaticMethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
@@ -78,16 +76,16 @@ public final class AgentTransformerTest {
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
         AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.mock.material.Material");
-        result.getConstructorAdvisors().add(new ConstructorAdvisorConfiguration(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
-        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
-        result.getStaticMethodAdvisors().add(new StaticMethodAdvisorConfiguration(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
+        result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
+        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticMock"), MockStaticMethodAroundAdvice.class.getTypeName()));
         return result;
     }
     
     private static AdvisorConfiguration createAdvisorConfigurationInTwice() {
         AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial");
-        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
-        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAroundRepeatedAdvice.class.getTypeName()));
+        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAroundAdvice.class.getTypeName()));
+        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAroundRepeatedAdvice.class.getTypeName()));
         return result;
     }
     

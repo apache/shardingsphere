@@ -19,9 +19,7 @@ package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.ConstructorAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.InstanceMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.StaticMethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;
@@ -51,15 +49,15 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
     private AdvisorConfiguration createAdvisorConfiguration(final YamlAdvisorConfiguration yamlAdvisorConfig) {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
         if (null != yamlAdvisorConfig.getConstructAdvice() && !("".equals(yamlAdvisorConfig.getConstructAdvice()))) {
-            result.getConstructorAdvisors().add(new ConstructorAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getConstructAdvice()));
+            result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getConstructAdvice()));
         }
         String[] instancePointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(i -> "instance".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
         if (instancePointcuts.length > 0) {
-            result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisorConfiguration(ElementMatchers.namedOneOf(instancePointcuts), yamlAdvisorConfig.getInstanceAdvice()));
+            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instancePointcuts), yamlAdvisorConfig.getInstanceAdvice()));
         }
         String[] staticPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(i -> "static".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
         if (staticPointcuts.length > 0) {
-            result.getStaticMethodAdvisors().add(new StaticMethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticPointcuts), yamlAdvisorConfig.getStaticAdvice()));
+            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticPointcuts), yamlAdvisorConfig.getStaticAdvice()));
         }
         return result;
     }

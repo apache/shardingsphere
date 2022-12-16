@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
-import org.apache.shardingsphere.agent.config.advisor.method.MethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
@@ -35,11 +35,11 @@ import java.util.stream.Collectors;
  * Method advisor build engine.
  */
 @RequiredArgsConstructor
-public final class MethodAdvisorBuildEngine<T extends MethodAdvisorConfiguration> {
+public final class MethodAdvisorBuildEngine {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuildEngine.class);
     
-    private final Collection<T> advisorConfigs;
+    private final Collection<MethodAdvisorConfiguration> advisorConfigs;
     
     private final TypeDescription typePointcut;
     
@@ -50,7 +50,7 @@ public final class MethodAdvisorBuildEngine<T extends MethodAdvisorConfiguration
      * @param methodAdvisorBuilder method advisor builder
      * @return created builder
      */
-    public Builder<?> create(final Builder<?> builder, final MethodAdvisorBuilder<T> methodAdvisorBuilder) {
+    public Builder<?> create(final Builder<?> builder, final MethodAdvisorBuilder methodAdvisorBuilder) {
         Builder<?> result = builder;
         Collection<MethodAdvisor> matchedAdvisor = typePointcut.getDeclaredMethods().stream()
                 .filter(methodAdvisorBuilder::isMatchedMethod).map(each -> findMatchedAdvisor(each, methodAdvisorBuilder)).filter(Objects::nonNull).collect(Collectors.toList());
@@ -66,8 +66,8 @@ public final class MethodAdvisorBuildEngine<T extends MethodAdvisorConfiguration
         return result;
     }
     
-    private MethodAdvisor findMatchedAdvisor(final InDefinedShape methodDescription, final MethodAdvisorBuilder<T> methodAdvisorBuilder) {
-        List<T> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
+    private MethodAdvisor findMatchedAdvisor(final InDefinedShape methodDescription, final MethodAdvisorBuilder methodAdvisorBuilder) {
+        List<MethodAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
         if (matchedAdvisorConfigs.isEmpty()) {
             return null;
         }

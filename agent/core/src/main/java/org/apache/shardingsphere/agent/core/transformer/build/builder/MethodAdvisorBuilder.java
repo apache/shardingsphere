@@ -19,17 +19,15 @@ package org.apache.shardingsphere.agent.core.transformer.build.builder;
 
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.dynamic.DynamicType.Builder;
-import org.apache.shardingsphere.agent.config.advisor.method.MethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 import java.util.List;
 
 /**
  * Method advisor builder.
- * 
- * @param <T> type of method advisor configuration
  */
-public interface MethodAdvisorBuilder<T extends MethodAdvisorConfiguration> {
+public interface MethodAdvisorBuilder {
     
     /**
      * Create method advisor builder.
@@ -55,7 +53,7 @@ public interface MethodAdvisorBuilder<T extends MethodAdvisorConfiguration> {
      * @param advisorConfig advisor configuration
      * @return got method advisor
      */
-    MethodAdvisor getSingleMethodAdvisor(InDefinedShape methodDescription, T advisorConfig);
+    MethodAdvisor getSingleMethodAdvisor(InDefinedShape methodDescription, MethodAdvisorConfiguration advisorConfig);
     
     /**
      * Get composed method advisor.
@@ -64,5 +62,5 @@ public interface MethodAdvisorBuilder<T extends MethodAdvisorConfiguration> {
      * @param advisorConfigs advisor configurations
      * @return got method advisor
      */
-    MethodAdvisor getComposedMethodAdvisor(InDefinedShape methodDescription, List<T> advisorConfigs);
+    MethodAdvisor getComposedMethodAdvisor(InDefinedShape methodDescription, List<MethodAdvisorConfiguration> advisorConfigs);
 }

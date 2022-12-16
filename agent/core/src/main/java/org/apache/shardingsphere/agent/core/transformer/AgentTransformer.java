@@ -58,9 +58,9 @@ public final class AgentTransformer implements Transformer {
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
         AdvisorConfiguration advisorConfig = advisorConfigs.get(typeDescription.getTypeName());
         AdviceFactory adviceFactory = new AdviceFactory(classLoader, pluginConfigs, enhanceProxy);
-        result = new MethodAdvisorBuildEngine<>(advisorConfig.getConstructorAdvisors(), typeDescription).create(result, new ConstructorAdvisorBuilder(adviceFactory));
-        result = new MethodAdvisorBuildEngine<>(advisorConfig.getInstanceMethodAdvisors(), typeDescription).create(result, new InstanceMethodAdvisorBuilder(adviceFactory));
-        result = new MethodAdvisorBuildEngine<>(advisorConfig.getStaticMethodAdvisors(), typeDescription).create(result, new StaticMethodAdvisorBuilder(adviceFactory));
+        result = new MethodAdvisorBuildEngine(advisorConfig.getConstructorAdvisors(), typeDescription).create(result, new ConstructorAdvisorBuilder(adviceFactory));
+        result = new MethodAdvisorBuildEngine(advisorConfig.getInstanceMethodAdvisors(), typeDescription).create(result, new InstanceMethodAdvisorBuilder(adviceFactory));
+        result = new MethodAdvisorBuildEngine(advisorConfig.getStaticMethodAdvisors(), typeDescription).create(result, new StaticMethodAdvisorBuilder(adviceFactory));
         return result;
     }
 }
