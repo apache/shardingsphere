@@ -40,6 +40,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,7 +96,7 @@ public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
         InstanceMaterial material = new ByteBuddy()
                 .subclass(InstanceMaterial.class)
                 .method(ElementMatchers.named(methodName))
-                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAroundInterceptor(new MockInstanceMethodAroundAdvice(rebase))))
+                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAroundInterceptor(Collections.singleton(new MockInstanceMethodAroundAdvice(rebase)))))
                 .make()
                 .load(new MockClassLoader())
                 .getLoaded()

@@ -23,12 +23,13 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
+import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 /**
@@ -39,7 +40,7 @@ public class StaticMethodAroundInterceptor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAroundInterceptor.class);
     
-    private final StaticMethodAroundAdvice advice;
+    private final Collection<StaticMethodAroundAdvice> advices;
     
     /**
      * Only intercept static method.
@@ -58,7 +59,9 @@ public class StaticMethodAroundInterceptor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                advice.beforeMethod(klass, method, args, methodResult);
+                for (StaticMethodAroundAdvice each : advices) {
+                    each.beforeMethod(klass, method, args, methodResult);
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -77,7 +80,9 @@ public class StaticMethodAroundInterceptor {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    advice.onThrowing(klass, method, args, ex);
+                    for (StaticMethodAroundAdvice each : advices) {
+                        each.onThrowing(klass, method, args, ex);
+                    }
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
@@ -88,7 +93,9 @@ public class StaticMethodAroundInterceptor {
         } finally {
             try {
                 if (adviceEnabled) {
-                    advice.afterMethod(klass, method, args, methodResult);
+                    for (StaticMethodAroundAdvice each : advices) {
+                        each.afterMethod(klass, method, args, methodResult);
+                    }
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {

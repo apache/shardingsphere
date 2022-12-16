@@ -71,9 +71,6 @@ public final class MethodAdvisorBuildEngine {
         if (matchedAdvisorConfigs.isEmpty()) {
             return null;
         }
-        if (1 == matchedAdvisorConfigs.size()) {
-            return methodAdvisorBuilder.getSingleMethodAdvisor(methodDescription, matchedAdvisorConfigs.get(0));
-        }
-        return methodAdvisorBuilder.getComposedMethodAdvisor(methodDescription, matchedAdvisorConfigs);
+        return methodAdvisorBuilder.getMethodAdvisor(methodDescription, matchedAdvisorConfigs);
     }
 }

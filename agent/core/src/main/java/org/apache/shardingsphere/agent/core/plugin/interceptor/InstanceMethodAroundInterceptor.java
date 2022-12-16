@@ -31,6 +31,7 @@ import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 /**
@@ -41,7 +42,7 @@ public class InstanceMethodAroundInterceptor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAroundInterceptor.class);
     
-    private final InstanceMethodAroundAdvice advice;
+    private final Collection<InstanceMethodAroundAdvice> advices;
     
     /**
      * Only intercept instance method.
@@ -60,7 +61,9 @@ public class InstanceMethodAroundInterceptor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                advice.beforeMethod(target, method, args, methodResult);
+                for (InstanceMethodAroundAdvice each : advices) {
+                    each.beforeMethod(target, method, args, methodResult);
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -79,7 +82,9 @@ public class InstanceMethodAroundInterceptor {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    advice.onThrowing(target, method, args, ex);
+                    for (InstanceMethodAroundAdvice each : advices) {
+                        each.onThrowing(target, method, args, ex);
+                    }
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
@@ -90,7 +95,9 @@ public class InstanceMethodAroundInterceptor {
         } finally {
             try {
                 if (adviceEnabled) {
-                    advice.afterMethod(target, method, args, methodResult);
+                    for (InstanceMethodAroundAdvice each : advices) {
+                        each.afterMethod(target, method, args, methodResult);
+                    }
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {

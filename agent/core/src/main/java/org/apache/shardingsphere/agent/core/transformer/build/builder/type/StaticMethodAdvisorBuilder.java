@@ -25,7 +25,6 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
@@ -53,13 +52,8 @@ public final class StaticMethodAdvisorBuilder implements MethodAdvisorBuilder {
     }
     
     @Override
-    public MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodDescription, final MethodAdvisorConfiguration advisorConfig) {
-        return new MethodAdvisor(methodDescription, new StaticMethodAroundInterceptor(adviceFactory.getAdvice(advisorConfig.getAdviceClassName())));
-    }
-    
-    @Override
-    public MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
+    public MethodAdvisor getMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
         Collection<StaticMethodAroundAdvice> advices = advisorConfigs.stream().<StaticMethodAroundAdvice>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-        return new MethodAdvisor(methodDescription, new ComposedStaticMethodAroundInterceptor(advices));
+        return new MethodAdvisor(methodDescription, new StaticMethodAroundInterceptor(advices));
     }
 }
