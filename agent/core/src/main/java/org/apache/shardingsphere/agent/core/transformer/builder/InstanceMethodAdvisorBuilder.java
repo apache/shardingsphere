@@ -33,6 +33,7 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInt
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
+import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;

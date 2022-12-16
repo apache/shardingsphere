@@ -31,6 +31,7 @@ import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
+import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
 
 import java.util.Collection;
 import java.util.List;

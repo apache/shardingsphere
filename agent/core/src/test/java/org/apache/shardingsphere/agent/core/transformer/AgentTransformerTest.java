@@ -35,12 +35,10 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAround
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
-import org.apache.shardingsphere.agent.core.transformer.builder.AdviceFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,15 +57,9 @@ public final class AgentTransformerTest {
     private final List<String> queue = new LinkedList<>();
     
     @BeforeClass
-    @SuppressWarnings("unchecked")
     public static void setup() throws ReflectiveOperationException {
         ByteBuddyAgent.install();
         AgentClassLoader.init(Collections.emptyList());
-        FieldReader objectPoolReader = new FieldReader(AdviceFactory.class, AdviceFactory.class.getDeclaredField("CACHED_ADVICES"));
-        Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
-        objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
-        objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
-        objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
         Map<String, AdvisorConfiguration> advisorConfigs = new HashMap<>(2, 1);
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
         advisorConfigs.put(advisorConfig.getTargetClassName(), advisorConfig);
