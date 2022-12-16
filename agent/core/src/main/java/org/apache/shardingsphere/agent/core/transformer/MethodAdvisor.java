@@ -26,9 +26,9 @@ import net.bytebuddy.description.method.MethodDescription;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MethodAdvisor<T> {
+public final class MethodAdvisor {
     
     private final MethodDescription pointcut;
     
-    private final T advice;
+    private final Object advice;
 }
