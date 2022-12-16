@@ -33,10 +33,4 @@ public final class StaticMethodAdvisorConfiguration implements MethodAdvisorConf
     private final ElementMatcher<? super MethodDescription> pointcut;
     
     private final String adviceClassName;
-    
-    private final boolean overrideArgs;
-    
-    public StaticMethodAdvisorConfiguration(final ElementMatcher<? super MethodDescription> pointcut, final String adviceClassName) {
-        this(pointcut, adviceClassName, false);
-    }
 }

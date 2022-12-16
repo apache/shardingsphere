@@ -33,10 +33,4 @@ public final class InstanceMethodAdvisorConfiguration implements MethodAdvisorCo
     private final ElementMatcher<? super MethodDescription> pointcut;
     
     private final String adviceClassName;
-    
-    private final boolean overrideArgs;
-    
-    public InstanceMethodAdvisorConfiguration(final ElementMatcher<? super MethodDescription> pointcut, final String adviceClassName) {
-        this(pointcut, adviceClassName, false);
-    }
 }
