@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.transformer.builder;
 
-import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
@@ -68,11 +67,10 @@ public final class ConstructorAdvisorBuilder {
     public Builder<?> create(final Builder<?> builder) {
         Builder<?> result = builder;
         Collection<MethodAdvisor> matchedAdvisor = typePointcut.getDeclaredMethods()
-                .stream().filter(MethodDescription::isConstructor).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
+                .stream().filter(this::isMatchedMethod).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
         for (MethodAdvisor each : matchedAdvisor) {
             try {
-                result = result.constructor(ElementMatchers.is(each.getPointcut()))
-                        .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(each.getAdvice())));
+                result = create(result, each);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -80,6 +78,15 @@ public final class ConstructorAdvisorBuilder {
             }
         }
         return result;
+    }
+    
+    private Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
+        return builder.constructor(ElementMatchers.is(methodAdvisor.getPointcut()))
+                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdvice())));
+    }
+    
+    private boolean isMatchedMethod(final InDefinedShape methodPointcut) {
+        return methodPointcut.isConstructor();
     }
     
     private MethodAdvisor getMatchedAdvisor(final InDefinedShape methodPointcut) {

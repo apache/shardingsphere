@@ -71,15 +71,10 @@ public final class StaticMethodAdvisorBuilder {
     public Builder<?> create(final Builder<?> builder) {
         Builder<?> result = builder;
         Collection<MethodAdvisor> matchedAdvisors = typePointcut.getDeclaredMethods()
-                .stream().filter(each -> each.isStatic() && !(each.isAbstract() || each.isSynthetic())).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
+                .stream().filter(this::isMatchedMethod).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
         for (MethodAdvisor each : matchedAdvisors) {
             try {
-                if (each.getAdvice() instanceof StaticMethodInterceptorArgsOverride) {
-                    result = result.method(ElementMatchers.is(each.getPointcut()))
-                            .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(each.getAdvice()));
-                } else {
-                    result = result.method(ElementMatchers.is(each.getPointcut())).intercept(MethodDelegation.withDefaultConfiguration().to(each.getAdvice()));
-                }
+                result = create(result, each);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -87,6 +82,18 @@ public final class StaticMethodAdvisorBuilder {
             }
         }
         return result;
+    }
+    
+    private Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
+        if (methodAdvisor.getAdvice() instanceof StaticMethodInterceptorArgsOverride) {
+            return builder.method(ElementMatchers.is(methodAdvisor.getPointcut()))
+                    .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(methodAdvisor.getAdvice()));
+        }
+        return builder.method(ElementMatchers.is(methodAdvisor.getPointcut())).intercept(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdvice()));
+    }
+    
+    private boolean isMatchedMethod(final InDefinedShape methodPointcut) {
+        return methodPointcut.isStatic() && !(methodPointcut.isAbstract() || methodPointcut.isSynthetic());
     }
     
     private MethodAdvisor getMatchedAdvisor(final InDefinedShape methodPointcut) {
