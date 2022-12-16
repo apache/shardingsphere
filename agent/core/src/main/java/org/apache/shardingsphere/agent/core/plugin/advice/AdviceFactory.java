@@ -77,7 +77,7 @@ public final class AdviceFactory {
         Object result = Class.forName(className, true, pluginClassLoader).getDeclaredConstructor().newInstance();
         setupPluginBootService(pluginClassLoader, pluginConfigs);
         return result;
-    }    
+    }
     
     private static void setupPluginBootService(final ClassLoader pluginClassLoader, final Map<String, PluginConfiguration> pluginConfigs) {
         if (isStarted) {
