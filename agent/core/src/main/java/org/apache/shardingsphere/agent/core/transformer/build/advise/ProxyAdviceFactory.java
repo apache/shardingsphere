@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer.builder.advise;
+package org.apache.shardingsphere.agent.core.transformer.build.advise;
 
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Advice factory.
+ * Proxy Advice factory.
  */
-public final class AdviceFactory {
+@RequiredArgsConstructor
+public final class ProxyAdviceFactory {
     
-    private final ProxyAdviceFactory proxyAdviceFactory;
-    
-    private final JDBCAdviceFactory jdbcAdviceFactory;
-    
-    private final boolean isEnhancedForProxy;
-    
-    public AdviceFactory(final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs, final boolean isEnhancedForProxy) {
-        proxyAdviceFactory = new ProxyAdviceFactory();
-        jdbcAdviceFactory = new JDBCAdviceFactory(classLoader, pluginConfigs);
-        this.isEnhancedForProxy = isEnhancedForProxy;
-    }
+    private static final Map<String, Object> CACHED_ADVICES = new ConcurrentHashMap<>();
     
     /**
      * Get advice.
@@ -45,7 +39,13 @@ public final class AdviceFactory {
      * @param <T> type of advice
      * @return got advance
      */
+    @SuppressWarnings("unchecked")
     public <T> T getAdvice(final String adviceClassName) {
-        return isEnhancedForProxy ? proxyAdviceFactory.getAdvice(adviceClassName) : jdbcAdviceFactory.getAdvice(adviceClassName);
+        return (T) CACHED_ADVICES.computeIfAbsent(adviceClassName, this::createAdviceForProxy);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Object createAdviceForProxy(final String adviceClassName) {
+        return Class.forName(adviceClassName, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
     }
 }
