@@ -22,8 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 
+import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -31,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public final class MySQLIncrementTask extends BaseIncrementTask {
     
-    private final JdbcTemplate jdbcTemplate;
+    private final DataSource dataSource;
     
     private final String orderTableName;
     
@@ -45,13 +46,14 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
             if (0 == executeCount % 2) {
-                jdbcTemplate.update(String.format("DELETE FROM %s WHERE order_id = ?", orderTableName), orderPrimaryKey);
+                String sql = String.format("DELETE FROM %s WHERE order_id = ?", orderTableName);
+                DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{orderPrimaryKey});
             } else {
                 setNullToOrderFields(orderPrimaryKey);
                 updateOrderByPrimaryKey(orderPrimaryKey);
             }
             Object orderItemPrimaryKey = insertOrderItem();
-            jdbcTemplate.update("UPDATE t_order_item SET status = ? WHERE item_id = ?", "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
+            DataSourceExecuteUtil.execute(dataSource, "UPDATE t_order_item SET status = ? WHERE item_id = ?", new Object[]{"updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey});
             executeCount++;
         }
         log.info("MySQL increment task runnable execute successfully.");
@@ -61,7 +63,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), random.nextInt(0, 6),
                 random.nextInt(1, 99), "中文测试"};
-        jdbcTemplate.update(String.format("INSERT INTO %s (order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?)", orderTableName), orderInsertDate);
+        DataSourceExecuteUtil.execute(dataSource, String.format("INSERT INTO %s (order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?)", orderTableName), orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -69,18 +71,22 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertItemDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), PipelineCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update("INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?, ?, ?, ?)", orderInsertItemDate);
+        DataSourceExecuteUtil.execute(dataSource, "INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?, ?, ?, ?)", orderInsertItemDate);
         return orderInsertItemDate[0];
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey};
-        jdbcTemplate.update(String.format("UPDATE %s SET t_char = ?,t_unsigned_int = ? WHERE order_id = ?", orderTableName), updateData);
+        DataSourceExecuteUtil.execute(dataSource, String.format("UPDATE %s SET t_char = ?,t_unsigned_int = ? WHERE order_id = ?", orderTableName), updateData);
         // TODO 0000-00-00 00:00:00 now will cause consistency check failed.
         // jdbcTemplate.update(String.format("UPDATE %s SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName), primaryKey);
+        /*
+         DataSourceUtil.execute(dataSource, String.format("UPDATE %s SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName),
+          new Object[]{primaryKey});
+         */
     }
     
     private void setNullToOrderFields(final Object primaryKey) {
-        jdbcTemplate.update(String.format("UPDATE %s SET t_char = null, t_unsigned_int = null WHERE order_id = ?", orderTableName), primaryKey);
+        DataSourceExecuteUtil.execute(dataSource, String.format("UPDATE %s SET t_char = null, t_unsigned_int = null WHERE order_id = ?", orderTableName), new Object[]{primaryKey});
     }
 }
