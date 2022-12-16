@@ -81,8 +81,8 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
         // TODO 0000-00-00 00:00:00 now will cause consistency check failed.
         // jdbcTemplate.update(String.format("UPDATE %s SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName), primaryKey);
         /*
-         DataSourceUtil.execute(dataSource, String.format("UPDATE %s SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName),
-          new Object[]{primaryKey});
+         * DataSourceUtil.execute(dataSource, String.format("UPDATE %s SET t_char = null,t_unsigned_int = 299,t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName), new
+         * Object[]{primaryKey});
          */
     }
     
