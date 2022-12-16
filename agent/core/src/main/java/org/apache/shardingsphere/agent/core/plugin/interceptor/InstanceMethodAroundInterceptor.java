@@ -57,7 +57,7 @@ public class InstanceMethodAroundInterceptor {
     public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
-        boolean adviceEnabled = advice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
                 advice.beforeMethod(target, method, args, methodResult);

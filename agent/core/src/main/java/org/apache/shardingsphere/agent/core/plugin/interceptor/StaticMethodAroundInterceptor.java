@@ -55,7 +55,7 @@ public class StaticMethodAroundInterceptor {
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
-        boolean adviceEnabled = advice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
                 advice.beforeMethod(klass, method, args, methodResult);
