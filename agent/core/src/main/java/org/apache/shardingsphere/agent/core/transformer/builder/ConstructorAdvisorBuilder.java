@@ -24,7 +24,7 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.method.type.ConstructorAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
@@ -46,15 +46,15 @@ public final class ConstructorAdvisorBuilder {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(ConstructorAdvisorBuilder.class);
     
-    private final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs;
+    private final Collection<ConstructorAdvisorConfiguration> advisorConfigs;
     
     private final TypeDescription typePointcut;
     
     private final AdviceFactory adviceFactory;
     
-    public ConstructorAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs,
+    public ConstructorAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<ConstructorAdvisorConfiguration> advisorConfigs,
                                      final boolean isEnhancedForProxy, final TypeDescription typePointcut, final ClassLoader classLoader) {
-        this.constructorAdvisorConfigs = constructorAdvisorConfigs;
+        this.advisorConfigs = advisorConfigs;
         this.typePointcut = typePointcut;
         adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
     }
@@ -67,12 +67,9 @@ public final class ConstructorAdvisorBuilder {
      */
     public Builder<?> create(final Builder<?> builder) {
         Builder<?> result = builder;
-        Collection<MethodAdvisor<? extends ConstructorInterceptor>> constructorAdvisors = typePointcut.getDeclaredMethods().stream()
-                .filter(MethodDescription::isConstructor)
-                .map(this::getMatchedConstructorAdvisor)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        for (MethodAdvisor<? extends ConstructorInterceptor> each : constructorAdvisors) {
+        Collection<MethodAdvisor<?>> matchedAdvisor = typePointcut.getDeclaredMethods()
+                .stream().filter(MethodDescription::isConstructor).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
+        for (MethodAdvisor<?> each : matchedAdvisor) {
             try {
                 result = result.constructor(ElementMatchers.is(each.getPointcut()))
                         .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(each.getAdvice())));
@@ -85,20 +82,24 @@ public final class ConstructorAdvisorBuilder {
         return result;
     }
     
-    private MethodAdvisor<? extends ConstructorInterceptor> getMatchedConstructorAdvisor(final InDefinedShape methodPointcut) {
-        List<ConstructorAdvisorConfiguration> matchedConstructorAdvisorConfigs = constructorAdvisorConfigs
-                .stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
-        if (matchedConstructorAdvisorConfigs.isEmpty()) {
+    private MethodAdvisor<?> getMatchedAdvisor(final InDefinedShape methodPointcut) {
+        List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
+        if (matchedAdvisorConfigs.isEmpty()) {
             return null;
         }
-        if (1 == matchedConstructorAdvisorConfigs.size()) {
-            return new MethodAdvisor<>(
-                    methodPointcut, new ConstructorInterceptor(adviceFactory.getAdvice(matchedConstructorAdvisorConfigs.get(0).getAdviceClassName())));
+        if (1 == matchedAdvisorConfigs.size()) {
+            return getSingleMethodAdvisor(methodPointcut, matchedAdvisorConfigs);
         }
-        Collection<ConstructorAdvice> constructorAdvices = matchedConstructorAdvisorConfigs.stream()
-                .map(ConstructorAdvisorConfiguration::getAdviceClassName)
-                .map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each))
-                .collect(Collectors.toList());
-        return new MethodAdvisor<>(methodPointcut, new ComposedConstructorInterceptor(constructorAdvices));
+        return getComposedMethodAdvisor(methodPointcut, matchedAdvisorConfigs);
+    }
+    
+    private MethodAdvisor<ConstructorInterceptor> getSingleMethodAdvisor(final InDefinedShape methodPointcut, final List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs) {
+        return new MethodAdvisor<>(methodPointcut, new ConstructorInterceptor(adviceFactory.getAdvice(matchedAdvisorConfigs.get(0).getAdviceClassName())));
+    }
+    
+    private MethodAdvisor<ComposedConstructorInterceptor> getComposedMethodAdvisor(final InDefinedShape methodPointcut, final List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs) {
+        Collection<ConstructorAdvice> advices = matchedAdvisorConfigs
+                .stream().map(ConstructorAdvisorConfiguration::getAdviceClassName).map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each)).collect(Collectors.toList());
+        return new MethodAdvisor<>(methodPointcut, new ComposedConstructorInterceptor(advices));
     }
 }

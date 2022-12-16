@@ -19,9 +19,9 @@ package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.InstanceMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.StaticMethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.method.type.ConstructorAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.method.type.InstanceMethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.method.type.StaticMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;

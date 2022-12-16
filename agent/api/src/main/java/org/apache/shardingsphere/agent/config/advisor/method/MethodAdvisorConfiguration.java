@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config.advisor;
+package org.apache.shardingsphere.agent.config.advisor.method;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Instance method advisor configuration.
+ * Method advisor configuration.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InstanceMethodAdvisorConfiguration {
+public interface MethodAdvisorConfiguration {
     
-    private final ElementMatcher<? super MethodDescription> pointcut;
+    /**
+     * Get pointcut.
+     * 
+     * @return pointcut
+     */
+    ElementMatcher<? super MethodDescription> getPointcut();
     
-    private final String adviceClassName;
-    
-    private final boolean overrideArgs;
-    
-    public InstanceMethodAdvisorConfiguration(final ElementMatcher<? super MethodDescription> pointcut, final String adviceClassName) {
-        this(pointcut, adviceClassName, false);
-    }
+    /**
+     * Get advice class name.
+     * 
+     * @return advice class name
+     */
+    String getAdviceClassName();
 }
