@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.transformer.builder;
 
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
@@ -33,8 +32,8 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAro
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedInstanceMethodInterceptorArgsOverride;
-import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
+import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -46,20 +45,22 @@ import java.util.stream.Collectors;
 /**
  * Instance method advisor builder.
  */
-@RequiredArgsConstructor
 public final class InstanceMethodAdvisorBuilder {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdvisorBuilder.class);
     
-    private final Map<String, PluginConfiguration> pluginConfigs;
-    
     private final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs;
-    
-    private final boolean isEnhancedForProxy;
     
     private final TypeDescription typePointcut;
     
-    private final ClassLoader classLoader;
+    private final AdviceFactory adviceFactory;
+    
+    public InstanceMethodAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs,
+                                        final boolean isEnhancedForProxy, final TypeDescription typePointcut, final ClassLoader classLoader) {
+        this.instanceMethodAdvisorConfigs = instanceMethodAdvisorConfigs;
+        this.typePointcut = typePointcut;
+        adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
+    }
     
     /**
      * Create instance method advisor builder.
@@ -104,7 +105,7 @@ public final class InstanceMethodAdvisorBuilder {
     }
     
     private MethodAdvisor<?> getSingleInstanceMethodPoint(final InDefinedShape methodPointcut, final InstanceMethodAdvisorConfiguration instanceMethodAdvisorConfig) {
-        InstanceMethodAroundAdvice instanceMethodAroundAdvice = loadAdviceInstance(instanceMethodAdvisorConfig.getAdviceClassName());
+        InstanceMethodAroundAdvice instanceMethodAroundAdvice = adviceFactory.getAdvice(instanceMethodAdvisorConfig.getAdviceClassName());
         return instanceMethodAdvisorConfig.isOverrideArgs()
                 ? new MethodAdvisor<>(methodPointcut, new InstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvice))
                 : new MethodAdvisor<>(methodPointcut, new InstanceMethodAroundInterceptor(instanceMethodAroundAdvice));
@@ -118,15 +119,11 @@ public final class InstanceMethodAdvisorBuilder {
                 isArgsOverride = true;
             }
             if (null != each.getAdviceClassName()) {
-                instanceMethodAroundAdvices.add(loadAdviceInstance(each.getAdviceClassName()));
+                instanceMethodAroundAdvices.add(adviceFactory.getAdvice(each.getAdviceClassName()));
             }
         }
         return isArgsOverride
                 ? new MethodAdvisor<>(methodPointcut, new ComposedInstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvices))
                 : new MethodAdvisor<>(methodPointcut, new ComposedInstanceMethodAroundInterceptor(instanceMethodAroundAdvices));
-    }
-    
-    private <T> T loadAdviceInstance(final String adviceClassName) {
-        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, pluginConfigs, isEnhancedForProxy);
     }
 }
