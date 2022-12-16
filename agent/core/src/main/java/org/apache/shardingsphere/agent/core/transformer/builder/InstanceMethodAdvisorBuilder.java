@@ -70,9 +70,9 @@ public final class InstanceMethodAdvisorBuilder {
      */
     public Builder<?> create(final Builder<?> builder) {
         Builder<?> result = builder;
-        Collection<MethodAdvisor<?>> matchedAdvisors = typePointcut.getDeclaredMethods()
+        Collection<MethodAdvisor> matchedAdvisors = typePointcut.getDeclaredMethods()
                 .stream().filter(each -> !(each.isAbstract() || each.isSynthetic())).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
-        for (MethodAdvisor<?> each : matchedAdvisors) {
+        for (MethodAdvisor each : matchedAdvisors) {
             try {
                 if (each.getAdvice() instanceof InstanceMethodInterceptorArgsOverride) {
                     result = result.method(ElementMatchers.is(each.getPointcut()))
@@ -89,7 +89,7 @@ public final class InstanceMethodAdvisorBuilder {
         return result;
     }
     
-    private MethodAdvisor<?> getMatchedAdvisor(final InDefinedShape methodPointcut) {
+    private MethodAdvisor getMatchedAdvisor(final InDefinedShape methodPointcut) {
         List<InstanceMethodAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
         if (matchedAdvisorConfigs.isEmpty()) {
             return null;
@@ -100,13 +100,13 @@ public final class InstanceMethodAdvisorBuilder {
         return getComposedMethodAdvisor(methodPointcut);
     }
     
-    private MethodAdvisor<?> getSingleMethodAdvisor(final InDefinedShape methodPointcut, final InstanceMethodAdvisorConfiguration advisorConfig) {
+    private MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final InstanceMethodAdvisorConfiguration advisorConfig) {
         InstanceMethodAroundAdvice instanceMethodAroundAdvice = adviceFactory.getAdvice(advisorConfig.getAdviceClassName());
         Object advice = advisorConfig.isOverrideArgs() ? new InstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvice) : new InstanceMethodAroundInterceptor(instanceMethodAroundAdvice);
-        return new MethodAdvisor<>(methodPointcut, advice);
+        return new MethodAdvisor(methodPointcut, advice);
     }
     
-    private MethodAdvisor<?> getComposedMethodAdvisor(final InDefinedShape methodPointcut) {
+    private MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut) {
         Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices = new LinkedList<>();
         boolean isArgsOverride = false;
         for (InstanceMethodAdvisorConfiguration each : advisorConfigs) {
@@ -118,6 +118,6 @@ public final class InstanceMethodAdvisorBuilder {
             }
         }
         Object advice = isArgsOverride ? new ComposedInstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvices) : new ComposedInstanceMethodAroundInterceptor(instanceMethodAroundAdvices);
-        return new MethodAdvisor<>(methodPointcut, advice);
+        return new MethodAdvisor(methodPointcut, advice);
     }
 }

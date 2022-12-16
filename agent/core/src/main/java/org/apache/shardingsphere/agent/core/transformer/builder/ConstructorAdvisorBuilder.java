@@ -67,9 +67,9 @@ public final class ConstructorAdvisorBuilder {
      */
     public Builder<?> create(final Builder<?> builder) {
         Builder<?> result = builder;
-        Collection<MethodAdvisor<?>> matchedAdvisor = typePointcut.getDeclaredMethods()
+        Collection<MethodAdvisor> matchedAdvisor = typePointcut.getDeclaredMethods()
                 .stream().filter(MethodDescription::isConstructor).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
-        for (MethodAdvisor<?> each : matchedAdvisor) {
+        for (MethodAdvisor each : matchedAdvisor) {
             try {
                 result = result.constructor(ElementMatchers.is(each.getPointcut()))
                         .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(each.getAdvice())));
@@ -82,7 +82,7 @@ public final class ConstructorAdvisorBuilder {
         return result;
     }
     
-    private MethodAdvisor<?> getMatchedAdvisor(final InDefinedShape methodPointcut) {
+    private MethodAdvisor getMatchedAdvisor(final InDefinedShape methodPointcut) {
         List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
         if (matchedAdvisorConfigs.isEmpty()) {
             return null;
@@ -93,13 +93,13 @@ public final class ConstructorAdvisorBuilder {
         return getComposedMethodAdvisor(methodPointcut, matchedAdvisorConfigs);
     }
     
-    private MethodAdvisor<ConstructorInterceptor> getSingleMethodAdvisor(final InDefinedShape methodPointcut, final List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs) {
-        return new MethodAdvisor<>(methodPointcut, new ConstructorInterceptor(adviceFactory.getAdvice(matchedAdvisorConfigs.get(0).getAdviceClassName())));
+    private MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs) {
+        return new MethodAdvisor(methodPointcut, new ConstructorInterceptor(adviceFactory.getAdvice(matchedAdvisorConfigs.get(0).getAdviceClassName())));
     }
     
-    private MethodAdvisor<ComposedConstructorInterceptor> getComposedMethodAdvisor(final InDefinedShape methodPointcut, final List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs) {
+    private MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut, final List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs) {
         Collection<ConstructorAdvice> advices = matchedAdvisorConfigs
                 .stream().map(ConstructorAdvisorConfiguration::getAdviceClassName).map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each)).collect(Collectors.toList());
-        return new MethodAdvisor<>(methodPointcut, new ComposedConstructorInterceptor(advices));
+        return new MethodAdvisor(methodPointcut, new ComposedConstructorInterceptor(advices));
     }
 }
