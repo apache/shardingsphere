@@ -31,7 +31,7 @@ import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedConstructorInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
+import org.apache.shardingsphere.agent.core.plugin.advice.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 import java.util.Collection;
@@ -102,6 +102,6 @@ public final class ConstructorAdvisorBuilder {
     }
     
     private <T> T loadAdviceInstance(final String adviceClassName) {
-        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, pluginConfigs, isEnhancedForProxy);
+        return AdviceFactory.getAdvice(adviceClassName, classLoader, pluginConfigs, isEnhancedForProxy);
     }
 }

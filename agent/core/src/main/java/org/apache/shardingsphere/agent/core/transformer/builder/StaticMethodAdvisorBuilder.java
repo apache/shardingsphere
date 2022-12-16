@@ -33,7 +33,7 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroun
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodInterceptorArgsOverride;
-import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
+import org.apache.shardingsphere.agent.core.plugin.advice.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 import java.util.Collection;
@@ -125,6 +125,6 @@ public final class StaticMethodAdvisorBuilder {
     }
     
     private <T> T loadAdviceInstance(final String adviceClassName) {
-        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, pluginConfigs, isEnhancedForProxy);
+        return AdviceFactory.getAdvice(adviceClassName, classLoader, pluginConfigs, isEnhancedForProxy);
     }
 }
