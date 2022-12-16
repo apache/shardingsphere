@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
-public final class FixtureImporter implements Importer {
+/**
+ * CDC importer.
+ */
+public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
     
-    public FixtureImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                           final PipelineJobProgressListener jobProgressListener) {
+    @Override
+    protected void runBlocking() {
+        // TODO to be implemented
     }
     
     @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-    }
-    
-    @Override
-    public void run() {
-        start();
+    protected void doStop() {
+        // TODO to be implemented
     }
 }

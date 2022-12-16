@@ -22,7 +22,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreatorFactory;
 
@@ -68,7 +68,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     
     // TODO simplify parameters
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
-                           final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
+                           final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
                            final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalExecuteEngine,
                            final InventoryIncrementalJobItemContext jobItemContext) {
         taskId = dumperConfig.getDataSourceName();
@@ -78,7 +78,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
         dumper = IncrementalDumperCreatorFactory.getInstance(dumperConfig.getDataSourceConfig().getDatabaseType().getType()).createIncrementalDumper(dumperConfig, position, channel,
                 sourceMetaDataLoader);
-        importers = createImporters(concurrency, importerConfig, dataSourceManager, channel, jobItemContext);
+        importers = createImporters(concurrency, importerConfig, importerConnector, channel, jobItemContext);
     }
     
     private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition<?> position, final InventoryIncrementalJobItemProgress jobItemProgress) {
@@ -91,12 +91,11 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         return incrementalTaskProgress;
     }
     
-    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
                                                  final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < concurrency; i++) {
-            result.add(ImporterCreatorFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType()).createImporter(importerConfig, dataSourceManager, channel,
-                    jobProgressListener));
+            result.add(ImporterCreatorFactory.getInstance(importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener));
         }
         return result;
     }

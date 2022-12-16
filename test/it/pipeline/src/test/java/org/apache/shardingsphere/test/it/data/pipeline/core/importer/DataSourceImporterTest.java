@@ -30,9 +30,11 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.importer.DefaultImporter;
+import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
+import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +59,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DefaultImporterTest {
+public final class DataSourceImporterTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -79,11 +81,12 @@ public final class DefaultImporterTest {
     @Mock
     private PreparedStatement preparedStatement;
     
-    private DefaultImporter jdbcImporter;
+    private DataSourceImporter jdbcImporter;
     
     @Before
     public void setUp() throws SQLException {
-        jdbcImporter = new DefaultImporter(mockImporterConfiguration(), dataSourceManager, channel, new FixtureInventoryIncrementalJobItemContext());
+        ImporterConnector importerConnector = new DataSourceImporterConnector(dataSourceManager);
+        jdbcImporter = new DataSourceImporter(mockImporterConfiguration(), importerConnector, channel, new FixtureInventoryIncrementalJobItemContext());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }

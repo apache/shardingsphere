@@ -17,23 +17,13 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
-/**
- * Fixture importer creator.
- */
-public final class FixtureImporterCreator implements ImporterCreator {
+public final class FixtureImporterConnector implements ImporterConnector {
     
     @Override
-    public Importer createImporter(final ImporterConfiguration importerConfig,
-                                   final ImporterConnector importerConnector, final PipelineChannel channel,
-                                   final PipelineJobProgressListener jobProgressListener) {
-        return new FixtureImporter(importerConfig, importerConnector, channel, jobProgressListener);
+    public Object getConnector() {
+        return null;
     }
     
     @Override

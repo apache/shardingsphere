@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporterCreator
+org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterCreator

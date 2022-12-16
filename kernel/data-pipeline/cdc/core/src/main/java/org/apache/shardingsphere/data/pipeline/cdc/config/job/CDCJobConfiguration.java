@@ -56,7 +56,6 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     @Override
     public int getJobShardingCount() {
-        // TODO job sharding count maybe not always 1
-        return 1;
+        return jobShardingDataNodes.size();
     }
 }

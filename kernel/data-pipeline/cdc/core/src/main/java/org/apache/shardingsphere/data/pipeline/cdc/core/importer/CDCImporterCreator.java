@@ -15,40 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 /**
- * Default importer creator.
+ * CDC importer creator.
  */
-public final class DefaultImporterCreator implements ImporterCreator {
-    
-    private static final Collection<String> TYPE_ALIASES = Collections.unmodifiableList(Arrays.asList("PostgreSQL", "openGauss"));
+public final class CDCImporterCreator implements ImporterCreator {
     
     @Override
-    public Importer createImporter(final ImporterConfiguration importerConfig,
-                                   final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+    public Importer createImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener) {
-        return new DefaultImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+        return new CDCImporter();
     }
     
     @Override
     public String getType() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return TYPE_ALIASES;
+        return "CDC";
     }
 }

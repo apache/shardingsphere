@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFactory;
+import org.junit.Test;
+import org.mockito.Mock;
 
-public final class FixtureImporter implements Importer {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class CDCImporterCreatorTest {
     
-    public FixtureImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                           final PipelineJobProgressListener jobProgressListener) {
-    }
+    @Mock
+    private ImporterConfiguration importerConfig;
     
-    @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-    }
-    
-    @Override
-    public void run() {
-        start();
+    @Test
+    public void assertCreateCDCImporter() {
+        Importer actual = ImporterCreatorFactory.getInstance("CDC").createImporter(importerConfig, new CDCImporterConnector(), null, null);
+        assertThat(actual, instanceOf(CDCImporter.class));
     }
 }

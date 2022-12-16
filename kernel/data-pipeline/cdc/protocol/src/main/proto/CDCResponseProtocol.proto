@@ -51,6 +51,22 @@ message CreateSubscriptionResult {
   bool existing = 2;
 }
 
+message NullValue {
+
+}
+
+message BigIntegerValue {
+  bytes value = 1;
+}
+
+message BigDecimalValue {
+  string value = 1;
+}
+
+message ClobValue {
+  string value = 1;
+}
+
 message FetchRecordResult {
   message Record {
     map<string, google.protobuf.Any> before = 1;
@@ -77,6 +93,6 @@ message FetchRecordResult {
     bool isDDL = 6;
     optional string ddlSQL = 7;
   }
-  repeated Record records = 1;
-  bool hasNext = 2;
+  string ack_id = 1;
+  repeated Record records = 2;
 }

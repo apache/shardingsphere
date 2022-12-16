@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.importer.connector;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
-public final class FixtureImporter implements Importer {
+/**
+ * Default importer connector.
+ */
+
+@RequiredArgsConstructor
+public final class DataSourceImporterConnector implements ImporterConnector {
     
-    public FixtureImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                           final PipelineJobProgressListener jobProgressListener) {
+    private final PipelineDataSourceManager pipelineDataSourceManager;
+    
+    @Override
+    public Object getConnector() {
+        return pipelineDataSourceManager;
     }
     
     @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-    }
-    
-    @Override
-    public void run() {
-        start();
+    public String getType() {
+        return "DataSource";
     }
 }

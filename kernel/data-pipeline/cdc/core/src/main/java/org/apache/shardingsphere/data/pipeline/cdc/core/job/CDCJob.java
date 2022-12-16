@@ -72,5 +72,6 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     @Override
     protected void doClean() {
+        dataSourceManager.close();
     }
 }
