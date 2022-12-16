@@ -54,7 +54,7 @@ public final class StaticMethodAdvisorBuilder {
     private final Map<String, PluginConfiguration> pluginConfigs;
     
     private final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs;
-            
+    
     private final boolean isEnhancedForProxy;
     
     private final TypeDescription typePointcut;

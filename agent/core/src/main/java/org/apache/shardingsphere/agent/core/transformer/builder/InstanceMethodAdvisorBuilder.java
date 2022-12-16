@@ -54,7 +54,7 @@ public final class InstanceMethodAdvisorBuilder {
     private final Map<String, PluginConfiguration> pluginConfigs;
     
     private final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisorConfigs;
-            
+    
     private final boolean isEnhancedForProxy;
     
     private final TypeDescription typePointcut;

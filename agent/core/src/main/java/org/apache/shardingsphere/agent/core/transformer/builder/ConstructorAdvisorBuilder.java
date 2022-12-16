@@ -51,7 +51,7 @@ public final class ConstructorAdvisorBuilder {
     private final Map<String, PluginConfiguration> pluginConfigs;
     
     private final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs;
-            
+    
     private final boolean isEnhancedForProxy;
     
     private final TypeDescription typePointcut;
