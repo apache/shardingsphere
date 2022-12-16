@@ -56,16 +56,8 @@ public final class StaticMethodAdvice {
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult invocationResult = new MethodInvocationResult();
         boolean adviceEnabled = PluginContext.isPluginEnabled();
-        try {
-            if (adviceEnabled) {
-                for (StaticMethodAdviceExecutor each : executors) {
-                    each.beforeMethod(klass, method, args, invocationResult);
-                }
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
-            // CHECKSTYLE:ON
-            LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), klass, ex);
+        if (adviceEnabled) {
+            interceptPre(klass, method, args, invocationResult);
         }
         Object result;
         try {
@@ -74,31 +66,51 @@ public final class StaticMethodAdvice {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            try {
-                if (adviceEnabled) {
-                    for (StaticMethodAdviceExecutor each : executors) {
-                        each.onThrowing(klass, method, args, ex);
-                    }
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ignored) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), klass, ex);
+            if (adviceEnabled) {
+                interceptThrow(klass, method, args, ex);
             }
             throw ex;
         } finally {
-            try {
-                if (adviceEnabled) {
-                    for (StaticMethodAdviceExecutor each : executors) {
-                        each.afterMethod(klass, method, args, invocationResult);
-                    }
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), klass, ex);
+            if (adviceEnabled) {
+                interceptPost(klass, method, args, invocationResult);
             }
         }
         return invocationResult.isRebased() ? invocationResult.getResult() : result;
+    }
+    
+    private void interceptPre(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        try {
+            for (StaticMethodAdviceExecutor each : executors) {
+                each.beforeMethod(klass, method, args, invocationResult);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ex) {
+            // CHECKSTYLE:ON
+            LOGGER.error("Failed to execute the pre-method of method `{}` in class `{}`.", method.getName(), klass, ex);
+        }
+    }
+    
+    private void interceptThrow(final Class<?> klass, final Method method, final Object[] args, final Throwable ex) {
+        try {
+            for (StaticMethodAdviceExecutor each : executors) {
+                each.onThrowing(klass, method, args, ex);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ignored) {
+            // CHECKSTYLE:ON
+            LOGGER.error("Failed to execute the error handler of method `{}` in class `{}`.", method.getName(), klass, ex);
+        }
+    }
+    
+    private void interceptPost(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        try {
+            for (StaticMethodAdviceExecutor each : executors) {
+                each.afterMethod(klass, method, args, invocationResult);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ex) {
+            // CHECKSTYLE:ON
+            LOGGER.error("Failed to execute the post-method of method `{}` in class `{}`.", method.getName(), klass, ex);
+        }
     }
 }
