@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.InstanceMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
+import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.TracingAdviser;
 
 /**
@@ -40,7 +40,7 @@ public final class SQLParserEngineAdviser implements TracingAdviser {
     @Override
     public AdvisorConfiguration getAdvisorConfiguration(final Class<? extends InstanceMethodAroundAdvice> sqlParserEngineAdvice) {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(TARGET_CLASS);
-        result.getInstanceMethodAdvisors().add(new InstanceMethodAdvisorConfiguration(ElementMatchers.named(TARGET_METHOD), sqlParserEngineAdvice.getName()));
+        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named(TARGET_METHOD), sqlParserEngineAdvice.getName()));
         return result;
     }
 }
