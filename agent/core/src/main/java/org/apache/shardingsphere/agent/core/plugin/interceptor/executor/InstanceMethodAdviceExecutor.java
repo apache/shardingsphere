@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 /**
  * Instance method advice executor.
  */
-public interface InstanceMethodAdviceExecutor extends AgentAdviceExecutor {
+public interface InstanceMethodAdviceExecutor {
     
     /**
      * Intercept the target method and weave the method before origin method.

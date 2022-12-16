@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 /**
  * Constructor advice executor.
  */
-public interface ConstructorAdviceExecutor extends AgentAdviceExecutor {
+public interface ConstructorAdviceExecutor {
     
     /**
      * Intercept the target's constructor.

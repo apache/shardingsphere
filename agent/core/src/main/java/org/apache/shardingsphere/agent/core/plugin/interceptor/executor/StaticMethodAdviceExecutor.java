@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 /**
  * Static method advice executor.
  */
-public interface StaticMethodAdviceExecutor extends AgentAdviceExecutor {
+public interface StaticMethodAdviceExecutor {
     
     /**
      * Intercept the target method and weave the method before origin method.
