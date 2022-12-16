@@ -24,11 +24,11 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
-import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -54,14 +54,13 @@ public class InstanceMethodAroundInterceptor {
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        TargetAdviceObject instance = (TargetAdviceObject) target;
+    public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
         boolean adviceEnabled = instanceMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                instanceMethodAroundAdvice.beforeMethod(instance, method, args, methodResult);
+                instanceMethodAroundAdvice.beforeMethod(target, method, args, methodResult);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -80,7 +79,7 @@ public class InstanceMethodAroundInterceptor {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    instanceMethodAroundAdvice.onThrowing(instance, method, args, ex);
+                    instanceMethodAroundAdvice.onThrowing(target, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
@@ -91,7 +90,7 @@ public class InstanceMethodAroundInterceptor {
         } finally {
             try {
                 if (adviceEnabled) {
-                    instanceMethodAroundAdvice.afterMethod(instance, method, args, methodResult);
+                    instanceMethodAroundAdvice.afterMethod(target, method, args, methodResult);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
