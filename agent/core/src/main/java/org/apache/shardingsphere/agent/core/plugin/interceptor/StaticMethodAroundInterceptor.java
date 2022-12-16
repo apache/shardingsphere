@@ -39,7 +39,7 @@ public class StaticMethodAroundInterceptor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAroundInterceptor.class);
     
-    private final StaticMethodAroundAdvice staticMethodAroundAdvice;
+    private final StaticMethodAroundAdvice advice;
     
     /**
      * Only intercept static method.
@@ -55,10 +55,10 @@ public class StaticMethodAroundInterceptor {
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
-        boolean adviceEnabled = staticMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                staticMethodAroundAdvice.beforeMethod(klass, method, args, methodResult);
+                advice.beforeMethod(klass, method, args, methodResult);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -77,7 +77,7 @@ public class StaticMethodAroundInterceptor {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    staticMethodAroundAdvice.onThrowing(klass, method, args, ex);
+                    advice.onThrowing(klass, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
@@ -88,7 +88,7 @@ public class StaticMethodAroundInterceptor {
         } finally {
             try {
                 if (adviceEnabled) {
-                    staticMethodAroundAdvice.afterMethod(klass, method, args, methodResult);
+                    advice.afterMethod(klass, method, args, methodResult);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {

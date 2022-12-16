@@ -41,7 +41,7 @@ public class InstanceMethodAroundInterceptor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAroundInterceptor.class);
     
-    private final InstanceMethodAroundAdvice instanceMethodAroundAdvice;
+    private final InstanceMethodAroundAdvice advice;
     
     /**
      * Only intercept instance method.
@@ -57,10 +57,10 @@ public class InstanceMethodAroundInterceptor {
     public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
-        boolean adviceEnabled = instanceMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                instanceMethodAroundAdvice.beforeMethod(target, method, args, methodResult);
+                advice.beforeMethod(target, method, args, methodResult);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -79,7 +79,7 @@ public class InstanceMethodAroundInterceptor {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    instanceMethodAroundAdvice.onThrowing(target, method, args, ex);
+                    advice.onThrowing(target, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
@@ -90,7 +90,7 @@ public class InstanceMethodAroundInterceptor {
         } finally {
             try {
                 if (adviceEnabled) {
-                    instanceMethodAroundAdvice.afterMethod(target, method, args, methodResult);
+                    advice.afterMethod(target, method, args, methodResult);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {

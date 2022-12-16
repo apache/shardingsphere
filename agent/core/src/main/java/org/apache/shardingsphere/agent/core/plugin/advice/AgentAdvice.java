@@ -21,13 +21,4 @@ package org.apache.shardingsphere.agent.core.plugin.advice;
  * Agent advice.
  */
 public interface AgentAdvice {
-    
-    /**
-     * Check if disable the check process when interceptor are trying to call the advice. Then the advice will be called by skipping checks.
-     *
-     * @return disable or not
-     */
-    default boolean disableCheck() {
-        return false;
-    }
 }

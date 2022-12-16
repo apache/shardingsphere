@@ -35,7 +35,7 @@ public class ConstructorInterceptor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorInterceptor.class);
     
-    private final ConstructorAdvice constructorAdvice;
+    private final ConstructorAdvice advice;
     
     /**
      * Intercept constructor.
@@ -45,10 +45,10 @@ public class ConstructorInterceptor {
      */
     @RuntimeType
     public void intercept(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
-        boolean adviceEnabled = constructorAdvice.disableCheck() || PluginContext.isPluginEnabled();
+        boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                constructorAdvice.onConstructor(target, args);
+                advice.onConstructor(target, args);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable throwable) {
