@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import org.apache.shardingsphere.agent.core.plugin.advice.AdviceExecutor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 /**
- * Method advisor.
+ * Advice executor.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MethodAdvisor {
-    
-    private final MethodDescription pointcut;
-    
-    private final AdviceExecutor adviceExecutor;
+public interface AdviceExecutor {
 }

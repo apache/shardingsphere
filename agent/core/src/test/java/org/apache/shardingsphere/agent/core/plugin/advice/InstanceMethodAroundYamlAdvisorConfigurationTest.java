@@ -30,6 +30,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
+import org.apache.shardingsphere.agent.core.plugin.advice.type.InstanceMethodAdviceExecutor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

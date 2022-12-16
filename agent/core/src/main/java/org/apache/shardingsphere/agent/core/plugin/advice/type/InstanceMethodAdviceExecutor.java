@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.advice.type;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -24,10 +24,11 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
-import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
+import org.apache.shardingsphere.agent.core.plugin.advice.AdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -37,7 +38,7 @@ import java.util.concurrent.Callable;
  * Instance method advice executor.
  */
 @RequiredArgsConstructor
-public final class InstanceMethodAdviceExecutor {
+public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdviceExecutor.class);
     

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.advice.type;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -25,6 +25,7 @@ import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
+import org.apache.shardingsphere.agent.core.plugin.advice.AdviceExecutor;
 
 import java.util.Collection;
 
@@ -32,7 +33,7 @@ import java.util.Collection;
  * Constructor advice executor.
  */
 @RequiredArgsConstructor
-public final class ConstructorAdviceExecutor {
+public final class ConstructorAdviceExecutor implements AdviceExecutor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorAdviceExecutor.class);
     
