@@ -22,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 
 /**
- * Agent transformer point.
+ * Method advisor.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AgentTransformationPoint<T> {
+public final class MethodAdvisor<T> {
     
-    private final MethodDescription description;
+    private final MethodDescription pointcut;
     
-    private final T interceptor;
+    private final T advice;
 }
