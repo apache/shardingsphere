@@ -68,6 +68,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
@@ -120,8 +121,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private final MetaDataContexts metaDataContexts;
     
     private final String sql;
-    
-    private final String removeHintSQL;
     
     private final List<PreparedStatement> statements;
     
@@ -194,14 +193,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.connection = connection;
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
         eventBusContext = connection.getContextManager().getInstanceContext().getEventBusContext();
-        this.sql = sql;
-        this.removeHintSQL = SQLHintUtils.removeHint(sql);
+        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        this.sql = sqlParserRule.isSqlCommentParseEnabled() ? sql : SQLHintUtils.removeHint(sql);
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType()));
-        sqlStatement = sqlParserEngine.parse(this.removeHintSQL, true);
+        sqlStatement = sqlParserEngine.parse(this.sql, true);
         sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, connection.getDatabaseName());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -566,7 +564,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
-        return new QueryContext(sqlStatementContext, removeHintSQL, params, SQLHintUtils.extractHint(sql));
+        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(sql);
+        return new QueryContext(sqlStatementContext, sql, params, hintValueContext);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
