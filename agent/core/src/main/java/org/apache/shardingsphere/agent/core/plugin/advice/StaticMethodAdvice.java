@@ -55,7 +55,6 @@ public final class StaticMethodAdvice {
     @SneakyThrows
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult invocationResult = new MethodInvocationResult();
-        Object result;
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
@@ -68,12 +67,9 @@ public final class StaticMethodAdvice {
             // CHECKSTYLE:ON
             LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), klass, ex);
         }
+        Object result;
         try {
-            if (invocationResult.isRebased()) {
-                result = invocationResult.getResult();
-            } else {
-                result = callable.call();
-            }
+            result = invocationResult.isRebased() ? invocationResult.getResult() : callable.call();
             invocationResult.rebase(result);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
