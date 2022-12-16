@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
@@ -96,7 +96,7 @@ public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
         InstanceMaterial material = new ByteBuddy()
                 .subclass(InstanceMaterial.class)
                 .method(ElementMatchers.named(methodName))
-                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAroundInterceptor(Collections.singleton(new MockInstanceMethodAdviceExecutor(rebase)))))
+                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAdvice(Collections.singleton(new MockInstanceMethodAdviceExecutor(rebase)))))
                 .make()
                 .load(new MockClassLoader())
                 .getLoaded()

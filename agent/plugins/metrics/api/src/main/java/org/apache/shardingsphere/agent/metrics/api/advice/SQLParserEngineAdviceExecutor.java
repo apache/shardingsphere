@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;

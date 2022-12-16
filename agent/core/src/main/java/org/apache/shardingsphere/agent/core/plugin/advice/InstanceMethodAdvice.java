@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,30 +28,30 @@ import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
 /**
- * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method.
+ * Instance method advice.
  */
 @RequiredArgsConstructor
-public class InstanceMethodAroundInterceptor {
+public final class InstanceMethodAdvice {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAroundInterceptor.class);
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdvice.class);
     
     private final Collection<InstanceMethodAdviceExecutor> executors;
     
     /**
-     * Only intercept instance method.
+     * Intercept instance method.
      *
-     * @param target the target object
-     * @param method the intercepted method
-     * @param args the all arguments of method
-     * @param callable the origin method invocation
-     * @return the return value of target invocation
+     * @param target target object
+     * @param method intercepted method
+     * @param args all arguments of method
+     * @param callable origin method invocation
+     * @return return value of target invocation
      */
     @RuntimeType
     @SneakyThrows

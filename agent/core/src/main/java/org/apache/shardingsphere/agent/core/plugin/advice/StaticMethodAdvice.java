@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,30 +26,30 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.StaticMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.advice.executor.StaticMethodAdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
 /**
- * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method.
+ * Static method advice.
  */
 @RequiredArgsConstructor
-public class StaticMethodAroundInterceptor {
+public final class StaticMethodAdvice {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAroundInterceptor.class);
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdvice.class);
     
     private final Collection<StaticMethodAdviceExecutor> executors;
     
     /**
-     * Only intercept static method.
+     * Intercept static method.
      *
-     * @param klass the class of target
-     * @param method the intercepted method
-     * @param args the all arguments of method
-     * @param callable the origin method invocation
-     * @return the return value of target invocation
+     * @param klass target class
+     * @param method intercepted method
+     * @param args all arguments of method
+     * @param callable origin method invocation
+     * @return return value of target invocation
      */
     @RuntimeType
     @SneakyThrows

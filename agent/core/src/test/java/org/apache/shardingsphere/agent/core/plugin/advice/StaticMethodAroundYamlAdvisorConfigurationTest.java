@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
@@ -83,9 +83,9 @@ public final class StaticMethodAroundYamlAdvisorConfigurationTest {
                                 .implement(TargetAdviceObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .method(ElementMatchers.named("staticMockWithException"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(Collections.singleton(new MockStaticMethodAdviceExecutor(false)))))
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdvice(Collections.singleton(new MockStaticMethodAdviceExecutor(false)))))
                                 .method(ElementMatchers.named("staticMock"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(Collections.singleton(new MockStaticMethodAdviceExecutor(true)))));
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdvice(Collections.singleton(new MockStaticMethodAdviceExecutor(true)))));
                     }
                     return builder;
                 })

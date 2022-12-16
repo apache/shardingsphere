@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.ConstructorAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.advice.executor.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
@@ -30,20 +30,20 @@ import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import java.util.Collection;
 
 /**
- * Proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
+ * Constructor advice.
  */
 @RequiredArgsConstructor
-public class ConstructorInterceptor {
+public final class ConstructorAdvice {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorAdvice.class);
     
     private final Collection<ConstructorAdviceExecutor> executors;
     
     /**
      * Intercept constructor.
      *
-     * @param target the target object
-     * @param args the all constructor arguments
+     * @param target target object
+     * @param args all constructor arguments
      */
     @RuntimeType
     public void intercept(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
