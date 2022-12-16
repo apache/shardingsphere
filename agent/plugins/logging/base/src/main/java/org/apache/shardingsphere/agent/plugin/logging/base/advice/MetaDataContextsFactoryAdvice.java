@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.advice.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.logging.base.threadlocal.ElapsedTimeThreadLocal;
 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import brave.propagation.TraceContext;
-import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;

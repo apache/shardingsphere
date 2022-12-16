@@ -21,7 +21,7 @@ import brave.Span;
 import brave.Tracing;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;

@@ -23,7 +23,7 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advice.type.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
@@ -55,7 +55,7 @@ public final class ConstructorAdvisorBuilder implements MethodAdvisorBuilder {
     
     @Override
     public MethodAdvisor getMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
-        Collection<ConstructorAdvice> advices = advisorConfigs.stream().<ConstructorAdvice>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+        Collection<ConstructorAdvice> advices = advisorConfigs.stream().map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
         return new MethodAdvisor(methodDescription, new ConstructorAdviceExecutor(advices));
     }
 }

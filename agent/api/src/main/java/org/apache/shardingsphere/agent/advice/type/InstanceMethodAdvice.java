@@ -15,14 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice;
+package org.apache.shardingsphere.agent.advice.type;
+
+import org.apache.shardingsphere.agent.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 
 import java.lang.reflect.Method;
 
 /**
  * Instance method advice.
  */
-public interface InstanceMethodAdvice {
+public interface InstanceMethodAdvice extends AgentAdvice {
     
     /**
      * Intercept the target method and weave the method before origin method.

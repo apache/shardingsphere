@@ -26,6 +26,7 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.advice.AdviceExecutor;
@@ -42,7 +43,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdviceExecutor.class);
     
-    private final Collection<org.apache.shardingsphere.agent.advice.InstanceMethodAdvice> advices;
+    private final Collection<InstanceMethodAdvice> advices;
     
     /**
      * Intercept instance method.
@@ -82,7 +83,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private void interceptBefore(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
-            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : advices) {
+            for (InstanceMethodAdvice each : advices) {
                 each.beforeMethod(target, method, args, invocationResult);
             }
             // CHECKSTYLE:OFF
@@ -94,7 +95,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private void interceptThrow(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable ex) {
         try {
-            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : advices) {
+            for (InstanceMethodAdvice each : advices) {
                 each.onThrowing(target, method, args, ex);
             }
             // CHECKSTYLE:OFF
@@ -106,7 +107,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private void interceptAfter(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
-            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : advices) {
+            for (InstanceMethodAdvice each : advices) {
                 each.afterMethod(target, method, args, invocationResult);
             }
             // CHECKSTYLE:OFF

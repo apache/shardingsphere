@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.transformer.build.advise;
 
+import org.apache.shardingsphere.agent.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 
 import java.util.Map;
@@ -42,10 +43,9 @@ public final class AdviceFactory {
      * Get advice.
      *
      * @param adviceClassName advice class name
-     * @param <T> type of advice
      * @return got advance
      */
-    public <T> T getAdvice(final String adviceClassName) {
+    public AgentAdvice getAdvice(final String adviceClassName) {
         return isEnhancedForProxy ? proxyAdviceFactory.getAdvice(adviceClassName) : jdbcAdviceFactory.getAdvice(adviceClassName);
     }
 }

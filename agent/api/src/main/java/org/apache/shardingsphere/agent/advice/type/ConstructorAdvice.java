@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice;
+package org.apache.shardingsphere.agent.advice.type;
+
+import org.apache.shardingsphere.agent.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 
 /**
  * Constructor advice.
  */
-public interface ConstructorAdvice {
+public interface ConstructorAdvice extends AgentAdvice {
     
     /**
      * Intercept the target's constructor.

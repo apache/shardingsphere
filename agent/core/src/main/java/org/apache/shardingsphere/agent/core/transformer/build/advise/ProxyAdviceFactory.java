@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.core.transformer.build.advise;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.agent.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 
 import java.util.Map;
@@ -30,22 +31,20 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public final class ProxyAdviceFactory {
     
-    private static final Map<String, Object> CACHED_ADVICES = new ConcurrentHashMap<>();
+    private static final Map<String, AgentAdvice> CACHED_ADVICES = new ConcurrentHashMap<>();
     
     /**
      * Get advice.
      *
      * @param adviceClassName advice class name
-     * @param <T> type of advice
      * @return got advance
      */
-    @SuppressWarnings("unchecked")
-    public <T> T getAdvice(final String adviceClassName) {
-        return (T) CACHED_ADVICES.computeIfAbsent(adviceClassName, this::createAdviceForProxy);
+    public AgentAdvice getAdvice(final String adviceClassName) {
+        return CACHED_ADVICES.computeIfAbsent(adviceClassName, this::createAdviceForProxy);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Object createAdviceForProxy(final String adviceClassName) {
-        return Class.forName(adviceClassName, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
+    private AgentAdvice createAdviceForProxy(final String adviceClassName) {
+        return (AgentAdvice) Class.forName(adviceClassName, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
     }
 }

@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser;
-
-import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
+package org.apache.shardingsphere.agent.advice;
 
 /**
- * Tracing adviser.
+ * Agent advice.
  */
-public interface TracingAdviser {
-    
-    /**
-     * Get advisor configuration.
-     * 
-     * @param adviceClass instance method advice class
-     * @return advisor configuration
-     */
-    AdvisorConfiguration getAdvisorConfiguration(Class<? extends InstanceMethodAdvice> adviceClass);
+public interface AgentAdvice {
 }

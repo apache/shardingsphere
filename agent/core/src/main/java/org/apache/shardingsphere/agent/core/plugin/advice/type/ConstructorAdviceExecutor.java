@@ -22,6 +22,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
@@ -37,7 +38,7 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorAdviceExecutor.class);
     
-    private final Collection<org.apache.shardingsphere.agent.advice.ConstructorAdvice> advices;
+    private final Collection<ConstructorAdvice> advices;
     
     /**
      * Intercept constructor.
@@ -50,7 +51,7 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                for (org.apache.shardingsphere.agent.advice.ConstructorAdvice each : advices) {
+                for (ConstructorAdvice each : advices) {
                     each.onConstructor(target, args);
                 }
             }

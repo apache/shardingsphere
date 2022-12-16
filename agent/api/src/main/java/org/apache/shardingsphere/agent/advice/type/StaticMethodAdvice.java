@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice;
+package org.apache.shardingsphere.agent.advice.type;
+
+import org.apache.shardingsphere.agent.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 
 /**
  * Static method advice.
  */
-public interface StaticMethodAdvice {
+public interface StaticMethodAdvice extends AgentAdvice {
     
     /**
      * Intercept the target method and weave the method before origin method.

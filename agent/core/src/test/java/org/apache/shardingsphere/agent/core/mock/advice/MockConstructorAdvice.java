@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.mock.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 
 import java.util.List;
 import java.util.Optional;

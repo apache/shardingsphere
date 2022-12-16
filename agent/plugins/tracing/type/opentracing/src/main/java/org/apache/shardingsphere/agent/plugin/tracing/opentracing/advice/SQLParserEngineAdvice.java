@@ -22,7 +22,7 @@ import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 
