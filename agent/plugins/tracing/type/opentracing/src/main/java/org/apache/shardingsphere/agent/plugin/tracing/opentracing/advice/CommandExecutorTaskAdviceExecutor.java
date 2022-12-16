@@ -15,43 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
 import io.opentracing.Scope;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
 
 /**
- * SQL parser engine advice.
+ * Command executor task advice executor.
  */
-public final class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
+public final class CommandExecutorTaskAdviceExecutor implements InstanceMethodAdviceExecutor {
     
-    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
+    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+    
+    private static final String ROOT_SPAN = "ot_root_span_";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
+                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
                 .startActive(true);
-        target.setAttachment(scope);
+        ExecutorDataMap.getValue().put(ROOT_SPAN, scope.span());
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ((Scope) target.getAttachment()).close();
+        GlobalTracer.get().scopeManager().active().close();
+        ExecutorDataMap.getValue().remove(ROOT_SPAN);
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
+        OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

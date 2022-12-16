@@ -15,38 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.core.mock.advice;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
-import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
-/**
- * Transaction advice.
- */
-public final class TransactionAdvice implements InstanceMethodAroundAdvice {
+@RequiredArgsConstructor
+@SuppressWarnings("unchecked")
+public final class MockInstanceMethodAdviceExecutor implements InstanceMethodAdviceExecutor {
     
-    public static final String COMMIT = "commit";
+    private final boolean rebase;
     
-    public static final String ROLLBACK = "rollback";
-    
-    static {
-        MetricsPool.create(MetricIds.TRANSACTION_COMMIT);
-        MetricsPool.create(MetricIds.TRANSACTION_ROLLBACK);
+    public MockInstanceMethodAdviceExecutor() {
+        this(false);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        String methodName = method.getName();
-        if (COMMIT.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(MetricsWrapper::inc);
-        } else if (ROLLBACK.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(MetricsWrapper::inc);
+        List<String> queues = (List<String>) args[0];
+        queues.add("before");
+        if (rebase) {
+            result.rebase("rebase invocation method");
         }
+    }
+    
+    @Override
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("after");
+    }
+    
+    @Override
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("exception");
     }
 }

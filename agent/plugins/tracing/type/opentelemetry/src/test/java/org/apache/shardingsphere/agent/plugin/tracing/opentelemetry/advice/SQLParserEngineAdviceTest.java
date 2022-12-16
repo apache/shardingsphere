@@ -46,7 +46,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     private static final String SQL_STATEMENT = "select 1";
     
-    private SQLParserEngineAdvice advice;
+    private SQLParserEngineAdviceExecutor advice;
     
     private Span parentSpan;
     
@@ -56,7 +56,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
                 .spanBuilder("parent")
                 .startSpan();
         ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, parentSpan);
-        advice = new SQLParserEngineAdvice();
+        advice = new SQLParserEngineAdviceExecutor();
     }
     
     @Test

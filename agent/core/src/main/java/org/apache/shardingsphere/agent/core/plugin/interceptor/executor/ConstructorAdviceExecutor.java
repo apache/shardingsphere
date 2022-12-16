@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.executor;
 
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Constructor advice executor.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+public interface ConstructorAdviceExecutor {
     
     /**
      * Intercept the target's constructor.

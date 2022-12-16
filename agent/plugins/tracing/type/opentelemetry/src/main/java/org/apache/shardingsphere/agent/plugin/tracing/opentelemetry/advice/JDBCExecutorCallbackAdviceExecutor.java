@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 
-import brave.Span;
-import brave.Tracing;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -32,46 +36,48 @@ import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 
 import java.lang.reflect.Method;
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * JDBC executor callback advice.
+ * JDBC executor callback advice executor.
  */
-public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
+public class JDBCExecutorCallbackAdviceExecutor implements InstanceMethodAdviceExecutor {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
-    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
+    @SneakyThrows
     @SuppressWarnings("unchecked")
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
-        Span span = null == root ? Tracing.currentTracer().nextSpan().name(OPERATION_NAME) : Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME);
-        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
-        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
+        Span root = (Span) ((Map<String, Object>) args[2]).get(OpenTelemetryConstants.ROOT_SPAN);
+        Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
+        SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
+        if (root != null) {
+            spanBuilder.setParent(Context.current().with(root));
+        }
+        spanBuilder.setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME);
+        spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE);
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectiveUtil.getFieldValue(target, "storageTypes");
         Method getMetaDataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class);
         getMetaDataMethod.setAccessible(true);
         DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target,
                 new Object[]{executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName())});
-        span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
-        span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostname());
-        span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
-        span.tag(ZipkinConstants.Tags.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql());
-        span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
-        span.start();
-        target.setAttachment(span);
+        spanBuilder.setAttribute(OpenTelemetryConstants.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName())
+                .setAttribute(OpenTelemetryConstants.PEER_HOSTNAME, metaData.getHostname())
+                .setAttribute(OpenTelemetryConstants.PEER_PORT, String.valueOf(metaData.getPort()))
+                .setAttribute(OpenTelemetryConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
+                .setAttribute(OpenTelemetryConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
+        target.setAttachment(spanBuilder.startSpan());
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ((Span) target.getAttachment()).finish();
+        ((Span) target.getAttachment()).end();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        ((Span) target.getAttachment()).error(throwable);
+        ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);
     }
 }

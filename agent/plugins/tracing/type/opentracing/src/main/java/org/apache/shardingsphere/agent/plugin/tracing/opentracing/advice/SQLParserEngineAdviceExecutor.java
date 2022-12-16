@@ -15,44 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import io.opentracing.Scope;
+import io.opentracing.tag.Tags;
+import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
-@RequiredArgsConstructor
-@SuppressWarnings("unchecked")
-public final class MockInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
+/**
+ * SQL parser engine advice executor.
+ */
+public final class SQLParserEngineAdviceExecutor implements InstanceMethodAdviceExecutor {
     
-    private final boolean rebase;
-    
-    public MockInstanceMethodAroundAdvice() {
-        this(false);
-    }
+    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("before");
-        if (rebase) {
-            result.rebase("rebase invocation method");
-        }
+        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
+                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
+                .startActive(true);
+        target.setAttachment(scope);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("after");
+        ((Scope) target.getAttachment()).close();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("exception");
+        OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

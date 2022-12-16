@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
     
-    private final ChannelHandlerAdvice channelHandlerAdvice = new ChannelHandlerAdvice();
+    private final ChannelHandlerAdviceExecutor channelHandlerAdvice = new ChannelHandlerAdviceExecutor();
     
     @Mock
     private Method channelRead;
@@ -49,9 +49,9 @@ public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertMethod() {
-        when(channelRead.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_READ);
-        when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);
-        when(channelInactive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_INACTIVE);
+        when(channelRead.getName()).thenReturn(ChannelHandlerAdviceExecutor.CHANNEL_READ);
+        when(channelActive.getName()).thenReturn(ChannelHandlerAdviceExecutor.CHANNEL_ACTIVE);
+        when(channelInactive.getName()).thenReturn(ChannelHandlerAdviceExecutor.CHANNEL_INACTIVE);
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         channelHandlerAdvice.beforeMethod(targetObject, channelRead, new Object[]{}, new MethodInvocationResult());
         channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());

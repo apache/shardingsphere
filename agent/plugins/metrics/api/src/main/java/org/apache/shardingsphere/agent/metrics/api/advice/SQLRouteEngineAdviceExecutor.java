@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
@@ -37,9 +37,9 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
- * SQL route engine advice.
+ * SQL route engine advice executor.
  */
-public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
+public final class SQLRouteEngineAdviceExecutor implements InstanceMethodAdviceExecutor {
     
     static {
         MetricsPool.create(MetricIds.ROUTE_SQL_INSERT);

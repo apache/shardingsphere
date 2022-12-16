@@ -39,7 +39,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
-    private static final JDBCExecutorCallbackAdvice ADVICE = new JDBCExecutorCallbackAdvice();
+    private static final JDBCExecutorCallbackAdviceExecutor ADVICE = new JDBCExecutorCallbackAdviceExecutor();
     
     @Before
     public void setup() {

@@ -19,40 +19,47 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import brave.Span;
 import brave.Tracing;
-import brave.propagation.TraceContext;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * SQL parser engine advice.
+ * Command executor task advice executor.
  */
-public final class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
+public final class CommandExecutorTaskAdviceExecutor implements InstanceMethodAdviceExecutor {
     
-    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
+    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
-        Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
-        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
-        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
-        span.tag(ZipkinConstants.Tags.DB_STATEMENT, String.valueOf(args[0]));
-        span.start();
-        target.setAttachment(span);
+        Span span = Tracing.currentTracer().newTrace().name(OPERATION_NAME);
+        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT)
+                .tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
+        ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, span);
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ((Span) target.getAttachment()).finish();
+        Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
+        field.setAccessible(true);
+        JDBCBackendConnection connection = (JDBCBackendConnection) ((ConnectionSession) field.get(target)).getBackendConnection();
+        Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
+        span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
+        span.finish();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        ((Span) target.getAttachment()).error(throwable);
+        ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).error(throwable);
     }
 }

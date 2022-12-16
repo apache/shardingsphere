@@ -37,11 +37,11 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private CommandExecutorTaskAdvice advice;
+    private CommandExecutorTaskAdviceExecutor advice;
     
     @Before
     public void setup() {
-        advice = new CommandExecutorTaskAdvice();
+        advice = new CommandExecutorTaskAdviceExecutor();
     }
     
     @Test

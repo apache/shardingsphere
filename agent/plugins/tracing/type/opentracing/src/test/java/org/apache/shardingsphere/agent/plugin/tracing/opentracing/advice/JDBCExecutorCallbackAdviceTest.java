@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 
 public final class JDBCExecutorCallbackAdviceTest {
     
-    private static final JDBCExecutorCallbackAdvice ADVICE = new JDBCExecutorCallbackAdvice();
+    private static final JDBCExecutorCallbackAdviceExecutor ADVICE = new JDBCExecutorCallbackAdviceExecutor();
     
     private static MockTracer tracer;
     

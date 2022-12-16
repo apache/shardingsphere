@@ -42,7 +42,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     private static final String SQL_STATEMENT = "select 1";
     
-    private SQLParserEngineAdvice advice;
+    private SQLParserEngineAdviceExecutor advice;
     
     private Span parentSpan;
     
@@ -50,7 +50,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     public void setup() {
         parentSpan = Tracing.currentTracer().newTrace().name("parent").start();
         ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, parentSpan);
-        advice = new SQLParserEngineAdvice();
+        advice = new SQLParserEngineAdviceExecutor();
     }
     
     @Test

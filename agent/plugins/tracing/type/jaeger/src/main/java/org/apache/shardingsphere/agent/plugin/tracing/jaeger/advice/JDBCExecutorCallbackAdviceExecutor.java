@@ -24,7 +24,7 @@ import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
@@ -40,9 +40,9 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * JDBC executor callback advice.
+ * JDBC executor callback advice executor.
  */
-public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
+public final class JDBCExecutorCallbackAdviceExecutor implements InstanceMethodAdviceExecutor {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     

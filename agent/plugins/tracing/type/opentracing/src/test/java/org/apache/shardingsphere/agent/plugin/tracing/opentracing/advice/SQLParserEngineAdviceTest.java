@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class SQLParserEngineAdviceTest {
     
-    private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
+    private static final SQLParserEngineAdviceExecutor ADVICE = new SQLParserEngineAdviceExecutor();
     
     private static MockTracer tracer;
     

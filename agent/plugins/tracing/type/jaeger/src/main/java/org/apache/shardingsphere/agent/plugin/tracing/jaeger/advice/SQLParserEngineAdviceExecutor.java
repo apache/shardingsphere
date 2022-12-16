@@ -15,33 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import io.opentracing.Scope;
+import io.opentracing.tag.Tags;
+import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
-@SuppressWarnings("unchecked")
-public final class MockInstanceMethodAroundRepeatedAdvice implements InstanceMethodAroundAdvice {
+/**
+ * SQL parser engine advice executor.
+ */
+public final class SQLParserEngineAdviceExecutor implements InstanceMethodAdviceExecutor {
+    
+    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("twice_before");
+        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
+                .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
+                .startActive(true);
+        target.setAttachment(scope);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("twice_after");
+        ((Scope) target.getAttachment()).close();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("twice_exception");
+        JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

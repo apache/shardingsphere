@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
@@ -39,9 +39,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatemen
 import java.lang.reflect.Method;
 
 /**
- * SQL parse engine advice.
+ * SQL parse engine advice executor.
  */
-public final class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
+public final class SQLParserEngineAdviceExecutor implements InstanceMethodAdviceExecutor {
     
     static {
         MetricsPool.create(MetricIds.PARSE_SQL_INSERT);

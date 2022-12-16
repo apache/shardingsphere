@@ -105,7 +105,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         MethodInvocationResult result = new MethodInvocationResult();
         result.rebase(sqlStatement);
-        new SQLParserEngineAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, result);
+        new SQLParserEngineAdviceExecutor().afterMethod(targetObject, mock(Method.class), new Object[]{}, result);
         assertTrue(MetricsPool.get(metricIds).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
     }

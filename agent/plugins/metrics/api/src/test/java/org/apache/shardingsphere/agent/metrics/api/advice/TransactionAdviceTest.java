@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     
-    private final TransactionAdvice transactionAdvice = new TransactionAdvice();
+    private final TransactionAdviceExecutor transactionAdvice = new TransactionAdviceExecutor();
     
     @Mock
     private Method commit;
@@ -46,8 +46,8 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertMethod() {
-        when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
-        when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
+        when(commit.getName()).thenReturn(TransactionAdviceExecutor.COMMIT);
+        when(rollback.getName()).thenReturn(TransactionAdviceExecutor.ROLLBACK);
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());

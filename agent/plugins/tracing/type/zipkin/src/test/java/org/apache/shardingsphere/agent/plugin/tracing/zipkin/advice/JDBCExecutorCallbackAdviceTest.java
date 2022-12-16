@@ -38,12 +38,12 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private JDBCExecutorCallbackAdvice advice;
+    private JDBCExecutorCallbackAdviceExecutor advice;
     
     @Before
     public void setup() {
         getExtraMap().put(ZipkinConstants.ROOT_SPAN, null);
-        advice = new JDBCExecutorCallbackAdvice();
+        advice = new JDBCExecutorCallbackAdviceExecutor();
     }
     
     @Test

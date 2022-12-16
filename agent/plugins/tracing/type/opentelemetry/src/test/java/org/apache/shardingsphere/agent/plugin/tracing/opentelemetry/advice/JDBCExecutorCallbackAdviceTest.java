@@ -40,11 +40,11 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
     
-    private JDBCExecutorCallbackAdvice advice;
+    private JDBCExecutorCallbackAdviceExecutor advice;
     
     @Before
     public void setup() {
-        advice = new JDBCExecutorCallbackAdvice();
+        advice = new JDBCExecutorCallbackAdviceExecutor();
     }
     
     @Test

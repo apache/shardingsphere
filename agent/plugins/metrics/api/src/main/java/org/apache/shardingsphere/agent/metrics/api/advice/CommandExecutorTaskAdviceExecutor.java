@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
@@ -28,9 +28,9 @@ import org.apache.shardingsphere.agent.metrics.api.threadlocal.ElapsedTimeThread
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice.
+ * Command executor task advice executor.
  */
-public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
+public final class CommandExecutorTaskAdviceExecutor implements InstanceMethodAdviceExecutor {
     
     public static final String COMMAND_EXECUTOR_RUN = "run";
     

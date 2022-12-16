@@ -28,7 +28,7 @@ import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class InstanceMethodAroundInterceptor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAroundInterceptor.class);
     
-    private final Collection<InstanceMethodAroundAdvice> advices;
+    private final Collection<InstanceMethodAdviceExecutor> executors;
     
     /**
      * Only intercept instance method.
@@ -61,7 +61,7 @@ public class InstanceMethodAroundInterceptor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                for (InstanceMethodAroundAdvice each : advices) {
+                for (InstanceMethodAdviceExecutor each : executors) {
                     each.beforeMethod(target, method, args, methodResult);
                 }
             }
@@ -82,7 +82,7 @@ public class InstanceMethodAroundInterceptor {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    for (InstanceMethodAroundAdvice each : advices) {
+                    for (InstanceMethodAdviceExecutor each : executors) {
                         each.onThrowing(target, method, args, ex);
                     }
                 }
@@ -95,7 +95,7 @@ public class InstanceMethodAroundInterceptor {
         } finally {
             try {
                 if (adviceEnabled) {
-                    for (InstanceMethodAroundAdvice each : advices) {
+                    for (InstanceMethodAdviceExecutor each : executors) {
                         each.afterMethod(target, method, args, methodResult);
                     }
                 }

@@ -40,11 +40,11 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
     
-    private CommandExecutorTaskAdvice advice;
+    private CommandExecutorTaskAdviceExecutor advice;
     
     @Before
     public void setup() {
-        advice = new CommandExecutorTaskAdvice();
+        advice = new CommandExecutorTaskAdviceExecutor();
     }
     
     @Test

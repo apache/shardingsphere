@@ -23,7 +23,7 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -31,9 +31,9 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice.
+ * Command executor task advice executor.
  */
-public class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
+public class CommandExecutorTaskAdviceExecutor implements InstanceMethodAdviceExecutor {
     
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
