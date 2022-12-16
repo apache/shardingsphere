@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer.builder;
+package org.apache.shardingsphere.agent.core.transformer.build.builder.type;
 
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
-import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
@@ -29,7 +28,8 @@ import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
-import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
+import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
+import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,36 +39,34 @@ import java.util.stream.Collectors;
 /**
  * Constructor advisor builder.
  */
-public final class ConstructorAdvisorBuilder extends MethodAdvisorBuilder<ConstructorAdvisorConfiguration> {
+public final class ConstructorAdvisorBuilder implements MethodAdvisorBuilder<ConstructorAdvisorConfiguration> {
     
     private final AdviceFactory adviceFactory;
     
-    public ConstructorAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<ConstructorAdvisorConfiguration> advisorConfigs,
-                                     final boolean isEnhancedForProxy, final TypeDescription typePointcut, final ClassLoader classLoader) {
-        super(advisorConfigs, typePointcut);
+    public ConstructorAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final boolean isEnhancedForProxy, final ClassLoader classLoader) {
         adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
     }
     
     @Override
-    protected Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
+    public Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
         return builder.constructor(ElementMatchers.is(methodAdvisor.getPointcut()))
                 .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdvice())));
     }
     
     @Override
-    protected boolean isMatchedMethod(final InDefinedShape methodPointcut) {
-        return methodPointcut.isConstructor();
+    public boolean isMatchedMethod(final InDefinedShape methodDescription) {
+        return methodDescription.isConstructor();
     }
     
     @Override
-    protected MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final ConstructorAdvisorConfiguration advisorConfig) {
-        return new MethodAdvisor(methodPointcut, new ConstructorInterceptor(adviceFactory.getAdvice(advisorConfig.getAdviceClassName())));
+    public MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodDescription, final ConstructorAdvisorConfiguration advisorConfig) {
+        return new MethodAdvisor(methodDescription, new ConstructorInterceptor(adviceFactory.getAdvice(advisorConfig.getAdviceClassName())));
     }
     
     @Override
-    protected MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut, final List<ConstructorAdvisorConfiguration> advisorConfigs) {
+    public MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodDescription, final List<ConstructorAdvisorConfiguration> advisorConfigs) {
         Collection<ConstructorAdvice> advices = advisorConfigs
                 .stream().map(ConstructorAdvisorConfiguration::getAdviceClassName).map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each)).collect(Collectors.toList());
-        return new MethodAdvisor(methodPointcut, new ComposedConstructorInterceptor(advices));
+        return new MethodAdvisor(methodDescription, new ComposedConstructorInterceptor(advices));
     }
 }

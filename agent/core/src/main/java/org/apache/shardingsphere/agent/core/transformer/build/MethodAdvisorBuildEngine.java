@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer.builder;
+package org.apache.shardingsphere.agent.core.transformer.build;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
@@ -24,6 +24,7 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import org.apache.shardingsphere.agent.config.advisor.method.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
+import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,32 +32,31 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Method advisor builder.
- * 
- * @param <T> type of method advisor configuration
+ * Method advisor build engine.
  */
 @RequiredArgsConstructor
-public abstract class MethodAdvisorBuilder<T extends MethodAdvisorConfiguration> {
+public final class MethodAdvisorBuildEngine<T extends MethodAdvisorConfiguration> {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilder.class);
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuildEngine.class);
     
     private final Collection<T> advisorConfigs;
     
     private final TypeDescription typePointcut;
     
     /**
-     * Create constructor advisor builder.
+     * Create method advisor builder.
      * 
      * @param builder original builder
+     * @param methodAdvisorBuilder method advisor builder
      * @return created builder
      */
-    public final Builder<?> create(final Builder<?> builder) {
+    public Builder<?> create(final Builder<?> builder, final MethodAdvisorBuilder<T> methodAdvisorBuilder) {
         Builder<?> result = builder;
-        Collection<MethodAdvisor> matchedAdvisor = typePointcut.getDeclaredMethods()
-                .stream().filter(this::isMatchedMethod).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
+        Collection<MethodAdvisor> matchedAdvisor = typePointcut.getDeclaredMethods().stream()
+                .filter(methodAdvisorBuilder::isMatchedMethod).map(each -> findMatchedAdvisor(each, methodAdvisorBuilder)).filter(Objects::nonNull).collect(Collectors.toList());
         for (MethodAdvisor each : matchedAdvisor) {
             try {
-                result = create(result, each);
+                result = methodAdvisorBuilder.create(result, each);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -66,22 +66,14 @@ public abstract class MethodAdvisorBuilder<T extends MethodAdvisorConfiguration>
         return result;
     }
     
-    protected abstract Builder<?> create(Builder<?> builder, MethodAdvisor methodAdvisor);
-    
-    private MethodAdvisor getMatchedAdvisor(final InDefinedShape methodPointcut) {
-        List<T> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
+    private MethodAdvisor findMatchedAdvisor(final InDefinedShape methodDescription, final MethodAdvisorBuilder<T> methodAdvisorBuilder) {
+        List<T> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
         if (matchedAdvisorConfigs.isEmpty()) {
             return null;
         }
         if (1 == matchedAdvisorConfigs.size()) {
-            return getSingleMethodAdvisor(methodPointcut, matchedAdvisorConfigs.get(0));
+            return methodAdvisorBuilder.getSingleMethodAdvisor(methodDescription, matchedAdvisorConfigs.get(0));
         }
-        return getComposedMethodAdvisor(methodPointcut, matchedAdvisorConfigs);
+        return methodAdvisorBuilder.getComposedMethodAdvisor(methodDescription, matchedAdvisorConfigs);
     }
-    
-    protected abstract boolean isMatchedMethod(InDefinedShape methodPointcut);
-    
-    protected abstract MethodAdvisor getSingleMethodAdvisor(InDefinedShape methodPointcut, T advisorConfig);
-    
-    protected abstract MethodAdvisor getComposedMethodAdvisor(InDefinedShape methodPointcut, List<T> advisorConfigs);
 }
