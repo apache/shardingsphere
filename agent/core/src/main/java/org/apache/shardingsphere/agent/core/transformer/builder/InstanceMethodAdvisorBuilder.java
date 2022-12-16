@@ -25,7 +25,6 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.method.type.InstanceMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
@@ -39,52 +38,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Instance method advisor builder.
  */
-public final class InstanceMethodAdvisorBuilder {
-    
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdvisorBuilder.class);
-    
-    private final Collection<InstanceMethodAdvisorConfiguration> advisorConfigs;
-    
-    private final TypeDescription typePointcut;
+public final class InstanceMethodAdvisorBuilder extends MethodAdvisorBuilder<InstanceMethodAdvisorConfiguration> {
     
     private final AdviceFactory adviceFactory;
     
     public InstanceMethodAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<InstanceMethodAdvisorConfiguration> advisorConfigs,
                                         final boolean isEnhancedForProxy, final TypeDescription typePointcut, final ClassLoader classLoader) {
-        this.advisorConfigs = advisorConfigs;
-        this.typePointcut = typePointcut;
+        super(advisorConfigs, typePointcut);
         adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
     }
     
-    /**
-     * Create instance method advisor builder.
-     * 
-     * @param builder original builder
-     * @return created builder
-     */
-    public Builder<?> create(final Builder<?> builder) {
-        Builder<?> result = builder;
-        Collection<MethodAdvisor> matchedAdvisors = typePointcut.getDeclaredMethods()
-                .stream().filter(this::isMatchedMethod).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
-        for (MethodAdvisor each : matchedAdvisors) {
-            try {
-                result = create(result, each);
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to load advice class: {}.", typePointcut.getTypeName(), ex);
-            }
-        }
-        return result;
-    }
-    
-    private Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
+    @Override
+    protected Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
         if (methodAdvisor.getAdvice() instanceof InstanceMethodInterceptorArgsOverride) {
             return builder.method(ElementMatchers.is(methodAdvisor.getPointcut()))
                     .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(methodAdvisor.getAdvice()));
@@ -92,28 +61,20 @@ public final class InstanceMethodAdvisorBuilder {
         return builder.method(ElementMatchers.is(methodAdvisor.getPointcut())).intercept(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdvice()));
     }
     
-    private boolean isMatchedMethod(final InDefinedShape methodPointcut) {
+    @Override
+    protected boolean isMatchedMethod(final InDefinedShape methodPointcut) {
         return !(methodPointcut.isAbstract() || methodPointcut.isSynthetic());
     }
     
-    private MethodAdvisor getMatchedAdvisor(final InDefinedShape methodPointcut) {
-        List<InstanceMethodAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
-        if (matchedAdvisorConfigs.isEmpty()) {
-            return null;
-        }
-        if (1 == matchedAdvisorConfigs.size()) {
-            return getSingleMethodAdvisor(methodPointcut, matchedAdvisorConfigs.get(0));
-        }
-        return getComposedMethodAdvisor(methodPointcut);
-    }
-    
-    private MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final InstanceMethodAdvisorConfiguration advisorConfig) {
+    @Override
+    protected MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final InstanceMethodAdvisorConfiguration advisorConfig) {
         InstanceMethodAroundAdvice instanceMethodAroundAdvice = adviceFactory.getAdvice(advisorConfig.getAdviceClassName());
         Object advice = advisorConfig.isOverrideArgs() ? new InstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvice) : new InstanceMethodAroundInterceptor(instanceMethodAroundAdvice);
         return new MethodAdvisor(methodPointcut, advice);
     }
     
-    private MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut) {
+    @Override
+    protected MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut, final List<InstanceMethodAdvisorConfiguration> advisorConfigs) {
         Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices = new LinkedList<>();
         boolean isArgsOverride = false;
         for (InstanceMethodAdvisorConfiguration each : advisorConfigs) {

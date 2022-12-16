@@ -26,7 +26,6 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.transformer.builder.ConstructorAdvisorBuilder;
 import org.apache.shardingsphere.agent.core.transformer.builder.InstanceMethodAdvisorBuilder;
@@ -39,8 +38,6 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class AgentTransformer implements Transformer {
-    
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(AgentTransformer.class);
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     

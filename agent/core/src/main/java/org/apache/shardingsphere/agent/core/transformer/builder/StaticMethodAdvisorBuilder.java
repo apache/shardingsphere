@@ -25,7 +25,6 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.method.type.StaticMethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
@@ -39,52 +38,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Static method advisor builder.
  */
-public final class StaticMethodAdvisorBuilder {
-    
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdvisorBuilder.class);
-    
-    private final Collection<StaticMethodAdvisorConfiguration> advisorConfigs;
-    
-    private final TypeDescription typePointcut;
+public final class StaticMethodAdvisorBuilder extends MethodAdvisorBuilder<StaticMethodAdvisorConfiguration> {
     
     private final AdviceFactory adviceFactory;
     
     public StaticMethodAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<StaticMethodAdvisorConfiguration> advisorConfigs,
                                       final boolean isEnhancedForProxy, final TypeDescription typePointcut, final ClassLoader classLoader) {
-        this.advisorConfigs = advisorConfigs;
-        this.typePointcut = typePointcut;
+        super(advisorConfigs, typePointcut);
         adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
     }
     
-    /**
-     * Create static method advisor builder.
-     * 
-     * @param builder original builder
-     * @return created builder
-     */
-    public Builder<?> create(final Builder<?> builder) {
-        Builder<?> result = builder;
-        Collection<MethodAdvisor> matchedAdvisors = typePointcut.getDeclaredMethods()
-                .stream().filter(this::isMatchedMethod).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
-        for (MethodAdvisor each : matchedAdvisors) {
-            try {
-                result = create(result, each);
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to load advice class: {}.", typePointcut.getTypeName(), ex);
-            }
-        }
-        return result;
-    }
-    
-    private Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
+    @Override
+    protected Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
         if (methodAdvisor.getAdvice() instanceof StaticMethodInterceptorArgsOverride) {
             return builder.method(ElementMatchers.is(methodAdvisor.getPointcut()))
                     .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(methodAdvisor.getAdvice()));
@@ -92,29 +61,21 @@ public final class StaticMethodAdvisorBuilder {
         return builder.method(ElementMatchers.is(methodAdvisor.getPointcut())).intercept(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdvice()));
     }
     
-    private boolean isMatchedMethod(final InDefinedShape methodPointcut) {
+    @Override
+    protected boolean isMatchedMethod(final InDefinedShape methodPointcut) {
         return methodPointcut.isStatic() && !(methodPointcut.isAbstract() || methodPointcut.isSynthetic());
     }
     
-    private MethodAdvisor getMatchedAdvisor(final InDefinedShape methodPointcut) {
-        List<StaticMethodAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
-        if (matchedAdvisorConfigs.isEmpty()) {
-            return null;
-        }
-        if (1 == matchedAdvisorConfigs.size()) {
-            return getSingleMethodAdvisor(methodPointcut, matchedAdvisorConfigs.get(0));
-        }
-        return getComposedMethodAdvisor(methodPointcut);
-    }
-    
-    private MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final StaticMethodAdvisorConfiguration advisorConfig) {
+    @Override
+    protected MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final StaticMethodAdvisorConfiguration advisorConfig) {
         StaticMethodAroundAdvice staticMethodAroundAdvice = adviceFactory.getAdvice(advisorConfig.getAdviceClassName());
         return advisorConfig.isOverrideArgs()
                 ? new MethodAdvisor(methodPointcut, new StaticMethodInterceptorArgsOverride(staticMethodAroundAdvice))
                 : new MethodAdvisor(methodPointcut, new StaticMethodAroundInterceptor(staticMethodAroundAdvice));
     }
     
-    private MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut) {
+    @Override
+    protected MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut, final List<StaticMethodAdvisorConfiguration> advisorConfigs) {
         Collection<StaticMethodAroundAdvice> staticMethodAroundAdvices = new LinkedList<>();
         boolean isArgsOverride = false;
         for (StaticMethodAdvisorConfiguration each : advisorConfigs) {
