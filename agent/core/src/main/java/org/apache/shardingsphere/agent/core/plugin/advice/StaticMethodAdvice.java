@@ -57,7 +57,7 @@ public final class StaticMethodAdvice {
         MethodInvocationResult invocationResult = new MethodInvocationResult();
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         if (adviceEnabled) {
-            interceptPre(klass, method, args, invocationResult);
+            interceptBefore(klass, method, args, invocationResult);
         }
         Object result;
         try {
@@ -72,13 +72,13 @@ public final class StaticMethodAdvice {
             throw ex;
         } finally {
             if (adviceEnabled) {
-                interceptPost(klass, method, args, invocationResult);
+                interceptAfter(klass, method, args, invocationResult);
             }
         }
         return invocationResult.isRebased() ? invocationResult.getResult() : result;
     }
     
-    private void interceptPre(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptBefore(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
             for (StaticMethodAdviceExecutor each : executors) {
                 each.beforeMethod(klass, method, args, invocationResult);
@@ -102,7 +102,7 @@ public final class StaticMethodAdvice {
         }
     }
     
-    private void interceptPost(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptAfter(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
             for (StaticMethodAdviceExecutor each : executors) {
                 each.afterMethod(klass, method, args, invocationResult);

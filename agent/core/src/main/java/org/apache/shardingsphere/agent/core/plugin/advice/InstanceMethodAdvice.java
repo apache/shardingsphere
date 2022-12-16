@@ -58,16 +58,8 @@ public final class InstanceMethodAdvice {
     public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         MethodInvocationResult invocationResult = new MethodInvocationResult();
         boolean adviceEnabled = PluginContext.isPluginEnabled();
-        try {
-            if (adviceEnabled) {
-                for (InstanceMethodAdviceExecutor each : executors) {
-                    each.beforeMethod(target, method, args, invocationResult);
-                }
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
-            // CHECKSTYLE:ON
-            LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
+        if (adviceEnabled) {
+            interceptBefore(target, method, args, invocationResult);
         }
         Object result;
         try {
@@ -76,31 +68,51 @@ public final class InstanceMethodAdvice {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            try {
-                if (adviceEnabled) {
-                    for (InstanceMethodAdviceExecutor each : executors) {
-                        each.onThrowing(target, method, args, ex);
-                    }
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ignored) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
+            if (adviceEnabled) {
+                interceptThrow(target, method, args, ex);
             }
             throw ex;
         } finally {
-            try {
-                if (adviceEnabled) {
-                    for (InstanceMethodAdviceExecutor each : executors) {
-                        each.afterMethod(target, method, args, invocationResult);
-                    }
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
+            if (adviceEnabled) {
+                interceptAfter(target, method, args, invocationResult);
             }
         }
         return invocationResult.isRebased() ? invocationResult.getResult() : result;
+    }
+    
+    private void interceptBefore(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        try {
+            for (InstanceMethodAdviceExecutor each : executors) {
+                each.beforeMethod(target, method, args, invocationResult);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ex) {
+            // CHECKSTYLE:ON
+            LOGGER.error("Failed to execute the pre-method of method `{}` in class `{}`.", method.getName(), target.getClass(), ex);
+        }
+    }
+    
+    private void interceptThrow(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable ex) {
+        try {
+            for (InstanceMethodAdviceExecutor each : executors) {
+                each.onThrowing(target, method, args, ex);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ignored) {
+            // CHECKSTYLE:ON
+            LOGGER.error("Failed to execute the error handler of method `{}` in class `{}`.", method.getName(), target.getClass(), ex);
+        }
+    }
+    
+    private void interceptAfter(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        try {
+            for (InstanceMethodAdviceExecutor each : executors) {
+                each.afterMethod(target, method, args, invocationResult);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ex) {
+            // CHECKSTYLE:ON
+            LOGGER.error("Failed to execute the post-method of method `{}` in class `{}`.", method.getName(), target.getClass(), ex);
+        }
     }
 }
