@@ -27,9 +27,10 @@ import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.transformer.build.MethodAdvisorBuildEngine;
+import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.type.ConstructorAdvisorBuilder;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.type.InstanceMethodAdvisorBuilder;
-import org.apache.shardingsphere.agent.core.transformer.build.MethodAdvisorBuildEngine;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.type.StaticMethodAdvisorBuilder;
 
 import java.util.Map;
@@ -56,9 +57,10 @@ public final class AgentTransformer implements Transformer {
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
         AdvisorConfiguration advisorConfig = advisorConfigs.get(typeDescription.getTypeName());
-        result = new MethodAdvisorBuildEngine<>(advisorConfig.getConstructorAdvisors(), typeDescription).create(result, new ConstructorAdvisorBuilder(pluginConfigs, enhanceProxy, classLoader));
-        result = new MethodAdvisorBuildEngine<>(advisorConfig.getInstanceMethodAdvisors(), typeDescription).create(result, new InstanceMethodAdvisorBuilder(pluginConfigs, enhanceProxy, classLoader));
-        result = new MethodAdvisorBuildEngine<>(advisorConfig.getStaticMethodAdvisors(), typeDescription).create(result, new StaticMethodAdvisorBuilder(pluginConfigs, enhanceProxy, classLoader));
+        AdviceFactory adviceFactory = new AdviceFactory(classLoader, pluginConfigs, enhanceProxy);
+        result = new MethodAdvisorBuildEngine<>(advisorConfig.getConstructorAdvisors(), typeDescription).create(result, new ConstructorAdvisorBuilder(adviceFactory));
+        result = new MethodAdvisorBuildEngine<>(advisorConfig.getInstanceMethodAdvisors(), typeDescription).create(result, new InstanceMethodAdvisorBuilder(adviceFactory));
+        result = new MethodAdvisorBuildEngine<>(advisorConfig.getStaticMethodAdvisors(), typeDescription).create(result, new StaticMethodAdvisorBuilder(adviceFactory));
         return result;
     }
 }
