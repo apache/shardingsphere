@@ -53,7 +53,8 @@ public final class StaticMethodAdvisorBuilder implements MethodAdvisorBuilder {
     
     @Override
     public MethodAdvisor getMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
-        Collection<StaticMethodAdviceExecutor> adviceExecutors = advisorConfigs.stream().<StaticMethodAdviceExecutor>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+        Collection<StaticMethodAdviceExecutor> adviceExecutors = advisorConfigs
+                .stream().<StaticMethodAdviceExecutor>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
         return new MethodAdvisor(methodDescription, new StaticMethodAroundInterceptor(adviceExecutors));
     }
 }

@@ -30,6 +30,10 @@ public final class MockStaticMethodAdviceExecutor implements StaticMethodAdviceE
     
     private final boolean rebase;
     
+    public MockStaticMethodAdviceExecutor() {
+        this(false);
+    }
+    
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queue = (List<String>) args[0];

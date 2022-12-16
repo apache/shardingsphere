@@ -31,6 +31,10 @@ public final class MockInstanceMethodAdviceExecutor implements InstanceMethodAdv
     
     private final boolean rebase;
     
+    public MockInstanceMethodAdviceExecutor() {
+        this(false);
+    }
+    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queues = (List<String>) args[0];

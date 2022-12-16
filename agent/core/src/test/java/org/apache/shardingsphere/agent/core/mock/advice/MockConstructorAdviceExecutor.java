@@ -29,6 +29,10 @@ public final class MockConstructorAdviceExecutor implements ConstructorAdviceExe
     
     private final List<String> queues;
     
+    public MockConstructorAdviceExecutor() {
+        this(null);
+    }
+    
     @Override
     @SuppressWarnings("unchecked")
     public void onConstructor(final TargetAdviceObject target, final Object[] args) {
