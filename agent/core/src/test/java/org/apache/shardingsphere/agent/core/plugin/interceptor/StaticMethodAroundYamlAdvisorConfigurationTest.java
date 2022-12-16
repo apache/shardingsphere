@@ -40,6 +40,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -82,9 +83,9 @@ public final class StaticMethodAroundYamlAdvisorConfigurationTest {
                                 .implement(TargetAdviceObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .method(ElementMatchers.named("staticMockWithException"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(false))))
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(Collections.singleton(new MockStaticMethodAroundAdvice(false)))))
                                 .method(ElementMatchers.named("staticMock"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(true))));
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(Collections.singleton(new MockStaticMethodAroundAdvice(true)))));
                     }
                     return builder;
                 })

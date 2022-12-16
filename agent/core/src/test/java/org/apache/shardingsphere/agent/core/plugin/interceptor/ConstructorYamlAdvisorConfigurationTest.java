@@ -36,6 +36,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -68,7 +69,8 @@ public final class ConstructorYamlAdvisorConfigurationTest {
                                 .implement(TargetAdviceObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .constructor(ElementMatchers.isConstructor())
-                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorInterceptor(new MockConstructorAdvice(QUEUE)))));
+                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration()
+                                        .to(new ConstructorInterceptor(Collections.singleton(new MockConstructorAdvice(QUEUE))))));
                     }
                     return builder;
                 })

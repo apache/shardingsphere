@@ -47,20 +47,11 @@ public interface MethodAdvisorBuilder {
     boolean isMatchedMethod(InDefinedShape methodDescription);
     
     /**
-     * Get single method advisor.
-     * 
-     * @param methodDescription method description
-     * @param advisorConfig advisor configuration
-     * @return got method advisor
-     */
-    MethodAdvisor getSingleMethodAdvisor(InDefinedShape methodDescription, MethodAdvisorConfiguration advisorConfig);
-    
-    /**
-     * Get composed method advisor.
+     * Get method advisor.
      * 
      * @param methodDescription method description
      * @param advisorConfigs advisor configurations
      * @return got method advisor
      */
-    MethodAdvisor getComposedMethodAdvisor(InDefinedShape methodDescription, List<MethodAdvisorConfiguration> advisorConfigs);
+    MethodAdvisor getMethodAdvisor(InDefinedShape methodDescription, List<MethodAdvisorConfiguration> advisorConfigs);
 }

@@ -27,6 +27,8 @@ import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
+import java.util.Collection;
+
 /**
  * Proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
  */
@@ -35,7 +37,7 @@ public class ConstructorInterceptor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorInterceptor.class);
     
-    private final ConstructorAdvice advice;
+    private final Collection<ConstructorAdvice> advices;
     
     /**
      * Intercept constructor.
@@ -48,7 +50,9 @@ public class ConstructorInterceptor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                advice.onConstructor(target, args);
+                for (ConstructorAdvice each : advices) {
+                    each.onConstructor(target, args);
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable throwable) {
