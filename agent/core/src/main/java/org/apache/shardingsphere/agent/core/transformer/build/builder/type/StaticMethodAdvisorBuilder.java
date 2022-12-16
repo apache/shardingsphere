@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.agent.core.transformer.build.builder.type;
 
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.method.type.StaticMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
@@ -37,18 +37,14 @@ import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvi
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Static method advisor builder.
  */
+@RequiredArgsConstructor
 public final class StaticMethodAdvisorBuilder implements MethodAdvisorBuilder<StaticMethodAdvisorConfiguration> {
     
     private final AdviceFactory adviceFactory;
-    
-    public StaticMethodAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final boolean isEnhancedForProxy, final ClassLoader classLoader) {
-        adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
-    }
     
     @Override
     public Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {

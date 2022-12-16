@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.agent.core.transformer.build.builder.type;
 
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.method.type.ConstructorAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedConstructorInterceptor;
@@ -33,19 +33,15 @@ import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvi
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Constructor advisor builder.
  */
+@RequiredArgsConstructor
 public final class ConstructorAdvisorBuilder implements MethodAdvisorBuilder<ConstructorAdvisorConfiguration> {
     
     private final AdviceFactory adviceFactory;
-    
-    public ConstructorAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final boolean isEnhancedForProxy, final ClassLoader classLoader) {
-        adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
-    }
     
     @Override
     public Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
