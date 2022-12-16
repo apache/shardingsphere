@@ -52,14 +52,13 @@ public class InstanceMethodInterceptorArgsOverride {
      * @return the return value of target invocation
      */
     @RuntimeType
-    public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @Morph final OverrideArgsInvoker callable) {
-        TargetAdviceObject instance = (TargetAdviceObject) target;
+    public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @Morph final OverrideArgsInvoker callable) {
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
         boolean adviceEnabled = instanceMethodAroundAdvice.disableCheck() || PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                instanceMethodAroundAdvice.beforeMethod(instance, method, args, methodResult);
+                instanceMethodAroundAdvice.beforeMethod(target, method, args, methodResult);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -78,7 +77,7 @@ public class InstanceMethodInterceptorArgsOverride {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    instanceMethodAroundAdvice.onThrowing(instance, method, args, ex);
+                    instanceMethodAroundAdvice.onThrowing(target, method, args, ex);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
@@ -89,7 +88,7 @@ public class InstanceMethodInterceptorArgsOverride {
         } finally {
             try {
                 if (adviceEnabled) {
-                    instanceMethodAroundAdvice.afterMethod(instance, method, args, methodResult);
+                    instanceMethodAroundAdvice.afterMethod(target, method, args, methodResult);
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
