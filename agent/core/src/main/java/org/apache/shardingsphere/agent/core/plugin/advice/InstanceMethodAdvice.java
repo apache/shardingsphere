@@ -56,13 +56,13 @@ public final class InstanceMethodAdvice {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult methodResult = new MethodInvocationResult();
+        MethodInvocationResult invocationResult = new MethodInvocationResult();
         Object result;
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
                 for (InstanceMethodAdviceExecutor each : executors) {
-                    each.beforeMethod(target, method, args, methodResult);
+                    each.beforeMethod(target, method, args, invocationResult);
                 }
             }
             // CHECKSTYLE:OFF
@@ -71,12 +71,12 @@ public final class InstanceMethodAdvice {
             LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
         }
         try {
-            if (methodResult.isRebased()) {
-                result = methodResult.getResult();
+            if (invocationResult.isRebased()) {
+                result = invocationResult.getResult();
             } else {
                 result = callable.call();
             }
-            methodResult.rebase(result);
+            invocationResult.rebase(result);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -96,7 +96,7 @@ public final class InstanceMethodAdvice {
             try {
                 if (adviceEnabled) {
                     for (InstanceMethodAdviceExecutor each : executors) {
-                        each.afterMethod(target, method, args, methodResult);
+                        each.afterMethod(target, method, args, invocationResult);
                     }
                 }
                 // CHECKSTYLE:OFF
@@ -105,6 +105,6 @@ public final class InstanceMethodAdvice {
                 LOGGER.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
         }
-        return methodResult.isRebased() ? methodResult.getResult() : result;
+        return invocationResult.isRebased() ? invocationResult.getResult() : result;
     }
 }

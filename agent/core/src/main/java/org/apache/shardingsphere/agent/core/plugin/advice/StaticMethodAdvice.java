@@ -54,13 +54,13 @@ public final class StaticMethodAdvice {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult methodResult = new MethodInvocationResult();
+        MethodInvocationResult invocationResult = new MethodInvocationResult();
         Object result;
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
                 for (StaticMethodAdviceExecutor each : executors) {
-                    each.beforeMethod(klass, method, args, methodResult);
+                    each.beforeMethod(klass, method, args, invocationResult);
                 }
             }
             // CHECKSTYLE:OFF
@@ -69,12 +69,12 @@ public final class StaticMethodAdvice {
             LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), klass, ex);
         }
         try {
-            if (methodResult.isRebased()) {
-                result = methodResult.getResult();
+            if (invocationResult.isRebased()) {
+                result = invocationResult.getResult();
             } else {
                 result = callable.call();
             }
-            methodResult.rebase(result);
+            invocationResult.rebase(result);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -94,7 +94,7 @@ public final class StaticMethodAdvice {
             try {
                 if (adviceEnabled) {
                     for (StaticMethodAdviceExecutor each : executors) {
-                        each.afterMethod(klass, method, args, methodResult);
+                        each.afterMethod(klass, method, args, invocationResult);
                     }
                 }
                 // CHECKSTYLE:OFF
@@ -103,6 +103,6 @@ public final class StaticMethodAdvice {
                 LOGGER.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), klass, ex);
             }
         }
-        return methodResult.isRebased() ? methodResult.getResult() : result;
+        return invocationResult.isRebased() ? invocationResult.getResult() : result;
     }
 }
