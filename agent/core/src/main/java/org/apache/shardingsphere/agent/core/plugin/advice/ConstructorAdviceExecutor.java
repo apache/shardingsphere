@@ -36,7 +36,7 @@ public final class ConstructorAdviceExecutor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorAdviceExecutor.class);
     
-    private final Collection<org.apache.shardingsphere.agent.advice.ConstructorAdvice> executors;
+    private final Collection<org.apache.shardingsphere.agent.advice.ConstructorAdvice> advices;
     
     /**
      * Intercept constructor.
@@ -49,7 +49,7 @@ public final class ConstructorAdviceExecutor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                for (org.apache.shardingsphere.agent.advice.ConstructorAdvice each : executors) {
+                for (org.apache.shardingsphere.agent.advice.ConstructorAdvice each : advices) {
                     each.onConstructor(target, args);
                 }
             }

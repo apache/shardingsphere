@@ -53,8 +53,7 @@ public final class InstanceMethodAdvisorBuilder implements MethodAdvisorBuilder 
     
     @Override
     public MethodAdvisor getMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
-        Collection<InstanceMethodAdvice> adviceExecutors = advisorConfigs
-                .stream().<InstanceMethodAdvice>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-        return new MethodAdvisor(methodDescription, new InstanceMethodAdviceExecutor(adviceExecutors));
+        Collection<InstanceMethodAdvice> advices = advisorConfigs.stream().<InstanceMethodAdvice>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+        return new MethodAdvisor(methodDescription, new InstanceMethodAdviceExecutor(advices));
     }
 }

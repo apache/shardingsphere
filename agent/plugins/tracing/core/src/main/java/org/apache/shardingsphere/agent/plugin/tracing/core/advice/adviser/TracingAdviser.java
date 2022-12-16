@@ -28,8 +28,8 @@ public interface TracingAdviser {
     /**
      * Get advisor configuration.
      * 
-     * @param adviceExecutorClass instance method around advice class
+     * @param adviceClass instance method advice class
      * @return advisor configuration
      */
-    AdvisorConfiguration getAdvisorConfiguration(Class<? extends InstanceMethodAdvice> adviceExecutorClass);
+    AdvisorConfiguration getAdvisorConfiguration(Class<? extends InstanceMethodAdvice> adviceClass);
 }

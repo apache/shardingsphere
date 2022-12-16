@@ -41,7 +41,7 @@ public final class InstanceMethodAdviceExecutor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdviceExecutor.class);
     
-    private final Collection<org.apache.shardingsphere.agent.advice.InstanceMethodAdvice> executors;
+    private final Collection<org.apache.shardingsphere.agent.advice.InstanceMethodAdvice> advices;
     
     /**
      * Intercept instance method.
@@ -81,7 +81,7 @@ public final class InstanceMethodAdviceExecutor {
     
     private void interceptBefore(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
-            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : executors) {
+            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : advices) {
                 each.beforeMethod(target, method, args, invocationResult);
             }
             // CHECKSTYLE:OFF
@@ -93,7 +93,7 @@ public final class InstanceMethodAdviceExecutor {
     
     private void interceptThrow(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable ex) {
         try {
-            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : executors) {
+            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : advices) {
                 each.onThrowing(target, method, args, ex);
             }
             // CHECKSTYLE:OFF
@@ -105,7 +105,7 @@ public final class InstanceMethodAdviceExecutor {
     
     private void interceptAfter(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
-            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : executors) {
+            for (org.apache.shardingsphere.agent.advice.InstanceMethodAdvice each : advices) {
                 each.afterMethod(target, method, args, invocationResult);
             }
             // CHECKSTYLE:OFF
