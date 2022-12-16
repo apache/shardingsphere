@@ -81,7 +81,7 @@ public abstract class MethodAdvisorBuilder<T extends MethodAdvisorConfiguration>
     
     protected abstract boolean isMatchedMethod(InDefinedShape methodPointcut);
     
-    protected abstract MethodAdvisor getSingleMethodAdvisor(final InDefinedShape methodPointcut, final T advisorConfig);
+    protected abstract MethodAdvisor getSingleMethodAdvisor(InDefinedShape methodPointcut, T advisorConfig);
     
-    protected abstract MethodAdvisor getComposedMethodAdvisor(final InDefinedShape methodPointcut, final List<T> advisorConfigs);
+    protected abstract MethodAdvisor getComposedMethodAdvisor(InDefinedShape methodPointcut, List<T> advisorConfigs);
 }
