@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -23,86 +23,84 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import net.bytebuddy.implementation.bind.annotation.This;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.StaticMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
 /**
- * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method.
+ * Instance method advice.
  */
 @RequiredArgsConstructor
-public class StaticMethodAroundInterceptor {
+public final class InstanceMethodAdvice {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAroundInterceptor.class);
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdvice.class);
     
-    private final Collection<StaticMethodAdviceExecutor> executors;
+    private final Collection<InstanceMethodAdviceExecutor> executors;
     
     /**
-     * Only intercept static method.
+     * Intercept instance method.
      *
-     * @param klass the class of target
-     * @param method the intercepted method
-     * @param args the all arguments of method
-     * @param callable the origin method invocation
-     * @return the return value of target invocation
+     * @param target target object
+     * @param method intercepted method
+     * @param args all arguments of method
+     * @param callable origin method invocation
+     * @return return value of target invocation
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult methodResult = new MethodInvocationResult();
-        Object result;
+    public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
+        MethodInvocationResult invocationResult = new MethodInvocationResult();
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                for (StaticMethodAdviceExecutor each : executors) {
-                    each.beforeMethod(klass, method, args, methodResult);
+                for (InstanceMethodAdviceExecutor each : executors) {
+                    each.beforeMethod(target, method, args, invocationResult);
                 }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), klass, ex);
+            LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
         }
+        Object result;
         try {
-            if (methodResult.isRebased()) {
-                result = methodResult.getResult();
-            } else {
-                result = callable.call();
-            }
-            methodResult.rebase(result);
+            result = invocationResult.isRebased() ? invocationResult.getResult() : callable.call();
+            invocationResult.rebase(result);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    for (StaticMethodAdviceExecutor each : executors) {
-                        each.onThrowing(klass, method, args, ex);
+                    for (InstanceMethodAdviceExecutor each : executors) {
+                        each.onThrowing(target, method, args, ex);
                     }
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
-                LOGGER.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), klass, ex);
+                LOGGER.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
             throw ex;
         } finally {
             try {
                 if (adviceEnabled) {
-                    for (StaticMethodAdviceExecutor each : executors) {
-                        each.afterMethod(klass, method, args, methodResult);
+                    for (InstanceMethodAdviceExecutor each : executors) {
+                        each.afterMethod(target, method, args, invocationResult);
                     }
                 }
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                LOGGER.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), klass, ex);
+                LOGGER.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
         }
-        return methodResult.isRebased() ? methodResult.getResult() : result;
+        return invocationResult.isRebased() ? invocationResult.getResult() : result;
     }
 }

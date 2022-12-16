@@ -23,8 +23,8 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.StaticMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.advice.executor.StaticMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
@@ -55,6 +55,6 @@ public final class StaticMethodAdvisorBuilder implements MethodAdvisorBuilder {
     public MethodAdvisor getMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
         Collection<StaticMethodAdviceExecutor> adviceExecutors = advisorConfigs
                 .stream().<StaticMethodAdviceExecutor>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-        return new MethodAdvisor(methodDescription, new StaticMethodAroundInterceptor(adviceExecutors));
+        return new MethodAdvisor(methodDescription, new StaticMethodAdvice(adviceExecutors));
     }
 }

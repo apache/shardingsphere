@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.interceptor;
+package org.apache.shardingsphere.agent.core.plugin.advice;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
@@ -70,7 +70,7 @@ public final class ConstructorYamlAdvisorConfigurationTest {
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .constructor(ElementMatchers.isConstructor())
                                 .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration()
-                                        .to(new ConstructorInterceptor(Collections.singleton(new MockConstructorAdviceExecutor(QUEUE))))));
+                                        .to(new ConstructorAdvice(Collections.singleton(new MockConstructorAdviceExecutor(QUEUE))))));
                     }
                     return builder;
                 })
