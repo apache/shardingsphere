@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer.builder;
+package org.apache.shardingsphere.agent.core.transformer.builder.advise;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,10 +29,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Advice factory.
+ * JDBC advice factory.
  */
 @RequiredArgsConstructor
-public final class AdviceFactory {
+public final class JDBCAdviceFactory {
     
     private static final Map<String, Object> CACHED_ADVICES = new ConcurrentHashMap<>();
     
@@ -44,8 +44,6 @@ public final class AdviceFactory {
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
-    private final boolean isEnhancedForProxy;
-    
     /**
      * Get advice.
      *
@@ -53,22 +51,8 @@ public final class AdviceFactory {
      * @param <T> type of advice
      * @return got advance
      */
+    @SuppressWarnings("unchecked")
     public <T> T getAdvice(final String adviceClassName) {
-        return isEnhancedForProxy ? getAdviceForProxy(adviceClassName) : getAdviceForJDBC(adviceClassName);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private <T> T getAdviceForProxy(final String adviceClassName) {
-        return (T) CACHED_ADVICES.computeIfAbsent(adviceClassName, this::createAdviceForProxy);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object createAdviceForProxy(final String adviceClassName) {
-        return Class.forName(adviceClassName, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private <T> T getAdviceForJDBC(final String adviceClassName) {
         String adviceInstanceCacheKey = String.format("%s_%s@%s", adviceClassName, classLoader.getClass().getName(), Integer.toHexString(classLoader.hashCode()));
         return (T) CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, key -> createAdviceForJDBC(adviceClassName));
     }
