@@ -53,7 +53,7 @@ public final class InstanceMethodAdvisorBuilder extends MethodAdvisorBuilder<Ins
     }
     
     @Override
-    protected Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
+    protected Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
         if (methodAdvisor.getAdvice() instanceof InstanceMethodInterceptorArgsOverride) {
             return builder.method(ElementMatchers.is(methodAdvisor.getPointcut()))
                     .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(methodAdvisor.getAdvice()));

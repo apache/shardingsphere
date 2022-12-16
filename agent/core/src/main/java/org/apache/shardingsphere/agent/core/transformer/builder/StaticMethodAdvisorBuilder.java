@@ -53,7 +53,7 @@ public final class StaticMethodAdvisorBuilder extends MethodAdvisorBuilder<Stati
     }
     
     @Override
-    protected Builder<?> create(Builder<?> builder, final MethodAdvisor methodAdvisor) {
+    protected Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
         if (methodAdvisor.getAdvice() instanceof StaticMethodInterceptorArgsOverride) {
             return builder.method(ElementMatchers.is(methodAdvisor.getPointcut()))
                     .intercept(MethodDelegation.withDefaultConfiguration().withBinders(Morph.Binder.install(OverrideArgsInvoker.class)).to(methodAdvisor.getAdvice()));
