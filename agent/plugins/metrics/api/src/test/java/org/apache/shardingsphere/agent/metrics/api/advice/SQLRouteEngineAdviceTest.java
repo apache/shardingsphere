@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
-    private final SQLRouteEngineAdvice sqlRouteEngineAdvice = new SQLRouteEngineAdvice();
+    private final SQLRouteEngineAdviceExecutor sqlRouteEngineAdvice = new SQLRouteEngineAdviceExecutor();
     
     @Test
     public void assertInsertRoute() {

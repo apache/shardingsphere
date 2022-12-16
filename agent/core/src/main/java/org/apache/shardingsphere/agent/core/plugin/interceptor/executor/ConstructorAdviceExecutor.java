@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.executor;
 
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 
-import java.util.List;
-
-@RequiredArgsConstructor
-public final class MockConstructorAdvice implements ConstructorAdvice {
+/**
+ * Constructor advice executor.
+ */
+public interface ConstructorAdviceExecutor extends AgentAdviceExecutor {
     
-    private final List<String> queues;
-    
-    public MockConstructorAdvice() {
-        this(null);
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void onConstructor(final TargetAdviceObject target, final Object[] args) {
-        if (null != args && args.length > 0) {
-            List<String> list = Optional.ofNullable(queues).orElse((List<String>) args[0]);
-            list.add("on constructor");
-        }
-    }
+    /**
+     * Intercept the target's constructor.
+     * This method is weaved after the constructor execution.
+     *
+     * @param target intercepted target object
+     * @param args all arguments of the intercepted constructor
+     */
+    void onConstructor(TargetAdviceObject target, Object[] args);
 }

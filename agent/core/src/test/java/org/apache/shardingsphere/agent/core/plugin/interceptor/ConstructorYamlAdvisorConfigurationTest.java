@@ -29,7 +29,7 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -70,7 +70,7 @@ public final class ConstructorYamlAdvisorConfigurationTest {
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .constructor(ElementMatchers.isConstructor())
                                 .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration()
-                                        .to(new ConstructorInterceptor(Collections.singleton(new MockConstructorAdvice(QUEUE))))));
+                                        .to(new ConstructorInterceptor(Collections.singleton(new MockConstructorAdviceExecutor(QUEUE))))));
                     }
                     return builder;
                 })

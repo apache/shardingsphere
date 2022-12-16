@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.executor;
 
 /**
- * Agent advice.
+ * Agent advice executor.
  */
-public interface AgentAdvice {
+public interface AgentAdviceExecutor {
 }

@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class CommandExecutorTaskAdviceTest {
     
-    private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
+    private static final CommandExecutorTaskAdviceExecutor ADVICE = new CommandExecutorTaskAdviceExecutor();
     
     private static MockTracer tracer;
     

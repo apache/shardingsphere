@@ -26,7 +26,7 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
-import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.StaticMethodAdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public class StaticMethodAroundInterceptor {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAroundInterceptor.class);
     
-    private final Collection<StaticMethodAroundAdvice> advices;
+    private final Collection<StaticMethodAdviceExecutor> executors;
     
     /**
      * Only intercept static method.
@@ -59,7 +59,7 @@ public class StaticMethodAroundInterceptor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                for (StaticMethodAroundAdvice each : advices) {
+                for (StaticMethodAdviceExecutor each : executors) {
                     each.beforeMethod(klass, method, args, methodResult);
                 }
             }
@@ -80,7 +80,7 @@ public class StaticMethodAroundInterceptor {
             // CHECKSTYLE:ON
             try {
                 if (adviceEnabled) {
-                    for (StaticMethodAroundAdvice each : advices) {
+                    for (StaticMethodAdviceExecutor each : executors) {
                         each.onThrowing(klass, method, args, ex);
                     }
                 }
@@ -93,7 +93,7 @@ public class StaticMethodAroundInterceptor {
         } finally {
             try {
                 if (adviceEnabled) {
-                    for (StaticMethodAroundAdvice each : advices) {
+                    for (StaticMethodAdviceExecutor each : executors) {
                         each.afterMethod(klass, method, args, methodResult);
                     }
                 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
@@ -27,35 +27,26 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Channel handler advice.
+ * Transaction advice executor.
  */
-public final class ChannelHandlerAdvice implements InstanceMethodAroundAdvice {
+public final class TransactionAdviceExecutor implements InstanceMethodAdviceExecutor {
     
-    public static final String CHANNEL_READ = "channelRead";
+    public static final String COMMIT = "commit";
     
-    public static final String CHANNEL_ACTIVE = "channelActive";
-    
-    public static final String CHANNEL_INACTIVE = "channelInactive";
+    public static final String ROLLBACK = "rollback";
     
     static {
-        MetricsPool.create(MetricIds.PROXY_REQUEST);
-        MetricsPool.create(MetricIds.PROXY_COLLECTION);
+        MetricsPool.create(MetricIds.TRANSACTION_COMMIT);
+        MetricsPool.create(MetricIds.TRANSACTION_ROLLBACK);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        switch (method.getName()) {
-            case CHANNEL_READ:
-                MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
-                break;
-            case CHANNEL_ACTIVE:
-                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
-                break;
-            case CHANNEL_INACTIVE:
-                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::dec);
-                break;
-            default:
-                break;
+        String methodName = method.getName();
+        if (COMMIT.equals(methodName)) {
+            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(MetricsWrapper::inc);
+        } else if (ROLLBACK.equals(methodName)) {
+            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(MetricsWrapper::inc);
         }
     }
 }

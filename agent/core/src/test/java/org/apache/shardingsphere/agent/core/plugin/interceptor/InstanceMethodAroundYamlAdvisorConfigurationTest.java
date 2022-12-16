@@ -28,7 +28,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -96,7 +96,7 @@ public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
         InstanceMaterial material = new ByteBuddy()
                 .subclass(InstanceMaterial.class)
                 .method(ElementMatchers.named(methodName))
-                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAroundInterceptor(Collections.singleton(new MockInstanceMethodAroundAdvice(rebase)))))
+                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAroundInterceptor(Collections.singleton(new MockInstanceMethodAdviceExecutor(rebase)))))
                 .make()
                 .load(new MockClassLoader())
                 .getLoaded()

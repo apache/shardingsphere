@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.executor;
 
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 
 /**
- * Weaving the advice around the static methods of target class.
+ * Static method advice executor.
  */
-public interface StaticMethodAroundAdvice extends AgentAdvice {
+public interface StaticMethodAdviceExecutor extends AgentAdviceExecutor {
     
     /**
      * Intercept the target method and weave the method before origin method.

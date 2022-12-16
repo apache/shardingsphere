@@ -43,7 +43,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
-    private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
+    private static final CommandExecutorTaskAdviceExecutor ADVICE = new CommandExecutorTaskAdviceExecutor();
     
     private static final Map<String, Object> EXPECTED = new HashMap<>(2, 1);
     

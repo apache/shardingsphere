@@ -15,47 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanBuilder;
-import io.opentelemetry.api.trace.SpanKind;
-import io.opentelemetry.api.trace.StatusCode;
+import brave.Span;
+import brave.Tracing;
+import brave.propagation.TraceContext;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice.
+ * SQL parser engine advice executor.
  */
-public class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
+public final class SQLParserEngineAdviceExecutor implements InstanceMethodAdviceExecutor {
     
-    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
-                .spanBuilder(OPERATION_NAME)
-                .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
-                .setSpanKind(SpanKind.CLIENT);
-        Span span = spanBuilder.startSpan();
+        TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
+        Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
+        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
+        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
+        span.tag(ZipkinConstants.Tags.DB_STATEMENT, String.valueOf(args[0]));
+        span.start();
         target.setAttachment(span);
-        ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, span);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ((Span) target.getAttachment()).end();
-        ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
+        ((Span) target.getAttachment()).finish();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);
+        ((Span) target.getAttachment()).error(throwable);
     }
 }

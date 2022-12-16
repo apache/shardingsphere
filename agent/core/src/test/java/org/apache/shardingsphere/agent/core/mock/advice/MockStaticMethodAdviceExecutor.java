@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.agent.core.mock.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.executor.StaticMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 
 import java.lang.reflect.Method;
@@ -27,32 +26,29 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public final class MockInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
+public final class MockStaticMethodAdviceExecutor implements StaticMethodAdviceExecutor {
     
     private final boolean rebase;
     
-    public MockInstanceMethodAroundAdvice() {
-        this(false);
-    }
-    
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("before");
+    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+        List<String> queue = (List<String>) args[0];
+        queue.add("before");
         if (rebase) {
-            result.rebase("rebase invocation method");
+            result.rebase("rebase static invocation method");
         }
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("after");
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+        List<String> queue = (List<String>) args[0];
+        queue.add("after");
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queues = (List<String>) args[0];
-        queues.add("exception");
+    public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
+        List<String> queue = (List<String>) args[0];
+        queue.add("exception");
     }
+    
 }
