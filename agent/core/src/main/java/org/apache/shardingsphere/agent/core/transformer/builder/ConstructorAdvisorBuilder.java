@@ -24,7 +24,7 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.config.advisor.ConstructorAdvisorConfiguration;
+import org.apache.shardingsphere.agent.config.advisor.method.type.ConstructorAdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
@@ -67,9 +67,9 @@ public final class ConstructorAdvisorBuilder {
      */
     public Builder<?> create(final Builder<?> builder) {
         Builder<?> result = builder;
-        Collection<MethodAdvisor<? extends ConstructorInterceptor>> matchedAdvisor = typePointcut.getDeclaredMethods()
+        Collection<MethodAdvisor<?>> matchedAdvisor = typePointcut.getDeclaredMethods()
                 .stream().filter(MethodDescription::isConstructor).map(this::getMatchedAdvisor).filter(Objects::nonNull).collect(Collectors.toList());
-        for (MethodAdvisor<? extends ConstructorInterceptor> each : matchedAdvisor) {
+        for (MethodAdvisor<?> each : matchedAdvisor) {
             try {
                 result = result.constructor(ElementMatchers.is(each.getPointcut()))
                         .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(each.getAdvice())));
@@ -82,7 +82,7 @@ public final class ConstructorAdvisorBuilder {
         return result;
     }
     
-    private MethodAdvisor<? extends ConstructorInterceptor> getMatchedAdvisor(final InDefinedShape methodPointcut) {
+    private MethodAdvisor<?> getMatchedAdvisor(final InDefinedShape methodPointcut) {
         List<ConstructorAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodPointcut)).collect(Collectors.toList());
         if (matchedAdvisorConfigs.isEmpty()) {
             return null;
