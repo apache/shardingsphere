@@ -24,23 +24,22 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.StaticMethodAdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
 /**
- * Static method advice.
+ * Static method advice executor.
  */
 @RequiredArgsConstructor
-public final class StaticMethodAdvice {
+public final class StaticMethodAdviceExecutor {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdvice.class);
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdviceExecutor.class);
     
-    private final Collection<StaticMethodAdviceExecutor> executors;
+    private final Collection<org.apache.shardingsphere.agent.advice.StaticMethodAdvice> executors;
     
     /**
      * Intercept static method.
@@ -80,7 +79,7 @@ public final class StaticMethodAdvice {
     
     private void interceptBefore(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
-            for (StaticMethodAdviceExecutor each : executors) {
+            for (org.apache.shardingsphere.agent.advice.StaticMethodAdvice each : executors) {
                 each.beforeMethod(klass, method, args, invocationResult);
             }
             // CHECKSTYLE:OFF
@@ -92,7 +91,7 @@ public final class StaticMethodAdvice {
     
     private void interceptThrow(final Class<?> klass, final Method method, final Object[] args, final Throwable ex) {
         try {
-            for (StaticMethodAdviceExecutor each : executors) {
+            for (org.apache.shardingsphere.agent.advice.StaticMethodAdvice each : executors) {
                 each.onThrowing(klass, method, args, ex);
             }
             // CHECKSTYLE:OFF
@@ -104,7 +103,7 @@ public final class StaticMethodAdvice {
     
     private void interceptAfter(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         try {
-            for (StaticMethodAdviceExecutor each : executors) {
+            for (org.apache.shardingsphere.agent.advice.StaticMethodAdvice each : executors) {
                 each.afterMethod(klass, method, args, invocationResult);
             }
             // CHECKSTYLE:OFF

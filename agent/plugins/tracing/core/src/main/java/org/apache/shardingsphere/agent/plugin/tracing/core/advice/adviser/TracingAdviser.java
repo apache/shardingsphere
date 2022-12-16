@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser;
 
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 
 /**
@@ -31,5 +31,5 @@ public interface TracingAdviser {
      * @param adviceExecutorClass instance method around advice class
      * @return advisor configuration
      */
-    AdvisorConfiguration getAdvisorConfiguration(Class<? extends InstanceMethodAdviceExecutor> adviceExecutorClass);
+    AdvisorConfiguration getAdvisorConfiguration(Class<? extends InstanceMethodAdvice> adviceExecutorClass);
 }

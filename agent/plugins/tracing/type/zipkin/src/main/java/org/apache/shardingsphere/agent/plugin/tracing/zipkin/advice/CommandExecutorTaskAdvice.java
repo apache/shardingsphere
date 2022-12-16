@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import io.opentracing.Scope;
-import io.opentracing.tag.Tags;
-import io.opentracing.util.GlobalTracer;
+import brave.Span;
+import brave.Tracing;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
+import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -37,32 +35,31 @@ import java.lang.reflect.Method;
 /**
  * Command executor task advice executor.
  */
-public final class CommandExecutorTaskAdviceExecutor implements InstanceMethodAdviceExecutor {
+public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
-                .startActive(true);
-        ExecutorDataMap.getValue().put(JaegerConstants.ROOT_SPAN, scope.span());
+        Span span = Tracing.currentTracer().newTrace().name(OPERATION_NAME);
+        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT)
+                .tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
+        ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, span);
     }
     
-    @Override
     @SneakyThrows(ReflectiveOperationException.class)
+    @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
         Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
         field.setAccessible(true);
         JDBCBackendConnection connection = (JDBCBackendConnection) ((ConnectionSession) field.get(target)).getBackendConnection();
-        Scope scope = GlobalTracer.get().scopeManager().active();
-        scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connection.getConnectionSize());
-        scope.close();
+        Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
+        span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
+        span.finish();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
+        ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).error(throwable);
     }
 }

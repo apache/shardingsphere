@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.agent.core.mock.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.ConstructorAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.ConstructorAdvice;
 
 import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public final class MockConstructorAdviceExecutor implements ConstructorAdviceExecutor {
+public final class MockConstructorAdvice implements ConstructorAdvice {
     
     private final List<String> queues;
     
-    public MockConstructorAdviceExecutor() {
+    public MockConstructorAdvice() {
         this(null);
     }
     

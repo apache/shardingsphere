@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
-    private final SQLRouteEngineAdviceExecutor sqlRouteEngineAdvice = new SQLRouteEngineAdviceExecutor();
+    private final SQLRouteEngineAdvice sqlRouteEngineAdvice = new SQLRouteEngineAdvice();
     
     @Test
     public void assertInsertRoute() {

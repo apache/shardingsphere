@@ -15,33 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base.advice;
+package org.apache.shardingsphere.agent.core.mock.advice;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.StaticMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.logging.base.threadlocal.ElapsedTimeThreadLocal;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.advice.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
-/**
- * Schema meta data loader advice executor.
- */
-@Slf4j
-public final class MetaDataContextsFactoryAdviceExecutor implements StaticMethodAdviceExecutor {
+@RequiredArgsConstructor
+@SuppressWarnings("unchecked")
+public final class MockStaticMethodAdvice implements StaticMethodAdvice {
+    
+    private final boolean rebase;
+    
+    public MockStaticMethodAdvice() {
+        this(false);
+    }
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+        List<String> queue = (List<String>) args[0];
+        queue.add("before");
+        if (rebase) {
+            result.rebase("rebase static invocation method");
+        }
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        try {
-            long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-            log.info("Build meta data contexts finished, cost {} milliseconds", elapsedTime);
-        } finally {
-            ElapsedTimeThreadLocal.INSTANCE.remove();
-        }
+        List<String> queue = (List<String>) args[0];
+        queue.add("after");
     }
+    
+    @Override
+    public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
+        List<String> queue = (List<String>) args[0];
+        queue.add("exception");
+    }
+    
 }

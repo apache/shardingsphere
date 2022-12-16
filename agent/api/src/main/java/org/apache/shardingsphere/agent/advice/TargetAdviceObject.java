@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.advice;
 
 /**
  * Wrapped class for target and provide a context to store variable during invocation.

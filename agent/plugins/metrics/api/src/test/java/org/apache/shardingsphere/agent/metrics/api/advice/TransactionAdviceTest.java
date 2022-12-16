@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureWrapper;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     
-    private final TransactionAdviceExecutor transactionAdvice = new TransactionAdviceExecutor();
+    private final TransactionAdvice transactionAdvice = new TransactionAdvice();
     
     @Mock
     private Method commit;
@@ -46,8 +46,8 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertMethod() {
-        when(commit.getName()).thenReturn(TransactionAdviceExecutor.COMMIT);
-        when(rollback.getName()).thenReturn(TransactionAdviceExecutor.ROLLBACK);
+        when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
+        when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());

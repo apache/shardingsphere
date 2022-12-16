@@ -21,7 +21,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
-import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdviceExecutor;
+import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
@@ -36,7 +36,7 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     private static final String SCHEMA_METADATA_LOADER_METHOD_NAME = "create";
     
-    private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdviceExecutor.class.getName();
+    private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
     public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {

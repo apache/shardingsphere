@@ -20,38 +20,41 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
-import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Context;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice executor.
+ * SQL parser engine advice executor.
  */
-public class CommandExecutorTaskAdviceExecutor implements InstanceMethodAdviceExecutor {
+public class SQLParserEngineAdvice implements InstanceMethodAdvice {
     
-    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
-                .spanBuilder(OPERATION_NAME)
+        Span root = (Span) ExecutorDataMap.getValue().get(OpenTelemetryConstants.ROOT_SPAN);
+        Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
+        SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME)
                 .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
-                .setSpanKind(SpanKind.CLIENT);
-        Span span = spanBuilder.startSpan();
-        target.setAttachment(span);
-        ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, span);
+                .setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE)
+                .setAttribute(OpenTelemetryConstants.DB_STATEMENT, String.valueOf(args[0]));
+        if (root != null) {
+            spanBuilder.setParent(Context.current().with(root));
+        }
+        target.setAttachment(spanBuilder.startSpan());
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Span) target.getAttachment()).end();
-        ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
     }
     
     @Override

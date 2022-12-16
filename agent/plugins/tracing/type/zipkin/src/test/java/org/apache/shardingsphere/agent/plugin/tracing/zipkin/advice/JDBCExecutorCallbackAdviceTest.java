@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
@@ -38,12 +38,12 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private JDBCExecutorCallbackAdviceExecutor advice;
+    private JDBCExecutorCallbackAdvice advice;
     
     @Before
     public void setup() {
         getExtraMap().put(ZipkinConstants.ROOT_SPAN, null);
-        advice = new JDBCExecutorCallbackAdviceExecutor();
+        advice = new JDBCExecutorCallbackAdvice();
     }
     
     @Test

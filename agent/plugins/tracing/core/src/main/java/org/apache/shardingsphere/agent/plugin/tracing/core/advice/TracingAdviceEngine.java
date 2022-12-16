@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.CommandExecutorTaskAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.JDBCExecutorCallbackAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.SQLParserEngineAdviser;
@@ -44,9 +44,9 @@ public final class TracingAdviceEngine {
      * @param jdbcExecutorCallbackAdviceExecutor JDBC executor callback advice executor
      * @return got configurations
      */
-    public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations(final Class<? extends InstanceMethodAdviceExecutor> commandExecutorTaskAdviceExecutor,
-                                                                          final Class<? extends InstanceMethodAdviceExecutor> sqlParserEngineAdviceExecutor,
-                                                                          final Class<? extends InstanceMethodAdviceExecutor> jdbcExecutorCallbackAdviceExecutor) {
+    public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations(final Class<? extends InstanceMethodAdvice> commandExecutorTaskAdviceExecutor,
+                                                                          final Class<? extends InstanceMethodAdvice> sqlParserEngineAdviceExecutor,
+                                                                          final Class<? extends InstanceMethodAdvice> jdbcExecutorCallbackAdviceExecutor) {
         // TODO load from YAML, please ref metrics
         Collection<AdvisorConfiguration> result = new LinkedList<>();
         result.add(new CommandExecutorTaskAdviser(type).getAdvisorConfiguration(commandExecutorTaskAdviceExecutor));

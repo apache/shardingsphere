@@ -15,44 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-import brave.Span;
-import brave.Tracing;
-import brave.propagation.TraceContext;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import io.opentracing.Scope;
+import io.opentracing.tag.Tags;
+import io.opentracing.util.GlobalTracer;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 
 import java.lang.reflect.Method;
 
 /**
  * SQL parser engine advice executor.
  */
-public final class SQLParserEngineAdviceExecutor implements InstanceMethodAdviceExecutor {
+public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
-        Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
-        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
-        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
-        span.tag(ZipkinConstants.Tags.DB_STATEMENT, String.valueOf(args[0]));
-        span.start();
-        target.setAttachment(span);
+        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
+                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
+                .startActive(true);
+        target.setAttachment(scope);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ((Span) target.getAttachment()).finish();
+        ((Scope) target.getAttachment()).close();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        ((Span) target.getAttachment()).error(throwable);
+        OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

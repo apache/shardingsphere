@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
@@ -37,11 +37,11 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private CommandExecutorTaskAdviceExecutor advice;
+    private CommandExecutorTaskAdvice advice;
     
     @Before
     public void setup() {
-        advice = new CommandExecutorTaskAdviceExecutor();
+        advice = new CommandExecutorTaskAdvice();
     }
     
     @Test

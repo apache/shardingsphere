@@ -30,5 +30,5 @@ public final class MethodAdvisor {
     
     private final MethodDescription pointcut;
     
-    private final Object advice;
+    private final Object adviceExecutor;
 }

@@ -21,8 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.ConstructorAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
@@ -30,14 +29,14 @@ import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import java.util.Collection;
 
 /**
- * Constructor advice.
+ * Constructor advice executor.
  */
 @RequiredArgsConstructor
-public final class ConstructorAdvice {
+public final class ConstructorAdviceExecutor {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorAdvice.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorAdviceExecutor.class);
     
-    private final Collection<ConstructorAdviceExecutor> executors;
+    private final Collection<org.apache.shardingsphere.agent.advice.ConstructorAdvice> executors;
     
     /**
      * Intercept constructor.
@@ -50,7 +49,7 @@ public final class ConstructorAdvice {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                for (ConstructorAdviceExecutor each : executors) {
+                for (org.apache.shardingsphere.agent.advice.ConstructorAdvice each : executors) {
                     each.onConstructor(target, args);
                 }
             }

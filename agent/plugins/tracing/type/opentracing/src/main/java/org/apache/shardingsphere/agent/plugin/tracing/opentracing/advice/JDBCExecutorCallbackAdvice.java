@@ -18,31 +18,46 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
- * SQL parser engine advice executor.
+ * JDBC executor callback advice executor.
  */
-public final class SQLParserEngineAdviceExecutor implements InstanceMethodAdviceExecutor {
+public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     
-    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
+    private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
+    @SuppressWarnings("unchecked")
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
-                .startActive(true);
-        target.setAttachment(scope);
+        Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
+        Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
+        if ((boolean) args[1]) {
+            builder.asChildOf(root);
+        } else {
+            JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
+            ExecutionUnit unit = executionUnit.getExecutionUnit();
+            builder.withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
+                    .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                    .withTag(Tags.DB_TYPE.getKey(), "sql")
+                    .withTag(Tags.DB_INSTANCE.getKey(), unit.getDataSourceName())
+                    .withTag(Tags.DB_STATEMENT.getKey(), unit.getSqlUnit().getSql())
+                    .withTag(ShardingSphereTags.DB_BIND_VARIABLES.getKey(), unit.getSqlUnit().getParameters().toString());
+        }
+        target.setAttachment(builder.startActive(true));
     }
     
     @Override

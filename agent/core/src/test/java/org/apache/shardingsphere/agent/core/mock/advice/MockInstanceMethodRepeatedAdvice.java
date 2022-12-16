@@ -17,42 +17,31 @@
 
 package org.apache.shardingsphere.agent.core.mock.advice;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-@RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public final class MockInstanceMethodAdviceExecutor implements InstanceMethodAdviceExecutor {
-    
-    private final boolean rebase;
-    
-    public MockInstanceMethodAdviceExecutor() {
-        this(false);
-    }
+public final class MockInstanceMethodRepeatedAdvice implements InstanceMethodAdvice {
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queues = (List<String>) args[0];
-        queues.add("before");
-        if (rebase) {
-            result.rebase("rebase invocation method");
-        }
+        queues.add("twice_before");
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queues = (List<String>) args[0];
-        queues.add("after");
+        queues.add("twice_after");
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
         List<String> queues = (List<String>) args[0];
-        queues.add("exception");
+        queues.add("twice_exception");
     }
 }
