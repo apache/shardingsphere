@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.transformer.builder;
 
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedConstructorInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 import java.util.Collection;
@@ -43,20 +41,22 @@ import java.util.stream.Collectors;
 /**
  * Constructor advisor builder.
  */
-@RequiredArgsConstructor
 public final class ConstructorAdvisorBuilder {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(ConstructorAdvisorBuilder.class);
     
-    private final Map<String, PluginConfiguration> pluginConfigs;
-    
     private final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs;
-    
-    private final boolean isEnhancedForProxy;
     
     private final TypeDescription typePointcut;
     
-    private final ClassLoader classLoader;
+    private final AdviceFactory adviceFactory;
+    
+    public ConstructorAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<ConstructorAdvisorConfiguration> constructorAdvisorConfigs,
+                                     final boolean isEnhancedForProxy, final TypeDescription typePointcut, final ClassLoader classLoader) {
+        this.constructorAdvisorConfigs = constructorAdvisorConfigs;
+        this.typePointcut = typePointcut;
+        adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
+    }
     
     /**
      * Create constructor advisor builder.
@@ -92,16 +92,12 @@ public final class ConstructorAdvisorBuilder {
         }
         if (1 == matchedConstructorAdvisorConfigs.size()) {
             return new MethodAdvisor<>(
-                    methodPointcut, new ConstructorInterceptor(loadAdviceInstance(matchedConstructorAdvisorConfigs.get(0).getAdviceClassName())));
+                    methodPointcut, new ConstructorInterceptor(adviceFactory.getAdvice(matchedConstructorAdvisorConfigs.get(0).getAdviceClassName())));
         }
         Collection<ConstructorAdvice> constructorAdvices = matchedConstructorAdvisorConfigs.stream()
                 .map(ConstructorAdvisorConfiguration::getAdviceClassName)
-                .map(each -> (ConstructorAdvice) loadAdviceInstance(each))
+                .map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each))
                 .collect(Collectors.toList());
         return new MethodAdvisor<>(methodPointcut, new ComposedConstructorInterceptor(constructorAdvices));
-    }
-    
-    private <T> T loadAdviceInstance(final String adviceClassName) {
-        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, pluginConfigs, isEnhancedForProxy);
     }
 }

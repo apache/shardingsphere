@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.transformer.builder;
 
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroun
 import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodInterceptorArgsOverride;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.composed.ComposedStaticMethodInterceptorArgsOverride;
-import org.apache.shardingsphere.agent.core.plugin.loader.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 import java.util.Collection;
@@ -46,20 +44,22 @@ import java.util.stream.Collectors;
 /**
  * Static method advisor builder.
  */
-@RequiredArgsConstructor
 public final class StaticMethodAdvisorBuilder {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdvisorBuilder.class);
     
-    private final Map<String, PluginConfiguration> pluginConfigs;
-    
     private final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs;
-    
-    private final boolean isEnhancedForProxy;
     
     private final TypeDescription typePointcut;
     
-    private final ClassLoader classLoader;
+    private final AdviceFactory adviceFactory;
+    
+    public StaticMethodAdvisorBuilder(final Map<String, PluginConfiguration> pluginConfigs, final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisorConfigs,
+                                      final boolean isEnhancedForProxy, final TypeDescription typePointcut, final ClassLoader classLoader) {
+        this.staticMethodAdvisorConfigs = staticMethodAdvisorConfigs;
+        this.typePointcut = typePointcut;
+        adviceFactory = new AdviceFactory(classLoader, pluginConfigs, isEnhancedForProxy);
+    }
     
     /**
      * Create static method advisor builder.
@@ -103,7 +103,7 @@ public final class StaticMethodAdvisorBuilder {
     }
     
     private MethodAdvisor<?> getSingleStaticMethodPoint(final InDefinedShape methodPointcut, final StaticMethodAdvisorConfiguration staticMethodAdvisorConfig) {
-        StaticMethodAroundAdvice staticMethodAroundAdvice = loadAdviceInstance(staticMethodAdvisorConfig.getAdviceClassName());
+        StaticMethodAroundAdvice staticMethodAroundAdvice = adviceFactory.getAdvice(staticMethodAdvisorConfig.getAdviceClassName());
         return staticMethodAdvisorConfig.isOverrideArgs()
                 ? new MethodAdvisor<>(methodPointcut, new StaticMethodInterceptorArgsOverride(staticMethodAroundAdvice))
                 : new MethodAdvisor<>(methodPointcut, new StaticMethodAroundInterceptor(staticMethodAroundAdvice));
@@ -117,14 +117,10 @@ public final class StaticMethodAdvisorBuilder {
                 isArgsOverride = true;
             }
             if (null != each.getAdviceClassName()) {
-                staticMethodAroundAdvices.add(loadAdviceInstance(each.getAdviceClassName()));
+                staticMethodAroundAdvices.add(adviceFactory.getAdvice(each.getAdviceClassName()));
             }
         }
         return isArgsOverride ? new MethodAdvisor<>(methodPointcut, new ComposedStaticMethodInterceptorArgsOverride(staticMethodAroundAdvices))
                 : new MethodAdvisor<>(methodPointcut, new ComposedStaticMethodAroundInterceptor(staticMethodAroundAdvices));
-    }
-    
-    private <T> T loadAdviceInstance(final String adviceClassName) {
-        return AdviceInstanceLoader.loadAdviceInstance(adviceClassName, classLoader, pluginConfigs, isEnhancedForProxy);
     }
 }
