@@ -119,9 +119,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final MetaDataContexts metaDataContexts;
     
-    private final String originSQL;
-    
     private final String sql;
+    
+    private final String removeHintSQL;
     
     private final List<PreparedStatement> statements;
     
@@ -194,14 +194,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.connection = connection;
         metaDataContexts = connection.getContextManager().getMetaDataContexts();
         eventBusContext = connection.getContextManager().getInstanceContext().getEventBusContext();
-        this.originSQL = sql;
-        this.sql = SQLHintUtils.removeHint(originSQL);
+        this.sql = sql;
+        this.removeHintSQL = SQLHintUtils.removeHint(sql);
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType()));
-        sqlStatement = sqlParserEngine.parse(this.sql, true);
+        sqlStatement = sqlParserEngine.parse(this.removeHintSQL, true);
         sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, connection.getDatabaseName());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -566,7 +566,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
-        return new QueryContext(sqlStatementContext, sql, params, SQLHintUtils.extractHint(originSQL));
+        return new QueryContext(sqlStatementContext, removeHintSQL, params, SQLHintUtils.extractHint(sql));
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
