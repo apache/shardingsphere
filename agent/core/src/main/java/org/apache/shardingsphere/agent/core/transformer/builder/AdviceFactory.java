@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.transformer.builder;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
@@ -32,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Advice factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class AdviceFactory {
     
     private static final Map<String, Object> CACHED_ADVICES = new ConcurrentHashMap<>();
@@ -41,45 +40,48 @@ public final class AdviceFactory {
     
     private static boolean isStarted;
     
+    private final ClassLoader classLoader;
+    
+    private final Map<String, PluginConfiguration> pluginConfigs;
+    
+    private final boolean isEnhancedForProxy;
+    
     /**
      * Get advice.
      *
      * @param adviceClassName advice class name
-     * @param classLoader class loader
-     * @param pluginConfigs plugin configurations
-     * @param isEnhancedForProxy is enhanced for proxy
      * @param <T> type of advice
      * @return got advance
      */
-    public static <T> T getAdvice(final String adviceClassName, final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs, final boolean isEnhancedForProxy) {
-        return isEnhancedForProxy ? getAdviceForProxy(adviceClassName) : getAdviceForJDBC(adviceClassName, classLoader, pluginConfigs);
+    public <T> T getAdvice(final String adviceClassName) {
+        return isEnhancedForProxy ? getAdviceForProxy(adviceClassName) : getAdviceForJDBC(adviceClassName);
     }
     
     @SuppressWarnings("unchecked")
-    private static <T> T getAdviceForProxy(final String className) {
-        return (T) CACHED_ADVICES.computeIfAbsent(className, AdviceFactory::createAdviceForProxy);
+    private <T> T getAdviceForProxy(final String adviceClassName) {
+        return (T) CACHED_ADVICES.computeIfAbsent(adviceClassName, this::createAdviceForProxy);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Object createAdviceForProxy(final String className) {
-        return Class.forName(className, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
+    private Object createAdviceForProxy(final String adviceClassName) {
+        return Class.forName(adviceClassName, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
     }
     
     @SuppressWarnings("unchecked")
-    private static <T> T getAdviceForJDBC(final String className, final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs) {
-        String adviceInstanceCacheKey = String.format("%s_%s@%s", className, classLoader.getClass().getName(), Integer.toHexString(classLoader.hashCode()));
-        return (T) CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, key -> createAdviceForJDBC(className, classLoader, pluginConfigs));
+    private <T> T getAdviceForJDBC(final String adviceClassName) {
+        String adviceInstanceCacheKey = String.format("%s_%s@%s", adviceClassName, classLoader.getClass().getName(), Integer.toHexString(classLoader.hashCode()));
+        return (T) CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, key -> createAdviceForJDBC(adviceClassName));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Object createAdviceForJDBC(final String className, final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs) {
+    private Object createAdviceForJDBC(final String adviceClassName) {
         ClassLoader pluginClassLoader = PLUGIN_CLASS_LOADERS.computeIfAbsent(classLoader, key -> new AgentClassLoader(key, PluginJarHolder.getPluginJars()));
-        Object result = Class.forName(className, true, pluginClassLoader).getDeclaredConstructor().newInstance();
-        setupPluginBootService(pluginClassLoader, pluginConfigs);
+        Object result = Class.forName(adviceClassName, true, pluginClassLoader).getDeclaredConstructor().newInstance();
+        setupPluginBootService(pluginClassLoader);
         return result;
     }
     
-    private static void setupPluginBootService(final ClassLoader pluginClassLoader, final Map<String, PluginConfiguration> pluginConfigs) {
+    private void setupPluginBootService(final ClassLoader pluginClassLoader) {
         if (isStarted) {
             return;
         }
