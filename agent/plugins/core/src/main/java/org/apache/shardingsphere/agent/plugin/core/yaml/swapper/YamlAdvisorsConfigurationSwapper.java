@@ -28,7 +28,7 @@ import java.io.InputStream;
 public final class YamlAdvisorsConfigurationSwapper {
     
     /**
-     * unmarshal advisors configuration.
+     * Unmarshal advisors configuration.
      * 
      * @param inputStream input stream
      * @return unmarshalled advisors configuration
