@@ -19,10 +19,10 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.advisor.AdvisorConfigurationRegistryFactory;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.TracingAdviser;
 
 /**
