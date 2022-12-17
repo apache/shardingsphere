@@ -26,4 +26,22 @@
     </parent>
     <artifactId>shardingsphere-agent-plugin-core</artifactId>
     <name>${project.artifactId}</name>
+    
+    <properties>
+        <core.target.directory>${project.basedir}/target/plugins</core.target.directory>
+    </properties>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <outputFile>${core.target.directory}/${project.build.finalName}.jar</outputFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
