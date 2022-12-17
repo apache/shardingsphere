@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Yaml pointcut configuration.
+ * YAML pointcut configuration.
  */
 @Getter
 @Setter
