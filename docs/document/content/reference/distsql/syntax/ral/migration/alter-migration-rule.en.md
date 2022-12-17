@@ -32,14 +32,14 @@ shardingSize ::=
   int
 
 rateLimiter ::=
-  'RATE_LIMITER' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' 'PROPERTIES' '(' propertyDefinition ')'
+  'RATE_LIMITER' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' 'PROPERTIES' '(' propertiesDefinition ')' ')' ')'
 
 algorithmName ::=
   string
 
-propertyDefinition ::=
+propertiesDefinition ::=
   ',' 'PROPERTIES' '(' ( key  '=' value ) ( ',' key  '=' value )* ')'
-
+  
 key ::=
   string
 
