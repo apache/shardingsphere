@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.executor;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
@@ -30,7 +30,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
-import org.apache.shardingsphere.agent.core.plugin.advice.type.StaticMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,7 +51,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class StaticMethodAroundYamlAdvisorConfigurationTest {
+public final class StaticMethodAdviceExecutorIT {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     

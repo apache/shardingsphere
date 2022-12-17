@@ -24,7 +24,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advice.type.StaticMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
