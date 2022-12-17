@@ -9,7 +9,7 @@ weight = 2
 
 ### 语法
 
-```
+```sql
 ShowReadWriteSplittingRule::=
   'SHOW' 'READWRITE_SPLITTING' 'RULES' ('FROM' databaseName)?
 

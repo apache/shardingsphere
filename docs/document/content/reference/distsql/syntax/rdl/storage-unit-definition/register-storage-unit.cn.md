@@ -14,7 +14,7 @@ RegisterStorageUnit ::=
   'REGISTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  StorageUnitName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
+  storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (proertiesDefinition)?')'
 
 storageUnitName ::=
   identifier
@@ -37,11 +37,8 @@ user ::=
 password ::=
   string
 
-proerties ::=
-  PROPERTIES '(' property ( ',' property )* ')'
-
-property ::=
-  key '=' value
+proertiesDefinition ::=
+  ',' PROPERTIES '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string

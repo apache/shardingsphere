@@ -11,7 +11,7 @@ weight = 6
 
 ```sql
 ClearHint ::=
-  'CLEAR' ('SHARDING'|'READWRITE_SPLITTING')? 'HINT' 
+  'CLEAR' ('SHARDING' | 'READWRITE_SPLITTING')? 'HINT' 
 ```
 
 ### 补充说明

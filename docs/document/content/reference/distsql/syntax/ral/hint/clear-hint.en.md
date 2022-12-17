@@ -11,7 +11,7 @@ The `CLEAR HINT` syntax is used to clear hint settings for current connection.
 
 ```sql
 ClearHint ::=
-  'CLEAR' ('SHARDING'|'READWRITE_SPLITTING')? 'HINT' 
+  'CLEAR' ('SHARDING' | 'READWRITE_SPLITTING')? 'HINT' 
 ```
 
 ### Supplement

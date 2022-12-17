@@ -11,7 +11,7 @@ weight = 13
 
 ```sql
 CreateShardingTableReferenceRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition )*
+  'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
 
 referenceRelationshipDefinition ::=
    ruleName '(' tableName (',' tableName)* ')'

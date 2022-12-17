@@ -11,7 +11,7 @@ The `DROP DB_DISCOVERY RULE` syntax is used to drop database discovery rule for 
 
 ```sql
 DropDatabaseDiscoveryRule ::=
-  'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)* ('FROM' databaseName)?
 
 dbDiscoveryRuleName ::=
   identifier

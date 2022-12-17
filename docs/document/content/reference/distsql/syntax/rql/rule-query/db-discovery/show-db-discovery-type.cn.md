@@ -9,7 +9,7 @@ weight = 3
 
 ### 语法
 
-```
+```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'TYPES' ('FROM' databaseName)?
 

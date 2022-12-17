@@ -9,9 +9,9 @@ weight = 9
 
 ### 语法
 
-```
+```sql
 ShowUnusedShardingAuditors::=
-  'SHOW' 'SHARDING' 'AUDITOR'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'AUDITOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

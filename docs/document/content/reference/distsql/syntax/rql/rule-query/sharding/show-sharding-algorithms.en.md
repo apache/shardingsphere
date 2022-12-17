@@ -9,7 +9,7 @@ The `SHOW SHARDING ALGORITHMS` syntax is used to query the sharding algorithms i
 
 ### Syntax
 
-```
+```sql
 ShowShardingAlgorithms::=
   'SHOW' 'SHARDING' 'ALGORITHMS' ('FROM' databaseName)?
 

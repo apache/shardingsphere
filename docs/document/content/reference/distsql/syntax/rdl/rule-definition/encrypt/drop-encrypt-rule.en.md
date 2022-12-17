@@ -11,7 +11,7 @@ The `DROP ENCRYPT RULE` syntax is used to drop an existing encryption rule.
 
 ```sql
 DropEncryptRule ::=
-  'DROP' 'ENCRYPT' 'RULE' tableName ( ',' tableName )*
+  'DROP' 'ENCRYPT' 'RULE' tableName (',' tableName)*
     
 tableName ::=
   identifier

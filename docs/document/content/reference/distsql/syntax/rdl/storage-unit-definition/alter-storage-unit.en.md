@@ -10,11 +10,11 @@ The `ALTER STORAGE UNIT` syntax is used to alter storage units for the currently
 ### Syntax
 
 ```sql
-AlterResource ::=
+AlterStorageUnit ::=
   'ALTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  storageUnitName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
+  storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (proertiesDefinition)?')'
 
 storageUnitName ::=
   identifier
@@ -37,11 +37,8 @@ user ::=
 password ::=
   string
 
-proerties ::=
-  PROPERTIES '(' property ( ',' property )* ')'
-
-property ::=
-  key '=' value
+proertiesDefinition ::=
+  ',' PROPERTIES '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string

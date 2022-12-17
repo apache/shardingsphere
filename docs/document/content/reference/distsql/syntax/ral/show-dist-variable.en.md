@@ -11,7 +11,7 @@ The `SHOW DIST VARIABLE` syntax is used to query `PROXY` system variables config
 
 ```sql
 ShowDistVariable ::=
-  'SHOW' ('VARIABLES'|'VARIABLE' 'WHERE' 'NAME' '=' variableName)
+  'SHOW' ('VARIABLES' | 'VARIABLE' 'WHERE' 'NAME' '=' variableName)
 
 variableName ::=
   identifier

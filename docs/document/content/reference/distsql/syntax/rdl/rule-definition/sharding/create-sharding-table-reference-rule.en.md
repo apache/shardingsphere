@@ -11,7 +11,7 @@ The `CREATE SHARDING TABLE REFERENCE RULE` syntax is used to create reference ru
 
 ```sql
 CreateShardingTableReferenceRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition )*
+  'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
 
 referenceRelationshipDefinition ::=
    ruleName '(' tableName (',' tableName)* ')'

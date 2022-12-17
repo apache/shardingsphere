@@ -11,7 +11,7 @@ weight = 6
 
 ```sql
 LableRelabelComputeNodes ::=
-  ('LABEL'|'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
+  ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
 
 instance_id ::=
   string
