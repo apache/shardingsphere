@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.executor;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
-import org.apache.shardingsphere.agent.core.plugin.advice.type.ConstructorAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -45,7 +45,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 
-public final class ConstructorYamlAdvisorConfigurationTest {
+public final class ConstructorAdviceExecutorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     

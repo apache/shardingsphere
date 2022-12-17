@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.executor;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
@@ -28,9 +28,9 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
-import org.apache.shardingsphere.agent.core.plugin.advice.type.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAdvice;
+import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
+import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,15 +51,13 @@ import static org.junit.Assert.assertArrayEquals;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
+public final class StaticMethodAdviceExecutorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial";
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.StaticMaterial";
     
     private static ResettableClassFileTransformer byteBuddyAgent;
-    
-    private final boolean rebase;
     
     private final String methodName;
     
@@ -70,9 +68,8 @@ public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
     @Parameters
     public static Collection<Object[]> prepareData() {
         return Arrays.asList(
-                new Object[]{false, "mock", "invocation", new String[]{"before", "on", "after"}},
-                new Object[]{true, "mock", "rebase invocation method", new String[]{"before", "after"}},
-                new Object[]{false, "mockWithException", null, new String[]{"before", "exception", "after"}});
+                new Object[]{"staticMock", "rebase static invocation method", new String[]{"before", "after"}},
+                new Object[]{"staticMockWithException", null, new String[]{"before", "exception", "after"}});
     }
     
     @BeforeClass
@@ -85,31 +82,28 @@ public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
                     if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetAdviceObject.class)
-                                .intercept(FieldAccessor.ofField(EXTRA_DATA));
+                                .intercept(FieldAccessor.ofField(EXTRA_DATA))
+                                .method(ElementMatchers.named("staticMockWithException"))
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdviceExecutor(Collections.singleton(new MockStaticMethodAdvice(false)))))
+                                .method(ElementMatchers.named("staticMock"))
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdviceExecutor(Collections.singleton(new MockStaticMethodAdvice(true)))));
                     }
                     return builder;
-                }).asTerminalTransformation()
+                })
+                .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }
     
     @Test
-    public void assertInterceptedMethod() throws ReflectiveOperationException {
-        InstanceMaterial material = new ByteBuddy()
-                .subclass(InstanceMaterial.class)
-                .method(ElementMatchers.named(methodName))
-                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAdviceExecutor(Collections.singleton(new MockInstanceMethodAdvice(rebase)))))
-                .make()
-                .load(new MockClassLoader())
-                .getLoaded()
-                .getDeclaredConstructor().newInstance();
+    public void assertInterceptedMethod() {
         List<String> queues = new LinkedList<>();
-        if ("mockWithException".equals(methodName)) {
+        if ("staticMockWithException".equals(methodName)) {
             try {
-                material.mockWithException(queues);
-            } catch (IOException ignored) {
+                StaticMaterial.staticMockWithException(queues);
+            } catch (final IOException ignored) {
             }
         } else {
-            assertThat(material.mock(queues), is(result));
+            assertThat(StaticMaterial.staticMock(queues), is(result));
         }
         assertArrayEquals(expected, queues.toArray());
     }
@@ -117,8 +111,5 @@ public final class InstanceMethodAroundYamlAdvisorConfigurationTest {
     @AfterClass
     public static void destroy() {
         byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
-    }
-    
-    private static class MockClassLoader extends ClassLoader {
     }
 }
