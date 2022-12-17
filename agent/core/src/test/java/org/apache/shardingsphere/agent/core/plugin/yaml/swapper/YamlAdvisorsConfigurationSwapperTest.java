@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.swapper;
+package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
