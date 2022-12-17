@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.OpenTelemetryTracingPluginBootService;
 import org.junit.After;
 import org.junit.Test;
 
