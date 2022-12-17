@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.yaml.entity;
+package org.apache.shardingsphere.agent.plugin.core.yaml.entity;
 
 import lombok.Getter;
 import lombok.Setter;

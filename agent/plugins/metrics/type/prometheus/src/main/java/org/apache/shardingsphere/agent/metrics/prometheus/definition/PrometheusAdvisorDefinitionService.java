@@ -20,10 +20,10 @@ package org.apache.shardingsphere.agent.metrics.prometheus.definition;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
-import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
+import org.apache.shardingsphere.agent.plugin.core.advisor.AdvisorConfigurationRegistryFactory;
+import org.apache.shardingsphere.agent.plugin.core.yaml.entity.YamlAdvisorConfiguration;
+import org.apache.shardingsphere.agent.plugin.core.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.plugin.core.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;

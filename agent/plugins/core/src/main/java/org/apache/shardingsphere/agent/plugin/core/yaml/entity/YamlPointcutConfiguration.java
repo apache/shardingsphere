@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advisor;
+package org.apache.shardingsphere.agent.plugin.core.yaml.entity;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class AdvisorConfigurationRegistryFactoryTest {
+/**
+ * Yaml pointcut configuration.
+ */
+@Getter
+@Setter
+public final class YamlPointcutConfiguration {
     
-    @Test
-    public void assertGetRegistryWithType() {
-        assertThat(AdvisorConfigurationRegistryFactory.getRegistry("test"), instanceOf(AdvisorConfigurationRegistry.class));
-    }
+    private String name;
+    
+    private String type;
 }

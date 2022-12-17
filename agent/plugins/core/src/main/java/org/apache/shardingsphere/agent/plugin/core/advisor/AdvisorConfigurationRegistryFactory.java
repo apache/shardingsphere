@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config.validator;
+package org.apache.shardingsphere.agent.plugin.core.advisor;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Remote plugin configuration validator.
+ * Advisor configuration registry factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RemotePluginConfigurationValidator {
+public final class AdvisorConfigurationRegistryFactory {
+    
+    private static final Map<String, AdvisorConfigurationRegistry> REGISTRIES = new ConcurrentHashMap<>();
     
     /**
-     * Validate remote plugin configuration.
+     * Get advisor configuration registry.
      * 
-     * @param type plugin type 
-     * @param pluginConfig to be validated plugin configuration
+     * @param type registry type
+     * @return advisor configuration registry
      */
-    public static void validate(final String type, final PluginConfiguration pluginConfig) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(pluginConfig.getHost()), "Hostname of %s is required.", type);
-        Preconditions.checkArgument(pluginConfig.getPort() > 0, "Port `%s` of %s must be a positive number.", pluginConfig.getPort(), type);
+    public static AdvisorConfigurationRegistry getRegistry(final String type) {
+        return REGISTRIES.computeIfAbsent(type, each -> new AdvisorConfigurationRegistry());
     }
 }

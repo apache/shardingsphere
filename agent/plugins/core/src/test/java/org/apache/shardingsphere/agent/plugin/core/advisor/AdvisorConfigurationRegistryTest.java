@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advisor;
+package org.apache.shardingsphere.agent.plugin.core.advisor;
 
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.junit.Test;
