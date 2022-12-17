@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 /**
  * Time recorder.
  */
-public enum TimeRecorder {
+public enum LogTimeRecorder {
     
     INSTANCE;
     

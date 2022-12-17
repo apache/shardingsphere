@@ -31,12 +31,12 @@ public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        TimeRecorder.INSTANCE.record(System.currentTimeMillis());
+        LogTimeRecorder.INSTANCE.record(System.currentTimeMillis());
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        log.info("Build meta data contexts finished, cost {} milliseconds.", TimeRecorder.INSTANCE.getElapsedTime());
-        TimeRecorder.INSTANCE.cleanRecordedTime();
+        log.info("Build meta data contexts finished, cost {} milliseconds.", LogTimeRecorder.INSTANCE.getElapsedTime());
+        LogTimeRecorder.INSTANCE.cleanRecordedTime();
     }
 }
