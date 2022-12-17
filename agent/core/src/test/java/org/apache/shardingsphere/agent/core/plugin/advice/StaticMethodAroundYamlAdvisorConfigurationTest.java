@@ -27,9 +27,10 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
+import org.apache.shardingsphere.agent.core.plugin.advice.type.StaticMethodAdviceExecutor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -83,9 +84,9 @@ public final class StaticMethodAroundYamlAdvisorConfigurationTest {
                                 .implement(TargetAdviceObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .method(ElementMatchers.named("staticMockWithException"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdvice(Collections.singleton(new MockStaticMethodAdviceExecutor(false)))))
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdviceExecutor(Collections.singleton(new MockStaticMethodAdvice(false)))))
                                 .method(ElementMatchers.named("staticMock"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdvice(Collections.singleton(new MockStaticMethodAdviceExecutor(true)))));
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAdviceExecutor(Collections.singleton(new MockStaticMethodAdvice(true)))));
                     }
                     return builder;
                 })

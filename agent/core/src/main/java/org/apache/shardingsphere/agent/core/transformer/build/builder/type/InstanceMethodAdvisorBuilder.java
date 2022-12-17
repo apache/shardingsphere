@@ -23,8 +23,8 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
@@ -43,7 +43,7 @@ public final class InstanceMethodAdvisorBuilder implements MethodAdvisorBuilder 
     
     @Override
     public Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
-        return builder.method(ElementMatchers.is(methodAdvisor.getPointcut())).intercept(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdvice()));
+        return builder.method(ElementMatchers.is(methodAdvisor.getPointcut())).intercept(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdviceExecutor()));
     }
     
     @Override
@@ -53,8 +53,7 @@ public final class InstanceMethodAdvisorBuilder implements MethodAdvisorBuilder 
     
     @Override
     public MethodAdvisor getMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
-        Collection<InstanceMethodAdviceExecutor> adviceExecutors = advisorConfigs
-                .stream().<InstanceMethodAdviceExecutor>map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-        return new MethodAdvisor(methodDescription, new InstanceMethodAdvice(adviceExecutors));
+        Collection<InstanceMethodAdvice> advices = advisorConfigs.stream().map(each -> (InstanceMethodAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+        return new MethodAdvisor(methodDescription, new InstanceMethodAdviceExecutor(advices));
     }
 }

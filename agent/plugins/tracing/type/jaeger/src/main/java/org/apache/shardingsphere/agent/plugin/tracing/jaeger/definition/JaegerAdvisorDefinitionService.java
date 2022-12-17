@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.CommandExecutorTaskAdviceExecutor;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.JDBCExecutorCallbackAdviceExecutor;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.CommandExecutorTaskAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.JDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
@@ -34,7 +34,7 @@ public final class JaegerAdvisorDefinitionService implements AdvisorDefinitionSe
     
     @Override
     public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
-        return engine.getProxyAdvisorConfigurations(CommandExecutorTaskAdviceExecutor.class, CommandExecutorTaskAdviceExecutor.class, JDBCExecutorCallbackAdviceExecutor.class);
+        return engine.getProxyAdvisorConfigurations(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
     }
     
     @Override

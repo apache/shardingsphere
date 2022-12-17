@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.core.transformer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
+import org.apache.shardingsphere.agent.core.plugin.advice.AdviceExecutor;
 
 /**
  * Method advisor.
@@ -30,5 +31,5 @@ public final class MethodAdvisor {
     
     private final MethodDescription pointcut;
     
-    private final Object advice;
+    private final AdviceExecutor adviceExecutor;
 }

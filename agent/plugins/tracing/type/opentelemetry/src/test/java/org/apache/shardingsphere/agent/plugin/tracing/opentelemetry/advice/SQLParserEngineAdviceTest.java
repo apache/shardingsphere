@@ -23,7 +23,7 @@ import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
@@ -46,7 +46,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     private static final String SQL_STATEMENT = "select 1";
     
-    private SQLParserEngineAdviceExecutor advice;
+    private SQLParserEngineAdvice advice;
     
     private Span parentSpan;
     
@@ -56,7 +56,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
                 .spanBuilder("parent")
                 .startSpan();
         ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, parentSpan);
-        advice = new SQLParserEngineAdviceExecutor();
+        advice = new SQLParserEngineAdvice();
     }
     
     @Test

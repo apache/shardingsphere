@@ -23,9 +23,9 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.ConstructorAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.advice.type.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
@@ -45,7 +45,7 @@ public final class ConstructorAdvisorBuilder implements MethodAdvisorBuilder {
     @Override
     public Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
         return builder.constructor(ElementMatchers.is(methodAdvisor.getPointcut()))
-                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdvice())));
+                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdviceExecutor())));
     }
     
     @Override
@@ -55,8 +55,7 @@ public final class ConstructorAdvisorBuilder implements MethodAdvisorBuilder {
     
     @Override
     public MethodAdvisor getMethodAdvisor(final InDefinedShape methodDescription, final List<MethodAdvisorConfiguration> advisorConfigs) {
-        Collection<ConstructorAdviceExecutor> adviceExecutors = advisorConfigs
-                .stream().map(MethodAdvisorConfiguration::getAdviceClassName).map(each -> (ConstructorAdviceExecutor) adviceFactory.getAdvice(each)).collect(Collectors.toList());
-        return new MethodAdvisor(methodDescription, new ConstructorAdvice(adviceExecutors));
+        Collection<ConstructorAdvice> advices = advisorConfigs.stream().map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+        return new MethodAdvisor(methodDescription, new ConstructorAdviceExecutor(advices));
     }
 }

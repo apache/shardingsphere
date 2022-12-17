@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
@@ -43,7 +43,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
-    private static final CommandExecutorTaskAdviceExecutor ADVICE = new CommandExecutorTaskAdviceExecutor();
+    private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
     
     private static final Map<String, Object> EXPECTED = new HashMap<>(2, 1);
     

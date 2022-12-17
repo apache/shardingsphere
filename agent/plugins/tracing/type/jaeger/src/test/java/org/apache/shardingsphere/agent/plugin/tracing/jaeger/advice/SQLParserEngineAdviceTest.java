@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
 import io.opentracing.mock.MockSpan;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
@@ -38,7 +38,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
-    private static final SQLParserEngineAdviceExecutor ADVICE = new SQLParserEngineAdviceExecutor();
+    private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
     
     @Test
     public void assertMethod() {

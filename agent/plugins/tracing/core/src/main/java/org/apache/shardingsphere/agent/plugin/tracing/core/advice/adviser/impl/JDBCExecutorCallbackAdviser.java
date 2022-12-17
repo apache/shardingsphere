@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.TracingAdviser;
 
@@ -40,10 +40,10 @@ public final class JDBCExecutorCallbackAdviser implements TracingAdviser {
     private final String type;
     
     @Override
-    public AdvisorConfiguration getAdvisorConfiguration(final Class<? extends InstanceMethodAdviceExecutor> adviceExecutorClass) {
+    public AdvisorConfiguration getAdvisorConfiguration(final Class<? extends InstanceMethodAdvice> adviceClass) {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(TARGET_CLASS);
         result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(
-                ElementMatchers.named(TARGET_METHOD).and(ElementMatchers.takesArgument(0, ElementMatchers.named(TARGET_METHOD_FIRST_PARAM))), adviceExecutorClass.getName()));
+                ElementMatchers.named(TARGET_METHOD).and(ElementMatchers.takesArgument(0, ElementMatchers.named(TARGET_METHOD_FIRST_PARAM))), adviceClass.getName()));
         return result;
     }
 }

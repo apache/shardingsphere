@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import brave.Span;
 import brave.Tracing;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
@@ -42,7 +42,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     private static final String SQL_STATEMENT = "select 1";
     
-    private SQLParserEngineAdviceExecutor advice;
+    private SQLParserEngineAdvice advice;
     
     private Span parentSpan;
     
@@ -50,7 +50,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     public void setup() {
         parentSpan = Tracing.currentTracer().newTrace().name("parent").start();
         ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, parentSpan);
-        advice = new SQLParserEngineAdviceExecutor();
+        advice = new SQLParserEngineAdvice();
     }
     
     @Test

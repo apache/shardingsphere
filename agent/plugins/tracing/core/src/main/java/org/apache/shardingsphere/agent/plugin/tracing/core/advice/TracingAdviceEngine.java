@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advice.executor.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.CommandExecutorTaskAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.JDBCExecutorCallbackAdviser;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.adviser.impl.SQLParserEngineAdviser;
@@ -39,19 +39,19 @@ public final class TracingAdviceEngine {
     /**
      * Get proxy tracing advisor configurations.
      * 
-     * @param commandExecutorTaskAdviceExecutor command executor task advice executor
-     * @param sqlParserEngineAdviceExecutor SQL parser engine advice executor
-     * @param jdbcExecutorCallbackAdviceExecutor JDBC executor callback advice executor
+     * @param commandExecutorTaskAdvice command executor task advice
+     * @param sqlParserEngineAdvice SQL parser engine advice
+     * @param jdbcExecutorCallbackAdvice JDBC executor callback advice
      * @return got configurations
      */
-    public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations(final Class<? extends InstanceMethodAdviceExecutor> commandExecutorTaskAdviceExecutor,
-                                                                          final Class<? extends InstanceMethodAdviceExecutor> sqlParserEngineAdviceExecutor,
-                                                                          final Class<? extends InstanceMethodAdviceExecutor> jdbcExecutorCallbackAdviceExecutor) {
+    public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations(final Class<? extends InstanceMethodAdvice> commandExecutorTaskAdvice,
+                                                                          final Class<? extends InstanceMethodAdvice> sqlParserEngineAdvice,
+                                                                          final Class<? extends InstanceMethodAdvice> jdbcExecutorCallbackAdvice) {
         // TODO load from YAML, please ref metrics
         Collection<AdvisorConfiguration> result = new LinkedList<>();
-        result.add(new CommandExecutorTaskAdviser(type).getAdvisorConfiguration(commandExecutorTaskAdviceExecutor));
-        result.add(new SQLParserEngineAdviser(type).getAdvisorConfiguration(sqlParserEngineAdviceExecutor));
-        result.add(new JDBCExecutorCallbackAdviser(type).getAdvisorConfiguration(jdbcExecutorCallbackAdviceExecutor));
+        result.add(new CommandExecutorTaskAdviser(type).getAdvisorConfiguration(commandExecutorTaskAdvice));
+        result.add(new SQLParserEngineAdviser(type).getAdvisorConfiguration(sqlParserEngineAdvice));
+        result.add(new JDBCExecutorCallbackAdviser(type).getAdvisorConfiguration(jdbcExecutorCallbackAdvice));
         return result;
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.Before;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class SQLParserEngineAdviceTest {
     
-    private static final SQLParserEngineAdviceExecutor ADVICE = new SQLParserEngineAdviceExecutor();
+    private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
     
     private static MockTracer tracer;
     
