@@ -33,7 +33,7 @@
     </modules>
     
     <properties>
-        <metrics.target.directory>${project.basedir}/../../target/plugins</metrics.target.directory>
+        <target.directory>${project.basedir}/../../target/plugins</target.directory>
     </properties>
     
     <build>
@@ -41,7 +41,7 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${metrics.target.directory}/${project.build.finalName}.jar</outputFile>
+                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>
