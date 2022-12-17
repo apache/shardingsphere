@@ -72,8 +72,6 @@
                                     <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
                                     <exclude>com.h2database:h2:jar:</exclude>
-                                    <exclude>org.slf4j:*</exclude>
-                                    <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
