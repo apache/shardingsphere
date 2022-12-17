@@ -91,9 +91,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = matchInstanceOnlinePath(event.getKey());
         if (matcher.find()) {
-            ComputeNodeData ComputeNodeData = YamlEngine.unmarshal(event.getValue(), ComputeNodeData.class);
+            ComputeNodeData computeNodeData = YamlEngine.unmarshal(event.getValue(), ComputeNodeData.class);
             InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create(matcher.group(2),
-                    InstanceType.valueOf(matcher.group(1).toUpperCase()), ComputeNodeData.getAttribute(), ComputeNodeData.getVersion());
+                    InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion());
             if (Type.ADDED == event.getType()) {
                 return Optional.of(new InstanceOnlineEvent(instanceMetaData));
             }
