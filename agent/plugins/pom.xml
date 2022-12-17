@@ -41,11 +41,6 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-        </dependency>
     </dependencies>
     
     <build>
