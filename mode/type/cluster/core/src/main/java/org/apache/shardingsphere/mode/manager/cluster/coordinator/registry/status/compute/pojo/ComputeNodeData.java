@@ -15,45 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.metadata;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.pojo;
 
-/**
- * Instance meta data.
- */
-public interface InstanceMetaData {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@Getter
+@Setter
+public final class ComputeNodeData {
     
-    /**
-     * Get instance ID.
-     * 
-     * @return instance ID
-     */
-    String getId();
+    private String attribute;
     
-    /**
-     * Get instance type.
-     * 
-     * @return instance type
-     */
-    InstanceType getType();
+    private String version;
     
-    /**
-     * Get IP.
-     * 
-     * @return IP
-     */
-    String getIp();
-    
-    /**
-     * Get attributes.
-     * 
-     * @return attributes
-     */
-    String getAttributes();
-    
-    /**
-     * Get version.
-     *
-     * @return version
-     */
-    String getVersion();
+    public ComputeNodeData(final String attribute, final String version) {
+        this.attribute = attribute;
+        this.version = version;
+    }
 }
