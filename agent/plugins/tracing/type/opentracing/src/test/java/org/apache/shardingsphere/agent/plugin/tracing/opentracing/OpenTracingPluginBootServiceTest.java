@@ -15,43 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
 
-import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
-public final class JaegerTracingPluginBootServiceTest {
+public final class OpenTracingPluginBootServiceTest {
     
-    private final JaegerTracingPluginBootService jaegerTracingPluginBootService = new JaegerTracingPluginBootService();
+    private final OpenTracingPluginBootService openTracingPluginBootService = new OpenTracingPluginBootService();
     
     @Test
     public void assertStart() {
-        jaegerTracingPluginBootService.start(new PluginConfiguration("localhost", 5775, "", createProperties()), true);
+        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()), true);
         assertTrue(GlobalTracer.isRegistered());
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty("JAEGER_SAMPLER_TYPE", "const");
-        result.setProperty("JAEGER_SAMPLER_PARAM", "1");
-        result.setProperty("JAEGER_REPORTER_LOG_SPANS", Boolean.TRUE.toString());
-        result.setProperty("JAEGER_REPORTER_FLUSH_INTERVAL", "1");
+        result.setProperty("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer");
         return result;
     }
     
     @After
-    public void close() throws ReflectiveOperationException {
-        jaegerTracingPluginBootService.close();
-        Field field = GlobalTracer.class.getDeclaredField("tracer");
-        field.setAccessible(true);
-        field.set(null, NoopTracerFactory.create());
+    public void close() {
+        openTracingPluginBootService.close();
     }
 }

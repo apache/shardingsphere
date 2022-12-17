@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.service;
+package org.apache.shardingsphere.agent.metrics.prometheus;
 
 import com.google.common.base.Preconditions;
 import io.prometheus.client.CollectorRegistry;

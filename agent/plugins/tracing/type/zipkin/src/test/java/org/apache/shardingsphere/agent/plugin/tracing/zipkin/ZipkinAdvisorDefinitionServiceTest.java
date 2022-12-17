@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class JaegerAdvisorDefinitionServiceTest {
+public final class ZipkinAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new JaegerAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
+        assertThat(new ZipkinAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
     }
 }

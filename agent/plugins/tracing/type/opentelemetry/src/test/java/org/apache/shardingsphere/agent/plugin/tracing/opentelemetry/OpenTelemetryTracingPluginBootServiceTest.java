@@ -15,33 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
-import brave.Tracing;
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 
-public final class ZipkinTracingPluginBootServiceTest {
-    
-    private final ZipkinTracingPluginBootService zipkinTracingPluginBootService = new ZipkinTracingPluginBootService();
+public final class OpenTelemetryTracingPluginBootServiceTest {
     
     @Test
-    public void assertStart() throws ReflectiveOperationException {
-        zipkinTracingPluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()), true);
-        Field field = ZipkinTracingPluginBootService.class.getDeclaredField("tracing");
-        field.setAccessible(true);
-        Tracing tracing = (Tracing) field.get(zipkinTracingPluginBootService);
-        assertNotNull(tracing.tracer());
+    public void assertStart() {
+        new OpenTelemetryTracingPluginBootService().start(new PluginConfiguration(null, 0, null, createProperties()), true);
+        assertNotNull(GlobalOpenTelemetry.getTracerProvider());
+        assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("otel.resource.attributes", "service.name=shardingsphere-agent");
+        result.setProperty("otel.traces.exporter", "zipkin");
+        return result;
     }
     
     @After
     public void close() {
-        zipkinTracingPluginBootService.close();
+        new OpenTelemetryTracingPluginBootService().close();
+        GlobalOpenTelemetry.resetForTest();
     }
 }

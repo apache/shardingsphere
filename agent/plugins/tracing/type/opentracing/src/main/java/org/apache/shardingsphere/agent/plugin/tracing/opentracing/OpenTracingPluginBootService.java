@@ -15,26 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.service;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
 
-import io.opentelemetry.sdk.OpenTelemetrySdk;
-import io.opentelemetry.sdk.autoconfigure.OpenTelemetrySdkAutoConfiguration;
+import com.google.common.base.Preconditions;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
-public class OpenTelemetryTracingPluginBootService implements PluginBootService {
+/**
+ * Open tracing plugin boot service.
+ */
+public final class OpenTracingPluginBootService implements PluginBootService {
+    
+    private static final String KEY_OPENTRACING_TRACER_CLASS_NAME = "opentracing-tracer-class-name";
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
-        OpenTelemetrySdk sdk = OpenTelemetrySdkAutoConfiguration.initialize();
-        // tracer will be created
-        sdk.getTracer("shardingsphere-agent");
+        String tracerClassName = pluginConfig.getProps().getProperty(KEY_OPENTRACING_TRACER_CLASS_NAME);
+        Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation in you config");
+        try {
+            init((Tracer) Class.forName(tracerClassName).getDeclaredConstructor().newInstance());
+        } catch (final ReflectiveOperationException ex) {
+            throw new RuntimeException("Initialize opentracing tracer class failure.", ex);
+        }
     }
     
-    private void setSystemProperty(final String key, final String value) {
-        String propertyKey = key.replaceAll("-", ".");
-        System.setProperty(propertyKey, String.valueOf(value));
+    private void init(final Tracer tracer) {
+        if (!GlobalTracer.isRegistered()) {
+            GlobalTracer.register(tracer);
+        }
     }
     
     @Override
@@ -43,6 +53,6 @@ public class OpenTelemetryTracingPluginBootService implements PluginBootService 
     
     @Override
     public String getType() {
-        return "OpenTelemetry";
+        return "OpenTracing";
     }
 }

@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusAdvisorDefinitionServiceTest {
+public final class JaegerAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new PrometheusAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(5));
+        assertThat(new JaegerAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
     }
 }

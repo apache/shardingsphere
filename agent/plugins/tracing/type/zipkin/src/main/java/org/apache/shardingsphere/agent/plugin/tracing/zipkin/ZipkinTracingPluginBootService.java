@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
 
 import brave.Tracing;
 import brave.sampler.BoundarySampler;

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.metrics.prometheus.definition.PrometheusAdvisorDefinitionService
+org.apache.shardingsphere.agent.metrics.prometheus.PrometheusAdvisorDefinitionService
