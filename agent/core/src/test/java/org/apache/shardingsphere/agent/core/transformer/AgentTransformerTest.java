@@ -69,7 +69,7 @@ public final class AgentTransformerTest {
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
                 .type(new AgentJunction(advisorConfigs))
-                .transform(new AgentTransformer(Collections.emptyMap(), advisorConfigs, true))
+                .transform(new AgentTransformer(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }

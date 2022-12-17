@@ -19,11 +19,10 @@ package org.apache.shardingsphere.agent.core.plugin.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
-import org.apache.shardingsphere.agent.core.plugin.PluginJarHolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +55,6 @@ public final class AgentPluginLoader {
             result.add(new PluginJar(new JarFile(each, true), each));
             LOGGER.info("Loaded jar: {}", each.getName());
         }
-        PluginJarHolder.setPluginJars(result);
         return result;
     }
 }
