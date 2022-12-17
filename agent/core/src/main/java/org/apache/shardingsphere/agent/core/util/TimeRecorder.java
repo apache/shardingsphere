@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base.advice;
+package org.apache.shardingsphere.agent.core.util;
 
 /**
- * Log time recorder.
+ * Time recorder.
  */
-public enum LogTimeRecorder {
+public enum TimeRecorder {
     
     INSTANCE;
     
     private static final ThreadLocal<Long> CURRENT_RECORDER = new ThreadLocal<>();
     
     /**
-     * Record time.
-     *
-     * @param time time
+     * Record now.
      */
-    public void record(final long time) {
-        CURRENT_RECORDER.set(time);
+    public void record() {
+        CURRENT_RECORDER.set(System.currentTimeMillis());
     }
     
     /**
@@ -47,7 +45,7 @@ public enum LogTimeRecorder {
     /**
      * Clean recorded time.
      */
-    public void cleanRecordedTime() {
+    public void clean() {
         CURRENT_RECORDER.remove();
     }
 }
