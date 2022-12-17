@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.util.TimeRecorder;
 import org.apache.shardingsphere.agent.metrics.api.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
-import org.apache.shardingsphere.agent.metrics.api.threadlocal.ElapsedTimeThreadLocal;
 
 import java.lang.reflect.Method;
 
@@ -44,7 +44,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
-            ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+            TimeRecorder.INSTANCE.record();
         }
     }
     
@@ -52,10 +52,9 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
             try {
-                long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-                MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> optional.observe(elapsedTime));
+                MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> optional.observe(TimeRecorder.INSTANCE.getElapsedTime()));
             } finally {
-                ElapsedTimeThreadLocal.INSTANCE.remove();
+                TimeRecorder.INSTANCE.clean();
             }
         } else if (COMMAND_EXECUTOR_EXCEPTION.equals(method.getName())) {
             MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).ifPresent(MetricsWrapper::inc);
