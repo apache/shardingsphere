@@ -55,6 +55,6 @@ public final class InstanceMetaDataBuilderFactory {
      * @return created instance meta data
      */
     public static InstanceMetaData create(final String instanceId, final InstanceType instanceType, final String attributes, final String version) {
-        return InstanceType.JDBC == instanceType ? new JDBCInstanceMetaData(instanceId) : new ProxyInstanceMetaData(instanceId, attributes, version);
+        return InstanceType.JDBC == instanceType ? new JDBCInstanceMetaData(instanceId, version) : new ProxyInstanceMetaData(instanceId, attributes, version);
     }
 }
