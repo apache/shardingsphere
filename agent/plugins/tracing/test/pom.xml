@@ -61,15 +61,4 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <outputFile>${project.build.directory}/${project.build.finalName}</outputFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

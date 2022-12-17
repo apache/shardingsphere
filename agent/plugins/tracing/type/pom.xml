@@ -50,9 +50,6 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
                     <outputFile>${tracing.target.directory}/${project.build.finalName}.jar</outputFile>
