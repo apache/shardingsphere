@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
 
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;

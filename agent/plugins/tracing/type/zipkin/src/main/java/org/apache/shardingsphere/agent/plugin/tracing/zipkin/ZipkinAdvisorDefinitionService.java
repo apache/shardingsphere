@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
 
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.CommandExecutorTaskAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.CommandExecutorTaskAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.JDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
 
 /**
- * OpenTracing advisor definition service.
+ * Zipkin advisor definition service.
  */
-public final class OpenTracingAdvisorDefinitionService implements AdvisorDefinitionService {
+public final class ZipkinAdvisorDefinitionService implements AdvisorDefinitionService {
     
     private final TracingAdviceEngine engine = new TracingAdviceEngine(getType());
     
@@ -44,6 +44,6 @@ public final class OpenTracingAdvisorDefinitionService implements AdvisorDefinit
     
     @Override
     public String getType() {
-        return "OpenTracing";
+        return "Zipkin";
     }
 }

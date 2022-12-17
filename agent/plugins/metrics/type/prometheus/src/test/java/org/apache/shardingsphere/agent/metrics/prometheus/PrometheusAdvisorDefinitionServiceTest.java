@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition;
+package org.apache.shardingsphere.agent.metrics.prometheus;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenTracingAdvisorDefinitionServiceTest {
+public final class PrometheusAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new OpenTracingAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
+        assertThat(new PrometheusAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(5));
     }
 }

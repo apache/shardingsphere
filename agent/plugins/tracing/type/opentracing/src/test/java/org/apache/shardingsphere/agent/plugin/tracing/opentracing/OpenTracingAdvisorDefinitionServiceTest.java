@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenTelemetryTracingAdvisorDefinitionServiceTest {
+public final class OpenTracingAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new OpenTelemetryTracingAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
+        assertThat(new OpenTracingAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
     }
 }

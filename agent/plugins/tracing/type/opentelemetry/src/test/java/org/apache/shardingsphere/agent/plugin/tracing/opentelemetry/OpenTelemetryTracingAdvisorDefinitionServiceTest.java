@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ZipkinAdvisorDefinitionServiceTest {
+public final class OpenTelemetryTracingAdvisorDefinitionServiceTest {
     
     @Test
     public void assertGetProxyAdvisors() {
-        assertThat(new ZipkinAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
+        assertThat(new OpenTelemetryTracingAdvisorDefinitionService().getProxyAdvisorConfigurations().size(), is(3));
     }
 }

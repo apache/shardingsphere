@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.definition;
+package org.apache.shardingsphere.agent.metrics.prometheus;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;

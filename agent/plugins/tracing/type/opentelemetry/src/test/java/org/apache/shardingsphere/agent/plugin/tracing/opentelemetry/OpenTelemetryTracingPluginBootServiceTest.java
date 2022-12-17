@@ -15,43 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
-import io.opentracing.noop.NoopTracerFactory;
-import io.opentracing.util.GlobalTracer;
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.OpenTelemetryTracingPluginBootService;
 import org.junit.After;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
-public final class JaegerTracingPluginBootServiceTest {
-    
-    private final JaegerTracingPluginBootService jaegerTracingPluginBootService = new JaegerTracingPluginBootService();
+public final class OpenTelemetryTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        jaegerTracingPluginBootService.start(new PluginConfiguration("localhost", 5775, "", createProperties()), true);
-        assertTrue(GlobalTracer.isRegistered());
+        new OpenTelemetryTracingPluginBootService().start(new PluginConfiguration(null, 0, null, createProperties()), true);
+        assertNotNull(GlobalOpenTelemetry.getTracerProvider());
+        assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty("JAEGER_SAMPLER_TYPE", "const");
-        result.setProperty("JAEGER_SAMPLER_PARAM", "1");
-        result.setProperty("JAEGER_REPORTER_LOG_SPANS", Boolean.TRUE.toString());
-        result.setProperty("JAEGER_REPORTER_FLUSH_INTERVAL", "1");
+        result.setProperty("otel.resource.attributes", "service.name=shardingsphere-agent");
+        result.setProperty("otel.traces.exporter", "zipkin");
         return result;
     }
     
     @After
-    public void close() throws ReflectiveOperationException {
-        jaegerTracingPluginBootService.close();
-        Field field = GlobalTracer.class.getDeclaredField("tracer");
-        field.setAccessible(true);
-        field.set(null, NoopTracerFactory.create());
+    public void close() {
+        new OpenTelemetryTracingPluginBootService().close();
+        GlobalOpenTelemetry.resetForTest();
     }
 }
