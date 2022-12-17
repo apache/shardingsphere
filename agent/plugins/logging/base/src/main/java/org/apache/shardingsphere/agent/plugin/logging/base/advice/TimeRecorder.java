@@ -15,26 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base.service;
-
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
+package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 
 /**
- * Base logging plugin boot service.
+ * Time recorder.
  */
-public final class BaseLoggingPluginBootService implements PluginBootService {
+public enum TimeRecorder {
     
-    @Override
-    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
+    INSTANCE;
+    
+    private static final ThreadLocal<Long> CURRENT_RECORDER = new ThreadLocal<>();
+    
+    /**
+     * Record time.
+     *
+     * @param time time
+     */
+    public void record(final long time) {
+        CURRENT_RECORDER.set(time);
     }
     
-    @Override
-    public void close() {
+    /**
+     * Get elapsed time.
+     *
+     * @return elapsed time
+     */
+    public long getElapsedTime() {
+        return System.currentTimeMillis() - CURRENT_RECORDER.get();
     }
     
-    @Override
-    public String getType() {
-        return "BaseLogging";
+    /**
+     * Clean recorded time.
+     */
+    public void cleanRecordedTime() {
+        CURRENT_RECORDER.remove();
     }
 }

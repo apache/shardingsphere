@@ -15,42 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base.threadlocal;
+package org.apache.shardingsphere.agent.plugin.logging.base;
+
+import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
 /**
- * The enum Elapsed time thread local.
+ * Base logging plugin boot service.
  */
-public enum ElapsedTimeThreadLocal {
+public final class BaseLoggingPluginBootService implements PluginBootService {
     
-    /**
-     * Instance elapsed time thread local.
-     */
-    INSTANCE;
-    
-    private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
-    
-    /**
-     * Set.
-     *
-     * @param time the time
-     */
-    public void set(final long time) {
-        CURRENT_LOCAL.set(time);
+    @Override
+    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
     }
     
-    /**
-     * Get long.
-     *
-     * @return the long
-     */
-    public Long get() {
-        return CURRENT_LOCAL.get();
+    @Override
+    public void close() {
     }
     
-    /**
-     * Remove.
-     */
-    public void remove() {
-        CURRENT_LOCAL.remove();
+    @Override
+    public String getType() {
+        return "BaseLogging";
     }
 }
