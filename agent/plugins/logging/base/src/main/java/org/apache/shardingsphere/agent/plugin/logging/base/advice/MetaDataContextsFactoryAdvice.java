@@ -20,28 +20,23 @@ package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.logging.base.threadlocal.ElapsedTimeThreadLocal;
 
 import java.lang.reflect.Method;
 
 /**
- * Schema meta data loader advice executor.
+ * Meta data contexts factory advice.
  */
 @Slf4j
 public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+        LogTimeRecorder.INSTANCE.record(System.currentTimeMillis());
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        try {
-            long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-            log.info("Build meta data contexts finished, cost {} milliseconds", elapsedTime);
-        } finally {
-            ElapsedTimeThreadLocal.INSTANCE.remove();
-        }
+        log.info("Build meta data contexts finished, cost {} milliseconds.", LogTimeRecorder.INSTANCE.getElapsedTime());
+        LogTimeRecorder.INSTANCE.cleanRecordedTime();
     }
 }

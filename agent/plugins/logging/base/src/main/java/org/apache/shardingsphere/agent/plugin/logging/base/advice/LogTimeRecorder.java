@@ -15,42 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base.threadlocal;
+package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 
 /**
- * The enum Elapsed time thread local.
+ * Log time recorder.
  */
-public enum ElapsedTimeThreadLocal {
+public enum LogTimeRecorder {
     
-    /**
-     * Instance elapsed time thread local.
-     */
     INSTANCE;
     
-    private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<Long> CURRENT_RECORDER = new ThreadLocal<>();
     
     /**
-     * Set.
+     * Record time.
      *
-     * @param time the time
+     * @param time time
      */
-    public void set(final long time) {
-        CURRENT_LOCAL.set(time);
+    public void record(final long time) {
+        CURRENT_RECORDER.set(time);
     }
     
     /**
-     * Get long.
+     * Get elapsed time.
      *
-     * @return the long
+     * @return elapsed time
      */
-    public Long get() {
-        return CURRENT_LOCAL.get();
+    public long getElapsedTime() {
+        return System.currentTimeMillis() - CURRENT_RECORDER.get();
     }
     
     /**
-     * Remove.
+     * Clean recorded time.
      */
-    public void remove() {
-        CURRENT_LOCAL.remove();
+    public void cleanRecordedTime() {
+        CURRENT_RECORDER.remove();
     }
 }
