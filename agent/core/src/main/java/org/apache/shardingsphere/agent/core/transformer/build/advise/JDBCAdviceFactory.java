@@ -22,8 +22,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
-import org.apache.shardingsphere.agent.core.plugin.PluginJarHolder;
+import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +45,8 @@ public final class JDBCAdviceFactory {
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
+    private final Collection<PluginJar> pluginJars;
+    
     /**
      * Get advice.
      *
@@ -59,7 +62,7 @@ public final class JDBCAdviceFactory {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private Object createAdviceForJDBC(final String adviceClassName) {
-        ClassLoader pluginClassLoader = PLUGIN_CLASS_LOADERS.computeIfAbsent(classLoader, key -> new AgentClassLoader(key, PluginJarHolder.getPluginJars()));
+        ClassLoader pluginClassLoader = PLUGIN_CLASS_LOADERS.computeIfAbsent(classLoader, key -> new AgentClassLoader(key, pluginJars));
         Object result = Class.forName(adviceClassName, true, pluginClassLoader).getDeclaredConstructor().newInstance();
         setupPluginBootService(pluginClassLoader);
         return result;
@@ -71,7 +74,7 @@ public final class JDBCAdviceFactory {
         }
         try {
             PluginBootServiceManager.startAllServices(pluginConfigs, pluginClassLoader, false);
-            Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginBootServiceManager.closeAllServices(pluginJars)));
         } finally {
             isStarted = true;
         }
