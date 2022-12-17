@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.yaml.entity;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * YAML advisors configuration.
- */
-@Setter
-@Getter
-public final class YamlAdvisorsConfiguration {
+public final class AdvisorConfigurationRegistryFactoryTest {
     
-    private Collection<YamlAdvisorConfiguration> advisors = new LinkedList<>();
+    @Test
+    public void assertGetRegistryWithType() {
+        assertThat(AdvisorConfigurationRegistryFactory.getRegistry("test"), instanceOf(AdvisorConfigurationRegistry.class));
+    }
 }

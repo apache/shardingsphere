@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.yaml.swapper;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import org.apache.shardingsphere.agent.plugin.core.yaml.entity.YamlAdvisorsConfiguration;
-import org.yaml.snakeyaml.Yaml;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 
-import java.io.InputStream;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * YAML advisors configuration swapper.
+ * Advisor configuration registry.
  */
-public final class YamlAdvisorsConfigurationSwapper {
+public final class AdvisorConfigurationRegistry {
+    
+    private final Map<String, AdvisorConfiguration> advisors = new ConcurrentHashMap<>();
     
     /**
-     * Unmarshal advisors configuration.
+     * Get advisor configuration.
      * 
-     * @param inputStream input stream
-     * @return unmarshalled advisors configuration
+     * @param targetClassName to be advised class name
+     * @return advisor configuration
      */
-    public YamlAdvisorsConfiguration unmarshal(final InputStream inputStream) {
-        return new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
+    public AdvisorConfiguration getAdvisorConfiguration(final String targetClassName) {
+        return advisors.computeIfAbsent(targetClassName, AdvisorConfiguration::new);
     }
 }

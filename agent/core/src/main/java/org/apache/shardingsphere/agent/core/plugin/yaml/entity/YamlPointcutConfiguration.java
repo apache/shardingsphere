@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.advisor;
+package org.apache.shardingsphere.agent.core.plugin.yaml.entity;
 
-import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Advisor configuration registry.
+ * YAML pointcut configuration.
  */
-public final class AdvisorConfigurationRegistry {
+@Getter
+@Setter
+public final class YamlPointcutConfiguration {
     
-    private final Map<String, AdvisorConfiguration> advisors = new ConcurrentHashMap<>();
+    private String name;
     
-    /**
-     * Get advisor configuration.
-     * 
-     * @param targetClassName to be advised class name
-     * @return advisor configuration
-     */
-    public AdvisorConfiguration getAdvisorConfiguration(final String targetClassName) {
-        return advisors.computeIfAbsent(targetClassName, AdvisorConfiguration::new);
-    }
+    private String type;
 }

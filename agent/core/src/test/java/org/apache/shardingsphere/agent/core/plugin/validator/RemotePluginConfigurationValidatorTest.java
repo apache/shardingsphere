@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.validator;
+package org.apache.shardingsphere.agent.core.plugin.validator;
 
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.junit.Test;

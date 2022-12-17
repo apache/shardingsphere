@@ -49,14 +49,6 @@
         </fileSet>
         
         <fileSet>
-            <directory>../plugins/core/target/plugins</directory>
-            <outputDirectory>./plugins</outputDirectory>
-            <includes>
-                <include>**.jar</include>
-            </includes>
-        </fileSet>
-        
-        <fileSet>
             <directory>../plugins/logging/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
