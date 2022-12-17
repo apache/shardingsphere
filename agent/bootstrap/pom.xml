@@ -71,7 +71,6 @@
                                     <exclude>com.google.guava:listenablefuture:jar:*</exclude>
                                     <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
-                                    <exclude>com.h2database:h2:jar:</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
