@@ -65,7 +65,6 @@
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>net.bytebuddy:*</exclude>
                                     <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
                                     <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
                                     <exclude>com.google.guava:listenablefuture:jar:*</exclude>
@@ -73,6 +72,7 @@
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
                                     <exclude>com.h2database:h2:jar:</exclude>
                                     <exclude>org.slf4j:*</exclude>
+                                    <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
