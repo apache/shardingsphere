@@ -73,12 +73,9 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>../../target/plugins/shardingsphere-agent-metrics-prometheus-5.3.1-SNAPSHOT.jar</outputFile>
+                    <outputFile>${metrics.target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>
