@@ -147,8 +147,8 @@ public final class ComputeNodeStatusService {
             if (Strings.isNullOrEmpty(value)) {
                 continue;
             }
-            ComputeNodeData instanceIdentity = YamlEngine.unmarshal(value, ComputeNodeData.class);
-            result.add(loadComputeNodeInstance(InstanceMetaDataBuilderFactory.create(each, instanceType, instanceIdentity.getAttribute(), instanceIdentity.getVersion())));
+            ComputeNodeData computeNodeData = YamlEngine.unmarshal(value, ComputeNodeData.class);
+            result.add(loadComputeNodeInstance(InstanceMetaDataBuilderFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion())));
         }
         return result;
     }
