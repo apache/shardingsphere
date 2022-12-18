@@ -14,7 +14,7 @@ CreateDatabaseDiscoveryRule ::=
   'CREATE' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' ',' 'TYPE' '(' 'NAME' '=' typeName (',' propertiesDefinition)? ')' ',' 'HEARTBEAT' '(' propertiesDefinition ')' ')' 
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' ',' 'TYPE' '(' 'NAME' '=' typeName (',' propertiesDefinition)? ')' ',' 'HEARTBEAT' '(' propertiesDefinition ')' ')' 
 
 propertiesDefinition ::=
   'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
