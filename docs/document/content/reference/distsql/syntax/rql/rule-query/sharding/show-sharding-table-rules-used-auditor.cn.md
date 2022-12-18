@@ -9,7 +9,7 @@ weight = 13
 
 ### 语法
 
-```
+```sql
 ShowShardingTableRulesUsedAuditor::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'AUDITOR' AuditortorName ('FROM' databaseName)?
 

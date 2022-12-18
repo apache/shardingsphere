@@ -11,7 +11,7 @@ weight = 4
 
 ```sql
 SetDistVariable ::=
-  'SET' 'DIST' 'VARIABLE' ( proxyPropertyName '=' proxyPropertyValue | 'transaction_type' '=' transactionType | 'agent_plugins_enable' '=' agentPluginsEnable )
+  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'transaction_type' '=' transactionType | 'agent_plugins_enable' '=' agentPluginsEnable)
 
 proxyPropertyName ::= 
   identifier

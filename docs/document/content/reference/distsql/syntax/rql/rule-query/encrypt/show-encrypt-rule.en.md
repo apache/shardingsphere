@@ -9,7 +9,7 @@ The `SHOW ENCRYPT RULES` syntax is used to query encrypt rules for specified dat
 
 ### Syntax
 
-```
+```sql
 ShowEncryptRule::=
   'SHOW' 'ENCRYPT' 'RULES' ('FROM' databaseName)?
 

@@ -11,15 +11,15 @@ weight = 6
 
 ```sql
 AlterSqlParserRule ::=
-  'ALTER' 'SQL_PARSER' 'RULE' 'SQL_COMMENT_PARSE_ENABLE' '=' sqlCommentParseEnable ',' 'PARSE_TREE_CACHE' parseTreeCacheDefination ',' 'SQL_STATEMENT_CACHE' sqlStatementCacheDefination
+  'ALTER' 'SQL_PARSER' 'RULE' 'SQL_COMMENT_PARSE_ENABLE' '=' sqlCommentParseEnable ',' 'PARSE_TREE_CACHE' parseTreeCacheDefinition ',' 'SQL_STATEMENT_CACHE' sqlStatementCacheDefinition
 
 sqlCommentParseEnable ::=
   boolean
 
-parseTreeCacheDefination ::=
+parseTreeCacheDefinition ::=
   '(' 'INITIAL_CAPACITY' '=' initialCapacity ',' 'MAXIMUM_SIZE' '=' maximumSize ',' 'CONCURRENCY_LEVEL' '=' concurrencyLevel ')'
 
-sqlStatementCacheDefination ::=
+sqlStatementCacheDefinition ::=
   '(' 'INITIAL_CAPACITY' '=' initialCapacity ',' 'MAXIMUM_SIZE' '=' maximumSize ',' 'CONCURRENCY_LEVEL' '=' concurrencyLevel ')'
 
 initialCapacity ::=

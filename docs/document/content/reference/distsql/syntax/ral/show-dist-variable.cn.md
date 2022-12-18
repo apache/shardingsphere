@@ -11,7 +11,7 @@ weight = 5
 
 ```sql
 ShowDistVariable ::=
-  'SHOW' ('VARIABLES'|'VARIABLE' 'NAME' '=' variableName)
+  'SHOW' ('VARIABLES' | 'VARIABLE' 'NAME' '=' variableName)
 
 variableName ::=
   identifier

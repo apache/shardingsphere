@@ -11,7 +11,7 @@ The `LABEL|RELABEL COMPUTE NODES` syntax is used to label `PROXY` instance.
 
 ```sql
 LableRelabelComputeNodes ::=
-  ('LABEL'|'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
+  ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
 
 instance_id ::=
   string

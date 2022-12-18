@@ -9,9 +9,9 @@ weight = 7
 
 ### 语法
 
-```
+```sql
 ShowUnusedShardingKeyGenerators::=
-  'SHOW' 'UNUSED' 'SHARDING' 'KEY' 'GENERATOR'('FROM' databaseName)?
+  'SHOW' 'UNUSED' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

@@ -11,7 +11,7 @@ The `DROP SHADOW ALGORITHM` syntax is used to drop shadow algorithm for specifie
 
 ```sql
 DropShadowAlgorithm ::=
-  'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName(',' shadowAlgorithmName)* ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
 
 shadowAlgorithmName ::=
   identifier

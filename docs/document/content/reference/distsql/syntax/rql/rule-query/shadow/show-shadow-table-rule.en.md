@@ -9,7 +9,7 @@ The `SHOW SHADOW TABLE RULE` syntax is used to query shadow table rules for spec
 
 ### Syntax
 
-```
+```sql
 ShowEncryptRule::=
   'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
 

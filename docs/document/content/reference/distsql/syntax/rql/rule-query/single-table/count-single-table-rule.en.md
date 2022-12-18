@@ -9,7 +9,7 @@ The `COUNT SINGLE_TABLE RULE` syntax is used to query number of single table rul
 
 ### Syntax
 
-```
+```sql
 CountSingleTableRule::=
   'COUNT' 'SINGLE_TABLE' 'RULE' ('FROM' databaseName)?
   

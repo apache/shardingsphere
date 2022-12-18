@@ -9,7 +9,7 @@ weight = 2
 
 ### 语法
 
-```
+```sql
 ShowDatabaseDiscoveryRule::=
   'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
 

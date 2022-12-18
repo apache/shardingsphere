@@ -9,7 +9,7 @@ weight = 2
 
 ### 语法
 
-```
+```sql
 ShowDefaultSingleTableStorageUnit::=
   'SHOW' 'DEFAULT' 'SINGLE' 'TABLE' 'STORAGE' 'UNIT' ('FROM' databaseName)?
   

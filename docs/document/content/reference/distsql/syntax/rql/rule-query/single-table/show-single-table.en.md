@@ -9,7 +9,7 @@ The `SHOW SINGLE TABLE` syntax is used to query single tables for specified data
 
 ### Syntax
 
-```
+```sql
 ShowSingleTable::=
   'SHOW' 'SINGLE' ('TABLES' ('LIKES' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
 

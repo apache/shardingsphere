@@ -10,7 +10,7 @@ weight = 2
 
 ```sql
 SetReadwriteSplittingHintSource ::=
-  'SET' 'READWRITE_SPLITTING' 'HINT' 'SOURCE' '='('auto'|'write')
+  'SET' 'READWRITE_SPLITTING' 'HINT' 'SOURCE' '='('auto' | 'write')
 ```
 
 ### 示例

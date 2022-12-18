@@ -12,7 +12,7 @@ weight = 7
 
 ```sql
 ShowHintStatus ::=
-  'SHOW' ('SHARDING'|'READWRITE_SPLITTING') 'HINT' 'STATUS'
+  'SHOW' ('SHARDING' | 'READWRITE_SPLITTING') 'HINT' 'STATUS'
 ```
 
 ### 示例
