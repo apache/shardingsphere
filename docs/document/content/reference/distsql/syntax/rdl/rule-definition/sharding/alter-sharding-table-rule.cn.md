@@ -29,16 +29,16 @@ auditStrategyDefinition ::=
   'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ')'
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType (propertiesDefinition)?')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)?')'
 
 propertiesDefinition ::=
-  ',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 
 tableName ::=
   identifier

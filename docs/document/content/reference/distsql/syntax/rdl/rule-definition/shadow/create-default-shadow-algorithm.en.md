@@ -14,19 +14,19 @@ CreateDefaultShadowAlgorithm ::=
   'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
 
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType propertiesDefiinition ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefiinition ')'
     
 shadowAlgorithmType ::=
   string
 
 propertiesDefinition ::=
-  ',' 'PROPERTIES' '(' (key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### Supplement

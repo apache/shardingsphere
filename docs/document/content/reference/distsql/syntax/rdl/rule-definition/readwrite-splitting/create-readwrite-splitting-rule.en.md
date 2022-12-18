@@ -23,7 +23,7 @@ dynamicReadwriteSplittingDefinition ::=
     'AUTO_AWARE_RESOURCE' '=' resourceName (',' 'WRITE_DATA_SOURCE_QUERY_ENABLED' '=' ('TRUE' | 'FALSE'))?
 
 loadBalancerDefinition ::=
-    'TYPE' '(' 'NAME' '=' loadBalancerType (propertiesDefinition)? ')'
+    'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
 
 ruleName ::=
   identifier
@@ -38,13 +38,13 @@ loadBalancerType ::=
   string
 
 propertiesDefinition ::=
-  ',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### Supplement

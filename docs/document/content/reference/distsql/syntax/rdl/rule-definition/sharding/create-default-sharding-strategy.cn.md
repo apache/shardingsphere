@@ -20,7 +20,7 @@ strategyType ::=
   string
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType propertiesDefinition ')'  
+  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'  
 
 columnNames ::=
   columnName (',' columnName)+
@@ -32,13 +32,13 @@ algorithmType ::=
   string
 
 propertiesDefinition ::=
-  ',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### 补充说明

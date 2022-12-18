@@ -23,7 +23,7 @@ shadowTableRule ::=
   tableName '(' shadowAlgorithm ')'
     
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType propertiesDefinition ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefinition ')'
 
 ruleName ::=
   identifier
@@ -41,13 +41,13 @@ shadowAlgorithmType ::=
   string
 
 propertiesDefinition ::=
-  ',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### Supplement

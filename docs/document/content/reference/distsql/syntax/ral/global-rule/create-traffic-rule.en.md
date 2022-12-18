@@ -35,7 +35,7 @@ key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### Supplement
