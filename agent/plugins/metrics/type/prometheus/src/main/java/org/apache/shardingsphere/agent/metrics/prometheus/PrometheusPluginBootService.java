@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus;
 
-import com.google.common.base.Preconditions;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.validator.RemotePluginConfigurationValidator;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.MetaDataInfoCollector;
@@ -41,20 +41,17 @@ public final class PrometheusPluginBootService implements PluginBootService {
     
     private static final String KEY_JVM_INFORMATION_COLLECTOR_ENABLED = "jvm-information-collector-enabled";
     
-    private boolean isEnhancedForProxy;
-    
     private HTTPServer httpServer;
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        Preconditions.checkState(pluginConfig.getPort() > 0, "Prometheus config error, host is null or port is `%s`", pluginConfig.getPort());
-        this.isEnhancedForProxy = isEnhancedForProxy;
-        startServer(pluginConfig);
+        RemotePluginConfigurationValidator.validate(getType(), pluginConfig);
+        startServer(pluginConfig, isEnhancedForProxy);
         MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
     }
     
-    private void startServer(final PluginConfiguration pluginConfig) {
-        registerCollector(Boolean.parseBoolean(pluginConfig.getProps().getProperty(KEY_JVM_INFORMATION_COLLECTOR_ENABLED)));
+    private void startServer(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
+        registerCollector(Boolean.parseBoolean(pluginConfig.getProps().getProperty(KEY_JVM_INFORMATION_COLLECTOR_ENABLED)), isEnhancedForProxy);
         InetSocketAddress socketAddress = getSocketAddress(pluginConfig.getHost(), pluginConfig.getPort());
         try {
             httpServer = new HTTPServer(socketAddress, CollectorRegistry.defaultRegistry, true);
@@ -64,13 +61,13 @@ public final class PrometheusPluginBootService implements PluginBootService {
         }
     }
     
-    private void registerCollector(final boolean enabled) {
+    private void registerCollector(final boolean isEnableCollectJVMInformation, final boolean isEnhancedForProxy) {
         new BuildInfoCollector(isEnhancedForProxy).register();
         if (isEnhancedForProxy) {
             new ProxyInfoCollector().register();
             new MetaDataInfoCollector().register();
         }
-        if (enabled) {
+        if (isEnableCollectJVMInformation) {
             DefaultExports.initialize();
         }
     }
