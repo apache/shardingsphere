@@ -39,7 +39,7 @@ import java.util.Optional;
 /**
  * Prometheus metrics wrapper factory.
  */
-public class PrometheusWrapperFactory implements MetricsWrapperFactory {
+public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     private static List<Map<String, Object>> metrics;
     
