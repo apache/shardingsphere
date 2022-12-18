@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Histogram;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
-import org.junit.Test;
+import io.prometheus.client.Counter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class HistogramWrapperTest {
+/**
+ * Prometheus counter wrapper.
+ */
+@RequiredArgsConstructor
+public final class CounterWrapper implements MetricsWrapper {
     
-    @Test
-    public void assertCreate() {
-        Histogram histogram = Histogram.build().name("a").help("help").create();
-        HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
-        histogramWrapper.observe(1);
-        histogram = (Histogram) ReflectiveUtil.getFieldValue(histogramWrapper, "histogram");
-        assertThat(histogram.collect().size(), is(1));
+    private final Counter counter;
+    
+    @Override
+    public void inc(final double value) {
+        counter.inc(value);
+    }
+    
+    @Override
+    public void inc(final double value, final String... labels) {
+        counter.labels(labels).inc(value);
     }
 }

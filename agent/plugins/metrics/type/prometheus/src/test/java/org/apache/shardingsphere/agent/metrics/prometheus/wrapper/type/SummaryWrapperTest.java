@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Summary;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
+import org.junit.Test;
 
-/**
- * Prometheus summary wrapper.
- */
-@RequiredArgsConstructor
-public final class SummaryWrapper implements MetricsWrapper {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class SummaryWrapperTest {
     
-    private final Summary summary;
-    
-    @Override
-    public void observe(final double value) {
-        summary.observe(value);
+    @Test
+    public void assertCreate() {
+        SummaryWrapper summaryWrapper = new SummaryWrapper(Summary.build().name("a").help("help").create());
+        summaryWrapper.observe(1);
+        Summary summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
+        assertThat(summary.collect().size(), is(1));
     }
 }

@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Summary;
+import io.prometheus.client.Histogram;
 import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SummaryWrapperTest {
+public final class HistogramWrapperTest {
     
     @Test
     public void assertCreate() {
-        SummaryWrapper summaryWrapper = new SummaryWrapper(Summary.build().name("a").help("help").create());
-        summaryWrapper.observe(1);
-        Summary summary = (Summary) ReflectiveUtil.getFieldValue(summaryWrapper, "summary");
-        assertThat(summary.collect().size(), is(1));
+        Histogram histogram = Histogram.build().name("a").help("help").create();
+        HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
+        histogramWrapper.observe(1);
+        histogram = (Histogram) ReflectiveUtil.getFieldValue(histogramWrapper, "histogram");
+        assertThat(histogram.collect().size(), is(1));
     }
 }

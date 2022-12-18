@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Gauge;
 import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;

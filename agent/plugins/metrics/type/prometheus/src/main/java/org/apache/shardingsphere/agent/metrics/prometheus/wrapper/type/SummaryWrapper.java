@@ -15,37 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Gauge;
+import io.prometheus.client.Summary;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 
 /**
- * Prometheus gauge wrapper.
+ * Prometheus summary wrapper.
  */
 @RequiredArgsConstructor
-public final class GaugeWrapper implements MetricsWrapper {
+public final class SummaryWrapper implements MetricsWrapper {
     
-    private final Gauge gauge;
-    
-    @Override
-    public void inc(final double value) {
-        gauge.inc(value);
-    }
+    private final Summary summary;
     
     @Override
-    public void inc(final double value, final String... labels) {
-        gauge.labels(labels).inc(value);
-    }
-    
-    @Override
-    public void dec(final double value) {
-        gauge.dec(value);
-    }
-    
-    @Override
-    public void dec(final double value, final String... labels) {
-        gauge.labels(labels).dec(value);
+    public void observe(final double value) {
+        summary.observe(value);
     }
 }

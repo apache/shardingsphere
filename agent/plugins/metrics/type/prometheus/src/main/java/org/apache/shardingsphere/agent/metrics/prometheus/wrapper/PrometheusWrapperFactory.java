@@ -24,6 +24,10 @@ import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.CounterWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.GaugeWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.HistogramWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.SummaryWrapper;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -35,7 +39,7 @@ import java.util.Optional;
 /**
  * Prometheus metrics wrapper factory.
  */
-public class PrometheusWrapperFactory implements MetricsWrapperFactory {
+public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     private static List<Map<String, Object>> metrics;
     
