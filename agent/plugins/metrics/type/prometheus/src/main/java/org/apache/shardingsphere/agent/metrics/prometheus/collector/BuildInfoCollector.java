@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.proxy.Bootstrap;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,13 +35,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class BuildInfoCollector extends Collector {
     
-    private static final String PROXY_BOOTSTRAP_CLASS = "org.apache.shardingsphere.proxy.Bootstrap";
-    
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     private final boolean isEnhancedForProxy;
     
-    @SneakyThrows(ClassNotFoundException.class)
     @Override
     public List<MetricFamilySamples> collect() {
         Optional<GaugeMetricFamily> artifactInfo = FACTORY.createGaugeMetricFamily(MetricIds.BUILD_INFO);
@@ -50,7 +47,7 @@ public final class BuildInfoCollector extends Collector {
         }
         addMetric(artifactInfo.get(), getClass().getPackage());
         if (isEnhancedForProxy) {
-            addMetric(artifactInfo.get(), Class.forName(PROXY_BOOTSTRAP_CLASS).getPackage());
+            addMetric(artifactInfo.get(), Bootstrap.class.getPackage());
         }
         return Collections.singletonList(artifactInfo.get());
     }
