@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
-import org.apache.shardingsphere.agent.metrics.core.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
@@ -39,20 +38,18 @@ public final class ProxyInfoCollector extends Collector {
     
     private static final String PROXY_STATE = "state";
     
-    private static final String PROXY_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
-    
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
-    private static final ConcurrentHashMap<StateType, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<StateType, Integer> PROXY_STATES = new ConcurrentHashMap<>();
     
     static {
-        PROXY_STATE_MAP.put(StateType.OK, 1);
-        PROXY_STATE_MAP.put(StateType.CIRCUIT_BREAK, 2);
+        PROXY_STATES.put(StateType.OK, 1);
+        PROXY_STATES.put(StateType.CIRCUIT_BREAK, 2);
     }
     
     @Override
     public List<MetricFamilySamples> collect() {
-        if (!MetricsUtil.isClassExisted(PROXY_CLASS) || null == ProxyContext.getInstance().getContextManager()) {
+        if (null == ProxyContext.getInstance().getContextManager()) {
             return Collections.emptyList();
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
@@ -61,7 +58,7 @@ public final class ProxyInfoCollector extends Collector {
             return Collections.emptyList();
         }
         List<MetricFamilySamples> result = new LinkedList<>();
-        proxyInfo.get().addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(stateContext.get().getCurrentState()));
+        proxyInfo.get().addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATES.get(stateContext.get().getCurrentState()));
         result.add(proxyInfo.get());
         return result;
     }

@@ -21,7 +21,6 @@ import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
-import org.apache.shardingsphere.agent.metrics.core.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -48,15 +47,13 @@ public final class MetaDataInfoCollector extends Collector {
     
     private static final String ACTUAL_DB_COUNT = "database_count";
     
-    private static final String PROXY_CONTEXT_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
-    
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
         Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.METADATA_INFO);
-        if (null != ProxyContext.getInstance().getContextManager() && metaDataInfo.isPresent() && MetricsUtil.isClassExisted(PROXY_CONTEXT_CLASS)) {
+        if (null != ProxyContext.getInstance().getContextManager() && metaDataInfo.isPresent()) {
             collectProxy(metaDataInfo.get());
             result.add(metaDataInfo.get());
         }
@@ -88,7 +85,7 @@ public final class MetaDataInfoCollector extends Collector {
     private Optional<String> getDatabaseName(final DataSource dataSource) {
         Object jdbcUrl = DataSourcePropertiesCreator.create(dataSource).getAllStandardProperties().get("url");
         if (null == jdbcUrl) {
-            log.info("Can not get JDBC URL");
+            log.info("Can not get JDBC URL.");
             return Optional.empty();
         }
         try {
@@ -97,7 +94,7 @@ public final class MetaDataInfoCollector extends Collector {
                 return Optional.of(uri.getPath());
             }
         } catch (final URISyntaxException | NullPointerException ignored) {
-            log.info("Unsupported JDBC URL by URI: {}", jdbcUrl);
+            log.info("Unsupported JDBC URL by URI: {}.", jdbcUrl);
         }
         return Optional.empty();
     }

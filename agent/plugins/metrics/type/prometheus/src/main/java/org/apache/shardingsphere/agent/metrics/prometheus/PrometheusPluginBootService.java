@@ -61,13 +61,13 @@ public final class PrometheusPluginBootService implements PluginBootService {
         }
     }
     
-    private void registerCollector(final boolean isCollectJVMInformation, final boolean isEnhancedForProxy) {
+    private void registerCollector(final boolean isJVMInformationCollection, final boolean isEnhancedForProxy) {
         new BuildInfoCollector(isEnhancedForProxy).register();
         if (isEnhancedForProxy) {
             new ProxyInfoCollector().register();
             new MetaDataInfoCollector().register();
         }
-        if (isCollectJVMInformation) {
+        if (isJVMInformationCollection) {
             DefaultExports.initialize();
         }
     }
