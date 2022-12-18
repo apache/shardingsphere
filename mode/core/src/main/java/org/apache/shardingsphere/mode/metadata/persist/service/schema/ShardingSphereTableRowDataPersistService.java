@@ -69,6 +69,7 @@ public final class ShardingSphereTableRowDataPersistService {
      * @param schemaName schema name
      * @param tableName table name
      * @param table table
+     * @return ShardingSphere table data
      */
     public ShardingSphereTableData load(final String databaseName, final String schemaName, final String tableName, final ShardingSphereTable table) {
         ShardingSphereTableData result = new ShardingSphereTableData(tableName);
