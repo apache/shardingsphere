@@ -32,8 +32,8 @@ import java.util.Optional;
 /**
  * Build information collector.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class BuildInfoCollector extends Collector {
     
     private static final String PROXY_BOOTSTRAP_CLASS = "org.apache.shardingsphere.proxy.Bootstrap";
