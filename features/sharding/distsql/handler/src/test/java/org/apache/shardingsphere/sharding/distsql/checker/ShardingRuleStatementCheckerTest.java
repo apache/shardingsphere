@@ -191,6 +191,15 @@ public final class ShardingRuleStatementCheckerTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckTableWithUnmatchedShardingStrategyType3() {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("MOD", newProperties("sharding-count", "4"));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "user_id", databaseAlgorithmSegment));
+        List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckTableWithInvalidAlgorithmName() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", null));
@@ -278,8 +287,8 @@ public final class ShardingRuleStatementCheckerTest {
     private TableRuleSegment createCompleteTableRule() {
         TableRuleSegment result = new TableRuleSegment("t_product_1", Collections.singletonList("ds_${0..1}.t_order${0..1}"));
         Properties props = new Properties();
-        result.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", new AlgorithmSegment("algorithm", props)));
-        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", new AlgorithmSegment("algorithm", props)));
+        result.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", new AlgorithmSegment("HINT_INLINE", props)));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", new AlgorithmSegment("HINT_INLINE", props)));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         return result;
     }
