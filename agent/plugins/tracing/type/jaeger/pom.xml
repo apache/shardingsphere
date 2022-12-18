@@ -27,6 +27,10 @@
     <artifactId>shardingsphere-agent-tracing-jaeger</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <jaeger-client.version>0.31.0</jaeger-client.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -57,6 +61,7 @@
         <dependency>
             <groupId>io.jaegertracing</groupId>
             <artifactId>jaeger-client</artifactId>
+            <version>${jaeger-client.version}</version>
         </dependency>
     </dependencies>
 </project>
