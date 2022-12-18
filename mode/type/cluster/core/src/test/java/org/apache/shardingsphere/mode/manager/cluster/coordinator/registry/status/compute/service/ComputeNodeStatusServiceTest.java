@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.pojo.ComputeNodeData;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
@@ -113,7 +114,10 @@ public final class ComputeNodeStatusServiceTest {
     public void assertLoadAllComputeNodeInstances() {
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("foo_instance_3307"));
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("foo_instance_3308"));
-        when(repository.getDirectly("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn("127.0.0.1@3308");
+        when(repository.getDirectly("/nodes/compute_nodes/online/jdbc/foo_instance_3307"))
+                .thenReturn(YamlEngine.marshal(new ComputeNodeData("127.0.0.1@3307", "foo_version")));
+        when(repository.getDirectly("/nodes/compute_nodes/online/proxy/foo_instance_3308"))
+                .thenReturn(YamlEngine.marshal(new ComputeNodeData("127.0.0.1@3308", "foo_version")));
         List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getMetaData().getId(), is("foo_instance_3307"));

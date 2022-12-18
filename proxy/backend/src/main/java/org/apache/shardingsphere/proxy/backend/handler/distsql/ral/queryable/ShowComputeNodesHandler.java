@@ -51,9 +51,11 @@ public final class ShowComputeNodesHandler extends QueryableRALBackendHandler<Sh
     
     private static final String LABELS = "labels";
     
+    private static final String VERSION = "version";
+    
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, WORKER_ID, LABELS);
+        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, WORKER_ID, LABELS, VERSION);
     }
     
     @Override
@@ -72,6 +74,6 @@ public final class ShowComputeNodesHandler extends QueryableRALBackendHandler<Sh
         InstanceMetaData instanceMetaData = instance.getMetaData();
         return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
-                instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), labels);
+                instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), labels, instanceMetaData.getVersion());
     }
 }
