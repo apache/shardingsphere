@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.core.util;
 
-import io.prometheus.client.Counter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Prometheus counter wrapper.
+ * Metrics Utility.
  */
-@RequiredArgsConstructor
-public final class CounterWrapper implements MetricsWrapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MetricsUtil {
     
-    private final Counter counter;
-    
-    @Override
-    public void inc(final double value) {
-        counter.inc(value);
-    }
-    
-    @Override
-    public void inc(final double value, final String... labels) {
-        counter.labels(labels).inc(value);
+    /**
+     * Check whether class existed.
+     *
+     * @param className class name
+     * @return class existed or not
+     */
+    public static boolean isClassExisted(final String className) {
+        try {
+            Class.forName(className);
+        } catch (final ClassNotFoundException ex) {
+            return false;
+        }
+        return true;
     }
 }

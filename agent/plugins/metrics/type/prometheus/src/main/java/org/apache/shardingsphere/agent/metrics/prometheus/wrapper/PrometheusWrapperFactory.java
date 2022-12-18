@@ -22,8 +22,8 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.GaugeMetricFamily;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.core.MetricsWrapperFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;

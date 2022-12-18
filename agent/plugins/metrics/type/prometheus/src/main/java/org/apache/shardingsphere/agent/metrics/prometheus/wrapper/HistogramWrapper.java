@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
 import io.prometheus.client.Histogram;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 
 /**
  * Prometheus histogram wrapper.

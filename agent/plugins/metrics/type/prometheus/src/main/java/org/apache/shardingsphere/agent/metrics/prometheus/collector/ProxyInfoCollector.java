@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
-import org.apache.shardingsphere.agent.metrics.api.util.MetricsUtil;
+import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.core.util.MetricsUtil;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
