@@ -59,7 +59,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        RemotePluginConfigurationValidator.validate(getType(), pluginConfig);
+        RemotePluginConfigurationValidator.validateHostAndPort(getType(), pluginConfig);
         Properties props = pluginConfig.getProps();
         String urlVersion = Optional.ofNullable(props.getProperty(KEY_URL_VERSION)).orElse(DEFAULT_URL_VERSION);
         String serviceName = Optional.ofNullable(props.getProperty(KEY_SERVICE_NAME)).orElse(DEFAULT_SERVICE_NAME);

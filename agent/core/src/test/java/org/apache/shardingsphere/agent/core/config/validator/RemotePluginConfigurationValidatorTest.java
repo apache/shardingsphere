@@ -25,25 +25,25 @@ import static org.junit.Assert.assertThrows;
 public final class RemotePluginConfigurationValidatorTest {
     
     @Test
-    public void assertValidateSuccess() {
-        RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null));
+    public void assertValidateHostAndPortSuccess() {
+        RemotePluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null));
     }
     
     @Test
-    public void assertValidateWhenHostIsEmpty() {
+    public void assertValidateHostAndPortWhenHostIsEmpty() {
         assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
-                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
+                () -> RemotePluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
     }
     
     @Test
-    public void assertValidateWhenHostIsNull() {
+    public void assertValidateHostAndPortWhenHostIsNull() {
         assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
-                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
+                () -> RemotePluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
     }
     
     @Test
-    public void assertValidateWhenPortLessThanOne() {
+    public void assertValidateHostAndPortWhenPortLessThanOne() {
         assertThrows("Port `0` of foo_host must be a positive number", IllegalArgumentException.class,
-                () -> RemotePluginConfigurationValidator.validate("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
+                () -> RemotePluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
     }
 }
