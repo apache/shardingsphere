@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.core.fixture;
+package org.apache.shardingsphere.agent.core.plugin.yaml.loader;
 
-import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
-import org.apache.shardingsphere.agent.metrics.core.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
+import org.yaml.snakeyaml.Yaml;
 
-import java.util.Optional;
+import java.io.InputStream;
 
-public final class FixtureWrapperFactory implements MetricsWrapperFactory {
+/**
+ * YAML advisors configuration loader.
+ */
+public final class YamlAdvisorsConfigurationLoader {
     
-    @Override
-    public Optional<MetricsWrapper> create(final String id) {
-        return Optional.of(new FixtureWrapper());
+    /**
+     * Load advisors configuration.
+     * 
+     * @param inputStream input stream
+     * @return loaded advisors configuration
+     */
+    public YamlAdvisorsConfiguration load(final InputStream inputStream) {
+        return new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
     }
 }

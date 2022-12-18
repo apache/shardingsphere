@@ -17,49 +17,26 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus;
 
-import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
-import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Prometheus advisor definition service.
  */
 public final class PrometheusAdvisorDefinitionService implements AdvisorDefinitionService {
     
+    private final YamlAdvisorsConfigurationLoader loader = new YamlAdvisorsConfigurationLoader();
+    
+    private final YamlAdvisorsConfigurationSwapper swapper = new YamlAdvisorsConfigurationSwapper();
+    
     @Override
     public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
-        Collection<AdvisorConfiguration> result = new LinkedList<>();
-        for (YamlAdvisorConfiguration each : new YamlAdvisorsConfigurationSwapper().unmarshal(getClass().getResourceAsStream("/prometheus/advisors.yaml")).getAdvisors()) {
-            if (null != each.getTarget()) {
-                result.add(createAdvisorConfiguration(each));
-            }
-        }
-        return result;
-    }
-    
-    private AdvisorConfiguration createAdvisorConfiguration(final YamlAdvisorConfiguration yamlAdvisorConfig) {
-        AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
-        if (null != yamlAdvisorConfig.getConstructAdvice() && !("".equals(yamlAdvisorConfig.getConstructAdvice()))) {
-            result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getConstructAdvice()));
-        }
-        String[] instancePointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(i -> "instance".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (instancePointcuts.length > 0) {
-            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instancePointcuts), yamlAdvisorConfig.getInstanceAdvice()));
-        }
-        String[] staticPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(i -> "static".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (staticPointcuts.length > 0) {
-            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticPointcuts), yamlAdvisorConfig.getStaticAdvice()));
-        }
-        return result;
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/prometheus/advisors.yaml")), getType());
     }
     
     @Override
