@@ -15,27 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.core.fixture;
 
-import io.prometheus.client.Counter;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 
 /**
- * Prometheus counter wrapper.
+ * Fixed metric wrapper.
  */
-@RequiredArgsConstructor
-public final class CounterWrapper implements MetricsWrapper {
+@Getter
+public final class FixtureWrapper implements MetricsWrapper {
     
-    private final Counter counter;
+    private Double fixtureValue = 0.0d;
     
     @Override
     public void inc(final double value) {
-        counter.inc(value);
+        fixtureValue += value;
     }
     
     @Override
     public void inc(final double value, final String... labels) {
-        counter.labels(labels).inc(value);
+        fixtureValue += value;
+    }
+    
+    @Override
+    public void dec(final double value) {
+        fixtureValue -= value;
+    }
+    
+    @Override
+    public void dec(final double value, final String... labels) {
+        fixtureValue -= value;
+    }
+    
+    @Override
+    public void observe(final double value) {
+        fixtureValue = value;
+    }
+    
+    @Override
+    public void delegate(final Object object) {
+        fixtureValue = -1.0;
     }
 }

@@ -21,63 +21,30 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-metrics-type</artifactId>
+        <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-metrics-prometheus</artifactId>
+    <artifactId>shardingsphere-agent-metrics-core</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-metrics-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-frontend-core</artifactId>
+            <artifactId>shardingsphere-infra-route</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-backend</artifactId>
+            <artifactId>shardingsphere-sharding-distsql-statement</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-context</artifactId>
+            <artifactId>shardingsphere-data-pipeline-distsql-statement</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_hotspot</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_httpserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.prometheus.jmx</groupId>
-            <artifactId>collector</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

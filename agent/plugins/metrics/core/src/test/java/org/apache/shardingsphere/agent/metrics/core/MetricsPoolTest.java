@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.core;
 
-import io.prometheus.client.Counter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.core.fixture.FixtureWrapperFactory;
+import org.junit.Test;
 
-/**
- * Prometheus counter wrapper.
- */
-@RequiredArgsConstructor
-public final class CounterWrapper implements MetricsWrapper {
+import static org.junit.Assert.assertTrue;
+
+public final class MetricsPoolTest {
     
-    private final Counter counter;
-    
-    @Override
-    public void inc(final double value) {
-        counter.inc(value);
-    }
-    
-    @Override
-    public void inc(final double value, final String... labels) {
-        counter.labels(labels).inc(value);
+    @Test
+    public void assertCreate() {
+        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+        MetricsPool.create("test");
+        assertTrue(MetricsPool.get("test").isPresent());
     }
 }

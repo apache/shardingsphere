@@ -21,7 +21,7 @@ import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
+import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 
 import java.util.Arrays;

@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.agent.metrics.core;
 
-import io.prometheus.client.Counter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
+import java.util.Optional;
 
 /**
- * Prometheus counter wrapper.
+ * Metrics wrapper factory.
  */
-@RequiredArgsConstructor
-public final class CounterWrapper implements MetricsWrapper {
+public interface MetricsWrapperFactory {
     
-    private final Counter counter;
-    
-    @Override
-    public void inc(final double value) {
-        counter.inc(value);
-    }
-    
-    @Override
-    public void inc(final double value, final String... labels) {
-        counter.labels(labels).inc(value);
-    }
+    /**
+     * Create metrics wrapper.
+     *
+     * @param id metrics wrapper ID
+     * @return metrics wrapper
+     */
+    Optional<MetricsWrapper> create(String id);
 }
