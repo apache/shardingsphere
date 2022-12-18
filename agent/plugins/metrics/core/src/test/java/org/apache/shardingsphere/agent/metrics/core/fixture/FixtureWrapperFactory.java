@@ -22,9 +22,6 @@ import org.apache.shardingsphere.agent.metrics.core.MetricsWrapperFactory;
 
 import java.util.Optional;
 
-/**
- * Fixed metric wrapper factory.
- */
 public final class FixtureWrapperFactory implements MetricsWrapperFactory {
     
     @Override

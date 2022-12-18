@@ -51,13 +51,13 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
         if (null != yamlAdvisorConfig.getConstructAdvice() && !("".equals(yamlAdvisorConfig.getConstructAdvice()))) {
             result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getConstructAdvice()));
         }
-        String[] instancePointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(i -> "instance".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (instancePointcuts.length > 0) {
-            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instancePointcuts), yamlAdvisorConfig.getInstanceAdvice()));
+        String[] instanceMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "instance".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
+        if (instanceMethodPointcuts.length > 0) {
+            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instanceMethodPointcuts), yamlAdvisorConfig.getInstanceAdvice()));
         }
-        String[] staticPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(i -> "static".equals(i.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (staticPointcuts.length > 0) {
-            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticPointcuts), yamlAdvisorConfig.getStaticAdvice()));
+        String[] staticMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "static".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
+        if (staticMethodPointcuts.length > 0) {
+            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticMethodPointcuts), yamlAdvisorConfig.getStaticAdvice()));
         }
         return result;
     }
