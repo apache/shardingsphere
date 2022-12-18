@@ -17,13 +17,13 @@ lableName ::=
   identifier
 
 trafficAlgorithmDefination ::=
-  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' trafficAlgorithmTypeName (propertiesDefination)? ')' ')'
+  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' trafficAlgorithmTypeName (',' propertiesDefination)? ')' ')'
 
 loadBalancerDefination ::=
-  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' '=' loadBalancerName (propertiesDefination)? ')' ')'
+  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' '=' loadBalancerName (',' propertiesDefination)? ')' ')'
 
 propertiesDefination ::=
-  ',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 trafficAlgorithmTypeName ::=
   string

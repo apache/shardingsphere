@@ -14,7 +14,7 @@ AlterStorageUnit ::=
   'ALTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (proertiesDefinition)?')'
+  storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
 
 storageUnitName ::=
   identifier
@@ -37,8 +37,8 @@ user ::=
 password ::=
   string
 
-proertiesDefinition ::=
-  ',' PROPERTIES '(' key '=' value (',' key '=' value)* ')'
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
