@@ -36,7 +36,7 @@ public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
@@ -46,7 +46,7 @@ public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         ((Scope) target.getAttachment()).close();
     }
     

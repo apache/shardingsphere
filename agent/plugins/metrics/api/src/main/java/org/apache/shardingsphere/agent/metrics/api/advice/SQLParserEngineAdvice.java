@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatemen
 import java.lang.reflect.Method;
 
 /**
- * SQL parse engine advice executor.
+ * SQL parse engine advice.
  */
 public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     
@@ -58,8 +58,8 @@ public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        SQLStatement sqlStatement = (SQLStatement) result.getResult();
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        SQLStatement sqlStatement = (SQLStatement) invocationResult.getResult();
         countSQL(sqlStatement);
         countDistSQL(sqlStatement);
     }

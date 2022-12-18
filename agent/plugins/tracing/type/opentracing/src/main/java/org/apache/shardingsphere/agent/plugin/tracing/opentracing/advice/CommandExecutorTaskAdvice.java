@@ -39,7 +39,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     private static final String ROOT_SPAN = "ot_root_span_";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
                 .startActive(true);
@@ -47,7 +47,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         GlobalTracer.get().scopeManager().active().close();
         ExecutorDataMap.getValue().remove(ROOT_SPAN);
     }

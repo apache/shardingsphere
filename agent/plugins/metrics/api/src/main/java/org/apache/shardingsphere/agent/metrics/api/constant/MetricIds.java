@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.agent.metrics.api.constant;
 
+/**
+ * Metric IDs.
+ */
 public final class MetricIds {
     
     public static final String PROXY_REQUEST = "proxy_request_total";

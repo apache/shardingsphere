@@ -42,7 +42,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     
     @Override
     @SuppressWarnings("unchecked")
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if ((boolean) args[1]) {
@@ -61,7 +61,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         ((Scope) target.getAttachment()).close();
     }
     

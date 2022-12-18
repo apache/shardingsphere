@@ -28,7 +28,7 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice executor.
+ * Command executor task advice.
  */
 public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
@@ -42,14 +42,14 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
             TimeRecorder.INSTANCE.record();
         }
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
             try {
                 MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> optional.observe(TimeRecorder.INSTANCE.getElapsedTime()));

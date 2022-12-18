@@ -40,7 +40,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Span span = Tracing.currentTracer().newTrace().name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT)
                 .tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
@@ -49,7 +49,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
         field.setAccessible(true);
         JDBCBackendConnection connection = (JDBCBackendConnection) ((ConnectionSession) field.get(target)).getBackendConnection();

@@ -36,16 +36,16 @@ public final class MockInstanceMethodAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         List<String> queues = (List<String>) args[0];
         queues.add("before");
         if (rebase) {
-            result.rebase("rebase invocation method");
+            invocationResult.rebase("rebase invocation method");
         }
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         List<String> queues = (List<String>) args[0];
         queues.add("after");
     }

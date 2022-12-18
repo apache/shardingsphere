@@ -36,7 +36,7 @@ public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
         Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
@@ -47,7 +47,7 @@ public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         ((Span) target.getAttachment()).finish();
     }
     

@@ -35,9 +35,9 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param target the target object
      * @param method the target method
      * @param args all method arguments
-     * @param result wrapped class of result to detect whether or not to execute the origin method
+     * @param invocationResult wrapped class of result to detect whether or not to execute the origin method
      */
-    default void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
     }
     
     /**
@@ -47,9 +47,9 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param target the target object
      * @param method the target method
      * @param args all method arguments
-     * @param result wrapped class of result to detect whether or not to execute the origin method.
+     * @param invocationResult wrapped class of result to detect whether or not to execute the origin method.
      */
-    default void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
     }
     
     /**
