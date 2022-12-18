@@ -38,16 +38,17 @@ public final class YamlAdvisorConfigurationSwapper {
      */
     public AdvisorConfiguration swapToObject(final YamlAdvisorConfiguration yamlAdvisorConfig, final String type) {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
-        if (null != yamlAdvisorConfig.getConstructAdvice() && !("".equals(yamlAdvisorConfig.getConstructAdvice()))) {
-            result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getConstructAdvice()));
+        String[] constructPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "construct".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
+        if (constructPointcuts.length > 0) {
+            result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getAdvice()));
         }
         String[] instanceMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "instance".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
         if (instanceMethodPointcuts.length > 0) {
-            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instanceMethodPointcuts), yamlAdvisorConfig.getInstanceAdvice()));
+            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instanceMethodPointcuts), yamlAdvisorConfig.getAdvice()));
         }
         String[] staticMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "static".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
         if (staticMethodPointcuts.length > 0) {
-            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticMethodPointcuts), yamlAdvisorConfig.getStaticAdvice()));
+            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticMethodPointcuts), yamlAdvisorConfig.getAdvice()));
         }
         return result;
     }

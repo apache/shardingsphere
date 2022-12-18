@@ -41,26 +41,24 @@ public final class YamlAdvisorsConfigurationSwapperTest {
         List<YamlAdvisorConfiguration> actualYamlAdvisorConfigs = new ArrayList<>(actual.getAdvisors());
         assertYamlAdvisorConfiguration(actualYamlAdvisorConfigs.get(0), createExpectedYamlAdvisorConfiguration("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask",
                 "org.apache.shardingsphere.agent.metrics.api.advice.CommandExecutorTaskAdvice",
-                null, null, Arrays.asList(createExpectedYamlPointcutConfiguration("run", "instance"), createExpectedYamlPointcutConfiguration("processException", "instance"))));
+                Arrays.asList(createExpectedYamlPointcutConfiguration("run", "instance"), createExpectedYamlPointcutConfiguration("processException", "instance"))));
         assertYamlAdvisorConfiguration(actualYamlAdvisorConfigs.get(1), createExpectedYamlAdvisorConfiguration("org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler",
                 "org.apache.shardingsphere.agent.metrics.api.advice.ChannelHandlerAdvice",
-                null, null, Arrays.asList(createExpectedYamlPointcutConfiguration("channelActive", "instance"),
+                Arrays.asList(createExpectedYamlPointcutConfiguration("channelActive", "instance"),
                         createExpectedYamlPointcutConfiguration("channelRead", "instance"), createExpectedYamlPointcutConfiguration("channelInactive", "instance"))));
         assertYamlAdvisorConfiguration(actualYamlAdvisorConfigs.get(2), createExpectedYamlAdvisorConfiguration("org.apache.shardingsphere.infra.route.engine.SQLRouteEngine",
-                "org.apache.shardingsphere.agent.metrics.api.advice.SQLRouteEngineAdvice", null, null, Collections.singleton(createExpectedYamlPointcutConfiguration("route", "instance"))));
+                "org.apache.shardingsphere.agent.metrics.api.advice.SQLRouteEngineAdvice", Collections.singleton(createExpectedYamlPointcutConfiguration("route", "instance"))));
         assertYamlAdvisorConfiguration(actualYamlAdvisorConfigs.get(3), createExpectedYamlAdvisorConfiguration(
                 "org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager",
                 "org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice",
-                null, null, Arrays.asList(createExpectedYamlPointcutConfiguration("commit", "instance"), createExpectedYamlPointcutConfiguration("rollback", "instance"))));
+                Arrays.asList(createExpectedYamlPointcutConfiguration("commit", "instance"), createExpectedYamlPointcutConfiguration("rollback", "instance"))));
         assertYamlAdvisorConfiguration(actualYamlAdvisorConfigs.get(4), createExpectedYamlAdvisorConfiguration("org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecoratorHelper",
-                null, "org.apache.shardingsphere.agent.metrics.api.advice.DataSourceAdvice", null, Collections.singleton(createExpectedYamlPointcutConfiguration("decorate", "static"))));
+                "org.apache.shardingsphere.agent.metrics.api.advice.DataSourceAdvice", Collections.singleton(createExpectedYamlPointcutConfiguration("decorate", "static"))));
     }
     
     private void assertYamlAdvisorConfiguration(final YamlAdvisorConfiguration actual, final YamlAdvisorConfiguration expected) {
         assertThat(actual.getTarget(), is(expected.getTarget()));
-        assertThat(actual.getInstanceAdvice(), is(expected.getInstanceAdvice()));
-        assertThat(actual.getStaticAdvice(), is(expected.getStaticAdvice()));
-        assertThat(actual.getConstructAdvice(), is(expected.getConstructAdvice()));
+        assertThat(actual.getAdvice(), is(expected.getAdvice()));
         assertThat(actual.getPointcuts().isEmpty(), is(expected.getPointcuts().isEmpty()));
         Iterator<YamlPointcutConfiguration> expectedYamlPointcutConfigs = expected.getPointcuts().iterator();
         for (YamlPointcutConfiguration each : actual.getPointcuts()) {
@@ -70,13 +68,10 @@ public final class YamlAdvisorsConfigurationSwapperTest {
         }
     }
     
-    private YamlAdvisorConfiguration createExpectedYamlAdvisorConfiguration(final String target, final String instanceAdvice,
-                                                                            final String staticAdvice, final String constructAdvice, final Collection<YamlPointcutConfiguration> yamlPointcutConfigs) {
+    private YamlAdvisorConfiguration createExpectedYamlAdvisorConfiguration(final String target, final String advice, final Collection<YamlPointcutConfiguration> yamlPointcutConfigs) {
         YamlAdvisorConfiguration result = new YamlAdvisorConfiguration();
         result.setTarget(target);
-        result.setInstanceAdvice(instanceAdvice);
-        result.setStaticAdvice(staticAdvice);
-        result.setConstructAdvice(constructAdvice);
+        result.setAdvice(advice);
         result.setPointcuts(yamlPointcutConfigs);
         return result;
     }
