@@ -39,7 +39,7 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     @SuppressWarnings("AccessOfSystemProperties")
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        RemotePluginConfigurationValidator.validate(getType(), pluginConfig);
+        RemotePluginConfigurationValidator.validateHostAndPort(getType(), pluginConfig);
         pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()

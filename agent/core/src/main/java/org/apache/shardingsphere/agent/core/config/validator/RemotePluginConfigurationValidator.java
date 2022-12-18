@@ -30,13 +30,32 @@ import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 public final class RemotePluginConfigurationValidator {
     
     /**
-     * Validate remote plugin configuration.
+     * Validate host and port.
      * 
      * @param type plugin type 
      * @param pluginConfig to be validated plugin configuration
      */
-    public static void validate(final String type, final PluginConfiguration pluginConfig) {
+    public static void validateHostAndPort(final String type, final PluginConfiguration pluginConfig) {
+        validateHost(type, pluginConfig);
+        validatePort(type, pluginConfig);
+    }
+    
+    /**
+     * Validate host.
+     * 
+     * @param type plugin type
+     * @param pluginConfig to be validated plugin configuration
+     */
+    public static void validateHost(final String type, final PluginConfiguration pluginConfig) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(pluginConfig.getHost()), "Hostname of %s is required.", type);
+    }
+    
+    /**
+     * Validate port.
+     * @param type plugin type
+     * @param pluginConfig to be validated plugin configuration
+     */
+    public static void validatePort(final String type, final PluginConfiguration pluginConfig) {
         Preconditions.checkArgument(pluginConfig.getPort() > 0, "Port `%s` of %s must be a positive number.", pluginConfig.getPort(), type);
     }
 }

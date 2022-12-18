@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus;
 
+import com.google.common.base.Strings;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
@@ -45,35 +46,35 @@ public final class PrometheusPluginBootService implements PluginBootService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        RemotePluginConfigurationValidator.validate(getType(), pluginConfig);
+        RemotePluginConfigurationValidator.validatePort(getType(), pluginConfig);
         startServer(pluginConfig, isEnhancedForProxy);
         MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
     }
     
     private void startServer(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
         registerCollector(Boolean.parseBoolean(pluginConfig.getProps().getProperty(KEY_JVM_INFORMATION_COLLECTOR_ENABLED)), isEnhancedForProxy);
-        InetSocketAddress socketAddress = getSocketAddress(pluginConfig.getHost(), pluginConfig.getPort());
+        InetSocketAddress socketAddress = getSocketAddress(pluginConfig);
         try {
             httpServer = new HTTPServer(socketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info("Prometheus metrics HTTP server `{}:{}` start success", socketAddress.getHostString(), socketAddress.getPort());
+            log.info("Prometheus metrics HTTP server `{}:{}` start success.", socketAddress.getHostString(), socketAddress.getPort());
         } catch (final IOException ex) {
-            log.error("Prometheus metrics HTTP server start fail", ex);
+            log.error("Prometheus metrics HTTP server start fail.", ex);
         }
     }
     
-    private void registerCollector(final boolean isCollectJVMInformation, final boolean isEnhancedForProxy) {
+    private void registerCollector(final boolean isJVMInformationCollection, final boolean isEnhancedForProxy) {
         new BuildInfoCollector(isEnhancedForProxy).register();
         if (isEnhancedForProxy) {
             new ProxyInfoCollector().register();
             new MetaDataInfoCollector().register();
         }
-        if (isCollectJVMInformation) {
+        if (isJVMInformationCollection) {
             DefaultExports.initialize();
         }
     }
     
-    private InetSocketAddress getSocketAddress(final String host, final int port) {
-        return null == host || "".equals(host) ? new InetSocketAddress(port) : new InetSocketAddress(host, port);
+    private InetSocketAddress getSocketAddress(final PluginConfiguration pluginConfig) {
+        return Strings.isNullOrEmpty(pluginConfig.getHost()) ? new InetSocketAddress(pluginConfig.getPort()) : new InetSocketAddress(pluginConfig.getHost(), pluginConfig.getPort());
     }
     
     @Override
