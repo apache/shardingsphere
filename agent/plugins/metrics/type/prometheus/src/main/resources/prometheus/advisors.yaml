@@ -17,14 +17,14 @@
 
 advisors:
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
-    advice: org.apache.shardingsphere.agent.metrics.api.advice.CommandExecutorTaskAdvice
+    advice: org.apache.shardingsphere.agent.metrics.core.advice.CommandExecutorTaskAdvice
     pointcuts:
       - name: run
         type: instance
       - name: processException
         type: instance
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
-    advice: org.apache.shardingsphere.agent.metrics.api.advice.ChannelHandlerAdvice
+    advice: org.apache.shardingsphere.agent.metrics.core.advice.ChannelHandlerAdvice
     pointcuts:
       - name: channelActive
         type: instance
@@ -33,19 +33,19 @@ advisors:
       - name: channelInactive
         type: instance
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
-    advice: org.apache.shardingsphere.agent.metrics.api.advice.SQLRouteEngineAdvice
+    advice: org.apache.shardingsphere.agent.metrics.core.advice.SQLRouteEngineAdvice
     pointcuts:
       - name: route
         type: instance
   - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager
-    advice: org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice
+    advice: org.apache.shardingsphere.agent.metrics.core.advice.TransactionAdvice
     pointcuts:
       - name: commit
         type: instance
       - name: rollback
         type: instance
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
-    advice: org.apache.shardingsphere.agent.metrics.api.advice.SQLParserEngineAdvice
+    advice: org.apache.shardingsphere.agent.metrics.core.advice.SQLParserEngineAdvice
     pointcuts:
       - name: parse
         type: instance
