@@ -32,11 +32,7 @@ public final class YamlAdvisorConfiguration {
     
     private String target;
     
-    private String instanceAdvice;
-    
-    private String staticAdvice;
-    
-    private String constructAdvice;
+    private String advice;
     
     private Collection<YamlPointcutConfiguration> pointcuts = new LinkedList<>();
 }
