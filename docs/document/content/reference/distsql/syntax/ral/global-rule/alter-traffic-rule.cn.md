@@ -11,18 +11,18 @@ weight = 8
 
 ```sql
 AlterTrafficRule ::=
-  'ALTER' 'TRAFFIC' 'RULE'  '(' 'LABELS' '(' lableName ')' ',' trafficAlgorithmDefination ',' loadBalancerDefination ')'
+  'ALTER' 'TRAFFIC' 'RULE'  '(' 'LABELS' '(' lableName ')' ',' trafficAlgorithmDefinition ',' loadBalancerDefinition ')'
 
 lableName ::=
   identifier
 
-trafficAlgorithmDefination ::=
-  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' trafficAlgorithmTypeName (',' propertiesDefination)? ')' ')'
+trafficAlgorithmDefinition ::=
+  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' trafficAlgorithmTypeName (',' propertiesDefinition)? ')' ')'
 
-loadBalancerDefination ::=
-  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' '=' loadBalancerName (',' propertiesDefination)? ')' ')'
+loadBalancerDefinition ::=
+  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' '=' loadBalancerName (',' propertiesDefinition)? ')' ')'
 
-propertiesDefination ::=
+propertiesDefinition ::=
   'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 trafficAlgorithmTypeName ::=
