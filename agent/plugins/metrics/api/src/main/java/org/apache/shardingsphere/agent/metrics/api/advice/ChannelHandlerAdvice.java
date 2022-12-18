@@ -27,7 +27,7 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Channel handler advice executor.
+ * Channel handler advice.
  */
 public final class ChannelHandlerAdvice implements InstanceMethodAdvice {
     
@@ -43,7 +43,7 @@ public final class ChannelHandlerAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         switch (method.getName()) {
             case CHANNEL_READ:
                 MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);

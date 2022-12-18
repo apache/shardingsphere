@@ -42,7 +42,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .startActive(true);
@@ -51,7 +51,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
     @Override
     @SneakyThrows(ReflectiveOperationException.class)
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
         Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
         field.setAccessible(true);

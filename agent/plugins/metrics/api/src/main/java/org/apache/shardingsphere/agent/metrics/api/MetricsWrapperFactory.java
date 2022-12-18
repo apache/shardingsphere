@@ -20,15 +20,15 @@ package org.apache.shardingsphere.agent.metrics.api;
 import java.util.Optional;
 
 /**
- * Metrics wrapper abstract factory.
+ * Metrics wrapper factory.
  */
 public interface MetricsWrapperFactory {
     
     /**
-     * Create the metrics wrapper.
+     * Create metrics wrapper.
      *
-     * @param id id
-     * @return optional of metrics wrapper
+     * @param id metrics wrapper ID
+     * @return metrics wrapper
      */
     Optional<MetricsWrapper> create(String id);
 }

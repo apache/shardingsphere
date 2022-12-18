@@ -30,18 +30,18 @@ public final class MetricsPool {
     private static MetricsWrapperFactory wrapperFactory;
     
     /**
-     * Set the metrics wrapper factory.
+     * Set metrics wrapper factory.
      *
-     * @param factory MetricsWrapperFactory
+     * @param factory metrics wrapper factory
      */
     public static void setMetricsFactory(final MetricsWrapperFactory factory) {
         wrapperFactory = factory;
     }
     
     /**
-     * Create metrics wrapper by id.
+     * Create metrics wrapper.
      *
-     * @param id id
+     * @param id metrics wrapper ID
      */
     public static void create(final String id) {
         Optional<MetricsWrapper> wrapper = wrapperFactory.create(id);
@@ -49,10 +49,10 @@ public final class MetricsPool {
     }
     
     /**
-     * Get the metrics wrapper by id.
+     * Get the metrics wrapper.
      *
-     * @param id id
-     * @return optional of metrics wrapper
+     * @param id metrics wrapper ID
+     * @return metrics wrapper
      */
     public static Optional<MetricsWrapper> get(final String id) {
         return Optional.ofNullable(METRICS_POOL.get(id));

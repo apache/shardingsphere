@@ -37,7 +37,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
- * SQL route engine advice executor.
+ * SQL route engine advice.
  */
 public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
     
@@ -51,7 +51,7 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
@@ -66,8 +66,8 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        RouteContext routeContext = (RouteContext) result.getResult();
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        RouteContext routeContext = (RouteContext) invocationResult.getResult();
         if (null != routeContext) {
             Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
             routeUnits.forEach(each -> {

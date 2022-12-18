@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Metrics Util.
+ * Metrics Utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetricsUtil {
@@ -35,7 +35,7 @@ public final class MetricsUtil {
     public static boolean isClassExisted(final String className) {
         try {
             Class.forName(className);
-        } catch (ClassNotFoundException ex) {
+        } catch (final ClassNotFoundException ex) {
             return false;
         }
         return true;

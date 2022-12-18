@@ -27,7 +27,7 @@ import org.apache.shardingsphere.agent.metrics.api.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Transaction advice executor.
+ * Transaction advice.
  */
 public final class TransactionAdvice implements InstanceMethodAdvice {
     
@@ -41,7 +41,7 @@ public final class TransactionAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         String methodName = method.getName();
         if (COMMIT.equals(methodName)) {
             MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(MetricsWrapper::inc);

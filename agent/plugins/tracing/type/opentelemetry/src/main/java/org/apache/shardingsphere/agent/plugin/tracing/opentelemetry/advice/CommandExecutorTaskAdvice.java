@@ -38,7 +38,7 @@ public class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
                 .spanBuilder(OPERATION_NAME)
                 .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
@@ -49,7 +49,7 @@ public class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         ((Span) target.getAttachment()).end();
         ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
     }
