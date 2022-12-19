@@ -20,32 +20,32 @@ advisors:
     advice: org.apache.shardingsphere.agent.metrics.core.advice.CommandExecutorTaskAdvice
     pointcuts:
       - name: run
-        type: instance
+        type: method
       - name: processException
-        type: instance
+        type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
     advice: org.apache.shardingsphere.agent.metrics.core.advice.ChannelHandlerAdvice
     pointcuts:
       - name: channelActive
-        type: instance
+        type: method
       - name: channelRead
-        type: instance
+        type: method
       - name: channelInactive
-        type: instance
+        type: method
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
     advice: org.apache.shardingsphere.agent.metrics.core.advice.SQLRouteEngineAdvice
     pointcuts:
       - name: route
-        type: instance
+        type: method
   - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager
     advice: org.apache.shardingsphere.agent.metrics.core.advice.TransactionAdvice
     pointcuts:
       - name: commit
-        type: instance
+        type: method
       - name: rollback
-        type: instance
+        type: method
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
     advice: org.apache.shardingsphere.agent.metrics.core.advice.SQLParserEngineAdvice
     pointcuts:
       - name: parse
-        type: instance
+        type: method
