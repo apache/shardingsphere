@@ -40,7 +40,7 @@ public final class SQLParserEngineAdviser implements TracingAdviser {
     @Override
     public AdvisorConfiguration getAdvisorConfiguration(final Class<? extends InstanceMethodAdvice> adviceClass) {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(TARGET_CLASS);
-        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named(TARGET_METHOD), adviceClass.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named(TARGET_METHOD), adviceClass.getName()));
         return result;
     }
 }

@@ -18,15 +18,20 @@
 package org.apache.shardingsphere.agent.core.plugin.executor.type;
 
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.dynamic.DynamicType.Builder;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
+import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
+import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 import java.util.Collection;
 
@@ -60,5 +65,11 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
             // CHECKSTYLE:ON
             LOGGER.error("Constructor advice execution error. class: {}", target.getClass().getTypeName(), throwable);
         }
+    }
+    
+    @Override
+    public Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
+        return builder.constructor(ElementMatchers.is(methodAdvisor.getPointcut()))
+                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdviceExecutor())));
     }
 }
