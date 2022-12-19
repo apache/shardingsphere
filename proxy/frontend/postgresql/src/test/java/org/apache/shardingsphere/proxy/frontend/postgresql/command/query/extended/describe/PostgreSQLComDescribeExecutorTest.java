@@ -140,7 +140,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     public void assertDescribePortal() throws SQLException {
         when(packet.getType()).thenReturn('P');
         when(packet.getName()).thenReturn("P_1");
-        Portal<?> portal = mock(Portal.class);
+        Portal portal = mock(Portal.class);
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
         when(portal.describe()).thenReturn(expected);
         when(portalContext.get("P_1")).thenReturn(portal);

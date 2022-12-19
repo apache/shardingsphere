@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLEmptyStatement;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -93,6 +93,6 @@ public final class PostgreSQLComBindExecutorTest extends ProxyContextRestorer {
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        verify(portalContext).add(any(JDBCPortal.class));
+        verify(portalContext).add(any(Portal.class));
     }
 }

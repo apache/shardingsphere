@@ -84,7 +84,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class JDBCPortalTest extends ProxyContextRestorer {
+public final class PortalTest extends ProxyContextRestorer {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager mockContextManager;
@@ -124,7 +124,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetName() throws SQLException {
-        JDBCPortal portal = new JDBCPortal("", new PostgreSQLServerPreparedStatement("",
+        Portal portal = new Portal("", new PostgreSQLServerPreparedStatement("",
                 new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList()), Collections.emptyList(), Collections.emptyList(), backendConnection);
         assertThat(portal.getName(), is(""));
     }
@@ -143,7 +143,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         PostgreSQLServerPreparedStatement preparedStatement =
                 new PostgreSQLServerPreparedStatement("", sqlStatementContext, Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
-        JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
         portal.bind();
         assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
@@ -169,7 +169,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         PostgreSQLServerPreparedStatement preparedStatement =
                 new PostgreSQLServerPreparedStatement("", selectStatementContext, Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
-        JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
         portal.bind();
         assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
         List<PostgreSQLPacket> actualPackets = portal.execute(2);
@@ -188,7 +188,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(insertStatementContext.getSqlStatement()).thenReturn(new PostgreSQLInsertStatement());
         PostgreSQLServerPreparedStatement preparedStatement =
                 new PostgreSQLServerPreparedStatement("", insertStatementContext, Collections.emptyList());
-        JDBCPortal portal = new JDBCPortal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        Portal portal = new Portal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
@@ -200,7 +200,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
-        JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
@@ -217,7 +217,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         variableAssignSegment.setVariable(new VariableSegment());
         setStatement.getVariableAssigns().add(variableAssignSegment);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, new CommonSQLStatementContext<>(setStatement), Collections.emptyList());
-        JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(2));
@@ -231,13 +231,13 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         when(preparedStatement.getSql()).thenReturn("");
         when(preparedStatement.getSqlStatementContext()).thenReturn(mock(SQLStatementContext.class));
-        new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).describe();
+        new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).describe();
     }
     
     @Test
     public void assertClose() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
-        JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.close();
         verify(backendConnection).unmarkResourceInUse(proxyBackendHandler);
         verify(proxyBackendHandler).close();
