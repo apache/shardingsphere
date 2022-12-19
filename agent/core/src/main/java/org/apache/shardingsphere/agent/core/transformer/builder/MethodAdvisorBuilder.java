@@ -26,6 +26,7 @@ import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MethodAdvisorBuilder {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilder.class);
     
     private final AdviceFactory adviceFactory;
     

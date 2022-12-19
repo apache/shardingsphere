@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.spi.AgentSPIRegistry;
 import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
@@ -35,7 +36,7 @@ import java.util.Map.Entry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginBootServiceManager {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(PluginBootServiceManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PluginBootServiceManager.class);
     
     /**
      * Start all services.

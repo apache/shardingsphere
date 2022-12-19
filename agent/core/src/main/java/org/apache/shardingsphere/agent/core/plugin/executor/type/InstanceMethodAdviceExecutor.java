@@ -31,6 +31,7 @@ import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
@@ -45,7 +46,7 @@ import java.util.concurrent.Callable;
 @RequiredArgsConstructor
 public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdviceExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdviceExecutor.class);
     
     private final Collection<InstanceMethodAdvice> advices;
     
