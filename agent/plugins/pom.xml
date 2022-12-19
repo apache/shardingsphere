@@ -55,7 +55,7 @@
                         <phase>package</phase>
                         <configuration>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <artifactSet>
                                 <excludes>

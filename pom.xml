@@ -57,7 +57,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
+        <shade.package>org.apache.shardingsphere.shade</shade.package>
         
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
