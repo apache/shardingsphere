@@ -105,7 +105,7 @@ public final class AgentTransformerTest {
             new TargetObjectFixture(new LinkedList<>()).callInstanceMethodWhenExceptionThrown(queue);
         } catch (final UnsupportedOperationException ignored) {
         }
-        assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method", 
+        assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method",
                 "foo throw instance method exception", "bar throw instance method exception", "foo after instance method", "bar after instance method")));
     }
     
