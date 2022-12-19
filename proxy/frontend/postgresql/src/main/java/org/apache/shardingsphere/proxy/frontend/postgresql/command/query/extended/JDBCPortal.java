@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
@@ -74,12 +74,12 @@ public final class JDBCPortal implements Portal<Void> {
     
     private final ProxyBackendHandler proxyBackendHandler;
     
-    private final JDBCBackendConnection backendConnection;
+    private final BackendConnection backendConnection;
     
     private ResponseHeader responseHeader;
     
     public JDBCPortal(final String name, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> params, final List<PostgreSQLValueFormat> resultFormats,
-                      final JDBCBackendConnection backendConnection) throws SQLException {
+                      final BackendConnection backendConnection) throws SQLException {
         this.name = name;
         this.sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         this.resultFormats = resultFormats;

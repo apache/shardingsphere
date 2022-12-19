@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -51,7 +51,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     private ContextManager contextManager;
     
     @Mock
-    private JDBCBackendConnection backendConnection;
+    private BackendConnection backendConnection;
     
     private ConnectionSession connectionSession;
     
@@ -74,7 +74,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     @Test(expected = SwitchTypeInTransactionException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() {
         connectionSession.setCurrentDatabase("db");
-        JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
+        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
     }
@@ -82,7 +82,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchSchemaWhileBegin() {
         connectionSession.setCurrentDatabase("db");
-        JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
+        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         connectionSession.setCurrentDatabase("newDB");
         assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));

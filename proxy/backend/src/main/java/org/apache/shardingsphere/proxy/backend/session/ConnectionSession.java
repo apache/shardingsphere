@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExec
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
@@ -80,7 +79,7 @@ public final class ConnectionSession {
         this.protocolType = protocolType;
         transactionStatus = new TransactionStatus(initialTransactionType);
         this.attributeMap = attributeMap;
-        backendConnection = new JDBCBackendConnection(this);
+        backendConnection = new BackendConnection(this);
         statementManager = new JDBCBackendStatement();
         connectionContext = new ConnectionContext(((CacheableExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections);
     }
