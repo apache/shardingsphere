@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer.build.advise;
+package org.apache.shardingsphere.agent.core.transformer.builder.advise;
 
 import org.apache.shardingsphere.agent.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
