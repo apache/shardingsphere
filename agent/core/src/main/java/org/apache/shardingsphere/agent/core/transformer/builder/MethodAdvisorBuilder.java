@@ -61,7 +61,7 @@ public final class MethodAdvisorBuilder {
         Builder<?> result = builder;
         for (MethodAdvisor each : getMatchedMethodAdvisors()) {
             try {
-                result = each.getAdviceExecutor().buildAdvisor(result, each);
+                result = each.getAdviceExecutor().decorateBuilder(result, each.getPointcut());
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON

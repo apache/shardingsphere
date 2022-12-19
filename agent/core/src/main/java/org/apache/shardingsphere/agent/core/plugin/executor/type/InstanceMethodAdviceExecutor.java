@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.core.plugin.executor.type;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
-import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -123,7 +123,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     }
     
     @Override
-    public Builder<?> buildAdvisor(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
-        return builder.method(ElementMatchers.is(methodAdvisor.getPointcut())).intercept(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdviceExecutor()));
+    public Builder<?> decorateBuilder(final Builder<?> builder, final MethodDescription pointcut) {
+        return builder.method(ElementMatchers.is(pointcut)).intercept(MethodDelegation.withDefaultConfiguration().to(this));
     }
 }

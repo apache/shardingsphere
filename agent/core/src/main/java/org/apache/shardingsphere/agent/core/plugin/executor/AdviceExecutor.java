@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin.executor;
 
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
-import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 
 /**
  * Advice executor.
@@ -26,11 +26,11 @@ import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 public interface AdviceExecutor {
     
     /**
-     * Build method advisor.
+     * Decorate advice builder.
      *
      * @param builder original builder
-     * @param methodAdvisor method advisor
-     * @return built builder
+     * @param pointcut method pointcut
+     * @return decorated builder
      */
-    Builder<?> buildAdvisor(Builder<?> builder, MethodAdvisor methodAdvisor);
+    Builder<?> decorateBuilder(Builder<?> builder, MethodDescription pointcut);
 }
