@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
+import org.apache.shardingsphere.agent.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
@@ -34,7 +35,7 @@ import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -72,29 +73,22 @@ public final class MethodAdvisorBuilder {
     }
     
     private Collection<MethodAdvisor> getMatchedMethodAdvisors() {
-        Collection<MethodAdvisor> result = new LinkedList<>();
-        for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
-            result.addAll(getMatchedMethodAdvisors(each));
-        }
-        return result;
+        return typePointcut.getDeclaredMethods().stream().map(this::findMatchedMethodAdvisor).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
     
-    private Collection<MethodAdvisor> getMatchedMethodAdvisors(final InDefinedShape methodDescription) {
-        Collection<MethodAdvisor> result = new LinkedList<>();
+    private Optional<MethodAdvisor> findMatchedMethodAdvisor(final InDefinedShape methodDescription) {
+        Collection<AgentAdvice> advices = advisorConfig.getAdvisors().stream()
+                .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
         if (isConstructor(methodDescription)) {
-            Collection<ConstructorAdvice> advices = advisorConfig.getAdvisors().stream()
-                    .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-            result.add(new MethodAdvisor(methodDescription, new ConstructorAdviceExecutor(advices)));
-        } else if (isStaticMethod(methodDescription)) {
-            Collection<StaticMethodAdvice> advices = advisorConfig.getAdvisors().stream()
-                    .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> (StaticMethodAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-            result.add(new MethodAdvisor(methodDescription, new StaticMethodAdviceExecutor(advices)));
-        } else if (isMethod(methodDescription)) {
-            Collection<InstanceMethodAdvice> advices = advisorConfig.getAdvisors().stream()
-                    .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> (InstanceMethodAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-            result.add(new MethodAdvisor(methodDescription, new InstanceMethodAdviceExecutor(advices)));
+            return Optional.of(new MethodAdvisor(methodDescription, new ConstructorAdviceExecutor(advices.stream().map(each -> (ConstructorAdvice) each).collect(Collectors.toList()))));
         }
-        return result;
+        if (isStaticMethod(methodDescription)) {
+            return Optional.of(new MethodAdvisor(methodDescription, new StaticMethodAdviceExecutor(advices.stream().map(each -> (StaticMethodAdvice) each).collect(Collectors.toList()))));
+        }
+        if (isMethod(methodDescription)) {
+            return Optional.of(new MethodAdvisor(methodDescription, new InstanceMethodAdviceExecutor(advices.stream().map(each -> (InstanceMethodAdvice) each).collect(Collectors.toList()))));
+        }
+        return Optional.empty();
     }
     
     private boolean isConstructor(final InDefinedShape methodDescription) {
