@@ -42,13 +42,9 @@ public final class YamlAdvisorConfigurationSwapper {
         if (constructPointcuts.length > 0) {
             result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getAdvice()));
         }
-        String[] instanceMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "instance".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (instanceMethodPointcuts.length > 0) {
-            result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instanceMethodPointcuts), yamlAdvisorConfig.getAdvice()));
-        }
-        String[] staticMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "static".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (staticMethodPointcuts.length > 0) {
-            result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticMethodPointcuts), yamlAdvisorConfig.getAdvice()));
+        String[] methodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "method".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
+        if (methodPointcuts.length > 0) {
+            result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(methodPointcuts), yamlAdvisorConfig.getAdvice()));
         }
         return result;
     }
