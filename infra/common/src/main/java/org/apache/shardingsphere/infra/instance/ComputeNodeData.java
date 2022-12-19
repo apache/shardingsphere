@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.pojo;
+package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
