@@ -114,21 +114,13 @@ public final class ShardingSphereDataPersistService {
     
     private void persistTableData(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData, final Map<String, ShardingSphereDatabase> databases) {
         schemaData.getTableData().values().forEach(each -> {
-            if (each.getRows().isEmpty()) {
-                persistTable(databaseName, schemaName, each.getName());
-            } else {
-                YamlShardingSphereRowDataSwapper swapper =
-                        new YamlShardingSphereRowDataSwapper(new ArrayList<>(databases.get(databaseName.toLowerCase()).getSchema(schemaName).getTable(each.getName()).getColumns().values()));
-                persistTableData(databaseName, schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
-            }
+            YamlShardingSphereRowDataSwapper swapper =
+                    new YamlShardingSphereRowDataSwapper(new ArrayList<>(databases.get(databaseName.toLowerCase()).getSchema(schemaName).getTable(each.getName()).getColumns().values()));
+            persistTableData(databaseName, schemaName, each.getName(), each.getRows().stream().map(swapper::swapToYamlConfiguration).collect(Collectors.toList()));
         });
     }
     
     private void persistTableData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
         tableRowDataPersistService.persist(databaseName, schemaName, tableName, rows);
-    }
-    
-    private void persistTable(final String databaseName, final String schemaName, final String tableName) {
-        repository.persist(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName.toLowerCase()), "");
     }
 }
