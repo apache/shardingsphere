@@ -48,10 +48,4 @@ public final class SystemSchemaBuilderRuleTest {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
     }
-    
-    @Test
-    public void assertIsTableRow() {
-        assertTrue(SystemSchemaBuilderRule.isTableRow("shardingsphere", "sharding_table_statistics"));
-        assertFalse(SystemSchemaBuilderRule.isTableRow("shardingsphere", "cluster_information"));
-    }
 }

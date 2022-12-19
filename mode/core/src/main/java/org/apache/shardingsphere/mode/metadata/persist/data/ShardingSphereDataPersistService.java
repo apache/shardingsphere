@@ -23,12 +23,10 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.node.ShardingSphereDataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.schema.ShardingSphereTableDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.schema.ShardingSphereTableRowDataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
@@ -46,13 +44,10 @@ public final class ShardingSphereDataPersistService {
     
     private final PersistRepository repository;
     
-    private final ShardingSphereTableDataPersistService tableDataPersistService;
-    
     private final ShardingSphereTableRowDataPersistService tableRowDataPersistService;
     
     public ShardingSphereDataPersistService(final PersistRepository repository) {
         this.repository = repository;
-        tableDataPersistService = new ShardingSphereTableDataPersistService(repository);
         tableRowDataPersistService = new ShardingSphereTableRowDataPersistService(repository);
     }
     
@@ -93,11 +88,8 @@ public final class ShardingSphereDataPersistService {
         }
         ShardingSphereSchemaData result = new ShardingSphereSchemaData();
         for (String each : tableNames.stream().filter(schema::containsTable).collect(Collectors.toList())) {
-            if (SystemSchemaBuilderRule.isTableRow(schemaName, each)) {
-                result.getTableData().put(each, tableRowDataPersistService.load(databaseName, schemaName, each, schema.getTable(each)));
-            } else {
-                result.getTableData().put(each, tableDataPersistService.load(databaseName, schemaName, each, schema.getTable(each)));
-            }
+            result.getTableData().put(each, tableRowDataPersistService.load(databaseName, schemaName, each, schema.getTable(each)));
+            
         }
         return result;
     }
@@ -133,11 +125,7 @@ public final class ShardingSphereDataPersistService {
     }
     
     private void persistTableData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
-        if (SystemSchemaBuilderRule.isTableRow(schemaName, tableName)) {
-            tableRowDataPersistService.persist(databaseName, schemaName, tableName, rows);
-        } else {
-            tableDataPersistService.persist(databaseName, schemaName, tableName, rows);
-        }
+        tableRowDataPersistService.persist(databaseName, schemaName, tableName, rows);
     }
     
     private void persistTable(final String databaseName, final String schemaName, final String tableName) {

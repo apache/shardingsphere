@@ -127,20 +127,4 @@ public enum SystemSchemaBuilderRule {
         }
         return false;
     }
-    
-    /**
-     * Judge whether current table is need to split rows or not.
-     *
-     * @param schema schema
-     * @param tableName table name
-     * @return whether current table is need to split rows or not.
-     */
-    public static boolean isTableRow(final String schema, final String tableName) {
-        for (SystemSchemaBuilderRule each : values()) {
-            if (each.getSchema().equals(schema) && "sharding_table_statistics".equals(tableName)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
