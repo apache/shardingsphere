@@ -21,13 +21,15 @@ import net.bytebuddy.agent.builder.AgentBuilder.Listener;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 
 /**
  * Logging listener for ByteBuddy lifecycle.
  */
+@SuppressWarnings("NullableProblems")
 public final class LoggingListener implements Listener {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(LoggingListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingListener.class);
     
     @Override
     public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
