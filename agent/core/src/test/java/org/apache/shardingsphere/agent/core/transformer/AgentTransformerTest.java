@@ -103,7 +103,7 @@ public final class AgentTransformerTest {
         List<String> queue = new LinkedList<>();
         try {
             new TargetObjectFixture(new LinkedList<>()).callInstanceMethodWhenExceptionThrown(queue);
-        } catch (final RuntimeException ignored) {
+        } catch (final UnsupportedOperationException ignored) {
         }
         assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method", 
                 "foo throw instance method exception", "bar throw instance method exception", "foo after instance method", "bar after instance method")));
@@ -121,7 +121,7 @@ public final class AgentTransformerTest {
         List<String> queue = new LinkedList<>();
         try {
             TargetObjectFixture.callStaticMethodWhenExceptionThrown(queue);
-        } catch (final RuntimeException ignored) {
+        } catch (final UnsupportedOperationException ignored) {
         }
         assertThat(queue, is(Arrays.asList("foo before static method", "bar before static method",
                 "foo throw static method exception", "bar throw static method exception", "foo after static method", "bar after static method")));

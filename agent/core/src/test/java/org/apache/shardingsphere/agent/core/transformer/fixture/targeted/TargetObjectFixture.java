@@ -40,7 +40,7 @@ public final class TargetObjectFixture {
      * @param queue queue
      */
     public void callInstanceMethodWhenExceptionThrown(final List<String> queue) {
-        throw new RuntimeException();
+        throw new UnsupportedOperationException();
     }
     
     /**
@@ -58,6 +58,6 @@ public final class TargetObjectFixture {
      * @param queue queue
      */
     public static void callStaticMethodWhenExceptionThrown(final List<String> queue) {
-        throw new RuntimeException();
+        throw new UnsupportedOperationException();
     }
 }
