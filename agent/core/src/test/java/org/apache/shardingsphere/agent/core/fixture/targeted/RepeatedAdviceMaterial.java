@@ -27,11 +27,11 @@ public final class RepeatedAdviceMaterial {
     /**
      * Mock method for testing.
      *
-     * @param queues queues
+     * @param queue queue
      * @return result
      */
-    public String mock(final List<String> queues) {
-        queues.add("on");
+    public String mock(final List<String> queue) {
+        queue.add("on");
         return "invocation";
     }
 }

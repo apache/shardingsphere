@@ -54,5 +54,4 @@ public final class MockStaticMethodAdvice implements StaticMethodAdvice {
         List<String> queue = (List<String>) args[0];
         queue.add("exception");
     }
-    
 }

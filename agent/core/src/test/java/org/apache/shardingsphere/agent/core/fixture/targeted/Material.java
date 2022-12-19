@@ -24,29 +24,29 @@ import java.util.List;
 @NoArgsConstructor
 public final class Material {
     
-    public Material(final List<String> queues) {
-        queues.add("constructor");
+    public Material(final List<String> queue) {
+        queue.add("constructor");
     }
     
     /**
      * Mock method for testing.
      *
-     * @param queues queues
+     * @param queue queue
      * @return result
      */
-    public String mock(final List<String> queues) {
-        queues.add("on");
+    public String mock(final List<String> queue) {
+        queue.add("on");
         return "invocation";
     }
     
     /**
      * Mock static method for testing.
      *
-     * @param queues queues
+     * @param queue queue
      * @return result
      */
-    public static String staticMock(final List<String> queues) {
-        queues.add("on");
+    public static String staticMock(final List<String> queue) {
+        queue.add("on");
         return "static invocation";
     }
 }
