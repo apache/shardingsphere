@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.targeted;
+package org.apache.shardingsphere.agent.core.fixture.advice;
 
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 
 import java.util.List;
 
-@NoArgsConstructor
-public final class ConstructorMaterial {
+public final class FooConstructorAdvice implements ConstructorAdvice {
     
-    public ConstructorMaterial(final List<String> queue) {
-        queue.add("constructor");
+    @Override
+    @SuppressWarnings("unchecked")
+    public void onConstructor(final TargetAdviceObject target, final Object[] args) {
+        ((List<String>) args[0]).add("advice constructor");
     }
 }

@@ -17,41 +17,31 @@
 
 package org.apache.shardingsphere.agent.core.fixture.advice;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-@RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public final class MockStaticMethodAdvice implements StaticMethodAdvice {
+public final class BarInstanceMethodAdvice implements InstanceMethodAdvice {
     
-    private final boolean rebase;
-    
-    public MockStaticMethodAdvice() {
-        this(false);
+    @Override
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("twice_before");
     }
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("before");
-        if (rebase) {
-            result.rebase("rebase static invocation method");
-        }
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("twice_after");
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("after");
-    }
-    
-    @Override
-    public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("exception");
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("twice_exception");
     }
 }
