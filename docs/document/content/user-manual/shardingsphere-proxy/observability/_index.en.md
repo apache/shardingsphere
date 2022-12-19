@@ -35,7 +35,7 @@ tree
     │   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
     │   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
     │   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
-    └── shardingsphere-agent.jar
+    └── shardingsphere-agent-${latest.release.version}.jar
 ```
 * Configuration file
 
@@ -101,10 +101,10 @@ plugins:
 
 * Edit the startup script
 
-Configure the absolute path of shardingsphere-agent.jar to the start.sh startup script of shardingsphere proxy. 
+Configure the absolute path of shardingsphere-agent-${latest.release.version}.jar to the start.sh startup script of shardingsphere proxy. 
 ```shell
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
--javaagent:/xxxxx/agent/shardingsphere-agent.jar \
+-javaagent:/xxxxx/agent/shardingsphere-agent-${latest.release.version}.jar \
 -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 ```
 
@@ -131,7 +131,7 @@ services:
   apache-shardingsphere-proxy:
     image: apache/shardingsphere-proxy:latest
     environment:
-      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent.jar"
+      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar"
       PORT: 3308
     volumes:
       - ./custom/agent:/agent/

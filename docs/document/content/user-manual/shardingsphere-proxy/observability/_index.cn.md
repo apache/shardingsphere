@@ -35,7 +35,7 @@ tree
     │   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
     │   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
     │   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
-    └── shardingsphere-agent.jar
+    └── shardingsphere-agent-${latest.release.version}.jar
 ```
 * 配置说明
 
@@ -101,10 +101,10 @@ plugins:
 
 * 编辑启动脚本
 
-配置 shardingsphere-agent.jar 的绝对路径到 ShardingSphere-Proxy 的 start.sh 启动脚本中，请注意配置自己对应的绝对路径。
+配置 shardingsphere-agent-${latest.release.version}.jar 的绝对路径到 ShardingSphere-Proxy 的 start.sh 启动脚本中，请注意配置自己对应的绝对路径。
 ```shell
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
--javaagent:/xxxxx/agent/shardingsphere-agent.jar \
+-javaagent:/xxxxx/agent/shardingsphere-agent-${latest.release.version}.jar \
 -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 ```
 
@@ -130,7 +130,7 @@ services:
   apache-shardingsphere-proxy:
     image: apache/shardingsphere-proxy:latest
     environment:
-      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent.jar"
+      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar"
       PORT: 3308
     volumes:
       - ./custom/agent/:/agent/
