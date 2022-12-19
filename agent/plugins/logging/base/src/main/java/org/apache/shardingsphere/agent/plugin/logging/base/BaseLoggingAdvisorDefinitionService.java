@@ -51,7 +51,7 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     private Collection<AdvisorConfiguration> getAdvisorConfigurations() {
         Collection<AdvisorConfiguration> result = new LinkedList<>();
         AdvisorConfiguration advisorConfig = AdvisorConfigurationRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(SCHEMA_METADATA_LOADER_CLASS);
-        advisorConfig.getStaticMethodAdvisors().add(
+        advisorConfig.getAdvisors().add(
                 new MethodAdvisorConfiguration(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
         result.add(advisorConfig);
         return result;

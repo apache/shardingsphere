@@ -32,9 +32,5 @@ public final class AdvisorConfiguration {
     
     private final String targetClassName;
     
-    private final Collection<MethodAdvisorConfiguration> constructorAdvisors = new LinkedList<>();
-    
-    private final Collection<MethodAdvisorConfiguration> instanceMethodAdvisors = new LinkedList<>();
-    
-    private final Collection<MethodAdvisorConfiguration> staticMethodAdvisors = new LinkedList<>();
+    private final Collection<MethodAdvisorConfiguration> advisors = new LinkedList<>();
 }

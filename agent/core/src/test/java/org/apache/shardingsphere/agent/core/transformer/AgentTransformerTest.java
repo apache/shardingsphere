@@ -76,16 +76,16 @@ public final class AgentTransformerTest {
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
         AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.mock.material.Material");
-        result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.takesArguments(1), MockConstructorAdvice.class.getTypeName()));
-        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
-        result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticMock"), MockStaticMethodAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), MockConstructorAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticMock"), MockStaticMethodAdvice.class.getTypeName()));
         return result;
     }
     
     private static AdvisorConfiguration createAdvisorConfigurationInTwice() {
         AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial");
-        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
-        result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodRepeatedAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodRepeatedAdvice.class.getTypeName()));
         return result;
     }
     

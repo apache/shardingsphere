@@ -21,14 +21,19 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.executor.type.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
-import org.apache.shardingsphere.agent.core.transformer.build.builder.MethodAdvisorBuilder;
+import org.apache.shardingsphere.agent.core.transformer.build.advise.AdviceFactory;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +44,8 @@ public final class MethodAdvisorBuildEngine {
     
     private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuildEngine.class);
     
+    private final AdviceFactory adviceFactory;
+    
     private final Collection<MethodAdvisorConfiguration> advisorConfigs;
     
     private final TypeDescription typePointcut;
@@ -47,16 +54,13 @@ public final class MethodAdvisorBuildEngine {
      * Create method advisor builder.
      * 
      * @param builder original builder
-     * @param methodAdvisorBuilder method advisor builder
      * @return created builder
      */
-    public Builder<?> create(final Builder<?> builder, final MethodAdvisorBuilder methodAdvisorBuilder) {
+    public Builder<?> create(final Builder<?> builder) {
         Builder<?> result = builder;
-        Collection<MethodAdvisor> matchedAdvisor = typePointcut.getDeclaredMethods().stream()
-                .filter(methodAdvisorBuilder::isMatchedMethod).map(each -> findMatchedAdvisor(each, methodAdvisorBuilder)).filter(Objects::nonNull).collect(Collectors.toList());
-        for (MethodAdvisor each : matchedAdvisor) {
+        for (MethodAdvisor each : getMatchedMethodAdvisors()) {
             try {
-                result = methodAdvisorBuilder.create(result, each);
+                result = each.getAdviceExecutor().create(result, each);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -66,11 +70,41 @@ public final class MethodAdvisorBuildEngine {
         return result;
     }
     
-    private MethodAdvisor findMatchedAdvisor(final InDefinedShape methodDescription, final MethodAdvisorBuilder methodAdvisorBuilder) {
-        List<MethodAdvisorConfiguration> matchedAdvisorConfigs = advisorConfigs.stream().filter(each -> each.getPointcut().matches(methodDescription)).collect(Collectors.toList());
-        if (matchedAdvisorConfigs.isEmpty()) {
-            return null;
+    private Collection<MethodAdvisor> getMatchedMethodAdvisors() {
+        Collection<MethodAdvisor> result = new LinkedList<>();
+        for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
+            result.addAll(getMatchedMethodAdvisors(each));
         }
-        return methodAdvisorBuilder.getMethodAdvisor(methodDescription, matchedAdvisorConfigs);
+        return result;
+    }
+    
+    private Collection<MethodAdvisor> getMatchedMethodAdvisors(final InDefinedShape methodDescription) {
+        Collection<MethodAdvisor> result = new LinkedList<>();
+        if (isConstructor(methodDescription)) {
+            Collection<ConstructorAdvice> advices = advisorConfigs.stream()
+                    .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> (ConstructorAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+            result.add(new MethodAdvisor(methodDescription, new ConstructorAdviceExecutor(advices)));
+        } else if (isStaticMethod(methodDescription)) {
+            Collection<StaticMethodAdvice> advices = advisorConfigs.stream()
+                    .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> (StaticMethodAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+            result.add(new MethodAdvisor(methodDescription, new StaticMethodAdviceExecutor(advices)));
+        } else if (isMethod(methodDescription)) {
+            Collection<InstanceMethodAdvice> advices = advisorConfigs.stream()
+                    .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> (InstanceMethodAdvice) adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+            result.add(new MethodAdvisor(methodDescription, new InstanceMethodAdviceExecutor(advices)));
+        }
+        return result;
+    }
+    
+    private boolean isConstructor(final InDefinedShape methodDescription) {
+        return methodDescription.isConstructor();
+    }
+    
+    private boolean isStaticMethod(final InDefinedShape methodDescription) {
+        return methodDescription.isStatic() && isMethod(methodDescription);
+    }
+    
+    private boolean isMethod(final InDefinedShape methodDescription) {
+        return !(methodDescription.isAbstract() || methodDescription.isSynthetic());
     }
 }

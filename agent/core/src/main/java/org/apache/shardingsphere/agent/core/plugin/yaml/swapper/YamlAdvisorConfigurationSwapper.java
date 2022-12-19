@@ -40,15 +40,15 @@ public final class YamlAdvisorConfigurationSwapper {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
         String[] constructPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "construct".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
         if (constructPointcuts.length > 0) {
-            result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getAdvice()));
+            result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getAdvice()));
         }
         String[] instanceMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "instance".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
         if (instanceMethodPointcuts.length > 0) {
-            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instanceMethodPointcuts), yamlAdvisorConfig.getAdvice()));
+            result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instanceMethodPointcuts), yamlAdvisorConfig.getAdvice()));
         }
         String[] staticMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "static".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
         if (staticMethodPointcuts.length > 0) {
-            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticMethodPointcuts), yamlAdvisorConfig.getAdvice()));
+            result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticMethodPointcuts), yamlAdvisorConfig.getAdvice()));
         }
         return result;
     }
