@@ -41,27 +41,27 @@ public final class FooAdvice implements ConstructorAdvice, InstanceMethodAdvice,
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("foo after instance method");
-    }
-    
-    @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("foo throw instance method exception");
-    }
-    
-    @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo before static method");
     }
     
     @Override
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+        List<String> queue = (List<String>) args[0];
+        queue.add("foo after instance method");
+    }
+    
+    @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queue = (List<String>) args[0];
         queue.add("foo after static method");
+    }
+    
+    @Override
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+        List<String> queue = (List<String>) args[0];
+        queue.add("foo throw instance method exception");
     }
     
     @Override
