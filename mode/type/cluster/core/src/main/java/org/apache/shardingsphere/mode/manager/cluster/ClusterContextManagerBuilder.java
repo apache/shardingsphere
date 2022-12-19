@@ -74,7 +74,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas()
                 .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persist(each.getName(), schemaName, schema)));
-        
         metaDataContexts.getShardingSphereData().getDatabaseData().forEach((key, value) -> value.getSchemaData().forEach((schemaName, schemaData) ->
                 metaDataContexts.getPersistService().getShardingSphereDataPersistService().persist(key, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
     }
