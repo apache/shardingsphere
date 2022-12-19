@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.core.fixture.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;

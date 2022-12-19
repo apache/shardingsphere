@@ -28,8 +28,8 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
+import org.apache.shardingsphere.agent.core.fixture.advice.MockStaticMethodAdvice;
+import org.apache.shardingsphere.agent.core.fixture.targeted.StaticMaterial;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -55,7 +55,7 @@ public final class StaticMethodAdviceExecutorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.StaticMaterial";
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.fixture.targeted.StaticMaterial";
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     

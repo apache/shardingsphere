@@ -29,8 +29,8 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
+import org.apache.shardingsphere.agent.core.fixture.advice.MockConstructorAdvice;
+import org.apache.shardingsphere.agent.core.fixture.targeted.ConstructorMaterial;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -49,7 +49,7 @@ public final class ConstructorAdviceExecutorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial";
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.fixture.targeted.ConstructorMaterial";
     
     private static final List<String> QUEUE = new LinkedList<>();
     

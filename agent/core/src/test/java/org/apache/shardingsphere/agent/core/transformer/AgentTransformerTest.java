@@ -27,12 +27,12 @@ import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodRepeatedAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.Material;
-import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
+import org.apache.shardingsphere.agent.core.fixture.advice.MockConstructorAdvice;
+import org.apache.shardingsphere.agent.core.fixture.advice.MockInstanceMethodAdvice;
+import org.apache.shardingsphere.agent.core.fixture.advice.MockInstanceMethodRepeatedAdvice;
+import org.apache.shardingsphere.agent.core.fixture.advice.MockStaticMethodAdvice;
+import org.apache.shardingsphere.agent.core.fixture.targeted.Material;
+import org.apache.shardingsphere.agent.core.fixture.targeted.RepeatedAdviceMaterial;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -65,7 +65,7 @@ public final class AgentTransformerTest {
         advisorConfigs.put(advisorConfigInTwice.getTargetClassName(), advisorConfigInTwice);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
-                        .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))
+                        .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.fixture"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
                 .type(new AgentJunction(advisorConfigs))
@@ -75,7 +75,7 @@ public final class AgentTransformerTest {
     }
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.mock.material.Material");
+        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.Material");
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), MockConstructorAdvice.class.getTypeName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticMock"), MockStaticMethodAdvice.class.getTypeName()));
@@ -83,7 +83,7 @@ public final class AgentTransformerTest {
     }
     
     private static AdvisorConfiguration createAdvisorConfigurationInTwice() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial");
+        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.RepeatedAdviceMaterial");
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodRepeatedAdvice.class.getTypeName()));
         return result;
