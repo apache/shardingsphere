@@ -36,7 +36,7 @@
     </modules>
     
     <properties>
-        <tracing.target.directory>${project.basedir}/../../target/plugins</tracing.target.directory>
+        <target.directory>${project.basedir}/../../target/plugins</target.directory>
     </properties>
     
     <dependencies>
@@ -50,12 +50,9 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${tracing.target.directory}/${project.build.finalName}.jar</outputFile>
+                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>

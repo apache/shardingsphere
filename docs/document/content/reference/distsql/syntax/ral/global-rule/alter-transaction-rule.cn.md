@@ -11,7 +11,10 @@ weight = 5
 
 ```sql
 AlterTransactionRule ::=
-  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType ',' 'TYPE' '(' 'NAME' '=' transactionManager ',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')' ')' ')'
+  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType ',' 'TYPE' '(' 'NAME' '=' transactionManager ',' propertiesDefinition ')' ')'
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 defaultTransactionType ::=
   string
@@ -23,7 +26,7 @@ key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### 补充说明

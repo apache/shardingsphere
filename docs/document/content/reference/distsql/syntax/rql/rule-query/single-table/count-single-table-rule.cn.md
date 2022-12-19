@@ -9,7 +9,7 @@ weight = 4
 
 ### 语法
 
-```
+```sql
 CountSingleTableRule::=
   'COUNT' 'SINGLE_TABLE' 'RULE' ('FROM' databaseName)?
   

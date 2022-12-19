@@ -17,23 +17,46 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * YAML advisors configuration swapper.
  */
 public final class YamlAdvisorsConfigurationSwapper {
     
+    private final YamlAdvisorConfigurationSwapper advisorConfigurationSwapper = new YamlAdvisorConfigurationSwapper();
+    
     /**
-     * unmarshal advisors configuration.
+     * Unmarshal advisors configuration.
      * 
      * @param inputStream input stream
      * @return unmarshalled advisors configuration
      */
     public YamlAdvisorsConfiguration unmarshal(final InputStream inputStream) {
         return new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
+    }
+    
+    /**
+     * Swap from YAML advisors configuration to advisor configurations.
+     * 
+     * @param yamlAdvisorsConfig YAML advisors configuration
+     * @param type type
+     * @return advisor configurations
+     */
+    public Collection<AdvisorConfiguration> swapToObject(final YamlAdvisorsConfiguration yamlAdvisorsConfig, final String type) {
+        Collection<AdvisorConfiguration> result = new LinkedList<>();
+        for (YamlAdvisorConfiguration each : yamlAdvisorsConfig.getAdvisors()) {
+            if (null != each.getTarget()) {
+                result.add(advisorConfigurationSwapper.swapToObject(each, type));
+            }
+        }
+        return result;
     }
 }

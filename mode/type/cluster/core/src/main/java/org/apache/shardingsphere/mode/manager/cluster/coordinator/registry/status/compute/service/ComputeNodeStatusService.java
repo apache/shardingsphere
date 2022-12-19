@@ -20,12 +20,14 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.pojo.ComputeNodeData;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -34,7 +36,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Compute node status service.
@@ -51,7 +52,8 @@ public final class ComputeNodeStatusService {
      * @param instanceMetaData instance definition
      */
     public void registerOnline(final InstanceMetaData instanceMetaData) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()), instanceMetaData.getAttributes());
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()),
+                YamlEngine.marshal(new ComputeNodeData(instanceMetaData.getAttributes(), ShardingSphereVersion.VERSION)));
     }
     
     /**
@@ -139,9 +141,16 @@ public final class ComputeNodeStatusService {
     }
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
-                InstanceMetaDataBuilderFactory.create(each, instanceType, repository.getDirectly(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
+        Collection<ComputeNodeInstance> result = new LinkedList<>();
+        for (String each : repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType))) {
+            String value = repository.getDirectly(ComputeNode.getOnlineInstanceNodePath(each, instanceType));
+            if (Strings.isNullOrEmpty(value)) {
+                continue;
+            }
+            ComputeNodeData computeNodeData = YamlEngine.unmarshal(value, ComputeNodeData.class);
+            result.add(loadComputeNodeInstance(InstanceMetaDataBuilderFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion())));
+        }
+        return result;
     }
     
     /**

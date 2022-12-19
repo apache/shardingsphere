@@ -11,31 +11,40 @@ The `ALTER SHARDING TABLE RULE` syntax is used to alter sharding table rule for 
 
 ```sql
 AlterShardingTableRule ::=
-  'ALTER' 'SHARDING' 'TABLE' 'RULE' ( tableDefinition | autoTableDefinition ) ( ',' ( tableDefinition | autoTableDefinition ) )*
+  'ALTER' 'SHARDING' 'TABLE' 'RULE' (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
 
 tableDefinition ::= 
-  tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ','  'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'TABLE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+  tableName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 autoTableDefinition ::=
-  tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ','  'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+  tableName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition (',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
 
 strategyDefinition ::=
-  'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
+  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
   'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' algorithmDefinition ')' 
 
 auditStrategyDefinition ::= 
-  'AUDIT_STRATEGY' '(' algorithmDefinition ( ',' algorithmDefinition )* ')'
+  'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ')'
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' ( propertyDefinition )?  ')' )?')'
+  'TYPE' '(' 'NAME' '=' algorithmType (',' propertiesDefinition)?')'
 
-propertyDefinition ::=
-  ( key  '=' value ) ( ',' key  '=' value )* 
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 
 tableName ::=
   identifier
+
+dataNode ::=
+  string
 
 storageUnitName ::=
   identifier
@@ -45,7 +54,7 @@ columnName ::=
 
 algorithmType ::=
   identifier
-    
+
 strategyType ::=
   string
 ```

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
@@ -218,12 +219,10 @@ public final class ProjectionEngine {
     private Collection<Projection> getActualProjections(final Collection<Projection> projections) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
-            if (each instanceof ColumnProjection) {
-                result.add(each);
-            } else if (each instanceof ExpressionProjection) {
-                result.add(each);
-            } else if (each instanceof ShorthandProjection) {
+            if (each instanceof ShorthandProjection) {
                 result.addAll(((ShorthandProjection) each).getActualColumns().values());
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each);
             }
         }
         return result;

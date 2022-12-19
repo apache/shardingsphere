@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.mock.advice;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorAdvice;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public final class MockConstructorAdvice implements ConstructorAdvice {

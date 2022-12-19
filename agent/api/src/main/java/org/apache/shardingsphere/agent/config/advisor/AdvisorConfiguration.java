@@ -19,9 +19,6 @@ package org.apache.shardingsphere.agent.config.advisor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.config.advisor.method.type.ConstructorAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.InstanceMethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.method.type.StaticMethodAdvisorConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,9 +32,9 @@ public final class AdvisorConfiguration {
     
     private final String targetClassName;
     
-    private final Collection<ConstructorAdvisorConfiguration> constructorAdvisors = new LinkedList<>();
+    private final Collection<MethodAdvisorConfiguration> constructorAdvisors = new LinkedList<>();
     
-    private final Collection<InstanceMethodAdvisorConfiguration> instanceMethodAdvisors = new LinkedList<>();
+    private final Collection<MethodAdvisorConfiguration> instanceMethodAdvisors = new LinkedList<>();
     
-    private final Collection<StaticMethodAdvisorConfiguration> staticMethodAdvisors = new LinkedList<>();
+    private final Collection<MethodAdvisorConfiguration> staticMethodAdvisors = new LinkedList<>();
 }

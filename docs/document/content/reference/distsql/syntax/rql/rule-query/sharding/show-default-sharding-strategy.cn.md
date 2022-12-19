@@ -9,7 +9,7 @@ weight = 5
 
 ### 语法
 
-```
+```sql
 ShowDefaultShardingStrategy::=
   'SHOW' 'DEFAULT' 'SHARDING' 'STRATEGY' ('FROM' databaseName)?
 

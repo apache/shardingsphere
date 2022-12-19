@@ -9,7 +9,7 @@ The `SHOW UNUSED SHARDING ALGORITHMS` syntax is used to query the unused shardin
 
 ### Syntax
 
-```
+```sql
 ShowShardingAlgorithms::=
   'SHOW' 'UNUSED' 'SHARDING' 'ALGORITHMS' ('FROM' databaseName)?
 

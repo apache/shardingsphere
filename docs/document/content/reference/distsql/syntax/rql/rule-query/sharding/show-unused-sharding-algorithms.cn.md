@@ -9,7 +9,7 @@ weight = 4
 
 ### 语法
 
-```
+```sql
 ShowShardingAlgorithms::=
   'SHOW' 'UNUSED' 'SHARDING' 'ALGORITHMS' ('FROM' databaseName)?
 

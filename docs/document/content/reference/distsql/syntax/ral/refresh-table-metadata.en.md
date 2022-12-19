@@ -11,7 +11,7 @@ The `REFRESH TABLE METADATA` syntax is used to refresh table metadata.
 
 ```sql
 RefreshTableMetadata ::=
-  'REFRESH' 'TABLE' 'METADATA' ( (tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
+  'REFRESH' 'TABLE' 'METADATA' ((tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
 
 tableName ::=
   identifier

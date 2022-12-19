@@ -22,8 +22,12 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.GaugeMetricFamily;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
-import org.apache.shardingsphere.agent.metrics.api.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.metrics.core.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.CounterWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.GaugeWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.HistogramWrapper;
+import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type.SummaryWrapper;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -35,16 +39,16 @@ import java.util.Optional;
 /**
  * Prometheus metrics wrapper factory.
  */
-public class PrometheusWrapperFactory implements MetricsWrapperFactory {
+public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     private static List<Map<String, Object>> metrics;
     
     static {
-        parseMetricsYaml();
+        parseMetricsYAML();
     }
     
     @SuppressWarnings("unchecked")
-    private static void parseMetricsYaml() {
+    private static void parseMetricsYAML() {
         InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream("/prometheus/metrics.yaml");
         Map<String, List<Map<String, Object>>> metricsMap = new Yaml().loadAs(inputStream, LinkedHashMap.class);
         metrics = metricsMap.get("metrics");

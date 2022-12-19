@@ -31,7 +31,8 @@ public final class RandomTrafficLoadBalanceAlgorithmTest {
     @Test
     public void assertGetInstanceId() {
         RandomTrafficLoadBalanceAlgorithm randomAlgorithm = new RandomTrafficLoadBalanceAlgorithm();
-        List<InstanceMetaData> instances = Arrays.asList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307"), new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308"));
+        List<InstanceMetaData> instances = Arrays.asList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_verison"),
+                new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_verison"));
         assertTrue(instances.contains(randomAlgorithm.getInstanceId("simple_traffic", instances)));
         assertTrue(instances.contains(randomAlgorithm.getInstanceId("simple_traffic", instances)));
         assertTrue(instances.contains(randomAlgorithm.getInstanceId("simple_traffic", instances)));

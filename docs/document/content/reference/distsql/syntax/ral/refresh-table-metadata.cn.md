@@ -11,7 +11,7 @@ weight = 6
 
 ```sql
 RefreshTableMetadata ::=
-  'REFRESH' 'TABLE' 'METADATA' ( (tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
+  'REFRESH' 'TABLE' 'METADATA' ((tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
 
 tableName ::=
   identifier

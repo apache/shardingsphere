@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.Scope;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.core.plugin.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.plugin.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -30,16 +30,16 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice.
+ * Command executor task advice executor.
  */
-public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
+public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     private static final String ROOT_SPAN = "ot_root_span_";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
                 .startActive(true);
@@ -47,7 +47,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         GlobalTracer.get().scopeManager().active().close();
         ExecutorDataMap.getValue().remove(ROOT_SPAN);
     }

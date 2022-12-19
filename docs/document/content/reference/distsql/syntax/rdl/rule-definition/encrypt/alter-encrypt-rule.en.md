@@ -11,28 +11,25 @@ The `ALTER ENCRYPT RULE` syntax is used to alter an encryption rule.
 
 ```sql
 AlterEncryptRule ::=
-  'ALTER' 'ENCRYPT' 'RULE' encryptDefinition ( ',' encryptDefinition )*
+  'ALTER' 'ENCRYPT' 'RULE' encryptDefinition (',' encryptDefinition)*
 
 encryptDefinition ::=
-  ruleName '(' 'COLUMNS' '(' columnDefinition ( ',' columnDefinition )*  ')' ( ',' 'QUERY_WITH_CIPHER_COLUMN' '=' ( 'TRUE' | 'FALSE' ) )? ')'
+  ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' (',' 'QUERY_WITH_CIPHER_COLUMN' '=' ('TRUE' | 'FALSE'))? ')'
 
 columnDefinition ::=
-  '(' 'NAME' '=' columnName ( ',' 'PLAIN' '=' plainColumnName )? ',' 'CIPHER' '=' cipherColumnName ( ',' 'ASSISTED_QUERY_COLUMN' '=' assistedQueryColumnName )? ( ',' 'LIKE_QUERY_COLUMN' '=' likeQueryColumnName )? ',' encryptAlgorithmDefinition ( ',' assistedQueryAlgorithmDefinition )? ( ',' likeQueryAlgorithmDefinition )? ')' 
+  '(' 'NAME' '=' columnName (',' 'PLAIN' '=' plainColumnName)? ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY_COLUMN' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY_COLUMN' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
 
 encryptAlgorithmDefinition ::=
-  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' propertiesDefinition )? ')'
+  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
 
 assistedQueryAlgorithmDefinition ::=
-  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' propertiesDefinition )? ')'
+  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
 
 likeQueryAlgorithmDefinition ::=
-  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' propertiesDefinition )? ')'
+  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
 
 propertiesDefinition ::=
-  'PROPERTIES' '(' property ( ',' property )* ')'
-
-property ::=
-  key '=' value
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 tableName ::=
   identifier

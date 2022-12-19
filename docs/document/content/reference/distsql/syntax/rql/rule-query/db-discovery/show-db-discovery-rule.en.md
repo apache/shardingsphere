@@ -9,7 +9,7 @@ The `SHOW DB_DISCOVERY RULES` syntax is used to query database discovery rules f
 
 ### Syntax
 
-```
+```sql
 ShowDatabaseDiscoveryRule::=
   'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
 

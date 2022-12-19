@@ -25,6 +25,7 @@ import org.apache.shardingsphere.agent.core.spi.AgentSPIRegistry;
 import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -66,8 +67,10 @@ public final class PluginBootServiceManager {
     
     /**
      * Close all services.
+     * 
+     * @param pluginJars plugin jars
      */
-    public static void closeAllServices() {
+    public static void closeAllServices(final Collection<PluginJar> pluginJars) {
         AgentSPIRegistry.getAllRegisteredServices(PluginBootService.class).forEach(each -> {
             try {
                 each.close();
@@ -77,7 +80,7 @@ public final class PluginBootServiceManager {
                 LOGGER.error("Failed to close service.", ex);
             }
         });
-        PluginJarHolder.getPluginJars().forEach(each -> {
+        pluginJars.forEach(each -> {
             try {
                 each.getJarFile().close();
             } catch (final IOException ex) {

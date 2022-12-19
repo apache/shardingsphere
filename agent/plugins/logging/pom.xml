@@ -33,18 +33,15 @@
     </modules>
     
     <properties>
-        <logging.target.directory>${project.basedir}/../target/plugins</logging.target.directory>
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
     </properties>
     
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${logging.target.directory}/${project.build.finalName}.jar</outputFile>
+                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>

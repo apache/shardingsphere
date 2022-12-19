@@ -9,7 +9,7 @@ weight = 3
 
 ### 语法
 
-```
+```sql
 ShowSingleTable::=
   'SHOW' 'SINGLE' ('TABLES' ('LIKE' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
 

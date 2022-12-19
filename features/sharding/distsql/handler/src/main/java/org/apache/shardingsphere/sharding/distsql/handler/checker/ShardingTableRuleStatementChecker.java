@@ -304,9 +304,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static boolean isInvalidStrategy(final ShardingStrategySegment shardingStrategySegment) {
-        return !ShardingStrategyType.contains(shardingStrategySegment.getType())
-                || !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn())
-                || null == shardingStrategySegment.getShardingAlgorithm();
+        return !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn()) || null == shardingStrategySegment.getShardingAlgorithm();
     }
     
     private static Map<String, List<AbstractTableRuleSegment>> groupingByClassType(final Collection<AbstractTableRuleSegment> rules) {

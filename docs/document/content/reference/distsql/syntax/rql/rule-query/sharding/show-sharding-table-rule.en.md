@@ -9,7 +9,7 @@ The `SHOW SHARDING TABLE RULE` syntax is used to query the sharding table rule i
 
 ### Syntax
 
-```
+```sql
 ShowShardingTableRule ::=
   'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 

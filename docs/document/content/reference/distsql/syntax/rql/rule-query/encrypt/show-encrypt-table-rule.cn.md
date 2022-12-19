@@ -9,9 +9,9 @@ weight = 3
 
 ### 语法
 
-```
+```sql
 ShowEncryptTableRule::=
-  'SHOW' 'ENCRYPT' 'TABLE' 'RULE' tabeName('FROM' databaseName)?
+  'SHOW' 'ENCRYPT' 'TABLE' 'RULE' tabeName ('FROM' databaseName)?
 
 tableName ::=
   identifier

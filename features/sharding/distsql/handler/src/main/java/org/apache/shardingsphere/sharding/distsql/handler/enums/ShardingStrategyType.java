@@ -164,7 +164,7 @@ public enum ShardingStrategyType {
         try {
             return valueOf(name.toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            throw new UnsupportedSQLOperationException(String.format("unsupported strategy type %s", name));
+            throw new UnsupportedSQLOperationException(String.format("unsupported strategy type `%s`", name));
         }
     }
     

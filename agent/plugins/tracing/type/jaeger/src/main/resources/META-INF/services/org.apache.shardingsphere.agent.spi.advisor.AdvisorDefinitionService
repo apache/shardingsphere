@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition.JaegerAdvisorDefinitionService
+org.apache.shardingsphere.agent.plugin.tracing.jaeger.JaegerAdvisorDefinitionService

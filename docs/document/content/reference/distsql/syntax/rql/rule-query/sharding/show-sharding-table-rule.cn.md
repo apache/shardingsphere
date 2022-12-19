@@ -9,7 +9,7 @@ weight = 2
 
 ### 语法
 
-```
+```sql
 ShowShardingTableRule ::=
   'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 

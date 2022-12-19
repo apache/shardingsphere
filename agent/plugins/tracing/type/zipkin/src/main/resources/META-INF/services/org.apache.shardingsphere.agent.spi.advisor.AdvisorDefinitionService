@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition.ZipkinAdvisorDefinitionService
+org.apache.shardingsphere.agent.plugin.tracing.zipkin.ZipkinAdvisorDefinitionService

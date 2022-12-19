@@ -11,7 +11,7 @@ The `SET READWRITE_SPLITTING HINT SOURCE` syntax is used to set readwrite splitt
 
 ```sql
 SetReadwriteSplittingHintSource ::=
-  'SET' 'READWRITE_SPLITTING' 'HINT' 'SOURCE' '='('auto'|'write')
+  'SET' 'READWRITE_SPLITTING' 'HINT' 'SOURCE' '='('auto' | 'write')
 ```
 
 ### Example
