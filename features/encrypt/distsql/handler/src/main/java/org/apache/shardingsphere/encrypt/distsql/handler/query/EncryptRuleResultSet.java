@@ -72,7 +72,7 @@ public final class EncryptRuleResultSet implements DatabaseDistSQLResultSet {
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
                     Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : likeQueryEncryptorAlgorithmConfig.getType(),
                     Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()),
-                    getQueryWithCipherColumn(queryWithCipherColumn, tableRuleConfig, each).toString()));
+                    isQueryWithCipherColumn(queryWithCipherColumn, tableRuleConfig, each).toString()));
         });
         return result;
     }
@@ -81,7 +81,7 @@ public final class EncryptRuleResultSet implements DatabaseDistSQLResultSet {
         return null == obj ? "" : obj;
     }
     
-    private Boolean getQueryWithCipherColumn(final boolean queryWithCipherColumn, final EncryptTableRuleConfiguration tableRuleConfig, final EncryptColumnRuleConfiguration columnRuleConfig) {
+    private Boolean isQueryWithCipherColumn(final boolean queryWithCipherColumn, final EncryptTableRuleConfiguration tableRuleConfig, final EncryptColumnRuleConfiguration columnRuleConfig) {
         if (Objects.nonNull(columnRuleConfig.getQueryWithCipherColumn())) {
             return columnRuleConfig.getQueryWithCipherColumn();
         }
