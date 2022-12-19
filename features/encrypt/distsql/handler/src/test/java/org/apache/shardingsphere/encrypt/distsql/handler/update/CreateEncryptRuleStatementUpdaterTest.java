@@ -59,7 +59,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
                 new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()));
+                new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()), null);
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
         updater.checkSQLStatement(database, statement, null);
@@ -69,7 +69,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()),
-                new AlgorithmSegment(encryptorName, new Properties()));
+                new AlgorithmSegment(encryptorName, new Properties()), null);
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         return new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
     }
