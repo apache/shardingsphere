@@ -68,7 +68,7 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
     }
     
     @Override
-    public Builder<?> create(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
+    public Builder<?> buildAdvisor(final Builder<?> builder, final MethodAdvisor methodAdvisor) {
         return builder.constructor(ElementMatchers.is(methodAdvisor.getPointcut()))
                 .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(methodAdvisor.getAdviceExecutor())));
     }

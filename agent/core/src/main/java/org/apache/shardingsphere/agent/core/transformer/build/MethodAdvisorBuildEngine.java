@@ -60,7 +60,7 @@ public final class MethodAdvisorBuildEngine {
         Builder<?> result = builder;
         for (MethodAdvisor each : getMatchedMethodAdvisors()) {
             try {
-                result = each.getAdviceExecutor().create(result, each);
+                result = each.getAdviceExecutor().buildAdvisor(result, each);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON

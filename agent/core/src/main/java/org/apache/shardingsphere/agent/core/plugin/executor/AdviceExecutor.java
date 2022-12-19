@@ -26,11 +26,11 @@ import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
 public interface AdviceExecutor {
     
     /**
-     * Create method advisor builder.
+     * Build method advisor.
      *
      * @param builder original builder
      * @param methodAdvisor method advisor
-     * @return created builder
+     * @return built builder
      */
-    Builder<?> create(Builder<?> builder, MethodAdvisor methodAdvisor);
+    Builder<?> buildAdvisor(Builder<?> builder, MethodAdvisor methodAdvisor);
 }
