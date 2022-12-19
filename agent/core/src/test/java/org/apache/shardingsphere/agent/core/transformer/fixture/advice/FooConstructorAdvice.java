@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.advice;
+package org.apache.shardingsphere.agent.core.transformer.fixture.advice;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 
 import java.util.List;
-import java.util.Optional;
 
-@RequiredArgsConstructor
-public final class MockConstructorAdvice implements ConstructorAdvice {
-    
-    private final List<String> queues;
-    
-    public MockConstructorAdvice() {
-        this(null);
-    }
+public final class FooConstructorAdvice implements ConstructorAdvice {
     
     @Override
     @SuppressWarnings("unchecked")
     public void onConstructor(final TargetAdviceObject target, final Object[] args) {
-        if (null != args && args.length > 0) {
-            List<String> list = Optional.ofNullable(queues).orElse((List<String>) args[0]);
-            list.add("on constructor");
-        }
+        ((List<String>) args[0]).add("advice constructor");
     }
 }

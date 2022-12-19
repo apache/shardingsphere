@@ -27,12 +27,12 @@ import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
-import org.apache.shardingsphere.agent.core.fixture.advice.MockConstructorAdvice;
-import org.apache.shardingsphere.agent.core.fixture.advice.MockInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.fixture.advice.MockInstanceMethodRepeatedAdvice;
-import org.apache.shardingsphere.agent.core.fixture.advice.MockStaticMethodAdvice;
-import org.apache.shardingsphere.agent.core.fixture.targeted.Material;
-import org.apache.shardingsphere.agent.core.fixture.targeted.RepeatedAdviceMaterial;
+import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooConstructorAdvice;
+import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooInstanceMethodAdvice;
+import org.apache.shardingsphere.agent.core.transformer.fixture.advice.BarInstanceMethodAdvice;
+import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooStaticMethodAdvice;
+import org.apache.shardingsphere.agent.core.transformer.fixture.targeted.FooTargetObjectFixture;
+import org.apache.shardingsphere.agent.core.transformer.fixture.targeted.BarTargetObjectFixture;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -75,42 +75,42 @@ public final class AgentTransformerTest {
     }
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.Material");
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), MockConstructorAdvice.class.getTypeName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticMock"), MockStaticMethodAdvice.class.getTypeName()));
+        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.FooTargetObjectFixture");
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooConstructorAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), FooInstanceMethodAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticMock"), FooStaticMethodAdvice.class.getTypeName()));
         return result;
     }
     
     private static AdvisorConfiguration createAdvisorConfigurationInTwice() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.RepeatedAdviceMaterial");
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodAdvice.class.getTypeName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), MockInstanceMethodRepeatedAdvice.class.getTypeName()));
+        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.BarTargetObjectFixture");
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), FooInstanceMethodAdvice.class.getTypeName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), BarInstanceMethodAdvice.class.getTypeName()));
         return result;
     }
     
     @Test
     public void assertInstanceMethod() {
-        assertThat(new Material().mock(queue), is("invocation"));
+        assertThat(new FooTargetObjectFixture().mock(queue), is("invocation"));
         assertArrayEquals(new String[]{"before", "on", "after"}, queue.toArray());
     }
     
     @Test
     public void assertInstanceMethodInRepeatedAdvice() {
-        assertThat(new RepeatedAdviceMaterial().mock(queue), is("invocation"));
+        assertThat(new BarTargetObjectFixture().mock(queue), is("invocation"));
         assertArrayEquals(new String[]{"before", "twice_before", "on", "after", "twice_after"}, queue.toArray());
     }
     
     @Test
     public void assertStaticMethod() {
-        assertThat(Material.staticMock(queue), is("static invocation"));
+        assertThat(FooTargetObjectFixture.staticMock(queue), is("static invocation"));
         assertArrayEquals(new String[]{"before", "on", "after"}, queue.toArray());
     }
     
     @Test
     public void assertConstructor() {
-        new Material(queue);
-        assertArrayEquals(new String[]{"constructor", "on constructor"}, queue.toArray());
+        new FooTargetObjectFixture(queue);
+        assertArrayEquals(new String[]{"constructor", "advice constructor"}, queue.toArray());
     }
     
     @After

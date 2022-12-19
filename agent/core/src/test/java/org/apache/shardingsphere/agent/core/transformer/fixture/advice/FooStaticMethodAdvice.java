@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.advice;
+package org.apache.shardingsphere.agent.core.transformer.fixture.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
@@ -26,11 +26,11 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public final class MockStaticMethodAdvice implements StaticMethodAdvice {
+public final class FooStaticMethodAdvice implements StaticMethodAdvice {
     
     private final boolean rebase;
     
-    public MockStaticMethodAdvice() {
+    public FooStaticMethodAdvice() {
         this(false);
     }
     

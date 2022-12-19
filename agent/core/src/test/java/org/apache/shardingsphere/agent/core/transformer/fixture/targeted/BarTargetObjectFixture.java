@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.targeted;
-
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.agent.core.transformer.fixture.targeted;
 
 import java.util.List;
 
-@NoArgsConstructor
-public final class ConstructorMaterial {
+public final class BarTargetObjectFixture {
     
-    public ConstructorMaterial(final List<String> queue) {
-        queue.add("constructor");
+    /**
+     * Mock method for testing.
+     *
+     * @param queue queue
+     * @return result
+     */
+    public String mock(final List<String> queue) {
+        queue.add("on");
+        return "invocation";
     }
 }

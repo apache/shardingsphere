@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.targeted;
+package org.apache.shardingsphere.agent.core.transformer.fixture.targeted;
 
-import java.io.IOException;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
-public class InstanceMaterial {
+@NoArgsConstructor
+public final class FooTargetObjectFixture {
+    
+    public FooTargetObjectFixture(final List<String> queue) {
+        queue.add("constructor");
+    }
     
     /**
      * Mock method for testing.
@@ -34,12 +40,13 @@ public class InstanceMaterial {
     }
     
     /**
-     * Mock method for testing with exception.
+     * Mock static method for testing.
      *
      * @param queue queue
-     * @throws IOException IO Exception
+     * @return result
      */
-    public void mockWithException(final List<String> queue) throws IOException {
-        throw new IOException();
+    public static String staticMock(final List<String> queue) {
+        queue.add("on");
+        return "static invocation";
     }
 }

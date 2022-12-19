@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.advice;
+package org.apache.shardingsphere.agent.core.transformer.fixture.advice;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
@@ -24,24 +25,34 @@ import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import java.lang.reflect.Method;
 import java.util.List;
 
+@RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public final class MockInstanceMethodRepeatedAdvice implements InstanceMethodAdvice {
+public final class FooInstanceMethodAdvice implements InstanceMethodAdvice {
+    
+    private final boolean rebase;
+    
+    public FooInstanceMethodAdvice() {
+        this(false);
+    }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         List<String> queues = (List<String>) args[0];
-        queues.add("twice_before");
+        queues.add("before");
+        if (rebase) {
+            invocationResult.rebase("rebase invocation method");
+        }
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         List<String> queues = (List<String>) args[0];
-        queues.add("twice_after");
+        queues.add("after");
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
         List<String> queues = (List<String>) args[0];
-        queues.add("twice_exception");
+        queues.add("exception");
     }
 }
