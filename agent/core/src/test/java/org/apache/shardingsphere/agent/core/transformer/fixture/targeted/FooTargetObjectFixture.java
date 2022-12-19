@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.targeted;
+package org.apache.shardingsphere.agent.core.transformer.fixture.targeted;
 
 import lombok.NoArgsConstructor;
 

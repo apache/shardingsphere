@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.fixture.targeted;
+package org.apache.shardingsphere.agent.core.transformer.fixture.advice;
+
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 
 import java.util.List;
 
-public final class BarTargetObjectFixture {
+public final class FooConstructorAdvice implements ConstructorAdvice {
     
-    /**
-     * Mock method for testing.
-     *
-     * @param queue queue
-     * @return result
-     */
-    public String mock(final List<String> queue) {
-        queue.add("on");
-        return "invocation";
+    @Override
+    @SuppressWarnings("unchecked")
+    public void onConstructor(final TargetAdviceObject target, final Object[] args) {
+        ((List<String>) args[0]).add("advice constructor");
     }
 }
