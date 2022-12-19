@@ -121,7 +121,7 @@ public final class RefreshTableMetaDataHandlerTest extends ProxyContextRestorer 
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getDefaultValue());
+        result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getDefaultValue());
         return result;
     }
 }

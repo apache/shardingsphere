@@ -34,8 +34,5 @@
         <module>mysql</module>
         <module>postgresql</module>
         <module>opengauss</module>
-        <module>reactive-core</module>
-        <module>reactive-mysql</module>
-        <module>reactive-spi</module>
     </modules>
 </project>

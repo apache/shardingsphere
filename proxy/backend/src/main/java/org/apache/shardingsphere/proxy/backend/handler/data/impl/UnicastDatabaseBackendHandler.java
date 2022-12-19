@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 
-import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
@@ -51,19 +50,6 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     private final ConnectionSession connectionSession;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
-    
-    @Override
-    public Future<ResponseHeader> executeFuture() {
-        String originDatabase = connectionSession.getDatabaseName();
-        String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).containsDataSource(), () -> new StorageUnitNotExistedException(databaseName));
-        connectionSession.setCurrentDatabase(databaseName);
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(queryContext, connectionSession.getBackendConnection(), false);
-        return databaseCommunicationEngine.executeFuture().eventually(unused -> {
-            connectionSession.setCurrentDatabase(databaseName);
-            return Future.succeededFuture();
-        });
-    }
     
     @Override
     public ResponseHeader execute() throws SQLException {

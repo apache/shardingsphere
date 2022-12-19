@@ -77,7 +77,6 @@
         <activation-api.version>1.2.0</activation-api.version>
         
         <calcite.version>1.32.0</calcite.version>
-        <vertx.version>4.3.3</vertx.version>
         <netty.version>4.1.86.Final</netty.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
@@ -251,11 +250,6 @@
                 <groupId>org.apache.calcite</groupId>
                 <artifactId>calcite-core</artifactId>
                 <version>${calcite.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.vertx</groupId>
-                <artifactId>vertx-mysql-client</artifactId>
-                <version>${vertx.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>

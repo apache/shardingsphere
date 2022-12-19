@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
+public final class OKProxyStateTest extends ProxyContextRestorer {
     
     @Mock
     private ChannelHandlerContext context;
@@ -71,7 +71,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     public void assertExecuteWithProxyHintEnabled() {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
-        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
     }
@@ -81,7 +81,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         ExecutorService executorService = registerMockExecutorService(1);
-        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
     }
@@ -93,7 +93,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
                 .getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLTP);
         EventExecutor eventExecutor = mock(EventExecutor.class);
         when(context.executor()).thenReturn(eventExecutor);
-        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(eventExecutor).execute(any(CommandExecutorTask.class));
     }
     
@@ -104,7 +104,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
                 .getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLAP);
         when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection(null)).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
-        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
+        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
     }

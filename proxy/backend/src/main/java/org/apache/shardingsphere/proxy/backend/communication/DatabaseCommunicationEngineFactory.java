@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
@@ -59,15 +57,10 @@ public final class DatabaseCommunicationEngineFactory {
                                                                                     final boolean preferPreparedStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
         T result;
-        if (backendConnection instanceof JDBCBackendConnection) {
-            JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
-            String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-            result = (T) new JDBCDatabaseCommunicationEngine(driverType, database, queryContext, jdbcBackendConnection);
-            jdbcBackendConnection.add(result);
-        } else {
-            VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
-            result = (T) new VertxDatabaseCommunicationEngine(database, queryContext, vertxBackendConnection);
-        }
+        JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
+        String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
+        result = (T) new JDBCDatabaseCommunicationEngine(driverType, database, queryContext, jdbcBackendConnection);
+        jdbcBackendConnection.add(result);
         return result;
     }
 }
