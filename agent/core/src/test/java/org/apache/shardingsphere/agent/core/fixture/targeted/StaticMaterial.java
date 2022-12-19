@@ -25,21 +25,21 @@ public final class StaticMaterial {
     /**
      * Mock static method for testing.
      *
-     * @param queues queues
+     * @param queue queue
      * @return result
      */
-    public static String staticMock(final List<String> queues) {
-        queues.add("on");
+    public static String staticMock(final List<String> queue) {
+        queue.add("on");
         return "static invocation";
     }
     
     /**
      * Mock static method for testing with exception.
      *
-     * @param queues queues
+     * @param queue queue
      * @throws IOException IO Exception
      */
-    public static void staticMockWithException(final List<String> queues) throws IOException {
+    public static void staticMockWithException(final List<String> queue) throws IOException {
         throw new IOException();
     }
 }

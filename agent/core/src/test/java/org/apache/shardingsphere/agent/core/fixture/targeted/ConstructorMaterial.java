@@ -24,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 public final class ConstructorMaterial {
     
-    public ConstructorMaterial(final List<String> queues) {
-        queues.add("constructor");
+    public ConstructorMaterial(final List<String> queue) {
+        queue.add("constructor");
     }
 }
