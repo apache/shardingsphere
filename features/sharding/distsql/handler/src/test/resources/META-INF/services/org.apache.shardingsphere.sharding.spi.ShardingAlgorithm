@@ -20,3 +20,4 @@ org.apache.shardingsphere.sharding.distsql.fixture.sharding.BarDistSQLShardingAl
 org.apache.shardingsphere.sharding.distsql.fixture.sharding.HintInlineShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.distsql.fixture.sharding.InlineShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.distsql.fixture.sharding.ModShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.distsql.fixture.sharding.CoreStandardShardingAlgorithmFixture
