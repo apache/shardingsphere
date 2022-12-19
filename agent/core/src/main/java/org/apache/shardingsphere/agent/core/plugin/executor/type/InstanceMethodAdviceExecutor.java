@@ -123,7 +123,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     }
     
     @Override
-    public Builder<?> buildAdvisor(final Builder<?> builder, final MethodDescription pointcut) {
+    public Builder<?> decorateBuilder(final Builder<?> builder, final MethodDescription pointcut) {
         return builder.method(ElementMatchers.is(pointcut)).intercept(MethodDelegation.withDefaultConfiguration().to(this));
     }
 }

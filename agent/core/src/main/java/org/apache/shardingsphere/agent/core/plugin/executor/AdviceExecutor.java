@@ -26,11 +26,11 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 public interface AdviceExecutor {
     
     /**
-     * Build method advisor.
+     * Decorate advice builder.
      *
      * @param builder original builder
      * @param pointcut method pointcut
-     * @return built builder
+     * @return decorated builder
      */
-    Builder<?> buildAdvisor(Builder<?> builder, MethodDescription pointcut);
+    Builder<?> decorateBuilder(Builder<?> builder, MethodDescription pointcut);
 }
