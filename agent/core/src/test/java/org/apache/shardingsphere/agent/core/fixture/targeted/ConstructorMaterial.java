@@ -15,40 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.material;
+package org.apache.shardingsphere.agent.core.fixture.targeted;
 
-import java.util.List;
 import lombok.NoArgsConstructor;
 
-/**
- * Have to redefine this class dynamic, so never add `final` modifier.
- */
+import java.util.List;
+
 @NoArgsConstructor
-public class Material {
+public final class ConstructorMaterial {
     
-    public Material(final List<String> queues) {
+    public ConstructorMaterial(final List<String> queues) {
         queues.add("constructor");
-    }
-    
-    /**
-     * Mock method for testing.
-     *
-     * @param queues queues
-     * @return result
-     */
-    public String mock(final List<String> queues) {
-        queues.add("on");
-        return "invocation";
-    }
-    
-    /**
-     * Mock static method for testing.
-     *
-     * @param queues queues
-     * @return result
-     */
-    public static String staticMock(final List<String> queues) {
-        queues.add("on");
-        return "static invocation";
     }
 }

@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.material;
+package org.apache.shardingsphere.agent.core.fixture.targeted;
 
-import lombok.NoArgsConstructor;
-
+import java.io.IOException;
 import java.util.List;
 
-/**
- * Have to redefine this class dynamic, so never add `final` modifier.
- */
-@NoArgsConstructor
-public class RepeatedAdviceMaterial {
+public class InstanceMaterial {
     
     /**
      * Mock method for testing.
@@ -36,5 +31,15 @@ public class RepeatedAdviceMaterial {
     public String mock(final List<String> queues) {
         queues.add("on");
         return "invocation";
+    }
+    
+    /**
+     * Mock method for testing with exception.
+     *
+     * @param queues queues
+     * @throws IOException IO Exception
+     */
+    public void mockWithException(final List<String> queues) throws IOException {
+        throw new IOException();
     }
 }

@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.material;
+package org.apache.shardingsphere.agent.core.fixture.targeted;
 
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Have to redefine this class dynamic, so never add `final` modifier.
- */
-public class StaticMaterial {
+public final class StaticMaterial {
     
     /**
      * Mock static method for testing.

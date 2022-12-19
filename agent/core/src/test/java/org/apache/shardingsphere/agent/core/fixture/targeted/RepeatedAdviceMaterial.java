@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.core.fixture.targeted;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
 
-@RequiredArgsConstructor
-public final class MockConstructorAdvice implements ConstructorAdvice {
+@NoArgsConstructor
+public final class RepeatedAdviceMaterial {
     
-    private final List<String> queues;
-    
-    public MockConstructorAdvice() {
-        this(null);
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void onConstructor(final TargetAdviceObject target, final Object[] args) {
-        if (null != args && args.length > 0) {
-            List<String> list = Optional.ofNullable(queues).orElse((List<String>) args[0]);
-            list.add("on constructor");
-        }
+    /**
+     * Mock method for testing.
+     *
+     * @param queues queues
+     * @return result
+     */
+    public String mock(final List<String> queues) {
+        queues.add("on");
+        return "invocation";
     }
 }

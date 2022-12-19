@@ -28,8 +28,8 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
+import org.apache.shardingsphere.agent.core.fixture.advice.MockInstanceMethodAdvice;
+import org.apache.shardingsphere.agent.core.fixture.targeted.InstanceMaterial;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.InstanceMethodAdviceExecutor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -55,7 +55,7 @@ public final class InstanceMethodAdviceExecutorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial";
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.fixture.targeted.InstanceMaterial";
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     
