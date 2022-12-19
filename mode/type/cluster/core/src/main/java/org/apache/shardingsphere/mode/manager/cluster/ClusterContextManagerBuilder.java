@@ -49,9 +49,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         persistConfigurations(persistService, param);
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), param.getInstanceMetaData(), param.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, param);
-        ClusterPersistRepository persistRepository = registryCenter.getRepository();
-        if (persistRepository instanceof InstanceContextAware) {
-            ((InstanceContextAware) persistRepository).setInstanceContext(instanceContext);
+        if (registryCenter.getRepository() instanceof InstanceContextAware) {
+            ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
         }
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
         persistMetaData(metaDataContexts);
