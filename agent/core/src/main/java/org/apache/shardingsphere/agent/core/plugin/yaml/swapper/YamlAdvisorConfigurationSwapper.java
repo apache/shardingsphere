@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
@@ -26,9 +28,8 @@ import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfi
 /**
  * YAML advisor configuration swapper.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlAdvisorConfigurationSwapper {
-    
-    private final YamlPointcutConfigurationSwapper pointcutConfigurationSwapper = new YamlPointcutConfigurationSwapper();
     
     /**
      * Swap from YAML advisor configuration to advisors configuration.
@@ -37,10 +38,10 @@ public final class YamlAdvisorConfigurationSwapper {
      * @param type type
      * @return advisor configuration
      */
-    public AdvisorConfiguration swapToObject(final YamlAdvisorConfiguration yamlAdvisorConfig, final String type) {
+    public static AdvisorConfiguration swapToObject(final YamlAdvisorConfiguration yamlAdvisorConfig, final String type) {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
         for (YamlPointcutConfiguration each : yamlAdvisorConfig.getPointcuts()) {
-            pointcutConfigurationSwapper.swapToObject(each).ifPresent(elementMatcher -> result.getAdvisors().add(new MethodAdvisorConfiguration(elementMatcher, yamlAdvisorConfig.getAdvice())));
+            YamlPointcutConfigurationSwapper.swapToObject(each).ifPresent(elementMatcher -> result.getAdvisors().add(new MethodAdvisorConfiguration(elementMatcher, yamlAdvisorConfig.getAdvice())));
         }
         return result;
     }

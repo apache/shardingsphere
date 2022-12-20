@@ -40,10 +40,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
     
-    private static final YamlAdvisorsConfigurationLoader LOADER = new YamlAdvisorsConfigurationLoader();
-    
-    private static final YamlAdvisorsConfigurationSwapper SWAPPER = new YamlAdvisorsConfigurationSwapper();
-    
     /**
      * Load advisor configurations.
      * 
@@ -58,7 +54,8 @@ public final class AdvisorConfigurationLoader {
         for (PluginBootService each : PluginServiceLoader.newServiceInstances(PluginBootService.class, AgentClassLoader.getClassLoader())) {
             if (pluginTypes.contains(each.getType())) {
                 String resourceFile = String.join("/", "", each.getType().toLowerCase(), (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml");
-                Collection<AdvisorConfiguration> advisorConfigs = SWAPPER.swapToObject(LOADER.load(each.getClass().getResourceAsStream(resourceFile)), each.getType());
+                Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper.swapToObject(
+                        YamlAdvisorsConfigurationLoader.load(each.getClass().getResourceAsStream(resourceFile)), each.getType());
                 result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
             }
         }

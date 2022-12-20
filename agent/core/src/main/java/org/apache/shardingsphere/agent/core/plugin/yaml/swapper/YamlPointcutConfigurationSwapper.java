@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
@@ -29,6 +31,7 @@ import java.util.Optional;
 /**
  * YAML pointcut configuration swapper.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlPointcutConfigurationSwapper {
     
     /**
@@ -37,7 +40,7 @@ public final class YamlPointcutConfigurationSwapper {
      * @param yamlPointcutConfig YAML pointcut configuration
      * @return pointcut
      */
-    public Optional<ElementMatcher<? super MethodDescription>> swapToObject(final YamlPointcutConfiguration yamlPointcutConfig) {
+    public static Optional<ElementMatcher<? super MethodDescription>> swapToObject(final YamlPointcutConfiguration yamlPointcutConfig) {
         if ("constructor".equals(yamlPointcutConfig.getType())) {
             return Optional.of(appendParameters(yamlPointcutConfig, ElementMatchers.isConstructor()));
         }
@@ -47,7 +50,7 @@ public final class YamlPointcutConfigurationSwapper {
         return Optional.empty();
     }
     
-    private ElementMatcher<? super MethodDescription> appendParameters(final YamlPointcutConfiguration yamlPointcutConfig, final Junction<? super MethodDescription> pointcut) {
+    private static ElementMatcher<? super MethodDescription> appendParameters(final YamlPointcutConfiguration yamlPointcutConfig, final Junction<? super MethodDescription> pointcut) {
         Junction<? super MethodDescription> result = pointcut;
         for (YamlPointcutParameterConfiguration each : yamlPointcutConfig.getParams()) {
             result = result.and(ElementMatchers.takesArgument(each.getIndex(), ElementMatchers.named(each.getName())));

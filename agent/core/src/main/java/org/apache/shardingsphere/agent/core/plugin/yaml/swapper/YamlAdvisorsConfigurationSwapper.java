@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
@@ -27,9 +29,8 @@ import java.util.LinkedList;
 /**
  * YAML advisors configuration swapper.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlAdvisorsConfigurationSwapper {
-    
-    private final YamlAdvisorConfigurationSwapper advisorConfigurationSwapper = new YamlAdvisorConfigurationSwapper();
     
     /**
      * Swap from YAML advisors configuration to advisor configurations.
@@ -38,11 +39,11 @@ public final class YamlAdvisorsConfigurationSwapper {
      * @param type type
      * @return advisor configurations
      */
-    public Collection<AdvisorConfiguration> swapToObject(final YamlAdvisorsConfiguration yamlAdvisorsConfig, final String type) {
+    public static Collection<AdvisorConfiguration> swapToObject(final YamlAdvisorsConfiguration yamlAdvisorsConfig, final String type) {
         Collection<AdvisorConfiguration> result = new LinkedList<>();
         for (YamlAdvisorConfiguration each : yamlAdvisorsConfig.getAdvisors()) {
             if (null != each.getTarget()) {
-                result.add(advisorConfigurationSwapper.swapToObject(each, type));
+                result.add(YamlAdvisorConfigurationSwapper.swapToObject(each, type));
             }
         }
         return result;
