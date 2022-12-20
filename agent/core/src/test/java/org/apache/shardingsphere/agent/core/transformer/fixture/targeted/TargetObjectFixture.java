@@ -17,36 +17,47 @@
 
 package org.apache.shardingsphere.agent.core.transformer.fixture.targeted;
 
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 
-@NoArgsConstructor
-public final class FooTargetObjectFixture {
+public final class TargetObjectFixture {
     
-    public FooTargetObjectFixture(final List<String> queue) {
-        queue.add("constructor");
+    public TargetObjectFixture(final List<String> queue) {
+        queue.add("on constructor");
     }
     
     /**
-     * Mock method for testing.
+     * Call instance method.
      *
      * @param queue queue
-     * @return result
      */
-    public String mock(final List<String> queue) {
-        queue.add("on");
-        return "invocation";
+    public void callInstanceMethod(final List<String> queue) {
+        queue.add("on instance method");
     }
     
     /**
-     * Mock static method for testing.
+     * Call instance method when exception thrown.
      *
      * @param queue queue
-     * @return result
      */
-    public static String staticMock(final List<String> queue) {
-        queue.add("on");
-        return "static invocation";
+    public void callInstanceMethodWhenExceptionThrown(final List<String> queue) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Call static method.
+     *
+     * @param queue queue
+     */
+    public static void callStaticMethod(final List<String> queue) {
+        queue.add("on static method");
+    }
+    
+    /**
+     * Call static method when exception thrown.
+     *
+     * @param queue queue
+     */
+    public static void callStaticMethodWhenExceptionThrown(final List<String> queue) {
+        throw new UnsupportedOperationException();
     }
 }

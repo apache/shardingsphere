@@ -27,45 +27,35 @@ import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
-import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooConstructorAdvice;
-import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.transformer.fixture.advice.BarInstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooStaticMethodAdvice;
-import org.apache.shardingsphere.agent.core.transformer.fixture.targeted.FooTargetObjectFixture;
-import org.apache.shardingsphere.agent.core.transformer.fixture.targeted.BarTargetObjectFixture;
-import org.junit.After;
+import org.apache.shardingsphere.agent.core.transformer.fixture.advice.BarAdvice;
+import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooAdvice;
+import org.apache.shardingsphere.agent.core.transformer.fixture.targeted.TargetObjectFixture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
 
 public final class AgentTransformerTest {
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     
-    private final List<String> queue = new LinkedList<>();
-    
     @BeforeClass
     public static void setup() throws ReflectiveOperationException {
         ByteBuddyAgent.install();
         AgentClassLoader.init(Collections.emptyList());
-        Map<String, AdvisorConfiguration> advisorConfigs = new HashMap<>(2, 1);
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
-        advisorConfigs.put(advisorConfig.getTargetClassName(), advisorConfig);
-        AdvisorConfiguration advisorConfigInTwice = createAdvisorConfigurationInTwice();
-        advisorConfigs.put(advisorConfigInTwice.getTargetClassName(), advisorConfigInTwice);
+        Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
-                        .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.fixture"))))
+                        .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.transformer.fixture"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
                 .type(new AgentJunction(advisorConfigs))
@@ -75,51 +65,65 @@ public final class AgentTransformerTest {
     }
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.FooTargetObjectFixture");
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooConstructorAdvice.class.getTypeName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), FooInstanceMethodAdvice.class.getTypeName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticMock"), FooStaticMethodAdvice.class.getTypeName()));
+        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.transformer.fixture.targeted.TargetObjectFixture");
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethod"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethod"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethodWhenExceptionThrown"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethodWhenExceptionThrown"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethod"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethod"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethodWhenExceptionThrown"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethodWhenExceptionThrown"), BarAdvice.class.getName()));
         return result;
-    }
-    
-    private static AdvisorConfiguration createAdvisorConfigurationInTwice() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.fixture.targeted.BarTargetObjectFixture");
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), FooInstanceMethodAdvice.class.getTypeName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("mock"), BarInstanceMethodAdvice.class.getTypeName()));
-        return result;
-    }
-    
-    @Test
-    public void assertInstanceMethod() {
-        assertThat(new FooTargetObjectFixture().mock(queue), is("invocation"));
-        assertArrayEquals(new String[]{"before", "on", "after"}, queue.toArray());
-    }
-    
-    @Test
-    public void assertInstanceMethodInRepeatedAdvice() {
-        assertThat(new BarTargetObjectFixture().mock(queue), is("invocation"));
-        assertArrayEquals(new String[]{"before", "twice_before", "on", "after", "twice_after"}, queue.toArray());
-    }
-    
-    @Test
-    public void assertStaticMethod() {
-        assertThat(FooTargetObjectFixture.staticMock(queue), is("static invocation"));
-        assertArrayEquals(new String[]{"before", "on", "after"}, queue.toArray());
-    }
-    
-    @Test
-    public void assertConstructor() {
-        new FooTargetObjectFixture(queue);
-        assertArrayEquals(new String[]{"constructor", "advice constructor"}, queue.toArray());
-    }
-    
-    @After
-    public void cleanup() {
-        queue.clear();
     }
     
     @AfterClass
     public static void destroy() {
         byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+    }
+    
+    @Test
+    public void assertAdviceConstructor() {
+        List<String> queue = new LinkedList<>();
+        new TargetObjectFixture(queue);
+        assertThat(queue, is(Arrays.asList("on constructor", "foo constructor", "bar constructor")));
+    }
+    
+    @Test
+    public void assertAdviceInstanceMethod() {
+        List<String> queue = new LinkedList<>();
+        new TargetObjectFixture(new LinkedList<>()).callInstanceMethod(queue);
+        assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method", "on instance method", "foo after instance method", "bar after instance method")));
+    }
+    
+    @Test
+    public void assertAdviceInstanceMethodWhenExceptionThrown() {
+        List<String> queue = new LinkedList<>();
+        try {
+            new TargetObjectFixture(new LinkedList<>()).callInstanceMethodWhenExceptionThrown(queue);
+        } catch (final UnsupportedOperationException ignored) {
+        }
+        assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method",
+                "foo throw instance method exception", "bar throw instance method exception", "foo after instance method", "bar after instance method")));
+    }
+    
+    @Test
+    public void assertAdviceStaticMethod() {
+        List<String> queue = new LinkedList<>();
+        TargetObjectFixture.callStaticMethod(queue);
+        assertThat(queue, is(Arrays.asList("foo before static method", "bar before static method", "on static method", "foo after static method", "bar after static method")));
+    }
+    
+    @Test
+    public void assertAdviceStaticMethodWhenExceptionThrown() {
+        List<String> queue = new LinkedList<>();
+        try {
+            TargetObjectFixture.callStaticMethodWhenExceptionThrown(queue);
+        } catch (final UnsupportedOperationException ignored) {
+        }
+        assertThat(queue, is(Arrays.asList("foo before static method", "bar before static method",
+                "foo throw static method exception", "bar throw static method exception", "foo after static method", "bar after static method")));
     }
 }
