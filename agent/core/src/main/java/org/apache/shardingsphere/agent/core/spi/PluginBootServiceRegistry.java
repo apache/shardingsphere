@@ -19,37 +19,49 @@ package org.apache.shardingsphere.agent.core.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.spi.AgentSPI;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.ServiceLoader;
 
 /**
- *  Agent SPI registry.
+ *  Plugin boot service registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentSPIRegistry {
+public final class PluginBootServiceRegistry {
     
     /**
      * Get registered service.
      *
-     * @param typedSPIClass typed SPI class
      * @param type type
-     * @param <T> type of agent typed SPI
      * @return registered service
      */
-    public static <T extends AgentSPI> Optional<T> getRegisteredService(final Class<T> typedSPIClass, final String type) {
-        return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
+    public static Optional<PluginBootService> getRegisteredService(final String type) {
+        return AgentServiceLoader.getServiceLoader(PluginBootService.class).newServiceInstances().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
     }
     
     /**
      * Get all registered services.
      *
-     * @param typedSPIClass typed SPI class
-     * @param <T> type of agent typed SPI
      * @return registered services
      */
-    public static <T extends AgentSPI> Collection<T> getAllRegisteredServices(final Class<T> typedSPIClass) {
-        return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances();
+    public static Collection<PluginBootService> getAllRegisteredServices() {
+        return AgentServiceLoader.getServiceLoader(PluginBootService.class).newServiceInstances();
+    }
+    
+    /**
+     * Create new instances.
+     *
+     * @param classLoader class loader
+     * @return created instances
+     */
+    public static Collection<PluginBootService> newInstances(final ClassLoader classLoader) {
+        Collection<PluginBootService> result = new LinkedList<>();
+        for (PluginBootService each : ServiceLoader.load(PluginBootService.class, classLoader)) {
+            result.add(each);
+        }
+        return result;
     }
 }

@@ -23,7 +23,7 @@ import brave.sampler.RateLimitingSampler;
 import brave.sampler.Sampler;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.validator.RemotePluginConfigurationValidator;
-import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
