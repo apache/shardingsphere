@@ -29,5 +29,5 @@ public final class YamlPointcutParameterConfiguration {
     
     private int index;
     
-    private String type;
+    private String name;
 }

@@ -42,15 +42,19 @@ public final class YamlPointcutConfigurationSwapper {
             return Optional.of(appendParameters(yamlPointcutConfig, ElementMatchers.isConstructor()));
         }
         if ("method".equals(yamlPointcutConfig.getType())) {
-            return Optional.of(appendParameters(yamlPointcutConfig, ElementMatchers.namedOneOf(yamlPointcutConfig.getName())));
+            return Optional.of(appendParameters(yamlPointcutConfig, ElementMatchers.named(yamlPointcutConfig.getName())));
         }
         return Optional.empty();
     }
     
     private ElementMatcher<? super MethodDescription> appendParameters(final YamlPointcutConfiguration yamlPointcutConfig, final Junction<? super MethodDescription> pointcut) {
-        for (YamlPointcutParameterConfiguration each : yamlPointcutConfig.getParams()) {
-            pointcut.and(ElementMatchers.takesArgument(each.getIndex(), ElementMatchers.named(each.getType())));
+        if (yamlPointcutConfig.getParams().isEmpty()) {
+            return pointcut.and(ElementMatchers.takesNoArguments());
         }
-        return pointcut;
+        Junction<? super MethodDescription> result = pointcut;
+        for (YamlPointcutParameterConfiguration each : yamlPointcutConfig.getParams()) {
+            result = result.and(ElementMatchers.takesArgument(each.getIndex(), ElementMatchers.named(each.getName())));
+        }
+        return result;
     }
 }

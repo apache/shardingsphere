@@ -20,9 +20,7 @@ package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -32,16 +30,6 @@ import java.util.LinkedList;
 public final class YamlAdvisorsConfigurationSwapper {
     
     private final YamlAdvisorConfigurationSwapper advisorConfigurationSwapper = new YamlAdvisorConfigurationSwapper();
-    
-    /**
-     * Unmarshal advisors configuration.
-     * 
-     * @param inputStream input stream
-     * @return unmarshalled advisors configuration
-     */
-    public YamlAdvisorsConfiguration unmarshal(final InputStream inputStream) {
-        return new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
-    }
     
     /**
      * Swap from YAML advisors configuration to advisor configurations.
