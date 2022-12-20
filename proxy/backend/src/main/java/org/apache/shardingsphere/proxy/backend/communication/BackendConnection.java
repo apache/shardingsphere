@@ -60,7 +60,7 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
     
     private final Collection<ProxyBackendHandler> inUseBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<ConnectionPostProcessor<Connection>> connectionPostProcessors = new LinkedList<>();
+    private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
     private final ResourceLock resourceLock = new ResourceLock();
     
@@ -138,7 +138,7 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
     }
     
     private void replayMethodsInvocation(final Connection target) {
-        for (ConnectionPostProcessor<Connection> each : connectionPostProcessors) {
+        for (ConnectionPostProcessor each : connectionPostProcessors) {
             each.process(target);
         }
     }

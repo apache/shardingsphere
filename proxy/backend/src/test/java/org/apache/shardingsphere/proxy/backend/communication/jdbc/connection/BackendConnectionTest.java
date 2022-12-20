@@ -190,8 +190,8 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPostProcessors() {
-        ConnectionPostProcessor<?> connectionPostProcessor = mock(ConnectionPostProcessor.class);
-        Collection<ConnectionPostProcessor<?>> connectionPostProcessors = new LinkedList<>();
+        ConnectionPostProcessor connectionPostProcessor = mock(ConnectionPostProcessor.class);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
         connectionPostProcessors.add(connectionPostProcessor);
         Field field = BackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
@@ -347,7 +347,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     private void verifyConnectionPostProcessorsEmpty() {
         Field field = BackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        Collection<ConnectionPostProcessor<?>> connectionPostProcessors = (Collection<ConnectionPostProcessor<?>>) field.get(backendConnection);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
         assertTrue(connectionPostProcessors.isEmpty());
     }
     
