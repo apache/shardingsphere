@@ -39,7 +39,7 @@ public final class PluginBootServiceRegistry {
      * @return registered service
      */
     public static Optional<PluginBootService> getRegisteredService(final String type) {
-        return AgentServiceLoader.getServiceLoader(PluginBootService.class).newServiceInstances().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
+        return AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
     }
     
     /**
@@ -48,7 +48,7 @@ public final class PluginBootServiceRegistry {
      * @return registered services
      */
     public static Collection<PluginBootService> getAllRegisteredServices() {
-        return AgentServiceLoader.getServiceLoader(PluginBootService.class).newServiceInstances();
+        return AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices();
     }
     
     /**
