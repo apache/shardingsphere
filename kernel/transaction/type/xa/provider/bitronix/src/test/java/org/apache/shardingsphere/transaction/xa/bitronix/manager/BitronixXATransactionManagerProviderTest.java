@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.resource.ResourceRegistrar;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectionUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public final class BitronixXATransactionManagerProviderTest {
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
+        ReflectionUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
     }
     
     @Test

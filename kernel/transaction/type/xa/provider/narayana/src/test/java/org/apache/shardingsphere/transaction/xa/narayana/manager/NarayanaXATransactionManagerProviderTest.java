@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectionUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,9 +59,9 @@ public final class NarayanaXATransactionManagerProviderTest {
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setField(transactionManagerProvider, "xaRecoveryModule", xaRecoveryModule);
-        ReflectiveUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
-        ReflectiveUtil.setField(transactionManagerProvider, "recoveryManagerService", recoveryManagerService);
+        ReflectionUtil.setField(transactionManagerProvider, "xaRecoveryModule", xaRecoveryModule);
+        ReflectionUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
+        ReflectionUtil.setField(transactionManagerProvider, "recoveryManagerService", recoveryManagerService);
     }
     
     @Test

@@ -42,7 +42,7 @@ public final class ReflectionUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T getFieldValue(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getField(target.getClass(), fieldName, true);
+        Field field = getField(target.getClass(), fieldName);
         Object value = field.get(target);
         Preconditions.checkNotNull(value);
         if (valueClass.isAssignableFrom(value.getClass())) {
@@ -51,17 +51,8 @@ public final class ReflectionUtil {
         throw new ClassCastException("field " + fieldName + " is " + value.getClass().getName() + " can cast to " + valueClass.getName());
     }
     
-    /**
-     * Get field from class.
-     *
-     * @param targetClass target class
-     * @param fieldName field name
-     * @param isDeclared is declared
-     * @return {@link Field}
-     * @throws NoSuchFieldException no such field exception
-     */
-    public static Field getField(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field result = isDeclared ? targetClass.getDeclaredField(fieldName) : targetClass.getField(fieldName);
+    private static Field getField(final Class<?> targetClass, final String fieldName) throws NoSuchFieldException {
+        Field result = targetClass.getDeclaredField(fieldName);
         result.setAccessible(true);
         return result;
     }

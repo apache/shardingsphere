@@ -22,24 +22,23 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
- * Reflective utility.
+ * Reflection utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReflectiveUtil {
+public final class ReflectionUtil {
     
     /**
-     * Get field value.
-     *
+     * Set value to specified field.
+     * 
      * @param target target
      * @param fieldName field name
-     * @return field value
+     * @param value value
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Object getFieldValue(final Object target, final String fieldName) {
-        return getField(target.getClass(), fieldName).get(target);
+    public static void setField(final Object target, final String fieldName, final Object value) {
+        getField(target.getClass(), fieldName).set(target, value);
     }
     
     private static Field getField(final Class<?> target, final String fieldName) throws NoSuchFieldException {
@@ -54,32 +53,5 @@ public final class ReflectiveUtil {
             clazz = clazz.getSuperclass();
         }
         throw new NoSuchFieldException(String.format("Can not find field name `%s` in class %s.", fieldName, target));
-    }
-    
-    /**
-     * Set value to specified field.
-     * 
-     * @param target target
-     * @param fieldName field name
-     * @param value value
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void setField(final Object target, final String fieldName, final Object value) {
-        getField(target.getClass(), fieldName).set(target, value);
-    }
-    
-    /**
-     * Set value to specified static field.
-     *
-     * @param target target
-     * @param fieldName field name
-     * @param value value
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void setStaticField(final Class<?> target, final String fieldName, final Object value) {
-        Field field = getField(target, fieldName);
-        if (Modifier.isStatic(field.getModifiers())) {
-            field.set(null, value);
-        }
     }
 }

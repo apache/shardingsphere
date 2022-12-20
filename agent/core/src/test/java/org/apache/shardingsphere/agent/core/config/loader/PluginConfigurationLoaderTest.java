@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.config.loader;
 
 import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
+import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
 import org.junit.Test;
 
 import java.io.File;
@@ -35,7 +35,7 @@ public final class PluginConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
+        ReflectionUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
         assertNotNull(PluginConfigurationLoader.load());
     }
     

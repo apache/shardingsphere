@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
+import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
 import java.sql.DatabaseMetaData;
@@ -58,7 +58,7 @@ public class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
         spanBuilder.setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME);
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE);
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectiveUtil.getFieldValue(target, "storageTypes");
+        Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectionUtil.getFieldValue(target, "storageTypes");
         Method getMetaDataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class);
         getMetaDataMethod.setAccessible(true);
         DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target,
