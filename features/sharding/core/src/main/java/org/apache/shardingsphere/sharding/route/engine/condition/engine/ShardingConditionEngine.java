@@ -33,8 +33,8 @@ public interface ShardingConditionEngine<T extends SQLStatementContext<?>> exten
     /**
      * Initialize the sharding condition engine.
      *
-     * @param rule Sharding rule
-     * @param database Sharding database
+     * @param rule sharding rule
+     * @param database sharding database
      */
     void init(ShardingRule rule, ShardingSphereDatabase database);
     
