@@ -33,9 +33,9 @@ public interface PluginBootService extends AutoCloseable {
     void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
     
     /**
-     * Get type.
+     * Get plugin type.
      *
-     * @return type
+     * @return plugin type
      */
     String getType();
 }
