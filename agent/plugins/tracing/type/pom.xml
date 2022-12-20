@@ -39,14 +39,6 @@
         <target.directory>${project.basedir}/../../target/plugins</target.directory>
     </properties>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-tracing-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-    
     <build>
         <plugins>
             <plugin>

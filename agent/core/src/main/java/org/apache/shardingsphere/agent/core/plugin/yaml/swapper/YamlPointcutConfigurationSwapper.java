@@ -48,9 +48,6 @@ public final class YamlPointcutConfigurationSwapper {
     }
     
     private ElementMatcher<? super MethodDescription> appendParameters(final YamlPointcutConfiguration yamlPointcutConfig, final Junction<? super MethodDescription> pointcut) {
-        if (yamlPointcutConfig.getParams().isEmpty()) {
-            return pointcut.and(ElementMatchers.takesNoArguments());
-        }
         Junction<? super MethodDescription> result = pointcut;
         for (YamlPointcutParameterConfiguration each : yamlPointcutConfig.getParams()) {
             result = result.and(ElementMatchers.takesArgument(each.getIndex(), ElementMatchers.named(each.getName())));

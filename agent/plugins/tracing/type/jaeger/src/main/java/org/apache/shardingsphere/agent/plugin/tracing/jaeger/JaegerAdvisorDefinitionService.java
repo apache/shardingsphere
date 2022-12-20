@@ -18,28 +18,31 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
 
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingAdviceEngine;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.CommandExecutorTaskAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.JDBCExecutorCallbackAdvice;
+import org.apache.shardingsphere.agent.core.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
+import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Jaeger advisor definition service.
  */
 public final class JaegerAdvisorDefinitionService implements AdvisorDefinitionService {
     
-    private final TracingAdviceEngine engine = new TracingAdviceEngine(getType());
+    private final YamlAdvisorsConfigurationLoader loader = new YamlAdvisorsConfigurationLoader();
+    
+    private final YamlAdvisorsConfigurationSwapper swapper = new YamlAdvisorsConfigurationSwapper();
     
     @Override
     public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
-        return engine.getProxyAdvisorConfigurations(CommandExecutorTaskAdvice.class, CommandExecutorTaskAdvice.class, JDBCExecutorCallbackAdvice.class);
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/jaeger/advisors.yaml")), getType());
     }
     
     @Override
     public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
-        return engine.getJDBCAdvisorConfigurations();
+        // TODO add JDBC advisor
+        return Collections.emptyList();
     }
     
     @Override

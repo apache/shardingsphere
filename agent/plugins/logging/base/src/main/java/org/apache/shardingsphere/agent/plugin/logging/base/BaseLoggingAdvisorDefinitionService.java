@@ -17,44 +17,30 @@
 
 package org.apache.shardingsphere.agent.plugin.logging.base;
 
-import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
-import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
+import org.apache.shardingsphere.agent.core.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
+import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Base logging advisor definition service.
  */
 public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinitionService {
     
-    private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory";
+    private final YamlAdvisorsConfigurationLoader loader = new YamlAdvisorsConfigurationLoader();
     
-    private static final String SCHEMA_METADATA_LOADER_METHOD_NAME = "create";
-    
-    private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
+    private final YamlAdvisorsConfigurationSwapper swapper = new YamlAdvisorsConfigurationSwapper();
     
     @Override
     public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
-        return getAdvisorConfigurations();
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/baselogging/advisors.yaml")), getType());
     }
     
     @Override
     public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
-        return getAdvisorConfigurations();
-    }
-    
-    private Collection<AdvisorConfiguration> getAdvisorConfigurations() {
-        Collection<AdvisorConfiguration> result = new LinkedList<>();
-        AdvisorConfiguration advisorConfig = AdvisorConfigurationRegistryFactory.getRegistry(getType()).getAdvisorConfiguration(SCHEMA_METADATA_LOADER_CLASS);
-        advisorConfig.getAdvisors().add(
-                new MethodAdvisorConfiguration(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME).and(ElementMatchers.takesArguments(4)), SCHEMA_METADATA_LOADER_ADVICE_CLASS));
-        result.add(advisorConfig);
-        return result;
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/baselogging/advisors.yaml")), getType());
     }
     
     @Override
