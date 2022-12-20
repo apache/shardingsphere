@@ -41,7 +41,7 @@ public final class PrometheusAdvisorDefinitionService implements AdvisorDefiniti
     
     @Override
     public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
-        // TODO add JDBC related interceptors
+        // TODO add JDBC advisor
         return Collections.emptyList();
     }
     
