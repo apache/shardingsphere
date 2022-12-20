@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 /**
  * Open tracing plugin boot service.

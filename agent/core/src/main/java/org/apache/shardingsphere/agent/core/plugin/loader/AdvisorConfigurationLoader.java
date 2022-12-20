@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -47,7 +47,7 @@ public final class AdvisorConfigurationLoader {
      * @param pluginJars plugin jars
      * @param pluginTypes plugin types
      * @param isEnhancedForProxy is enhanced for proxy
-     * @return loaded advisor configurations
+     * @return loaded configurations
      */
     public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();

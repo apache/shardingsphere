@@ -17,14 +17,24 @@
 
 package org.apache.shardingsphere.agent.spi;
 
+import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+
 /**
- * Agent SPI.
+ * Plugin boot service that the lifecycle is from the agent start to shutdown.
  */
-public interface AgentSPI {
+public interface PluginBootService extends AutoCloseable {
+    
+    /**
+     * Start plugin boot service.
+     *
+     * @param pluginConfig plugin configuration
+     * @param isEnhancedForProxy is enhanced for proxy
+     */
+    void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
     
     /**
      * Get type.
-     * 
+     *
      * @return type
      */
     String getType();
