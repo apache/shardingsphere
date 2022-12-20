@@ -34,6 +34,7 @@ public final class YamlAdvisorsConfigurationLoader {
      * @return loaded advisors configuration
      */
     public YamlAdvisorsConfiguration load(final InputStream inputStream) {
-        return new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
+        YamlAdvisorsConfiguration result = new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
+        return null == result ? new YamlAdvisorsConfiguration() : result;
     }
 }
