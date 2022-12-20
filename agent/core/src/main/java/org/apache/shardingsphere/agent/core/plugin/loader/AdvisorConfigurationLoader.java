@@ -23,8 +23,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
+import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
-import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
+import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,6 +40,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
     
+    private static final YamlAdvisorsConfigurationLoader LOADER = new YamlAdvisorsConfigurationLoader();
+    
+    private static final YamlAdvisorsConfigurationSwapper SWAPPER = new YamlAdvisorsConfigurationSwapper();
+    
     /**
      * Load advisor configurations.
      * 
@@ -49,9 +55,10 @@ public final class AdvisorConfigurationLoader {
     public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
         AgentClassLoader.init(pluginJars);
-        for (AdvisorDefinitionService each : PluginServiceLoader.newServiceInstances(AdvisorDefinitionService.class, AgentClassLoader.getClassLoader())) {
+        for (PluginBootService each : PluginServiceLoader.newServiceInstances(PluginBootService.class, AgentClassLoader.getClassLoader())) {
             if (pluginTypes.contains(each.getType())) {
-                Collection<AdvisorConfiguration> advisorConfigs = isEnhancedForProxy ? each.getProxyAdvisorConfigurations() : each.getJDBCAdvisorConfigurations();
+                String resourceFile = String.join("/", "", each.getType().toLowerCase(), (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml");
+                Collection<AdvisorConfiguration> advisorConfigs = SWAPPER.swapToObject(LOADER.load(each.getClass().getResourceAsStream(resourceFile)), each.getType());
                 result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
             }
         }
