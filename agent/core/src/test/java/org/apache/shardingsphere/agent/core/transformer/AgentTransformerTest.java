@@ -68,14 +68,14 @@ public final class AgentTransformerTest {
         AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.transformer.fixture.targeted.TargetObjectFixture");
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooAdvice.class.getName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethod"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethod"), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethodWhenExceptionThrown"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callInstanceMethodWhenExceptionThrown"), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethod"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethod"), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethodWhenExceptionThrown"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callStaticMethodWhenExceptionThrown"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callWhenExceptionThrown"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callWhenExceptionThrown"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCall"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCall"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCallWhenExceptionThrown"), FooAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCallWhenExceptionThrown"), BarAdvice.class.getName()));
         return result;
     }
     
@@ -94,7 +94,7 @@ public final class AgentTransformerTest {
     @Test
     public void assertAdviceInstanceMethod() {
         List<String> queue = new LinkedList<>();
-        new TargetObjectFixture(new LinkedList<>()).callInstanceMethod(queue);
+        new TargetObjectFixture(new LinkedList<>()).call(queue);
         assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method", "on instance method", "foo after instance method", "bar after instance method")));
     }
     
@@ -102,7 +102,7 @@ public final class AgentTransformerTest {
     public void assertAdviceInstanceMethodWhenExceptionThrown() {
         List<String> queue = new LinkedList<>();
         try {
-            new TargetObjectFixture(new LinkedList<>()).callInstanceMethodWhenExceptionThrown(queue);
+            new TargetObjectFixture(new LinkedList<>()).callWhenExceptionThrown(queue);
         } catch (final UnsupportedOperationException ignored) {
         }
         assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method",
@@ -112,7 +112,7 @@ public final class AgentTransformerTest {
     @Test
     public void assertAdviceStaticMethod() {
         List<String> queue = new LinkedList<>();
-        TargetObjectFixture.callStaticMethod(queue);
+        TargetObjectFixture.staticCall(queue);
         assertThat(queue, is(Arrays.asList("foo before static method", "bar before static method", "on static method", "foo after static method", "bar after static method")));
     }
     
@@ -120,7 +120,7 @@ public final class AgentTransformerTest {
     public void assertAdviceStaticMethodWhenExceptionThrown() {
         List<String> queue = new LinkedList<>();
         try {
-            TargetObjectFixture.callStaticMethodWhenExceptionThrown(queue);
+            TargetObjectFixture.staticCallWhenExceptionThrown(queue);
         } catch (final UnsupportedOperationException ignored) {
         }
         assertThat(queue, is(Arrays.asList("foo before static method", "bar before static method",

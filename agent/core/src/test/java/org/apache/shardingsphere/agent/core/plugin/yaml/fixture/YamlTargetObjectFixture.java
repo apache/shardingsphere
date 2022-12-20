@@ -15,49 +15,59 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer.fixture.targeted;
+package org.apache.shardingsphere.agent.core.plugin.yaml.fixture;
 
-import java.util.List;
+import lombok.NoArgsConstructor;
 
-public final class TargetObjectFixture {
+@NoArgsConstructor
+public final class YamlTargetObjectFixture {
     
-    public TargetObjectFixture(final List<String> queue) {
-        queue.add("on constructor");
+    public YamlTargetObjectFixture(final String value) {
+    }
+    
+    /**
+     * Call instance method.
+     */
+    public void call() {
     }
     
     /**
      * Call instance method.
      *
-     * @param queue queue
+     * @param value value
      */
-    public void call(final List<String> queue) {
-        queue.add("on instance method");
+    public void call(final String value) {
     }
     
     /**
-     * Call instance method when exception thrown.
+     * Call instance method.
      *
-     * @param queue queue
+     * @param value1 value1
+     * @param value2 value2
      */
-    public void callWhenExceptionThrown(final List<String> queue) {
-        throw new UnsupportedOperationException();
+    public void call(final String value1, final String value2) {
+    }
+    
+    /**
+     * Call static method.
+     */
+    public static void staticCall() {
     }
     
     /**
      * Call static method.
      *
-     * @param queue queue
+     * @param value value
      */
-    public static void staticCall(final List<String> queue) {
-        queue.add("on static method");
+    public static void staticCall(final String value) {
     }
     
     /**
-     * Call static method when exception thrown.
+     * Call static method.
      *
-     * @param queue queue
+     * @param value1 value1
+     * @param value2 value2
      */
-    public static void staticCallWhenExceptionThrown(final List<String> queue) {
-        throw new UnsupportedOperationException();
+    public static void staticCall(final String value1, final String value2) {
     }
 }
