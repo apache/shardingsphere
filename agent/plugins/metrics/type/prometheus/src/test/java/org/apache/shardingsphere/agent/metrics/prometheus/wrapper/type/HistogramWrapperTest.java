@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Histogram;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
+import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,7 +31,7 @@ public final class HistogramWrapperTest {
         Histogram histogram = Histogram.build().name("a").help("help").create();
         HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
         histogramWrapper.observe(1);
-        histogram = (Histogram) ReflectiveUtil.getFieldValue(histogramWrapper, "histogram");
+        histogram = (Histogram) ReflectionUtil.getFieldValue(histogramWrapper, "histogram");
         assertThat(histogram.collect().size(), is(1));
     }
 }

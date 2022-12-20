@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.FieldReader;
 
@@ -87,7 +87,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
         storageTypes.put("mock.db", new MySQLDatabaseType());
-        ReflectiveUtil.setField(mock, "storageTypes", storageTypes);
+        ReflectionUtil.setField(mock, "storageTypes", storageTypes);
         targetObject = (TargetAdviceObject) mock;
     }
 }
