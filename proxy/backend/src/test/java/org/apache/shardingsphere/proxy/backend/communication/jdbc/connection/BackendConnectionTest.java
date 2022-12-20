@@ -28,7 +28,8 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -82,7 +83,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
+public final class BackendConnectionTest extends ProxyContextRestorer {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -92,14 +93,14 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
-    private JDBCBackendConnection backendConnection;
+    private BackendConnection backendConnection;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
         setContextManager();
         setBackendDataSource();
         when(connectionSession.getDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        backendConnection = spy(new JDBCBackendConnection(connectionSession));
+        backendConnection = spy(new BackendConnection(connectionSession));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
@@ -189,10 +190,10 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPostProcessors() {
-        ConnectionPostProcessor<?> connectionPostProcessor = mock(ConnectionPostProcessor.class);
-        Collection<ConnectionPostProcessor<?>> connectionPostProcessors = new LinkedList<>();
+        ConnectionPostProcessor connectionPostProcessor = mock(ConnectionPostProcessor.class);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
         connectionPostProcessors.add(connectionPostProcessor);
-        Field field = JDBCBackendConnection.class.getDeclaredField("connectionPostProcessors");
+        Field field = BackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
         field.set(backendConnection, connectionPostProcessors);
     }
@@ -227,7 +228,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @Test
     public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws NoSuchFieldException, IllegalAccessException, SQLException {
-        Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
+        Field field = BackendConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         Connection connection = prepareCachedConnections();
@@ -323,7 +324,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> connections) {
-        Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
+        Field field = BackendConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         assertTrue(cachedConnections.containsKey(dataSourceName));
@@ -333,7 +334,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Connection prepareCachedConnections() {
-        Field field = JDBCBackendConnection.class.getDeclaredField("cachedConnections");
+        Field field = BackendConnection.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         Connection connection = mock(Connection.class);
@@ -344,15 +345,15 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void verifyConnectionPostProcessorsEmpty() {
-        Field field = JDBCBackendConnection.class.getDeclaredField("connectionPostProcessors");
+        Field field = BackendConnection.class.getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        Collection<ConnectionPostProcessor<?>> connectionPostProcessors = (Collection<ConnectionPostProcessor<?>>) field.get(backendConnection);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
         assertTrue(connectionPostProcessors.isEmpty());
     }
     
     @Test
     public void assertAddDatabaseCommunicationEngine() {
-        ProxyBackendHandler expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler expectedEngine = mock(DatabaseCommunicationEngine.class);
         backendConnection.add(expectedEngine);
         Collection<ProxyBackendHandler> actual = getDatabaseCommunicationEngines();
         assertThat(actual.size(), is(1));
@@ -361,7 +362,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @Test
     public void assertMarkDatabaseCommunicationEngineInUse() {
-        ProxyBackendHandler expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler expectedEngine = mock(DatabaseCommunicationEngine.class);
         backendConnection.add(expectedEngine);
         backendConnection.markResourceInUse(expectedEngine);
         Collection<ProxyBackendHandler> actual = getInUseDatabaseCommunicationEngines();
@@ -371,7 +372,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @Test
     public void assertUnmarkInUseDatabaseCommunicationEngine() {
-        ProxyBackendHandler engine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler engine = mock(DatabaseCommunicationEngine.class);
         Collection<ProxyBackendHandler> actual = getInUseDatabaseCommunicationEngines();
         actual.add(engine);
         backendConnection.unmarkResourceInUse(engine);
@@ -380,8 +381,8 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @Test
     public void assertCloseHandlers() throws SQLException {
-        ProxyBackendHandler engine = mock(JDBCDatabaseCommunicationEngine.class);
-        ProxyBackendHandler inUseEngine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler engine = mock(DatabaseCommunicationEngine.class);
+        ProxyBackendHandler inUseEngine = mock(DatabaseCommunicationEngine.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
         Collection<ProxyBackendHandler> databaseCommunicationEngines = getDatabaseCommunicationEngines();
@@ -404,7 +405,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getDatabaseCommunicationEngines() {
-        Field field = JDBCBackendConnection.class.getDeclaredField("backendHandlers");
+        Field field = BackendConnection.class.getDeclaredField("backendHandlers");
         field.setAccessible(true);
         return (Collection<ProxyBackendHandler>) field.get(backendConnection);
     }
@@ -412,14 +413,9 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getInUseDatabaseCommunicationEngines() {
-        Field field = JDBCBackendConnection.class.getDeclaredField("inUseBackendHandlers");
+        Field field = BackendConnection.class.getDeclaredField("inUseBackendHandlers");
         field.setAccessible(true);
         return (Collection<ProxyBackendHandler>) field.get(backendConnection);
-    }
-    
-    @Test
-    public void assertPrepareForTaskExecution() {
-        backendConnection.prepareForTaskExecution();
     }
     
     @Test

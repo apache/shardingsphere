@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
@@ -34,9 +34,9 @@ import java.util.LinkedList;
 /**
  * Backend transaction manager.
  */
-public final class JDBCBackendTransactionManager implements TransactionManager<Void> {
+public final class BackendTransactionManager implements TransactionManager {
     
-    private final JDBCBackendConnection connection;
+    private final BackendConnection connection;
     
     private final TransactionType transactionType;
     
@@ -44,7 +44,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
     
     private final ShardingSphereTransactionManager shardingSphereTransactionManager;
     
-    public JDBCBackendTransactionManager(final JDBCBackendConnection backendConnection) {
+    public BackendTransactionManager(final BackendConnection backendConnection) {
         connection = backendConnection;
         transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
@@ -54,7 +54,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
     }
     
     @Override
-    public Void begin() {
+    public void begin() {
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
             connection.getConnectionSession().getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
@@ -66,11 +66,10 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
         } else {
             shardingSphereTransactionManager.begin();
         }
-        return null;
     }
     
     @Override
-    public Void commit() throws SQLException {
+    public void commit() throws SQLException {
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
@@ -85,11 +84,10 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
             }
         }
-        return null;
     }
     
     @Override
-    public Void rollback() throws SQLException {
+    public void rollback() throws SQLException {
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
@@ -104,11 +102,10 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
             }
         }
-        return null;
     }
     
     @Override
-    public Void setSavepoint(final String savepointName) throws SQLException {
+    public void setSavepoint(final String savepointName) throws SQLException {
         for (Connection each : connection.getCachedConnections().values()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
         }
@@ -119,11 +116,10 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 throw new RuntimeException(ex);
             }
         });
-        return null;
     }
     
     @Override
-    public Void rollbackTo(final String savepointName) throws SQLException {
+    public void rollbackTo(final String savepointName) throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : connection.getCachedConnections().values()) {
             try {
@@ -135,11 +131,11 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
         if (result.isEmpty() && connection.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
             connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
         }
-        return throwSQLExceptionIfNecessary(result);
+        throwSQLExceptionIfNecessary(result);
     }
     
     @Override
-    public Void releaseSavepoint(final String savepointName) throws SQLException {
+    public void releaseSavepoint(final String savepointName) throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : connection.getCachedConnections().values()) {
             try {
@@ -148,12 +144,12 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 result.add(ex);
             }
         }
-        return throwSQLExceptionIfNecessary(result);
+        throwSQLExceptionIfNecessary(result);
     }
     
-    private Void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
+    private void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
         if (exceptions.isEmpty()) {
-            return null;
+            return;
         }
         SQLException ex = null;
         int count = 0;

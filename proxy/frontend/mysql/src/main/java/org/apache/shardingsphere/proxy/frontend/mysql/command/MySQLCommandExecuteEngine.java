@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
@@ -88,7 +87,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                ((JDBCBackendConnection) backendConnection).getResourceLock().doAwait();
+                backendConnection.getResourceLock().doAwait();
             }
             DatabasePacket<?> dataValue = queryCommandExecutor.getQueryRowPacket();
             context.write(dataValue);

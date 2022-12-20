@@ -22,11 +22,10 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -69,7 +68,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
@@ -84,7 +83,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
@@ -118,9 +117,9 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private JDBCBackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
+    private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
         Field field = transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager");
         field.setAccessible(true);
-        return (JDBCBackendTransactionManager) field.get(transactionBackendHandler);
+        return (BackendTransactionManager) field.get(transactionBackendHandler);
     }
 }

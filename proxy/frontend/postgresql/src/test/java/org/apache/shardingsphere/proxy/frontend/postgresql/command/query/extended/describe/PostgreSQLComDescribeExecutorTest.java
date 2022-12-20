@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
@@ -140,7 +140,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     public void assertDescribePortal() throws SQLException {
         when(packet.getType()).thenReturn('P');
         when(packet.getName()).thenReturn("P_1");
-        Portal<?> portal = mock(Portal.class);
+        Portal portal = mock(Portal.class);
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
         when(portal.describe()).thenReturn(expected);
         when(portalContext.get("P_1")).thenReturn(portal);
@@ -360,7 +360,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     private void prepareJDBCBackendConnection(final String sql) throws SQLException {
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);

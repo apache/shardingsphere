@@ -60,11 +60,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-frontend-reactive-mysql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-frontend-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>

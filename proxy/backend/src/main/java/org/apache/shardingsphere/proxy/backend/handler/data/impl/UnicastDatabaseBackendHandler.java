@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 
-import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
@@ -51,19 +50,6 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     private final ConnectionSession connectionSession;
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
-    
-    @Override
-    public Future<ResponseHeader> executeFuture() {
-        String originDatabase = connectionSession.getDatabaseName();
-        String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).containsDataSource(), () -> new StorageUnitNotExistedException(databaseName));
-        connectionSession.setCurrentDatabase(databaseName);
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(queryContext, connectionSession.getBackendConnection(), false);
-        return databaseCommunicationEngine.executeFuture().eventually(unused -> {
-            connectionSession.setCurrentDatabase(databaseName);
-            return Future.succeededFuture();
-        });
-    }
     
     @Override
     public ResponseHeader execute() throws SQLException {

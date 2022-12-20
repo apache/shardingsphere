@@ -100,11 +100,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
     
     /**
-     * Proxy backend driver type.
-     */
-    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class, true),
-    
-    /**
      * Proxy MySQL default version.
      */
     PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false),

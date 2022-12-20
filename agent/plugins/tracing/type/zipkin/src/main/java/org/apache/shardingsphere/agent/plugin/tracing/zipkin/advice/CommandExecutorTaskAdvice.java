@@ -25,7 +25,7 @@ import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 
@@ -52,7 +52,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
         field.setAccessible(true);
-        JDBCBackendConnection connection = (JDBCBackendConnection) ((ConnectionSession) field.get(target)).getBackendConnection();
+        BackendConnection connection = ((ConnectionSession) field.get(target)).getBackendConnection();
         Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
         span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
         span.finish();

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -32,6 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public final class PostgreSQLComExecuteExecutorTest {
     private PostgreSQLComExecutePacket packet;
     
     @Mock
-    private JDBCPortal portal;
+    private Portal portal;
     
     @InjectMocks
     private PostgreSQLComExecuteExecutor executor;
@@ -66,7 +67,7 @@ public final class PostgreSQLComExecuteExecutorTest {
     }
     
     @Test
-    public void assertExecute() {
+    public void assertExecute() throws SQLException {
         PostgreSQLPacket expectedPacket = mock(PostgreSQLPacket.class);
         when(portal.execute(anyInt())).thenReturn(Collections.singletonList(expectedPacket));
         List<DatabasePacket<?>> actualPackets = executor.execute();
@@ -75,21 +76,21 @@ public final class PostgreSQLComExecuteExecutorTest {
     }
     
     @Test
-    public void assertCloseExecutorWhenPortalIsNotAnyTclStatement() {
+    public void assertCloseExecutorWhenPortalIsNotAnyTclStatement() throws SQLException {
         when(portal.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         executor.close();
         verify(portalContext, never()).closeAll();
     }
     
     @Test
-    public void assertCloseExecutorWhenPortalCommitStatement() {
+    public void assertCloseExecutorWhenPortalCommitStatement() throws SQLException {
         when(portal.getSqlStatement()).thenReturn(mock(CommitStatement.class));
         executor.close();
         verify(portalContext).closeAll();
     }
     
     @Test
-    public void assertCloseExecutorWhenPortalRollbackStatement() {
+    public void assertCloseExecutorWhenPortalRollbackStatement() throws SQLException {
         when(portal.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
         executor.close();
         verify(portalContext).closeAll();

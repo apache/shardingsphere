@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -56,7 +56,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
+    private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     private int currentSequenceId;
     
@@ -68,7 +68,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeFactory.getInstance("MySQL").getType()).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, databaseName);
-        JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
+        BackendConnection backendConnection = connectionSession.getBackendConnection();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(queryContext, backendConnection, false);
         databaseCommunicationEngine.execute();

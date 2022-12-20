@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -47,13 +47,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class JDBCBackendTransactionManagerTest extends ProxyContextRestorer {
+public final class BackendTransactionManagerTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
     
     @Mock
-    private JDBCBackendConnection backendConnection;
+    private BackendConnection backendConnection;
     
     @Mock
     private TransactionStatus transactionStatus;
@@ -64,7 +64,7 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
     @Mock
     private ShardingSphereTransactionManager shardingSphereTransactionManager;
     
-    private JDBCBackendTransactionManager backendTransactionManager;
+    private BackendTransactionManager backendTransactionManager;
     
     @Before
     public void setUp() {
@@ -166,13 +166,13 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
-        backendTransactionManager = new JDBCBackendTransactionManager(backendConnection);
+        backendTransactionManager = new BackendTransactionManager(backendConnection);
         setLocalTransactionManager();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setLocalTransactionManager() {
-        Field field = JDBCBackendTransactionManager.class.getDeclaredField("localTransactionManager");
+        Field field = BackendTransactionManager.class.getDeclaredField("localTransactionManager");
         field.setAccessible(true);
         field.set(backendTransactionManager, localTransactionManager);
     }

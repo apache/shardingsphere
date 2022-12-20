@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
-import io.vertx.core.Future;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
@@ -55,11 +54,6 @@ public final class DatabaseBackendHandlerFactory {
         }
         if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
             return new DatabaseBackendHandler() {
-                
-                @Override
-                public Future<ResponseHeader> executeFuture() {
-                    return Future.succeededFuture(new UpdateResponseHeader(sqlStatement));
-                }
                 
                 @Override
                 public ResponseHeader execute() {

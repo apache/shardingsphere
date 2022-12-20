@@ -76,8 +76,6 @@
 #  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
 #    # Available sql federation type: NONE (default), ORIGINAL, ADVANCED
 #  sql-federation-type: NONE
-#    # Available proxy backend driver type: JDBC (default), ExperimentalVertx
-#  proxy-backend-driver-type: JDBC
 #  proxy-mysql-default-version: 5.7.22 # In the absence of schema name, the default version will be used.
 #  proxy-default-port: 3307 # Proxy default port.
 #  proxy-netty-backlog: 1024 # Proxy netty backlog.
