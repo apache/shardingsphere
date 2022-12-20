@@ -88,7 +88,7 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * JDBC database communication engine.
+ * Database communication engine.
  */
 public final class DatabaseCommunicationEngine implements DatabaseBackendHandler {
     

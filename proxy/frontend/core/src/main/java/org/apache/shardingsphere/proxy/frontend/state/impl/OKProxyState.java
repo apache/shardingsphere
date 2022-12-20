@@ -32,7 +32,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import java.util.concurrent.ExecutorService;
 
 /**
- * JDBC OK proxy state.
+ * OK proxy state.
  */
 public final class OKProxyState implements ProxyState {
     

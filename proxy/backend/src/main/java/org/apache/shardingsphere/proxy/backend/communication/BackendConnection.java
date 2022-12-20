@@ -46,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * JDBC backend connection.
+ * Backend connection.
  */
 @RequiredArgsConstructor
 @Getter
