@@ -23,7 +23,6 @@ import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConf
 import org.apache.shardingsphere.agent.spi.advisor.AdvisorDefinitionService;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Zipkin advisor definition service.
@@ -36,13 +35,12 @@ public final class ZipkinAdvisorDefinitionService implements AdvisorDefinitionSe
     
     @Override
     public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
-        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/zipkin/advisors.yaml")), getType());
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/" + getType().toLowerCase() + "/proxy-advisors.yaml")), getType());
     }
     
     @Override
     public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
-        // TODO add JDBC advisor
-        return Collections.emptyList();
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/" + getType().toLowerCase() + "/jdbc-advisors.yaml")), getType());
     }
     
     @Override
