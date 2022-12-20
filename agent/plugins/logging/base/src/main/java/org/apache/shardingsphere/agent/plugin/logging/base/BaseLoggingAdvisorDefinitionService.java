@@ -35,12 +35,12 @@ public final class BaseLoggingAdvisorDefinitionService implements AdvisorDefinit
     
     @Override
     public Collection<AdvisorConfiguration> getProxyAdvisorConfigurations() {
-        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/baselogging/advisors.yaml")), getType());
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/" + getType().toLowerCase() + "/proxy-advisors.yaml")), getType());
     }
     
     @Override
     public Collection<AdvisorConfiguration> getJDBCAdvisorConfigurations() {
-        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/baselogging/advisors.yaml")), getType());
+        return swapper.swapToObject(loader.load(getClass().getResourceAsStream("/" + getType().toLowerCase() + "/jdbc-advisors.yaml")), getType());
     }
     
     @Override
