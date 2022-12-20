@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.loader;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
@@ -25,6 +27,7 @@ import java.io.InputStream;
 /**
  * YAML advisors configuration loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlAdvisorsConfigurationLoader {
     
     /**
@@ -33,7 +36,7 @@ public final class YamlAdvisorsConfigurationLoader {
      * @param inputStream input stream
      * @return loaded advisors configuration
      */
-    public YamlAdvisorsConfiguration load(final InputStream inputStream) {
+    public static YamlAdvisorsConfiguration load(final InputStream inputStream) {
         YamlAdvisorsConfiguration result = new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
         return null == result ? new YamlAdvisorsConfiguration() : result;
     }
