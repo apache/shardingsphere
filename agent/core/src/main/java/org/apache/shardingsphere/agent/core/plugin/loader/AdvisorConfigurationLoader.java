@@ -28,6 +28,7 @@ import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConf
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.plugin.PluginBootService;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,12 +54,20 @@ public final class AdvisorConfigurationLoader {
         AgentClassLoader.init(pluginJars);
         for (PluginBootService each : PluginServiceLoader.newServiceInstances(PluginBootService.class, AgentClassLoader.getClassLoader())) {
             if (pluginTypes.contains(each.getType())) {
-                String resourceFile = String.join("/", "", each.getType().toLowerCase(), (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml");
-                Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper.swapToObject(
-                        YamlAdvisorsConfigurationLoader.load(each.getClass().getResourceAsStream(resourceFile)), each.getType());
+                Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper
+                        .swapToObject(YamlAdvisorsConfigurationLoader.load(getAdvisorsResourceStream(each, isEnhancedForProxy)), each.getType());
                 result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
             }
         }
         return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
+    }
+    
+    private static InputStream getAdvisorsResourceStream(final PluginBootService pluginBootService, final boolean isEnhancedForProxy) {
+        InputStream result = pluginBootService.getClass().getResourceAsStream(getAdvisorsResourceFile(pluginBootService, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml"));
+        return null == result ? pluginBootService.getClass().getResourceAsStream(getAdvisorsResourceFile(pluginBootService, "advisors.yaml")) : result;
+    }
+    
+    private static String getAdvisorsResourceFile(final PluginBootService pluginBootService, final String fileName) {
+        return String.join("/", "", pluginBootService.getType().toLowerCase(), fileName);
     }
 }
