@@ -1178,4 +1178,24 @@
     <test-case sql="SELECT * FROM (SELECT count(*) as count, id from t_single_table group by id) as temp_table" db-types="MySQL" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in simple select statement when use sharding feature.|Test encrypt table's LIKE operator in simple select statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18' OR telephone LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in simple select statement with or condition when use sharding feature.|Test encrypt table's LIKE operator in simple select statement with or condition when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '%18')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator in subquery select statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in select join statement when use sharding feature.|Test encrypt table's LIKE operator in select join statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '%18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in select group by statement when use sharding feature.|Test encrypt table's LIKE operator in select group by statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </integration-test-cases>
