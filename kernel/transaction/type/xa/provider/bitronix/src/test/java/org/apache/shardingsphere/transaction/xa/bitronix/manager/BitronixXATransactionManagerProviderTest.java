@@ -19,12 +19,12 @@ package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.resource.ResourceRegistrar;
-import org.apache.shardingsphere.infra.util.reflect.ReflectionUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
@@ -52,8 +52,8 @@ public final class BitronixXATransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @Before
-    public void setUp() {
-        ReflectionUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
+    public void setUp() throws NoSuchFieldException {
+        new InstanceField(BitronixXATransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider).set(transactionManager);
     }
     
     @Test

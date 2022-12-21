@@ -23,7 +23,6 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.internal.StringUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
@@ -37,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.Serializable;
@@ -68,7 +68,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4, new ConcurrentHashMap<>());
-        binlogContext = ReflectionUtil.getFieldValue(binlogEventPacketDecoder, "binlogContext", BinlogContext.class);
+        binlogContext = (BinlogContext) new FieldReader(binlogEventPacketDecoder, MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext")).read();
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
         columnDefs = Lists.newArrayList(new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG), new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONG),
                 new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR), new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL));

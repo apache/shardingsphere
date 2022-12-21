@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
-import org.apache.shardingsphere.infra.util.reflect.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XAConnection;
@@ -69,8 +69,8 @@ public final class DataSourceXAResourceRecoveryHelperTest {
     }
     
     @Test
-    public void assertGetXAResourcesWithoutConnecting() throws SQLException {
-        ReflectionUtil.setField(recoveryHelper, "delegate", xaResource);
+    public void assertGetXAResourcesWithoutConnecting() throws SQLException, NoSuchFieldException {
+        new InstanceField(DataSourceXAResourceRecoveryHelper.class.getDeclaredField("delegate"), recoveryHelper).set(xaResource);
         recoveryHelper.getXAResources();
         XAResource[] xaResources = recoveryHelper.getXAResources();
         assertThat(xaResources.length, is(1));

@@ -34,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDa
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
@@ -50,7 +49,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -115,15 +114,14 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertWriteRowsEvent() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public void assertWriteRowsEvent() {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setAfterRows(rows);
-        ReflectionUtil.invokeMethod(incrementalDumper, "handleWriteRowsEvent", new Class[]{WriteRowsEvent.class, PipelineTableMetaData.class},
-                new Object[]{rowsEvent, pipelineTableMetaData});
+        invokeMethod(incrementalDumper, "handleWriteRowsEvent", new Class[]{WriteRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertThat(records.get(0), instanceOf(DataRecord.class));
@@ -131,7 +129,7 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertUpdateRowsEvent() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public void assertUpdateRowsEvent() {
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
@@ -141,8 +139,7 @@ public final class MySQLIncrementalDumperTest {
         afterRows.add(new String[]{"1", "order_new"});
         rowsEvent.setBeforeRows(beforeRows);
         rowsEvent.setAfterRows(afterRows);
-        ReflectionUtil.invokeMethod(incrementalDumper, "handleUpdateRowsEvent", new Class[]{UpdateRowsEvent.class, PipelineTableMetaData.class},
-                new Object[]{rowsEvent, pipelineTableMetaData});
+        invokeMethod(incrementalDumper, "handleUpdateRowsEvent", new Class[]{UpdateRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertThat(records.get(0), instanceOf(DataRecord.class));
@@ -150,14 +147,14 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertDeleteRowsEvent() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public void assertDeleteRowsEvent() {
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setBeforeRows(rows);
-        ReflectionUtil.invokeMethod(incrementalDumper, "handleDeleteRowsEvent", new Class[]{DeleteRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
+        invokeMethod(incrementalDumper, "handleDeleteRowsEvent", new Class[]{DeleteRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertThat(records.get(0), instanceOf(DataRecord.class));
@@ -182,8 +179,14 @@ public final class MySQLIncrementalDumperTest {
         assertThat(records.get(0), instanceOf(PlaceholderRecord.class));
     }
     
-    @SneakyThrows({NoSuchMethodException.class, ReflectiveOperationException.class})
     private void invokeHandleEvent(final AbstractBinlogEvent event) {
-        ReflectionUtil.invokeMethod(incrementalDumper, "handleEvent", new Class[]{AbstractBinlogEvent.class}, new Object[]{event});
+        invokeMethod(incrementalDumper, "handleEvent", new Class[]{AbstractBinlogEvent.class}, new Object[]{event});
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Object invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues) {
+        Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+        return method.invoke(target, parameterValues);
     }
 }

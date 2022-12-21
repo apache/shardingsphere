@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
  * Reflection utility.
@@ -39,47 +38,16 @@ public final class ReflectionUtil {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static Object getFieldValue(final Object target, final String fieldName) {
-        return getField(target.getClass(), fieldName).get(target);
-    }
-    
-    private static Field getField(final Class<?> target, final String fieldName) throws NoSuchFieldException {
-        Class<?> clazz = target;
+        Class<?> clazz = target.getClass();
         while (null != clazz) {
             try {
                 Field result = clazz.getDeclaredField(fieldName);
                 result.setAccessible(true);
-                return result;
+                return result.get(target);
             } catch (final NoSuchFieldException ignored) {
             }
             clazz = clazz.getSuperclass();
         }
-        throw new NoSuchFieldException(String.format("Can not find field name `%s` in class %s.", fieldName, target));
-    }
-    
-    /**
-     * Set value to specified field.
-     * 
-     * @param target target
-     * @param fieldName field name
-     * @param value value
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void setField(final Object target, final String fieldName, final Object value) {
-        getField(target.getClass(), fieldName).set(target, value);
-    }
-    
-    /**
-     * Set value to specified static field.
-     *
-     * @param target target
-     * @param fieldName field name
-     * @param value value
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void setStaticField(final Class<?> target, final String fieldName, final Object value) {
-        Field field = getField(target, fieldName);
-        if (Modifier.isStatic(field.getModifiers())) {
-            field.set(null, value);
-        }
+        throw new NoSuchFieldException(String.format("Can not find field name `%s` in class %s.", fieldName, target.getClass()));
     }
 }
