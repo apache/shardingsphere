@@ -30,19 +30,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class ReflectionUtilTest {
     
     @Test
-    public void assertSetFieldValue() throws NoSuchFieldException, IllegalAccessException {
-        ReflectionFixture reflectionFixture = new ReflectionFixture();
-        ReflectionUtil.setFieldValue(reflectionFixture, "value", "foo");
-        assertThat(reflectionFixture.getValue(), is("foo"));
-    }
-    
-    @Test
-    public void assertGetFieldValue() throws NoSuchFieldException, IllegalAccessException {
-        ReflectionFixture reflectionFixture = new ReflectionFixture("bar");
-        assertThat(ReflectionUtil.getFieldValue(reflectionFixture, "value", String.class), is("bar"));
-    }
-    
-    @Test
     public void assertInvokeMethod() throws Exception {
         ReflectionFixture reflectionFixture = new ReflectionFixture();
         ReflectionUtil.invokeMethod(reflectionFixture, "setValue", new Class[]{String.class}, new Object[]{"new_value"});

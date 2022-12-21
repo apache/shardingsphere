@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -29,50 +28,6 @@ import java.lang.reflect.Method;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtil {
-    
-    /**
-     * Set value into target object field.
-     *
-     * @param target target object
-     * @param fieldName field name
-     * @param value new value
-     * @throws NoSuchFieldException no such field exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static void setFieldValue(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getField(target.getClass(), fieldName, true);
-        field.set(target, value);
-    }
-    
-    /**
-     * Get field value from instance target object.
-     *
-     * @param target target object
-     * @param fieldName field name
-     * @param valueClass expected value class
-     * @param <T> expected value class
-     * @return target filed value
-     * @throws NoSuchFieldException no such field exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T getFieldValue(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getField(target.getClass(), fieldName, true);
-        Object value = field.get(target);
-        if (null == value) {
-            return null;
-        }
-        if (valueClass.isAssignableFrom(value.getClass())) {
-            return (T) value;
-        }
-        throw new ClassCastException("field " + fieldName + " is " + value.getClass().getName() + " can cast to " + valueClass.getName());
-    }
-    
-    private static Field getField(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field result = isDeclared ? targetClass.getDeclaredField(fieldName) : targetClass.getField(fieldName);
-        result.setAccessible(true);
-        return result;
-    }
     
     /**
      * Invoke method.

@@ -21,7 +21,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthMoreDataPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
@@ -31,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
@@ -94,9 +94,9 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     @Test
-    public void assertDecodeAuthSwitchRequestPacket() throws NoSuchFieldException, IllegalAccessException {
+    public void assertDecodeAuthSwitchRequestPacket() throws NoSuchFieldException {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
-        ReflectionUtil.setFieldValue(negotiatePackageDecoder, "handshakeReceived", true);
+        new InstanceField(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder).set(true);
         List<Object> actual = new LinkedList<>();
         negotiatePackageDecoder.decode(channelHandlerContext, authSwitchRequestPacket(), actual);
         assertPacketByType(actual, MySQLAuthSwitchRequestPacket.class);
@@ -110,9 +110,9 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     @Test
-    public void assertDecodeAuthMoreDataPacket() throws NoSuchFieldException, IllegalAccessException {
+    public void assertDecodeAuthMoreDataPacket() throws NoSuchFieldException {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
-        ReflectionUtil.setFieldValue(negotiatePackageDecoder, "handshakeReceived", true);
+        new InstanceField(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder).set(true);
         List<Object> actual = new LinkedList<>();
         negotiatePackageDecoder.decode(channelHandlerContext, authMoreDataPacket(), actual);
         assertPacketByType(actual, MySQLAuthMoreDataPacket.class);
