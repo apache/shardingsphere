@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.core.config.loader;
 
 import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.InstanceField;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +34,8 @@ public final class PluginConfigurationLoaderTest {
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
     @Test
-    public void assertLoad() throws IOException {
-        ReflectionUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
+    public void assertLoad() throws IOException, NoSuchFieldException {
+        new InstanceField(AgentPathBuilder.class.getDeclaredField("agentPath"), AgentPathBuilder.class).set(new File(getResourceUrl()));
         assertNotNull(PluginConfigurationLoader.load());
     }
     
