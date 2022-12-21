@@ -130,12 +130,14 @@ public final class MySQLClientTest {
             while (true) {
                 Promise<Object> responseCallback;
                 try {
-                    responseCallback = (Promise) new FieldReader(mysqlClient, MySQLClient.class.getDeclaredField("responseCallback")).read();
+                    responseCallback = (Promise<Object>) new FieldReader(mysqlClient, MySQLClient.class.getDeclaredField("responseCallback")).read();
                 } catch (final NoSuchFieldException ex) {
                     throw new RuntimeException(ex);
                 }
-                responseCallback.setSuccess(response);
-                break;
+                if (null != responseCallback) {
+                    responseCallback.setSuccess(response);
+                    break;
+                }
             }
         }).start();
     }
