@@ -30,6 +30,7 @@ editURL = "https://github.com/apache/shardingsphere/tree/master/docs/document/co
 disableNextPrev = true
 # Hide breadcrumbs in the header and only show the current page title
 disableBreadcrumb = true
+description = "Apache ShardingSphere Document"
 
 [markup]
 [markup.tableOfContents]
