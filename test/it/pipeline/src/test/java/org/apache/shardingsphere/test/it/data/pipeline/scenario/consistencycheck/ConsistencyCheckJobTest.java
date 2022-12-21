@@ -20,19 +20,19 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencychec
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public final class ConsistencyCheckJobTest {
     }
     
     @Test
-    public void assertBuildPipelineJobItemContext() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    public void assertBuildPipelineJobItemContext() throws ReflectiveOperationException {
         YamlConsistencyCheckJobItemProgress jobItemProgress = new YamlConsistencyCheckJobItemProgress();
         jobItemProgress.setStatus(JobStatus.RUNNING.name());
         Map<String, Object> expectTableCheckPosition = new HashMap<>();
@@ -59,8 +59,14 @@ public final class ConsistencyCheckJobTest {
         YamlConsistencyCheckJobConfiguration yamlJobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToYamlConfiguration(jobConfig);
         ShardingContext shardingContext = new ShardingContext(checkJobId, "", 1, YamlEngine.marshal(yamlJobConfig), 0, "");
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob();
-        ReflectionUtil.invokeMethodInParentClass(consistencyCheckJob, "setJobId", new Class[]{String.class}, new Object[]{checkJobId});
+        invokeSetJobId(checkJobId, consistencyCheckJob);
         ConsistencyCheckJobItemContext actualItemContext = consistencyCheckJob.buildPipelineJobItemContext(shardingContext);
         assertThat(actualItemContext.getProgressContext().getTableCheckPositions(), is(expectTableCheckPosition));
+    }
+    
+    private void invokeSetJobId(final String checkJobId, final ConsistencyCheckJob consistencyCheckJob) throws ReflectiveOperationException {
+        Method method = AbstractPipelineJob.class.getDeclaredMethod("setJobId", String.class);
+        method.setAccessible(true);
+        method.invoke(consistencyCheckJob, checkJobId);
     }
 }

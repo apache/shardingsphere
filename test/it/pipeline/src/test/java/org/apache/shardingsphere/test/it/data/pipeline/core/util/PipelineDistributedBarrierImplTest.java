@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.impl.PipelineDistributedBarrierImpl;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
+import org.apache.shardingsphere.data.pipeline.core.spi.impl.PipelineDistributedBarrierImpl;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -40,15 +40,14 @@ public final class PipelineDistributedBarrierImplTest {
     }
     
     @Test
-    @SuppressWarnings("rawtypes")
-    public void assertRegisterAndRemove() throws NoSuchFieldException, IllegalAccessException {
+    public void assertRegisterAndRemove() throws NoSuchFieldException {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrierImpl instance = new PipelineDistributedBarrierImpl();
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
-        Map countDownLatchMap = ReflectionUtil.getFieldValue(instance, "countDownLatchMap", Map.class);
+        Map<?, ?> countDownLatchMap = (Map<?, ?>) new FieldReader(instance, PipelineDistributedBarrierImpl.class.getDeclaredField("countDownLatchMap")).read();
         assertNotNull(countDownLatchMap);
         assertTrue(countDownLatchMap.containsKey(parentPath));
         instance.unregister(parentPath);

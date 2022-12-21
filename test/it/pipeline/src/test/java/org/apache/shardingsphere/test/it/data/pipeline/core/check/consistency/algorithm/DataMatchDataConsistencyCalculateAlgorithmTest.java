@@ -23,11 +23,11 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.InstanceField;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -81,9 +81,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromBegin() throws NoSuchFieldException, IllegalAccessException {
+    public void assertCalculateFromBegin() throws NoSuchFieldException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
-        ReflectionUtil.setFieldValue(calculateAlgorithm, "chunkSize", 5);
+        new InstanceField(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm).set(5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
         Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
         DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 0);
@@ -98,9 +98,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromMiddle() throws NoSuchFieldException, IllegalAccessException {
+    public void assertCalculateFromMiddle() throws NoSuchFieldException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
-        ReflectionUtil.setFieldValue(calculateAlgorithm, "chunkSize", 5);
+        new InstanceField(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm).set(5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);
         Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
         DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 5);
