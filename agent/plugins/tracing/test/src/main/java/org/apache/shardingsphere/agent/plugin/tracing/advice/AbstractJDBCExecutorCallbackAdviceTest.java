@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.util.reflection.InstanceField;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -71,7 +71,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
         executionUnit = new JDBCExecutionUnit(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())), null, statement);
-        JDBCExecutorCallback mock = mock(JDBCExecutorCallback.class, invocation -> {
+        JDBCExecutorCallback mockedJDBCExecutorCallback = mock(JDBCExecutorCallback.class, invocation -> {
             switch (invocation.getMethod().getName()) {
                 case "getAttachment":
                     return attachment;
@@ -83,11 +83,11 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
             }
         });
         Map<String, DataSourceMetaData> cachedDatasourceMetaData =
-                (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
+                (Map<String, DataSourceMetaData>) new FieldReader(mockedJDBCExecutorCallback, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
         cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
         storageTypes.put("mock.db", new MySQLDatabaseType());
-        ReflectionUtil.setField(mock, "storageTypes", storageTypes);
-        targetObject = (TargetAdviceObject) mock;
+        new InstanceField(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), mockedJDBCExecutorCallback).set(storageTypes);
+        targetObject = (TargetAdviceObject) mockedJDBCExecutorCallback;
     }
 }
