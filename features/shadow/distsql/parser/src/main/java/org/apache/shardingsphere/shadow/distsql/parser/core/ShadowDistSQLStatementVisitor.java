@@ -79,7 +79,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitCreateDefaultShadowAlgorithm(final CreateDefaultShadowAlgorithmContext ctx) {
-        return new CreateDefaultShadowAlgorithmStatement((ShadowAlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return new CreateDefaultShadowAlgorithmStatement(null != ctx.ifNotExists(), (ShadowAlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
