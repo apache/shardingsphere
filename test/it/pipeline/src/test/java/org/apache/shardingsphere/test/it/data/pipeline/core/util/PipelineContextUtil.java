@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
@@ -49,8 +48,9 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
+import org.mockito.internal.util.reflection.FieldReader;
 
-import java.lang.reflect.Field;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,11 +111,9 @@ public final class PipelineContextUtil {
         PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private static ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
-        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
-        field.setAccessible(true);
-        return (ContextManager) field.get(dataSource);
+        return (ContextManager) new FieldReader(dataSource, ShardingSphereDataSource.class.getDeclaredField("contextManager")).read();
     }
     
     @SneakyThrows(ConcurrentException.class)
