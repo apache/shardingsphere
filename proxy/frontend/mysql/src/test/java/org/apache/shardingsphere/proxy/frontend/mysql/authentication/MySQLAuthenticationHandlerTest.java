@@ -42,8 +42,8 @@ import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticat
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.InstanceField;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,9 +76,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     @SneakyThrows(ReflectiveOperationException.class)
     private void initAuthPluginDataForAuthenticationHandler() {
         MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
-        Field field = MySQLAuthenticationHandler.class.getDeclaredField("authPluginData");
-        field.setAccessible(true);
-        field.set(authenticationHandler, authPluginData);
+        new InstanceField(MySQLAuthenticationHandler.class.getDeclaredField("authPluginData"), authenticationHandler).set(authPluginData);
     }
     
     @Test
@@ -155,11 +153,9 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
         if (!isNeedSuper) {
-            Field authorityRegistryField = AuthorityRule.class.getDeclaredField("authorityRegistry");
             AuthorityRegistry authorityRegistry = mock(AuthorityRegistry.class);
             when(authorityRegistry.findPrivileges(user.getGrantee())).thenReturn(Optional.empty());
-            authorityRegistryField.setAccessible(true);
-            authorityRegistryField.set(rule, authorityRegistry);
+            new InstanceField(AuthorityRule.class.getDeclaredField("authorityRegistry"), rule).set(authorityRegistry);
         }
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }

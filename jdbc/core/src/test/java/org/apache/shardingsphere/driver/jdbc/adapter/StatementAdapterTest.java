@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederation
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.InstanceField;
 
-import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -259,10 +259,8 @@ public final class StatementAdapterTest {
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void setExecutionContext(final ShardingSphereStatement statement, final ExecutionContext executionContext) {
-        Field field = statement.getClass().getDeclaredField("executionContext");
-        field.setAccessible(true);
-        field.set(statement, executionContext);
+        new InstanceField(statement.getClass().getDeclaredField("executionContext"), statement).set(executionContext);
     }
 }
