@@ -19,20 +19,27 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.metadata.node.event
 
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessorFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor.ConsistencyCheckChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineJobConfigurationChangedProcessor;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor.ConsistencyCheckJobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor.MigrationChangedJobConfigurationProcessor;
-import org.hamcrest.MatcherAssert;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor.MigrationJobConfigurationChangedProcessor;
 import org.junit.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public final class PipelineChangedJobConfigurationProcessorFactoryTest {
+public final class PipelineJobConfigurationChangedProcessorFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        MatcherAssert.assertThat(PipelineChangedJobConfigurationProcessorFactory.getInstance(new MigrationJobType()), instanceOf(MigrationChangedJobConfigurationProcessor.class));
-        assertThat(PipelineChangedJobConfigurationProcessorFactory.getInstance(new ConsistencyCheckJobType()), instanceOf(ConsistencyCheckChangedJobConfigurationProcessor.class));
+        Optional<PipelineJobConfigurationChangedProcessor> migrationProcessor = PipelineChangedJobConfigurationProcessorFactory.findInstance(new MigrationJobType());
+        assertTrue(migrationProcessor.isPresent());
+        assertThat(migrationProcessor.get(), instanceOf(MigrationJobConfigurationChangedProcessor.class));
+        Optional<PipelineJobConfigurationChangedProcessor> consistencyCheckProcessor = PipelineChangedJobConfigurationProcessorFactory.findInstance(new ConsistencyCheckJobType());
+        assertTrue(consistencyCheckProcessor.isPresent());
+        assertThat(consistencyCheckProcessor.get(), instanceOf(ConsistencyCheckJobConfigurationChangedProcessor.class));
     }
 }

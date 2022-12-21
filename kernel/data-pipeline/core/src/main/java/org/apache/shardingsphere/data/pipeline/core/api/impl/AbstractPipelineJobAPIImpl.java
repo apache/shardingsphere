@@ -26,8 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrierFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
@@ -35,6 +33,8 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHas
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrierFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -96,13 +96,13 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             return Optional.of(jobId);
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobClassName());
-        repositoryAPI.persist(jobConfigKey, convertJobConfigurationToText(jobConfig));
+        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(convertJobConfiguration(jobConfig)));
         return Optional.of(jobId);
     }
     
     protected abstract String getJobClassName();
     
-    private String convertJobConfigurationToText(final PipelineJobConfiguration jobConfig) {
+    protected JobConfigurationPOJO convertJobConfiguration(final PipelineJobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setJobName(jobConfig.getJobId());
         jobConfigPOJO.setShardingTotalCount(jobConfig.getJobShardingCount());
@@ -110,7 +110,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         String createTimeFormat = LocalDateTime.now().format(DATE_TIME_FORMATTER);
         jobConfigPOJO.getProps().setProperty("create_time", createTimeFormat);
         jobConfigPOJO.getProps().setProperty("start_time_millis", System.currentTimeMillis() + "");
-        return YamlEngine.marshal(jobConfigPOJO);
+        return jobConfigPOJO;
     }
     
     protected abstract YamlPipelineJobConfiguration swapToYamlJobConfiguration(PipelineJobConfiguration jobConfig);

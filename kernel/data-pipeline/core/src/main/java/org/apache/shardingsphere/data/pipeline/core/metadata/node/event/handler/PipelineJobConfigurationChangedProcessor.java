@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 /**
- * Importer creator factory.
+ * Pipeline changed job configuration processor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ImporterCreatorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(ImporterCreator.class);
-    }
+public interface PipelineJobConfigurationChangedProcessor extends TypedSPI {
     
     /**
-     * Get importer creator instance.
+     * Process changed job configuration.
      *
-     * @param importType import type
-     * @return importer creator
+     * @param eventType event type
+     * @param jobConfigPOJO job configuration pojo
      */
-    public static ImporterCreator getInstance(final String importType) {
-        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, importType);
-    }
+    // TODO replace JobConfigurationPOJO to JobConfiguration
+    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
 }

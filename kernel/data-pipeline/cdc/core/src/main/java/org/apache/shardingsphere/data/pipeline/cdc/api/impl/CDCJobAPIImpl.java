@@ -52,10 +52,14 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -63,6 +67,8 @@ import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtra
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -94,7 +100,7 @@ public final class CDCJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl 
     private final YamlPipelineDataSourceConfigurationSwapper pipelineDataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
     @Override
-    public String createJobAndStart(final CreateSubscriptionJobParameter event) {
+    public boolean createJob(final CreateSubscriptionJobParameter event) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setDatabase(event.getDatabase());
         yamlJobConfig.setTableNames(event.getSubscribeTableNames());
@@ -109,8 +115,18 @@ public final class CDCJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl 
         yamlJobConfig.setTablesFirstDataNodes(tableFirstDataNodes.marshal());
         extendYamlJobConfiguration(yamlJobConfig);
         CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
-        start(jobConfig);
-        return jobConfig.getJobId();
+        ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobConfig.getJobId()));
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobConfig.getJobId());
+        if (repositoryAPI.isExisted(jobConfigKey)) {
+            log.warn("cdc job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+            return false;
+        }
+        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClassName());
+        JobConfigurationPOJO jobConfigurationPOJO = convertJobConfiguration(jobConfig);
+        jobConfigurationPOJO.setDisabled(true);
+        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigurationPOJO));
+        return true;
     }
     
     private ShardingSpherePipelineDataSourceConfiguration getDataSourceConfiguration(final ShardingSphereDatabase database) {

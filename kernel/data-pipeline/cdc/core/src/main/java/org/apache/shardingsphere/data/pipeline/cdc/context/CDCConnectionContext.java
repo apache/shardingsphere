@@ -29,4 +29,7 @@ public final class CDCConnectionContext {
     
     @Setter
     private volatile CDCConnectionStatus status;
+    
+    @Setter
+    private volatile String jobId;
 }

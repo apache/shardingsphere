@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
-
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+package org.apache.shardingsphere.data.pipeline.cdc.client.constant;
 
 /**
- * Pipeline changed job configuration processor.
+ * Client connection status.
  */
-// TODO rename to PipelineJobConfigurationChangedProcessor
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+public enum ClientConnectionStatus {
     
-    /**
-     * Process changed job configuration.
-     *
-     * @param eventType event type
-     * @param jobConfigPOJO job configuration pojo
-     */
-    // TODO replace JobConfigurationPOJO to JobConfiguration
-    void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
+    CONNECTED,
+    
+    NOT_LOGGED_IN,
+    
+    LOGGING_IN,
+    
+    CREATING_SUBSCRIPTION,
+    
+    SUBSCRIBING
 }
