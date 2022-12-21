@@ -143,14 +143,10 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
         String user = getIdentifierValue(ctx.user());
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
         Properties props = getProperties(ctx.propertiesDefinition());
-        DataSourceSegment result = null;
-        if (null != ctx.urlSource()) {
-            result = new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
-        }
-        if (null != ctx.simpleSource()) {
-            result = new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(),
-                    getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
-        }
+        DataSourceSegment result = null != ctx.urlSource() ? new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()),
+                getIdentifierValue(ctx.urlSource().url()), user, password, props) : null;
+        result = null != ctx.simpleSource() ? new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()),
+                ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props) : result;
         return result;
     }
     
