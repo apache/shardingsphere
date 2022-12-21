@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public final class ReflectiveFixture {
+public final class ReflectionFixture {
     
     private final String value;
 }

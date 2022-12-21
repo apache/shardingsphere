@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.util;
 
-import org.apache.shardingsphere.agent.core.util.fixture.ReflectiveFixture;
+import org.apache.shardingsphere.agent.core.util.fixture.ReflectionFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ public final class ReflectionUtilTest {
     
     @Test
     public void assertGetFieldValue() {
-        ReflectiveFixture reflectiveFixture = new ReflectiveFixture("foo");
-        assertThat(ReflectionUtil.getFieldValue(reflectiveFixture, "value"), is(reflectiveFixture.getValue()));
+        ReflectionFixture reflectionFixture = new ReflectionFixture("foo");
+        assertThat(ReflectionUtil.getFieldValue(reflectionFixture, "value"), is(reflectionFixture.getValue()));
     }
 }
