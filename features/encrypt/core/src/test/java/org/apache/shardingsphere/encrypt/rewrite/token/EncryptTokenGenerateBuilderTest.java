@@ -99,6 +99,6 @@ public final class EncryptTokenGenerateBuilderTest {
             }
             searchClass = searchClass.getSuperclass();
         }
-        throw new IllegalStateException("No such field in class");
+        throw new IllegalStateException("No such field in class.");
     }
 }
