@@ -44,7 +44,7 @@ resourceName
     ;
 
 encryptColumnDefinition
-    : LP_ columnDefinition (COMMA_ plainColumnDefinition)? COMMA_ cipherColumnDefinition (COMMA_ assistedQueryColumnDefinition)? (COMMA_ likeQueryColumnDefinition)? COMMA_ encryptAlgorithm (COMMA_ assistedQueryAlgorithm)? (COMMA_ likeQueryAlgorithm)? RP_
+    : LP_ columnDefinition (COMMA_ plainColumnDefinition)? COMMA_ cipherColumnDefinition (COMMA_ assistedQueryColumnDefinition)? (COMMA_ likeQueryColumnDefinition)? COMMA_ encryptAlgorithm (COMMA_ assistedQueryAlgorithm)? (COMMA_ likeQueryAlgorithm)? (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
     ;
 
 columnDefinition
