@@ -19,12 +19,12 @@ package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
-import org.apache.shardingsphere.infra.util.reflect.ReflectionUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
@@ -58,10 +58,10 @@ public final class NarayanaXATransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @Before
-    public void setUp() {
-        ReflectionUtil.setField(transactionManagerProvider, "xaRecoveryModule", xaRecoveryModule);
-        ReflectionUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
-        ReflectionUtil.setField(transactionManagerProvider, "recoveryManagerService", recoveryManagerService);
+    public void setUp() throws NoSuchFieldException {
+        new InstanceField(NarayanaXATransactionManagerProvider.class.getDeclaredField("xaRecoveryModule"), transactionManagerProvider).set(xaRecoveryModule);
+        new InstanceField(NarayanaXATransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider).set(transactionManager);
+        new InstanceField(NarayanaXATransactionManagerProvider.class.getDeclaredField("recoveryManagerService"), transactionManagerProvider).set(recoveryManagerService);
     }
     
     @Test
