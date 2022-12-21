@@ -6,7 +6,9 @@ weight = 3
 
 ## Data Structure in Registry Center
 
-Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations. `nodes` node persist the runtime node of database access object, to distinguish different database access instances.
+Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations. 
+`nodes` node persist the runtime node of database access object, to distinguish different database access instances.
+`sys_data` persist system tables and data.
 
 ```
 namespace
@@ -54,6 +56,14 @@ namespace
    ├    ├──storage_nodes                       
    ├    ├     ├──${databaseName.groupName.ds} 
    ├    ├     ├──${databaseName.groupName.ds}
+   ├──sys_data
+   ├    ├──shardingsphere
+   ├    ├     ├──schemas
+   ├    ├     ├     ├──shardingsphere
+   ├    ├     ├     ├     ├──tables             # system tables
+   ├    ├     ├     ├     ├     ├──sharding_table_statistics    # sharding statistics table
+   ├    ├     ├     ├     ├     ├     ├──8a2dcb0d97c3d86ef77b3d4651a1d7d0  # md5
+   ├    ├     ├     ├     ├     ├──cluster_information    # cluster information table
 ```
 
 ### /rules
