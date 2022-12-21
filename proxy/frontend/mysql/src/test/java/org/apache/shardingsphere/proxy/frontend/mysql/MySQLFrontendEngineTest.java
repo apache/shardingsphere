@@ -51,6 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -100,11 +101,9 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void resetConnectionIdGenerator() {
-        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
-        field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), 0);
+        new InstanceField(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance()).set(0);
         mysqlFrontendEngine = new MySQLFrontendEngine();
     }
     
