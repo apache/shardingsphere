@@ -28,9 +28,9 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -42,9 +42,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -108,11 +108,9 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(QueryContext.class), any(BackendConnection.class), eq(false))).thenReturn(databaseCommunicationEngine);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void setBackendHandlerFactory(final DatabaseBackendHandler schemaDatabaseBackendHandler) {
-        Field field = schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory");
-        field.setAccessible(true);
-        field.set(schemaDatabaseBackendHandler, databaseCommunicationEngineFactory);
+        new InstanceField(schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory"), schemaDatabaseBackendHandler).set(databaseCommunicationEngineFactory);
     }
     
     @Test
