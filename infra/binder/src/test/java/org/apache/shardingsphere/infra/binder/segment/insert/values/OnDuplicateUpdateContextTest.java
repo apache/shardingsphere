@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.ModuleMemberAccessor;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,21 +40,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class OnDuplicateUpdateContextTest {
     
-    @SuppressWarnings("unchecked")
     @Test
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Collection<AssignmentSegment> assignments = Collections.emptyList();
-        List<Object> params = Collections.emptyList();
-        int parametersOffset = 0;
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, params, parametersOffset);
-        Method getValueExpressionsMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
-        getValueExpressionsMethod.setAccessible(true);
-        List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
-        assertThat(onDuplicateUpdateContext.getValueExpressions(), is(getValueExpressionsResult));
-        Method getParametersMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getParameters", List.class, int.class);
-        getParametersMethod.setAccessible(true);
-        List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(onDuplicateUpdateContext, new Object[]{params, parametersOffset});
-        assertThat(onDuplicateUpdateContext.getParameters(), is(getParametersResult));
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(Collections.emptyList(), Collections.emptyList(), 0);
+        assertThat(onDuplicateUpdateContext.getValueExpressions(),
+                is(new ModuleMemberAccessor().invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class), onDuplicateUpdateContext, Collections.emptyList())));
+        assertThat(onDuplicateUpdateContext.getParameters(),
+                is(new ModuleMemberAccessor().invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getParameters", List.class, int.class), onDuplicateUpdateContext, Collections.emptyList(), 0)));
     }
     
     @Test
