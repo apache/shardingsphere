@@ -54,7 +54,6 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -158,11 +157,9 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         verify(context).writeAndFlush(argThat((ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
-        field.setAccessible(true);
-        field.set(mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
+        new InstanceField(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), mysqlFrontendEngine.getAuthenticationEngine()).set(connectionPhase);
     }
     
     private void initProxyContext(final ShardingSphereUser user) {

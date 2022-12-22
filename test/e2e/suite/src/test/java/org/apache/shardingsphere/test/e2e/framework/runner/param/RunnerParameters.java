@@ -23,8 +23,6 @@ import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 import org.mockito.internal.util.reflection.FieldReader;
 
-import java.lang.reflect.Field;
-
 /**
  * Runner parameters.
  */
@@ -40,9 +38,7 @@ public final class RunnerParameters {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public E2ETestParameter getTestParameter() {
-        Field paramsField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
-        paramsField.setAccessible(true);
-        Object[] params = (Object[]) paramsField.get(getRunner());
+        Object[] params = (Object[]) new FieldReader(getRunner(), BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters")).read();
         return (E2ETestParameter) params[0];
     }
     

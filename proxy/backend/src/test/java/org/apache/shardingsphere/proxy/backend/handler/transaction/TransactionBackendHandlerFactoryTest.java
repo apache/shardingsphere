@@ -22,13 +22,13 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -40,8 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.MockedStatic;
-
-import java.lang.reflect.Field;
+import org.mockito.internal.util.reflection.FieldReader;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -65,6 +64,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         ProxyContext.init(contextManager);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
@@ -95,6 +95,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
@@ -110,16 +111,12 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private <S, T> void assertFieldOfInstance(final S classInstance, final String fieldName, final Matcher<T> matcher) {
-        Field field = classInstance.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        T value = (T) field.get(classInstance);
+        T value = (T) new FieldReader(classInstance, classInstance.getClass().getDeclaredField(fieldName)).read();
         assertThat(value, matcher);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
-        Field field = transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager");
-        field.setAccessible(true);
-        return (BackendTransactionManager) field.get(transactionBackendHandler);
+        return (BackendTransactionManager) new FieldReader(transactionBackendHandler, transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager")).read();
     }
 }

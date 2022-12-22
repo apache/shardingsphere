@@ -47,6 +47,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -131,19 +133,15 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
         return mock(ShardingSphereRuleMetaData.class);
     }
     
-    private void setBackendDataSource() throws ReflectiveOperationException {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
-        field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), backendDataSource);
+    private void setBackendDataSource() throws NoSuchFieldException {
+        new InstanceField(ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource"), ProxyContext.getInstance()).set(backendDataSource);
     }
     
     @After
     public void clean() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
-        field.setAccessible(true);
-        Class<?> clazz = field.getType();
-        Object datasource = clazz.getDeclaredConstructor().newInstance();
-        field.set(ProxyContext.getInstance(), datasource);
+        Object datasource = field.getType().getDeclaredConstructor().newInstance();
+        new InstanceField(field, ProxyContext.getInstance()).set(datasource);
     }
     
     @Test
@@ -193,9 +191,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
         ConnectionPostProcessor connectionPostProcessor = mock(ConnectionPostProcessor.class);
         Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
         connectionPostProcessors.add(connectionPostProcessor);
-        Field field = BackendConnection.class.getDeclaredField("connectionPostProcessors");
-        field.setAccessible(true);
-        field.set(backendConnection, connectionPostProcessors);
+        new InstanceField(BackendConnection.class.getDeclaredField("connectionPostProcessors"), backendConnection).set(connectionPostProcessors);
     }
     
     @Test
@@ -227,10 +223,8 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws NoSuchFieldException, IllegalAccessException, SQLException {
-        Field field = BackendConnection.class.getDeclaredField("cachedConnections");
-        field.setAccessible(true);
-        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
+    public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws NoSuchFieldException, SQLException {
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) new FieldReader(backendConnection, BackendConnection.class.getDeclaredField("cachedConnections")).read();
         Connection connection = prepareCachedConnections();
         cachedConnections.put("ignoredDataSourceName", connection);
         backendConnection.closeConnections(false);
@@ -322,32 +316,27 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> connections) {
-        Field field = BackendConnection.class.getDeclaredField("cachedConnections");
-        field.setAccessible(true);
-        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) new FieldReader(backendConnection, BackendConnection.class.getDeclaredField("cachedConnections")).read();
         assertTrue(cachedConnections.containsKey(dataSourceName));
         assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private Connection prepareCachedConnections() {
-        Field field = BackendConnection.class.getDeclaredField("cachedConnections");
-        field.setAccessible(true);
-        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) new FieldReader(backendConnection, BackendConnection.class.getDeclaredField("cachedConnections")).read();
         Connection connection = mock(Connection.class);
         cachedConnections.put("ignoredDataSourceName", connection);
         return connection;
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void verifyConnectionPostProcessorsEmpty() {
-        Field field = BackendConnection.class.getDeclaredField("connectionPostProcessors");
-        field.setAccessible(true);
-        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) new FieldReader(
+                backendConnection, BackendConnection.class.getDeclaredField("connectionPostProcessors")).read();
         assertTrue(connectionPostProcessors.isEmpty());
     }
     
@@ -405,17 +394,13 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getDatabaseCommunicationEngines() {
-        Field field = BackendConnection.class.getDeclaredField("backendHandlers");
-        field.setAccessible(true);
-        return (Collection<ProxyBackendHandler>) field.get(backendConnection);
+        return (Collection<ProxyBackendHandler>) new FieldReader(backendConnection, BackendConnection.class.getDeclaredField("backendHandlers")).read();
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getInUseDatabaseCommunicationEngines() {
-        Field field = BackendConnection.class.getDeclaredField("inUseBackendHandlers");
-        field.setAccessible(true);
-        return (Collection<ProxyBackendHandler>) field.get(backendConnection);
+        return (Collection<ProxyBackendHandler>) new FieldReader(backendConnection, BackendConnection.class.getDeclaredField("inUseBackendHandlers")).read();
     }
     
     @Test

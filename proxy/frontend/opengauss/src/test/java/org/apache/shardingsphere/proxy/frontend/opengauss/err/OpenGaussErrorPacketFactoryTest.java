@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.err;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 import org.opengauss.util.PSQLException;
 import org.opengauss.util.ServerErrorMessage;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -82,10 +82,8 @@ public final class OpenGaussErrorPacketFactoryTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
+    @SneakyThrows(NoSuchFieldException.class)
     private static Map<Character, String> getFieldsInPacket(final OpenGaussErrorResponsePacket packet) {
-        Field field = OpenGaussErrorResponsePacket.class.getDeclaredField("fields");
-        field.setAccessible(true);
-        return (Map<Character, String>) field.get(packet);
+        return (Map<Character, String>) new FieldReader(packet, OpenGaussErrorResponsePacket.class.getDeclaredField("fields")).read();
     }
 }

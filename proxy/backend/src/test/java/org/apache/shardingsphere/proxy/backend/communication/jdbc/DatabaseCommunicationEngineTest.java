@@ -65,6 +65,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.plugins.MemberAccessor;
 
@@ -291,10 +292,8 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private <T> T getField(final DatabaseCommunicationEngine target, final String fieldName) {
-        Field field = DatabaseCommunicationEngine.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return (T) field.get(target);
+        return (T) new FieldReader(target, DatabaseCommunicationEngine.class.getDeclaredField(fieldName)).read();
     }
 }

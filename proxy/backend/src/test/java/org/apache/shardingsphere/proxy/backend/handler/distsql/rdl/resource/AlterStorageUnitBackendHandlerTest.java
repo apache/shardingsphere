@@ -41,10 +41,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -88,9 +88,7 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         alterStorageUnitBackendHandler = new AlterStorageUnitBackendHandler(alterStorageUnitStatement, connectionSession);
-        Field field = alterStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler");
-        field.setAccessible(true);
-        field.set(alterStorageUnitBackendHandler, validateHandler);
+        new InstanceField(alterStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler"), alterStorageUnitBackendHandler).set(validateHandler);
     }
     
     @Test

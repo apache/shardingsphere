@@ -23,8 +23,8 @@ import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecuto
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLPortalContextRegistry;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentMap;
 
 import static org.junit.Assert.assertTrue;
@@ -50,8 +50,6 @@ public final class PostgreSQLFrontendEngineTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private ConcurrentMap<Integer, PortalContext> getPortalContexts() {
-        Field field = PostgreSQLPortalContextRegistry.class.getDeclaredField("portalContexts");
-        field.setAccessible(true);
-        return (ConcurrentMap<Integer, PortalContext>) field.get(PostgreSQLPortalContextRegistry.getInstance());
+        return (ConcurrentMap<Integer, PortalContext>) new FieldReader(PostgreSQLPortalContextRegistry.getInstance(), PostgreSQLPortalContextRegistry.class.getDeclaredField("portalContexts")).read();
     }
 }
