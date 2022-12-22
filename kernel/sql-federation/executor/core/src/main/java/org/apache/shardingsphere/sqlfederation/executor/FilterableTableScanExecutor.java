@@ -118,6 +118,11 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     private final EventBusContext eventBusContext;
     
     @Override
+    public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
+        return null;
+    }
+    
+    @Override
     public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName().toLowerCase();
         String schemaName = executorContext.getSchemaName().toLowerCase();

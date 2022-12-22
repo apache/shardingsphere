@@ -71,6 +71,29 @@ public final class FederationTranslatableTable extends AbstractTable implements 
      * @param projects fields to be projected
      * @return enumerable result
      */
+    public Enumerable<Object> projectAndFilterScalar(final DataContext root, final String[] filterValues, final int[] projects) {
+        return executor.executeScalar(table, new TranslatableScanNodeExecutorContext(root, filterValues, projects));
+    }
+    
+    /**
+     * Execute filter and project when query the federation translatable table.
+     *
+     * @param root data context
+     * @param projects fields to be projected
+     * @return enumerable result
+     */
+    public Enumerable<Object> projectScalar(final DataContext root, final int[] projects) {
+        return executor.executeScalar(table, new TranslatableScanNodeExecutorContext(root, null, projects));
+    }
+    
+    /**
+     * Execute filter and project when query the federation translatable table.
+     *
+     * @param root data context
+     * @param filterValues right value in filter condition
+     * @param projects fields to be projected
+     * @return enumerable result
+     */
     public Enumerable<Object[]> projectAndFilter(final DataContext root, final String[] filterValues, final int[] projects) {
         return executor.execute(table, new TranslatableScanNodeExecutorContext(root, filterValues, projects));
     }

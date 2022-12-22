@@ -80,8 +80,11 @@ import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.Filtera
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.StringToRexNodeUtil;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.EmptyRowScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.MemoryScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.SQLFederationScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
@@ -119,6 +122,93 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     private final ShardingSphereData data;
     
     private final EventBusContext eventBusContext;
+    
+    @Override
+    public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
+        String databaseName = executorContext.getDatabaseName().toLowerCase();
+        String schemaName = executorContext.getSchemaName().toLowerCase();
+        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
+        SqlString sqlString = createSQLString(table, (TranslatableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
+        // TODO replace sql parse with sql convert
+        SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
+        QueryContext queryContext = createQueryContext(federationContext.getMetaData(), sqlString, databaseType);
+        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
+        ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
+        if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
+            federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
+            return createEmptyScalarEnumerable();
+        }
+        if (databaseType.getSystemSchemas().contains(schemaName)) {
+            return executeByScalarShardingSphereData(databaseName, schemaName, table);
+        }
+        return executeScalarEnumerable(databaseType, queryContext, database, context);
+    }
+    
+    private AbstractEnumerable<Object> createEmptyScalarEnumerable() {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new EmptyRowScalarEnumerator();
+            }
+        };
+    }
+    
+    private Enumerable<Object> executeByScalarShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(data.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
+                .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
+        return tableData.map(this::createMemoryScalarEnumerator).orElseGet(this::createEmptyScalarEnumerable);
+    }
+    
+    private Enumerable<Object> createMemoryScalarEnumerator(final ShardingSphereTableData tableData) {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new MemoryScalarEnumerator(tableData.getRows());
+            }
+        };
+    }
+    
+    private AbstractEnumerable<Object> executeScalarEnumerable(final DatabaseType databaseType, final QueryContext queryContext,
+                                                               final ShardingSphereDatabase database, final ExecutionContext context) {
+        try {
+            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
+            setParameters(executionGroupContext.getInputGroups());
+            ExecuteProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
+            List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
+            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
+            MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
+            Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
+            return createScalarEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        } finally {
+            ExecuteProcessEngine.cleanExecution();
+        }
+    }
+    
+    private AbstractEnumerable<Object> createScalarEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) throws SQLException {
+        // TODO remove getRows when mergedResult support JDBC first method
+        Collection<Object> rows = getScalarRows(mergedResult, metaData);
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new SQLFederationScalarEnumerator(rows, statements);
+            }
+        };
+    }
+    
+    private Collection<Object> getScalarRows(final MergedResult mergedResult, final QueryResultMetaData metaData) throws SQLException {
+        Collection<Object> result = new LinkedList<>();
+        while (mergedResult.next()) {
+            Object currentRow = mergedResult.getValue(1, Object.class);
+            result.add(currentRow);
+        }
+        return result;
+    }
     
     @Override
     public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
