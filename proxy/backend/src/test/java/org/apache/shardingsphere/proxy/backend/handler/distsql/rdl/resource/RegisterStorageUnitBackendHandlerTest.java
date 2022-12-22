@@ -43,9 +43,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -95,9 +95,7 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(readwriteSplittingRule));
         registerStorageUnitBackendHandler = new RegisterStorageUnitBackendHandler(registerStorageUnitStatement, connectionSession);
-        Field field = registerStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler");
-        field.setAccessible(true);
-        field.set(registerStorageUnitBackendHandler, validateHandler);
+        new InstanceField(registerStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler"), registerStorageUnitBackendHandler).set(validateHandler);
     }
     
     @Test
