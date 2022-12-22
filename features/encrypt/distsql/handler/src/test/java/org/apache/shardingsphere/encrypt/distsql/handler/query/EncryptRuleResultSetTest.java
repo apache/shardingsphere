@@ -48,11 +48,13 @@ public final class EncryptRuleResultSetTest {
         DatabaseDistSQLResultSet resultSet = new EncryptRuleResultSet();
         resultSet.init(database, mock(ShowEncryptRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(16));
+        assertThat(actual.size(), is(18));
         assertTrue(actual.contains("t_encrypt"));
         assertTrue(actual.contains("user_id"));
         assertTrue(actual.contains("user_cipher"));
         assertTrue(actual.contains("user_plain"));
+        assertTrue(actual.contains("user_assisted"));
+        assertTrue(actual.contains("user_like"));
         assertTrue(actual.contains("md5"));
     }
     
@@ -65,7 +67,7 @@ public final class EncryptRuleResultSetTest {
     }
     
     private RuleConfiguration getRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, null, "user_plain", "test", null);
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "user_like", "user_plain", "test", null);
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig), null);
         AlgorithmConfiguration shardingSphereAlgorithmConfig = new AlgorithmConfiguration("md5", new Properties());
         return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));
