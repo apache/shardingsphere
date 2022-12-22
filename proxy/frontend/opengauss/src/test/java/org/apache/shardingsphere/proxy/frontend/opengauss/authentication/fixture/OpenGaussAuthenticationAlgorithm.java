@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationHandler;
-import org.mockito.internal.util.reflection.ModuleMemberAccessor;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.nio.charset.StandardCharsets;
 
@@ -51,30 +51,30 @@ public final class OpenGaussAuthenticationAlgorithm {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] generateKFromPBKDF2(final String password, final String saltString, final int serverIteration) {
-        return (byte[]) new ModuleMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("generateKFromPBKDF2", String.class, String.class, int.class),
+        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("generateKFromPBKDF2", String.class, String.class, int.class),
                 OpenGaussAuthenticationHandler.class, password, saltString, serverIteration);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] getKeyFromHmac(final byte[] key, final byte[] data) {
-        return (byte[]) new ModuleMemberAccessor().invoke(
+        return (byte[]) Plugins.getMemberAccessor().invoke(
                 OpenGaussAuthenticationHandler.class.getDeclaredMethod("getKeyFromHmac", byte[].class, byte[].class), OpenGaussAuthenticationHandler.class, key, data);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] sha256(final byte[] str) {
-        return (byte[]) new ModuleMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("sha256", byte[].class), OpenGaussAuthenticationHandler.class, new Object[]{str});
+        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("sha256", byte[].class), OpenGaussAuthenticationHandler.class, new Object[]{str});
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] hexStringToBytes(final String rawHexString) {
-        return (byte[]) new ModuleMemberAccessor().invoke(
+        return (byte[]) Plugins.getMemberAccessor().invoke(
                 OpenGaussAuthenticationHandler.class.getDeclaredMethod("hexStringToBytes", String.class), OpenGaussAuthenticationHandler.class, rawHexString);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] xor(final byte[] value1, final byte[] value2) {
-        return (byte[]) new ModuleMemberAccessor().invoke(
+        return (byte[]) Plugins.getMemberAccessor().invoke(
                 OpenGaussAuthenticationHandler.class.getDeclaredMethod("xor", byte[].class, byte[].class), OpenGaussAuthenticationHandler.class, value1, value2);
     }
     

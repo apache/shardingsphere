@@ -52,9 +52,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.internal.util.reflection.InstanceField;
-import org.mockito.internal.util.reflection.ModuleMemberAccessor;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
@@ -134,7 +134,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
     
     @Test
     public void assertGetIdentifierPacket() throws ReflectiveOperationException {
-        assertThat(new ModuleMemberAccessor().invoke(PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class), new PostgreSQLAuthenticationEngine(), username),
+        assertThat(Plugins.getMemberAccessor().invoke(PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class), new PostgreSQLAuthenticationEngine(), username),
                 instanceOf(PostgreSQLMD5PasswordAuthenticationPacket.class));
     }
     
@@ -156,7 +156,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         PostgreSQLMD5PasswordAuthenticationPacket md5PasswordPacket = argumentCaptor.getValue();
         byte[] md5Salt = getMd5Salt(md5PasswordPacket);
         payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-        String md5Digest = (String) new ModuleMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
+        String md5Digest = (String) Plugins.getMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
                 new PostgreSQLMD5PasswordAuthenticator(), username, inputPassword, md5Salt);
         payload.writeInt1('p');
         payload.writeInt4(4 + md5Digest.length() + 1);

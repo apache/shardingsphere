@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.ModuleMemberAccessor;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.Serializable;
@@ -77,7 +77,7 @@ public final class MySQLBinlogRowsEventPacketTest {
         assertFalse(actual.getColumnsPresentBitmap().isNullParameter(0));
         assertNull(actual.getColumnsPresentBitmap2());
         MySQLPacketPayload packetPayload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        assertThat(((Serializable[]) new ModuleMemberAccessor()
+        assertThat(((Serializable[]) Plugins.getMemberAccessor()
                 .invoke(MySQLBinlogRowsEventPacket.class.getDeclaredMethod("readRow", List.class, MySQLPacketPayload.class), actual, columnDefs, packetPayload))[0], is(0L));
     }
     

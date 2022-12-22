@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthe
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.ModuleMemberAccessor;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,7 +53,7 @@ public final class PostgreSQLMD5PasswordAuthenticatorTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private String md5Encode(final byte[] md5Salt) {
-        return (String) new ModuleMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
+        return (String) Plugins.getMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
                 new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
     }
 }

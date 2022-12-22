@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.ModuleMemberAccessor;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -44,9 +44,9 @@ public final class InsertValueContextTest {
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         InsertValueContext insertValueContext = new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 0);
         assertThat(insertValueContext.getValueExpressions(), is(
-                new ModuleMemberAccessor().invoke(InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class), insertValueContext, Collections.emptyList())));
+                Plugins.getMemberAccessor().invoke(InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class), insertValueContext, Collections.emptyList())));
         assertThat(insertValueContext.getParameters(), is(
-                new ModuleMemberAccessor().invoke(InsertValueContext.class.getDeclaredMethod("getParameters", List.class, int.class), insertValueContext, Collections.emptyList(), 0)));
+                Plugins.getMemberAccessor().invoke(InsertValueContext.class.getDeclaredMethod("getParameters", List.class, int.class), insertValueContext, Collections.emptyList(), 0)));
     }
     
     @Test

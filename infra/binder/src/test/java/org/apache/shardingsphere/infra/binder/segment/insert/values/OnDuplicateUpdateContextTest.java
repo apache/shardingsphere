@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.ModuleMemberAccessor;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -43,10 +43,10 @@ public final class OnDuplicateUpdateContextTest {
     @Test
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(Collections.emptyList(), Collections.emptyList(), 0);
-        assertThat(onDuplicateUpdateContext.getValueExpressions(),
-                is(new ModuleMemberAccessor().invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class), onDuplicateUpdateContext, Collections.emptyList())));
-        assertThat(onDuplicateUpdateContext.getParameters(),
-                is(new ModuleMemberAccessor().invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getParameters", List.class, int.class), onDuplicateUpdateContext, Collections.emptyList(), 0)));
+        assertThat(onDuplicateUpdateContext.getValueExpressions(), is(Plugins.getMemberAccessor()
+                .invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class), onDuplicateUpdateContext, Collections.emptyList())));
+        assertThat(onDuplicateUpdateContext.getParameters(), is(Plugins.getMemberAccessor()
+                .invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getParameters", List.class, int.class), onDuplicateUpdateContext, Collections.emptyList(), 0)));
     }
     
     @Test
