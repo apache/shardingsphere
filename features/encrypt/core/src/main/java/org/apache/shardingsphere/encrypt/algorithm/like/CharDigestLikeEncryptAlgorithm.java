@@ -154,7 +154,11 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
         StringBuilder result = new StringBuilder(plainValue.length());
         for (char each : plainValue.toCharArray()) {
             char maskedChar = getMaskedChar(each);
-            result.append(maskedChar);
+            if ('%' == maskedChar || '_' == maskedChar) {
+                result.append(each);
+            } else {
+                result.append(maskedChar);
+            }
         }
         return result.toString();
     }
