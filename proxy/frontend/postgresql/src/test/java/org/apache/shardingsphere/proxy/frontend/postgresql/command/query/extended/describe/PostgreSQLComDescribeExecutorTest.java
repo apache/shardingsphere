@@ -61,7 +61,6 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.ResultSetMetaData;
@@ -381,11 +380,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private List<PostgreSQLColumnDescription> getColumnDescriptions(final PostgreSQLRowDescriptionPacket packet) {
-        Field columnDescriptionsField = PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions");
-        columnDescriptionsField.setAccessible(true);
-        return (List<PostgreSQLColumnDescription>) columnDescriptionsField.get(packet);
+        return (List<PostgreSQLColumnDescription>) new FieldReader(packet, PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions")).read();
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
