@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,9 +41,9 @@ import static org.mockito.Mockito.when;
 public final class SQLTokenGeneratorsTest {
     
     @Test
-    public void assertAddAllWithList() throws Exception {
+    public void assertAddAllWithList() throws NoSuchFieldException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSqlTokenGeneratorsMap(sqlTokenGenerators);
+        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
         SQLTokenGenerator mockSqlTokenGenerator = mock(SQLTokenGenerator.class);
         sqlTokenGenerators.addAll(Collections.singleton(mockSqlTokenGenerator));
         assertThat(actualSqlTokenGeneratorsMap.size(), is(1));
@@ -52,7 +52,7 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @Test
-    public void assertAddAllWithSameClass() throws Exception {
+    public void assertAddAllWithSameClass() throws NoSuchFieldException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         SQLTokenGenerator expectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
         SQLTokenGenerator unexpectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
@@ -60,7 +60,7 @@ public final class SQLTokenGeneratorsTest {
         collection.add(expectedSqlTokenGenerator);
         collection.add(unexpectedSqlTokenGenerator);
         sqlTokenGenerators.addAll(collection);
-        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSqlTokenGeneratorsMap(sqlTokenGenerators);
+        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
         assertThat(actualSqlTokenGeneratorsMap.size(), is(1));
         SQLTokenGenerator actualSqlTokenGenerator = actualSqlTokenGeneratorsMap.get(expectedSqlTokenGenerator.getClass());
         assertThat(actualSqlTokenGenerator, is(expectedSqlTokenGenerator));
@@ -95,9 +95,7 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @SuppressWarnings("unchecked")
-    private Map<Class<?>, SQLTokenGenerator> getSqlTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws NoSuchFieldException, IllegalAccessException {
-        Field field = sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators");
-        field.setAccessible(true);
-        return (Map<Class<?>, SQLTokenGenerator>) field.get(sqlTokenGenerators);
+    private Map<Class<?>, SQLTokenGenerator> getSQLTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws NoSuchFieldException {
+        return (Map<Class<?>, SQLTokenGenerator>) new FieldReader(sqlTokenGenerators, sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators")).read();
     }
 }

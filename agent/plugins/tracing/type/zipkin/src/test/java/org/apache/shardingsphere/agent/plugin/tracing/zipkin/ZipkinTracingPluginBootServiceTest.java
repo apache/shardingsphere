@@ -21,27 +21,25 @@ import brave.Tracing;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 
 public final class ZipkinTracingPluginBootServiceTest {
     
-    private final ZipkinTracingPluginBootService zipkinTracingPluginBootService = new ZipkinTracingPluginBootService();
-    
-    @Test
-    public void assertStart() throws ReflectiveOperationException {
-        zipkinTracingPluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()), true);
-        Field field = ZipkinTracingPluginBootService.class.getDeclaredField("tracing");
-        field.setAccessible(true);
-        Tracing tracing = (Tracing) field.get(zipkinTracingPluginBootService);
-        assertNotNull(tracing.tracer());
-    }
+    private final ZipkinTracingPluginBootService pluginBootService = new ZipkinTracingPluginBootService();
     
     @After
     public void close() {
-        zipkinTracingPluginBootService.close();
+        pluginBootService.close();
+    }
+    
+    @Test
+    public void assertStart() throws ReflectiveOperationException {
+        pluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()), true);
+        Tracing tracing = (Tracing) new FieldReader(pluginBootService, ZipkinTracingPluginBootService.class.getDeclaredField("tracing")).read();
+        assertNotNull(tracing.tracer());
     }
 }

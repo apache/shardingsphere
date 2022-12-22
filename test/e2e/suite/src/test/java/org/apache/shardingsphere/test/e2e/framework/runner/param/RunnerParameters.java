@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
+import org.mockito.internal.util.reflection.FieldReader;
 
 import java.lang.reflect.Field;
 
@@ -47,8 +48,6 @@ public final class RunnerParameters {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private Object getRunner() {
-        Field field = childStatement.getClass().getDeclaredField("val$each");
-        field.setAccessible(true);
-        return field.get(childStatement);
+        return new FieldReader(childStatement, childStatement.getClass().getDeclaredField("val$each")).read();
     }
 }

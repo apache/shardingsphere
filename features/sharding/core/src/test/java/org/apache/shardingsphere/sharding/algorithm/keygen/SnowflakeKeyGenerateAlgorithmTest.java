@@ -19,20 +19,21 @@ package org.apache.shardingsphere.sharding.algorithm.keygen;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.util.reflection.InstanceField;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -180,7 +181,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         setLastMilliseconds(algorithm, timeService.getCurrentMillis());
-        setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1);
+        setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -189,18 +190,14 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         assertThat(actual, is(expected));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void setLastMilliseconds(final KeyGenerateAlgorithm algorithm, final Number value) {
-        Field lastMilliseconds = SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("lastMilliseconds");
-        lastMilliseconds.setAccessible(true);
-        lastMilliseconds.set(algorithm, value);
+        new InstanceField(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("lastMilliseconds"), algorithm).set(value);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void setSequence(final KeyGenerateAlgorithm algorithm, final Number value) {
-        Field sequence = SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence");
-        sequence.setAccessible(true);
-        sequence.set(algorithm, value);
+        new InstanceField(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence"), algorithm).set(value);
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -236,12 +233,10 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws NoSuchFieldException, IllegalAccessException {
+    public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws NoSuchFieldException {
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(1));
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", props));
-        Field field = algorithm.getClass().getDeclaredField("props");
-        field.setAccessible(true);
-        assertThat(((Properties) field.get(algorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
+        assertThat(((Properties) new FieldReader(algorithm, algorithm.getClass().getDeclaredField("props")).read()).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
     }
 }

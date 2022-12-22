@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
 import java.util.Properties;
 
@@ -37,14 +37,14 @@ public final class MemoryPipelineChannelCreatorTest {
         props.setProperty("block-queue-size", "200");
         PipelineChannelCreator creator = new MemoryPipelineChannelCreator();
         creator.init(props);
-        assertThat(ReflectionUtil.getFieldValue(creator, "blockQueueSize", Integer.class), is(200));
+        assertThat(new FieldReader(creator, MemoryPipelineChannelCreator.class.getDeclaredField("blockQueueSize")).read(), is(200));
     }
     
     @Test
     public void assertInitWithoutBlockQueueSize() throws Exception {
         PipelineChannelCreator creator = new MemoryPipelineChannelCreator();
         creator.init(new Properties());
-        assertThat(ReflectionUtil.getFieldValue(creator, "blockQueueSize", Integer.class), is(10000));
+        assertThat(new FieldReader(creator, MemoryPipelineChannelCreator.class.getDeclaredField("blockQueueSize")).read(), is(10000));
     }
     
     @Test

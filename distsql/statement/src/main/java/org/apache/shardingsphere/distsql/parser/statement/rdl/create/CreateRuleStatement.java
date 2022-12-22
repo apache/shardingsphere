@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
  * Create rule statement.
  */
+@RequiredArgsConstructor
+@Getter
 public abstract class CreateRuleStatement extends RuleDefinitionStatement {
+    
+    private final boolean ifNotExists;
+    
+    public CreateRuleStatement() {
+        this(false);
+    }
 }

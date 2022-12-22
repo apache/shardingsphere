@@ -21,13 +21,13 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -92,10 +92,8 @@ public final class YamlShardingSphereDataSourceFactoryTest {
         return result.toString();
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void assertDataSource(final DataSource dataSource) {
-        Field field = ShardingSphereDataSource.class.getDeclaredField("databaseName");
-        field.setAccessible(true);
-        assertThat((String) field.get(dataSource), is("logic_db"));
+        assertThat(new FieldReader(dataSource, ShardingSphereDataSource.class.getDeclaredField("databaseName")).read(), is("logic_db"));
     }
 }
