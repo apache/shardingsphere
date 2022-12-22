@@ -53,9 +53,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -117,12 +118,9 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         authenticationEngine.authenticate(channelHandlerContext, payload);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void setAlreadyReceivedStartupMessage(final PostgreSQLAuthenticationEngine target) {
-        Field field = PostgreSQLAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
-        field.setAccessible(true);
-        field.set(target, true);
-        field.setAccessible(false);
+        new InstanceField(PostgreSQLAuthenticationEngine.class.getDeclaredField("startupMessageReceived"), target).set(true);
     }
     
     @Test
@@ -187,11 +185,9 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private byte[] getMd5Salt(final PostgreSQLMD5PasswordAuthenticationPacket md5PasswordPacket) {
-        Field field = PostgreSQLMD5PasswordAuthenticationPacket.class.getDeclaredField("md5Salt");
-        field.setAccessible(true);
-        return (byte[]) field.get(md5PasswordPacket);
+        return (byte[]) new FieldReader(md5PasswordPacket, PostgreSQLMD5PasswordAuthenticationPacket.class.getDeclaredField("md5Salt")).read();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
