@@ -39,7 +39,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
@@ -47,7 +46,6 @@ import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.internal.util.reflection.InstanceField;
 
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.LinkedHashMap;
@@ -123,11 +121,9 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         assertThat(getAuthResponse(), is(authResponse));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private void setAuthenticationResult() {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult");
-        field.setAccessible(true);
-        field.set(authenticationEngine, AuthenticationResultBuilder.continued("root", "", "sharding_db"));
+        new InstanceField(MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine).set(authenticationEngine);
     }
     
     @Test
