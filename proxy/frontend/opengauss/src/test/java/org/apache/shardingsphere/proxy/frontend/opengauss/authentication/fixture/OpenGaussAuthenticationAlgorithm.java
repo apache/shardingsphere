@@ -63,7 +63,7 @@ public final class OpenGaussAuthenticationAlgorithm {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] sha256(final byte[] str) {
-        return (byte[]) new ModuleMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("sha256", byte[].class), OpenGaussAuthenticationHandler.class, new Object[] {str});
+        return (byte[]) new ModuleMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("sha256", byte[].class), OpenGaussAuthenticationHandler.class, new Object[]{str});
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
