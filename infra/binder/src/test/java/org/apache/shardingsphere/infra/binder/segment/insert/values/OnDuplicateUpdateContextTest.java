@@ -55,8 +55,7 @@ public final class OnDuplicateUpdateContextTest {
         String parameterValue1 = "test1";
         String parameterValue2 = "test2";
         List<Object> params = Arrays.asList(parameterValue1, parameterValue2);
-        int parametersOffset = 0;
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, params, parametersOffset);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, params, 0);
         Object valueFromInsertValueContext1 = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext1, is(parameterValue1));
         Object valueFromInsertValueContext2 = onDuplicateUpdateContext.getValue(1);
@@ -75,8 +74,7 @@ public final class OnDuplicateUpdateContextTest {
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
         Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
-        List<Object> params = Collections.emptyList();
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, params, 0);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0);
         Object valueFromInsertValueContext = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext, is(literalObject));
     }
@@ -107,8 +105,7 @@ public final class OnDuplicateUpdateContextTest {
     public void assertGetColumn() {
         Object literalObject = new Object();
         Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
-        List<Object> params = Collections.emptyList();
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, params, 0);
+        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0);
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
         assertThat(column, is(assignments.iterator().next().getColumns().get(0)));
     }
