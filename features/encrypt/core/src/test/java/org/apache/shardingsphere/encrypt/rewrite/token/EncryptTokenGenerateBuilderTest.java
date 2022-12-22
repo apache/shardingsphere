@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptOrderByItemTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -57,36 +58,33 @@ public final class EncryptTokenGenerateBuilderTest {
     }
     
     @Test
-    public void assertGetSQLTokenGenerators() throws IllegalAccessException {
+    public void assertGetSQLTokenGenerators() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getAllTables().isEmpty()).thenReturn(false);
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("table"));
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singletonList(mock(OrderByItem.class)));
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
-        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(
-                encryptRule, selectStatementContext, Collections.emptyList(), DefaultDatabase.LOGIC_NAME);
+        EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, selectStatementContext, Collections.emptyList(), DefaultDatabase.LOGIC_NAME);
         Collection<SQLTokenGenerator> sqlTokenGenerators = encryptTokenGenerateBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(2));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator item1 = iterator.next();
         assertThat(item1, instanceOf(EncryptProjectionTokenGenerator.class));
-        assertSqlTokenGenerator(item1);
+        assertSQLTokenGenerator(item1);
         SQLTokenGenerator item2 = iterator.next();
         assertThat(item2, instanceOf(EncryptOrderByItemTokenGenerator.class));
-        assertSqlTokenGenerator(item2);
+        assertSQLTokenGenerator(item2);
     }
     
-    private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws IllegalAccessException {
+    private void assertSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) {
         if (sqlTokenGenerator instanceof EncryptRuleAware) {
             assertField(sqlTokenGenerator, encryptRule, "encryptRule");
         }
     }
     
-    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws IllegalAccessException {
-        Field field = findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass());
-        field.setAccessible(true);
-        assertThat(field.get(sqlTokenGenerator), is(filedInstance));
+    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) {
+        assertThat(new FieldReader(sqlTokenGenerator, findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass())).read(), is(filedInstance));
     }
     
     private Field findField(final Class<?> clazz, final String fieldName, final Class<?> fieldType) {
@@ -99,6 +97,6 @@ public final class EncryptTokenGenerateBuilderTest {
             }
             searchClass = searchClass.getSuperclass();
         }
-        throw new IllegalStateException("No such field in class");
+        throw new IllegalStateException("No such field in class.");
     }
 }

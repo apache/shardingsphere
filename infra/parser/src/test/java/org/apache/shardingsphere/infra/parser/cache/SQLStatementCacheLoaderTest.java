@@ -21,8 +21,7 @@ import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
-
-import java.lang.reflect.Field;
+import org.mockito.internal.util.reflection.InstanceField;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,11 +35,8 @@ public final class SQLStatementCacheLoaderTest {
     @Test
     public void assertSQLStatementCacheLoad() throws ReflectiveOperationException {
         SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new CacheOption(128, 1024L), false);
-        Field sqlStatementParserExecutorField = sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor");
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
-        sqlStatementParserExecutorField.setAccessible(true);
-        sqlStatementParserExecutorField.set(sqlStatementCacheLoader, executor);
+        new InstanceField(sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor"), sqlStatementCacheLoader).set(executor);
         assertThat(sqlStatementCacheLoader.load(SQL), isA(SQLStatement.class));
-        sqlStatementParserExecutorField.setAccessible(false);
     }
 }

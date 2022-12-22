@@ -38,10 +38,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,9 +97,8 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
     @Test(expected = IllegalStateException.class)
     public void assertImportDatabaseExecutorForSharding() throws Exception {
         init(sharding);
-        Field shardingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
-        shardingRuleConfigurationImportCheckerField.setAccessible(true);
-        shardingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, shardingRuleConfigurationImportChecker);
+        new InstanceField(importDatabaseConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker"),
+                importDatabaseConfigurationHandler).set(shardingRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(sharding));
         assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(sharding).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
@@ -108,9 +107,8 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
     @Test(expected = IllegalStateException.class)
     public void assertImportDatabaseExecutorForReadwriteSplitting() throws Exception {
         init(readwriteSplitting);
-        Field readwriteSplittingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
-        readwriteSplittingRuleConfigurationImportCheckerField.setAccessible(true);
-        readwriteSplittingRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, readwriteSplittingRuleConfigurationImportChecker);
+        new InstanceField(importDatabaseConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker"),
+                importDatabaseConfigurationHandler).set(readwriteSplittingRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(readwriteSplitting));
         assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(readwriteSplitting).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
@@ -119,9 +117,8 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
     @Test(expected = IllegalStateException.class)
     public void assertImportDatabaseExecutorForDatabaseDiscovery() throws Exception {
         init(databaseDiscovery);
-        Field databaseDiscoveryRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker");
-        databaseDiscoveryRuleConfigurationImportCheckerField.setAccessible(true);
-        databaseDiscoveryRuleConfigurationImportCheckerField.set(importDatabaseConfigurationHandler, databaseDiscoveryRuleConfigurationImportChecker);
+        new InstanceField(importDatabaseConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker"),
+                importDatabaseConfigurationHandler).set(databaseDiscoveryRuleConfigurationImportChecker);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseDiscovery));
         assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseDiscovery).getRuleMetaData().getConfigurations());
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
@@ -131,9 +128,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         ImportDatabaseConfigurationHandler handler = importDatabaseConfigurationHandler = new ImportDatabaseConfigurationHandler();
         handler.init(new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationHandlerTest.class.getResource(featureMap.get(feature))).getPath()),
                 mock(ConnectionSession.class));
-        Field field = importDatabaseConfigurationHandler.getClass().getDeclaredField("validateHandler");
-        field.setAccessible(true);
-        field.set(importDatabaseConfigurationHandler, validateHandler);
+        new InstanceField(importDatabaseConfigurationHandler.getClass().getDeclaredField("validateHandler"), importDatabaseConfigurationHandler).set(validateHandler);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));

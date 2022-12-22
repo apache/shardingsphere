@@ -19,12 +19,12 @@ package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import org.apache.shardingsphere.infra.util.reflect.ReflectionUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
@@ -57,9 +57,9 @@ public final class AtomikosTransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @Before
-    public void setUp() {
-        ReflectionUtil.setField(transactionManagerProvider, "transactionManager", userTransactionManager);
-        ReflectionUtil.setField(transactionManagerProvider, "userTransactionService", userTransactionService);
+    public void setUp() throws NoSuchFieldException {
+        new InstanceField(AtomikosTransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider).set(userTransactionManager);
+        new InstanceField(AtomikosTransactionManagerProvider.class.getDeclaredField("userTransactionService"), transactionManagerProvider).set(userTransactionService);
     }
     
     @Test

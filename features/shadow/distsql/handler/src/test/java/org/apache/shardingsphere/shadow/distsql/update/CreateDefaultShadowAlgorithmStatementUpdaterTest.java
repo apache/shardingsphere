@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateDefaultShadowAlgorithmStatementUpdater;
@@ -48,21 +48,28 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
-        ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
-        when(statement.getShadowAlgorithmSegment()).thenReturn(shadowAlgorithmSegment);
+        when(statement.getShadowAlgorithmSegment()).thenReturn(new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", createProperties())));
         updater.checkSQLStatement(database, statement, currentConfig);
     }
     
     @Test
     public void assertExecuteSuccess() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
-        ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", prop));
-        when(statement.getShadowAlgorithmSegment()).thenReturn(shadowAlgorithmSegment);
+        when(statement.getShadowAlgorithmSegment()).thenReturn(new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", createProperties())));
         updater.checkSQLStatement(database, statement, currentConfig);
+    }
+    
+    @Test
+    public void assertExecuteWithIfNotExists() {
+        ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", createProperties()));
+        CreateDefaultShadowAlgorithmStatement statement = new CreateDefaultShadowAlgorithmStatement(true, shadowAlgorithmSegment);
+        updater.checkSQLStatement(database, statement, currentConfig);
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("type", "value");
+        return result;
     }
 }
