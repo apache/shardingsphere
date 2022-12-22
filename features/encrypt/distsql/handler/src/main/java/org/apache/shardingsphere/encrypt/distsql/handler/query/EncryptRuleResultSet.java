@@ -63,11 +63,11 @@ public final class EncryptRuleResultSet implements DatabaseDistSQLResultSet {
             AlgorithmConfiguration encryptorAlgorithmConfig = algorithmMap.get(each.getEncryptorName());
             AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = algorithmMap.get(each.getAssistedQueryEncryptorName());
             AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = algorithmMap.get(each.getLikeQueryEncryptorName());
-            result.add(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(), nullToEmptyString(null),
-                    each.getCipherColumn(), nullToEmptyString(null),
-                    nullToEmptyString(each.getPlainColumn()), nullToEmptyString(null),
-                    nullToEmptyString(each.getAssistedQueryColumn()), nullToEmptyString(null),
-                    nullToEmptyString(each.getLikeQueryColumn()), nullToEmptyString(null),
+            result.add(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(),
+                    each.getCipherColumn(),
+                    nullToEmptyString(each.getPlainColumn()),
+                    nullToEmptyString(each.getAssistedQueryColumn()),
+                    nullToEmptyString(each.getLikeQueryColumn()),
                     encryptorAlgorithmConfig.getType(), PropertiesConverter.convert(encryptorAlgorithmConfig.getProps()),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
@@ -94,8 +94,8 @@ public final class EncryptRuleResultSet implements DatabaseDistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "logic_column", "logic_data_type", "cipher_column", "cipher_data_type", "plain_column", "plain_data_type",
-                "assisted_query_column", "assisted_query_data_type", "like_query_column", "like_query_data_type", "encryptor_type", "encryptor_props",
+        return Arrays.asList("table", "logic_column", "cipher_column", "plain_column",
+                "assisted_query_column", "like_query_column", "encryptor_type", "encryptor_props",
                 "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props", "query_with_cipher_column");
     }
     
