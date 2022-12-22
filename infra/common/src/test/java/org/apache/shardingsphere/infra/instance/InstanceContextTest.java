@@ -33,9 +33,7 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -101,22 +99,5 @@ public final class InstanceContextTest {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig,
                 lockContext, eventBusContext);
         assertNotNull(context.getInstance().getState());
-    }
-    
-    @Test
-    public void assertGetModeConfiguration() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig,
-                lockContext, eventBusContext);
-        assertThat(context.getModeConfiguration(), is(modeConfig));
-    }
-    
-    @Test
-    public void assertIsCluster() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig,
-                lockContext, eventBusContext);
-        assertFalse(context.isCluster());
-        InstanceContext clusterContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
-                new ModeConfiguration("Cluster", null), lockContext, eventBusContext);
-        assertTrue(clusterContext.isCluster());
     }
 }

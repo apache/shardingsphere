@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.ClusterModeContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
@@ -32,7 +33,8 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
     
     @Override
     protected void update(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().getModeContextManager() instanceof ClusterModeContextManager,
+                () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
         String instanceId = getSqlStatement().getInstanceId();
         boolean isDisable = "DISABLE".equals(getSqlStatement().getStatus());
         if (isDisable) {

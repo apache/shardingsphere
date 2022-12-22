@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExpor
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.ClusterModeContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
@@ -89,7 +90,8 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     }
     
     private void checkModeAndPersistRepository(final ContextManager contextManager) {
-        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Mode must be `Cluster`"));
+        ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().getModeContextManager() instanceof ClusterModeContextManager,
+                () -> new UnsupportedSQLOperationException("Mode must be `Cluster`"));
     }
     
     private void checkDatabaseName(final String databaseName) {

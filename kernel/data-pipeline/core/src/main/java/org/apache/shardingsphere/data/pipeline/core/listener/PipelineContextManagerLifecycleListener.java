@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobWorker;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.ClusterModeContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 /**
@@ -35,7 +36,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         if (null == modeConfig) {
             return;
         }
-        if (!contextManager.getInstanceContext().isCluster()) {
+        if (!(contextManager.getInstanceContext().getModeContextManager() instanceof ClusterModeContextManager)) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }

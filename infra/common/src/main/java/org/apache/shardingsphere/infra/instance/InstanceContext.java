@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -46,7 +47,7 @@ public final class InstanceContext {
     @Getter(AccessLevel.NONE)
     private final WorkerIdGenerator workerIdGenerator;
     
-    private final ModeConfiguration modeConfiguration;
+    private final ModeContextManager modeContextManager;
     
     private final LockContext lockContext;
     
@@ -166,14 +167,5 @@ public final class InstanceContext {
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
         return allClusterInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
-    }
-    
-    /**
-     * Is cluster instance or not.
-     * 
-     * @return true if is cluster, else false
-     */
-    public boolean isCluster() {
-        return "Cluster".equals(modeConfiguration.getType());
     }
 }

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.ClusterModeContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
@@ -160,7 +161,7 @@ public final class DriverJDBCExecutor {
     
     private void refreshMetaData(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Optional<MetaDataRefreshedEvent> event = metaDataRefreshEngine.refresh(sqlStatementContext, routeUnits);
-        if (contextManager.getInstanceContext().isCluster() && event.isPresent()) {
+        if (contextManager.getInstanceContext().getModeContextManager() instanceof ClusterModeContextManager && event.isPresent()) {
             eventBusContext.post(event.get());
         }
     }

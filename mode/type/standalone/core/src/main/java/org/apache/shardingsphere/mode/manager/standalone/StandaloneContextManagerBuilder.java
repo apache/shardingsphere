@@ -57,8 +57,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {
-        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new GlobalLockContext(null), new EventBusContext());
+        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new StandaloneWorkerIdGenerator(), new StandaloneModeContextManager(),
+                new GlobalLockContext(null), new EventBusContext());
     }
     
     @Override
