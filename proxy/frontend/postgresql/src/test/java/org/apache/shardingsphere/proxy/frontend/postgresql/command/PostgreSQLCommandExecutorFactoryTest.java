@@ -47,9 +47,9 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,8 +57,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -152,11 +152,9 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private static List<CommandExecutor> getExecutorsFromAggregatedCommandExecutor(final PostgreSQLAggregatedCommandExecutor executor) {
-        Field field = PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors");
-        field.setAccessible(true);
-        return (List<CommandExecutor>) field.get(executor);
+        return (List<CommandExecutor>) new FieldReader(executor, PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors")).read();
     }
     
     @RequiredArgsConstructor

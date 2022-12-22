@@ -314,7 +314,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+    @SneakyThrows(NoSuchFieldException.class)
     private Collection<PostgreSQLColumnDescription> getColumnDescriptionsFromPacket(final PostgreSQLRowDescriptionPacket packet) {
         return (Collection<PostgreSQLColumnDescription>) new FieldReader(packet, PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions")).read();
     }
