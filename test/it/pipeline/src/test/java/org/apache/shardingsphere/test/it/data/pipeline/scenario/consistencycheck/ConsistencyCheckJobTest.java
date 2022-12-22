@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
@@ -25,15 +24,14 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsis
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,25 +46,27 @@ public final class ConsistencyCheckJobTest {
     
     @Test
     public void assertBuildPipelineJobItemContext() throws ReflectiveOperationException {
-        YamlConsistencyCheckJobItemProgress jobItemProgress = new YamlConsistencyCheckJobItemProgress();
-        jobItemProgress.setStatus(JobStatus.RUNNING.name());
-        Map<String, Object> expectTableCheckPosition = new HashMap<>();
-        expectTableCheckPosition.put("t_order", 100);
-        jobItemProgress.setTableCheckPositions(expectTableCheckPosition);
         String checkJobId = "j0201001";
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(checkJobId, 0, YamlEngine.marshal(jobItemProgress));
-        ConsistencyCheckJobConfiguration jobConfig = new ConsistencyCheckJobConfiguration(checkJobId, "", null, null);
-        YamlConsistencyCheckJobConfiguration yamlJobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToYamlConfiguration(jobConfig);
-        ShardingContext shardingContext = new ShardingContext(checkJobId, "", 1, YamlEngine.marshal(yamlJobConfig), 0, "");
+        Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(checkJobId, 0, YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob();
-        invokeSetJobId(checkJobId, consistencyCheckJob);
-        ConsistencyCheckJobItemContext actualItemContext = consistencyCheckJob.buildPipelineJobItemContext(shardingContext);
-        assertThat(actualItemContext.getProgressContext().getTableCheckPositions(), is(expectTableCheckPosition));
+        Plugins.getMemberAccessor().invoke(AbstractPipelineJob.class.getDeclaredMethod("setJobId", String.class), consistencyCheckJob, checkJobId);
+        ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildPipelineJobItemContext(
+                new ShardingContext(checkJobId, "", 1, YamlEngine.marshal(createYamlConsistencyCheckJobConfiguration(checkJobId)), 0, ""));
+        assertThat(actual.getProgressContext().getTableCheckPositions(), is(expectTableCheckPosition));
     }
     
-    private void invokeSetJobId(final String checkJobId, final ConsistencyCheckJob consistencyCheckJob) throws ReflectiveOperationException {
-        Method method = AbstractPipelineJob.class.getDeclaredMethod("setJobId", String.class);
-        method.setAccessible(true);
-        method.invoke(consistencyCheckJob, checkJobId);
+    private YamlConsistencyCheckJobItemProgress createYamlConsistencyCheckJobItemProgress(final Map<String, Object> expectTableCheckPosition) {
+        YamlConsistencyCheckJobItemProgress result = new YamlConsistencyCheckJobItemProgress();
+        result.setStatus(JobStatus.RUNNING.name());
+        result.setTableCheckPositions(expectTableCheckPosition);
+        return result;
+    }
+    
+    private YamlConsistencyCheckJobConfiguration createYamlConsistencyCheckJobConfiguration(final String checkJobId) {
+        YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
+        result.setJobId(checkJobId);
+        result.setParentJobId("");
+        return result;
     }
 }

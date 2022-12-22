@@ -45,16 +45,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -84,8 +82,7 @@ public final class MySQLIncrementalDumperTest {
         channel = new MultiplexMemoryPipelineChannel();
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig()));
         incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L), channel, metaDataLoader);
-        PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true, true);
-        when(pipelineTableMetaData.getColumnMetaData(anyInt())).thenReturn(column);
+        when(pipelineTableMetaData.getColumnMetaData(anyInt())).thenReturn(new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true, true));
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -114,79 +111,63 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertWriteRowsEvent() {
+    public void assertWriteRowsEvent() throws ReflectiveOperationException {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
-        List<Serializable[]> rows = new ArrayList<>(1);
-        rows.add(new String[]{"1", "order"});
-        rowsEvent.setAfterRows(rows);
-        invokeMethod(incrementalDumper, "handleWriteRowsEvent", new Class[]{WriteRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
-        List<Record> records = channel.fetchRecords(1, 0);
-        assertThat(records.size(), is(1));
-        assertThat(records.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) records.get(0)).getType(), is(IngestDataChangeType.INSERT));
+        rowsEvent.setAfterRows(Collections.singletonList(new String[]{"1", "order"}));
+        Plugins.getMemberAccessor().invoke(
+                MySQLIncrementalDumper.class.getDeclaredMethod("handleWriteRowsEvent", WriteRowsEvent.class, PipelineTableMetaData.class), incrementalDumper, rowsEvent, pipelineTableMetaData);
+        List<Record> actual = channel.fetchRecords(1, 0);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), instanceOf(DataRecord.class));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.INSERT));
     }
     
     @Test
-    public void assertUpdateRowsEvent() {
+    public void assertUpdateRowsEvent() throws ReflectiveOperationException {
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
-        List<Serializable[]> beforeRows = new ArrayList<>(1);
-        beforeRows.add(new String[]{"1", "order_old"});
-        List<Serializable[]> afterRows = new ArrayList<>(1);
-        afterRows.add(new String[]{"1", "order_new"});
-        rowsEvent.setBeforeRows(beforeRows);
-        rowsEvent.setAfterRows(afterRows);
-        invokeMethod(incrementalDumper, "handleUpdateRowsEvent", new Class[]{UpdateRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
-        List<Record> records = channel.fetchRecords(1, 0);
-        assertThat(records.size(), is(1));
-        assertThat(records.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) records.get(0)).getType(), is(IngestDataChangeType.UPDATE));
+        rowsEvent.setBeforeRows(Collections.singletonList(new String[]{"1", "order_old"}));
+        rowsEvent.setAfterRows(Collections.singletonList(new String[]{"1", "order_new"}));
+        Plugins.getMemberAccessor().invoke(
+                MySQLIncrementalDumper.class.getDeclaredMethod("handleUpdateRowsEvent", UpdateRowsEvent.class, PipelineTableMetaData.class), incrementalDumper, rowsEvent, pipelineTableMetaData);
+        List<Record> actual = channel.fetchRecords(1, 0);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), instanceOf(DataRecord.class));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.UPDATE));
     }
     
     @Test
-    public void assertDeleteRowsEvent() {
+    public void assertDeleteRowsEvent() throws ReflectiveOperationException {
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
-        List<Serializable[]> rows = new ArrayList<>(1);
-        rows.add(new String[]{"1", "order"});
-        rowsEvent.setBeforeRows(rows);
-        invokeMethod(incrementalDumper, "handleDeleteRowsEvent", new Class[]{DeleteRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
-        List<Record> records = channel.fetchRecords(1, 0);
-        assertThat(records.size(), is(1));
-        assertThat(records.get(0), instanceOf(DataRecord.class));
-        assertThat(((DataRecord) records.get(0)).getType(), is(IngestDataChangeType.DELETE));
+        rowsEvent.setBeforeRows(Collections.singletonList(new String[]{"1", "order"}));
+        Plugins.getMemberAccessor().invoke(
+                MySQLIncrementalDumper.class.getDeclaredMethod("handleDeleteRowsEvent", DeleteRowsEvent.class, PipelineTableMetaData.class), incrementalDumper, rowsEvent, pipelineTableMetaData);
+        List<Record> actual = channel.fetchRecords(1, 0);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), instanceOf(DataRecord.class));
+        assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.DELETE));
     }
     
     @Test
-    public void assertPlaceholderEvent() {
-        invokeHandleEvent(new PlaceholderEvent());
-        List<Record> records = channel.fetchRecords(1, 0);
-        assertThat(records.size(), is(1));
-        assertThat(records.get(0), instanceOf(PlaceholderRecord.class));
+    public void assertPlaceholderEvent() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class), incrementalDumper, new PlaceholderEvent());
+        List<Record> actual = channel.fetchRecords(1, 0);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), instanceOf(PlaceholderRecord.class));
     }
     
     @Test
-    public void assertRowsEventFiltered() {
+    public void assertRowsEventFiltered() throws ReflectiveOperationException {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("unknown_database");
-        invokeHandleEvent(rowsEvent);
-        List<Record> records = channel.fetchRecords(1, 0);
-        assertThat(records.size(), is(1));
-        assertThat(records.get(0), instanceOf(PlaceholderRecord.class));
-    }
-    
-    private void invokeHandleEvent(final AbstractBinlogEvent event) {
-        invokeMethod(incrementalDumper, "handleEvent", new Class[]{AbstractBinlogEvent.class}, new Object[]{event});
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes, final Object[] parameterValues) {
-        Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
-        method.setAccessible(true);
-        return method.invoke(target, parameterValues);
+        Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class), incrementalDumper, rowsEvent);
+        List<Record> actual = channel.fetchRecords(1, 0);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), instanceOf(PlaceholderRecord.class));
     }
 }
