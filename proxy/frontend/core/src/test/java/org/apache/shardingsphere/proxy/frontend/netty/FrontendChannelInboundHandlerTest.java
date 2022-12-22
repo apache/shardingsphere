@@ -38,9 +38,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,11 +86,9 @@ public final class FrontendChannelInboundHandlerTest {
         connectionSession = getConnectionSession();
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(NoSuchFieldException.class)
     private ConnectionSession getConnectionSession() {
-        Field connectionSessionField = FrontendChannelInboundHandler.class.getDeclaredField("connectionSession");
-        connectionSessionField.setAccessible(true);
-        return (ConnectionSession) connectionSessionField.get(frontendChannelInboundHandler);
+        return (ConnectionSession) new FieldReader(frontendChannelInboundHandler, FrontendChannelInboundHandler.class.getDeclaredField("connectionSession")).read();
     }
     
     @Test

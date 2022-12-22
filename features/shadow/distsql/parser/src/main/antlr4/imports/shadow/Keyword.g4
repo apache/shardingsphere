@@ -146,3 +146,7 @@ REGEX_MATCH
 SIMPLE_HINT
     : S I M P L E UL_ H I N T
     ;
+
+NOT
+    : N O T
+    ;

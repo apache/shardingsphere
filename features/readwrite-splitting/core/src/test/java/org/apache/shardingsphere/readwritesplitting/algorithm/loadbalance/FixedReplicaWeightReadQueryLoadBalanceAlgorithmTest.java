@@ -23,8 +23,8 @@ import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalance
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,13 +38,10 @@ import static org.junit.Assert.assertTrue;
 
 public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     
-    @SuppressWarnings("rawtypes")
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field accuracyThresholdField = FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP");
-        accuracyThresholdField.setAccessible(true);
-        ((Map) accuracyThresholdField.get(FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class)).clear();
+        ((Map<?, ?>) new FieldReader(FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class, FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP")).read()).clear();
     }
     
     @Test
