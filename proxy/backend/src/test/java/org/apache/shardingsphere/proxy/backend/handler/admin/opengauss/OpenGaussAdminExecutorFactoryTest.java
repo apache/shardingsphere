@@ -24,9 +24,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.InstanceField;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -48,10 +48,8 @@ public final class OpenGaussAdminExecutorFactoryTest {
     
     @Before
     public void setup() throws IllegalAccessException, NoSuchFieldException {
-        Field field = OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated");
-        field.setAccessible(true);
         openGaussAdminExecutorFactory = new OpenGaussAdminExecutorCreator();
-        field.set(openGaussAdminExecutorFactory, postgreSQLAdminExecutorFactory);
+        new InstanceField(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated"), openGaussAdminExecutorFactory).set(postgreSQLAdminExecutorFactory);
     }
     
     @Test
