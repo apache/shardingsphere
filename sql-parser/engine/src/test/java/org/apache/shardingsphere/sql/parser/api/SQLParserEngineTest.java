@@ -23,9 +23,9 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.InstanceField;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -42,11 +42,7 @@ public final class SQLParserEngineTest {
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseASTNode.class));
         CacheOption cacheOption = new CacheOption(128, 1024L);
         SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", cacheOption);
-        Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
-        Field parseTreeCacheField = sqlParserEngine.getClass().getDeclaredField("parseTreeCache");
-        sqlParserExecutorFiled.setAccessible(true);
-        parseTreeCacheField.setAccessible(true);
-        sqlParserExecutorFiled.set(sqlParserEngine, sqlParserExecutor);
+        new InstanceField(sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor"), sqlParserEngine).set(sqlParserExecutor);
         LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues().initialCapacity(128)
                 .maximumSize(1024).build(new CacheLoader<String, ParseASTNode>() {
                     
@@ -56,7 +52,7 @@ public final class SQLParserEngineTest {
                         return sqlParserExecutor.parse(sql);
                     }
                 });
-        parseTreeCacheField.set(sqlParserEngine, parseTreeCache);
+        new InstanceField(sqlParserEngine.getClass().getDeclaredField("parseTreeCache"), sqlParserEngine).set(parseTreeCache);
         sqlParserEngine.parse(SQL, true);
         verify(sqlParserExecutor, times(1)).parse(SQL);
         sqlParserEngine.parse(SQL, true);
