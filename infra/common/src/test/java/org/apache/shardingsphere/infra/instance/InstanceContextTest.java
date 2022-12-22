@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.instance;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 public final class InstanceContextTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
+    private final ModeContextManager modeContextManager = mock(ModeContextManager.class);
     
     private final LockContext lockContext = mock(LockContext.class);
     
@@ -49,7 +49,8 @@ public final class InstanceContextTest {
     public void assertUpdateInstanceStatus() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_instance_id");
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceMetaData), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig, lockContext, eventBusContext);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceMetaData), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
+                modeContextManager, lockContext, eventBusContext);
         StateType actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
         context.updateInstanceStatus(instanceMetaData.getId(), StateType.CIRCUIT_BREAK.name());
@@ -64,14 +65,14 @@ public final class InstanceContextTest {
     public void assertGetWorkerId() {
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
         when(computeNodeInstance.getWorkerId()).thenReturn(0);
-        InstanceContext context = new InstanceContext(computeNodeInstance, new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig, lockContext, eventBusContext);
+        InstanceContext context = new InstanceContext(computeNodeInstance, new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeContextManager, lockContext, eventBusContext);
         assertThat(context.getWorkerId(), is(0));
     }
     
     @Test
     public void assertGenerateWorkerId() {
         InstanceContext context = new InstanceContext(
-                new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig, lockContext, eventBusContext);
+                new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeContextManager, lockContext, eventBusContext);
         assertThat(context.generateWorkerId(new Properties()), is(Integer.MIN_VALUE));
     }
     
@@ -79,7 +80,7 @@ public final class InstanceContextTest {
     public void assertUpdateLabel() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_instance_id");
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceMetaData), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig, lockContext, eventBusContext);
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceMetaData), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeContextManager, lockContext, eventBusContext);
         Set<String> expected = new LinkedHashSet<>(Arrays.asList("label_1", "label_2"));
         context.updateLabel("foo_instance_id", expected);
         Collection<String> actual = context.getInstance().getLabels();
@@ -89,14 +90,14 @@ public final class InstanceContextTest {
     @Test
     public void assertGetInstance() {
         ComputeNodeInstance expected = new ComputeNodeInstance(mock(InstanceMetaData.class));
-        InstanceContext context = new InstanceContext(expected, new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig, lockContext, eventBusContext);
+        InstanceContext context = new InstanceContext(expected, new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeContextManager, lockContext, eventBusContext);
         ComputeNodeInstance actual = context.getInstance();
         assertThat(actual, is(expected));
     }
     
     @Test
     public void assertGetState() {
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeConfig,
+        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE), modeContextManager,
                 lockContext, eventBusContext);
         assertNotNull(context.getInstance().getState());
     }

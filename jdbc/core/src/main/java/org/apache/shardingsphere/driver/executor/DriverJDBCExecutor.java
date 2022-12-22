@@ -161,7 +161,7 @@ public final class DriverJDBCExecutor {
     
     private void refreshMetaData(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Optional<MetaDataRefreshedEvent> event = metaDataRefreshEngine.refresh(sqlStatementContext, routeUnits);
-        if (contextManager.getInstanceContext().getModeContextManager() instanceof ClusterModeContextManager && event.isPresent()) {
+        if ((contextManager.getInstanceContext().getModeContextManager() instanceof ClusterModeContextManager) && event.isPresent()) {
             eventBusContext.post(event.get());
         }
     }
