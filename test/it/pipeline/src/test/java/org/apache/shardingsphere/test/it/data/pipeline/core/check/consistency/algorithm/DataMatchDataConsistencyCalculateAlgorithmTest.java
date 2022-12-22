@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -81,9 +81,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromBegin() throws NoSuchFieldException {
+    public void assertCalculateFromBegin() throws ReflectiveOperationException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
-        new InstanceField(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm).set(5);
+        Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
         Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
         DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 0);
@@ -98,9 +98,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromMiddle() throws NoSuchFieldException {
+    public void assertCalculateFromMiddle() throws ReflectiveOperationException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
-        new InstanceField(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm).set(5);
+        Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);
         Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
         DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 5);

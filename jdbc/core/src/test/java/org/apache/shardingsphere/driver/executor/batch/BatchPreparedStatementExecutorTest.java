@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -145,10 +145,10 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         setFields(executionGroups, batchExecutionUnits);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setFields(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Collection<BatchExecutionUnit> batchExecutionUnits) {
-        new InstanceField(BatchPreparedStatementExecutor.class.getDeclaredField("executionGroupContext"), actual).set(new ExecutionGroupContext<>(executionGroups));
-        new InstanceField(BatchPreparedStatementExecutor.class.getDeclaredField("batchExecutionUnits"), actual).set(batchExecutionUnits);
-        new InstanceField(BatchPreparedStatementExecutor.class.getDeclaredField("batchCount"), actual).set(2);
+        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("executionGroupContext"), actual, new ExecutionGroupContext<>(executionGroups));
+        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchExecutionUnits"), actual, batchExecutionUnits);
+        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchCount"), actual, 2);
     }
 }

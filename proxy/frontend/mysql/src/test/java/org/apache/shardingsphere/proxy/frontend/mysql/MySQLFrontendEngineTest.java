@@ -51,7 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.InetAddress;
@@ -100,9 +100,9 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void resetConnectionIdGenerator() {
-        new InstanceField(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance()).set(0);
+        Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         mysqlFrontendEngine = new MySQLFrontendEngine();
     }
     
@@ -157,9 +157,9 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         verify(context).writeAndFlush(argThat((ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
-        new InstanceField(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), mysqlFrontendEngine.getAuthenticationEngine()).set(connectionPhase);
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
     }
     
     private void initProxyContext(final ShardingSphereUser user) {

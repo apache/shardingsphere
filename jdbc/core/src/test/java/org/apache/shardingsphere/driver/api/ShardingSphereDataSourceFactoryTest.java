@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -92,6 +92,6 @@ public final class ShardingSphereDataSourceFactoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void assertDataSource(final DataSource actualDataSource, final String expectedDataSourceName) {
-        assertThat(new FieldReader(actualDataSource, ShardingSphereDataSource.class.getDeclaredField("databaseName")).read(), is(expectedDataSourceName));
+        assertThat(Plugins.getMemberAccessor().get(ShardingSphereDataSource.class.getDeclaredField("databaseName"), actualDataSource), is(expectedDataSourceName));
     }
 }

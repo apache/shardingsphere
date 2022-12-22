@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine;
 
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.SQLException;
 
@@ -30,7 +30,7 @@ public final class ExecutorExceptionHandlerTest {
     
     @After
     public void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        ((ThreadLocal<?>) new FieldReader(SQLExecutorExceptionHandler.class, SQLExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN")).read()).remove();
+        ((ThreadLocal<?>) Plugins.getMemberAccessor().get(SQLExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN"), SQLExecutorExceptionHandler.class)).remove();
     }
     
     @Test(expected = SQLException.class)

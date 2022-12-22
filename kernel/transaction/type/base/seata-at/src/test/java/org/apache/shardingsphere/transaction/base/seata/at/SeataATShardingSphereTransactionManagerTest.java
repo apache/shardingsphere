@@ -40,8 +40,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -172,23 +171,23 @@ public final class SeataATShardingSphereTransactionManagerTest {
         }
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap() {
-        return (Map<String, DataSource>) new FieldReader(seataTransactionManager, seataTransactionManager.getClass().getDeclaredField("dataSourceMap")).read();
+        return (Map<String, DataSource>) Plugins.getMemberAccessor().get(seataTransactionManager.getClass().getDeclaredField("dataSourceMap"), seataTransactionManager);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setXID(final String xid) {
-        new InstanceField(SeataTransactionHolder.get().getClass().getDeclaredField("xid"), SeataTransactionHolder.get()).set(xid);
+        Plugins.getMemberAccessor().set(SeataTransactionHolder.get().getClass().getDeclaredField("xid"), SeataTransactionHolder.get(), xid);
         RootContext.bind(xid);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void releaseRpcClient() {
-        new InstanceField(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), TmNettyRemotingClient.getInstance()).set(new AtomicBoolean(false));
-        new InstanceField(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), TmNettyRemotingClient.getInstance()).set(null);
-        new InstanceField(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), RmNettyRemotingClient.getInstance()).set(new AtomicBoolean(false));
-        new InstanceField(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), RmNettyRemotingClient.getInstance()).set(null);
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), TmNettyRemotingClient.getInstance(), null);
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), RmNettyRemotingClient.getInstance(), null);
     }
 }

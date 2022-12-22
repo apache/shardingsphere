@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
@@ -130,9 +130,9 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionSession() {
-        new InstanceField(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor).set(connectionSession);
+        Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
     }
     
     @Test

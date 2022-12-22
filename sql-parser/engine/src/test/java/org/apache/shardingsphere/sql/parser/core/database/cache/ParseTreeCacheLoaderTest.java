@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.core.database.cache;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,10 +32,10 @@ public final class ParseTreeCacheLoaderTest {
     private static final String SQL = "select * from user where id=1";
     
     @Test
-    public void assertParseTreeCacheLoader() throws NoSuchFieldException {
+    public void assertParseTreeCacheLoader() throws ReflectiveOperationException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, RETURNS_DEEP_STUBS);
         ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL");
-        new InstanceField(loader.getClass().getDeclaredField("sqlParserExecutor"), loader).set(sqlParserExecutor);
+        Plugins.getMemberAccessor().set(loader.getClass().getDeclaredField("sqlParserExecutor"), loader, sqlParserExecutor);
         assertThat(loader.load(SQL), isA(ParseASTNode.class));
     }
 }

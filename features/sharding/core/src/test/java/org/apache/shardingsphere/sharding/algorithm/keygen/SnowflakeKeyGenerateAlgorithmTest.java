@@ -31,8 +31,7 @@ import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGener
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -190,14 +189,14 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         assertThat(actual, is(expected));
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setLastMilliseconds(final KeyGenerateAlgorithm algorithm, final Number value) {
-        new InstanceField(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("lastMilliseconds"), algorithm).set(value);
+        Plugins.getMemberAccessor().set(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("lastMilliseconds"), algorithm, value);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setSequence(final KeyGenerateAlgorithm algorithm, final Number value) {
-        new InstanceField(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence"), algorithm).set(value);
+        Plugins.getMemberAccessor().set(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence"), algorithm, value);
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -233,10 +232,10 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws NoSuchFieldException {
+    public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws ReflectiveOperationException {
         Properties props = new Properties();
         props.setProperty("max-tolerate-time-difference-milliseconds", String.valueOf(1));
         KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("SNOWFLAKE", props));
-        assertThat(((Properties) new FieldReader(algorithm, algorithm.getClass().getDeclaredField("props")).read()).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
+        assertThat(((Properties) Plugins.getMemberAccessor().get(algorithm.getClass().getDeclaredField("props"), algorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
     }
 }

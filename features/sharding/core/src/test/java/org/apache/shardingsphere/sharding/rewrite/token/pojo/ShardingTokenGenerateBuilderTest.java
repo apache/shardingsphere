@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -86,6 +86,6 @@ public final class ShardingTokenGenerateBuilderTest {
     }
     
     private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws Exception {
-        assertThat(new FieldReader(sqlTokenGenerator, sqlTokenGenerator.getClass().getDeclaredField(fieldName)).read(), is(filedInstance));
+        assertThat(Plugins.getMemberAccessor().get(sqlTokenGenerator.getClass().getDeclaredField(fieldName), sqlTokenGenerator), is(filedInstance));
     }
 }

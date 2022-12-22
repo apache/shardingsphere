@@ -48,7 +48,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.VoidAnswer1;
 
@@ -124,9 +124,9 @@ public final class ZookeeperRepositoryTest {
         mockDistributedLockHolder();
     }
     
-    @SneakyThrows({NoSuchFieldException.class, InterruptedException.class})
+    @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void mockClient() {
-        new InstanceField(ZookeeperRepository.class.getDeclaredField("builder"), REPOSITORY).set(builder);
+        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("builder"), REPOSITORY, builder);
         when(builder.connectString(anyString())).thenReturn(builder);
         when(builder.retryPolicy(any(RetryPolicy.class))).thenReturn(builder);
         when(builder.ensembleTracker(anyBoolean())).thenReturn(builder);
@@ -139,11 +139,11 @@ public final class ZookeeperRepositoryTest {
         when(client.blockUntilConnected(anyInt(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void mockDistributedLockHolder() {
         DistributedLockHolder distributedLockHolder = new DistributedLockHolder("Zookeeper", client, new ZookeeperProperties(new Properties()));
-        new InstanceField(DistributedLockHolder.class.getDeclaredField("locks"), distributedLockHolder).set(Collections.singletonMap("/locks/glock", mock(ZookeeperDistributedLock.class)));
-        new InstanceField(ZookeeperRepository.class.getDeclaredField("distributedLockHolder"), REPOSITORY).set(distributedLockHolder);
+        Plugins.getMemberAccessor().set(DistributedLockHolder.class.getDeclaredField("locks"), distributedLockHolder, Collections.singletonMap("/locks/glock", mock(ZookeeperDistributedLock.class)));
+        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("distributedLockHolder"), REPOSITORY, distributedLockHolder);
     }
     
     private void mockBuilder() {
@@ -239,7 +239,7 @@ public final class ZookeeperRepositoryTest {
     private void mockCache(final String key) {
         Map<String, CuratorCache> caches = new HashMap<>();
         caches.put(key, curatorCache);
-        new InstanceField(ZookeeperRepository.class.getDeclaredField("caches"), REPOSITORY).set(caches);
+        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("caches"), REPOSITORY, caches);
         when(curatorCache.listenable()).thenReturn(listenable);
     }
     

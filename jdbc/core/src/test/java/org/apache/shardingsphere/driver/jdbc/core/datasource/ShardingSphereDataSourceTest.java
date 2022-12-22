@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -140,7 +140,7 @@ public final class ShardingSphereDataSourceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
-        return (ContextManager) new FieldReader(dataSource, ShardingSphereDataSource.class.getDeclaredField("contextManager")).read();
+        return (ContextManager) Plugins.getMemberAccessor().get(ShardingSphereDataSource.class.getDeclaredField("contextManager"), dataSource);
     }
     
     private DataSource createHikariDataSource() {

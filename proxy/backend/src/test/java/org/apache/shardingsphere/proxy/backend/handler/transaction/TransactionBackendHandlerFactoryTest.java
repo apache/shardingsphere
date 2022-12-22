@@ -40,7 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.MockedStatic;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -111,12 +111,12 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private <S, T> void assertFieldOfInstance(final S classInstance, final String fieldName, final Matcher<T> matcher) {
-        T value = (T) new FieldReader(classInstance, classInstance.getClass().getDeclaredField(fieldName)).read();
+        T value = (T) Plugins.getMemberAccessor().get(classInstance.getClass().getDeclaredField(fieldName), classInstance);
         assertThat(value, matcher);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
-        return (BackendTransactionManager) new FieldReader(transactionBackendHandler, transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager")).read();
+        return (BackendTransactionManager) Plugins.getMemberAccessor().get(transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager"), transactionBackendHandler);
     }
 }

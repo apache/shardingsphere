@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
@@ -54,7 +54,7 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     @Before
     public void setUp() throws ReflectiveOperationException {
         schemaMetaDataRegistrySubscriber = new SchemaMetaDataRegistrySubscriber(mock(ClusterPersistRepository.class), new EventBusContext());
-        new InstanceField(schemaMetaDataRegistrySubscriber.getClass().getDeclaredField("persistService"), schemaMetaDataRegistrySubscriber).set(persistService);
+        Plugins.getMemberAccessor().set(schemaMetaDataRegistrySubscriber.getClass().getDeclaredField("persistService"), schemaMetaDataRegistrySubscriber, persistService);
     }
     
     @Test

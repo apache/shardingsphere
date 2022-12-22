@@ -22,7 +22,7 @@ import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Properties;
 
@@ -33,9 +33,9 @@ public final class JaegerTracingPluginBootServiceTest {
     private final JaegerTracingPluginBootService pluginBootService = new JaegerTracingPluginBootService();
     
     @After
-    public void close() throws NoSuchFieldException {
+    public void close() throws ReflectiveOperationException {
         pluginBootService.close();
-        new InstanceField(GlobalTracer.class.getDeclaredField("tracer"), GlobalTracer.class).set(NoopTracerFactory.create());
+        Plugins.getMemberAccessor().set(GlobalTracer.class.getDeclaredField("tracer"), GlobalTracer.class, NoopTracerFactory.create());
     }
     
     @Test

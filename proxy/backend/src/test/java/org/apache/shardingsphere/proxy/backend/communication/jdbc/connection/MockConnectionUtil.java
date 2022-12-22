@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -44,11 +44,11 @@ final class MockConnectionUtil {
      * @param dataSourceName datasource name
      * @param connectionSize connection size
      */
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     static void setCachedConnections(final BackendConnection backendConnection, final String dataSourceName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
         cachedConnections.putAll(backendConnection.getConnectionSession().getDatabaseName() + "." + dataSourceName, mockNewConnections(connectionSize));
-        new InstanceField(backendConnection.getClass().getDeclaredField("cachedConnections"), backendConnection).set(cachedConnections);
+        Plugins.getMemberAccessor().set(backendConnection.getClass().getDeclaredField("cachedConnections"), backendConnection, cachedConnections);
     }
     
     /**

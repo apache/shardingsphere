@@ -37,8 +37,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -67,7 +66,7 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() throws ReflectiveOperationException {
         initJobItemContext();
         InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
         dumperConfig.setUniqueKeyDataType(Types.INTEGER);
@@ -75,9 +74,9 @@ public final class InventoryTaskSplitterTest {
         inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), dumperConfig, jobItemContext.getTaskConfig().getImporterConfig());
     }
     
-    private void initJobItemContext() throws NoSuchFieldException {
+    private void initJobItemContext() throws ReflectiveOperationException {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        new InstanceField(MigrationJobConfiguration.class.getDeclaredField("uniqueKeyColumn"), jobConfig).set(new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
+        Plugins.getMemberAccessor().set(MigrationJobConfiguration.class.getDeclaredField("uniqueKeyColumn"), jobConfig, new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
         jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         dataSourceManager = (PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector();
         taskConfig = jobItemContext.getTaskConfig();
@@ -122,9 +121,10 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test(expected = SplitPipelineJobByRangeException.class)
-    public void assertSplitInventoryDataWithIllegalKeyDataType() throws SQLException, NoSuchFieldException {
+    public void assertSplitInventoryDataWithIllegalKeyDataType() throws SQLException, ReflectiveOperationException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
-        InventoryDumperConfiguration dumperConfig = (InventoryDumperConfiguration) new FieldReader(inventoryTaskSplitter, InventoryTaskSplitter.class.getDeclaredField("dumperConfig")).read();
+        InventoryDumperConfiguration dumperConfig = (InventoryDumperConfiguration) Plugins.getMemberAccessor()
+                .get(InventoryTaskSplitter.class.getDeclaredField("dumperConfig"), inventoryTaskSplitter);
         assertNotNull(dumperConfig);
         dumperConfig.setUniqueKey("order_id,user_id");
         dumperConfig.setUniqueKeyDataType(Integer.MIN_VALUE);
@@ -132,11 +132,11 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test(expected = SplitPipelineJobByRangeException.class)
-    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException, NoSuchFieldException {
+    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException, ReflectiveOperationException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
         try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig())) {
             PipelineColumnMetaData uniqueKeyColumn = PipelineTableMetaDataUtil.getUniqueKeyColumn(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
-            new InstanceField(MigrationJobConfiguration.class.getDeclaredField("uniqueKeyColumn"), jobItemContext.getJobConfig()).set(uniqueKeyColumn);
+            Plugins.getMemberAccessor().set(MigrationJobConfiguration.class.getDeclaredField("uniqueKeyColumn"), jobItemContext.getJobConfig(), uniqueKeyColumn);
         }
         inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }

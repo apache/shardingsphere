@@ -47,7 +47,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -152,9 +152,9 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private static List<CommandExecutor> getExecutorsFromAggregatedCommandExecutor(final PostgreSQLAggregatedCommandExecutor executor) {
-        return (List<CommandExecutor>) new FieldReader(executor, PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors")).read();
+        return (List<CommandExecutor>) Plugins.getMemberAccessor().get(PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors"), executor);
     }
     
     @RequiredArgsConstructor

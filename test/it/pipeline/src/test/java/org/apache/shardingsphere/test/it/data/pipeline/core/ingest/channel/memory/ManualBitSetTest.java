@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.channel.memo
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.ManualBitSet;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.BitSet;
 import java.util.List;
@@ -66,7 +66,7 @@ public final class ManualBitSetTest {
     public void assertClear() {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 100).forEach(bitSet::set);
-        List<BitSet> bitSets = (List<BitSet>) new FieldReader(bitSet, ManualBitSet.class.getDeclaredField("bitSets")).read();
+        List<BitSet> bitSets = (List<BitSet>) Plugins.getMemberAccessor().get(ManualBitSet.class.getDeclaredField("bitSets"), bitSet);
         assertNotNull(bitSets);
         assertThat(bitSets.size(), is(1));
         bitSet.clear(1025);

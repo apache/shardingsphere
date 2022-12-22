@@ -58,7 +58,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
@@ -313,9 +313,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<PostgreSQLColumnDescription> getColumnDescriptionsFromPacket(final PostgreSQLRowDescriptionPacket packet) {
-        return (Collection<PostgreSQLColumnDescription>) new FieldReader(packet, PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions")).read();
+        return (Collection<PostgreSQLColumnDescription>) Plugins.getMemberAccessor().get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), packet);
     }
     
     @SuppressWarnings("rawtypes")
@@ -380,9 +380,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private List<PostgreSQLColumnDescription> getColumnDescriptions(final PostgreSQLRowDescriptionPacket packet) {
-        return (List<PostgreSQLColumnDescription>) new FieldReader(packet, PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions")).read();
+        return (List<PostgreSQLColumnDescription>) Plugins.getMemberAccessor().get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), packet);
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)

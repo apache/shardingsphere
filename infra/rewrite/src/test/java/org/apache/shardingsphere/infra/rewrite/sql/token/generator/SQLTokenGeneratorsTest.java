@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class SQLTokenGeneratorsTest {
     
     @Test
-    public void assertAddAllWithList() throws NoSuchFieldException {
+    public void assertAddAllWithList() throws ReflectiveOperationException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
         SQLTokenGenerator mockSqlTokenGenerator = mock(SQLTokenGenerator.class);
@@ -52,7 +52,7 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @Test
-    public void assertAddAllWithSameClass() throws NoSuchFieldException {
+    public void assertAddAllWithSameClass() throws ReflectiveOperationException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         SQLTokenGenerator expectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
         SQLTokenGenerator unexpectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
@@ -95,7 +95,7 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @SuppressWarnings("unchecked")
-    private Map<Class<?>, SQLTokenGenerator> getSQLTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws NoSuchFieldException {
-        return (Map<Class<?>, SQLTokenGenerator>) new FieldReader(sqlTokenGenerators, sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators")).read();
+    private Map<Class<?>, SQLTokenGenerator> getSQLTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws ReflectiveOperationException {
+        return (Map<Class<?>, SQLTokenGenerator>) Plugins.getMemberAccessor().get(sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators"), sqlTokenGenerators);
     }
 }

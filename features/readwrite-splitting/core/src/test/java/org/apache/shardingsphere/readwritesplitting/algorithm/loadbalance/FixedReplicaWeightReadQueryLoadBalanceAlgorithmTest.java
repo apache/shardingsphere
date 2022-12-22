@@ -23,7 +23,7 @@ import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalance
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +41,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        ((Map<?, ?>) new FieldReader(FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class, FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP")).read()).clear();
+        ((Map<?, ?>) Plugins.getMemberAccessor().get(
+                FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP"), FixedReplicaWeightReadQueryLoadBalanceAlgorithm.class)).clear();
     }
     
     @Test

@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -43,8 +43,8 @@ public final class OpenGaussFrontendEngineTest {
     private PostgreSQLFrontendEngine mockPostgreSQLFrontendEngine;
     
     @Before
-    public void setup() throws NoSuchFieldException {
-        new InstanceField(OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine"), openGaussFrontendEngine).set(mockPostgreSQLFrontendEngine);
+    public void setup() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine"), openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
     }
     
     @Test

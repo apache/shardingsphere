@@ -28,7 +28,7 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionData
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import javax.transaction.Transaction;
@@ -134,16 +134,16 @@ public final class XAShardingSphereTransactionManagerTest {
         assertFalse(xaTransactionManager.isInTransaction());
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, XATransactionDataSource> getCachedDataSources() {
-        return (Map<String, XATransactionDataSource>) new FieldReader(xaTransactionManager, xaTransactionManager.getClass().getDeclaredField("cachedDataSources")).read();
+        return (Map<String, XATransactionDataSource>) Plugins.getMemberAccessor().get(xaTransactionManager.getClass().getDeclaredField("cachedDataSources"), xaTransactionManager);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private ThreadLocal<Map<Transaction, Connection>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
-        return (ThreadLocal<Map<Transaction, Connection>>) new FieldReader(transactionDataSource, transactionDataSource.getClass().getDeclaredField("enlistedTransactions")).read();
+        return (ThreadLocal<Map<Transaction, Connection>>) Plugins.getMemberAccessor().get(transactionDataSource.getClass().getDeclaredField("enlistedTransactions"), transactionDataSource);
     }
     
     private Map<String, DataSource> createDataSources(final DatabaseType databaseType) {

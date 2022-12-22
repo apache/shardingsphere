@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
@@ -94,9 +94,9 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     @Test
-    public void assertDecodeAuthSwitchRequestPacket() throws NoSuchFieldException {
+    public void assertDecodeAuthSwitchRequestPacket() throws ReflectiveOperationException {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
-        new InstanceField(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder).set(true);
+        Plugins.getMemberAccessor().set(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder, true);
         List<Object> actual = new LinkedList<>();
         negotiatePackageDecoder.decode(channelHandlerContext, authSwitchRequestPacket(), actual);
         assertPacketByType(actual, MySQLAuthSwitchRequestPacket.class);
@@ -110,9 +110,9 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     @Test
-    public void assertDecodeAuthMoreDataPacket() throws NoSuchFieldException {
+    public void assertDecodeAuthMoreDataPacket() throws ReflectiveOperationException {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
-        new InstanceField(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder).set(true);
+        Plugins.getMemberAccessor().set(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder, true);
         List<Object> actual = new LinkedList<>();
         negotiatePackageDecoder.decode(channelHandlerContext, authMoreDataPacket(), actual);
         assertPacketByType(actual, MySQLAuthMoreDataPacket.class);
