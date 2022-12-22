@@ -28,11 +28,16 @@ import static org.junit.Assert.assertTrue;
 
 public final class OpenTracingPluginBootServiceTest {
     
-    private final OpenTracingPluginBootService openTracingPluginBootService = new OpenTracingPluginBootService();
+    private final OpenTracingPluginBootService pluginBootService = new OpenTracingPluginBootService();
+    
+    @After
+    public void close() {
+        pluginBootService.close();
+    }
     
     @Test
     public void assertStart() {
-        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()), true);
+        pluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()), true);
         assertTrue(GlobalTracer.isRegistered());
     }
     
@@ -40,10 +45,5 @@ public final class OpenTracingPluginBootServiceTest {
         Properties result = new Properties();
         result.setProperty("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer");
         return result;
-    }
-    
-    @After
-    public void close() {
-        openTracingPluginBootService.close();
     }
 }

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.FieldReader;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
 
 public final class ExecuteEngineTest {
     
-    @Test(timeout = 30000)
+    @Test(timeout = 30000L)
     public void assertSubmitAndTaskSucceeded() throws ExecutionException, InterruptedException {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
@@ -50,7 +50,7 @@ public final class ExecuteEngineTest {
         verify(callback).onSuccess();
     }
     
-    @Test(timeout = 30000)
+    @Test(timeout = 30000L)
     public void assertSubmitAndTaskFailed() {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         RuntimeException expectedException = new RuntimeException("Expected");
@@ -73,9 +73,7 @@ public final class ExecuteEngineTest {
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void shutdownAndAwaitTerminal(final ExecuteEngine executeEngine) {
-        Field field = ExecuteEngine.class.getDeclaredField("executorService");
-        field.setAccessible(true);
-        ExecutorService executorService = (ExecutorService) field.get(executeEngine);
+        ExecutorService executorService = (ExecutorService) new FieldReader(executeEngine, ExecuteEngine.class.getDeclaredField("executorService")).read();
         executorService.shutdown();
         executorService.awaitTermination(30, TimeUnit.SECONDS);
     }
