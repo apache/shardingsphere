@@ -27,8 +27,8 @@ import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.InstanceField;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 
@@ -48,9 +48,7 @@ public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
         setupBatchProcessContexts();
     }
     
-    private void setupBatchProcessContexts() throws NoSuchFieldException, IllegalAccessException {
-        Field batchProcessContextsField = showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts");
-        batchProcessContextsField.setAccessible(true);
+    private void setupBatchProcessContexts() throws NoSuchFieldException {
         String executionNodeValue = "contexts:\n"
                 + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
                 + "  sql: alter table t_order add column a varchar(64) after order_id\n"
@@ -63,7 +61,7 @@ public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
                 + "    unitID: unitID1\n"
                 + "  - status: EXECUTE_STATUS_DONE\n"
                 + "    unitID: unitID2\n";
-        batchProcessContextsField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
+        new InstanceField(showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts"), showProcessListExecutor).set(Collections.singleton(executionNodeValue));
     }
     
     @Test
