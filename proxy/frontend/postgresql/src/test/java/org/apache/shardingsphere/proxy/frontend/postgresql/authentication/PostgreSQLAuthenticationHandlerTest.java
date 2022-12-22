@@ -156,6 +156,6 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     @SneakyThrows(ReflectiveOperationException.class)
     private String md5Encode(final byte[] md5Salt) {
         return (String) new ModuleMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
-                new PostgreSQLMD5PasswordAuthenticator(), "postgres", "sharding", md5Salt);
+                new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
     }
 }
