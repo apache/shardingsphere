@@ -63,7 +63,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
         }
         short sequenceId = in.readUnsignedByte();
         context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
-        ByteBuf message = in.readRetainedSlice(SEQUENCE_LENGTH + payloadLength);
+        ByteBuf message = in.readRetainedSlice(payloadLength);
         if (MAX_PACKET_LENGTH == payloadLength) {
             pendingMessages.add(message);
         } else if (pendingMessages.isEmpty()) {
@@ -78,10 +78,10 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
         Iterator<ByteBuf> pendingMessagesIterator = pendingMessages.iterator();
         result.addComponent(true, pendingMessagesIterator.next());
         while (pendingMessagesIterator.hasNext()) {
-            result.addComponent(true, pendingMessagesIterator.next().skipBytes(1));
+            result.addComponent(true, pendingMessagesIterator.next());
         }
-        if (lastMessage.readableBytes() > 1) {
-            result.addComponent(true, lastMessage.skipBytes(1));
+        if (lastMessage.readableBytes() > 0) {
+            result.addComponent(true, lastMessage);
         }
         out.add(result);
         pendingMessages.clear();
