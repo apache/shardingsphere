@@ -92,26 +92,26 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     }
     
     private void cleanPropertiesFactory() {
-        ReflectionUtil.setFieldValue(PropertiesFactory.class, "delegatePropertiesFactory", null);
+        ReflectionUtil.setStaticFieldValue(PropertiesFactory.class, "delegatePropertiesFactory", null);
     }
     
     @SuppressWarnings("unchecked")
     private void cleanBeanInstances() {
-        ((ConcurrentMap<String, Object>) ReflectionUtil.getFieldValue(BeanPopulator.class, "beanInstances")).clear();
+        ((ConcurrentMap<String, Object>) ReflectionUtil.getStaticFieldValue(BeanPopulator.class, "beanInstances")).clear();
     }
     
     private void cleanAtomicActionRecovery() {
-        ReflectionUtil.setFieldValue(AtomicActionRecoveryModule.class, "_recoveryStore", null);
+        ReflectionUtil.setStaticFieldValue(AtomicActionRecoveryModule.class, "_recoveryStore", null);
     }
     
     private void cleanXARecoveryModule() {
-        ReflectionUtil.setFieldValue(XARecoveryModule.class, "registeredXARecoveryModule", null);
+        ReflectionUtil.setStaticFieldValue(XARecoveryModule.class, "registeredXARecoveryModule", null);
     }
     
     private void cleanStoreManager() {
-        ReflectionUtil.setFieldValue(StoreManager.class, "actionStore", null);
-        ReflectionUtil.setFieldValue(StoreManager.class, "stateStore", null);
-        ReflectionUtil.setFieldValue(StoreManager.class, "communicationStore", null);
+        ReflectionUtil.setStaticFieldValue(StoreManager.class, "actionStore", null);
+        ReflectionUtil.setStaticFieldValue(StoreManager.class, "stateStore", null);
+        ReflectionUtil.setStaticFieldValue(StoreManager.class, "communicationStore", null);
     }
     
     @Override
