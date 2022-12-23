@@ -28,6 +28,10 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
+    <modules>
+        <module>shardingsphere-agent-shade-dependency</module>
+    </modules>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -83,7 +87,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <descriptors>
-                                        <descriptor>src/main/assembly/shardingsphere-agent-binary-distribution.xml</descriptor>
+                                        <descriptor>distribution/src/main/assembly/shardingsphere-agent-binary-distribution.xml</descriptor>
                                     </descriptors>
                                 </configuration>
                             </execution>

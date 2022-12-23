@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.spi;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 
 /**
- * Plugin boot service that the lifecycle is from the agent start to shutdown.
+ * Plugin boot service that the lifecycle is from the agent start to shut down.
  */
 public interface PluginBootService extends AutoCloseable {
     
