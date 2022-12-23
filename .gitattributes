@@ -19,3 +19,5 @@
 *.jpg -text
 *.jpeg -text
 *.png -text
+*.eot -text
+*.ttf -text
