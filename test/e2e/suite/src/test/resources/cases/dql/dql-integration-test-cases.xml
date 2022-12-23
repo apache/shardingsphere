@@ -491,26 +491,34 @@
     <test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    <test-case sql="SELECT * FROM t_user WHERE user_id &lt;= 15 ORDER BY user_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
     
-    <test-case sql="SELECT user_id, pwd FROM t_user WHERE pwd = 'a10'" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
+    <test-case sql="SELECT * FROM t_user WHERE user_id &lt;= 15 ORDER BY user_id" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11')" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+
+    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
+    <test-case sql="SELECT * FROM t_user WHERE password = '111111'" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11') and user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+
+    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
+    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333')" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    <test-case sql="SELECT * FROM t_user WHERE pwd in ('a10', 'b11') OR user_id = 10" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+
+    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
+    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333') AND user_id = 12" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id WHERE u.user_id IN (0, 11)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+
+    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
+    <test-case sql="SELECT * FROM t_user WHERE password IN ('222222', '333333') OR user_id = 10" scenario-types="encrypt">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO add dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting scenario when use standard t_user table in issue#21286 -->
+    <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id = m.user_id WHERE u.user_id IN (10, 11)" scenario-types="encrypt">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -1179,39 +1187,35 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in simple select statement when use sharding feature.|Test encrypt table's LIKE operator in simple select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in simple select statement when use sharding feature.|Test encrypt table's LIKE operator in simple select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18' OR telephone LIKE '_18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in simple select statement with or condition when use sharding feature.|Test encrypt table's LIKE operator in simple select statement with or condition when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '%18')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in subquery select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '%18')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator in subquery select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '_1000018')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in subquery select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '__18')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator in subquery select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in select join statement when use sharding feature.|Test encrypt table's LIKE operator in select join statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '_18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in select join statement when use sharding feature.|Test encrypt table's LIKE operator in select join statement when use encrypt feature.">
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '%18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '%18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in select group by statement when use sharding feature.|Test encrypt table's LIKE operator in select group by statement when use encrypt feature.">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator in select group by statement when use sharding feature.|Test encrypt table's LIKE operator in select group by statement when use encrypt feature.">
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </integration-test-cases>
