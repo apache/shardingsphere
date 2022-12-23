@@ -105,7 +105,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 return decodeDeleteRowsEventV2(binlogEventHeader, payload);
             default:
                 PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);
-                int remainDataLength = binlogEventHeader.getEventSize() + 2 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
+                int remainDataLength = binlogEventHeader.getEventSize() + 1 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
                 if (remainDataLength > 0) {
                     payload.skipReserved(remainDataLength);
                 }
