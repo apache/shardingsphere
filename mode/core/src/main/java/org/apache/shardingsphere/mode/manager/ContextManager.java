@@ -242,6 +242,13 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
+    /**
+     * Alter schema meta data.
+     *
+     * @param databaseName database name
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
+     */
     public synchronized void alterSchemaMetaData(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeDeletedTables = SchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedTables = SchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -38,31 +37,30 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     
     private ContextManager contextManager;
     
-    private MetaDataPersistService persistService;
-    
     @Override
     public void createDatabase(final String databaseName) {
-        persistService.getDatabaseMetaDataService().addDatabase(databaseName);
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().addDatabase(databaseName);
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
-        persistService.getDatabaseMetaDataService().dropDatabase(databaseName);
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().dropDatabase(databaseName);
     }
     
     @Override
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) {
-        persistService.getDataSourceService().append(databaseName, toBeRegisterStorageUnitProps);
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(databaseName, toBeRegisterStorageUnitProps);
     }
     
     @Override
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) {
-        persistService.getDataSourceService().append(databaseName, toBeUpdatedStorageUnitProps);
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(databaseName, toBeUpdatedStorageUnitProps);
     }
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
-        persistService.getDataSourceService().persist(databaseName, getToBeReversedDataSourcePropsMap(persistService.getDataSourceService().load(databaseName), toBeDroppedStorageUnitNames));
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persist(databaseName,
+                getToBeReversedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
     private Map<String, DataSourceProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
@@ -71,22 +69,21 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     
     @Override
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        persistService.getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
     }
     
     @Override
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
-        persistService.getGlobalRuleService().persist(globalRuleConfigs);
+        contextManager.getMetaDataContexts().getPersistService().getGlobalRuleService().persist(globalRuleConfigs);
     }
     
     @Override
     public void alterProperties(final Properties props) {
-        persistService.getPropsService().persist(props);
+        contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
     }
     
     @Override
     public void setContextManagerAware(final ContextManager contextManager) {
         this.contextManager = contextManager;
-        this.persistService = contextManager.getMetaDataContexts().getPersistService();
     }
 }
