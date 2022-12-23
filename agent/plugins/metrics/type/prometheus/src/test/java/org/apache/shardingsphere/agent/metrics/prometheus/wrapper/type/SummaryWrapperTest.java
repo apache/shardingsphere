@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,10 +27,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class SummaryWrapperTest {
     
     @Test
-    public void assertCreate() {
+    public void assertCreate() throws ReflectiveOperationException {
         SummaryWrapper summaryWrapper = new SummaryWrapper(Summary.build().name("a").help("help").create());
         summaryWrapper.observe(1);
-        Summary summary = (Summary) AgentReflectionUtil.getFieldValue(summaryWrapper, "summary");
+        Summary summary = (Summary) Plugins.getMemberAccessor().get(SummaryWrapper.class.getDeclaredField("summary"), summaryWrapper);
         assertThat(summary.collect().size(), is(1));
     }
 }
