@@ -22,7 +22,7 @@ import brave.Tracing;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
+import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
@@ -46,7 +46,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
-        BackendConnection connection = ((ConnectionSession) ReflectionUtil.getFieldValue(target, "connectionSession")).getBackendConnection();
+        BackendConnection connection = ((ConnectionSession) AgentReflectionUtil.getFieldValue(target, "connectionSession")).getBackendConnection();
         Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
         span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
         span.finish();

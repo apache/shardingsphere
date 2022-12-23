@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
+import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 
 import java.lang.reflect.Method;
 import java.sql.DatabaseMetaData;
@@ -56,8 +56,8 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
             builder = builder.asChildOf(root);
         }
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectionUtil.getFieldValue(target, "storageTypes");
-        DataSourceMetaData metaData = (DataSourceMetaData) ReflectionUtil.invokeMethod(
+        Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) AgentReflectionUtil.getFieldValue(target, "storageTypes");
+        DataSourceMetaData metaData = (DataSourceMetaData) AgentReflectionUtil.invokeMethod(
                 JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
                 target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)

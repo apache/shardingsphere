@@ -25,10 +25,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Reflection utility.
+ * Agent reflection utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReflectionUtil {
+public final class AgentReflectionUtil {
     
     /**
      * Get field value.

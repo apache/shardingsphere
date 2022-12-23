@@ -23,7 +23,7 @@ import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
+import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -50,7 +50,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
-        BackendConnection connection = ((ConnectionSession) ReflectionUtil.getFieldValue(target, "connectionSession")).getBackendConnection();
+        BackendConnection connection = ((ConnectionSession) AgentReflectionUtil.getFieldValue(target, "connectionSession")).getBackendConnection();
         Scope scope = GlobalTracer.get().scopeManager().active();
         scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connection.getConnectionSize());
         scope.close();

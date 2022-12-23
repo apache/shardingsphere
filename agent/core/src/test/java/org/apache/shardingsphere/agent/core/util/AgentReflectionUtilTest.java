@@ -23,11 +23,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ReflectionUtilTest {
+public final class AgentReflectionUtilTest {
     
     @Test
     public void assertGetFieldValue() {
         ReflectionFixture reflectionFixture = new ReflectionFixture("foo");
-        assertThat(ReflectionUtil.getFieldValue(reflectionFixture, "value"), is(reflectionFixture.getValue()));
+        assertThat(AgentReflectionUtil.getFieldValue(reflectionFixture, "value"), is(reflectionFixture.getValue()));
     }
 }
