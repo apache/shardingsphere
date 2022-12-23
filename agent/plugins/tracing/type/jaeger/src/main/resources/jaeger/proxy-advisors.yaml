@@ -33,4 +33,4 @@ advisors:
         type: method
         params:
           - index: 0
-            name: jdbcExecutionUnit
+            type: org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit
