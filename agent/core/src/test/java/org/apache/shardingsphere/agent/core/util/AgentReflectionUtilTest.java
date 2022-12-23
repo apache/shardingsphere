@@ -30,4 +30,9 @@ public final class AgentReflectionUtilTest {
         ReflectionFixture reflectionFixture = new ReflectionFixture("foo");
         assertThat(AgentReflectionUtil.getFieldValue(reflectionFixture, "value"), is(reflectionFixture.getValue()));
     }
+    
+    @Test
+    public void assertInvokeMethod() throws NoSuchMethodException {
+        assertThat(AgentReflectionUtil.invokeMethod(ReflectionFixture.class.getDeclaredMethod("call"), new ReflectionFixture("foo")), is("foo"));
+    }
 }

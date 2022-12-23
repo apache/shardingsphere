@@ -25,4 +25,8 @@ import lombok.RequiredArgsConstructor;
 public final class ReflectionFixture {
     
     private final String value;
+    
+    private String call() {
+        return value;
+    }
 }
