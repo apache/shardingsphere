@@ -42,7 +42,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.SelectStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 
 import java.util.Optional;
 
@@ -78,9 +77,6 @@ public final class SelectStatementAssert {
         assertWithClause(assertContext, actual, expected);
         assertCombineClause(assertContext, actual, expected);
         assertModelClause(assertContext, actual, expected);
-        if (actual instanceof OracleSelectStatement) {
-            assertRowNumMap(assertContext, (OracleSelectStatement) actual, expected);
-        }
     }
     
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -204,18 +200,6 @@ public final class SelectStatementAssert {
         } else {
             assertTrue(assertContext.getText("Actual model segment should exist."), modelSegment.isPresent());
             ModelClauseAssert.assertIs(assertContext, modelSegment.get(), expected.getModelClause());
-        }
-    }
-    
-    private static void assertRowNumMap(final SQLCaseAssertContext assertContext, final OracleSelectStatement actual, final SelectStatementTestCase expected) {
-        SelectStatementTestCase rowNumSelect = expected.getRowNumSelect();
-        if (null != rowNumSelect) {
-            if (null != rowNumSelect.getOrderByClause()) {
-                OrderByClauseAssert.assertIs(assertContext, actual.getRowNumSelect().values().iterator().next().getOrderBy().get(), rowNumSelect.getOrderByClause());
-            }
-            if (null != rowNumSelect.getGroupByClause()) {
-                GroupByClauseAssert.assertIs(assertContext, actual.getRowNumSelect().values().iterator().next().getGroupBy().get(), rowNumSelect.getGroupByClause());
-            }
         }
     }
 }

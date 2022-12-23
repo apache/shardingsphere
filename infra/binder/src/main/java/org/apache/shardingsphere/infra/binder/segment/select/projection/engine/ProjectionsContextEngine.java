@@ -128,7 +128,8 @@ public final class ProjectionsContextEngine {
     }
     
     /**
-     * expand projection, such as ShorthandProjection.
+     * Expand projection, such as ShorthandProjection.
+     * 
      * @param projection the projection to expand
      * @return expanded projections
      */

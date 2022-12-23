@@ -17,18 +17,34 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -38,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Aggregat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
@@ -49,7 +66,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -58,17 +77,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class SelectStatementContextTest {
     
@@ -605,5 +613,68 @@ public final class SelectStatementContextTest {
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue(hasAlias ? "n" : null)));
         return columnProjectionSegment;
+    }
+    
+    @Test
+    public void assertContainsOrderbyForOracleRownum() {
+        // select * from (select t.*, rownum r from (select * from a order by name)t ) where r<10
+        OracleSelectStatement selectStatement = new OracleSelectStatement();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        selectStatement.setProjections(projections);
+        ExpressionSegment expr = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("r")), new LiteralExpressionSegment(0, 0, 10), "<", "r<10");
+        WhereSegment where = new WhereSegment(0, 0, expr);
+        selectStatement.setWhere(where);
+        SelectStatement subStatement = createSubStatementOfAssertContainsOrderbyForOracleRownum();
+        TableSegment from = new SubqueryTableSegment(new SubquerySegment(26, 87, subStatement));
+        selectStatement.setFrom(from);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getSchemas()).thenReturn(mockSchemas());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class),
+                mock(ConfigurationProperties.class));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        assertTrue(selectStatementContext.getOrderByContext().getItems().size() > 0);
+    }
+    
+    private SelectStatement createSubStatementOfAssertContainsOrderbyForOracleRownum() {
+        // select t.*, rownum r from (select * from a order by a.name)t
+        final SelectStatement subStatement = new OracleSelectStatement();
+        ProjectionsSegment subProjections = new ProjectionsSegment(0, 0);
+        ShorthandProjectionSegment subShorthandProjection = new ShorthandProjectionSegment(0, 0);
+        subShorthandProjection.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t")));
+        subProjections.getProjections().add(subShorthandProjection);
+        ColumnProjectionSegment subRownumProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("rownum")));
+        subRownumProjection.setAlias(new AliasSegment(0, 0, new IdentifierValue("r")));
+        subProjections.getProjections().add(subRownumProjection);
+        subStatement.setProjections(subProjections);
+        SelectStatement subsubSelectStatement = createSubSubStatementOfAssertContainsOrderbyForOracleRownum();
+        SubquerySegment subsubSeg = new SubquerySegment(39, 70, subsubSelectStatement);
+        TableSegment subsubQuery = new SubqueryTableSegment(subsubSeg);
+        subsubQuery.setAlias(new AliasSegment(0, 0, new IdentifierValue("t")));
+        subStatement.setFrom(subsubQuery);
+        return subStatement;
+    }
+    
+    private SelectStatement createSubSubStatementOfAssertContainsOrderbyForOracleRownum() {
+        // select a.* from a order by a.name
+        SelectStatement subsubSelectStatement = new OracleSelectStatement();
+        ProjectionsSegment subsubProjections = new ProjectionsSegment(0, 0);
+        ShorthandProjectionSegment shorthandSegment = new ShorthandProjectionSegment(0, 0);
+        shorthandSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
+        subsubProjections.getProjections().add(shorthandSegment);
+        subsubSelectStatement.setProjections(subsubProjections);
+        subsubSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(28, 29, new IdentifierValue("a"))));
+        LinkedList<OrderByItemSegment> orderByItems = new LinkedList<OrderByItemSegment>();
+        orderByItems.add(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC, NullsOrderType.FIRST));
+        subsubSelectStatement.setOrderBy(new OrderBySegment(0, 0, orderByItems));
+        return subsubSelectStatement;
+    }
+    
+    private Map<String, ShardingSphereSchema> mockSchemas() {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(2, 1);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        result.put(DefaultDatabase.LOGIC_NAME, schema);
+        result.put("public", schema);
+        return result;
     }
 }

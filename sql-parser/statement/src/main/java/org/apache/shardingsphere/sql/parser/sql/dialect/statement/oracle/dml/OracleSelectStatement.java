@@ -24,9 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Oracle select statement.
@@ -39,15 +37,6 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
     private ModelSegment modelSegment;
     
     private WithSegment withSegment;
-    
-    /**
-     * the select statement associated with rownum alias. the map should has only 1 entry.<br>
-     * if use oracle's rownun alias in where, it means use the "order by" and "group by" exists in  the rownum's from sub query.<br>
-     * ex: select * from (select t.*, rownum r from (select * from a order by a.name)t ) where r<10<br>
-    -><br>
-    select * from (select t.*, rownum r from (select * from a order by a.name)t ) where r<10 orde by name<br>
-     */
-    private Map<String, OracleSelectStatement> rowNumSelect = new ConcurrentHashMap<String, OracleSelectStatement>();
     
     /**
      * Get lock segment.
@@ -74,13 +63,5 @@ public final class OracleSelectStatement extends SelectStatement implements Orac
      */
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
-    }
-    
-    /**
-     * get the select statement associated with rownum alias.
-     * @return select statement associated with rownum alias.  
-     */
-    public Map<String, OracleSelectStatement> getRowNumSelect() {
-        return rowNumSelect;
     }
 }

@@ -165,11 +165,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -513,31 +510,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         if (null != ctx.modelClause()) {
             result.setModelSegment((ModelSegment) visit(ctx.modelClause()));
-        }
-        Map<String, OracleSelectStatement> rowNumSelect = getRowNumSelect(result);
-        if (rowNumSelect.size() > 0) {
-            result.setRowNumSelect(rowNumSelect);
-        }
-        return result;
-    }
-    
-    private Map<String, OracleSelectStatement> getRowNumSelect(final OracleSelectStatement selectStatement) {
-        Map<String, OracleSelectStatement> result = new HashMap<>();
-        for (ProjectionSegment proj : selectStatement.getProjections().getProjections()) {
-            boolean isRowNumColumn = proj instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) proj).getColumn().getIdentifier().getValue().equalsIgnoreCase("ROWNUM");
-            Optional<OracleSelectStatement> subSelect = Optional.empty();
-            if (selectStatement.getFrom() instanceof SubqueryTableSegment) {
-                subSelect = Optional.of((OracleSelectStatement) ((SubqueryTableSegment) selectStatement.getFrom()).getSubquery().getSelect());
-            }
-            if (isRowNumColumn && subSelect.isPresent()) {
-                ColumnProjectionSegment rowNumSegment = (ColumnProjectionSegment) proj;
-                String rowNumAlias = rowNumSegment.getAlias().isPresent() ? rowNumSegment.getAlias().get() : "ROWNUM";
-                result.put(rowNumAlias, subSelect.get());
-                break;
-            } else if (proj instanceof ShorthandProjectionSegment && subSelect.isPresent() && subSelect.get().getRowNumSelect().size() > 0) {
-                result.putAll(subSelect.get().getRowNumSelect());
-                break;
-            }
         }
         return result;
     }

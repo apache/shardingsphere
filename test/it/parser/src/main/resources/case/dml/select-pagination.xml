@@ -1784,13 +1784,6 @@
                 </binary-operation-expression>
             </expr>
         </where>
-        <rownum>
-          <order-by>
-              <column-item start-index="325" stop-index="333" name="item_id" order-direction="DESC">
-                  <owner start-index="325" stop-index="325" name="i" />
-              </column-item>
-          </order-by>
-        </rownum>		
     </select>
 
     <select sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 7, 5, 3">
