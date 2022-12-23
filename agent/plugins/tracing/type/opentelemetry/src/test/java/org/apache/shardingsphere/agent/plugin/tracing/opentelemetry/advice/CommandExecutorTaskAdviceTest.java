@@ -21,7 +21,6 @@ import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
@@ -42,8 +41,8 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @Test
     public void assertMethod() {
         CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
@@ -55,9 +54,9 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @Test
     public void assertExceptionHandle() {
         CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);

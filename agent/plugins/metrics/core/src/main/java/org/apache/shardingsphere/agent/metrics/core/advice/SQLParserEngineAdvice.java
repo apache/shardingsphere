@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
@@ -58,8 +57,8 @@ public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
-        SQLStatement sqlStatement = (SQLStatement) invocationResult.getResult();
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+        SQLStatement sqlStatement = (SQLStatement) result;
         countSQL(sqlStatement);
         countDistSQL(sqlStatement);
     }

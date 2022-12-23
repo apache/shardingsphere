@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
@@ -39,8 +38,8 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @Test
     public void assertMethod() {
         CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         Span span = COLLECTOR.pop();
         Map<String, String> tags = span.tags();
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
@@ -52,9 +51,9 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @Test
     public void assertExceptionHandle() {
         CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         Span span = COLLECTOR.pop();
         Map<String, String> tags = span.tags();
         assertThat(tags.get("error"), is("IOException"));
