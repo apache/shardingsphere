@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Gauge;
-import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,12 +27,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class GaugeWrapperTest {
     
     @Test
-    public void assertCreate() {
+    public void assertCreate() throws ReflectiveOperationException {
         Gauge gauge = Gauge.build().name("a").help("help").create();
         GaugeWrapper gaugeWrapper = new GaugeWrapper(gauge);
         gaugeWrapper.inc();
         gaugeWrapper.inc(1);
-        gauge = (Gauge) AgentReflectionUtil.getFieldValue(gaugeWrapper, "gauge");
+        gauge = (Gauge) Plugins.getMemberAccessor().get(GaugeWrapper.class.getDeclaredField("gauge"), gaugeWrapper);
         assertThat(gauge.get(), is(2.0));
     }
 }

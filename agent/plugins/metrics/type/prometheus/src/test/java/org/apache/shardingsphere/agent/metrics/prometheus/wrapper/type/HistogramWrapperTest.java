@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Histogram;
-import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,11 +27,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class HistogramWrapperTest {
     
     @Test
-    public void assertCreate() {
+    public void assertCreate() throws ReflectiveOperationException {
         Histogram histogram = Histogram.build().name("a").help("help").create();
         HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
         histogramWrapper.observe(1);
-        histogram = (Histogram) AgentReflectionUtil.getFieldValue(histogramWrapper, "histogram");
+        histogram = (Histogram) Plugins.getMemberAccessor().get(HistogramWrapper.class.getDeclaredField("histogram"), histogramWrapper);
         assertThat(histogram.collect().size(), is(1));
     }
 }
