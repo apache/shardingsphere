@@ -46,7 +46,6 @@ public final class MySQLBinlogRotateEventPacketTest {
         when(payload.readStringFix(anyInt())).thenReturn("binlog-000001");
         when(payload.getByteBuf()).thenReturn(Unpooled.buffer());
         MySQLBinlogRotateEventPacket actual = new MySQLBinlogRotateEventPacket(binlogEventHeader, payload);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getBinlogEventHeader(), is(binlogEventHeader));
         assertThat(actual.getPosition(), is(4L));
         assertThat(actual.getNextBinlogName(), is("binlog-000001"));

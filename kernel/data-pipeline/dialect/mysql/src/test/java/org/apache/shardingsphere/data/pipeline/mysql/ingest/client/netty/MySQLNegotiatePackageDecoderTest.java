@@ -71,7 +71,7 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     private ByteBuf mockHandshakePacket() {
-        String handshakePacket = "000a352e372e32312d6c6f6700090000004a592a1f725a0d0900fff7210200ff8115000000000000000000001a437b30323a4d2b514b5870006d"
+        String handshakePacket = "0a352e372e32312d6c6f6700090000004a592a1f725a0d0900fff7210200ff8115000000000000000000001a437b30323a4d2b514b5870006d"
                 + "7973716c5f6e61746976655f70617373776f72640000000002000000";
         byte[] handshakePacketBytes = ByteBufUtil.decodeHexDump(handshakePacket);
         ByteBuf result = Unpooled.buffer(handshakePacketBytes.length);
@@ -103,8 +103,8 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     private ByteBuf authSwitchRequestPacket() {
-        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLAuthSwitchRequestPacket.HEADER);
-        when(byteBuf.getByte(1)).thenReturn((byte) MySQLAuthSwitchRequestPacket.HEADER);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) MySQLAuthSwitchRequestPacket.HEADER);
+        when(byteBuf.getByte(0)).thenReturn((byte) MySQLAuthSwitchRequestPacket.HEADER);
         when(byteBuf.bytesBefore((byte) 0)).thenReturn(20);
         return byteBuf;
     }
@@ -119,8 +119,8 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     private ByteBuf authMoreDataPacket() {
-        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLAuthMoreDataPacket.HEADER);
-        when(byteBuf.getByte(1)).thenReturn((byte) MySQLAuthMoreDataPacket.HEADER);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) MySQLAuthMoreDataPacket.HEADER);
+        when(byteBuf.getByte(0)).thenReturn((byte) MySQLAuthMoreDataPacket.HEADER);
         return byteBuf;
     }
     

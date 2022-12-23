@@ -200,6 +200,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         doReturn(getRemoteAddress()).when(result).remoteAddress();
         when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(result.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
         return result;
     }
     

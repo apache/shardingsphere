@@ -42,6 +42,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLNe
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLNegotiatePackageDecoder;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
@@ -97,6 +98,7 @@ public final class MySQLClient {
                     
                     @Override
                     protected void initChannel(final SocketChannel socketChannel) {
+                        socketChannel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
                         socketChannel.pipeline().addLast(new ChannelAttrInitializer());
                         socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
                         socketChannel.pipeline().addLast(new MySQLNegotiatePackageDecoder());
@@ -119,6 +121,7 @@ public final class MySQLClient {
     public synchronized boolean execute(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, true);
+        resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         return null != waitExpectedResponse(MySQLOKPacket.class);
     }
@@ -132,6 +135,7 @@ public final class MySQLClient {
     public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
+        resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         return (int) Objects.requireNonNull(waitExpectedResponse(MySQLOKPacket.class)).getAffectedRows();
     }
@@ -145,6 +149,7 @@ public final class MySQLClient {
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
+        resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
         return waitExpectedResponse(InternalResultSet.class);
     }
@@ -173,6 +178,7 @@ public final class MySQLClient {
         InetSocketAddress localAddress = (InetSocketAddress) channel.localAddress();
         MySQLComRegisterSlaveCommandPacket packet = new MySQLComRegisterSlaveCommandPacket(
                 connectInfo.getServerId(), localAddress.getHostName(), connectInfo.getUsername(), connectInfo.getPassword(), localAddress.getPort());
+        resetSequenceID();
         channel.writeAndFlush(packet);
         waitExpectedResponse(MySQLOKPacket.class);
     }
@@ -201,6 +207,7 @@ public final class MySQLClient {
         String tableKey = String.join(":", connectInfo.getHost(), String.valueOf(connectInfo.getPort()));
         channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey)));
         channel.pipeline().addLast(new MySQLBinlogEventHandler(getLastBinlogEvent(binlogFileName, binlogPosition)));
+        resetSequenceID();
         channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
     }
     
@@ -209,6 +216,10 @@ public final class MySQLClient {
         result.setFileName(binlogFileName);
         result.setPosition(binlogPosition);
         return result;
+    }
+    
+    private void resetSequenceID() {
+        channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(0);
     }
     
     /**

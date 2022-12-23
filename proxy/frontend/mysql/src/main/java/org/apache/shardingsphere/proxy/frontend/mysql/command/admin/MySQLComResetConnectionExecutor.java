@@ -44,6 +44,6 @@ public final class MySQLComResetConnectionExecutor implements CommandExecutor {
         connectionSession.setDefaultIsolationLevel(null);
         connectionSession.setIsolationLevel(null);
         connectionSession.getServerPreparedStatementRegistry().clear();
-        return Collections.singletonList(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
+        return Collections.singletonList(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }
