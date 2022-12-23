@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Counter;
-import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,12 +27,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class CounterWrapperTest {
     
     @Test
-    public void assertCreate() {
+    public void assertCreate() throws ReflectiveOperationException {
         Counter counter = Counter.build().name("a").help("help").create();
         CounterWrapper counterWrapper = new CounterWrapper(counter);
         counterWrapper.inc();
         counterWrapper.inc(1);
-        counter = (Counter) AgentReflectionUtil.getFieldValue(counterWrapper, "counter");
+        counter = (Counter) Plugins.getMemberAccessor().get(CounterWrapper.class.getDeclaredField("counter"), counterWrapper);
         assertThat(counter.get(), is(2.0));
     }
 }
