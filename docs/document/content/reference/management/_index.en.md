@@ -7,7 +7,7 @@ weight = 3
 ## Data Structure in Registry Center
 
 Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations. 
-`nodes` node persist the runtime node of database access object, to distinguish different database access instances.
+`nodes` persist the runtime node of database access object, to distinguish different database access instances.
 `sys_data` persist system tables and data.
 
 ```
@@ -68,7 +68,7 @@ namespace
 
 ### /rules
 
-Global rule configuration, which can include transaction configuration, SQL parser configuration, etc.
+These are the global rule configurations, which can include transaction configuration, SQL parser configuration, etc.
 
 ```yaml
 - !TRANSACTION
@@ -80,7 +80,7 @@ Global rule configuration, which can include transaction configuration, SQL pars
 
 ### /props
 
-Properties configuration. Please refer to the [Configuration Manual](/en/user-manual/shardingsphere-jdbc/props/) for more details.
+These are the properties configuration. Please refer to the [Configuration Manual](/en/user-manual/shardingsphere-jdbc/props/) for more details.
 
 ```yaml
 kernel-executor-size: 20
@@ -89,7 +89,7 @@ sql-show: true
 
 ### /metadata/${databaseName}/versions/${versionNumber}/dataSources
 
-A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by the users themselves.
+A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by the users.
 
 ```yaml
 ds_0:
@@ -163,7 +163,7 @@ indexs:                                   # Index
 
 ### /nodes/compute_nodes
 
-It includes running instance information of database access object, with sub-nodes as the identifiers of theh currently running instance, which is automatically generated at each startup using UUID. 
+It includes running instance information of database access object, with sub-nodes as the identifiers of the currently running instance, which is automatically generated at each startup using UUID. 
 
 The identifiers are temporary nodes, which are registered when instances are online and cleared when instances are offline. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
