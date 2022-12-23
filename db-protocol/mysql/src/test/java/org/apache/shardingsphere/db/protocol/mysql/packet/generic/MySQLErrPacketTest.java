@@ -45,7 +45,7 @@ public final class MySQLErrPacketTest {
     
     @Test
     public void assertNewErrPacketWithPayload() {
-        when(payload.readInt1()).thenReturn(1, MySQLErrPacket.HEADER);
+        when(payload.readInt1()).thenReturn(MySQLErrPacket.HEADER);
         when(payload.readInt2()).thenReturn(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getVendorCode());
         when(payload.readStringFix(1)).thenReturn("#");
         when(payload.readStringFix(5)).thenReturn(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getSqlState().getValue());
