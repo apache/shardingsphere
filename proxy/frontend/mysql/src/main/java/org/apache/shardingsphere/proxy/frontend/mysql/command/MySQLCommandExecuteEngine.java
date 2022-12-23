@@ -82,7 +82,6 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
         }
         int count = 0;
         int flushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
-        int currentSequenceId = 0;
         while (queryCommandExecutor.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
@@ -95,8 +94,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
                 context.flush();
                 count = 0;
             }
-            currentSequenceId++;
         }
-        context.write(new MySQLEofPacket(++currentSequenceId + headerPackagesCount, ServerStatusFlagCalculator.calculateFor(backendConnection.getConnectionSession())));
+        context.write(new MySQLEofPacket(ServerStatusFlagCalculator.calculateFor(backendConnection.getConnectionSession())));
     }
 }

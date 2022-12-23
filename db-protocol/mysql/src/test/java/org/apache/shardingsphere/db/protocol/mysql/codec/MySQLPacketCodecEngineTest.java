@@ -130,7 +130,6 @@ public final class MySQLPacketCodecEngineTest {
         when(byteBuf.markWriterIndex()).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(8);
         MySQLPacket actualMessage = mock(MySQLPacket.class);
-        when(actualMessage.getSequenceId()).thenReturn(1);
         new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(byteBuf).writeInt(0);
         verify(byteBuf).markWriterIndex();
@@ -170,7 +169,6 @@ public final class MySQLPacketCodecEngineTest {
         RuntimeException ex = mock(RuntimeException.class);
         MySQLPacket actualMessage = mock(MySQLPacket.class);
         doThrow(ex).when(actualMessage).write(any(MySQLPacketPayload.class));
-        when(actualMessage.getSequenceId()).thenReturn(2);
         new MySQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(byteBuf).writeInt(0);
         verify(byteBuf).markWriterIndex();

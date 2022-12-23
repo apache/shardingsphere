@@ -82,7 +82,7 @@ public final class MySQLClientTest {
     
     @Test
     public void assertExecute() throws ReflectiveOperationException {
-        mockChannelResponse(new MySQLOKPacket(0, 0));
+        mockChannelResponse(new MySQLOKPacket(0));
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("eventLoopGroup"), mysqlClient, new NioEventLoopGroup(1));
         assertTrue(mysqlClient.execute(""));
@@ -91,7 +91,7 @@ public final class MySQLClientTest {
     
     @Test
     public void assertExecuteUpdate() throws ReflectiveOperationException {
-        MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0, 0);
+        MySQLOKPacket expected = new MySQLOKPacket(10, 0, 0);
         Plugins.getMemberAccessor().set(MySQLOKPacket.class.getDeclaredField("affectedRows"), expected, 10L);
         mockChannelResponse(expected);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
@@ -117,7 +117,7 @@ public final class MySQLClientTest {
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("serverInfo"), mysqlClient, serverInfo);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("eventLoopGroup"), mysqlClient, new NioEventLoopGroup(1));
-        mockChannelResponse(new MySQLOKPacket(0, 0));
+        mockChannelResponse(new MySQLOKPacket(0));
         mysqlClient.subscribe("", 4L);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComRegisterSlaveCommandPacket.class));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComBinlogDumpCommandPacket.class));

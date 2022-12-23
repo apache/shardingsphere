@@ -60,7 +60,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         while (in.readableBytes() >= 2 + MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
             in.markReaderIndex();
             MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
-            skipSequenceId(payload);
             checkError(payload);
             MySQLBinlogEventHeader binlogEventHeader = new MySQLBinlogEventHeader(payload, binlogContext.getChecksumLength());
             // make sure event has complete body
@@ -112,10 +111,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 }
                 return result;
         }
-    }
-    
-    private void skipSequenceId(final MySQLPacketPayload payload) {
-        payload.readInt1();
     }
     
     private void checkError(final MySQLPacketPayload payload) {

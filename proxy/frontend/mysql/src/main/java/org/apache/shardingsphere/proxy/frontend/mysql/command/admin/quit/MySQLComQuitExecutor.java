@@ -31,6 +31,6 @@ public final class MySQLComQuitExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        return Collections.singletonList(new MySQLOKPacket(1, 0));
+        return Collections.singletonList(new MySQLOKPacket(0));
     }
 }

@@ -53,9 +53,4 @@ public abstract class AbstractMySQLBinlogEventPacket implements MySQLPacket, MyS
         }
         return alreadyReadIndex - payload.getByteBuf().readerIndex();
     }
-    
-    @Override
-    public final int getSequenceId() {
-        return 0;
-    }
 }
