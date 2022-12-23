@@ -52,17 +52,16 @@ public class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
         Span root = (Span) ((Map<String, Object>) args[2]).get(OpenTelemetryConstants.ROOT_SPAN);
         Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
-        if (root != null) {
+        if (null != root) {
             spanBuilder.setParent(Context.current().with(root));
         }
         spanBuilder.setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME);
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE);
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectionUtil.getFieldValue(target, "storageTypes");
-        Method getMetaDataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class);
-        getMetaDataMethod.setAccessible(true);
-        DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target,
-                new Object[]{executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName())});
+        DataSourceMetaData metaData = (DataSourceMetaData) ReflectionUtil.invokeMethod(
+                JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
+                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName())
                 .setAttribute(OpenTelemetryConstants.PEER_HOSTNAME, metaData.getHostname())
                 .setAttribute(OpenTelemetryConstants.PEER_PORT, String.valueOf(metaData.getPort()))
