@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -73,8 +73,8 @@ public final class ExecuteEngineTest {
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void shutdownAndAwaitTerminal(final ExecuteEngine executeEngine) {
-        ExecutorService executorService = (ExecutorService) new FieldReader(executeEngine, ExecuteEngine.class.getDeclaredField("executorService")).read();
+        ExecutorService executorService = (ExecutorService) Plugins.getMemberAccessor().get(ExecuteEngine.class.getDeclaredField("executorService"), executeEngine);
         executorService.shutdown();
-        executorService.awaitTermination(30, TimeUnit.SECONDS);
+        executorService.awaitTermination(30L, TimeUnit.SECONDS);
     }
 }

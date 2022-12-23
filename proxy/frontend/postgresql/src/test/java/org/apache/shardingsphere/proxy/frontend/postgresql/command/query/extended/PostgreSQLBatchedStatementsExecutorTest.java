@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
@@ -134,8 +134,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void prepareExecutionUnitParameters(final PostgreSQLBatchedStatementsExecutor target, final List<List<Object>> parameterSets) {
-        Map<ExecutionUnit, List<List<Object>>> map = (Map<ExecutionUnit, List<List<Object>>>) new FieldReader(
-                target, PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParams")).read();
-        map.replaceAll((k, v) -> parameterSets);
+        ((Map<ExecutionUnit, List<List<Object>>>) Plugins.getMemberAccessor().get(PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParams"), target))
+                .replaceAll((k, v) -> parameterSets);
     }
 }

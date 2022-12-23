@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContext
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -61,12 +61,12 @@ public final class DefaultPipelineDataSourceManagerTest {
     }
     
     @Test
-    public void assertClose() throws NoSuchFieldException {
+    public void assertClose() throws ReflectiveOperationException {
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         try {
             dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
             dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter()));
-            Map<?, ?> cachedDataSources = (Map<?, ?>) new FieldReader(dataSourceManager, DefaultPipelineDataSourceManager.class.getDeclaredField("cachedDataSources")).read();
+            Map<?, ?> cachedDataSources = (Map<?, ?>) Plugins.getMemberAccessor().get(DefaultPipelineDataSourceManager.class.getDeclaredField("cachedDataSources"), dataSourceManager);
             assertNotNull(cachedDataSources);
             assertThat(cachedDataSources.size(), is(2));
             dataSourceManager.close();

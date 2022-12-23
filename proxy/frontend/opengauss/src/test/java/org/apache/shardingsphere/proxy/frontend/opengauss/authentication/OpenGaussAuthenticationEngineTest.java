@@ -52,8 +52,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
@@ -115,9 +114,9 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         authenticationEngine.authenticate(channelHandlerContext, payload);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final OpenGaussAuthenticationEngine target) {
-        new InstanceField(OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived"), target).set(true);
+        Plugins.getMemberAccessor().set(OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived"), target, true);
     }
     
     @Test
@@ -176,19 +175,19 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getRandom64Code(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        return (byte[]) new FieldReader(packet, OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("random64Code")).read();
+        return (byte[]) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("random64Code"), packet);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getToken(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        return (byte[]) new FieldReader(packet, OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("token")).read();
+        return (byte[]) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("token"), packet);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private int getServerIteration(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        return (int) new FieldReader(packet, OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration")).read();
+        return (int) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration"), packet);
     }
     
     private String encodeDigest(final String password, final String random64code, final String token, final int serverIteration) {

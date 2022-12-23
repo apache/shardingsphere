@@ -49,7 +49,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -111,9 +111,9 @@ public final class PipelineContextUtil {
         PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private static ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
-        return (ContextManager) new FieldReader(dataSource, ShardingSphereDataSource.class.getDeclaredField("contextManager")).read();
+        return (ContextManager) Plugins.getMemberAccessor().get(ShardingSphereDataSource.class.getDeclaredField("contextManager"), dataSource);
     }
     
     @SneakyThrows(ConcurrentException.class)

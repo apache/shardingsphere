@@ -32,7 +32,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -167,7 +167,7 @@ public final class ShardingSphereConnectionTest {
     private ConnectionManager mockConnectionManager(final ConnectionTransaction connectionTransaction) {
         ConnectionManager result = mock(ConnectionManager.class);
         when(result.getConnectionTransaction()).thenReturn(connectionTransaction);
-        new InstanceField(connection.getClass().getDeclaredField("connectionManager"), connection).set(result);
+        Plugins.getMemberAccessor().set(connection.getClass().getDeclaredField("connectionManager"), connection, result);
         return result;
     }
     

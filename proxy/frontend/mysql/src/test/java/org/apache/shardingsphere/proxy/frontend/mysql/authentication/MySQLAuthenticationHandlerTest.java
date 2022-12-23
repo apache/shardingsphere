@@ -42,7 +42,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticat
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,7 +76,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     @SneakyThrows(ReflectiveOperationException.class)
     private void initAuthPluginDataForAuthenticationHandler() {
         MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
-        new InstanceField(MySQLAuthenticationHandler.class.getDeclaredField("authPluginData"), authenticationHandler).set(authPluginData);
+        Plugins.getMemberAccessor().set(MySQLAuthenticationHandler.class.getDeclaredField("authPluginData"), authenticationHandler, authPluginData);
     }
     
     @Test
@@ -134,7 +134,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
     }
     
-    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
+    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws ReflectiveOperationException {
         return new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user, isNeedSuper), new ConfigurationProperties(new Properties())));
     }
@@ -149,13 +149,13 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
         return result;
     }
     
-    private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
+    private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws ReflectiveOperationException {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
         if (!isNeedSuper) {
             AuthorityRegistry authorityRegistry = mock(AuthorityRegistry.class);
             when(authorityRegistry.findPrivileges(user.getGrantee())).thenReturn(Optional.empty());
-            new InstanceField(AuthorityRule.class.getDeclaredField("authorityRegistry"), rule).set(authorityRegistry);
+            Plugins.getMemberAccessor().set(AuthorityRule.class.getDeclaredField("authorityRegistry"), rule, authorityRegistry);
         }
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }

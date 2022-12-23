@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,6 +47,6 @@ public final class ConnectionIdGeneratorTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setCurrentConnectionId(final int connectionId) {
-        new InstanceField(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance()).set(connectionId);
+        Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), connectionId);
     }
 }

@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -108,9 +108,10 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(QueryContext.class), any(BackendConnection.class), eq(false))).thenReturn(databaseCommunicationEngine);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setBackendHandlerFactory(final DatabaseBackendHandler schemaDatabaseBackendHandler) {
-        new InstanceField(schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory"), schemaDatabaseBackendHandler).set(databaseCommunicationEngineFactory);
+        Plugins.getMemberAccessor()
+                .set(schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory"), schemaDatabaseBackendHandler, databaseCommunicationEngineFactory);
     }
     
     @Test

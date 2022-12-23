@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -86,9 +86,9 @@ public final class FrontendChannelInboundHandlerTest {
         connectionSession = getConnectionSession();
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private ConnectionSession getConnectionSession() {
-        return (ConnectionSession) new FieldReader(frontendChannelInboundHandler, FrontendChannelInboundHandler.class.getDeclaredField("connectionSession")).read();
+        return (ConnectionSession) Plugins.getMemberAccessor().get(FrontendChannelInboundHandler.class.getDeclaredField("connectionSession"), frontendChannelInboundHandler);
     }
     
     @Test

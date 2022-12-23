@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Map;
@@ -110,10 +110,10 @@ public final class OKProxyStateTest extends ProxyContextRestorer {
     }
     
     @SuppressWarnings({"unchecked", "SameParameterValue"})
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private ExecutorService registerMockExecutorService(final int connectionId) {
-        Map<Integer, ExecutorService> executorServices = (Map<Integer, ExecutorService>) new FieldReader(
-                ConnectionThreadExecutorGroup.getInstance(), ConnectionThreadExecutorGroup.class.getDeclaredField("executorServices")).read();
+        Map<Integer, ExecutorService> executorServices = (Map<Integer, ExecutorService>) Plugins.getMemberAccessor()
+                .get(ConnectionThreadExecutorGroup.class.getDeclaredField("executorServices"), ConnectionThreadExecutorGroup.getInstance());
         ExecutorService result = mock(ExecutorService.class);
         executorServices.put(connectionId, result);
         return result;

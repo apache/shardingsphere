@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptOrderByItemTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
@@ -30,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -83,8 +84,9 @@ public final class EncryptTokenGenerateBuilderTest {
         }
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) {
-        assertThat(new FieldReader(sqlTokenGenerator, findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass())).read(), is(filedInstance));
+        assertThat(Plugins.getMemberAccessor().get(findField(sqlTokenGenerator.getClass(), fieldName, filedInstance.getClass()), sqlTokenGenerator), is(filedInstance));
     }
     
     private Field findField(final Class<?> clazz, final String fieldName, final Class<?> fieldType) {

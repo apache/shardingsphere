@@ -34,8 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -73,12 +72,12 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadHandshakeInitPacket() throws NoSuchFieldException {
+    public void assertChannelReadHandshakeInitPacket() throws ReflectiveOperationException {
         MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, new MySQLAuthPluginData(new byte[8], new byte[12]));
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
-        ServerInfo serverInfo = (ServerInfo) new FieldReader(mysqlNegotiateHandler, MySQLNegotiateHandler.class.getDeclaredField("serverInfo")).read();
+        ServerInfo serverInfo = (ServerInfo) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler);
         assertNotNull(serverInfo);
         assertThat(serverInfo.getServerVersion().getMajor(), is(5));
         assertThat(serverInfo.getServerVersion().getMinor(), is(7));
@@ -86,10 +85,10 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadOkPacket() throws NoSuchFieldException {
+    public void assertChannelReadOkPacket() throws ReflectiveOperationException {
         MySQLOKPacket okPacket = new MySQLOKPacket(0, 0);
         ServerInfo serverInfo = new ServerInfo();
-        new InstanceField(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler).set(serverInfo);
+        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler, serverInfo);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);
         verify(pipeline).remove(mysqlNegotiateHandler);
         verify(authResultCallback).setSuccess(serverInfo);

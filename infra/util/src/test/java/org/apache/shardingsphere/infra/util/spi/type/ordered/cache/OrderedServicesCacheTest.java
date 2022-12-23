@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.Ordere
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.ref.SoftReference;
 import java.util.Collection;
@@ -46,8 +46,8 @@ public final class OrderedServicesCacheTest {
     }
     
     @After
-    public void cleanCache() throws NoSuchFieldException {
-        new InstanceField(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class).set(new SoftReference<>(new ConcurrentHashMap<>()));
+    public void cleanCache() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class, new SoftReference<>(new ConcurrentHashMap<>()));
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 import org.postgresql.util.ServerErrorMessage;
@@ -36,14 +36,14 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLErrPacketFactoryTest {
     
     @Test
-    public void assertPSQLExceptionWithServerErrorMessageNotNull() throws NoSuchFieldException {
+    public void assertPSQLExceptionWithServerErrorMessageNotNull() throws ReflectiveOperationException {
         ServerErrorMessage serverErrorMessage = mock(ServerErrorMessage.class);
         when(serverErrorMessage.getSeverity()).thenReturn(PostgreSQLMessageSeverityLevel.FATAL);
         when(serverErrorMessage.getSQLState()).thenReturn("sqlState");
         when(serverErrorMessage.getMessage()).thenReturn("message");
         when(serverErrorMessage.getPosition()).thenReturn(1);
         PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new PSQLException(serverErrorMessage));
-        Map<Character, String> fields = (Map<Character, String>) new FieldReader(actual, PostgreSQLErrorResponsePacket.class.getDeclaredField("fields")).read();
+        Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY), is(PostgreSQLMessageSeverityLevel.FATAL));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE), is("sqlState"));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("message"));
@@ -51,17 +51,17 @@ public final class PostgreSQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertPSQLExceptionWithServerErrorMessageIsNull() throws NoSuchFieldException {
+    public void assertPSQLExceptionWithServerErrorMessageIsNull() throws ReflectiveOperationException {
         PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new PSQLException("psqlEx", PSQLState.UNEXPECTED_ERROR, new Exception("test")));
-        Map<Character, String> fields = (Map<Character, String>) new FieldReader(actual, PostgreSQLErrorResponsePacket.class.getDeclaredField("fields")).read();
+        Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE), is(PSQLState.UNEXPECTED_ERROR.getState()));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("psqlEx"));
     }
     
     @Test
-    public void assertRuntimeException() throws NoSuchFieldException {
+    public void assertRuntimeException() throws ReflectiveOperationException {
         PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new RuntimeException("test"));
-        Map<Character, String> fields = (Map<Character, String>) new FieldReader(actual, PostgreSQLErrorResponsePacket.class.getDeclaredField("fields")).read();
+        Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("test"));
     }
 }

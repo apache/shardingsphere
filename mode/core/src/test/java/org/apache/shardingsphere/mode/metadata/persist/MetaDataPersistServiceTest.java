@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -85,7 +85,7 @@ public final class MetaDataPersistServiceTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        new InstanceField(metaDataPersistService.getClass().getDeclaredField(name), metaDataPersistService).set(value);
+        Plugins.getMemberAccessor().set(metaDataPersistService.getClass().getDeclaredField(name), metaDataPersistService, value);
     }
     
     @Test

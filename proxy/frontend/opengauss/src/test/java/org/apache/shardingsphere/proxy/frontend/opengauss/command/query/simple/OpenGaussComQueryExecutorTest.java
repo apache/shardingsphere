@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -73,9 +73,9 @@ public final class OpenGaussComQueryExecutorTest {
         setMockFieldIntoExecutor(queryExecutor);
     }
     
-    @SneakyThrows(NoSuchFieldException.class)
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setMockFieldIntoExecutor(final OpenGaussComQueryExecutor executor) {
-        new InstanceField(OpenGaussComQueryExecutor.class.getDeclaredField("proxyBackendHandler"), executor).set(proxyBackendHandler);
+        Plugins.getMemberAccessor().set(OpenGaussComQueryExecutor.class.getDeclaredField("proxyBackendHandler"), executor, proxyBackendHandler);
     }
     
     @Test
