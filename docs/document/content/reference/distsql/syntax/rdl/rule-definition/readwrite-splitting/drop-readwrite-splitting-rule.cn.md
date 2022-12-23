@@ -11,7 +11,7 @@ weight = 4
 
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

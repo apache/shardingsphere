@@ -52,7 +52,7 @@
                         <phase>package</phase>
                         <configuration>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <transformers>
@@ -66,12 +66,11 @@
                             </transformers>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>com.google.*:*</exclude>
-                                    <exclude>com.google.guava:guava:*</exclude>
-                                    <exclude>org.checkerframework:checker-qual:*</exclude>
-                                    <exclude>org.slf4j:*</exclude>
-                                    <exclude>org.yaml:snakeyaml:*</exclude>
-                                    <exclude>org.apache.commons:logging:*</exclude>
+                                    <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
+                                    <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
+                                    <exclude>com.google.guava:listenablefuture:jar:*</exclude>
+                                    <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
+                                    <exclude>org.checkerframework:checker-qual:jar:</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
@@ -80,8 +79,16 @@
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>org.yaml</pattern>
+                                    <shadedPattern>${shade.package}.org.yaml</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>${shade.package}.com.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

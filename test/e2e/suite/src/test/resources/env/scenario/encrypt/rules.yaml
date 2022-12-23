@@ -22,6 +22,10 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
+      props:
+        mask: 4093
   tables:
     t_user:
       columns:
@@ -44,8 +48,12 @@ rules:
         business_code:
           plainColumn: business_code_plain
           cipherColumn: business_code_cipher
+          likeQueryColumn: business_code_like
           encryptorName: aes_encryptor
+          likeQueryEncryptorName: like_encryptor
         telephone:
           plainColumn: telephone_plain
           cipherColumn: telephone_cipher
+          likeQueryColumn: telephone_like
           encryptorName: aes_encryptor
+          likeQueryEncryptorName: like_encryptor

@@ -9,7 +9,7 @@ weight = 12
 
 ### 语法
 
-```
+```sql
 ShowShardingTableRulesUsedKeyGenerator::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'KEY' 'GENERATOR' keyGeneratorName ('FROM' databaseName)?
 

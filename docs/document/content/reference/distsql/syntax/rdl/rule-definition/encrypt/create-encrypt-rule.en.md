@@ -11,14 +11,26 @@ The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite split
 
 ```sql
 CreateEncryptRule ::=
-  'CREATE' 'ENCRYPT' 'RULE' encryptDefinition ( ',' encryptDefinition )*
+  'CREATE' 'ENCRYPT' 'RULE' encryptDefinition (',' encryptDefinition)*
 
 encryptDefinition ::=
-  tableName '(' 'COLUMNS' '(' columnDefinition ( ',' columnDefinition )*  ')' ',' 'QUERY_WITH_CIPHER_COLUMN' '=' ( 'TRUE' | 'FALSE' ) ')'
+  ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' (',' 'QUERY_WITH_CIPHER_COLUMN' '=' ('TRUE' | 'FALSE'))? ')'
 
 columnDefinition ::=
-    'NAME' '=' columnName ',' ( 'PLAIN' '=' plainColumnName )? 'CIPHER' '=' cipherColumnName ','  'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
-    
+  '(' 'NAME' '=' columnName (',' 'PLAIN' '=' plainColumnName)? ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY_COLUMN' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY_COLUMN' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
+
+encryptAlgorithmDefinition ::=
+  'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+
+assistedQueryAlgorithmDefinition ::=
+  'ASSISTED_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+
+likeQueryAlgorithmDefinition ::=
+  'LIKE_QUERY_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
 tableName ::=
   identifier
 
@@ -31,16 +43,27 @@ plainColumnName ::=
 cipherColumnName ::=
   identifier
 
+assistedQueryColumnName ::=
+  identifier
+
+likeQueryColumnName ::=
+  identifier
+
 encryptAlgorithmType ::=
   string
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 
 ### Supplement
 
-- `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column 
-- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/) 
-- Duplicate `tableName` will not be created 
-- `queryWithCipherColumn` support uppercase or lowercase true or false
+- `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column, `ASSISTED_QUERY_COLUMN` specifies the assisted query column，`LIKE_QUERY_COLUMN` specifies the like query column
+- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/)
+- Duplicate `ruleName` will not be created
 
 ### Example
 
@@ -49,13 +72,13 @@ encryptAlgorithmType ::=
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
-(NAME=order_id, CIPHER =order_cipher,TYPE(NAME='MD5'))
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
+(NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
 ),QUERY_WITH_CIPHER_COLUMN=true),
 t_encrypt_2 (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
-(NAME=order_id, CIPHER=order_cipher,TYPE(NAME='MD5'))
+(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
+(NAME=order_id, CIPHER=order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
 ), QUERY_WITH_CIPHER_COLUMN=FALSE);
 ```
 

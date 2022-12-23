@@ -45,10 +45,5 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-mysql-client</artifactId>
-        </dependency>
     </dependencies>
 </project>

@@ -29,10 +29,9 @@ message CDCRequest {
     LOGIN = 1;
     CREATE_SUBSCRIPTION = 2;
     START_SUBSCRIPTION = 3;
-    STOP_SUBSCRIPTION = 4;
-    DROP_SUBSCRIPTION = 5;
-    FETCH_RECORDS = 6;
-    FETCH_RECORDS_ACK = 7;
+    ACK = 4;
+    STOP_SUBSCRIPTION = 5;
+    DROP_SUBSCRIPTION = 6;
   }
   Type type = 3;
   oneof request {
@@ -92,5 +91,5 @@ message DropSubscriptionRequest {
 
 message AckRequest {
   string subscriptionName = 1;
-  string lastReceivedPosition = 2;
+  string ack_id = 2;
 }

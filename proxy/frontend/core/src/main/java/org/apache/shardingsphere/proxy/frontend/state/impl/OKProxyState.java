@@ -17,13 +17,53 @@
 
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.infra.config.props.BackendExecutorType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
+import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.transaction.api.TransactionType;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * OK proxy state.
  */
-@SingletonSPI
-public interface OKProxyState extends ProxyState, TypedSPI {
+public final class OKProxyState implements ProxyState {
+    
+    @Override
+    public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
+        CommandExecutorTask commandExecutorTask = new CommandExecutorTask(databaseProtocolFrontendEngine, connectionSession, context, message);
+        ExecutorService executorService = determineSuitableExecutorService(context, message, databaseProtocolFrontendEngine, connectionSession);
+        executorService.execute(commandExecutorTask);
+    }
+    
+    private ExecutorService determineSuitableExecutorService(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine,
+                                                             final ConnectionSession connectionSession) {
+        if (requireOccupyThreadForConnection(connectionSession)) {
+            return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
+        }
+        if (isPreferNettyEventLoop()) {
+            return context.executor();
+        }
+        if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
+            return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
+        }
+        return UserExecutorGroup.getInstance().getExecutorService();
+    }
+    
+    private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)
+                || TransactionType.isDistributedTransaction(connectionSession.getTransactionStatus().getTransactionType());
+    }
+    
+    private boolean isPreferNettyEventLoop() {
+        return BackendExecutorType.OLTP == ProxyContext.getInstance()
+                .getContextManager().getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE);
+    }
 }

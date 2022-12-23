@@ -11,11 +11,14 @@ The `CREATE DB_DISCOVERY RULE` syntax is used to create a database discovery rul
 
 ```sql
 CreateDatabaseDiscoveryRule ::=
-  'CREATE' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition ( ',' databaseDiscoveryDefinition)*
+  'CREATE' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
-        
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' ',' 'TYPE' '(' 'NAME' '=' typeName (',' propertiesDefinition)? ')' ',' 'HEARTBEAT' '(' propertiesDefinition ')' ')' 
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
 ruleName ::=
   identifier
 
@@ -27,6 +30,12 @@ typeName ::=
 
 discoveryHeartbeatName ::=
   identifier
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 
 ### Supplement

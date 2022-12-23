@@ -20,12 +20,13 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.task;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 
+import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,7 +37,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private static final KeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
     
-    private final JdbcTemplate jdbcTemplate;
+    private final DataSource dataSource;
     
     private final String schema;
     
@@ -56,13 +57,15 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderId = insertOrder();
             if (0 == executeCount % 2) {
-                jdbcTemplate.update(String.format("DELETE FROM %s WHERE order_id = ?", getTableNameWithSchema(orderTableName)), orderId);
+                DataSourceExecuteUtil.execute(dataSource, String.format("DELETE FROM %s WHERE order_id = ?", getTableNameWithSchema(orderTableName)), new Object[]{orderId});
             } else {
                 updateOrderByPrimaryKey(orderId);
             }
             Object orderItemPrimaryKey = insertOrderItem();
-            jdbcTemplate.update(String.format("UPDATE %s SET status = ? WHERE item_id = ?", getTableNameWithSchema("t_order_item")), "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
-            jdbcTemplate.update(String.format("DELETE FROM %s WHERE item_id = ?", getTableNameWithSchema("t_order_item")), orderItemPrimaryKey);
+            String updateSql = String.format("UPDATE %s SET status = ? WHERE item_id = ?", getTableNameWithSchema("t_order_item"));
+            DataSourceExecuteUtil.execute(dataSource, updateSql, new Object[]{"updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey});
+            String deleteSql = String.format("DELETE FROM %s WHERE item_id = ?", getTableNameWithSchema("t_order_item"));
+            DataSourceExecuteUtil.execute(dataSource, deleteSql, new Object[]{orderItemPrimaryKey});
             executeCount++;
         }
         log.info("PostgreSQL increment task runnable execute successfully.");
@@ -74,7 +77,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status};
         String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?, ?, ?)", getTableNameWithSchema(orderTableName));
         log.info("insert order sql:{}", insertSQL);
-        jdbcTemplate.update(insertSQL, orderInsertDate);
+        DataSourceExecuteUtil.execute(dataSource, insertSQL, orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -82,13 +85,15 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertItemDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), PipelineCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        jdbcTemplate.update(String.format("INSERT INTO %s(item_id,order_id,user_id,status) VALUES(?,?,?,?)", getTableNameWithSchema("t_order_item")), orderInsertItemDate);
+        String insertSql = "INSERT INTO %s(item_id,order_id,user_id,status) VALUES(?,?,?,?)";
+        DataSourceExecuteUtil.execute(dataSource, String.format(insertSql, getTableNameWithSchema("t_order_item")), orderInsertItemDate);
         return orderInsertItemDate[0];
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        jdbcTemplate.update(String.format("UPDATE %s SET status = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName)), updateData);
+        String updateSql = String.format("UPDATE %s SET status = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
+        DataSourceExecuteUtil.execute(dataSource, String.format(updateSql, getTableNameWithSchema("t_order_item")), updateData);
     }
     
     private String getTableNameWithSchema(final String tableName) {

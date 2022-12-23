@@ -40,9 +40,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -174,32 +174,20 @@ public final class SeataATShardingSphereTransactionManagerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap() {
-        Field field = seataTransactionManager.getClass().getDeclaredField("dataSourceMap");
-        field.setAccessible(true);
-        return (Map<String, DataSource>) field.get(seataTransactionManager);
+        return (Map<String, DataSource>) Plugins.getMemberAccessor().get(seataTransactionManager.getClass().getDeclaredField("dataSourceMap"), seataTransactionManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setXID(final String xid) {
-        Field field = SeataTransactionHolder.get().getClass().getDeclaredField("xid");
-        field.setAccessible(true);
-        field.set(SeataTransactionHolder.get(), xid);
+        Plugins.getMemberAccessor().set(SeataTransactionHolder.get().getClass().getDeclaredField("xid"), SeataTransactionHolder.get(), xid);
         RootContext.bind(xid);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void releaseRpcClient() {
-        Field field = TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized");
-        field.setAccessible(true);
-        field.set(TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
-        field = TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(TmNettyRemotingClient.getInstance(), null);
-        field = RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized");
-        field.setAccessible(true);
-        field.set(RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
-        field = RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(RmNettyRemotingClient.getInstance(), null);
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), TmNettyRemotingClient.getInstance(), null);
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), RmNettyRemotingClient.getInstance(), null);
     }
 }

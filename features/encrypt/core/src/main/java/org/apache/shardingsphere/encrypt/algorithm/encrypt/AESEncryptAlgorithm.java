@@ -74,7 +74,7 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue.trim()));
         return new String(result, StandardCharsets.UTF_8);
     }
     

@@ -11,7 +11,7 @@ weight = 7
 
 ```sql
 MigrateTableInto ::=
-  'MIGRATE' 'TABLE' migrationSource '.' tableName 'INTO' (databaseName '.')?tableName
+  'MIGRATE' 'TABLE' migrationSource '.' tableName 'INTO' (databaseName '.')? tableName
 
 migrationSource ::=
   identifier

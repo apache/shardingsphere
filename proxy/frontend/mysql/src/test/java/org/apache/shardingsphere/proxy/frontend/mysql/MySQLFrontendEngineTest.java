@@ -51,9 +51,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -102,9 +102,7 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetConnectionIdGenerator() {
-        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
-        field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), 0);
+        Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         mysqlFrontendEngine = new MySQLFrontendEngine();
     }
     
@@ -161,9 +159,7 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
-        field.setAccessible(true);
-        field.set(mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
     }
     
     private void initProxyContext(final ShardingSphereUser user) {

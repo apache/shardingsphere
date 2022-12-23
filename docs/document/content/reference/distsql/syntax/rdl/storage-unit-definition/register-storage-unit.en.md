@@ -14,7 +14,7 @@ RegisterStorageUnit ::=
   'REGISTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  StorageUnitName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
+  storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
 
 storageUnitName ::=
   identifier
@@ -37,17 +37,14 @@ user ::=
 password ::=
   string
 
-proerties ::=
-  PROPERTIES '(' property ( ',' property )* ')'
-
-property ::=
-  key '=' value
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### Supplement
@@ -59,9 +56,7 @@ value ::=
 - `storageUnitName` needs to be unique within the current database;
 - `storageUnitName` name only allows letters, numbers and `_`, and must start with a letter;
 - `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
-  parameter name, `value` supports int and String types;
-- When `password` contains special characters, it is recommended to use the string form; For example, the string form
-  of `password@123` is `"password@123"`.
+  parameter name.
 
 ### Example
 

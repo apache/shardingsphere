@@ -44,6 +44,9 @@ public final class IntegrationTestCase {
     @XmlAttribute(name = "scenario-types")
     private String scenarioTypes;
     
+    @XmlAttribute(name = "scenario-comments")
+    private String scenarioComments;
+    
     @XmlElement(name = "assertion")
     private Collection<IntegrationTestCaseAssertion> assertions = new LinkedList<>();
 }

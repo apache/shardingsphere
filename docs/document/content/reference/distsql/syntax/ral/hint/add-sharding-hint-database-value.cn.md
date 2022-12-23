@@ -10,9 +10,9 @@ weight = 4
 
 ```sql
 AddShardingHintDatabaseValue ::=
-  'ADD' 'SHARDING' 'HINT' 'DATABASE_VALUE' shardingHintDatabaseValueDefination
+  'ADD' 'SHARDING' 'HINT' 'DATABASE_VALUE' shardingHintDatabaseValueDefinition
   
-  shardingHintDatabaseValueDefination ::=
+  shardingHintDatabaseValueDefinition ::=
     tableName '=' databaseShardingValue
 
   tableName ::=

@@ -9,7 +9,7 @@ weight = 4
 
 ### 语法
 
-```
+```sql
 ShowDatabaseDiscoveryHeartbeats::=
   'SHOW' 'DB_DISCOVERY' 'HEARTBEATS' ('FROM' databaseName)?
 

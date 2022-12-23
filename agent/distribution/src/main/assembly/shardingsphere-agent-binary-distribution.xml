@@ -82,7 +82,7 @@
                 <unpack>false</unpack>
                 <outputDirectory>./</outputDirectory>
                 <includeDependencies>false</includeDependencies>
-                <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
+                <outputFileNameMapping>shardingsphere-agent-${project.version}.jar</outputFileNameMapping>
             </binaries>
         </moduleSet>
     </moduleSets>

@@ -29,8 +29,6 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        
-        <springframework.version>4.3.6.RELEASE</springframework.version>
     </properties>
     
     <dependencies>
@@ -60,13 +58,6 @@
             <artifactId>shardingsphere-test-e2e-fixture</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>${springframework.version}</version>
-            <scope>test</scope>
         </dependency>
         
         <dependency>

@@ -4,6 +4,7 @@ weight = 2
 +++
 
 - You need to process the original data on stocks in the database by yourself.
+- Like query supports %, _, but does not support escape for now.
 - The case-insensitive queries are not supported for encrypted fields.
 - Comparison operations are not supported for encrypted fields, such as GREATER THAN, LESS THAN, ORDER BY, BETWEEN.
 - Calculation operations are not supported for encrypted fields, such as AVG, SUM, and computation expressions.

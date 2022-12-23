@@ -95,7 +95,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private List<DatabasePacket<?>> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
+    private List<DatabasePacket<?>> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             portalContext.closeAll();

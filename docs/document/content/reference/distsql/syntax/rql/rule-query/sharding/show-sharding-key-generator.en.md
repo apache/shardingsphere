@@ -9,9 +9,9 @@ weight = 6
 
 ### Syntax
 
-```
+```sql
 ShowShardingKeyGenerators::=
-  'SHOW' 'SHARDING' 'KEY' 'GENERATOR'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

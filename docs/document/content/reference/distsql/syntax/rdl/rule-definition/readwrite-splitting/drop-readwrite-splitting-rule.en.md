@@ -11,7 +11,7 @@ The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite splitting r
 
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

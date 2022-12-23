@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -78,7 +78,7 @@ public final class PostgreSQLCommandExecuteEngineTest extends ProxyContextRestor
         PostgreSQLComQueryExecutor comQueryExecutor = mock(PostgreSQLComQueryExecutor.class);
         when(comQueryExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, comQueryExecutor, 0);
         verify(channelHandlerContext).write(any(PostgreSQLReadyForQueryPacket.class));
@@ -88,7 +88,7 @@ public final class PostgreSQLCommandExecuteEngineTest extends ProxyContextRestor
     public void assertWriteQueryDataWithUpdate() throws SQLException {
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
+        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, queryCommandExecutor, 0);
         verify(channelHandlerContext).write(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
@@ -99,7 +99,7 @@ public final class PostgreSQLCommandExecuteEngineTest extends ProxyContextRestor
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
         when(channel.isActive()).thenReturn(false);
-        commandExecuteEngine.writeQueryData(channelHandlerContext, mock(JDBCBackendConnection.class), queryCommandExecutor, 0);
+        commandExecuteEngine.writeQueryData(channelHandlerContext, mock(BackendConnection.class), queryCommandExecutor, 0);
         verify(channelHandlerContext).write(isA(PostgreSQLCommandCompletePacket.class));
     }
     
@@ -111,7 +111,7 @@ public final class PostgreSQLCommandExecuteEngineTest extends ProxyContextRestor
         when(queryCommandExecutor.next()).thenReturn(true, false);
         when(channel.isWritable()).thenReturn(false, true);
         ResourceLock resourceLock = mock(ResourceLock.class);
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getResourceLock()).thenReturn(resourceLock);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         PostgreSQLPacket packet = mock(PostgreSQLPacket.class);

@@ -49,6 +49,10 @@ rules:
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
+        auditStrategy:
+          auditorNames:
+            - sharding_key_required_auditor
+          allowHintDisable: true
       t_order_item:
         actualDataSources: ds_0,ds_1
         shardingStrategy:
@@ -73,6 +77,15 @@ rules:
         props:
           sharding-count: 4
 
+    defaultAuditStrategy:
+      auditorNames:
+        - sharding_key_required_auditor
+      allowHintDisable: true
+
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
+
+    auditors:
+      sharding_key_required_auditor:
+        type: DML_SHARDING_CONDITIONS

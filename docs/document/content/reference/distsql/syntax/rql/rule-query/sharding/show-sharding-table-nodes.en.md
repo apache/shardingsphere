@@ -10,9 +10,9 @@ weight = 10
 
 ### Syntax
 
-```
+```sql
 ShowShardingTableNode::=
-  'SHOW' 'SHARDING' 'TABLE' 'NODE'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'NODE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

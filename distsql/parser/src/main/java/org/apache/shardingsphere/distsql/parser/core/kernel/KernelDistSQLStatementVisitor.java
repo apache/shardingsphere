@@ -139,15 +139,9 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         String user = getIdentifierValue(ctx.user());
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
         Properties props = getProperties(ctx.propertiesDefinition());
-        DataSourceSegment result = null;
-        if (null != ctx.urlSource()) {
-            result = new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
-        }
-        if (null != ctx.simpleSource()) {
-            result = new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(),
-                    getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
-        }
-        return result;
+        return null != ctx.urlSource() ? new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props)
+                : new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()),
+                        ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
     }
     
     private String getPassword(final PasswordContext ctx) {
@@ -365,10 +359,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     private AlgorithmSegment getAlgorithmSegment(final RateLimiterContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return (AlgorithmSegment) visit(ctx);
+        return null == ctx ? null : (AlgorithmSegment) visit(ctx);
     }
     
     @Override
@@ -388,24 +379,15 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     private Integer getWorkerThread(final WorkerThreadContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return Integer.parseInt(ctx.intValue().getText());
+        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
     }
     
     private Integer getBatchSize(final BatchSizeContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return Integer.parseInt(ctx.intValue().getText());
+        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
     }
     
     private Integer getShardingSize(final ShardingSizeContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return Integer.parseInt(ctx.intValue().getText());
+        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
     }
     
     @Override

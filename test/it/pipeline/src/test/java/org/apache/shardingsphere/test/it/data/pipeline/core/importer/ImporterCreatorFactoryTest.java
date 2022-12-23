@@ -24,12 +24,13 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImporter;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixturePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.importer.DefaultImporter;
+import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
+import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImporter;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixturePipelineDataSourceConfiguration;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -51,22 +52,22 @@ public final class ImporterCreatorFactoryTest {
     private PipelineChannel channel;
     
     @Test
-    public void assertCreateImporter() {
-        for (String each : Arrays.asList("MySQL", "PostgreSQL", "openGauss")) {
-            Importer actual = ImporterCreatorFactory.getInstance(each).createImporter(createImporterConfiguration(each), dataSourceManager, channel, new FixtureInventoryIncrementalJobItemContext());
-            assertThat(actual, instanceOf(DefaultImporter.class));
-        }
+    public void assertCreateDataSourceImporter() {
+        Importer actual = ImporterCreatorFactory.getInstance("DataSource").createImporter(createImporterConfiguration(), new DataSourceImporterConnector(dataSourceManager), channel,
+                new FixtureInventoryIncrementalJobItemContext());
+        assertThat(actual, instanceOf(DataSourceImporter.class));
     }
     
     @Test
-    public void assertCreateImporterForH2() {
-        Importer actual = ImporterCreatorFactory.getInstance("H2").createImporter(createImporterConfiguration("H2"), dataSourceManager, channel, new FixtureInventoryIncrementalJobItemContext());
+    public void assertCreateFixtureImporter() {
+        Importer actual = ImporterCreatorFactory.getInstance("FIXTURE").createImporter(createImporterConfiguration(), new DataSourceImporterConnector(dataSourceManager), channel,
+                new FixtureInventoryIncrementalJobItemContext());
         assertThat(actual, instanceOf(FixtureImporter.class));
     }
     
-    private ImporterConfiguration createImporterConfiguration(final String databaseType) {
+    private ImporterConfiguration createImporterConfiguration() {
         Map<LogicTableName, Set<String>> shardingColumnsMap = Collections.singletonMap(new LogicTableName("t_order"), new HashSet<>(Arrays.asList("order_id", "user_id", "status")));
-        PipelineDataSourceConfiguration dataSourceConfig = new FixturePipelineDataSourceConfiguration(DatabaseTypeFactory.getInstance(databaseType));
+        PipelineDataSourceConfiguration dataSourceConfig = new FixturePipelineDataSourceConfiguration(DatabaseTypeFactory.getInstance("H2"));
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, new TableNameSchemaNameMapping(Collections.emptyMap()), 1000, null, 3, 3);
     }
 }

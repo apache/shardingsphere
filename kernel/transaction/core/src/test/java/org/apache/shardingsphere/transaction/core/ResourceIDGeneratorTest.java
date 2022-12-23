@@ -19,12 +19,19 @@ package org.apache.shardingsphere.transaction.core;
 
 import org.junit.Test;
 
+import java.util.regex.Pattern;
+
 import static org.junit.Assert.assertTrue;
 
 public final class ResourceIDGeneratorTest {
     
     @Test
     public void assertNextIdProperly() {
-        assertTrue(ResourceIDGenerator.getInstance().nextId().contains("resource"));
+        assertTrue(isStartWithNumber(ResourceIDGenerator.getInstance().nextId()));
+    }
+    
+    private boolean isStartWithNumber(final String resourceId) {
+        Pattern pattern = Pattern.compile("[0-9]+-.*");
+        return pattern.matcher(resourceId).matches();
     }
 }

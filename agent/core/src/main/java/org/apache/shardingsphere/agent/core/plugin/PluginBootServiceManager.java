@@ -19,12 +19,13 @@ package org.apache.shardingsphere.agent.core.plugin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
-import org.apache.shardingsphere.agent.core.spi.AgentSPIRegistry;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.spi.PluginBootServiceRegistry;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -34,21 +35,21 @@ import java.util.Map.Entry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginBootServiceManager {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(PluginBootServiceManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PluginBootServiceManager.class);
     
     /**
      * Start all services.
      *
-     * @param pluginConfigMap plugin configuration map
-     * @param classLoader classLoader
+     * @param pluginConfigs plugin configuration map
+     * @param classLoader class loader
      * @param isEnhancedForProxy is enhanced for proxy
      */
-    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigMap, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
+    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigs, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(classLoader);
-            for (Entry<String, PluginConfiguration> entry : pluginConfigMap.entrySet()) {
-                AgentSPIRegistry.getRegisteredService(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
+            for (Entry<String, PluginConfiguration> entry : pluginConfigs.entrySet()) {
+                PluginBootServiceRegistry.getRegisteredService(entry.getKey()).ifPresent(optional -> {
                     try {
                         LOGGER.info("Start plugin: {}", optional.getType());
                         optional.start(entry.getValue(), isEnhancedForProxy);
@@ -66,9 +67,11 @@ public final class PluginBootServiceManager {
     
     /**
      * Close all services.
+     * 
+     * @param pluginJars plugin jars
      */
-    public static void closeAllServices() {
-        AgentSPIRegistry.getAllRegisteredServices(PluginBootService.class).forEach(each -> {
+    public static void closeAllServices(final Collection<PluginJar> pluginJars) {
+        PluginBootServiceRegistry.getAllRegisteredServices().forEach(each -> {
             try {
                 each.close();
                 // CHECKSTYLE:OFF
@@ -77,7 +80,7 @@ public final class PluginBootServiceManager {
                 LOGGER.error("Failed to close service.", ex);
             }
         });
-        PluginJarHolder.getPluginJars().forEach(each -> {
+        pluginJars.forEach(each -> {
             try {
                 each.getJarFile().close();
             } catch (final IOException ex) {

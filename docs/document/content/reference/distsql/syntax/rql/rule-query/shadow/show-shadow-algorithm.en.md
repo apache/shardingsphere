@@ -9,7 +9,7 @@ The `SHOW SHADOW ALGORITHM` syntax is used to query shadow algorithms for specif
 
 ### Syntax
 
-```
+```sql
 ShowEncryptAlgorithm::=
   'SHOW' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
 

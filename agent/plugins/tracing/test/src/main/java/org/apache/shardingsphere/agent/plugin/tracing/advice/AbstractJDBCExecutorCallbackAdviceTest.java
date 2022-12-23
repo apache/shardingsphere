@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -29,9 +29,8 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.runner.RunWith;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -49,7 +48,7 @@ import static org.mockito.Mockito.when;
 public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTestBase {
     
     @Getter
-    private AdviceTargetObject targetObject;
+    private TargetAdviceObject targetObject;
     
     private Object attachment;
     
@@ -71,7 +70,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
         executionUnit = new JDBCExecutionUnit(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())), null, statement);
-        JDBCExecutorCallback mock = mock(JDBCExecutorCallback.class, invocation -> {
+        JDBCExecutorCallback mockedJDBCExecutorCallback = mock(JDBCExecutorCallback.class, invocation -> {
             switch (invocation.getMethod().getName()) {
                 case "getAttachment":
                     return attachment;
@@ -82,12 +81,12 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
                     return invocation.callRealMethod();
             }
         });
-        Map<String, DataSourceMetaData> cachedDatasourceMetaData =
-                (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
+        Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
+                .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), mockedJDBCExecutorCallback);
         cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
         storageTypes.put("mock.db", new MySQLDatabaseType());
-        ReflectiveUtil.setField(mock, "storageTypes", storageTypes);
-        targetObject = (AdviceTargetObject) mock;
+        Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), mockedJDBCExecutorCallback, storageTypes);
+        targetObject = (TargetAdviceObject) mockedJDBCExecutorCallback;
     }
 }

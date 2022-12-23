@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,17 +29,18 @@ import java.util.Map;
  */
 public final class PortalContext {
     
-    private final Map<String, Portal<?>> portals = new LinkedHashMap<>();
+    private final Map<String, Portal> portals = new LinkedHashMap<>();
     
     /**
      * Add portal.
      *
      * @param portal portal name
+     * @throws SQLException SQL exception
      */
-    public void add(final Portal<?> portal) {
+    public void add(final Portal portal) throws SQLException {
         boolean isNamedPortal = !portal.getName().isEmpty();
         Preconditions.checkState(!isNamedPortal || !portals.containsKey(portal.getName()), "Named portal `%s` must be explicitly closed", portal.getName());
-        Portal<?> previousPortal = portals.put(portal.getName(), portal);
+        Portal previousPortal = portals.put(portal.getName(), portal);
         if (null != previousPortal) {
             previousPortal.close();
         }
@@ -47,21 +49,21 @@ public final class PortalContext {
     /**
      * Get portal.
      *
-     * @param <T> type of portal
      * @param portalName portal name
      * @return portal
      */
-    public <T extends Portal<?>> T get(final String portalName) {
-        return (T) portals.get(portalName);
+    public Portal get(final String portalName) {
+        return portals.get(portalName);
     }
     
     /**
      * Close portal.
      *
      * @param portalName portal name
+     * @throws SQLException SQL exception
      */
-    public void close(final String portalName) {
-        Portal<?> result = portals.remove(portalName);
+    public void close(final String portalName) throws SQLException {
+        Portal result = portals.remove(portalName);
         if (null != result) {
             result.close();
         }
@@ -69,9 +71,13 @@ public final class PortalContext {
     
     /**
      * Close all portals.
+     * 
+     * @throws SQLException SQL exception
      */
-    public void closeAll() {
-        portals.values().forEach(Portal::close);
+    public void closeAll() throws SQLException {
+        for (Portal portal : portals.values()) {
+            portal.close();
+        }
         portals.clear();
     }
 }

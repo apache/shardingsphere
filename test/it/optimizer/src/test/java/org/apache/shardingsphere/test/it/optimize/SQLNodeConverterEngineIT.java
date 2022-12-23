@@ -153,6 +153,8 @@ public final class SQLNodeConverterEngineIT {
         SUPPORTED_SQL_CASE_IDS.add("select_natural_left_join");
         SUPPORTED_SQL_CASE_IDS.add("select_natural_right_join");
         SUPPORTED_SQL_CASE_IDS.add("select_natural_full_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_order_by_for_nulls_first");
+        SUPPORTED_SQL_CASE_IDS.add("select_order_by_for_nulls_last");
     }
     // CHECKSTYLE:ON
     

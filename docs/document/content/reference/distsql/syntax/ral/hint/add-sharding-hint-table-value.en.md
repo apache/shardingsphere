@@ -11,9 +11,9 @@ The `ADD SHARDING HINT TABLE_VALUE` syntax is used to add table sharding value t
 
 ```sql
 AddShardingHintDatabaseValue ::=
-  'ADD' 'SHARDING' 'HINT' 'TABLE_VALUE' shardingHintTableValueDefination
+  'ADD' 'SHARDING' 'HINT' 'TABLE_VALUE' shardingHintTableValueDefinition
   
-  shardingHintTableValueDefination ::=
+  shardingHintTableValueDefinition ::=
     tableName '=' tableShardingValue
 
   tableName ::=

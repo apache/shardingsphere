@@ -14,7 +14,7 @@ SetDefaultSingleTableStorageUnit ::=
   'SET' 'DEFAULT' 'SINGLE' 'TABLE' 'STORAGE' 'UNIT' singleTableDefinition
 
 singleTableDefinition ::=
-  '=' (storageUnitName ｜ 'RANDOM')
+  '=' (storageUnitName | 'RANDOM')
 
 storageUnitName ::=
   identifier
