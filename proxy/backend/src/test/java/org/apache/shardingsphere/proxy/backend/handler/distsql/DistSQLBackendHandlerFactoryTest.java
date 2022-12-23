@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterSto
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -80,9 +81,10 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     }
     
     private ContextManager mockContextManager() {
-        ContextManager result = mock(ContextManager.class);
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getInstanceContext().getModeContextManager()).thenReturn(mock(ModeContextManager.class));
         return result;
     }
     

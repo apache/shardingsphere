@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -68,7 +69,7 @@ public final class GlobalRulesBuilderTest {
     private InstanceContext buildInstanceContext() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData(UUID.randomUUID().toString()));
         ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
-        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfig, mock(LockContext.class), new EventBusContext());
+        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfig, mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
     }
     
     private WorkerIdGenerator createWorkerIdGenerator() {
