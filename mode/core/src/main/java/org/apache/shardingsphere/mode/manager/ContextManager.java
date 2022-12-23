@@ -233,11 +233,20 @@ public final class ContextManager implements AutoCloseable {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
-            metaDataContexts = createMetaDataContexts(databaseName, null, ruleConfigs);
+            MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, null, ruleConfigs);
+            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
+            metaDataContexts = reloadMetaDataContexts;
             metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
         }
+    }
+    
+    public synchronized void alterSchemaMetaData(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Map<String, ShardingSphereSchema> toBeDeletedTables = SchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
+        Map<String, ShardingSphereSchema> toBeAddedTables = SchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
+        toBeAddedTables.forEach((key, value) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persist(databaseName, key, value));
+        toBeDeletedTables.forEach((key, value) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().delete(databaseName, key, value));
     }
     
     /**

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 
 /**

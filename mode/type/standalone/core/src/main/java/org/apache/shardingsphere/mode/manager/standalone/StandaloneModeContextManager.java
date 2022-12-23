@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
@@ -85,7 +83,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
                 new ResourceSwitchManager().createByDropResource(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDeletedDataSourcePropsMap);
         metaDataContexts.getMetaData().getDatabases().putAll(contextManager.renewDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), switchingResource));
         MetaDataContexts reloadMetaDataContexts = contextManager.createMetaDataContexts(databaseName, switchingResource, null);
-        alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
+        contextManager.alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
         contextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
         metaDataContexts = reloadMetaDataContexts;
         Map<String, DataSourceProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
@@ -107,15 +105,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(databaseName);
         contextManager.alterRuleConfiguration(databaseName, ruleConfigs);
         ShardingSphereDatabase reloadDatabase = metaDataContexts.getMetaData().getDatabase(databaseName);
-        alterSchemaMetaData(databaseName, reloadDatabase, currentDatabase);
+        contextManager.alterSchemaMetaData(databaseName, reloadDatabase, currentDatabase);
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
-    }
-    
-    private void alterSchemaMetaData(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        Map<String, ShardingSphereSchema> toBeDeletedTables = SchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        Map<String, ShardingSphereSchema> toBeAddedTables = SchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        toBeAddedTables.forEach((key, value) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persist(databaseName, key, value));
-        toBeDeletedTables.forEach((key, value) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().delete(databaseName, key, value));
     }
     
     @Override
