@@ -72,13 +72,13 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     
     private void assertYamlPointcutParameterConfiguration(final YamlPointcutParameterConfiguration actual, final YamlPointcutParameterConfiguration expected) {
         assertThat(actual.getIndex(), is(expected.getIndex()));
-        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getType(), is(expected.getType()));
     }
     
     private YamlPointcutParameterConfiguration createYamlPointcutParameterConfiguration(final int index, final String name) {
         YamlPointcutParameterConfiguration result = new YamlPointcutParameterConfiguration();
         result.setIndex(index);
-        result.setName(name);
+        result.setType(name);
         return result;
     }
     
