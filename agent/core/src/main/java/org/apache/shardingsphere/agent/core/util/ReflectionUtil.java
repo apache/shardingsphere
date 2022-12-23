@@ -66,7 +66,7 @@ public final class ReflectionUtil {
         if (!accessible) {
             method.setAccessible(true);
         }
-        Object result = method.invoke(target, target, args);
+        Object result = method.invoke(target, args);
         if (!accessible) {
             method.setAccessible(false);
         }
