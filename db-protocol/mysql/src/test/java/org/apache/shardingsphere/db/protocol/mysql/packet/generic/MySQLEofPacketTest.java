@@ -36,26 +36,24 @@ public final class MySQLEofPacketTest {
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNewEofPacketWithSequenceId() {
-        MySQLEofPacket actual = new MySQLEofPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        assertThat(actual.getSequenceId(), is(1));
+    public void assertNewEofPacketWithStatusFlag() {
+        MySQLEofPacket actual = new MySQLEofPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
     public void assertNewEofPacketWithPayload() {
-        when(payload.readInt1()).thenReturn(5, MySQLEofPacket.HEADER);
+        when(payload.readInt1()).thenReturn(MySQLEofPacket.HEADER);
         when(payload.readInt2()).thenReturn(0, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         MySQLEofPacket actual = new MySQLEofPacket(payload);
-        assertThat(actual.getSequenceId(), is(5));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
     public void assertWrite() {
-        new MySQLEofPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(payload);
+        new MySQLEofPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(payload);
         verify(payload).writeInt1(MySQLEofPacket.HEADER);
         verify(payload).writeInt2(0);
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());

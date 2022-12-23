@@ -55,14 +55,13 @@ public final class ResponsePacketBuilder {
      */
     public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int characterSet, final int statusFlags) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
-        int sequenceId = 0;
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
-        result.add(new MySQLFieldCountPacket(++sequenceId, queryHeaders.size()));
+        result.add(new MySQLFieldCountPacket(queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
-            result.add(new MySQLColumnDefinition41Packet(++sequenceId, characterSet, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
+            result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }
-        result.add(new MySQLEofPacket(++sequenceId, statusFlags));
+        result.add(new MySQLEofPacket(statusFlags));
         return result;
     }
     
@@ -94,6 +93,6 @@ public final class ResponsePacketBuilder {
      * @return update response packets
      */
     public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader, final int serverStatusFlag) {
-        return Collections.singletonList(new MySQLOKPacket(1, updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId(), serverStatusFlag));
+        return Collections.singletonList(new MySQLOKPacket(updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId(), serverStatusFlag));
     }
 }

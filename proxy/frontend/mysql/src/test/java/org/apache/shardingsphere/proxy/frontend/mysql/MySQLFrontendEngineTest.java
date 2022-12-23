@@ -98,6 +98,7 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(context.channel()).thenReturn(channel);
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

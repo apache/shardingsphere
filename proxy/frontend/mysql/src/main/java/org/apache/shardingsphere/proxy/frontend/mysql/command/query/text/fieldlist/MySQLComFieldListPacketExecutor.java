@@ -58,8 +58,6 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private int currentSequenceId;
-    
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         String databaseName = connectionSession.getDefaultDatabaseName();
@@ -81,9 +79,9 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         while (databaseCommunicationEngine.next()) {
             String columnName = databaseCommunicationEngine.getRowData().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
-                    ++currentSequenceId, characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
+                    characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
         }
-        result.add(new MySQLEofPacket(++currentSequenceId, ServerStatusFlagCalculator.calculateFor(connectionSession)));
+        result.add(new MySQLEofPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
         return result;
     }
     

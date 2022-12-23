@@ -182,7 +182,6 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         assertTrue(mysqlComStmtExecuteExecutor.next());
         MySQLPacket actualQueryRowPacket = mysqlComStmtExecuteExecutor.getQueryRowPacket();
         assertThat(actualQueryRowPacket, instanceOf(MySQLBinaryResultSetRowPacket.class));
-        assertThat(actualQueryRowPacket.getSequenceId(), is(4));
         mysqlComStmtExecuteExecutor.close();
         verify(proxyBackendHandler).close();
     }
