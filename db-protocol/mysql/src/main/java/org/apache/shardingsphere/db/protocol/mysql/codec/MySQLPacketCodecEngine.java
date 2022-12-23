@@ -124,7 +124,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
             ByteBuf header = context.alloc().ioBuffer(4, 4);
             int packetLength = Math.min(byteBuf.readableBytes(), MAX_PACKET_LENGTH);
             header.writeMediumLE(packetLength);
-            header.writeByte(sequenceId.incrementAndGet());
+            header.writeByte(sequenceId.getAndIncrement());
             result.addComponent(true, header);
             if (packetLength > 0) {
                 result.addComponent(true, byteBuf.readRetainedSlice(packetLength));
