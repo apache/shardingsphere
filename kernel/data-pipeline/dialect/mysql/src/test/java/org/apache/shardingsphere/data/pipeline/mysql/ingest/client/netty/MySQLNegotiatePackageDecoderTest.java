@@ -104,7 +104,7 @@ public final class MySQLNegotiatePackageDecoderTest {
     
     private ByteBuf authSwitchRequestPacket() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) MySQLAuthSwitchRequestPacket.HEADER);
-        when(byteBuf.getByte(1)).thenReturn((byte) MySQLAuthSwitchRequestPacket.HEADER);
+        when(byteBuf.getByte(0)).thenReturn((byte) MySQLAuthSwitchRequestPacket.HEADER);
         when(byteBuf.bytesBefore((byte) 0)).thenReturn(20);
         return byteBuf;
     }
@@ -120,7 +120,7 @@ public final class MySQLNegotiatePackageDecoderTest {
     
     private ByteBuf authMoreDataPacket() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) MySQLAuthMoreDataPacket.HEADER);
-        when(byteBuf.getByte(1)).thenReturn((byte) MySQLAuthMoreDataPacket.HEADER);
+        when(byteBuf.getByte(0)).thenReturn((byte) MySQLAuthMoreDataPacket.HEADER);
         return byteBuf;
     }
     
