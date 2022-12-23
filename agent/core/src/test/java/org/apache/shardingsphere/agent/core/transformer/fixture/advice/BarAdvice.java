@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.transformer.fixture.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
@@ -35,25 +34,25 @@ public final class BarAdvice implements ConstructorAdvice, InstanceMethodAdvice,
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         List<String> queue = (List<String>) args[0];
         queue.add("bar before instance method");
     }
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
         List<String> queue = (List<String>) args[0];
         queue.add("bar before static method");
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         List<String> queue = (List<String>) args[0];
         queue.add("bar after instance method");
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
         List<String> queue = (List<String>) args[0];
         queue.add("bar after static method");
     }

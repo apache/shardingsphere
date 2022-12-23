@@ -21,7 +21,6 @@ import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
@@ -42,8 +41,8 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @Test
     public void assertMethod() {
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
@@ -58,9 +57,9 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @Test
     public void assertExceptionHandle() {
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);

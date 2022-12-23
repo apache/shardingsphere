@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.core.fixture.FixtureWrapper;
@@ -103,9 +102,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        MethodInvocationResult result = new MethodInvocationResult();
-        result.rebase(sqlStatement);
-        new SQLParserEngineAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, result);
+        new SQLParserEngineAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, sqlStatement);
         assertTrue(MetricsPool.get(metricIds).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
     }

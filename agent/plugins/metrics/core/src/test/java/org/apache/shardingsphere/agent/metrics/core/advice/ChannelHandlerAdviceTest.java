@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.core.fixture.FixtureWrapper;
@@ -53,10 +52,10 @@ public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
         when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);
         when(channelInactive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_INACTIVE);
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        channelHandlerAdvice.beforeMethod(targetObject, channelRead, new Object[]{}, new MethodInvocationResult());
-        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
-        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{}, new MethodInvocationResult());
-        channelHandlerAdvice.beforeMethod(targetObject, channelInactive, new Object[]{}, new MethodInvocationResult());
+        channelHandlerAdvice.beforeMethod(targetObject, channelRead, new Object[]{});
+        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{});
+        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{});
+        channelHandlerAdvice.beforeMethod(targetObject, channelInactive, new Object[]{});
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST).get();
         assertTrue(MetricsPool.get(MetricIds.PROXY_REQUEST).isPresent());
         assertThat(requestWrapper.getFixtureValue(), is(1.0));
