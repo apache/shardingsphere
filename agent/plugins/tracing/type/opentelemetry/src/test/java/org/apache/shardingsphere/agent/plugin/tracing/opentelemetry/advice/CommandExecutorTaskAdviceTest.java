@@ -25,7 +25,6 @@ import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -40,15 +39,9 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
     
-    private CommandExecutorTaskAdvice advice;
-    
-    @Before
-    public void setup() {
-        advice = new CommandExecutorTaskAdvice();
-    }
-    
     @Test
     public void assertMethod() {
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
@@ -61,6 +54,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertExceptionHandle() {
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());

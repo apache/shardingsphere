@@ -52,10 +52,9 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
         span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectionUtil.getFieldValue(target, "storageTypes");
-        Method getMetaDataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class);
-        getMetaDataMethod.setAccessible(true);
-        DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target,
-                new Object[]{executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName())});
+        DataSourceMetaData metaData = (DataSourceMetaData) ReflectionUtil.invokeMethod(
+                JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
+                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
         span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostname());
         span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));

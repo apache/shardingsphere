@@ -21,7 +21,6 @@ import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import zipkin2.Span;
@@ -37,15 +36,9 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private CommandExecutorTaskAdvice advice;
-    
-    @Before
-    public void setup() {
-        advice = new CommandExecutorTaskAdvice();
-    }
-    
     @Test
     public void assertMethod() {
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         Span span = COLLECTOR.pop();
@@ -58,6 +51,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertExceptionHandle() {
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());

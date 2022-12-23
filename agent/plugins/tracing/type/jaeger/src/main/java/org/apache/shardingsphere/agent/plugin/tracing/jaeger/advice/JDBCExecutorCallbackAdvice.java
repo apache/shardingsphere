@@ -57,10 +57,9 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
         }
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectionUtil.getFieldValue(target, "storageTypes");
-        Method getMetaDataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class);
-        getMetaDataMethod.setAccessible(true);
-        DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target,
-                new Object[]{executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName())});
+        DataSourceMetaData metaData = (DataSourceMetaData) ReflectionUtil.invokeMethod(
+                JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
+                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
                 .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())
