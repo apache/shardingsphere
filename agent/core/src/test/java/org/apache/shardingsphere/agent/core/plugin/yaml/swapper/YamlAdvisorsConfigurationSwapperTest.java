@@ -51,15 +51,15 @@ public final class YamlAdvisorsConfigurationSwapperTest {
         }
         List<MethodAdvisorConfiguration> actualAdvisorConfig = new ArrayList<>(actual.getAdvisors());
         assertThat(actualAdvisorConfig.get(0).getPointcut(), is(ElementMatchers.isConstructor()));
-        assertThat(actualAdvisorConfig.get(1).getPointcut(), is(ElementMatchers.isConstructor().and(ElementMatchers.takesArgument(0, ElementMatchers.named("value")))));
+        assertThat(actualAdvisorConfig.get(1).getPointcut(), is(ElementMatchers.isConstructor().and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfig.get(2).getPointcut(), is(ElementMatchers.named("call")));
-        assertThat(actualAdvisorConfig.get(3).getPointcut(), is(ElementMatchers.named("call").and(ElementMatchers.takesArgument(0, ElementMatchers.named("value")))));
+        assertThat(actualAdvisorConfig.get(3).getPointcut(), is(ElementMatchers.named("call").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfig.get(4).getPointcut(), is(ElementMatchers.named("call")
-                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("value1"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("value2")))));
+                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfig.get(5).getPointcut(), is(ElementMatchers.named("staticCall")));
-        assertThat(actualAdvisorConfig.get(6).getPointcut(), is(ElementMatchers.named("staticCall").and(ElementMatchers.takesArgument(0, ElementMatchers.named("value")))));
+        assertThat(actualAdvisorConfig.get(6).getPointcut(), is(ElementMatchers.named("staticCall").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
         assertThat(actualAdvisorConfig.get(7).getPointcut(), is(ElementMatchers.named("staticCall")
-                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("value1"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("value2")))));
+                .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String")))));
         
     }
 }
