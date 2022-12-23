@@ -43,8 +43,6 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
-    private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
-    
     private static final Map<String, Object> EXPECTED = new HashMap<>(2, 1);
     
     @BeforeClass
@@ -55,8 +53,9 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertMethod() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -66,9 +65,10 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertExceptionHandle() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

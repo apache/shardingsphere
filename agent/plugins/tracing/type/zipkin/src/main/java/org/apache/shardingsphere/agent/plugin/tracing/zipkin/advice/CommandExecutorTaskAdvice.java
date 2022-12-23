@@ -19,17 +19,15 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import brave.Span;
 import brave.Tracing;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
+import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
@@ -42,17 +40,13 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
         Span span = Tracing.currentTracer().newTrace().name(OPERATION_NAME);
-        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT)
-                .tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
+        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT).tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
         ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, span);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
-        Field field = CommandExecutorTask.class.getDeclaredField("connectionSession");
-        field.setAccessible(true);
-        BackendConnection connection = ((ConnectionSession) field.get(target)).getBackendConnection();
+        BackendConnection connection = ((ConnectionSession) ReflectionUtil.getFieldValue(target, "connectionSession")).getBackendConnection();
         Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
         span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
         span.finish();
