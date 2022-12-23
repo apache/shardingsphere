@@ -98,6 +98,7 @@ public final class MySQLClient {
                     
                     @Override
                     protected void initChannel(final SocketChannel socketChannel) {
+                        socketChannel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
                         socketChannel.pipeline().addLast(new ChannelAttrInitializer());
                         socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
                         socketChannel.pipeline().addLast(new MySQLNegotiatePackageDecoder());
