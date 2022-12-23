@@ -61,7 +61,7 @@ public final class ReflectionUtil {
      * @return invoke result
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Object invokeMethod(final Method method,final Object target, final Object... args) {
+    public static Object invokeMethod(final Method method, final Object target, final Object... args) {
         boolean accessible = method.isAccessible();
         if (!accessible) {
             method.setAccessible(true);
