@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Counter;
-import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
+import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +32,7 @@ public final class CounterWrapperTest {
         CounterWrapper counterWrapper = new CounterWrapper(counter);
         counterWrapper.inc();
         counterWrapper.inc(1);
-        counter = (Counter) ReflectionUtil.getFieldValue(counterWrapper, "counter");
+        counter = (Counter) AgentReflectionUtil.getFieldValue(counterWrapper, "counter");
         assertThat(counter.get(), is(2.0));
     }
 }

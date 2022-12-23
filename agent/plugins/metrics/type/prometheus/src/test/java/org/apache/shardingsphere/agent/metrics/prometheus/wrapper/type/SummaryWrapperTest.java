@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper.type;
 
 import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.core.util.ReflectionUtil;
+import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +30,7 @@ public final class SummaryWrapperTest {
     public void assertCreate() {
         SummaryWrapper summaryWrapper = new SummaryWrapper(Summary.build().name("a").help("help").create());
         summaryWrapper.observe(1);
-        Summary summary = (Summary) ReflectionUtil.getFieldValue(summaryWrapper, "summary");
+        Summary summary = (Summary) AgentReflectionUtil.getFieldValue(summaryWrapper, "summary");
         assertThat(summary.collect().size(), is(1));
     }
 }
