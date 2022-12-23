@@ -42,9 +42,16 @@ public final class ReflectionUtil {
         Class<?> clazz = target.getClass();
         while (null != clazz) {
             try {
-                Field result = clazz.getDeclaredField(fieldName);
-                result.setAccessible(true);
-                return result.get(target);
+                Field field = clazz.getDeclaredField(fieldName);
+                boolean accessible = field.isAccessible();
+                if (!accessible) {
+                    field.setAccessible(true);
+                }
+                Object result = field.get(target);
+                if (!accessible) {
+                    field.setAccessible(false);
+                }
+                return result;
             } catch (final NoSuchFieldException ignored) {
             }
             clazz = clazz.getSuperclass();
