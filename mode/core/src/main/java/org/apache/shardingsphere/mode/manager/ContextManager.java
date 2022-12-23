@@ -285,7 +285,7 @@ public final class ContextManager implements AutoCloseable {
      * @param resource resource
      * @return ShardingSphere databases
      */
-    public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
+    public synchronized Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         Map<String, DataSource> newDataSource =
                 database.getResourceMetaData().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleDataSources().containsKey(entry.getKey()))
@@ -335,7 +335,7 @@ public final class ContextManager implements AutoCloseable {
      * @return MetaDataContexts meta data contexts
      * @throws SQLException SQL exception
      */
-    public MetaDataContexts createMetaDataContexts(final String databaseName, final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+    public synchronized MetaDataContexts createMetaDataContexts(final String databaseName, final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, switchingResource, ruleConfigs);
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
@@ -361,7 +361,7 @@ public final class ContextManager implements AutoCloseable {
      * @return ShardingSphere databases
      * @throws SQLException SQL exception
      */
-    public Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
+    public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
                                                                        final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
             metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().putAll(switchingResource.getNewDataSources());
@@ -396,7 +396,7 @@ public final class ContextManager implements AutoCloseable {
      * @param originalDatabase original database
      * @return ShardingSphere databases
      */
-    public Map<String, ShardingSphereDatabase> newShardingSphereDatabase(final ShardingSphereDatabase originalDatabase) {
+    public synchronized Map<String, ShardingSphereDatabase> newShardingSphereDatabase(final ShardingSphereDatabase originalDatabase) {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put(originalDatabase.getName().toLowerCase(), new ShardingSphereDatabase(originalDatabase.getName(),
                 originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(),
@@ -463,7 +463,7 @@ public final class ContextManager implements AutoCloseable {
      * @param reloadDatabase reload database
      * @param currentDatabase current database
      */
-    public void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+    public synchronized void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         SchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
                 .forEach(each -> metaDataContexts.getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
     }
@@ -525,7 +525,7 @@ public final class ContextManager implements AutoCloseable {
      * @param dataSourceName data source name
      * @param tableName to be reloaded table name
      */
-    public void reloadTable(final String databaseName, final String schemaName, final String dataSourceName, final String tableName) {
+    public synchronized void reloadTable(final String databaseName, final String schemaName, final String dataSourceName, final String tableName) {
         Map<String, DataSource> dataSourceMap = Collections.singletonMap(
                 dataSourceName, metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().get(dataSourceName));
         try {
