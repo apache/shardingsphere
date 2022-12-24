@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
+import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.ResourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -42,8 +42,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +68,18 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
     public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+        if (sqlStatement.isIfNotExists()) {
+            Set<String> currentStorageUnits = ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseName).keySet();
+            Iterator<String> iterator = dataSourcePropsMap.keySet().iterator();
+            while (iterator.hasNext()) {
+                if (currentStorageUnits.contains(iterator.next())) {
+                    iterator.remove();
+                }
+            }
+        }
+        if (dataSourcePropsMap.isEmpty()) {
+            return new UpdateResponseHeader(sqlStatement);
+        }
         validateHandler.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
@@ -79,8 +93,10 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
     @Override
     public void checkSQLStatement(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
-        checkDuplicatedDataSourceNames(databaseName, dataSourceNames, sqlStatement);
-        checkDuplicatedDataSourceNameWithReadwriteSplittingRule(databaseName, dataSourceNames);
+        if (!sqlStatement.isIfNotExists()) {
+            checkDuplicatedDataSourceNames(databaseName, dataSourceNames, sqlStatement);
+            checkDuplicatedDataSourceNameWithReadwriteSplittingRule(databaseName, dataSourceNames);
+        }
     }
     
     private void checkDuplicatedDataSourceNames(final String databaseName, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {

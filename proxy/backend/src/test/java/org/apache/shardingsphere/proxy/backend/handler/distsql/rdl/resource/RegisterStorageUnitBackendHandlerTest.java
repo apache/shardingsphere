@@ -145,18 +145,25 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
     }
     
+    @Test
+    public void assertCheckStatementWithIfNotExists() {
+        RegisterStorageUnitStatement registerStorageUnitStatementWithIfNotExists = new RegisterStorageUnitStatement(true, Collections.singleton(
+                new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "db_1", "root", "", new Properties())));
+        registerStorageUnitBackendHandler.checkSQLStatement("test_db", registerStorageUnitStatementWithIfNotExists);
+    }
+    
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration(final String ruleName) {
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(ruleName, null, null, null)), Collections.emptyMap());
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
-        return new RegisterStorageUnitStatement(Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())));
+        return new RegisterStorageUnitStatement(false, Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())));
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatementWithDuplicateStorageUnitNames() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         result.add(new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()));
         result.add(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties()));
-        return new RegisterStorageUnitStatement(result);
+        return new RegisterStorageUnitStatement(false, result);
     }
 }
