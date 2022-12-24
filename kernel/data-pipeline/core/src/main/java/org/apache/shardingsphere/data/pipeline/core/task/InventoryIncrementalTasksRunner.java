@@ -75,19 +75,15 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             return;
         }
         PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).persistJobItemProgress(jobItemContext);
-        if (executeInventoryTask()) {
-            if (jobItemContext.isStopping()) {
-                return;
-            }
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+            log.info("All inventory tasks finished.");
             executeIncrementalTask();
+        } else {
+            executeInventoryTask();
         }
     }
     
-    private synchronized boolean executeInventoryTask() {
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-            log.info("All inventory tasks finished.");
-            return true;
-        }
+    private synchronized void executeInventoryTask() {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (InventoryTask each : inventoryTasks) {
@@ -115,7 +111,6 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
                 }
             }
         });
-        return false;
     }
     
     private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
