@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -39,8 +39,8 @@ public final class DataSourcePoolMetaDataReflection {
      *
      * @return JDBC URL
      */
-    public String getJdbcUrl() {
-        return getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+    public Optional<String> getJdbcUrl() {
+        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
     }
     
     /**
@@ -48,8 +48,8 @@ public final class DataSourcePoolMetaDataReflection {
      * 
      * @return username
      */
-    public String getUsername() {
-        return getFieldValue(dataSourcePoolFieldMetaData.getUsernameFieldName());
+    public Optional<String> getUsername() {
+        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getUsernameFieldName());
     }
     
     /**
@@ -57,8 +57,8 @@ public final class DataSourcePoolMetaDataReflection {
      *
      * @return password
      */
-    public String getPassword() {
-        return getFieldValue(dataSourcePoolFieldMetaData.getPasswordFieldName());
+    public Optional<String> getPassword() {
+        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getPasswordFieldName());
     }
     
     /**
@@ -66,28 +66,7 @@ public final class DataSourcePoolMetaDataReflection {
      * 
      * @return JDBC connection properties
      */
-    public Properties getJdbcConnectionProperties() {
-        return getFieldValue(dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private <T> T getFieldValue(final String fieldName) {
-        Class<?> dataSourceClass = targetDataSource.getClass();
-        Field field = null;
-        boolean isFound = false;
-        while (!isFound) {
-            try {
-                field = dataSourceClass.getDeclaredField(fieldName);
-                isFound = true;
-            } catch (final ReflectiveOperationException ignored) {
-                dataSourceClass = dataSourceClass.getSuperclass();
-                if (Object.class == dataSourceClass) {
-                    return null;
-                }
-            }
-        }
-        field.setAccessible(true);
-        return (T) field.get(targetDataSource);
+    public Optional<Properties> getJdbcConnectionProperties() {
+        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
     }
 }

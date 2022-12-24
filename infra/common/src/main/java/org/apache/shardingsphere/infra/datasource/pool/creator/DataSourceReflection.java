@@ -160,18 +160,18 @@ public final class DataSourceReflection {
     public void addDefaultDataSourceProperties() {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
                 DataSourcePoolMetaDataFactory.findInstance(dataSource.getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
-        String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
-        Properties jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
-        if (null == jdbcUrl || null == jdbcConnectionProps) {
+        Optional<String> jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
+        Optional<Properties> jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
+        if (!jdbcUrl.isPresent() || !jdbcConnectionProps.isPresent()) {
             return;
         }
-        DataSourceMetaData dataSourceMetaData = DatabaseTypeEngine.getDatabaseType(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
+        DataSourceMetaData dataSourceMetaData = DatabaseTypeEngine.getDatabaseType(jdbcUrl.get()).getDataSourceMetaData(jdbcUrl.get(), null);
         Properties queryProps = dataSourceMetaData.getQueryProperties();
         for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps, queryProps)) {
-                jdbcConnectionProps.setProperty(defaultPropertyKey, defaultPropertyValue);
+            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps.get(), queryProps)) {
+                jdbcConnectionProps.get().setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
     }

@@ -139,7 +139,7 @@ public final class DataSourcePoolCreator {
             Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
             DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(targetDataSource, poolMetaData.getFieldMetaData());
             for (Entry<String, Object> entry : jdbcUrlProps.entrySet()) {
-                dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().setProperty(entry.getKey(), entry.getValue().toString());
+                dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().ifPresent(optional -> optional.setProperty(entry.getKey(), entry.getValue().toString()));
             }
         }
     }
