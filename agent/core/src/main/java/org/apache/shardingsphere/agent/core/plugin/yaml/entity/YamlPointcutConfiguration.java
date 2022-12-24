@@ -20,6 +20,9 @@ package org.apache.shardingsphere.agent.core.plugin.yaml.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * YAML pointcut configuration.
  */
@@ -30,4 +33,6 @@ public final class YamlPointcutConfiguration {
     private String name;
     
     private String type;
+    
+    private Collection<YamlPointcutParameterConfiguration> params = new LinkedList<>();
 }

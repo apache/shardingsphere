@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
+import java.sql.Connection;
+
 /**
  * Connection post processor.
- * 
- * @param <T> connection type
  */
 @FunctionalInterface
-public interface ConnectionPostProcessor<T> {
+public interface ConnectionPostProcessor {
     
     /**
      * Process connection.
      *
      * @param target target connection
      */
-    void process(T target);
+    void process(Connection target);
 }

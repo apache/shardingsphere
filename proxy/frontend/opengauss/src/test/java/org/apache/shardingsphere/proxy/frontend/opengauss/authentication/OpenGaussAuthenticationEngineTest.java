@@ -52,9 +52,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -116,10 +116,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final OpenGaussAuthenticationEngine target) {
-        Field field = OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
-        field.setAccessible(true);
-        field.set(target, true);
-        field.setAccessible(false);
+        Plugins.getMemberAccessor().set(OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived"), target, true);
     }
     
     @Test
@@ -180,23 +177,17 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
     
     @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getRandom64Code(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("random64Code");
-        field.setAccessible(true);
-        return (byte[]) field.get(packet);
+        return (byte[]) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("random64Code"), packet);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getToken(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("token");
-        field.setAccessible(true);
-        return (byte[]) field.get(packet);
+        return (byte[]) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("token"), packet);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private int getServerIteration(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration");
-        field.setAccessible(true);
-        return (int) field.get(packet);
+        return (int) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration"), packet);
     }
     
     private String encodeDigest(final String password, final String random64code, final String token, final int serverIteration) {

@@ -74,9 +74,4 @@ public final class MySQLBinlogEventHeader implements MySQLPacket {
         payload.writeInt4(logPos);
         payload.writeInt2(flags);
     }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
-    }
 }

@@ -19,13 +19,17 @@ package org.apache.shardingsphere.agent.core.plugin.executor.type;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.dynamic.DynamicType.Builder;
+import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
+import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
 
@@ -39,7 +43,7 @@ import java.util.concurrent.Callable;
 @RequiredArgsConstructor
 public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdviceExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdviceExecutor.class);
     
     private final Collection<StaticMethodAdvice> executors;
     
@@ -55,15 +59,13 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult invocationResult = new MethodInvocationResult();
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         if (adviceEnabled) {
-            interceptBefore(klass, method, args, invocationResult);
+            interceptBefore(klass, method, args);
         }
-        Object result;
+        Object result = null;
         try {
-            result = invocationResult.isRebased() ? invocationResult.getResult() : callable.call();
-            invocationResult.rebase(result);
+            result = callable.call();
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -73,16 +75,16 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             throw ex;
         } finally {
             if (adviceEnabled) {
-                interceptAfter(klass, method, args, invocationResult);
+                interceptAfter(klass, method, args, result);
             }
         }
-        return invocationResult.isRebased() ? invocationResult.getResult() : result;
+        return result;
     }
     
-    private void interceptBefore(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptBefore(final Class<?> klass, final Method method, final Object[] args) {
         try {
             for (StaticMethodAdvice each : executors) {
-                each.beforeMethod(klass, method, args, invocationResult);
+                each.beforeMethod(klass, method, args);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -103,15 +105,20 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         }
     }
     
-    private void interceptAfter(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptAfter(final Class<?> klass, final Method method, final Object[] args, final Object result) {
         try {
             for (StaticMethodAdvice each : executors) {
-                each.afterMethod(klass, method, args, invocationResult);
+                each.afterMethod(klass, method, args, result);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             LOGGER.error("Failed to execute the post-method of method `{}` in class `{}`.", method.getName(), klass, ex);
         }
+    }
+    
+    @Override
+    public Builder<?> decorateBuilder(final Builder<?> builder, final MethodDescription pointcut) {
+        return builder.method(ElementMatchers.is(pointcut)).intercept(MethodDelegation.withDefaultConfiguration().to(this));
     }
 }

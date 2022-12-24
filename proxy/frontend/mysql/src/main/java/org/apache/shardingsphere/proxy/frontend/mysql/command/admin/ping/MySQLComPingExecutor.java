@@ -37,6 +37,6 @@ public final class MySQLComPingExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        return Collections.singletonList(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
+        return Collections.singletonList(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

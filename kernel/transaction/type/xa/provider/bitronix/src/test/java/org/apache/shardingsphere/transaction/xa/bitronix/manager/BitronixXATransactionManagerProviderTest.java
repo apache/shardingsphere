@@ -19,12 +19,12 @@ package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.resource.ResourceRegistrar;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
@@ -52,8 +52,8 @@ public final class BitronixXATransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @Before
-    public void setUp() {
-        ReflectiveUtil.setField(transactionManagerProvider, "transactionManager", transactionManager);
+    public void setUp() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(BitronixXATransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider, transactionManager);
     }
     
     @Test

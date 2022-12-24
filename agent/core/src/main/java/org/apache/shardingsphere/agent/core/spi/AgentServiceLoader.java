@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.core.spi;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,17 +29,29 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Agent service loader.
  */
+@Getter
 public final class AgentServiceLoader<T> {
     
     private static final Map<Class<?>, AgentServiceLoader<?>> LOADERS = new ConcurrentHashMap<>();
     
-    private final Map<Class<?>, Collection<T>> serviceMap = new ConcurrentHashMap<>();
-    
-    private final Class<T> service;
+    private final Collection<T> services;
     
     private AgentServiceLoader(final Class<T> service) {
-        this.service = service;
-        register(service);
+        validate(service);
+        this.services = register(service);
+    }
+    
+    private void validate(final Class<T> service) {
+        Preconditions.checkNotNull(service, "Extension clazz is null.");
+        Preconditions.checkArgument(service.isInterface(), "Extension clazz `%s` is not interface.", service);
+    }
+    
+    private Collection<T> register(final Class<T> service) {
+        Collection<T> result = new LinkedList<>();
+        for (T each : ServiceLoader.load(service)) {
+            result.add(each);
+        }
+        return result;
     }
     
     /**
@@ -50,29 +63,6 @@ public final class AgentServiceLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> AgentServiceLoader<T> getServiceLoader(final Class<T> service) {
-        Preconditions.checkNotNull(service, "Extension clazz is null.");
-        Preconditions.checkArgument(service.isInterface(), "Extension clazz `%s` is not interface.", service);
-        AgentServiceLoader<T> agentServiceLoader = (AgentServiceLoader<T>) LOADERS.get(service);
-        if (null != agentServiceLoader) {
-            return agentServiceLoader;
-        }
         return (AgentServiceLoader<T>) LOADERS.computeIfAbsent(service, AgentServiceLoader::new);
-    }
-    
-    /**
-     * New service instances.
-     *
-     * @return service instances
-     */
-    public Collection<T> newServiceInstances() {
-        return serviceMap.get(service);
-    }
-    
-    private void register(final Class<T> service) {
-        if (serviceMap.containsKey(service)) {
-            return;
-        }
-        serviceMap.put(service, new LinkedList<>());
-        ServiceLoader.load(service).forEach(each -> serviceMap.get(service).add(each));
     }
 }

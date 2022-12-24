@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import zipkin2.Span;
@@ -37,17 +35,11 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private CommandExecutorTaskAdvice advice;
-    
-    @Before
-    public void setup() {
-        advice = new CommandExecutorTaskAdvice();
-    }
-    
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         Span span = COLLECTOR.pop();
         Map<String, String> tags = span.tags();
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
@@ -58,9 +50,10 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         Span span = COLLECTOR.pop();
         Map<String, String> tags = span.tags();
         assertThat(tags.get("error"), is("IOException"));

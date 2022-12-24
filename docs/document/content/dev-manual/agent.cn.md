@@ -25,24 +25,3 @@ chapter = true
 | OpenTelemetry | OpenTelemetryTracing plugin 启动类 | [`org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.service.OpenTelemetryTracingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentelemetry/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentelemetry/service/OpenTelemetryTracingPluginBootService.java) |
 | OpenTracing   | OpenTracing plugin 启动类          | [`org.apache.shardingsphere.agent.plugin.tracing.opentracing.service.OpenTracingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentracing/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentracing/service/OpenTracingPluginBootService.java) |
 | Zipkin        | Zipkin plugin 启动类               | [`org.apache.shardingsphere.agent.plugin.tracing.zipkin.service.ZipkinTracingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/zipkin/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/zipkin/service/ZipkinTracingPluginBootService.java) |
-
-## PluginDefinitionService
-
-### 全限定类名
-
-[`org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/api/src/main/java/org/apache/shardingsphere/agent/spi/definition/PluginDefinitionService.java)
-
-### 定义
-
-探针插件定义服务接口
-
-### 已知实现
-
-| *配置标识*     | *详细说明*                    | *全限定类名* |
-| ------------- | --------------------------- | ---------- |
-| Prometheus    | Prometheus 插件定义           | [`org.apache.shardingsphere.agent.metrics.prometheus.definition.PrometheusAdvisorDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/metrics/prometheus/src/main/java/org/apache/shardingsphere/agent/metrics/prometheus/definition/PrometheusPluginDefinitionService.java) |
-| Logging       | Logging 插件定义              | [`org.apache.shardingsphere.agent.plugin.logging.base.definition.BaseLoggingAdvisorDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/logging/base/src/main/java/org/apache/shardingsphere/agent/plugin/logging/base/definition/BaseLoggingPluginDefinitionService.java) |
-| Jaeger        | Jaeger 插件定义               | [`org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition.JaegerAdvisorDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/jaeger/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/jaeger/definition/JaegerPluginDefinitionService.java) |
-| OpenTelemetry | OpenTelemetryTracing 插件定义 | [`org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition.OpenTelemetryTracingAdvisorDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentelemetry/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentelemetry/definition/OpenTelemetryTracingPluginDefinitionService.java) |
-| OpenTracing   | OpenTracing 插件定义          | [`org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition.OpenTracingAdvisorDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentracing/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentracing/definition/OpenTracingPluginDefinitionService.java) |
-| Zipkin        | Zipkin 插件定义               | [`org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition.ZipkinAdvisorDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/zipkin/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/zipkin/definition/ZipkinPluginDefinitionService.java) |

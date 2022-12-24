@@ -36,9 +36,8 @@ public final class MySQLFieldCountPacketTest {
     
     @Test
     public void assertWrite() {
-        when(payload.readInt1()).thenReturn(1, 3);
+        when(payload.readInt1()).thenReturn(3);
         MySQLFieldCountPacket actual = new MySQLFieldCountPacket(payload);
-        assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getColumnCount(), is(3));
         actual.write(payload);
         verify(payload).writeIntLenenc(3);

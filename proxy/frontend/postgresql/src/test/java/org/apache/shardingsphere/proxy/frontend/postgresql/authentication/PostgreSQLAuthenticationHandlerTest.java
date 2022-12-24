@@ -48,8 +48,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authen
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,7 +80,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     @Before
     public void init() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-        String md5Digest = md5Encode(username, password, md5Salt.getBytes(StandardCharsets.UTF_8));
+        String md5Digest = md5Encode(md5Salt.getBytes(StandardCharsets.UTF_8));
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
         passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
@@ -154,9 +154,8 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private String md5Encode(final String username, final String password, final byte[] md5Salt) {
-        Method method = PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
-        method.setAccessible(true);
-        return (String) method.invoke(new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
+    private String md5Encode(final byte[] md5Salt) {
+        return (String) Plugins.getMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
+                new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
     }
 }

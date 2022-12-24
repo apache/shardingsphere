@@ -44,14 +44,13 @@ public final class MySQLHandshakePacketTest {
     
     @Test
     public void assertNewWithPayload() {
-        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
+        when(payload.readInt1()).thenReturn(MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.getDefaultServerVersion());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getServerVersion(), is(MySQLServerInfo.getDefaultServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
@@ -65,14 +64,13 @@ public final class MySQLHandshakePacketTest {
     
     @Test
     public void assertNewWithClientPluginAuthPayload() {
-        when(payload.readInt1()).thenReturn(0, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
+        when(payload.readInt1()).thenReturn(MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.getDefaultServerVersion(), MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getServerVersion(), is(MySQLServerInfo.getDefaultServerVersion()));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));

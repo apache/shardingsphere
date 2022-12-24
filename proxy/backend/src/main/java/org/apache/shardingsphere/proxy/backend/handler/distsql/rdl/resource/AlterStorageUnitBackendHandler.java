@@ -71,7 +71,7 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         validateHandler.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Alter storage unit failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));

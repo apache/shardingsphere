@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.junit.Test;
+
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,33 +33,33 @@ public final class PortalContextTest {
     private final PortalContext portalContext = new PortalContext();
     
     @Test
-    public void assertAddAndGetUnnamedPortal() {
+    public void assertAddAndGetUnnamedPortal() throws SQLException {
         assertAddAndGetPortal("");
     }
     
     @Test
-    public void assertAddAndGetNamedPortal() {
+    public void assertAddAndGetNamedPortal() throws SQLException {
         assertAddAndGetPortal("P_1");
     }
     
-    private void assertAddAndGetPortal(final String portalName) {
-        Portal<?> portal = mock(Portal.class);
+    private void assertAddAndGetPortal(final String portalName) throws SQLException {
+        Portal portal = mock(Portal.class);
         when(portal.getName()).thenReturn(portalName);
         portalContext.add(portal);
         assertThat(portalContext.get(portalName), is(portal));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertAddDuplicateNamedPortal() {
-        Portal<?> portal = mock(Portal.class);
+    public void assertAddDuplicateNamedPortal() throws SQLException {
+        Portal portal = mock(Portal.class);
         when(portal.getName()).thenReturn("P_1");
         portalContext.add(portal);
         portalContext.add(portal);
     }
     
     @Test
-    public void assertCloseSinglePortal() {
-        Portal<?> portal = mock(Portal.class);
+    public void assertCloseSinglePortal() throws SQLException {
+        Portal portal = mock(Portal.class);
         String portalName = "P_1";
         when(portal.getName()).thenReturn(portalName);
         portalContext.add(portal);
@@ -67,10 +68,10 @@ public final class PortalContextTest {
     }
     
     @Test
-    public void assertCloseAllPortals() {
-        Portal<?> portal1 = mock(JDBCPortal.class);
+    public void assertCloseAllPortals() throws SQLException {
+        Portal portal1 = mock(Portal.class);
         when(portal1.getName()).thenReturn("P_1");
-        Portal<?> portal2 = mock(JDBCPortal.class);
+        Portal portal2 = mock(Portal.class);
         when(portal2.getName()).thenReturn("P_2");
         portalContext.add(portal1);
         portalContext.add(portal2);

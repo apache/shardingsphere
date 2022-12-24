@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.core.fixture.FixtureWrapper;
@@ -71,7 +70,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
     public void assertRoute(final String metricIds, final QueryContext queryContext) {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, new MethodInvocationResult());
+        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{new ConnectionContext(), queryContext});
         FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(metricIds).get();
         assertTrue(MetricsPool.get(metricIds).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
@@ -85,9 +84,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
         RouteMapper tbMapper = new RouteMapper("t_order", "t_order_0");
         RouteUnit routeUnit = new RouteUnit(dsMapper, Collections.singletonList(tbMapper));
         routeContext.getRouteUnits().add(routeUnit);
-        MethodInvocationResult result = new MethodInvocationResult();
-        result.rebase(routeContext);
-        sqlRouteEngineAdvice.afterMethod(targetObject, mock(Method.class), new Object[]{}, result);
+        sqlRouteEngineAdvice.afterMethod(targetObject, mock(Method.class), new Object[]{}, routeContext);
         FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_DATASOURCE).get();
         assertTrue(MetricsPool.get(MetricIds.ROUTE_DATASOURCE).isPresent());
         assertThat(wrapper.getFixtureValue(), is(1.0));

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
@@ -41,7 +40,7 @@ public final class TransactionAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         String methodName = method.getName();
         if (COMMIT.equals(methodName)) {
             MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(MetricsWrapper::inc);

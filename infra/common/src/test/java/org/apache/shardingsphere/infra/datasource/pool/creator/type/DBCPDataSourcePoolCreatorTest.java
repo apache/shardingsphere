@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -62,8 +62,6 @@ public final class DBCPDataSourcePoolCreatorTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private Properties getConnectionProperties(final BasicDataSource actual) {
-        Field field = actual.getClass().getDeclaredField("connectionProperties");
-        field.setAccessible(true);
-        return (Properties) field.get(actual);
+        return (Properties) Plugins.getMemberAccessor().get(BasicDataSource.class.getDeclaredField("connectionProperties"), actual);
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -54,8 +55,8 @@ public final class TransactionRuleBuilderTest {
         TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "provider", new Properties());
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", null, new ShardingSphereResourceMetaData("db", createDataSourceMap()),
                 new ShardingSphereRuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)),
-                mock(WorkerIdGenerator.class), new ModeConfiguration("Standalone", null), mock(LockContext.class), new EventBusContext());
+        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
+                new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), instanceContext, mock(ConfigurationProperties.class));
         assertNotNull(rule.getConfiguration());
         assertThat(rule.getDatabases().get("logic_db").getResourceMetaData().getDataSources().size(), is(2));

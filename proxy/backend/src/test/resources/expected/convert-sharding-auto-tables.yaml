@@ -33,15 +33,18 @@ CREATE SHARDING TABLE RULE t_order (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,
 TYPE(NAME='mod', PROPERTIES('sharding-count'='4')),
-KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake'))
+KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')),
+AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 ), t_order_item (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,
 TYPE(NAME='mod', PROPERTIES('sharding-count'='4')),
-KEY_GENERATE_STRATEGY(COLUMN=order_item_id, TYPE(NAME='snowflake'))
+KEY_GENERATE_STRATEGY(COLUMN=order_item_id, TYPE(NAME='snowflake')),
+AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 ), t_account (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=account_id,
 TYPE(NAME='mod', PROPERTIES('sharding-count'='4')),
-KEY_GENERATE_STRATEGY(COLUMN=account_id, TYPE(NAME='snowflake'))
+KEY_GENERATE_STRATEGY(COLUMN=account_id, TYPE(NAME='snowflake')),
+AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 );

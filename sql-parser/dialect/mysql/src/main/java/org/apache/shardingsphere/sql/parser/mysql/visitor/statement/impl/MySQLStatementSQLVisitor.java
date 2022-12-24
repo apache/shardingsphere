@@ -423,6 +423,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
+            // TODO optimize operatorToken
             String rightText = "";
             if (null != ctx.NOT()) {
                 rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(),
@@ -438,9 +439,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             if (null != ctx.FALSE()) {
                 operatorToken = ctx.FALSE().getSymbol();
             }
-            int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 1 : operatorToken.getStartIndex();
+            int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 2 : operatorToken.getStartIndex();
             rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex())));
-            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 1, ctx.stop.getStopIndex(), rightText);
+            ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
             String operator = "IS";

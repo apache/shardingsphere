@@ -22,16 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
  * Database communication engine factory.
  */
-@SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseCommunicationEngineFactory {
     
@@ -49,25 +44,16 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of {@link DatabaseCommunicationEngine}.
      *
-     * @param <T> type of DatabaseCommunicationEngine
      * @param queryContext query context
      * @param backendConnection backend connection
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public <T extends DatabaseCommunicationEngine> T newDatabaseCommunicationEngine(final QueryContext queryContext, final BackendConnection<?> backendConnection,
-                                                                                    final boolean preferPreparedStatement) {
+    public DatabaseCommunicationEngine newDatabaseCommunicationEngine(final QueryContext queryContext, final BackendConnection backendConnection, final boolean preferPreparedStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
-        T result;
-        if (backendConnection instanceof JDBCBackendConnection) {
-            JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
-            String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-            result = (T) new JDBCDatabaseCommunicationEngine(driverType, database, queryContext, jdbcBackendConnection);
-            jdbcBackendConnection.add(result);
-        } else {
-            VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
-            result = (T) new VertxDatabaseCommunicationEngine(database, queryContext, vertxBackendConnection);
-        }
+        String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
+        DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(driverType, database, queryContext, backendConnection);
+        backendConnection.add(result);
         return result;
     }
 }

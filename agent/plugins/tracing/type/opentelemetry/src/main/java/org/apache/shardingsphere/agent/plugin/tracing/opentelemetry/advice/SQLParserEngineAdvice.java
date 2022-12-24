@@ -25,7 +25,6 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
@@ -39,7 +38,7 @@ public class SQLParserEngineAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         Span root = (Span) ExecutorDataMap.getValue().get(OpenTelemetryConstants.ROOT_SPAN);
         Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME)
@@ -53,7 +52,7 @@ public class SQLParserEngineAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         ((Span) target.getAttachment()).end();
     }
     

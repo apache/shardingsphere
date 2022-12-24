@@ -143,7 +143,7 @@ public final class ShardingRouteCacheableCheckerTest {
         ShardingTableRuleConfiguration nonCacheableTableSharding = new ShardingTableRuleConfiguration("t_non_cacheable_table_sharding", "ds_0.t_non_cacheable_table_sharding_${0..1}");
         nonCacheableTableSharding.setTableShardingStrategy(new StandardShardingStrategyConfiguration("id", "inline"));
         ruleConfig.getTables().add(nonCacheableTableSharding);
-        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"), new InstanceContext(mock(ComputeNodeInstance.class), props -> 0, null, null, null));
+        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"), new InstanceContext(mock(ComputeNodeInstance.class), props -> 0, null, null, null, null));
     }
     
     private ShardingCacheRule prepareShardingCacheRule(final ShardingRule shardingRule) {

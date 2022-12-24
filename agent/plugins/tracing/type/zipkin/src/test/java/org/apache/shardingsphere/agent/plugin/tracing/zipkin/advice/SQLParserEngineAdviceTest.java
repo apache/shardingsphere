@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import brave.Span;
 import brave.Tracing;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
@@ -32,8 +31,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
@@ -55,8 +54,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());
@@ -67,9 +66,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
         advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());

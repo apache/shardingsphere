@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
@@ -52,7 +52,7 @@ public final class MySQLSetVariableAdminExecutorTest extends ProxyContextRestore
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
@@ -60,7 +60,7 @@ public final class MySQLSetVariableAdminExecutorTest extends ProxyContextRestore
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1), new CacheOption(1, 1))))));
-        try (MockedConstruction<JDBCDatabaseCommunicationEngine> mockConstruction = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
+        try (MockedConstruction<DatabaseCommunicationEngine> mockConstruction = mockConstruction(DatabaseCommunicationEngine.class)) {
             executor.execute(connectionSession);
             verify(mockConstruction.constructed().get(0)).execute();
         }

@@ -36,9 +36,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-distsql-statement</artifactId>
+            <artifactId>shardingsphere-distsql-statement</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

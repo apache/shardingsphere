@@ -22,19 +22,25 @@ import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
 public final class JaegerTracingPluginBootServiceTest {
     
-    private final JaegerTracingPluginBootService jaegerTracingPluginBootService = new JaegerTracingPluginBootService();
+    private final JaegerTracingPluginBootService pluginBootService = new JaegerTracingPluginBootService();
+    
+    @After
+    public void close() throws ReflectiveOperationException {
+        pluginBootService.close();
+        Plugins.getMemberAccessor().set(GlobalTracer.class.getDeclaredField("tracer"), GlobalTracer.class, NoopTracerFactory.create());
+    }
     
     @Test
     public void assertStart() {
-        jaegerTracingPluginBootService.start(new PluginConfiguration("localhost", 5775, "", createProperties()), true);
+        pluginBootService.start(new PluginConfiguration("localhost", 5775, "", createProperties()), true);
         assertTrue(GlobalTracer.isRegistered());
     }
     
@@ -45,13 +51,5 @@ public final class JaegerTracingPluginBootServiceTest {
         result.setProperty("JAEGER_REPORTER_LOG_SPANS", Boolean.TRUE.toString());
         result.setProperty("JAEGER_REPORTER_FLUSH_INTERVAL", "1");
         return result;
-    }
-    
-    @After
-    public void close() throws ReflectiveOperationException {
-        jaegerTracingPluginBootService.close();
-        Field field = GlobalTracer.class.getDeclaredField("tracer");
-        field.setAccessible(true);
-        field.set(null, NoopTracerFactory.create());
     }
 }

@@ -25,14 +25,13 @@ import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 
 import java.lang.reflect.Method;
 import java.sql.DatabaseMetaData;
@@ -49,18 +48,17 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     @Override
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @SuppressWarnings("unchecked")
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         Span root = (Span) ((Map<String, Object>) args[2]).get(JaegerConstants.ROOT_SPAN);
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if (null != root) {
             builder = builder.asChildOf(root);
         }
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) ReflectiveUtil.getFieldValue(target, "storageTypes");
-        Method getMetaDataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class);
-        getMetaDataMethod.setAccessible(true);
-        DataSourceMetaData metaData = (DataSourceMetaData) getMetaDataMethod.invoke(target,
-                new Object[]{executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName())});
+        Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) AgentReflectionUtil.getFieldValue(target, "storageTypes");
+        DataSourceMetaData metaData = (DataSourceMetaData) AgentReflectionUtil.invokeMethod(
+                JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
+                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
                 .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())
@@ -73,7 +71,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         ((Scope) target.getAttachment()).close();
     }
     

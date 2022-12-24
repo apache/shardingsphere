@@ -29,8 +29,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,21 +50,19 @@ public final class MySQLColumnDefinition41PacketTest {
         when(resultSetMetaData.getColumnName(1)).thenReturn("id");
         when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(10);
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(1, resultSetMetaData, 1);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(resultSetMetaData, 1);
         actual.write(payload);
         verifyWrite();
     }
     
     @Test
     public void assertWriteWithPayload() {
-        when(payload.readInt1()).thenReturn(1, MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
+        when(payload.readInt1()).thenReturn(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
         when(payload.readInt2()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn(0x0cL);
         when(payload.readStringLenenc()).thenReturn("def", "logic_db", "tbl", "tbl", "id", "id");
         MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(payload);
-        assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verifyWrite();
     }

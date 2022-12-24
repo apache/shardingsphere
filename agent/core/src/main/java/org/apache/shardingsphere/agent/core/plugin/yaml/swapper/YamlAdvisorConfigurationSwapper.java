@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
-import net.bytebuddy.matcher.ElementMatchers;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfi
 /**
  * YAML advisor configuration swapper.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlAdvisorConfigurationSwapper {
     
     /**
@@ -36,19 +38,10 @@ public final class YamlAdvisorConfigurationSwapper {
      * @param type type
      * @return advisor configuration
      */
-    public AdvisorConfiguration swapToObject(final YamlAdvisorConfiguration yamlAdvisorConfig, final String type) {
+    public static AdvisorConfiguration swapToObject(final YamlAdvisorConfiguration yamlAdvisorConfig, final String type) {
         AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
-        String[] constructPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "construct".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (constructPointcuts.length > 0) {
-            result.getConstructorAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor(), yamlAdvisorConfig.getAdvice()));
-        }
-        String[] instanceMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "instance".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (instanceMethodPointcuts.length > 0) {
-            result.getInstanceMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(instanceMethodPointcuts), yamlAdvisorConfig.getAdvice()));
-        }
-        String[] staticMethodPointcuts = yamlAdvisorConfig.getPointcuts().stream().filter(each -> "static".equals(each.getType())).map(YamlPointcutConfiguration::getName).toArray(String[]::new);
-        if (staticMethodPointcuts.length > 0) {
-            result.getStaticMethodAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.namedOneOf(staticMethodPointcuts), yamlAdvisorConfig.getAdvice()));
+        for (YamlPointcutConfiguration each : yamlAdvisorConfig.getPointcuts()) {
+            YamlPointcutConfigurationSwapper.swapToObject(each).ifPresent(elementMatcher -> result.getAdvisors().add(new MethodAdvisorConfiguration(elementMatcher, yamlAdvisorConfig.getAdvice())));
         }
         return result;
     }

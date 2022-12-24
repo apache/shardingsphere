@@ -57,7 +57,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
+        <shade.package>org.apache.shardingsphere.shade</shade.package>
         
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -77,7 +77,6 @@
         <activation-api.version>1.2.0</activation-api.version>
         
         <calcite.version>1.32.0</calcite.version>
-        <vertx.version>4.3.3</vertx.version>
         <netty.version>4.1.86.Final</netty.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
@@ -253,11 +252,6 @@
                 <version>${calcite.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.vertx</groupId>
-                <artifactId>vertx-mysql-client</artifactId>
-                <version>${vertx.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-buffer</artifactId>
                 <version>${netty.version}</version>
@@ -265,11 +259,6 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-dns</artifactId>
                 <version>${netty.version}</version>
             </dependency>
             <dependency>
@@ -305,11 +294,6 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-resolver</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-resolver-dns</artifactId>
                 <version>${netty.version}</version>
             </dependency>
             <dependency>

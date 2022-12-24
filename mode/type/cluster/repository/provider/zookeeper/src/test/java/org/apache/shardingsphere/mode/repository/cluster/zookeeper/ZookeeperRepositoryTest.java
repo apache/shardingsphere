@@ -48,10 +48,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.VoidAnswer1;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,9 +65,9 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -126,9 +126,7 @@ public final class ZookeeperRepositoryTest {
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void mockClient() {
-        Field builderFiled = ZookeeperRepository.class.getDeclaredField("builder");
-        builderFiled.setAccessible(true);
-        builderFiled.set(REPOSITORY, builder);
+        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("builder"), REPOSITORY, builder);
         when(builder.connectString(anyString())).thenReturn(builder);
         when(builder.retryPolicy(any(RetryPolicy.class))).thenReturn(builder);
         when(builder.ensembleTracker(anyBoolean())).thenReturn(builder);
@@ -143,13 +141,9 @@ public final class ZookeeperRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void mockDistributedLockHolder() {
-        Field distributedLockHolderField = ZookeeperRepository.class.getDeclaredField("distributedLockHolder");
-        distributedLockHolderField.setAccessible(true);
         DistributedLockHolder distributedLockHolder = new DistributedLockHolder("Zookeeper", client, new ZookeeperProperties(new Properties()));
-        Field locksFiled = DistributedLockHolder.class.getDeclaredField("locks");
-        locksFiled.setAccessible(true);
-        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(ZookeeperDistributedLock.class)));
-        distributedLockHolderField.set(REPOSITORY, distributedLockHolder);
+        Plugins.getMemberAccessor().set(DistributedLockHolder.class.getDeclaredField("locks"), distributedLockHolder, Collections.singletonMap("/locks/glock", mock(ZookeeperDistributedLock.class)));
+        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("distributedLockHolder"), REPOSITORY, distributedLockHolder);
     }
     
     private void mockBuilder() {
@@ -243,11 +237,9 @@ public final class ZookeeperRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void mockCache(final String key) {
-        Field cachesFiled = ZookeeperRepository.class.getDeclaredField("caches");
-        cachesFiled.setAccessible(true);
         Map<String, CuratorCache> caches = new HashMap<>();
         caches.put(key, curatorCache);
-        cachesFiled.set(REPOSITORY, caches);
+        Plugins.getMemberAccessor().set(ZookeeperRepository.class.getDeclaredField("caches"), REPOSITORY, caches);
         when(curatorCache.listenable()).thenReturn(listenable);
     }
     

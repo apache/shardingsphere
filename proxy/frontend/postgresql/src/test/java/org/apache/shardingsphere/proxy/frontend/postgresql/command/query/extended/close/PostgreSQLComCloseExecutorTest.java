@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -49,7 +50,7 @@ public final class PostgreSQLComCloseExecutorTest {
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertExecuteClosePreparedStatement() {
+    public void assertExecuteClosePreparedStatement() throws SQLException {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(packet.getType()).thenReturn(PostgreSQLComClosePacket.Type.PREPARED_STATEMENT);
         when(packet.getName()).thenReturn("S_1");
@@ -60,7 +61,7 @@ public final class PostgreSQLComCloseExecutorTest {
     }
     
     @Test
-    public void assertExecuteClosePortal() {
+    public void assertExecuteClosePortal() throws SQLException {
         when(packet.getType()).thenReturn(PostgreSQLComClosePacket.Type.PORTAL);
         String portalName = "C_1";
         when(packet.getName()).thenReturn(portalName);
