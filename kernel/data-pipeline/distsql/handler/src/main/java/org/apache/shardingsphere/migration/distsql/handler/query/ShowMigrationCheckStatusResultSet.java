@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
@@ -36,7 +35,7 @@ import java.util.Optional;
  */
 public final class ShowMigrationCheckStatusResultSet implements DatabaseDistSQLResultSet {
     
-    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPIImpl();
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI();
     
     private Iterator<Collection<Object>> data;
     

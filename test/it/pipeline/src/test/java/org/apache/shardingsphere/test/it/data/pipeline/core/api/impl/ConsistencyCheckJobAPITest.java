@@ -27,8 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJo
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
@@ -47,7 +46,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public final class ConsistencyCheckJobAPIImplTest {
+public final class ConsistencyCheckJobAPITest {
     
     private static ConsistencyCheckJobAPI checkJobAPI;
     
@@ -56,7 +55,7 @@ public final class ConsistencyCheckJobAPIImplTest {
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
-        checkJobAPI = new ConsistencyCheckJobAPIImpl();
+        checkJobAPI = new ConsistencyCheckJobAPI();
         migrationJobAPI = new MigrationJobAPI();
     }
     
