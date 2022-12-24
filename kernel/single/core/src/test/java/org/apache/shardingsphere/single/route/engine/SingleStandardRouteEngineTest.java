@@ -58,11 +58,11 @@ public final class SingleStandardRouteEngineTest {
     @Test
     public void assertRouteInSameDataSource() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), null);
-        SingleRule singleTableRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
-        singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("t_order")));
-        singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("t_order_item")));
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        singleRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("t_order")));
+        singleRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("t_order_item")));
         RouteContext routeContext = new RouteContext();
-        engine.route(routeContext, singleTableRule);
+        engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -87,11 +87,11 @@ public final class SingleStandardRouteEngineTest {
     }
     
     @Test
-    public void assertRouteWithoutSingleTableRule() throws SQLException {
+    public void assertRouteWithoutSingleRule() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
-        SingleRule singleTableRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
-        engine.route(routeContext, singleTableRule);
+        engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
@@ -102,11 +102,11 @@ public final class SingleStandardRouteEngineTest {
     }
     
     @Test
-    public void assertRouteWithDefaultSingleTableRule() throws SQLException {
+    public void assertRouteWithDefaultSingleRule() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
-        SingleRule singleTableRule = new SingleRule(new SingleRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
-        engine.route(routeContext, singleTableRule);
+        engine.route(routeContext, singleRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -129,13 +129,13 @@ public final class SingleStandardRouteEngineTest {
     @Test(expected = TableExistsException.class)
     public void assertRouteDuplicateSingleTable() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(false));
-        engine.route(new RouteContext(), mockSingleTableRule());
+        engine.route(new RouteContext(), mockSingleRule());
     }
     
     @Test
     public void assertRouteIfNotExistsDuplicateSingleTable() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(true));
-        engine.route(new RouteContext(), mockSingleTableRule());
+        engine.route(new RouteContext(), mockSingleRule());
     }
     
     private SQLStatement mockStatement(final boolean ifNotExists) {
@@ -144,7 +144,7 @@ public final class SingleStandardRouteEngineTest {
         return result;
     }
     
-    private SingleRule mockSingleTableRule() {
+    private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
         DataNode dataNode = mock(DataNode.class);
         when(result.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));

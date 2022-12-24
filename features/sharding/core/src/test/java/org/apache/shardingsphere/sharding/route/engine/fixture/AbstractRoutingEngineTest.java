@@ -239,7 +239,7 @@ public abstract class AbstractRoutingEngineTest {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    protected final SingleRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
+    protected final SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         SingleRule result = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, rules);
         result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");

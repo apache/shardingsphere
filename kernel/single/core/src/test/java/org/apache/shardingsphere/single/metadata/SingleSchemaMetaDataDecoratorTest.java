@@ -45,11 +45,11 @@ public final class SingleSchemaMetaDataDecoratorTest {
     
     @Test
     public void assertDecorate() {
-        SingleRule singleTableRule = mock(SingleRule.class);
-        Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
-        SingleSchemaMetaDataDecorator builder = (SingleSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(singleTableRule);
+        SingleRule singleRule = mock(SingleRule.class);
+        Collection<ShardingSphereRule> rules = Collections.singletonList(singleRule);
+        SingleSchemaMetaDataDecorator builder = (SingleSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(singleRule);
         Map<String, SchemaMetaData> schemaMetaDataMap = mockSchemaMetaDataMap();
-        TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleTableRule, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
+        TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleRule, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = tableMetaData.getColumns().iterator();
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false)));
