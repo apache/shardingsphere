@@ -335,7 +335,8 @@ public final class ContextManager implements AutoCloseable {
      * @return MetaDataContexts meta data contexts
      * @throws SQLException SQL exception
      */
-    public synchronized MetaDataContexts createMetaDataContexts(final String databaseName, final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+    public synchronized MetaDataContexts createMetaDataContexts(final String databaseName, final SwitchingResource switchingResource,
+                                                                final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, switchingResource, ruleConfigs);
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
