@@ -368,7 +368,7 @@ public final class ContextManager implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
-                                                                       final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+                                                                                   final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
             metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().putAll(switchingResource.getNewDataSources());
         }
