@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPIFactory;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.DropMigrationCheckStatement;
 
 /**
  * Drop migration check updater.
  */
+// TODO delete
 public final class DropMigrationCheckUpdater implements RALUpdater<DropMigrationCheckStatement> {
-    
-    private final ConsistencyCheckJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getConsistencyCheckJobPublicAPI();
     
     @Override
     public void executeUpdate(final String databaseName, final DropMigrationCheckStatement sqlStatement) {
-        jobAPI.dropByParentJobId(sqlStatement.getJobId());
+        ConsistencyCheckJobAPIFactory.getInstance().dropByParentJobId(sqlStatement.getJobId());
     }
     
     @Override

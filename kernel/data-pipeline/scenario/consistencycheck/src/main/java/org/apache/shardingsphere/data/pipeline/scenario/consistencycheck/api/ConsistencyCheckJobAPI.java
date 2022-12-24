@@ -17,11 +17,60 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api;
 
-import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+
+import java.util.Map;
 
 /**
  * Consistency check job API.
  */
-public interface ConsistencyCheckJobAPI extends ConsistencyCheckJobPublicAPI, PipelineJobAPI {
+public interface ConsistencyCheckJobAPI extends PipelineJobAPI {
+    
+    /**
+     * Create consistency check configuration and start job.
+     *
+     * @param param create consistency check job parameter
+     * @return job id
+     */
+    String createJobAndStart(CreateConsistencyCheckJobParameter param);
+    
+    /**
+     * Get latest data consistency check result.
+     *
+     * @param jobId job id
+     * @return latest data consistency check result
+     */
+    Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(String jobId);
+    
+    /**
+     * Start by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
+    void startByParentJobId(String parentJobId);
+    
+    /**
+     * Start by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
+    void stopByParentJobId(String parentJobId);
+    
+    /**
+     * Drop by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
+    void dropByParentJobId(String parentJobId);
+    
+    /**
+     * Get consistency job item info.
+     *
+     * @param parentJobId parent job id
+     * @return consistency job item info
+     */
+    ConsistencyCheckJobItemInfo getJobItemInfo(String parentJobId);
 }
