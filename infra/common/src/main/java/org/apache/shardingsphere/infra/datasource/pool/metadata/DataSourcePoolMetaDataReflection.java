@@ -44,24 +44,6 @@ public final class DataSourcePoolMetaDataReflection {
     }
     
     /**
-     * Get username.
-     * 
-     * @return username
-     */
-    public Optional<String> getUsername() {
-        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getUsernameFieldName());
-    }
-    
-    /**
-     * Get password.
-     *
-     * @return password
-     */
-    public Optional<String> getPassword() {
-        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getPasswordFieldName());
-    }
-    
-    /**
      * Get JDBC connection properties.
      * 
      * @return JDBC connection properties
