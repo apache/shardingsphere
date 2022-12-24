@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDa
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
@@ -46,7 +46,7 @@ import java.sql.SQLException;
 @Slf4j
 public final class MigrationJob extends AbstractSimplePipelineJob {
     
-    private final MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();
+    private final MigrationJobAPI jobAPI = new MigrationJobAPIImpl();
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     

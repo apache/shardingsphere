@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPi
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
@@ -75,7 +75,7 @@ public final class JobConfigurationBuilder {
         String sourceTableName = RandomStringUtils.randomAlphabetic(32);
         MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getSourceResourceName(), yamlJobConfig.getSourceSchemaName(), sourceTableName,
                 yamlJobConfig.getTargetDatabaseName(), yamlJobConfig.getTargetTableName());
-        return MigrationJobAPIFactory.getInstance().marshalJobId(migrationJobId);
+        return new MigrationJobAPIImpl().marshalJobId(migrationJobId);
     }
     
     private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {

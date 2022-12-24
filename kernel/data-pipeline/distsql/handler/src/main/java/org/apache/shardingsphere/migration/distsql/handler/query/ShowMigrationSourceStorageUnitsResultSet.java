@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
@@ -32,11 +33,13 @@ import java.util.Iterator;
  */
 public final class ShowMigrationSourceStorageUnitsResultSet implements DatabaseDistSQLResultSet {
     
+    private final MigrationJobAPI jobAPI = new MigrationJobAPIImpl();
+    
     private Iterator<Collection<Object>> data;
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        data = MigrationJobAPIFactory.getInstance().listMigrationSourceResources().iterator();
+        data = jobAPI.listMigrationSourceResources().iterator();
     }
     
     @Override
