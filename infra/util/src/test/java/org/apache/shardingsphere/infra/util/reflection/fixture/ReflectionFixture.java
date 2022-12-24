@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.util.fixture;
+package org.apache.shardingsphere.infra.util.reflection.fixture;
 
 public final class ReflectionFixture {
     

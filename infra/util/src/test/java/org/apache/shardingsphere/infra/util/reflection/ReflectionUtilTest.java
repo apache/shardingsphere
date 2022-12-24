@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.util;
+package org.apache.shardingsphere.infra.util.reflection;
 
-import org.apache.shardingsphere.infra.util.util.fixture.ReflectionFixture;
+import org.apache.shardingsphere.infra.util.reflection.fixture.ReflectionFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
