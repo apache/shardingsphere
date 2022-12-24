@@ -40,9 +40,8 @@ public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      *
      * @param ruleConfig rule configuration
      * @param databases databases
-     * @param instanceContext instance context
      * @param props props
      * @return global rule
      */
-    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databases, InstanceContext instanceContext, ConfigurationProperties props);
+    GlobalRule build(T ruleConfig, Map<String, ShardingSphereDatabase> databases, ConfigurationProperties props);
 }

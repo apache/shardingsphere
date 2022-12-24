@@ -43,16 +43,15 @@ public final class GlobalRulesBuilder {
      *
      * @param globalRuleConfigs global rule configurations
      * @param databases databases
-     * @param instanceContext instance context
      * @param props props
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs, final Map<String, ShardingSphereDatabase> databases,
-                                                            final InstanceContext instanceContext, final ConfigurationProperties props) {
+                                                            final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
-            result.add(entry.getValue().build(entry.getKey(), databases, instanceContext, props));
+            result.add(entry.getValue().build(entry.getKey(), databases, props));
         }
         return result;
     }
