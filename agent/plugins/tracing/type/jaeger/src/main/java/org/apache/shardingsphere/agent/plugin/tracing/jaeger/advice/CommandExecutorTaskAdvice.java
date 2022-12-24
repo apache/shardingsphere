@@ -49,7 +49,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
-        BackendConnection connection = ((ConnectionSession) AgentReflectionUtil.getFieldValue(target, "connectionSession")).getBackendConnection();
+        BackendConnection connection = AgentReflectionUtil.<ConnectionSession>getFieldValue(target, "connectionSession").getBackendConnection();
         Scope scope = GlobalTracer.get().scopeManager().active();
         scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connection.getConnectionSize());
         scope.close();
