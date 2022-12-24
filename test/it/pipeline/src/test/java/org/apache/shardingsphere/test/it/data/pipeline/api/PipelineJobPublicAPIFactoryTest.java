@@ -17,32 +17,15 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.api;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PipelineJobPublicAPIFactoryTest {
-    
-    @Test
-    public void assertGetInventoryIncrementalJobPublicAPI() {
-        Collection<Pair<JobType, Class<? extends InventoryIncrementalJobPublicAPI>>> paramResult = new LinkedList<>();
-        paramResult.add(Pair.of(new MigrationJobType(), MigrationJobAPIImpl.class));
-        for (Pair<JobType, Class<? extends InventoryIncrementalJobPublicAPI>> each : paramResult) {
-            MatcherAssert.assertThat(PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(each.getKey().getTypeName()), instanceOf(each.getValue()));
-        }
-    }
     
     @Test
     public void assertGetMigrationJobPublicAPI() {
