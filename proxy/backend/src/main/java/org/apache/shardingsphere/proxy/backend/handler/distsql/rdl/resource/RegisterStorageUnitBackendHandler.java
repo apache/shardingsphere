@@ -70,14 +70,14 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {
             Set<String> currentStorageUnits = ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseName).keySet();
-            Iterator<String> storageUnitName = dataSourcePropsMap.keySet().iterator();
-            while (storageUnitName.hasNext()) {
-                if (currentStorageUnits.contains(storageUnitName.next())) {
-                    storageUnitName.remove();
+            Iterator<String> iterator = dataSourcePropsMap.keySet().iterator();
+            while (iterator.hasNext()) {
+                if (currentStorageUnits.contains(iterator.next())) {
+                    iterator.remove();
                 }
             }
         }
-        if (dataSourcePropsMap.keySet().isEmpty()) {
+        if (dataSourcePropsMap.isEmpty()) {
             return new UpdateResponseHeader(sqlStatement);
         }
         validateHandler.validate(dataSourcePropsMap);
