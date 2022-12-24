@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Agent reflection utility.
@@ -38,27 +39,39 @@ public final class AgentReflectionUtil {
      * @param <T> type of field value
      * @return field value
      */
-    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     public static <T> T getFieldValue(final Object target, final String fieldName) {
-        Class<?> clazz = target.getClass();
-        while (null != clazz) {
-            try {
-                Field field = clazz.getDeclaredField(fieldName);
-                boolean accessible = field.isAccessible();
-                if (!accessible) {
-                    field.setAccessible(true);
-                }
-                T result = (T) field.get(target);
-                if (!accessible) {
-                    field.setAccessible(false);
-                }
-                return result;
-            } catch (final NoSuchFieldException ignored) {
-            }
-            clazz = clazz.getSuperclass();
+        Optional<Field> field = findField(fieldName, target.getClass());
+        if (field.isPresent()) {
+            return getFieldValue(target, field.get());
         }
         throw new NoSuchFieldException(String.format("Can not find field name `%s` in class %s.", fieldName, target.getClass()));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(IllegalAccessException.class)
+    private static <T> T getFieldValue(final Object target, final Field field) {
+        boolean accessible = field.isAccessible();
+        if (!accessible) {
+            field.setAccessible(true);
+        }
+        T result = (T) field.get(target);
+        if (!accessible) {
+            field.setAccessible(false);
+        }
+        return result;
+    }
+    
+    private static Optional<Field> findField(final String fieldName, final Class<?> targetClass) {
+        Class<?> currentTargetClass = targetClass;
+        while (Object.class != currentTargetClass) {
+            try {
+                return Optional.of(currentTargetClass.getDeclaredField(fieldName));
+            } catch (final NoSuchFieldException ignored) {
+                currentTargetClass = currentTargetClass.getSuperclass();
+            }
+        }
+        return Optional.empty();
     }
     
     /**
