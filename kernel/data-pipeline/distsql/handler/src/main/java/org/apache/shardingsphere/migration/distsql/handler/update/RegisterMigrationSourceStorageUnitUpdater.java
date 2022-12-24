@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
@@ -41,7 +40,7 @@ import java.util.Map;
  */
 public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdater<RegisterMigrationSourceStorageUnitStatement> {
     
-    private final MigrationJobAPI jobAPI = new MigrationJobAPIImpl();
+    private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
     private final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
     

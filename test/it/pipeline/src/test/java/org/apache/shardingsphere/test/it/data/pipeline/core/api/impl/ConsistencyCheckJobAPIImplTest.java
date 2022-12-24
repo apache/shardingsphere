@@ -31,8 +31,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.Con
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.BeforeClass;
@@ -58,7 +57,7 @@ public final class ConsistencyCheckJobAPIImplTest {
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         checkJobAPI = new ConsistencyCheckJobAPIImpl();
-        migrationJobAPI = new MigrationJobAPIImpl();
+        migrationJobAPI = new MigrationJobAPI();
     }
     
     @Test

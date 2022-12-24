@@ -19,8 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowMigrationListResultSet implements DatabaseDistSQLResultSet {
     
-    private final MigrationJobAPI jobAPI = new MigrationJobAPIImpl();
+    private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
     private Iterator<Collection<Object>> data;
     

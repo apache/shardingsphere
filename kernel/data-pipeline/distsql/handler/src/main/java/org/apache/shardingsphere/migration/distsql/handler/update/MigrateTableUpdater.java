@@ -20,8 +20,7 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStateme
 @Slf4j
 public final class MigrateTableUpdater implements RALUpdater<MigrateTableStatement> {
     
-    private final MigrationJobAPI jobAPI = new MigrationJobAPIImpl();
+    private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
     @Override
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {

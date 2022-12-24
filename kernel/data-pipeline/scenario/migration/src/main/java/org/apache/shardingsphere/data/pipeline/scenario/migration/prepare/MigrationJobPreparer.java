@@ -37,8 +37,7 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.PipelineJobPreparerU
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -57,7 +56,7 @@ import java.util.Collections;
 @Slf4j
 public final class MigrationJobPreparer {
     
-    private final MigrationJobAPI jobAPI = new MigrationJobAPIImpl();
+    private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
     /**
      * Do prepare work.

@@ -67,7 +67,6 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilde
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
@@ -115,10 +114,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Migration job API impl.
+ * Migration job API.
  */
 @Slf4j
-public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl implements MigrationJobAPI {
+public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private final YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
     
@@ -337,7 +336,11 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
-    @Override
+    /**
+     * Add migration source resources.
+     *
+     * @param dataSourcePropsMap data source properties map
+     */
     public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
         Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
         Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
@@ -352,7 +355,11 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         dataSourcePersistService.persist(getJobType(), result);
     }
     
-    @Override
+    /**
+     * Drop migration source resources.
+     *
+     * @param resourceNames resource names
+     */
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
@@ -363,7 +370,11 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         dataSourcePersistService.persist(getJobType(), metaDataDataSource);
     }
     
-    @Override
+    /**
+     * Query migration source resources list.
+     *
+     * @return migration source resources
+     */
     public Collection<Collection<Object>> listMigrationSourceResources() {
         Map<String, DataSourceProperties> dataSourcePropertiesMap = dataSourcePersistService.load(getJobType());
         Collection<Collection<Object>> result = new ArrayList<>(dataSourcePropertiesMap.size());
@@ -400,7 +411,12 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         return "";
     }
     
-    @Override
+    /**
+     * Create job migration config and start.
+     *
+     * @param param create migration job parameter
+     * @return job id
+     */
     public String createJobAndStart(final CreateMigrationJobParameter param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
