@@ -19,18 +19,12 @@ package org.apache.shardingsphere.test.it.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PipelineJobPublicAPIFactoryTest {
-    
-    @Test
-    public void assertGetMigrationJobPublicAPI() {
-        assertThat(PipelineJobPublicAPIFactory.getMigrationJobPublicAPI(), instanceOf(MigrationJobAPIImpl.class));
-    }
     
     @Test
     public void assertGetConsistencyCheckJobPublicAPI() {

@@ -26,17 +26,7 @@ import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistr
 public final class PipelineJobPublicAPIFactory {
     
     static {
-        ShardingSphereServiceLoader.register(MigrationJobPublicAPI.class);
         ShardingSphereServiceLoader.register(ConsistencyCheckJobPublicAPI.class);
-    }
-    
-    /**
-     * Get instance of migration job public API.
-     *
-     * @return got instance
-     */
-    public static MigrationJobPublicAPI getMigrationJobPublicAPI() {
-        return RequiredSPIRegistry.getRegisteredService(MigrationJobPublicAPI.class);
     }
     
     /**

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPIFactory;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.StartMigrationStatement;
 
@@ -27,11 +26,9 @@ import org.apache.shardingsphere.migration.distsql.statement.StartMigrationState
  */
 public final class StartMigrationUpdater implements RALUpdater<StartMigrationStatement> {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
-    
     @Override
     public void executeUpdate(final String databaseName, final StartMigrationStatement sqlStatement) {
-        JOB_API.startDisabledJob(sqlStatement.getJobId());
+        MigrationJobAPIFactory.getInstance().startDisabledJob(sqlStatement.getJobId());
     }
     
     @Override

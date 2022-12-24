@@ -17,21 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.api;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Migration job API.
  */
 @SingletonSPI
-public interface MigrationJobAPI extends InventoryIncrementalJobAPI, MigrationJobPublicAPI, RequiredSPI {
+public interface MigrationJobAPI extends InventoryIncrementalJobAPI, RequiredSPI {
     
     @Override
     MigrationJobConfiguration getJobConfiguration(String jobId);
@@ -41,4 +45,33 @@ public interface MigrationJobAPI extends InventoryIncrementalJobAPI, MigrationJo
     
     @Override
     MigrationProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
+    
+    /**
+     * Add migration source resources.
+     *
+     * @param dataSourcePropsMap data source properties map
+     */
+    void addMigrationSourceResources(Map<String, DataSourceProperties> dataSourcePropsMap);
+    
+    /**
+     * Drop migration source resources.
+     *
+     * @param resourceNames resource names
+     */
+    void dropMigrationSourceResources(Collection<String> resourceNames);
+    
+    /**
+     * Query migration source resources list.
+     *
+     * @return migration source resources
+     */
+    Collection<Collection<Object>> listMigrationSourceResources();
+    
+    /**
+     * Create job migration config and start.
+     *
+     * @param param create migration job parameter
+     * @return job id
+     */
+    String createJobAndStart(CreateMigrationJobParameter param);
 }
