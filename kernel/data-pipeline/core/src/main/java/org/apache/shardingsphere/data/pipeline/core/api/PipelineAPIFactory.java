@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositor
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.registry.CoordinatorRegistryCenterInitializer;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
@@ -65,16 +63,6 @@ public final class PipelineAPIFactory {
     @SneakyThrows(ConcurrentException.class)
     public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
         return REPOSITORY_API_LAZY_INITIALIZER.get();
-    }
-    
-    /**
-     * Get pipeline job API.
-     *
-     * @param jobType job type
-     * @return pipeline job API
-     */
-    public static PipelineJobAPI getPipelineJobAPI(final JobType jobType) {
-        return TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, jobType.getTypeName());
     }
     
     /**

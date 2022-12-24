@@ -30,12 +30,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class PipelineJobAPIFactoryTest {
     
     @Test
-    public void assertGetPipelineJobAPI() {
+    public void assertGetMigrationJobAPI() {
         assertThat(PipelineJobAPIFactory.getPipelineJobAPI(new MigrationJobType()), instanceOf(MigrationJobAPI.class));
+        assertThat(PipelineJobAPIFactory.getPipelineJobAPI(new MigrationJobType().getTypeName()), instanceOf(MigrationJobAPI.class));
     }
     
     @Test
     public void assertGetConsistencyCheckJobAPI() {
         assertThat(PipelineJobAPIFactory.getPipelineJobAPI(new ConsistencyCheckJobType()), instanceOf(ConsistencyCheckJobAPI.class));
+        assertThat(PipelineJobAPIFactory.getPipelineJobAPI(new ConsistencyCheckJobType().getTypeName()), instanceOf(ConsistencyCheckJobAPI.class));
     }
 }

@@ -40,7 +40,7 @@ public final class PipelineJobAPIFactory {
      * @return pipeline job API
      */
     public static PipelineJobAPI getPipelineJobAPI(final JobType jobType) {
-        return getPipelineJobAPI(jobType.getTypeName());
+        return TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, jobType.getTypeName());
     }
     
     /**
