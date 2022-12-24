@@ -24,7 +24,6 @@ import org.apache.shardingsphere.migration.distsql.statement.DropMigrationCheckS
 /**
  * Drop migration check updater.
  */
-// TODO delete
 public final class DropMigrationCheckUpdater implements RALUpdater<DropMigrationCheckStatement> {
     
     @Override
