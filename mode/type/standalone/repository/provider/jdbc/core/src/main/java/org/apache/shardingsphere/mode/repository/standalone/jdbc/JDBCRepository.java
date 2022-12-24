@@ -169,7 +169,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("Update {} data to key: {} failed", getType(), key, ex);
         }
     }

@@ -322,7 +322,7 @@ public enum MySQLCharacterSet {
         Charset result = null;
         try {
             result = charsetSupplier.get();
-        } catch (UnsupportedCharsetException ignored) {
+        } catch (final UnsupportedCharsetException ignored) {
         }
         charset = result;
     }

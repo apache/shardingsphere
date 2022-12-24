@@ -88,7 +88,7 @@ public final class ResultSetUtil {
         }
         try {
             return convertType.cast(value);
-        } catch (ClassCastException cce) {
+        } catch (final ClassCastException ex) {
             throw new SQLFeatureNotSupportedException("getObject with type");
         }
     }

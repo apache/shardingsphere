@@ -119,7 +119,7 @@ public final class DatabaseDiscoveryEngine {
     private ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
         try {
             return databaseDiscoveryProviderAlgorithm.loadReplicaStatus(replicaDataSource);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("Load data source replica status error: ", ex);
             return new ReplicaDataSourceStatus(false, 0L);
         }
