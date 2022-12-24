@@ -265,6 +265,9 @@ public final class MySQLClient {
         try {
             running = false;
             channel.close().sync();
+            if (null != eventLoopGroup) {
+                eventLoopGroup.shutdownGracefully();
+            }
         } catch (final InterruptedException ex) {
             log.error("close channel interrupted", ex);
         }
