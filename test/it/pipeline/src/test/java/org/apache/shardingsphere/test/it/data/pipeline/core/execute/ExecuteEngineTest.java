@@ -61,10 +61,10 @@ public final class ExecuteEngineTest {
         Throwable actualCause = null;
         try {
             future.get();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException ex) {
             fail();
-        } catch (ExecutionException e) {
-            actualCause = e.getCause();
+        } catch (final ExecutionException ex) {
+            actualCause = ex.getCause();
         }
         assertThat(actualCause, is(expectedException));
         shutdownAndAwaitTerminal(executeEngine);

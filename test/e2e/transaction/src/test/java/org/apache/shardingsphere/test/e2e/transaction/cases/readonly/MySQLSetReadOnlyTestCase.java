@@ -54,7 +54,7 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
         try {
             executeWithLog(connection2, "update account set balance = 100 where id = 2;");
             fail("Update ran successfully, should failed.");
-        } catch (SQLException e) {
+        } catch (final SQLException ex) {
             log.info("Update failed for expect.");
         }
     }

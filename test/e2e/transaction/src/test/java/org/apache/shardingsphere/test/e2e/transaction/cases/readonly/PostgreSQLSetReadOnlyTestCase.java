@@ -53,7 +53,7 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
         try {
             executeWithLog(connection2, "update account set balance = 100 where id = 2;");
             log.info("Using the driver of postgresql:42.4.1 expect to update successfully.");
-        } catch (SQLException e) {
+        } catch (final SQLException ex) {
             Assert.fail("Update failed, should be successfully.");
         }
     }
