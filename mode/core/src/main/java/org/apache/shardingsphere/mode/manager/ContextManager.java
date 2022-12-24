@@ -345,7 +345,7 @@ public final class ContextManager implements AutoCloseable {
         Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, switchingResource, ruleConfigs);
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, instanceContext, props));
+                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, props));
         return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props));
     }
     
@@ -354,7 +354,7 @@ public final class ContextManager implements AutoCloseable {
         Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, switchingResource, metaDataPersistService.getDatabaseRulePersistService().load(databaseName));
         ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
         ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataPersistService.getGlobalRuleService().load(), changedDatabases, instanceContext, props));
+                GlobalRulesBuilder.buildRules(metaDataPersistService.getGlobalRuleService().load(), changedDatabases, props));
         return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props));
     }
     
@@ -423,7 +423,7 @@ public final class ContextManager implements AutoCloseable {
         Collection<ResourceHeldRule> staleResourceHeldRules = metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class);
         staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
         ShardingSphereRuleMetaData toBeChangedGlobalRuleMetaData = new ShardingSphereRuleMetaData(
-                GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.getMetaData().getDatabases(), instanceContext, metaDataContexts.getMetaData().getProps()));
+                GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getProps()));
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getDatabases(), toBeChangedGlobalRuleMetaData, metaDataContexts.getMetaData().getProps());
         metaDataContexts = newMetaDataContexts(toBeChangedMetaData);
