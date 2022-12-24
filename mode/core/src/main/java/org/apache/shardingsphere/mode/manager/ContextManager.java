@@ -270,7 +270,12 @@ public final class ContextManager implements AutoCloseable {
             SwitchingResource switchingResource =
                     new ResourceSwitchManager().createByAlterDataSourceProps(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData(), dataSourcePropsMap);
             metaDataContexts.getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), switchingResource));
-            metaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
+            // TODO Remove this logic when issue #22887 are finished.
+            MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
+            reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
+                    .persist(reloadMetaDataContexts.getMetaData().getActualDatabaseName(databaseName), schemaName, schema));
+            alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
+            metaDataContexts = reloadMetaDataContexts;
             metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
             switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
