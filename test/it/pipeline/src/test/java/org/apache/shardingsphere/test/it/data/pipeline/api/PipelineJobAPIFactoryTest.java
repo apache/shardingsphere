@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.api;
 
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
@@ -27,15 +27,15 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineAPIFactoryTest {
+public final class PipelineJobAPIFactoryTest {
     
     @Test
     public void assertGetPipelineJobAPI() {
-        assertThat(PipelineAPIFactory.getPipelineJobAPI(new MigrationJobType()), instanceOf(MigrationJobAPIImpl.class));
+        assertThat(PipelineJobAPIFactory.getPipelineJobAPI(new MigrationJobType()), instanceOf(MigrationJobAPIImpl.class));
     }
     
     @Test
     public void assertGetConsistencyCheckJobAPI() {
-        assertThat(PipelineAPIFactory.getPipelineJobAPI(new ConsistencyCheckJobType()), instanceOf(ConsistencyCheckJobAPIImpl.class));
+        assertThat(PipelineJobAPIFactory.getPipelineJobAPI(new ConsistencyCheckJobType()), instanceOf(ConsistencyCheckJobAPIImpl.class));
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
+import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
@@ -29,7 +30,7 @@ import java.util.Properties;
 /**
  * Inventory incremental job API.
  */
-public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
+public interface InventoryIncrementalJobAPI extends InventoryIncrementalJobPublicAPI, PipelineJobAPI {
     
     /**
      * Get job progress.
