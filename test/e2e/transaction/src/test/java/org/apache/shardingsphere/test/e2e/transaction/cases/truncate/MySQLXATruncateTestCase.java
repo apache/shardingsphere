@@ -69,9 +69,9 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
         try {
             connection.createStatement().execute("truncate account;");
             fail("Expect exception, but no exception report.");
-        } catch (TableModifyInTransactionException ex) {
+        } catch (final TableModifyInTransactionException ex) {
             log.info("Exception for expected in Proxy: {}", ex.getMessage());
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.info("Exception for expected in JDBC: {}", ex.getMessage());
         } finally {
             connection.rollback();

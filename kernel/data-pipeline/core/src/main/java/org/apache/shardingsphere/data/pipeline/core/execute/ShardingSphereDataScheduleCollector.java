@@ -109,7 +109,7 @@ public final class ShardingSphereDataScheduleCollector {
             Optional<ShardingSphereTableData> tableData = Optional.empty();
             try {
                 tableData = shardingSphereDataCollector.get().collect(databaseName, table, databases);
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 log.error("Collect data failed!", ex);
             }
             tableData.ifPresent(shardingSphereTableData -> changedShardingSphereData.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())

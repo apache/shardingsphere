@@ -318,7 +318,7 @@ public final class ContextManager implements AutoCloseable {
             metaDataContexts = createMetaDataContexts(databaseName, switchingResource, ruleConfigs);
             metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
             switchingResource.closeStaleDataSources();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("Alter database: {} data source and rule configuration failed", databaseName, ex);
         }
     }
