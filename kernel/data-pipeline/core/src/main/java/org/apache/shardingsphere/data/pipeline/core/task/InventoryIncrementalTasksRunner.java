@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProg
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Inventory incremental tasks' runner.
@@ -75,19 +76,15 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             return;
         }
         PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).persistJobItemProgress(jobItemContext);
-        if (executeInventoryTask()) {
-            if (jobItemContext.isStopping()) {
-                return;
-            }
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+            log.info("All inventory tasks finished.");
             executeIncrementalTask();
+        } else {
+            executeInventoryTask();
         }
     }
     
-    private synchronized boolean executeInventoryTask() {
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-            log.info("All inventory tasks finished.");
-            return true;
-        }
+    private synchronized void executeInventoryTask() {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (InventoryTask each : inventoryTasks) {
@@ -96,26 +93,26 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             }
             futures.addAll(each.start());
         }
-        CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
-            if (null != throwable) {
-                log.error("onFailure, inventory task execute failed.", throwable);
-                updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
-                String jobId = jobItemContext.getJobId();
-                jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-                jobAPI.stop(jobId);
-            }
-        });
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
-            if (null == throwable) {
-                if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-                    log.info("onSuccess, all inventory tasks finished.");
-                    executeIncrementalTask();
-                } else {
-                    log.info("onSuccess, inventory tasks not finished");
+        AtomicInteger completedCount = new AtomicInteger(0);
+        for (CompletableFuture<?> each : futures) {
+            each.whenComplete((o, throwable) -> {
+                completedCount.addAndGet(1);
+                if (null != throwable) {
+                    log.error("onFailure, inventory task execute failed.", throwable);
+                    updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+                    String jobId = jobItemContext.getJobId();
+                    jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+                    jobAPI.stop(jobId);
+                } else if (completedCount.get() == futures.size()) {
+                    if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+                        log.info("onSuccess, all inventory tasks finished.");
+                        executeIncrementalTask();
+                    } else {
+                        log.info("onSuccess, inventory tasks not finished");
+                    }
                 }
-            }
-        });
-        return false;
+            });
+        }
     }
     
     private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
@@ -140,19 +137,20 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             }
             futures.addAll(each.start());
         }
-        CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
-            if (null != throwable) {
-                log.error("onFailure, incremental task execute failed.", throwable);
-                updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
-                String jobId = jobItemContext.getJobId();
-                jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-                jobAPI.stop(jobId);
-            }
-        });
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
-            if (null == throwable) {
-                log.info("onSuccess, all incremental tasks finished.");
-            }
-        });
+        AtomicInteger completedCount = new AtomicInteger(0);
+        for (CompletableFuture<?> each : futures) {
+            each.whenComplete((o, throwable) -> {
+                completedCount.addAndGet(1);
+                if (null != throwable) {
+                    log.error("onFailure, incremental task execute failed.", throwable);
+                    updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
+                    String jobId = jobItemContext.getJobId();
+                    jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+                    jobAPI.stop(jobId);
+                } else if (completedCount.get() == futures.size()) {
+                    log.info("onSuccess, all incremental tasks finished.");
+                }
+            });
+        }
     }
 }
