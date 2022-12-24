@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
@@ -35,12 +36,14 @@ import java.util.Optional;
  */
 public final class ShowMigrationCheckStatusResultSet implements DatabaseDistSQLResultSet {
     
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPIImpl();
+    
     private Iterator<Collection<Object>> data;
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowMigrationCheckStatusStatement checkMigrationStatement = (ShowMigrationCheckStatusStatement) sqlStatement;
-        ConsistencyCheckJobItemInfo info = ConsistencyCheckJobAPIFactory.getInstance().getJobItemInfo(checkMigrationStatement.getJobId());
+        ConsistencyCheckJobItemInfo info = jobAPI.getJobItemInfo(checkMigrationStatement.getJobId());
         String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
         Collection<Object> result = Arrays.asList(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
                 String.valueOf(info.getFinishedPercentage()), info.getRemainingSeconds(),

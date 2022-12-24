@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPIImpl;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationCheckStatement;
 
@@ -26,9 +27,11 @@ import org.apache.shardingsphere.migration.distsql.statement.StopMigrationCheckS
  */
 public final class StopMigrationCheckUpdater implements RALUpdater<StopMigrationCheckStatement> {
     
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPIImpl();
+    
     @Override
     public void executeUpdate(final String databaseName, final StopMigrationCheckStatement sqlStatement) {
-        ConsistencyCheckJobAPIFactory.getInstance().stopByParentJobId(sqlStatement.getJobId());
+        jobAPI.stopByParentJobId(sqlStatement.getJobId());
     }
     
     @Override
