@@ -61,9 +61,9 @@ public final class ReflectionUtil {
         Class<?> currentTargetClass = targetClass;
         while (Object.class != currentTargetClass) {
             try {
-                return Optional.of(targetClass.getDeclaredField(fieldName));
+                return Optional.of(currentTargetClass.getDeclaredField(fieldName));
             } catch (final NoSuchFieldException ignored) {
-                currentTargetClass = targetClass.getSuperclass();
+                currentTargetClass = currentTargetClass.getSuperclass();
             }
         }
         return Optional.empty();
