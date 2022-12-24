@@ -68,7 +68,7 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         validateHandler.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Register storage unit failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
