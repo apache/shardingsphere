@@ -57,9 +57,8 @@ public class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
         spanBuilder.setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME);
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE);
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = (Map<String, DatabaseType>) AgentReflectionUtil.getFieldValue(target, "storageTypes");
-        DataSourceMetaData metaData = (DataSourceMetaData) AgentReflectionUtil.invokeMethod(
-                JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
+        Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");
+        DataSourceMetaData metaData = AgentReflectionUtil.invokeMethod(JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
                 target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName())
                 .setAttribute(OpenTelemetryConstants.PEER_HOSTNAME, metaData.getHostname())

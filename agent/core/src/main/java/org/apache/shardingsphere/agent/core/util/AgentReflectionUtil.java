@@ -35,10 +35,12 @@ public final class AgentReflectionUtil {
      *
      * @param target target
      * @param fieldName field name
+     * @param <T> type of field value
      * @return field value
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Object getFieldValue(final Object target, final String fieldName) {
+    public static <T> T getFieldValue(final Object target, final String fieldName) {
         Class<?> clazz = target.getClass();
         while (null != clazz) {
             try {
@@ -47,7 +49,7 @@ public final class AgentReflectionUtil {
                 if (!accessible) {
                     field.setAccessible(true);
                 }
-                Object result = field.get(target);
+                T result = (T) field.get(target);
                 if (!accessible) {
                     field.setAccessible(false);
                 }
@@ -65,15 +67,17 @@ public final class AgentReflectionUtil {
      * @param method method
      * @param target target
      * @param args arguments
+     * @param <T> type of invoke result
      * @return invoke result
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Object invokeMethod(final Method method, final Object target, final Object... args) {
+    public static <T> T invokeMethod(final Method method, final Object target, final Object... args) {
         boolean accessible = method.isAccessible();
         if (!accessible) {
             method.setAccessible(true);
         }
-        Object result = method.invoke(target, args);
+        T result = (T) method.invoke(target, args);
         if (!accessible) {
             method.setAccessible(false);
         }
