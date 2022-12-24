@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -49,13 +49,13 @@ public final class CountSingleTableRuleResultSet implements DatabaseDistSQLResul
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<SingleTableRule> rule = database.getRuleMetaData().findSingleRule(SingleTableRule.class);
+        Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
         Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
         rule.ifPresent(optional -> addSingleTableData(result, database.getName(), rule.get()));
         data = result.entrySet().iterator();
     }
     
-    private void addSingleTableData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final SingleTableRule rule) {
+    private void addSingleTableData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final SingleRule rule) {
         rowMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, databaseName, rule.getAllTables().size()));
     }
     
