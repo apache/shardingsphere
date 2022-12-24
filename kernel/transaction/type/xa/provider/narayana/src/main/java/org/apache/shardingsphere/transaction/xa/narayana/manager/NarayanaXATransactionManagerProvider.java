@@ -95,9 +95,8 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
         ReflectionUtil.setStaticFieldValue(PropertiesFactory.class, "delegatePropertiesFactory", null);
     }
     
-    @SuppressWarnings("unchecked")
     private void cleanBeanInstances() {
-        ((ConcurrentMap<String, Object>) ReflectionUtil.getStaticFieldValue(BeanPopulator.class, "beanInstances")).clear();
+        ReflectionUtil.<ConcurrentMap<String, Object>>getStaticFieldValue(BeanPopulator.class, "beanInstances").clear();
     }
     
     private void cleanAtomicActionRecovery() {

@@ -39,18 +39,18 @@ public final class ReflectionUtil {
      * @param <T> type of field value
      * @return field value
      */
-    @SuppressWarnings("unchecked")
     public static <T> Optional<T> getFieldValue(final Object target, final String fieldName) {
-        return findField(fieldName, target.getClass()).map(optional -> (T) getFieldValue(target, optional));
+        return findField(fieldName, target.getClass()).map(optional -> getFieldValue(target, optional));
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows(IllegalAccessException.class)
-    private static Object getFieldValue(final Object target, final Field field) {
+    private static <T> T getFieldValue(final Object target, final Field field) {
         boolean accessible = field.isAccessible();
         if (!accessible) {
             field.setAccessible(true);
         }
-        Object result = field.get(target);
+        T result = (T) field.get(target);
         if (!accessible) {
             field.setAccessible(false);
         }
@@ -74,16 +74,18 @@ public final class ReflectionUtil {
      *
      * @param target target
      * @param fieldName field name
+     * @param <T> type of field value
      * @return field value
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Object getStaticFieldValue(final Class<?> target, final String fieldName) {
+    public static <T> T getStaticFieldValue(final Class<?> target, final String fieldName) {
         Field field = target.getDeclaredField(fieldName);
         boolean accessible = field.isAccessible();
         if (!accessible) {
             field.setAccessible(true);
         }
-        Object result = field.get(target);
+        T result = (T) field.get(target);
         if (!accessible) {
             field.setAccessible(false);
         }
@@ -116,15 +118,17 @@ public final class ReflectionUtil {
      * @param method method
      * @param target target
      * @param args arguments
+     * @param <T> type of invoke result
      * @return invoke result
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Object invokeMethod(final Method method, final Object target, final Object... args) {
+    public static <T> T invokeMethod(final Method method, final Object target, final Object... args) {
         boolean accessible = method.isAccessible();
         if (!accessible) {
             method.setAccessible(true);
         }
-        Object result = method.invoke(target, args);
+        T result = (T) method.invoke(target, args);
         if (!accessible) {
             method.setAccessible(false);
         }
