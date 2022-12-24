@@ -27,7 +27,7 @@ import com.arjuna.common.internal.util.propertyservice.BeanPopulator;
 import com.arjuna.common.util.propertyservice.PropertiesFactory;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.util.ReflectionUtil;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
