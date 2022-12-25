@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 createShardingTableRule
-    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
+    : CREATE SHARDING TABLE RULE ifNotExists? shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 alterShardingTableRule
@@ -187,4 +187,8 @@ buildInStrategyType
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

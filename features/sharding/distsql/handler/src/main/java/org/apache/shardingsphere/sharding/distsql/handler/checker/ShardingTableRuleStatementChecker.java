@@ -89,10 +89,12 @@ public final class ShardingTableRuleStatementChecker {
      *
      * @param database database
      * @param rules rules
+     * @param ifNotExists ifNotExists statement if exists
      * @param currentRuleConfig current rule configuration
      */
-    public static void checkCreation(final ShardingSphereDatabase database, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) {
-        check(database, rules, currentRuleConfig, true);
+    public static void checkCreation(final ShardingSphereDatabase database, final Collection<AbstractTableRuleSegment> rules, final boolean ifNotExists,
+                                     final ShardingRuleConfiguration currentRuleConfig) {
+        check(database, rules, ifNotExists, currentRuleConfig, true);
     }
     
     /**
@@ -103,7 +105,7 @@ public final class ShardingTableRuleStatementChecker {
      * @param currentRuleConfig current rule configuration
      */
     public static void checkAlteration(final ShardingSphereDatabase database, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) {
-        check(database, rules, currentRuleConfig, false);
+        check(database, rules, false, currentRuleConfig, false);
     }
     
     /**
@@ -121,9 +123,10 @@ public final class ShardingTableRuleStatementChecker {
         return check(toBeCheckedRuleConfig, dataSourceNames);
     }
     
-    private static void check(final ShardingSphereDatabase database, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreated) {
+    private static void check(final ShardingSphereDatabase database, final Collection<AbstractTableRuleSegment> rules, final boolean ifNotExists, final ShardingRuleConfiguration currentRuleConfig,
+                              final boolean isCreated) {
         String databaseName = database.getName();
-        checkTables(databaseName, rules, currentRuleConfig, isCreated);
+        checkTables(databaseName, rules, currentRuleConfig, isCreated, ifNotExists);
         checkResources(databaseName, rules, database);
         checkKeyGenerators(rules, currentRuleConfig);
         checkAuditors(rules);
@@ -205,14 +208,17 @@ public final class ShardingTableRuleStatementChecker {
         return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
     }
     
-    private static void checkTables(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) {
+    private static void checkTables(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate,
+                                    final boolean ifNotExists) {
         Collection<String> requiredTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toList());
         Collection<String> duplicatedTables = getDuplicate(requiredTables);
         ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedTables));
         Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
         if (isCreate) {
-            Collection<String> identical = getIdentical(requiredTables, currentShardingTables);
-            ShardingSpherePreconditions.checkState(identical.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, identical));
+            if (!ifNotExists) {
+                Collection<String> identical = getIdentical(requiredTables, currentShardingTables);
+                ShardingSpherePreconditions.checkState(identical.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, identical));
+            }
         } else {
             Collection<String> different = getDifferent(requiredTables, currentShardingTables);
             ShardingSpherePreconditions.checkState(different.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, different));
