@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.createtable;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
@@ -125,13 +126,14 @@ public final class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> actualDDLs = CreateTableSQLGeneratorFactory.getInstance(testParam.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
-                assertIsCorrect(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
+                Collection<String> actualDDLs = TypedSPIRegistry.getRegisteredService(
+                        CreateTableSQLGenerator.class, testParam.getDatabaseType().getType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
+                assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
     }
     
-    private void assertIsCorrect(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
+    private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
         Iterator<String> expected = expectedSQL.iterator();
         for (String each : actualSQL) {
             assertThat(REPLACE_LINE_SPACE.matcher(each).replaceAll(""), is(REPLACE_LINE_SPACE.matcher(expected.next()).replaceAll("")));
