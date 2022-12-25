@@ -17,32 +17,94 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Shadow rule configuration checker.
  */
-public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
+public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    protected void checkShadowRuleConfiguration(final ShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
+    public void check(final String databaseName, final ShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
         Map<String, ShadowDataSourceConfiguration> dataSources = initShadowDataSources(config.getDataSources());
         checkDataSources(dataSources, dataSourceMap);
         Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
-        shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
-        shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
+        checkShadowTableDataSourcesAutoReferences(shadowTables, dataSources);
+        checkShadowTableDataSourcesReferences(shadowTables, dataSources);
         Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs = config.getShadowAlgorithms();
         String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
-        defaultShadowAlgorithmConfigurationCheck(defaultShadowAlgorithmName, shadowAlgorithmConfigs);
-        shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigs.keySet(), defaultShadowAlgorithmName);
-        shadowTableAlgorithmsReferencesCheck(shadowTables);
+        checkDefaultShadowAlgorithmConfiguration(defaultShadowAlgorithmName, shadowAlgorithmConfigs);
+        checkShadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigs.keySet(), defaultShadowAlgorithmName);
+        checkShadowTableAlgorithmsReferences(shadowTables);
+    }
+    
+    private void checkDataSources(final Map<String, ShadowDataSourceConfiguration> shadowDataSources, final Map<String, DataSource> dataSourceMap) {
+        Set<String> dataSource = dataSourceMap.keySet();
+        for (Entry<String, ShadowDataSourceConfiguration> entry : shadowDataSources.entrySet()) {
+            ShadowDataSourceConfiguration shadowConfig = entry.getValue();
+            boolean shadowDataSourceState = dataSource.contains(shadowConfig.getProductionDataSourceName()) && dataSource.contains(shadowConfig.getShadowDataSourceName());
+            Preconditions.checkState(shadowDataSourceState, "No available data source for shadow data source mapping configuration");
+        }
+    }
+    
+    private void checkShadowTableDataSourcesAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, ShadowDataSourceConfiguration> dataSources) {
+        if (1 == dataSources.size()) {
+            String dataSourceName = dataSources.keySet().iterator().next();
+            shadowTables.values().stream().map(ShadowTableConfiguration::getDataSourceNames).filter(Collection::isEmpty).forEach(dataSourceNames -> dataSourceNames.add(dataSourceName));
+        }
+    }
+    
+    private void checkShadowTableDataSourcesReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, ShadowDataSourceConfiguration> dataSources) {
+        Set<String> dataSourceNames = dataSources.keySet();
+        shadowTables.forEach((key, value) -> {
+            for (String each : value.getDataSourceNames()) {
+                Preconditions.checkState(dataSourceNames.contains(each), "No available shadow data sources mappings in shadow table `%s`.", key);
+            }
+        });
+    }
+    
+    private void checkDefaultShadowAlgorithmConfiguration(final String defaultShadowAlgorithmName, final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
+        if (null != defaultShadowAlgorithmName) {
+            AlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
+            boolean state = null != algorithmConfig && "SIMPLE_HINT".equals(algorithmConfig.getType());
+            Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
+        }
+    }
+    
+    private void checkShadowTableAlgorithmsAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Set<String> shadowAlgorithmNames, final String defaultShadowAlgorithmName) {
+        for (Entry<String, ShadowTableConfiguration> entry : shadowTables.entrySet()) {
+            Collection<String> names = entry.getValue().getShadowAlgorithmNames();
+            names.removeIf(next -> !shadowAlgorithmNames.contains(next));
+            if (null != defaultShadowAlgorithmName && names.isEmpty()) {
+                names.add(defaultShadowAlgorithmName);
+            }
+        }
+    }
+    
+    private void checkShadowTableAlgorithmsReferences(final Map<String, ShadowTableConfiguration> shadowTables) {
+        shadowTables.forEach((key, value) -> Preconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(), "No available shadow Algorithm configuration in shadow table `%s`.", key));
+    }
+    
+    private Map<String, ShadowDataSourceConfiguration> initShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSourceConfigurations) {
+        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
+        for (ShadowDataSourceConfiguration each : dataSourceConfigurations) {
+            result.put(each.getName(), each);
+        }
+        return result;
     }
     
     @Override
