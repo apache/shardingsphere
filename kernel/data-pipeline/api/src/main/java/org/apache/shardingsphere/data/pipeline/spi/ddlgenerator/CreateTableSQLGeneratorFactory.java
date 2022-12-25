@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.spi.ddlgenerator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Importer creator factory.
+ * Create table SQL generator factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ImporterCreatorFactory {
+public final class CreateTableSQLGeneratorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ImporterCreator.class);
+        ShardingSphereServiceLoader.register(CreateTableSQLGenerator.class);
     }
     
     /**
-     * Get importer creator instance.
+     * Get instance of create table SQL generator.
      *
      * @param databaseType database type
-     * @return importer creator
+     * @return got instance
      */
-    public static ImporterCreator getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, databaseType);
+    public static CreateTableSQLGenerator getInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.getRegisteredService(CreateTableSQLGenerator.class, databaseType.getType());
     }
 }
