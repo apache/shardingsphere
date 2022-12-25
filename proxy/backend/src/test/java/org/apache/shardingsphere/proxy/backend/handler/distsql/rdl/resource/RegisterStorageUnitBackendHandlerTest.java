@@ -26,8 +26,8 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -35,9 +35,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +46,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -77,13 +73,7 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resourceMetaData;
-    
-    @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-    
-    @Mock
-    private ReadwriteSplittingRule readwriteSplittingRule;
     
     private RegisterStorageUnitBackendHandler registerStorageUnitBackendHandler;
     
@@ -93,7 +83,6 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(ruleMetaData.findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.of(readwriteSplittingRule));
         registerStorageUnitBackendHandler = new RegisterStorageUnitBackendHandler(registerStorageUnitStatement, connectionSession);
         Plugins.getMemberAccessor().set(registerStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler"), registerStorageUnitBackendHandler, validateHandler);
     }
@@ -103,10 +92,6 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
-        when(readwriteSplittingRule.getConfiguration()).thenReturn(createReadwriteSplittingRuleConfiguration("read_write"));
         ResponseHeader responseHeader = registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
@@ -116,32 +101,25 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
         registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatementWithDuplicateStorageUnitNames());
     }
     
     @Test(expected = DuplicateResourceException.class)
     public void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", null));
+        when(contextManager.getDataSourceMap("test_db").keySet()).thenReturn(Collections.singleton("ds_0"));
         registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
     }
     
     @Test(expected = InvalidResourcesException.class)
-    public void assertExecuteWithDuplicateStorageUnitNamesWithReadwriteSplittingRule() {
+    public void assertExecuteWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
-        when(readwriteSplittingRule.getConfiguration()).thenReturn(createReadwriteSplittingRuleConfiguration("ds_0"));
+        DataSourceContainedRule rule = mock(DataSourceContainedRule.class);
+        when(rule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
         registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
     }
     
@@ -150,10 +128,6 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         RegisterStorageUnitStatement registerStorageUnitStatementWithIfNotExists = new RegisterStorageUnitStatement(true, Collections.singleton(
                 new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "db_1", "root", "", new Properties())));
         registerStorageUnitBackendHandler.checkSQLStatement("test_db", registerStorageUnitStatementWithIfNotExists);
-    }
-    
-    private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration(final String ruleName) {
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(ruleName, null, null, null)), Collections.emptyMap());
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
