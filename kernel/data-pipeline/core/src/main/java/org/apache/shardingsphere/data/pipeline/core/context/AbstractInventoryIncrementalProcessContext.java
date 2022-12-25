@@ -27,9 +27,9 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteC
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**
@@ -62,7 +62,7 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
         AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
         writeRateLimitAlgorithm = null != writeRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(writeRateLimiter) : null;
         AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
-        pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
+        pipelineChannelCreator = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelCreator.class);
         inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
             
             @Override
