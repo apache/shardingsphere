@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesVa
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.converter.ResourceSegmentsConverter;
+import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -51,7 +51,7 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
                 () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(urlBasedDataSourceSegment.getUrl());
-        Map<String, DataSourceProperties> sourcePropertiesMap = ResourceSegmentsConverter.convert(databaseType, dataSources);
+        Map<String, DataSourceProperties> sourcePropertiesMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
         validateHandler.validate(sourcePropertiesMap);
         jobAPI.addMigrationSourceResources(sourcePropertiesMap);
     }

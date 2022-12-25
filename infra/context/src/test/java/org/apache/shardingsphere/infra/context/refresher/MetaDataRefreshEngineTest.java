@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherFixture;
 import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherSQLStatementFixture;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
@@ -43,7 +44,8 @@ import static org.mockito.Mockito.when;
 
 public final class MetaDataRefreshEngineTest {
     
-    private final MetaDataRefreshEngine engine = new MetaDataRefreshEngine(mock(ShardingSphereDatabase.class), new ConfigurationProperties(new Properties()));
+    private final MetaDataRefreshEngine engine = new MetaDataRefreshEngine(mock(ModeContextManager.class),
+            mock(ShardingSphereDatabase.class), new ConfigurationProperties(new Properties()));
     
     @SuppressWarnings("rawtypes")
     @Test

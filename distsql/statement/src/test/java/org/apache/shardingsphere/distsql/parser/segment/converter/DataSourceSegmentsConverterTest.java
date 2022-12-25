@@ -34,11 +34,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ResourceSegmentsConverterTest {
+public final class DataSourceSegmentsConverterTest {
     
     @Test
     public void assertConvert() {
-        Map<String, DataSourceProperties> actual = ResourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
+        Map<String, DataSourceProperties> actual = DataSourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getAllLocalProperties().get("username"), is("root0"));

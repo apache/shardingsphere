@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -35,7 +36,7 @@ public final class MetaDataRefresherFixture implements MetaDataRefresher<Abstrac
     private int count;
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AbstractSQLStatement sqlStatement, final ConfigurationProperties props) {
         count++;
         return Optional.of(mock(MetaDataRefreshedEvent.class));

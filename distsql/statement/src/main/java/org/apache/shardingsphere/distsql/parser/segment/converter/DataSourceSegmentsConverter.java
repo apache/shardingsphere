@@ -30,21 +30,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Resource segments converter.
+ * Data source segments converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceSegmentsConverter {
+public final class DataSourceSegmentsConverter {
     
     /**
-     * Convert resource segments to data source properties map.
+     * Convert data source segments to data source properties map.
      *
      * @param databaseType database type
-     * @param resources data source segments
+     * @param dataSourceSegments data source segments
      * @return data source properties map
      */
-    public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> resources) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(resources.size(), 1);
-        for (DataSourceSegment each : resources) {
+    public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> dataSourceSegments) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceSegments.size(), 1);
+        for (DataSourceSegment each : dataSourceSegments) {
             result.put(each.getName(), new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", createProperties(databaseType, each)));
         }
         return result;
