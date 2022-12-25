@@ -45,14 +45,14 @@ public final class ShadowRuleStatementConverter {
     /**
      * Convert shadow rule segments to shadow rule configuration.
      *
-     * @param rules shadow rule statements
+     * @param segments shadow rule segments
      * @return shadow rule configuration
      */
-    public static ShadowRuleConfiguration convert(final Collection<ShadowRuleSegment> rules) {
+    public static ShadowRuleConfiguration convert(final Collection<ShadowRuleSegment> segments) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setShadowAlgorithms(getShadowAlgorithms(rules));
-        result.setDataSources(getDataSource(rules));
-        result.setTables(getTables(rules));
+        result.setShadowAlgorithms(getShadowAlgorithms(segments));
+        result.setDataSources(getDataSource(segments));
+        result.setTables(getTables(segments));
         return result;
     }
     

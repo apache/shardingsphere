@@ -50,14 +50,14 @@ public class ShadowRuleStatementChecker {
     }
     
     /**
-     * Check if resources exist in meta data.
+     * Check if storage units exist in meta data.
      *
-     * @param resources resource being checked
+     * @param requiredStorageUnits required storage units
      * @param database database
      */
-    public static void checkResourceExist(final Collection<String> resources, final ShardingSphereDatabase database) {
-        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedResources(resources);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(database.getName(), notExistedResources));
+    public static void checkStorageUnitsExist(final Collection<String> requiredStorageUnits, final ShardingSphereDatabase database) {
+        Collection<String> notExistedStorageUnits = database.getResourceMetaData().getNotExistedResources(requiredStorageUnits);
+        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredResourcesException(database.getName(), notExistedStorageUnits));
     }
     
     /**
@@ -121,13 +121,13 @@ public class ShadowRuleStatementChecker {
     /**
      * Check for any different data in the rules, and throw the specified exception.
      *
-     * @param requireRules rules to be checked
-     * @param currentRules rules to be checked
+     * @param requiredRules required rules
+     * @param currentRules current rules
      * @param thrower exception thrower
      */
-    public static void checkAnyDifferent(final Collection<String> requireRules,
+    public static void checkAnyDifferent(final Collection<String> requiredRules,
                                          final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) {
-        Collection<String> different = getDifferent(requireRules, currentRules);
+        Collection<String> different = getDifferent(requiredRules, currentRules);
         ShardingSpherePreconditions.checkState(different.isEmpty(), () -> thrower.apply(different));
     }
     
