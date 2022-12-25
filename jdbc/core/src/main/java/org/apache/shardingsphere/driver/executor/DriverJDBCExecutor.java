@@ -63,7 +63,8 @@ public final class DriverJDBCExecutor {
         this.jdbcExecutor = jdbcExecutor;
         metaDataContexts = contextManager.getMetaDataContexts();
         eventBusContext = contextManager.getInstanceContext().getEventBusContext();
-        metaDataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
+        metaDataRefreshEngine = new MetaDataRefreshEngine(contextManager.getInstanceContext().getModeContextManager(),
+                metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
     }
     
     /**
