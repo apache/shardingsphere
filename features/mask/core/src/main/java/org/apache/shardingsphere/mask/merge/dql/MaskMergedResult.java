@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mask.merge.dql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
-import org.apache.shardingsphere.mask.spi.context.MaskContext;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -45,11 +44,7 @@ public final class MaskMergedResult implements MergedResult {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Optional<MaskContext> maskContext = metaData.findMaskContext(columnIndex);
-        if (!maskContext.isPresent()) {
-            return mergedResult.getValue(columnIndex, type);
-        }
-        Optional<MaskAlgorithm> maskAlgorithm = metaData.findMaskAlgorithm(maskContext.get().getTableName(), maskContext.get().getColumnName());
+        Optional<MaskAlgorithm> maskAlgorithm = metaData.findMaskAlgorithmByColumnIndex(columnIndex);
         if (!maskAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }

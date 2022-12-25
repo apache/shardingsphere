@@ -50,7 +50,7 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Find maskAlgorithm.
+     * Find mask algorithm.
      *
      * @param logicTable logic table name
      * @param logicColumn logic column name

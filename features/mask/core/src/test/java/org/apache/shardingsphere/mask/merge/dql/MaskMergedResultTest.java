@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.mask.context.MaskContextBuilder;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
-import org.apache.shardingsphere.mask.spi.context.MaskContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -54,20 +51,11 @@ public final class MaskMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWithoutMaskContext() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        when(metaData.findMaskContext(1)).thenReturn(Optional.empty());
-        assertThat(new MaskMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
-    }
-    
-    @Test
-    public void assertGetValueWithMaskContext() throws SQLException {
+    public void assertGetValue() throws SQLException {
         when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
         MaskAlgorithm<String, String> maskAlgorithm = mock(MaskAlgorithm.class);
-        MaskContext maskContext = MaskContextBuilder.build(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_mask", "name");
         when(maskAlgorithm.mask("VALUE")).thenReturn("MASK_VALUE");
-        when(metaData.findMaskContext(1)).thenReturn(Optional.of(maskContext));
-        when(metaData.findMaskAlgorithm("t_mask", "name")).thenReturn(Optional.of(maskAlgorithm));
+        when(metaData.findMaskAlgorithmByColumnIndex(1)).thenReturn(Optional.of(maskAlgorithm));
         assertThat(new MaskMergedResult(metaData, mergedResult).getValue(1, String.class), is("MASK_VALUE"));
     }
     

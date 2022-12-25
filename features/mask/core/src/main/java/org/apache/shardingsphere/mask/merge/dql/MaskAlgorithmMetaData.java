@@ -24,10 +24,8 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.mask.context.MaskContextBuilder;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
-import org.apache.shardingsphere.mask.spi.context.MaskContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +46,7 @@ public final class MaskAlgorithmMetaData {
     private final SelectStatementContext selectStatementContext;
     
     /**
-     * Find MaskAlgorithm.
+     * Find mask algorithm.
      *
      * @param tableName table name
      * @param columnName column name
@@ -59,12 +57,12 @@ public final class MaskAlgorithmMetaData {
     }
     
     /**
-     * Find mask context.
+     * Find mask algorithm.
      *
      * @param columnIndex column index
-     * @return mask context
+     * @return maskAlgorithm
      */
-    public Optional<MaskContext> findMaskContext(final int columnIndex) {
+    public Optional<MaskAlgorithm> findMaskAlgorithmByColumnIndex(final int columnIndex) {
         Optional<ColumnProjection> columnProjection = findColumnProjection(columnIndex);
         if (!columnProjection.isPresent()) {
             return Optional.empty();
@@ -74,7 +72,7 @@ public final class MaskAlgorithmMetaData {
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
                 Collections.singletonList(columnProjection.get()), database.getSchema(schemaName));
         Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
-        return tableName.map(optional -> MaskContextBuilder.build(database.getName(), schemaName, optional, columnProjection.get().getName()));
+        return maskRule.findMaskAlgorithm(tableName.get(), columnProjection.get().getName());
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {
