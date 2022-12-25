@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
@@ -38,7 +39,7 @@ import java.util.Optional;
 public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
         Collection<String> tobeRemovedTables = new LinkedHashSet<>();
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
