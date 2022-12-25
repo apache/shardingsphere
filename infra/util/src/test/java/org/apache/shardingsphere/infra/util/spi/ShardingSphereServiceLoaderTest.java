@@ -40,9 +40,14 @@ public final class ShardingSphereServiceLoaderTest {
         ShardingSphereServiceLoader.register(MultitonSPIFixture.class);
     }
     
-    @Test
-    public void assertGetServiceInstancesWithUnregisteredSPI() {
-        assertTrue(ShardingSphereServiceLoader.getServiceInstances(Object.class).isEmpty());
+    @Test(expected = NullPointerException.class)
+    public void assertGetServiceInstancesWithNullValue() {
+        ShardingSphereServiceLoader.getServiceInstances(null);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetServiceInstancesWithNoInterface() {
+        ShardingSphereServiceLoader.getServiceInstances(Object.class);
     }
     
     @Test
