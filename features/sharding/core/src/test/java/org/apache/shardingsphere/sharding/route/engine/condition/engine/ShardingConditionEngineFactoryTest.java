@@ -70,21 +70,17 @@ public final class ShardingConditionEngineFactoryTest {
     @Test
     public void assertCreateInsertClauseShardingConditionEngine() {
         ShardingSphereDatabase database = ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL"));
-        
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         InsertStatement insertStatement = mock(InsertStatement.class);
         InsertValueContext insertValueContext = new InsertValueContext(Collections.singletonList(new LiteralExpressionSegment(0, 10, "1")), Collections.emptyList(), 0);
-        
         when(insertStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table"))));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.empty());
         when(queryContext.getSqlStatementContext()).thenReturn((SQLStatementContext) insertStatementContext);
-        
         ShardingConditionEngine engine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, shardingRule);
         assertThat(engine, instanceOf(DefaultShardingConditionEngine.class));
-        
         List<ShardingCondition> shardingConditions = engine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
         assertTrue(shardingConditions.get(0).getValues().isEmpty());
@@ -93,27 +89,22 @@ public final class ShardingConditionEngineFactoryTest {
     @Test
     public void assertCreateWhereClauseShardingConditionEngine() {
         ShardingSphereDatabase database = ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL"));
-        
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         WhereSegment whereSegment = mock(WhereSegment.class);
         TablesContext tablesContext = mock(TablesContext.class);
-        
         int betweenStart = 1;
         int betweenEnd = 100;
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("foo_sharding_col"));
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, betweenStart);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, betweenEnd);
         BetweenExpression betweenExpression = new BetweenExpression(0, 0, left, betweenSegment, andSegment, false);
-        
         when(whereSegment.getExpr()).thenReturn(betweenExpression);
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.findTableNamesByColumnSegment(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));
-        
         ShardingConditionEngine engine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, shardingRule);
         assertThat(engine, instanceOf(DefaultShardingConditionEngine.class));
-        
         List<ShardingCondition> shardingConditions = engine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
         assertTrue(shardingConditions.get(0).getValues().get(0) instanceof RangeShardingConditionValue);
