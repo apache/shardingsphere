@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
 
@@ -29,11 +30,10 @@ import java.sql.SQLException;
  */
 public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationStatement> {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
-    
     @Override
     public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {
-        JOB_API.commit(sqlStatement.getJobId());
+        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) PipelineJobAPIFactory.getPipelineJobAPI(new MigrationJobType());
+        jobAPI.commit(sqlStatement.getJobId());
     }
     
     @Override

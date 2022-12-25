@@ -37,6 +37,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ConsistencyCheckJobNotFoundException;
@@ -47,7 +48,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsis
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
@@ -70,10 +70,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Consistency check job API impl.
+ * Consistency check job API.
  */
 @Slf4j
-public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl implements ConsistencyCheckJobAPI {
+public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
@@ -85,7 +85,12 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         return jobId.getParentJobId() + jobId.getSequence();
     }
     
-    @Override
+    /**
+     * Create consistency check configuration and start job.
+     *
+     * @param param create consistency check job parameter
+     * @return job id
+     */
     public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         String parentJobId = param.getJobId();
@@ -110,7 +115,12 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         return result;
     }
     
-    @Override
+    /**
+     * Get latest data consistency check result.
+     *
+     * @param jobId job id
+     * @return latest data consistency check result
+     */
     public Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String jobId) {
         Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId);
         if (!latestCheckJobId.isPresent()) {
@@ -157,7 +167,11 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         super.startDisabledJob(jobId);
     }
     
-    @Override
+    /**
+     * Start by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
     public void startByParentJobId(final String parentJobId) {
         startDisabledJob(getLatestCheckJobId(parentJobId));
     }
@@ -168,12 +182,20 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         return result.get();
     }
     
-    @Override
+    /**
+     * Start by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
     public void stopByParentJobId(final String parentJobId) {
         stop(getLatestCheckJobId(parentJobId));
     }
     
-    @Override
+    /**
+     * Drop by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
     public void dropByParentJobId(final String parentJobId) {
         String latestCheckJobId = getLatestCheckJobId(parentJobId);
         stop(latestCheckJobId);
@@ -191,7 +213,12 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         dropJob(latestCheckJobId);
     }
     
-    @Override
+    /**
+     * Get consistency job item info.
+     *
+     * @param parentJobId parent job id
+     * @return consistency job item info
+     */
     public ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
         Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
@@ -233,7 +260,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, checkJobId);
-        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(parentJobId));
+        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) PipelineJobAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(parentJobId));
         result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         return result;
     }
