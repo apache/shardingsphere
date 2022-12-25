@@ -42,8 +42,8 @@ public final class AgentServiceLoader<T> {
     }
     
     private void validate(final Class<T> service) {
-        Preconditions.checkNotNull(service, "Extension clazz is null.");
-        Preconditions.checkArgument(service.isInterface(), "Extension clazz `%s` is not interface.", service);
+        Preconditions.checkNotNull(service, "SPI class is null.");
+        Preconditions.checkArgument(service.isInterface(), "SPI class `%s` is not interface.", service);
     }
     
     private Collection<T> register(final Class<T> service) {
