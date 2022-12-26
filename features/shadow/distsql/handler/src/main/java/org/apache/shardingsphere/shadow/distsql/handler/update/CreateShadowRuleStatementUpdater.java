@@ -77,7 +77,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     
     private void checkDuplicatedRules(final String databaseName, final CreateShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> toBeCreatedRuleNames = ShadowRuleStatementSupporter.getRuleNames(sqlStatement.getRules());
-        ShadowRuleStatementChecker.checkAnyDuplicate(toBeCreatedRuleNames, duplicated -> new DuplicateRuleException("shadow", databaseName, duplicated));
+        ShadowRuleStatementChecker.checkDuplicated(toBeCreatedRuleNames, duplicated -> new DuplicateRuleException("shadow", databaseName, duplicated));
         toBeCreatedRuleNames.retainAll(ShadowRuleStatementSupporter.getRuleNames(currentRuleConfig));
         if (sqlStatement.isIfNotExists()) {
             duplicatedRuleNames = toBeCreatedRuleNames;
@@ -92,7 +92,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> segments) {
         ShadowRuleStatementChecker.checkAlgorithmCompleteness(ShadowRuleStatementSupporter.getShadowAlgorithmSegment(segments));
-        ShadowRuleStatementChecker.checkAnyDuplicate(ShadowRuleStatementSupporter.getAlgorithmNames(segments), duplicated -> new DuplicateRuleException("shadow", databaseName, duplicated));
+        ShadowRuleStatementChecker.checkDuplicated(ShadowRuleStatementSupporter.getAlgorithmNames(segments), duplicated -> new DuplicateRuleException("shadow", databaseName, duplicated));
     }
     
     private void checkAlgorithmType(final Collection<ShadowRuleSegment> segments) {

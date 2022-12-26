@@ -49,7 +49,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     private void checkRuleExisted(final String databaseName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfExists()) {
-            ShadowRuleStatementChecker.checkRulesExist(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig),
+            ShadowRuleStatementChecker.checkExisted(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig),
                     notExistedRuleNames -> new MissingRequiredRuleException("Shadow", databaseName, notExistedRuleNames));
         }
     }
