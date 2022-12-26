@@ -46,6 +46,11 @@
             <artifactId>logback-classic</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-plugin-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
     <build>

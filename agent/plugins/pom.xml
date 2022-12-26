@@ -29,18 +29,13 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>core</module>
         <module>metrics</module>
         <module>tracing</module>
         <module>logging</module>
     </modules>
     
     <dependencies>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.shardingsphere</groupId>-->
-        <!--            <artifactId>shardingsphere-agent-core</artifactId>-->
-        <!--            <version>${project.version}</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-api</artifactId>
