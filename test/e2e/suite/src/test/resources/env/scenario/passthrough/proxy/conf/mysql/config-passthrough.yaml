@@ -27,3 +27,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
+
+rule:
+- !SINGLE
+  tables:
+    - passthrough.t_data_type_integer, passthrough.t_data_type_floating_point

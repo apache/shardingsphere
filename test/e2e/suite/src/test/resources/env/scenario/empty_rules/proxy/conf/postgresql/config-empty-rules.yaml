@@ -259,3 +259,7 @@ rules:
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN
+
+- !SINGLE
+  tables:
+    - readwrite_ds_0.t_single_table
