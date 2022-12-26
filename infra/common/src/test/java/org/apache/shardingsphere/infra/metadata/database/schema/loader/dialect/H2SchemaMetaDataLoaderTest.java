@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Ind
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.junit.Test;
 
@@ -148,7 +147,8 @@ public final class H2SchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DialectSchemaMetaDataLoaderFactory.findInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"));
+        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findRegisteredService(
+                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2").getType());
         assertTrue(result.isPresent());
         return result.get();
     }
