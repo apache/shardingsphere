@@ -59,10 +59,11 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtractorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -185,8 +186,8 @@ public final class CDCJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl 
         CDCProcessContext processContext = new CDCProcessContext(jobConfig.getJobId(), pipelineProcessConfig);
         JobRateLimitAlgorithm writeRateLimitAlgorithm = processContext.getWriteRateLimitAlgorithm();
         int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
-        Map<LogicTableName, Set<String>> shardingColumnsMap = ShardingColumnsExtractorFactory.getInstance().getShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(),
-                logicalTableNames.stream().map(LogicTableName::new).collect(Collectors.toSet()));
+        Map<LogicTableName, Set<String>> shardingColumnsMap = RequiredSPIRegistry.getRegisteredService(ShardingColumnsExtractor.class)
+                .getShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(), logicalTableNames.stream().map(LogicTableName::new).collect(Collectors.toSet()));
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, tableNameSchemaNameMapping, batchSize, writeRateLimitAlgorithm, 0, 1);
     }
     
