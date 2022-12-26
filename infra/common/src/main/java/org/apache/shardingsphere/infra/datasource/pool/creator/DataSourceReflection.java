@@ -22,9 +22,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolFieldMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -159,7 +159,8 @@ public final class DataSourceReflection {
      */
     public void addDefaultDataSourceProperties() {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
-                DataSourcePoolMetaDataFactory.findInstance(dataSource.getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
+                TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
+                        .map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
         Optional<String> jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         Optional<Properties> jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
         if (!jdbcUrl.isPresent() || !jdbcConnectionProps.isPresent()) {

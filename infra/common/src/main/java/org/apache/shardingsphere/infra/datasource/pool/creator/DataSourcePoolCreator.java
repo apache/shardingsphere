@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -72,7 +72,7 @@ public final class DataSourcePoolCreator {
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
-        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         if (poolMetaData.isPresent()) {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
