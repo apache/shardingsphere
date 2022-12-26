@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.util.yaml.representer;
 
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.representer.processor.DefaultYamlTupleProcessor;
 import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
-import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessorFactory;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.introspector.Property;
@@ -45,7 +45,7 @@ public final class ShardingSphereYamlRepresenter extends Representer {
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple nodeTuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        for (ShardingSphereYamlTupleProcessor each : ShardingSphereYamlTupleProcessorFactory.getAllInstances()) {
+        for (ShardingSphereYamlTupleProcessor each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlTupleProcessor.class)) {
             if (property.getName().equals(each.getTupleName())) {
                 return each.process(nodeTuple);
             }
