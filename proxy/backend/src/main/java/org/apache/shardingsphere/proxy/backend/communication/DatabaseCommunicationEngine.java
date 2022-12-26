@@ -255,12 +255,8 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
     
     private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetaDataRefreshEngine metaDataRefreshEngine = new MetaDataRefreshEngine(contextManager.getInstanceContext().getModeContextManager(), database,
-                contextManager.getMetaDataContexts().getMetaData().getProps());
-        Optional<MetaDataRefreshedEvent> event = metaDataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
-        if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(event.get());
-        }
+        new MetaDataRefreshEngine(contextManager.getInstanceContext().getModeContextManager(), database,
+                contextManager.getMetaDataContexts().getMetaData().getProps()).refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
