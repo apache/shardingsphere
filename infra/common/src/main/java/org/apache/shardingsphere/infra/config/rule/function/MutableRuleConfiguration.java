@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.api.config.rule;
+package org.apache.shardingsphere.infra.config.rule.function;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Single table rule configuration.
+ * Mutable rule configuration.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class SingleTableRuleConfiguration {
+public interface MutableRuleConfiguration extends RuleConfiguration {
     
-    private final String dataSourceName;
+    /**
+     * Put.
+     *
+     * @param dataSourceName data source name
+     * @param schemaName schema name
+     * @param tableName table name
+     */
+    void put(String dataSourceName, String schemaName, String tableName);
     
-    private final Collection<QualifiedTable> tables = new LinkedHashSet<>();
+    /**
+     * Remove.
+     *
+     * @param dataSourceName data source name
+     * @param schemaName schema name
+     * @param tableName table name
+     */
+    void remove(String dataSourceName, String schemaName, String tableName);
 }

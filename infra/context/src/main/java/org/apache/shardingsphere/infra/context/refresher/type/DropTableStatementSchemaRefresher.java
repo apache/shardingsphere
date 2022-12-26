@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.rule.function.MutableRuleConfiguration;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -48,15 +49,24 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
         });
         Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);
+        Collection<MutableRuleConfiguration> ruleConfigurations = database.getRuleMetaData().findRuleConfigurations(MutableRuleConfiguration.class);
         for (SimpleTableSegment each : sqlStatement.getTables()) {
-            removeDataNode(rules, each, schemaName);
+            removeDataNode(rules, schemaName, each);
+            removeRuleConfiguration(ruleConfigurations, logicDataSourceNames.iterator().next(), schemaName, each);
         }
+        modeContextManager.alterRuleConfiguration(database.getName(), database.getRuleMetaData().getConfigurations());
         return Optional.of(event);
     }
     
-    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final SimpleTableSegment tobeRemovedSegment, final String schemaName) {
+    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final String schemaName, final SimpleTableSegment tobeRemovedSegment) {
         for (MutableDataNodeRule each : rules) {
             each.remove(schemaName, tobeRemovedSegment.getTableName().getIdentifier().getValue());
+        }
+    }
+    
+    private void removeRuleConfiguration(final Collection<MutableRuleConfiguration> ruleConfigs, final String dataSourceName, final String schemaName, final SimpleTableSegment tobeRemovedSegment) {
+        for (MutableRuleConfiguration each : ruleConfigs) {
+            each.remove(dataSourceName, schemaName, tobeRemovedSegment.getTableName().getIdentifier().getValue());
         }
     }
     

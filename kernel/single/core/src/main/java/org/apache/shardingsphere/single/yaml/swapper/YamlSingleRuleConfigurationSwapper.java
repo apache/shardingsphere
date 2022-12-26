@@ -54,7 +54,11 @@ public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigu
     public SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.setDefaultDataSource(yamlConfig.getDefaultDataSource());
-        getDataSourceTables(yamlConfig.getTables()).forEach((key, value) -> result.getTables().add(new SingleTableRuleConfiguration(key, value)));
+        getDataSourceTables(yamlConfig.getTables()).forEach((key, value) -> {
+            SingleTableRuleConfiguration singleTableRuleConfig = new SingleTableRuleConfiguration(key);
+            singleTableRuleConfig.getTables().addAll(value);
+            result.getTables().add(singleTableRuleConfig);
+        });
         return result;
     }
     
@@ -63,7 +67,7 @@ public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigu
         for (String each : tableConfigs) {
             for (String qualifiedTableConfig : Splitter.on(",").trimResults().splitToList(each)) {
                 List<String> segments = Splitter.on(".").splitToList(qualifiedTableConfig);
-                Preconditions.checkArgument(segments.size() == 2 || segments.size() == 3, "Single table config must be two or three segments.");
+                Preconditions.checkArgument(segments.size() == 2 || segments.size() == 3, "Single table config must be two or three segments");
                 Collection<QualifiedTable> qualifiedTables = result.computeIfAbsent(segments.get(0), key -> new LinkedList<>());
                 qualifiedTables.add(segments.size() == 2 ? new QualifiedTable(null, segments.get(1)) : new QualifiedTable(segments.get(1), segments.get(2)));
             }

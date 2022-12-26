@@ -20,11 +20,13 @@ package org.apache.shardingsphere.single.api.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.MutableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.single.api.config.rule.SingleTableRuleConfiguration;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -32,9 +34,9 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class SingleRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
+public final class SingleRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration, MutableRuleConfiguration {
     
-    private final Collection<SingleTableRuleConfiguration> tables = new LinkedList<>();
+    private final Collection<SingleTableRuleConfiguration> tables = new LinkedHashSet<>();
     
     private String defaultDataSource;
     
@@ -45,5 +47,19 @@ public final class SingleRuleConfiguration implements DatabaseRuleConfiguration,
      */
     public Optional<String> getDefaultDataSource() {
         return Optional.ofNullable(defaultDataSource);
+    }
+    
+    @Override
+    public void put(final String dataSourceName, final String schemaName, final String tableName) {
+        SingleTableRuleConfiguration singleTableRuleConfig =
+                tables.stream().filter(each -> each.getDataSourceName().equals(dataSourceName)).findFirst().orElse(new SingleTableRuleConfiguration(dataSourceName));
+        singleTableRuleConfig.getTables().add(new QualifiedTable(schemaName, tableName));
+        tables.add(singleTableRuleConfig);
+    }
+    
+    @Override
+    public void remove(final String dataSourceName, final String schemaName, final String tableName) {
+        Optional<SingleTableRuleConfiguration> singleTableRuleConfig = tables.stream().filter(each -> each.getDataSourceName().equals(dataSourceName)).findFirst();
+        singleTableRuleConfig.ifPresent(optional -> optional.getTables().remove(new QualifiedTable(schemaName, tableName)));
     }
 }

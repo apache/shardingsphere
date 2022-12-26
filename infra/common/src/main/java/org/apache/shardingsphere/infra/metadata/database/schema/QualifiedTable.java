@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import com.google.common.base.Strings;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class QualifiedTable {
     
     private static final String DELIMITER = ".";

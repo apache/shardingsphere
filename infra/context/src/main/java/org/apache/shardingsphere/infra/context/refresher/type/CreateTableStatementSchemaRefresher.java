@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.rule.function.MutableRuleConfiguration;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -57,6 +58,8 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             database.getSchema(schemaName).putTable(tableName, actualTableMetaData.get());
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
             event.getAlteredTables().add(actualTableMetaData.get());
+            database.getRuleMetaData().findRuleConfigurations(MutableRuleConfiguration.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+            modeContextManager.alterRuleConfiguration(database.getName(), database.getRuleMetaData().getConfigurations());
             return Optional.of(event);
         }
         return Optional.empty();

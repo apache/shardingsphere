@@ -51,6 +51,23 @@ public final class ShardingSphereRuleMetaData {
     }
     
     /**
+     * Find rule configurations by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule
+     * @return found rule configurations
+     */
+    public <T extends RuleConfiguration> Collection<T> findRuleConfigurations(final Class<T> clazz) {
+        List<T> result = new LinkedList<>();
+        for (ShardingSphereRule each : rules) {
+            if (clazz.isAssignableFrom(each.getConfiguration().getClass())) {
+                result.add(clazz.cast(each.getConfiguration()));
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Find rules by class.
      *
      * @param clazz target class
