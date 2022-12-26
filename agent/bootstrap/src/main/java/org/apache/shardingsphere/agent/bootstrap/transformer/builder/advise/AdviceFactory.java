@@ -19,10 +19,9 @@ package org.apache.shardingsphere.agent.bootstrap.transformer.builder.advise;
 
 import org.apache.shardingsphere.agent.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.bootstrap.transformer.AdviceCreateListener;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Advice factory.
@@ -35,9 +34,10 @@ public final class AdviceFactory {
     
     private final boolean isEnhancedForProxy;
     
-    public AdviceFactory(final ClassLoader classLoader, final Map<String, PluginConfiguration> pluginConfigs, final Collection<PluginJar> pluginJars, final boolean isEnhancedForProxy) {
-        proxyAdviceFactory = new ProxyAdviceFactory();
-        jdbcAdviceFactory = new JDBCAdviceFactory(classLoader, pluginConfigs, pluginJars);
+    public AdviceFactory(final ClassLoader classLoader, final Collection<PluginJar> pluginJars,
+                         final boolean isEnhancedForProxy, final AdviceCreateListener createAdviceListener) {
+        proxyAdviceFactory = new ProxyAdviceFactory(createAdviceListener);
+        jdbcAdviceFactory = new JDBCAdviceFactory(classLoader, pluginJars, createAdviceListener);
         this.isEnhancedForProxy = isEnhancedForProxy;
     }
     

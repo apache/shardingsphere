@@ -21,8 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.bootstrap.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.bootstrap.plugin.PluginBootServiceManager;
+import org.apache.shardingsphere.agent.bootstrap.transformer.AdviceCreateListener;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,13 +38,11 @@ public final class JDBCAdviceFactory {
     
     private static final Map<ClassLoader, ClassLoader> PLUGIN_CLASS_LOADERS = new HashMap<>();
     
-    private static boolean isStarted;
-    
     private final ClassLoader classLoader;
     
-    private final Map<String, PluginConfiguration> pluginConfigs;
-    
     private final Collection<PluginJar> pluginJars;
+    
+    private final AdviceCreateListener createAdviceListener;
     
     /**
      * Get advice.
@@ -64,19 +61,7 @@ public final class JDBCAdviceFactory {
     private Object createAdviceForJDBC(final String adviceClassName) {
         ClassLoader pluginClassLoader = PLUGIN_CLASS_LOADERS.computeIfAbsent(classLoader, key -> new AgentClassLoader(key, pluginJars));
         Object result = Class.forName(adviceClassName, true, pluginClassLoader).getDeclaredConstructor().newInstance();
-        setupPluginBootService(pluginClassLoader);
+        createAdviceListener.onComplete(adviceClassName, pluginClassLoader);
         return result;
-    }
-    
-    private void setupPluginBootService(final ClassLoader pluginClassLoader) {
-        if (isStarted) {
-            return;
-        }
-        try {
-            PluginBootServiceManager.startAllServices(pluginConfigs, pluginClassLoader, false);
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginBootServiceManager.closeAllServices(pluginJars)));
-        } finally {
-            isStarted = true;
-        }
     }
 }
