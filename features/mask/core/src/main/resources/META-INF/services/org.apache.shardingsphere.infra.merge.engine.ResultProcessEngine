@@ -15,10 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.algorithm.hash.MD5MaskAlgorithm
-org.apache.shardingsphere.mask.algorithm.cover.KeepFirstNLastMMaskAlgorithm
-org.apache.shardingsphere.mask.algorithm.cover.KeepFromXToYMaskAlgorithm
-org.apache.shardingsphere.mask.algorithm.cover.MaskAfterSpecialCharAlgorithm
-org.apache.shardingsphere.mask.algorithm.cover.MaskBeforeSpecialCharAlgorithm
-org.apache.shardingsphere.mask.algorithm.cover.MaskFirstNLastMMaskAlgorithm
-org.apache.shardingsphere.mask.algorithm.cover.MaskFromXToYMaskAlgorithm
+org.apache.shardingsphere.mask.merge.MaskResultDecoratorEngine
