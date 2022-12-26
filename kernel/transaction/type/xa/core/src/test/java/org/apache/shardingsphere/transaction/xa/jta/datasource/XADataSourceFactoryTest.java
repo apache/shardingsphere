@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,26 +43,26 @@ public final class XADataSourceFactoryTest {
     
     @Test
     public void assertCreateH2XADataSource() {
-        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypeFactory.getInstance("H2"), dataSource);
+        XADataSource xaDataSource = XADataSourceFactory.build(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), dataSource);
         assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
     }
     
     @Test
     public void assertCreateMariaDBXADataSource() {
-        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypeFactory.getInstance("MariaDB"), dataSource);
+        XADataSource xaDataSource = XADataSourceFactory.build(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MariaDB"), dataSource);
         assertThat(xaDataSource, instanceOf(MariaDbDataSource.class));
     }
     
     @Test
     public void assertCreatePGXADataSource() {
         when(dataSource.getJdbcUrl()).thenReturn("jdbc:postgresql://localhost:5432/db1");
-        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypeFactory.getInstance("PostgreSQL"), dataSource);
+        XADataSource xaDataSource = XADataSourceFactory.build(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"), dataSource);
         assertThat(xaDataSource, instanceOf(PGXADataSource.class));
     }
     
     @Test
     public void assertCreateMSXADataSource() {
-        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypeFactory.getInstance("SQLServer"), dataSource);
+        XADataSource xaDataSource = XADataSourceFactory.build(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer"), dataSource);
         assertThat(xaDataSource.getClass().getName(), is("com.microsoft.sqlserver.jdbc.SQLServerXADataSource"));
     }
 }

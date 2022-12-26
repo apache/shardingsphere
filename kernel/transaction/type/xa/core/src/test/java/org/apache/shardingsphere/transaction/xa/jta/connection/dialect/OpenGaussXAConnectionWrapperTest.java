@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 public final class OpenGaussXAConnectionWrapperTest {
     
-    private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("openGauss");
+    private final DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "openGauss");
     
     @Test
     public void assertWrap() throws SQLException {

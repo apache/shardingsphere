@@ -81,7 +81,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -205,7 +204,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig) {
         String sourceSchemaName = jobConfig.getSourceSchemaName();
-        String targetSchemaName = DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
+        String targetSchemaName = TypedSPIRegistry.getRegisteredService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
         CreateTableEntry createTableEntry = new CreateTableEntry(
                 jobConfig.getSource(), new SchemaTableName(new SchemaName(sourceSchemaName), new TableName(jobConfig.getSourceTableName())),
                 jobConfig.getTarget(), new SchemaTableName(new SchemaName(targetSchemaName), new TableName(jobConfig.getTargetTableName())));

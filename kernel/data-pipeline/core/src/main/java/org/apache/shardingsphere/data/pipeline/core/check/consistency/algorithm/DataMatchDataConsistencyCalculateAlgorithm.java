@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueRead
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
@@ -60,7 +60,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = ShardingSphereServiceLoader
+            .getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
@@ -141,7 +142,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String logicTableName = param.getLogicTableName();
         String schemaName = param.getSchemaName();
         String uniqueKey = param.getUniqueKey().getName();
-        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(param.getDatabaseType()).isSchemaAvailable()
+        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && TypedSPIRegistry.getRegisteredService(DatabaseType.class, param.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
         if (null == param.getPreviousCalculatedResult() && null == param.getTableCheckPosition()) {

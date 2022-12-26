@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.H2OptimizerBuilder;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.impl.MySQLOptimizerBuilder;
 import org.junit.Test;
@@ -30,8 +30,7 @@ public final class OptimizerSQLDialectBuilderFactoryTest {
     
     @Test
     public void assertBuildWithDatabaseType() {
-        DatabaseType databaseType = DatabaseTypeFactory.getInstance("H2");
-        assertThat(OptimizerSQLDialectBuilderFactory.build(databaseType), is(new H2OptimizerBuilder().build()));
+        assertThat(OptimizerSQLDialectBuilderFactory.build(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")), is(new H2OptimizerBuilder().build()));
     }
     
     @Test

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Sch
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -104,7 +105,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(DatabaseTypeFactory.getInstance("MySQL")).load(connection.getMetaData());
+            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")).load(connection.getMetaData());
             String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

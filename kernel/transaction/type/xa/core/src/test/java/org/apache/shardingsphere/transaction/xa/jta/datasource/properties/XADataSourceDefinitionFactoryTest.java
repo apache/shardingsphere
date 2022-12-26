@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition;
 import org.junit.Test;
 
@@ -28,6 +29,6 @@ public final class XADataSourceDefinitionFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(XADataSourceDefinitionFactory.getInstance(DatabaseTypeFactory.getInstance("H2")), instanceOf(H2XADataSourceDefinition.class));
+        assertThat(XADataSourceDefinitionFactory.getInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")), instanceOf(H2XADataSourceDefinition.class));
     }
 }

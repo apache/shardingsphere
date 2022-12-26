@@ -48,9 +48,9 @@ import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collection;
@@ -186,7 +186,9 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     private Collection<String> getSupportedDatabaseTypes(final Collection<String> supportedDatabaseTypes) {
-        return supportedDatabaseTypes.isEmpty() ? DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList()) : supportedDatabaseTypes;
+        return supportedDatabaseTypes.isEmpty()
+                ? ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList())
+                : supportedDatabaseTypes;
     }
     
     @Override
@@ -194,7 +196,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("Algorithm type and job configuration are null."));
         return null == algorithmType
                 ? DataConsistencyCalculateAlgorithmChooser.choose(
-                        DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(getTargetDatabaseType(jobConfig)))
+                TypedSPIRegistry.getRegisteredService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
+                TypedSPIRegistry.getRegisteredService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
                 : ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(algorithmType, algorithmProps), DataConsistencyCalculateAlgorithm.class);
     }
     
