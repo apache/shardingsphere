@@ -80,13 +80,15 @@ public final class DatabaseTypeEngineTest {
     
     @Test
     public void assertGetStorageTypeWithDataSources() throws SQLException {
-        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")), mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")));
+        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")),
+                mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")));
         assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
     @Test
     public void assertGetStorageTypeWithDifferentDataSourceTypes() throws SQLException {
-        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")), mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")));
+        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")),
+                mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")));
         assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
