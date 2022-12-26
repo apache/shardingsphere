@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.util.TimeRecorder;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
@@ -43,7 +42,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
-            TimeRecorder.INSTANCE.record();
+            // TimeRecorder.INSTANCE.record();
         }
     }
     
@@ -51,9 +50,9 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
             try {
-                MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> optional.observe(TimeRecorder.INSTANCE.getElapsedTime()));
+                // MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> optional.observe(TimeRecorder.INSTANCE.getElapsedTime()));
             } finally {
-                TimeRecorder.INSTANCE.clean();
+                // TimeRecorder.INSTANCE.clean();
             }
         } else if (COMMAND_EXECUTOR_EXCEPTION.equals(method.getName())) {
             MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).ifPresent(MetricsWrapper::inc);
