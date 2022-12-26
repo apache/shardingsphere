@@ -423,3 +423,8 @@ rules:
           plainColumn: plain_pwd
           cipherColumn: cipher_pwd
           encryptorName: aes_encryptor
+
+- !SINGLE
+  tables:
+    - readwrite_ds_0.t_product,readwrite_ds_0.t_order_federate,readwrite_ds_0.t_single_table
+    - readwrite_ds_1.t_merchant,readwrite_ds_1.t_product_detail,readwrite_ds_1.t_order_item_federate,readwrite_ds_1.t_user_encrypt_federate,readwrite_ds_1.t_user_info

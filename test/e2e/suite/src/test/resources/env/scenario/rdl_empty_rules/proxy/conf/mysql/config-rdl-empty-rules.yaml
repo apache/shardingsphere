@@ -45,3 +45,9 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
+
+rules:
+- !SINGLE
+  tables:
+    - ds_0.t_user
+    - ds_2.t_product_category,ds_2.t_country,ds_2.t_order_0,ds_2.t_order_1,ds_2.t_order_2,ds_2.t_order_3,ds_2.t_order_item_0,ds_2.t_order_item_1,ds_2.t_order_item_2,ds_2.t_order_item_3

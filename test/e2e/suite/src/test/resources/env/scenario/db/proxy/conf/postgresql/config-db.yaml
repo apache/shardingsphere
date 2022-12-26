@@ -175,3 +175,8 @@ rules:
   auditors:
     auditor_constant:
       type: IT.AUDITOR.FIXTURE
+
+- !SINGLE
+  tables:
+    - ds_0.t_user,ds_0.t_product,ds_0.t_order_federate,ds_0.t_order_federate_sharding,ds_0.t_order_item_federate_sharding,ds_0.t_single_table
+    - ds_1.t_merchant,ds_1.t_product_detail,ds_1.t_order_item_federate,ds_1.t_order_federate_sharding,ds_1.t_order_item_federate_sharding

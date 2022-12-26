@@ -343,3 +343,8 @@ rules:
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN
+
+- !SINGLE
+  tables:
+    - readwrite_ds_0.t_user,readwrite_ds_0.t_product,readwrite_ds_0.t_order_federate,readwrite_ds_0.t_single_table
+    - readwrite_ds_1.t_merchant,readwrite_ds_1.t_product_detail,readwrite_ds_1.t_order_item_federate
