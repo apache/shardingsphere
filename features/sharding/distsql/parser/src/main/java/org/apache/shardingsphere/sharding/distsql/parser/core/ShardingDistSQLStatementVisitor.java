@@ -136,7 +136,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {
         Collection<AbstractTableRuleSegment> tableRuleSegments = ctx.shardingTableRuleDefinition().stream()
                 .map(each -> (AbstractTableRuleSegment) visit(each)).filter(Objects::nonNull).collect(Collectors.toList());
-        return new CreateShardingTableRuleStatement(tableRuleSegments);
+        return new CreateShardingTableRuleStatement(null != ctx.ifNotExists(), tableRuleSegments);
     }
     
     @Override

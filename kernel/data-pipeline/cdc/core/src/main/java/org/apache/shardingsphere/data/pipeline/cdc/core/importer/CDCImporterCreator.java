@@ -32,7 +32,7 @@ public final class CDCImporterCreator implements ImporterCreator {
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener) {
-        return new CDCImporter();
+        return new CDCImporter(importerConfig, importerConnector, channel, jobProgressListener);
     }
     
     @Override
