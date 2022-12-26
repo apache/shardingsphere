@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.execute;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
@@ -24,10 +25,14 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,5 +81,76 @@ public final class ExecuteEngineTest {
         ExecutorService executorService = (ExecutorService) Plugins.getMemberAccessor().get(ExecuteEngine.class.getDeclaredField("executorService"), executeEngine);
         executorService.shutdown();
         executorService.awaitTermination(30L, TimeUnit.SECONDS);
+    }
+    
+    @Test
+    public void assertTriggerAllFailure() throws InterruptedException {
+        CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(false));
+        CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(false));
+        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback(2);
+        ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
+        executeCallback.latch.await();
+        assertThat(executeCallback.successCount.get(), is(0));
+        assertThat(executeCallback.failureCount.get(), is(2));
+    }
+    
+    @Test
+    public void assertTriggerAllSuccess() throws InterruptedException {
+        CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
+        CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(true));
+        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback(1);
+        ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
+        executeCallback.latch.await();
+        assertThat(executeCallback.successCount.get(), is(1));
+        assertThat(executeCallback.failureCount.get(), is(0));
+    }
+    
+    @Test
+    public void assertTriggerPartSuccessFailure() throws InterruptedException {
+        CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
+        CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(false));
+        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback(1);
+        ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
+        executeCallback.latch.await();
+        assertThat(executeCallback.successCount.get(), is(0));
+        assertThat(executeCallback.failureCount.get(), is(1));
+    }
+    
+    @RequiredArgsConstructor
+    private static final class FixtureRunnable implements Runnable {
+        
+        private final boolean success;
+        
+        @Override
+        public void run() {
+            if (!success) {
+                throw new RuntimeException("Failure mock");
+            }
+        }
+    }
+    
+    private static final class FixtureExecuteCallback implements ExecuteCallback {
+        
+        private final CountDownLatch latch;
+        
+        private final AtomicInteger successCount = new AtomicInteger(0);
+        
+        private final AtomicInteger failureCount = new AtomicInteger(0);
+        
+        FixtureExecuteCallback(final int latchCount) {
+            this.latch = new CountDownLatch(latchCount);
+        }
+        
+        @Override
+        public void onSuccess() {
+            successCount.addAndGet(1);
+            latch.countDown();
+        }
+        
+        @Override
+        public void onFailure(final Throwable throwable) {
+            failureCount.addAndGet(1);
+            latch.countDown();
+        }
     }
 }
