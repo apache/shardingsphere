@@ -40,8 +40,6 @@ import java.util.Map;
  */
 public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
-    private static final String SHADOW = "shadow";
-    
     private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
     
     @Override
@@ -65,30 +63,26 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        checkConfigurationExist(database.getName(), currentRuleConfig);
+        ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
         checkAlgorithms(database.getName(), sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment(), currentRuleConfig);
-    }
-    
-    private void checkConfigurationExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
-        ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     
     private void checkAlgorithms(final String databaseName, final AlgorithmSegment algorithmSegment, final ShadowRuleConfiguration currentRuleConfig) {
         checkAlgorithmCompleteness(algorithmSegment);
         checkAlgorithmType(algorithmSegment);
-        Collection<String> requireAlgorithmNames = Collections.singleton(DEFAULT_ALGORITHM_NAME);
-        ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(),
-                different -> new MissingRequiredAlgorithmException(SHADOW, databaseName, different));
+        Collection<String> requiredAlgorithmNames = Collections.singleton(DEFAULT_ALGORITHM_NAME);
+        ShadowRuleStatementChecker.checkExisted(requiredAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(),
+                notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", databaseName, notExistedAlgorithms));
     }
     
     private static void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
         boolean isCompleteAlgorithm = !Strings.isNullOrEmpty(algorithmSegment.getName()) && !algorithmSegment.getProps().isEmpty();
-        ShardingSpherePreconditions.checkState(isCompleteAlgorithm, () -> new InvalidAlgorithmConfigurationException(SHADOW));
+        ShardingSpherePreconditions.checkState(isCompleteAlgorithm, () -> new InvalidAlgorithmConfigurationException("shadow"));
     }
     
     private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {
         String shadowAlgorithmType = algorithmSegment.getName();
-        ShardingSpherePreconditions.checkState(ShadowAlgorithmFactory.contains(shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException(SHADOW, shadowAlgorithmType));
+        ShardingSpherePreconditions.checkState(ShadowAlgorithmFactory.contains(shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
     }
     
     @Override

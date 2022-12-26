@@ -46,34 +46,34 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
             return;
         }
         String databaseName = database.getName();
-        checkResources(databaseName, database, currentRuleConfig);
+        checkDataSources(databaseName, database, currentRuleConfig);
         checkLoadBalancers(currentRuleConfig);
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        Collection<String> requireResources = new LinkedHashSet<>();
-        Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
+    private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        Collection<String> requiredDataSources = new LinkedHashSet<>();
+        Collection<String> requiredLogicalDataSources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
             if (null != each.getDynamicStrategy()) {
-                requireDiscoverableResources.add(each.getDynamicStrategy().getAutoAwareDataSourceName());
+                requiredLogicalDataSources.add(each.getDynamicStrategy().getAutoAwareDataSourceName());
             }
             if (null != each.getStaticStrategy()) {
                 if (null != each.getStaticStrategy().getWriteDataSourceName()) {
-                    requireResources.add(each.getStaticStrategy().getWriteDataSourceName());
+                    requiredDataSources.add(each.getStaticStrategy().getWriteDataSourceName());
                 }
                 if (!each.getStaticStrategy().getReadDataSourceNames().isEmpty()) {
-                    requireResources.addAll(each.getStaticStrategy().getReadDataSourceNames());
+                    requiredDataSources.addAll(each.getStaticStrategy().getReadDataSourceNames());
                 }
             }
         });
-        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requireResources);
-        ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
-        Collection<String> logicResources = getLogicResources(database);
-        Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistLogicResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistLogicResources));
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedResources(requiredDataSources);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedDataSources));
+        Collection<String> logicalDataSources = getLogicDataSources(database);
+        Collection<String> notExistedLogicalDataSources = requiredLogicalDataSources.stream().filter(each -> !logicalDataSources.contains(each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(notExistedLogicalDataSources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedLogicalDataSources));
     }
     
-    private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
