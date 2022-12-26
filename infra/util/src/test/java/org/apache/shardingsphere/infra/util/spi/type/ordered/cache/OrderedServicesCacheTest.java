@@ -51,7 +51,7 @@ public final class OrderedServicesCacheTest {
     }
     
     @Test
-    public void assertFindCachedServices() {
+    public void assertCacheServicesAndClear() {
         OrderedInterfaceFixture orderedInterfaceFixture = new OrderedInterfaceFixtureImpl();
         Collection<OrderedInterfaceFixture> customInterfaces = Collections.singleton(orderedInterfaceFixture);
         OrderedSPIFixture<?> cacheOrderedSPIFixture = new OrderedSPIFixtureImpl();
@@ -61,6 +61,8 @@ public final class OrderedServicesCacheTest {
         Optional<Map<?, ?>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces);
         assertTrue(actual.isPresent());
         assertThat(actual.get().get(orderedInterfaceFixture), is(cacheOrderedSPIFixture));
+        OrderedServicesCache.clearCache();
+        assertFalse(OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces).isPresent());
     }
     
     @Test
