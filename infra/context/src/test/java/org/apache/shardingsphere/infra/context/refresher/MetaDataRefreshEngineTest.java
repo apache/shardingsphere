@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresh
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
 
@@ -35,8 +36,8 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -55,7 +56,7 @@ public final class MetaDataRefreshEngineTest {
         for (int i = 0; i < dropTimes; i++) {
             assertTrue(engine.refresh(sqlStatementContext, Collections.emptyList()).isPresent());
         }
-        Optional<MetaDataRefresher> refresher = MetaDataRefresherFactory.findInstance(mock(MetaDataRefresherSQLStatementFixture.class).getClass());
+        Optional<MetaDataRefresher> refresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, mock(MetaDataRefresherSQLStatementFixture.class).getClass().getSuperclass().getName());
         assertTrue(refresher.isPresent());
         assertThat(((MetaDataRefresherFixture) refresher.get()).getCount(), is(dropTimes));
     }

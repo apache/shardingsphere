@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -62,7 +63,7 @@ public final class MetaDataRefreshEngine {
         if (IGNORED_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return Optional.empty();
         }
-        Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.findInstance(sqlStatementClass);
+        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
         if (schemaRefresher.isPresent()) {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName())).toLowerCase();
