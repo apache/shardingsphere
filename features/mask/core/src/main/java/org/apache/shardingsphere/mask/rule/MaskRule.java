@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Mask rule.
@@ -46,6 +47,18 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
         configuration = ruleConfig;
         ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, MaskAlgorithmFactory.newInstance(value)));
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new MaskTable(each)));
+    }
+    
+    /**
+     * Find mask algorithm.
+     *
+     * @param logicTable logic table name
+     * @param logicColumn logic column name
+     * @return maskAlgorithm
+     */
+    public Optional<MaskAlgorithm> findMaskAlgorithm(final String logicTable, final String logicColumn) {
+        String lowerCaseLogicTable = logicTable.toLowerCase();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findMaskAlgorithmName(logicColumn).map(maskAlgorithms::get) : Optional.empty();
     }
     
     @Override

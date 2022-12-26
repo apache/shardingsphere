@@ -120,7 +120,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitRegisterStorageUnit(final RegisterStorageUnitContext ctx) {
-        return new RegisterStorageUnitStatement(ctx.storageUnitDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
+        return new RegisterStorageUnitStatement(null != ctx.ifNotExists(), ctx.storageUnitDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override

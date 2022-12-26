@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 registerStorageUnit
-    : REGISTER STORAGE UNIT storageUnitDefinition (COMMA_ storageUnitDefinition)*
+    : REGISTER STORAGE UNIT ifNotExists? storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
 
 alterStorageUnit
@@ -77,4 +77,8 @@ ignoreSingleTables
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

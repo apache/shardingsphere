@@ -92,7 +92,7 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertParseRDL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RDL, new RegisterStorageUnitStatement(Collections.emptyList()));
+        assertParse(MetricIds.PARSE_DIST_SQL_RDL, new RegisterStorageUnitStatement(false, Collections.emptyList()));
     }
     
     @Test

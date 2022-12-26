@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,7 +76,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     private ShadowRule shadowRule;
     
     @Mock
-    private SingleTableRule singleTableRule;
+    private SingleRule singleTableRule;
     
     private ContextManager contextManager;
     
@@ -144,7 +144,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     @Test
     public void assertStorageUnitNameInUseIgnoreSingleTables() throws SQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
-        when(singleTableRule.getType()).thenReturn("SingleTableRule");
+        when(singleTableRule.getType()).thenReturn("SingleRule");
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));

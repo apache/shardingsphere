@@ -45,7 +45,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        BackendConnection connection = ((ConnectionSession) AgentReflectionUtil.getFieldValue(target, "connectionSession")).getBackendConnection();
+        BackendConnection connection = AgentReflectionUtil.<ConnectionSession>getFieldValue(target, "connectionSession").getBackendConnection();
         Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
         span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
         span.finish();

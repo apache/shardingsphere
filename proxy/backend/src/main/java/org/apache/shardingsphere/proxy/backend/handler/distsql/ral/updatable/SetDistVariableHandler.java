@@ -54,7 +54,7 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     private Enum<?> getEnumType(final String name) {
         try {
             return ConfigurationPropertyKey.valueOf(name.toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             return VariableEnum.getValueOf(name);
         }
     }

@@ -78,18 +78,22 @@ message CreateSubscriptionRequest {
 }
 
 message StartSubscriptionRequest {
-  string subscriptionName = 1;
+  string database = 1;
+  string subscriptionName = 2;
 }
 
 message StopSubscriptionRequest {
-  string subscriptionName = 1;
+  string database = 1;
+  string subscriptionName = 2;
 }
 
 message DropSubscriptionRequest {
-  string subscriptionName = 1;
+  string database = 1;
+  string subscriptionName = 2;
 }
 
 message AckRequest {
-  string subscriptionName = 1;
-  string ack_id = 2;
+  string database = 1;
+  string subscriptionName = 2;
+  string ack_id = 3;
 }

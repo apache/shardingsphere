@@ -94,7 +94,7 @@ public enum PostgreSQLCharacterSets {
         Charset result = null;
         try {
             result = charsetSupplier.get();
-        } catch (UnsupportedCharsetException ignored) {
+        } catch (final UnsupportedCharsetException ignored) {
         }
         charset = result;
         this.aliases = aliases;

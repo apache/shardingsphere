@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
+import java.util.Optional;
+
 /**
  * Pipeline changed job configuration processor factory.
  */
@@ -39,7 +41,7 @@ public final class PipelineChangedJobConfigurationProcessorFactory {
      * @param jobType job type
      * @return instance
      */
-    public static PipelineChangedJobConfigurationProcessor getInstance(final JobType jobType) {
-        return TypedSPIRegistry.getRegisteredService(PipelineChangedJobConfigurationProcessor.class, jobType.getTypeName());
+    public static Optional<PipelineChangedJobConfigurationProcessor> findInstance(final JobType jobType) {
+        return TypedSPIRegistry.findRegisteredService(PipelineChangedJobConfigurationProcessor.class, jobType.getTypeName());
     }
 }

@@ -61,7 +61,7 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
                 try {
                     return Charset.forName(value);
                     // CHECKSTYLE:OFF
-                } catch (Exception ex) {
+                } catch (final Exception ex) {
                     // CHECKSTYLE:ON
                     throw new UnknownCharsetException(value.toLowerCase());
                 }

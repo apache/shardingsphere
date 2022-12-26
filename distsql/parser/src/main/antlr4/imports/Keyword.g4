@@ -358,3 +358,7 @@ CENTER
 LIKE
     : L I K E
     ;
+
+NOT
+    : N O T
+    ;

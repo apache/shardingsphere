@@ -101,7 +101,7 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
             try {
                 assertThat(actualResultSet.getObject(i + 1), is(expectedResultSet.getObject(i + 1)));
                 assertThat(actualResultSet.getObject(actualMetaData.getColumnLabel(i + 1)), is(expectedResultSet.getObject(expectedMetaData.getColumnLabel(i + 1))));
-            } catch (AssertionError ex) {
+            } catch (final AssertionError ex) {
                 // FIXME #15593 verify accurate data types
                 Object actualValue = actualResultSet.getObject(i + 1);
                 Object expectedValue = expectedResultSet.getObject(i + 1);
