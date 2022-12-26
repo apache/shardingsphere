@@ -21,29 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Instance meta data builder factory.
+ * Instance meta data factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceMetaDataBuilderFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(InstanceMetaDataBuilder.class);
-    }
-    
-    /**
-     * Create instance meta data.
-     *
-     * @param type type
-     * @param port port 
-     * @return created instance meta data
-     */
-    public static InstanceMetaData create(final String type, final int port) {
-        return TypedSPIRegistry.getRegisteredService(InstanceMetaDataBuilder.class, type).build(port);
-    }
+public final class InstanceMetaDataFactory {
     
     /**
      * Create instance meta data.

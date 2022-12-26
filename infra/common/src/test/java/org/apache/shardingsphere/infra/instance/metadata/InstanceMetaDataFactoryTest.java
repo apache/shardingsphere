@@ -20,35 +20,15 @@ package org.apache.shardingsphere.infra.instance.metadata;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
-public final class InstanceMetaDataBuilderFactoryTest {
-    
-    @Test
-    public void assertCreateJDBCInstanceMetaDataWithoutInstanceId() {
-        InstanceMetaData actual = InstanceMetaDataBuilderFactory.create("JDBC", -1);
-        assertNotNull(actual.getId());
-        assertNotNull(actual.getIp());
-        assertThat(actual.getAttributes(), is(""));
-        assertThat(actual.getType(), is(InstanceType.JDBC));
-    }
-    
-    @Test
-    public void assertCreateProxyInstanceMetaDataWithoutInstanceId() {
-        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.create("Proxy", 3307);
-        assertNotNull(actual.getId());
-        assertNotNull(actual.getIp());
-        assertThat(actual.getPort(), is(3307));
-        assertThat(actual.getAttributes(), endsWith("@3307"));
-        assertThat(actual.getType(), is(InstanceType.PROXY));
-    }
+public final class InstanceMetaDataFactoryTest {
     
     @Test
     public void assertCreateJDBCInstanceMetaDataWithInstanceId() {
-        InstanceMetaData actual = InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.JDBC, "", "foo_version");
+        InstanceMetaData actual = InstanceMetaDataFactory.create("foo_id", InstanceType.JDBC, "", "foo_version");
         assertThat(actual.getId(), is("foo_id"));
         assertNotNull(actual.getIp());
         assertThat(actual.getAttributes(), is(""));
@@ -58,7 +38,7 @@ public final class InstanceMetaDataBuilderFactoryTest {
     
     @Test
     public void assertCreateProxyInstanceMetaDataWithInstanceId() {
-        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.PROXY, "127.0.0.1@3307", "foo_version");
+        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataFactory.create("foo_id", InstanceType.PROXY, "127.0.0.1@3307", "foo_version");
         assertThat(actual.getId(), is("foo_id"));
         assertThat(actual.getIp(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3307));

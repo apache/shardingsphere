@@ -22,7 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -69,9 +70,9 @@ public final class BootstrapInitializer {
     }
     
     private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
-        String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(),
-                ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
-        return InstanceMetaDataBuilderFactory.create(instanceType, port);
+        String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(
+                ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(), ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
+        return TypedSPIRegistry.getRegisteredService(InstanceMetaDataBuilder.class, instanceType).build(port);
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
