@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.type;
+package org.apache.shardingsphere.infra.context.refresher.type.index;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -25,13 +25,13 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 /**
@@ -40,11 +40,11 @@ import java.util.Optional;
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) {
+    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                        final String schemaName, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {
-            return Optional.empty();
+            return;
         }
         String actualSchemaName = sqlStatement.getIndex().get().getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);
         String indexName = sqlStatement.getIndex().get().getIndexName().getIdentifier().getValue();
@@ -52,18 +52,27 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         if (logicTableName.isPresent()) {
             ShardingSphereTable table = database.getSchema(actualSchemaName).getTable(logicTableName.get());
             Preconditions.checkNotNull(table, "Can not get the table '%s' meta data!", logicTableName.get());
-            table.getIndexes().remove(indexName);
+            ShardingSphereTable newTable = newShardingSphereTable(table);
+            newTable.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
-            table.getIndexes().put(renameIndexName, new ShardingSphereIndex(renameIndexName));
-            SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), actualSchemaName);
-            event.getAlteredTables().add(table);
-            return Optional.of(event);
+            newTable.getIndexes().put(renameIndexName, new ShardingSphereIndex(renameIndexName));
+            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName, logicDataSourceNames.iterator().next());
+            alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
+            modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
-        return Optional.empty();
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereSchema schema, final String indexName) {
         return schema.getAllTableNames().stream().filter(each -> schema.getTable(each).getIndexes().containsKey(indexName)).findFirst();
+    }
+    
+    private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), new LinkedHashMap<>(table.getColumns()),
+                new LinkedHashMap<>(table.getIndexes()), new LinkedHashMap<>(table.getConstrains()));
+        result.getColumnNames().addAll(table.getColumnNames());
+        result.getVisibleColumns().addAll(table.getVisibleColumns());
+        result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
+        return result;
     }
     
     @Override

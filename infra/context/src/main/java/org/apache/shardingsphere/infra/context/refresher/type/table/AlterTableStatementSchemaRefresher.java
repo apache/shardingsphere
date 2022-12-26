@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.type;
+package org.apache.shardingsphere.infra.context.refresher.type.table;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
@@ -25,11 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -38,37 +35,36 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Schema refresher for create table statement.
+ * Schema refresher for alter table statement.
  */
-public final class CreateTableStatementSchemaRefresher implements MetaDataRefresher<CreateTableStatement> {
+public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                        final String schemaName, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (!containsInImmutableDataNodeContainedRule(tableName, database)) {
-            database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames.iterator().next());
+        if (sqlStatement.getRenameTable().isPresent()) {
+            String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
+            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, schemaName, renameTable, props));
+            alterSchemaMetaDataPOJO.getDroppedTables().add(tableName);
+        } else {
+            alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, schemaName, tableName, props));
         }
+        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
+    }
+    
+    private ShardingSphereTable getTable(final ShardingSphereDatabase database, final String schemaName,
+                                         final String tableName, final ConfigurationProperties props) throws SQLException {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 database.getResourceMetaData().getStorageTypes(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), material);
-        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(tableName));
-        if (actualTableMetaData.isPresent()) {
-            database.getSchema(schemaName).putTable(tableName, actualTableMetaData.get());
-            SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
-            event.getAlteredTables().add(actualTableMetaData.get());
-            return Optional.of(event);
-        }
-        return Optional.empty();
-    }
-    
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+        return Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(tableName)).orElseGet(() ->
+                new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
     }
     
     @Override
     public String getType() {
-        return CreateTableStatement.class.getName();
+        return AlterTableStatement.class.getName();
     }
 }

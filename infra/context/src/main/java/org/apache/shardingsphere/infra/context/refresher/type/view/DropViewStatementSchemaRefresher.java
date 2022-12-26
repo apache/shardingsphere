@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.type;
+package org.apache.shardingsphere.infra.context.refresher.type.view;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Schema refresher for drop view statement.
@@ -37,28 +35,15 @@ import java.util.Optional;
 public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
+    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                        final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames.iterator().next());
         sqlStatement.getViews().forEach(each -> {
-            ShardingSphereSchema schema = database.getSchema(schemaName);
             String viewName = each.getTableName().getIdentifier().getValue();
-            schema.removeTable(viewName);
-            event.getDroppedTables().add(viewName);
-            schema.removeView(viewName);
-            event.getDroppedViews().add(viewName);
+            alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
+            alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
         });
-        Collection<MutableDataNodeRule> rules = database.getRuleMetaData().findRules(MutableDataNodeRule.class);
-        for (SimpleTableSegment each : sqlStatement.getViews()) {
-            removeDataNode(rules, each, schemaName);
-        }
-        return Optional.of(event);
-    }
-    
-    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final SimpleTableSegment tobeRemovedSegment, final String schemaName) {
-        for (MutableDataNodeRule each : rules) {
-            each.remove(schemaName, tobeRemovedSegment.getTableName().getIdentifier().getValue());
-        }
+        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
     @Override

@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.event;
+package org.apache.shardingsphere.infra.metadata.database.schema.pojo;
 
 import lombok.Getter;
-
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 /**
- * Drop index event.
+ * Alter schema pojo.
  */
+@RequiredArgsConstructor
 @Getter
-public final class DropIndexEvent implements MetaDataRefreshedEvent {
+public final class AlterSchemaPOJO {
     
-    private final List<SchemaAlteredEvent> schemaAlteredEvents = new LinkedList<>();
+    private final String databaseName;
+    
+    private final String logicDataSourceName;
+    
+    private final String schemaName;
+    
+    private final String renameSchemaName;
 }

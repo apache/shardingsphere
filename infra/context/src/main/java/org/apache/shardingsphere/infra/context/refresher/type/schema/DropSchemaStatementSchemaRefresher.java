@@ -15,35 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.fixture;
+package org.apache.shardingsphere.infra.context.refresher.type.schema;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.LinkedList;
 
-import static org.mockito.Mockito.mock;
-
-@Getter
-public final class MetaDataRefresherFixture implements MetaDataRefresher<AbstractSQLStatement> {
-    
-    private int count;
+/**
+ * Schema refresher for drop schema statement.
+ */
+public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final AbstractSQLStatement sqlStatement, final ConfigurationProperties props) {
-        count++;
-        return Optional.of(mock(MetaDataRefreshedEvent.class));
+    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                        final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) {
+        modeContextManager.dropSchema(database.getName(), getSchemaNames(sqlStatement));
+    }
+    
+    private Collection<String> getSchemaNames(final DropSchemaStatement sqlStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (IdentifierValue each : sqlStatement.getSchemaNames()) {
+            result.add(each.getValue().toLowerCase());
+        }
+        return result;
     }
     
     @Override
     public String getType() {
-        return AbstractSQLStatement.class.getName();
+        return DropSchemaStatement.class.getName();
     }
 }

@@ -15,21 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.event;
+package org.apache.shardingsphere.infra.metadata.database.schema.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Drop schema event.
+ * alter schema metadata pojo.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropSchemaEvent implements MetaDataRefreshedEvent {
+public final class AlterSchemaMetaDataPOJO {
     
     private final String databaseName;
     
-    private final Collection<String> schemaNames;
+    private final String schemaName;
+    
+    private final String logicDataSourceName;
+    
+    private final Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
+    
+    private final Collection<ShardingSphereView> alteredViews = new LinkedList<>();
+    
+    private final Collection<String> droppedTables = new LinkedList<>();
+    
+    private final Collection<String> droppedViews = new LinkedList<>();
 }
