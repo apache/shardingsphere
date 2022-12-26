@@ -4,10 +4,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-distribution</artifactId>
+        <artifactId>shardingsphere-agent</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-shade-dependency</artifactId>
+    
+    <properties>
+        <bytebuddy.version>1.12.12</bytebuddy.version>
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
+    </properties>
     
     <dependencies>
         <dependency>
@@ -19,5 +24,22 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${bytebuddy.version}</version>
+        </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -28,10 +28,6 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-agent-shade-dependency</module>
-    </modules>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

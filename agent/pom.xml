@@ -33,17 +33,6 @@
         <module>bootstrap</module>
         <module>plugins</module>
         <module>distribution</module>
+        <module>shade-dependency</module>
     </modules>
-    
-    <properties>
-        <bytebuddy.version>1.12.12</bytebuddy.version>
-    </properties>
-    
-    <dependencies>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>${bytebuddy.version}</version>
-        </dependency>
-    </dependencies>
 </project>
