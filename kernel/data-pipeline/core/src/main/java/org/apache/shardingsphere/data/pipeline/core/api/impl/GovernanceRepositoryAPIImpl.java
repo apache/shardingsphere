@@ -62,7 +62,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public Optional<String> getJobItemProgress(final String jobId, final int shardingItem) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem)));
+        String text = repository.getDirectly(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem));
+        return Strings.isNullOrEmpty(text) ? Optional.empty() : Optional.of(text);
     }
     
     @Override
