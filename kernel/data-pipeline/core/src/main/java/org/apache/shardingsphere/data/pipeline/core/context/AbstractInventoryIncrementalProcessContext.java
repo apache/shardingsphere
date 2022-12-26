@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProce
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
@@ -57,10 +56,10 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
         this.pipelineProcessConfig = processConfig;
         PipelineReadConfiguration readConfig = processConfig.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
-        readRateLimitAlgorithm = null != readRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(readRateLimiter) : null;
+        readRateLimitAlgorithm = null == readRateLimiter ? null : ShardingSphereAlgorithmFactory.createAlgorithm(readRateLimiter, JobRateLimitAlgorithm.class);
         PipelineWriteConfiguration writeConfig = processConfig.getWrite();
         AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
-        writeRateLimitAlgorithm = null != writeRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(writeRateLimiter) : null;
+        writeRateLimitAlgorithm = null == writeRateLimiter ? null : ShardingSphereAlgorithmFactory.createAlgorithm(writeRateLimiter, JobRateLimitAlgorithm.class);
         AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
         pipelineChannelCreator = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelCreator.class);
         inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
