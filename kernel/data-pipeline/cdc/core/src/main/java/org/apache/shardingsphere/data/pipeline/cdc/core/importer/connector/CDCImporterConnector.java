@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector;
 
+import io.netty.channel.Channel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 /**
  * CDC importer connector.
  */
+@RequiredArgsConstructor
 public final class CDCImporterConnector implements ImporterConnector {
+    
+    private final Channel channel;
     
     @Override
     public Object getConnector() {
-        // TODO to be implemented
-        return null;
+        return channel;
     }
     
     @Override

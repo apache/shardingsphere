@@ -34,7 +34,7 @@ message CDCResponse {
   oneof response {
     ServerGreetingResult server_greeting_result = 3;
     CreateSubscriptionResult create_subscription_result = 4;
-    FetchRecordResult fetch_record_result = 5;
+    DataRecordResult data_record_result = 5;
   }
 
   optional string error_code = 14;
@@ -67,7 +67,7 @@ message ClobValue {
   string value = 1;
 }
 
-message FetchRecordResult {
+message DataRecordResult {
   message Record {
     map<string, google.protobuf.Any> before = 1;
     map<string, google.protobuf.Any> after = 2;

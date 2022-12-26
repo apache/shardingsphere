@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.cdc.client.context;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import io.netty.util.AttributeKey;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 
 /**
- * Importer creator factory.
+ * Client connection context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ImporterCreatorFactory {
+@Getter
+public final class ClientConnectionContext {
     
-    static {
-        ShardingSphereServiceLoader.register(ImporterCreator.class);
-    }
+    public static final AttributeKey<ClientConnectionContext> CONTEXT_KEY = AttributeKey.valueOf("client.context");
     
-    /**
-     * Get importer creator instance.
-     *
-     * @param importType import type
-     * @return importer creator
-     */
-    public static ImporterCreator getInstance(final String importType) {
-        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, importType);
-    }
+    @Setter
+    private volatile ClientConnectionStatus status;
 }
