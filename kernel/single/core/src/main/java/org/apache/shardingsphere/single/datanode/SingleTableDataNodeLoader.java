@@ -93,7 +93,8 @@ public final class SingleTableDataNodeLoader {
     }
     
     private static boolean isSameSchemaTableName(final QualifiedTable qualifiedTable, final DataNode dataNode) {
-        return null != qualifiedTable.getSchemaName() ? qualifiedTable.getSchemaName().equals(dataNode.getSchemaName()) && qualifiedTable.getTableName().equals(dataNode.getTableName()) : qualifiedTable.getTableName().equals(dataNode.getTableName());
+        return null != qualifiedTable.getSchemaName() ? qualifiedTable.getSchemaName().equals(dataNode.getSchemaName()) && qualifiedTable.getTableName().equals(dataNode.getTableName())
+                : qualifiedTable.getTableName().equals(dataNode.getTableName());
     }
     
     private static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource, final String dataSourceName) {
