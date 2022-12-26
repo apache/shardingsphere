@@ -47,13 +47,13 @@ public final class SingleTableRuleResultSetTest {
     }
     
     private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         SingleRule rule = mock(SingleRule.class);
         SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
         singleRuleConfig.setDefaultDataSource("foo_ds");
         when(rule.getConfiguration()).thenReturn(singleRuleConfig);
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getSingleRule(SingleRule.class)).thenReturn(rule);
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }
