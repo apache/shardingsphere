@@ -87,7 +87,7 @@ public final class ShardingRuleStatementCheckerTest {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
         rules.clear();
         rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1")));
         ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
@@ -110,13 +110,13 @@ public final class ShardingRuleStatementCheckerTest {
         List<AbstractTableRuleSegment> rules = Arrays.asList(
                 new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1")),
                 new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1")));
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckCreationWithIdentical() {
         List<AbstractTableRuleSegment> rules = Collections.singletonList(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1")));
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
@@ -128,14 +128,14 @@ public final class ShardingRuleStatementCheckerTest {
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckCreationWithResourceRequiredMissed() {
         List<AbstractTableRuleSegment> rules = Collections.singletonList(new AutoTableRuleSegment("t_product", Arrays.asList("ds_required_missed", "ds_1")));
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckCreationWithInvalidKeyGenerateAlgorithm() {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("invalid", newProperties("invalid", "invalid"))));
-        ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -143,7 +143,7 @@ public final class ShardingRuleStatementCheckerTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Collections.singletonList(new ShardingAuditorSegment("sharding_key_required_auditor",
                 new AlgorithmSegment("invalid", new Properties()))), true));
-        ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -152,9 +152,9 @@ public final class ShardingRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("not_exist", newProperties("", "")));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("complex", newProperties("", "")));
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -163,7 +163,7 @@ public final class ShardingRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("complex", newProperties("", "")));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
@@ -171,7 +171,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("invalid", "product_id", null));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -179,7 +179,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("complex", "product_id", null));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -187,7 +187,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id,user_id", null));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -195,7 +195,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", null));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -203,7 +203,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", null));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, null);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, null);
     }
     
     @Test
@@ -212,7 +212,7 @@ public final class ShardingRuleStatementCheckerTest {
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${product_id% 2}"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -220,7 +220,7 @@ public final class ShardingRuleStatementCheckerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", null));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(tableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -228,7 +228,7 @@ public final class ShardingRuleStatementCheckerTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("INLINE", newProperties("algorithm-expression", "ds_${product_id% 2}")));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
     }
     
     @Test
@@ -236,7 +236,15 @@ public final class ShardingRuleStatementCheckerTest {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("MOD", newProperties("sharding-count", "4")));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
+    }
+    
+    @Test
+    public void assertCheckStatementWithIfNotExists() {
+        Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
+        rules.add(createCompleteAutoTableRule());
+        rules.add(createCompleteTableRule());
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, true, shardingRuleConfig);
     }
     
     private static ShardingRuleConfiguration createShardingRuleConfiguration() {
