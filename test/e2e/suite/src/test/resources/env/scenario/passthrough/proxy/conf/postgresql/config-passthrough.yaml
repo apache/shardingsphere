@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
 
-rule:
+rules:
 - !SINGLE
   tables:
     - passthrough.t_data_type_integer, passthrough.t_data_type_floating_point
