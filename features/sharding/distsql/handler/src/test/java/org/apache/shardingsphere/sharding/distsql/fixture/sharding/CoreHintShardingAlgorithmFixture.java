@@ -29,9 +29,6 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-/**
- * Hint inline sharding algorithm.
- */
 public final class CoreHintShardingAlgorithmFixture implements HintShardingAlgorithm<Comparable<?>> {
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";

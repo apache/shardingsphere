@@ -30,9 +30,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
-/**
- * Modulo sharding algorithm.
- */
 public final class CoreAutoShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
