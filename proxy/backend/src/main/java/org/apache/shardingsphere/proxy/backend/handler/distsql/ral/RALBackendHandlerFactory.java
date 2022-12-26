@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.distsql.handler.resultset.DistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.distsql.handler.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
@@ -131,7 +132,8 @@ public final class RALBackendHandlerFactory {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
-            return QueryableGlobalRuleRALBackendHandlerFactory.newInstance((QueryableGlobalRuleRALStatement) sqlStatement);
+            return new QueryableGlobalRuleRALBackendHandler(
+                    sqlStatement, (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
             return new UpdatableGlobalRuleRALBackendHandler(
