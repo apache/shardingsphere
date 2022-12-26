@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.yaml.config.pojo;
+package org.apache.shardingsphere.single.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Single rule configuration for YAML.
@@ -28,6 +31,8 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 @Getter
 @Setter
 public final class YamlSingleRuleConfiguration implements YamlRuleConfiguration {
+    
+    private Collection<String> tables = new LinkedList<>();
     
     private String defaultDataSource;
     

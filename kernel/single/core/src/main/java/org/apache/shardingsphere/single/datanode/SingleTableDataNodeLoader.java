@@ -21,7 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.api.config.rule.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.single.exception.SingleTablesLoadingException;
 
 import javax.sql.DataSource;
@@ -33,6 +36,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Single table data node loader.
@@ -43,22 +48,26 @@ public final class SingleTableDataNodeLoader {
     /**
      * Load single table data nodes.
      *
+     * @param ruleConfig rule config
      * @param databaseName database name
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param excludedTables excluded tables
      * @return single table data node map
      */
-    public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType,
+    public static Map<String, Collection<DataNode>> load(final SingleRuleConfiguration ruleConfig, final String databaseName, final DatabaseType databaseType,
                                                          final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
         Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), entry.getValue(), excludedTables);
-            for (String each : dataNodeMap.keySet()) {
-                Collection<DataNode> addedDataNodes = dataNodeMap.get(each);
-                Collection<DataNode> existDataNodes = result.getOrDefault(each.toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1));
-                existDataNodes.addAll(addedDataNodes);
-                result.putIfAbsent(each.toLowerCase(), existDataNodes);
+        for (SingleTableRuleConfiguration each : ruleConfig.getTables()) {
+            Map<String, QualifiedTable> qualifiedTableMap = each.getTables().stream().collect(Collectors.toMap(QualifiedTable::getTableName, Function.identity()));
+            Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, each.getDataSourceName(), dataSourceMap.get(each.getDataSourceName()), excludedTables);
+            for (Entry<String, Collection<DataNode>> entry : dataNodeMap.entrySet()) {
+                QualifiedTable qualifiedTable = qualifiedTableMap.get(entry.getKey().toLowerCase());
+                if (null == qualifiedTable) {
+                    continue;
+                }
+                Collection<DataNode> existDataNodes = result.computeIfAbsent(entry.getKey().toLowerCase(), key -> new LinkedHashSet<>(entry.getValue().size(), 1));
+                entry.getValue().stream().filter(table -> isSameSchemaTableName(qualifiedTable, table)).forEach(existDataNodes::add);
             }
         }
         return result;
@@ -81,6 +90,10 @@ public final class SingleTableDataNodeLoader {
             }
         }
         return result;
+    }
+    
+    private static boolean isSameSchemaTableName(final QualifiedTable qualifiedTable, final DataNode table) {
+        return null != table.getSchemaName() && table.getSchemaName().equals(qualifiedTable.getSchemaName()) && table.getTableName().equals(qualifiedTable.getTableName());
     }
     
     private static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource, final String dataSourceName) {

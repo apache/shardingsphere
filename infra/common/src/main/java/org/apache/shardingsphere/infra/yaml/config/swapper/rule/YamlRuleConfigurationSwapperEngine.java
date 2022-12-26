@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -64,18 +63,5 @@ public final class YamlRuleConfigurationSwapperEngine {
                                                                    final Class<?> ruleConfigType, final YamlRuleConfigurationSwapper swapper) {
         return yamlRuleConfigs.stream()
                 .filter(each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
-    }
-    
-    /**
-     * Swap from YAML rule configuration to rule configuration.
-     *
-     * @param yamlRuleConfig YAML rule configuration
-     * @return rule configuration
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public RuleConfiguration swapToRuleConfiguration(final YamlRuleConfiguration yamlRuleConfig) {
-        Collection<Class<?>> types = Collections.singletonList(yamlRuleConfig.getRuleConfigurationType());
-        YamlRuleConfigurationSwapper swapper = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(types).get(yamlRuleConfig.getRuleConfigurationType());
-        return (RuleConfiguration) swapper.swapToObject(yamlRuleConfig);
     }
 }

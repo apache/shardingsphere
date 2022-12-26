@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.single.swapper;
 
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
-import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
+import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
+import org.apache.shardingsphere.single.yaml.swapper.YamlSingleRuleConfigurationSwapper;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

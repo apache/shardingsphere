@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema;
+package org.apache.shardingsphere.single.api.config.rule;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+
+import java.util.Collection;
 
 /**
- * Qualified table.
+ * Single table rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class QualifiedTable {
+public final class SingleTableRuleConfiguration {
     
-    private static final String DELIMITER = ".";
+    private final String dataSourceName;
     
-    private final String schemaName;
-    
-    private final String tableName;
-    
-    @Override
-    public String toString() {
-        return Strings.isNullOrEmpty(schemaName) ? tableName : String.join(DELIMITER, schemaName, tableName);
-    }
+    private final Collection<QualifiedTable> tables;
 }
