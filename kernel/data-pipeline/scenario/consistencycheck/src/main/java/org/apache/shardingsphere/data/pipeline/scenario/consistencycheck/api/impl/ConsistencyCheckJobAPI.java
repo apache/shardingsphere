@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
@@ -142,8 +141,8 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     
     @Override
     public ConsistencyCheckJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
-        String progress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
-        return Strings.isNullOrEmpty(progress) ? null : swapper.swapToObject(YamlEngine.unmarshal(progress, YamlConsistencyCheckJobItemProgress.class, true));
+        Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
+        return progress.map(s -> swapper.swapToObject(YamlEngine.unmarshal(s, YamlConsistencyCheckJobItemProgress.class, true))).orElse(null);
     }
     
     @Override
