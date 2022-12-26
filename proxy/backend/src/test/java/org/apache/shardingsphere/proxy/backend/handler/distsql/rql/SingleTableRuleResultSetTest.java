@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableRuleResultSet;
@@ -49,7 +49,9 @@ public final class SingleTableRuleResultSetTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration("foo_ds"));
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        singleRuleConfig.setDefaultDataSource("foo_ds");
+        when(rule.getConfiguration()).thenReturn(singleRuleConfig);
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getSingleRule(SingleRule.class)).thenReturn(rule);
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
