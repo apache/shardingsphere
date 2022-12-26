@@ -51,7 +51,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
         ifNotExists = sqlStatement.isIfNotExists();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         if (!ifNotExists) {
-            checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
+            checkDuplicatedRuleNames(databaseName, sqlStatement, currentRuleConfig);
         }
         checkDuplicatedTablesInShardingTableReferenceRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeReferencedShardingTablesExisted(databaseName, sqlStatement, currentRuleConfig);
@@ -62,7 +62,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
     }
     
-    private void checkDuplicateRuleNames(final String databaseName, final CreateShardingTableReferenceRuleStatement sqlStatement,
+    private void checkDuplicatedRuleNames(final String databaseName, final CreateShardingTableReferenceRuleStatement sqlStatement,
                                          final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
