@@ -84,14 +84,9 @@
                                     <exclude>io.netty:netty-buffer</exclude>
                                     <exclude>io.netty:netty-resolver</exclude>
                                     <exclude>org:netty-resolver</exclude>
+                                    <exclude>net.bytebuddy:byte-buddy</exclude>
                                 </excludes>
                             </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.apache.commons</pattern>
-                                    <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
-                                </relocation>
-                            </relocations>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>

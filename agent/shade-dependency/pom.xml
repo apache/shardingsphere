@@ -79,6 +79,10 @@
                                     <pattern>org.apache.commons.logging</pattern>
                                     <shadedPattern>${shade.package}.org.apache.commons.logging</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
+                                </relocation>
                             </relocations>
                             <filters>
                                 <filter>
