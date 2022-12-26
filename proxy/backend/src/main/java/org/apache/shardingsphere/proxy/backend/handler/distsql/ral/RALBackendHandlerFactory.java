@@ -125,19 +125,19 @@ public final class RALBackendHandlerFactory {
             return new HintRALBackendHandler((HintRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
-            DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-            return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement, (DatabaseDistSQLResultSet) resultSet);
+            return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement,
+                    (DatabaseDistSQLResultSet) TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
-            return new QueryableGlobalRuleRALBackendHandler(
-                    sqlStatement, (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+            return new QueryableGlobalRuleRALBackendHandler(sqlStatement,
+                    (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
-            return new UpdatableGlobalRuleRALBackendHandler(
-                    sqlStatement, TypedSPIRegistry.getRegisteredService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement,
+                    TypedSPIRegistry.getRegisteredService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }
