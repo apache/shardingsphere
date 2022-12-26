@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrement
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.BasicDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
@@ -76,7 +75,7 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException if prepare target schema fail
      */
     public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
+        Optional<DataSourcePreparer> dataSourcePreparer = TypedSPIRegistry.findRegisteredService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
@@ -104,7 +103,7 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException SQL exception
      */
     public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
+        Optional<DataSourcePreparer> dataSourcePreparer = TypedSPIRegistry.findRegisteredService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
