@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.check.datasource.DataSourceCheckerFactory;
+import org.apache.shardingsphere.data.pipeline.core.check.datasource.BasicDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
@@ -147,7 +147,7 @@ public final class PipelineJobPreparerUtils {
         if (dataSources.isEmpty()) {
             return;
         }
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(databaseType);
+        DataSourceChecker dataSourceChecker = TypedSPIRegistry.findRegisteredService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
         dataSourceChecker.checkConnection(dataSources);
         dataSourceChecker.checkPrivilege(dataSources);
         dataSourceChecker.checkVariable(dataSources);
@@ -161,7 +161,7 @@ public final class PipelineJobPreparerUtils {
      * @param targetDataSources target data sources
      */
     public static void checkTargetDataSource(final String databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(databaseType);
+        DataSourceChecker dataSourceChecker = TypedSPIRegistry.findRegisteredService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
         if (null == targetDataSources || targetDataSources.isEmpty()) {
             log.info("target data source is empty, skip check");
             return;
