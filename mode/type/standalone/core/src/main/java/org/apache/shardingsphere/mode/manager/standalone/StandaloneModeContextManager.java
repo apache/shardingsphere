@@ -120,7 +120,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         for (Entry<String, ShardingSphereView> entry : toBeAddedViews.entrySet()) {
             if (!containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
                 database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
-            }
+            }StandaloneModeContextManager
             database.getSchema(schemaName).putTable(entry.getKey(), toBeAddedTables.get(entry.getKey().toLowerCase()));
             database.getSchema(schemaName).putView(entry.getKey(), entry.getValue());
         }
@@ -146,6 +146,10 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         removeViewsToDataNode(database, schemaName, tobeRemovedTables, tobeRemovedViews);
     }
     
+    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final String schemaName, final Collection<String> tobeRemovedTables) {
+        tobeRemovedTables.forEach(each -> rules.forEach(rule -> rule.remove(schemaName, each)));
+    }
+    
     private void removeTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> toBeDroppedTables) {
         removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), schemaName, toBeDroppedTables);
         toBeDroppedTables.forEach(each -> database.getSchema(schemaName).removeTable(each));
@@ -156,10 +160,6 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         ShardingSphereSchema schema = database.getSchema(schemaName);
         toBeDroppedTables.forEach(schema::removeTable);
         toBeDroppedViews.forEach(schema::removeView);
-    }
-    
-    private void removeDataNode(final Collection<MutableDataNodeRule> rules, final String schemaName, final Collection<String> tobeRemovedTables) {
-        tobeRemovedTables.forEach(each -> rules.forEach(rule -> rule.remove(schemaName, each)));
     }
     
     @Override
