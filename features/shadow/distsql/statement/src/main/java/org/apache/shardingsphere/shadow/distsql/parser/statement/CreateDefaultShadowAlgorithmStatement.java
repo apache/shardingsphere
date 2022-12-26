@@ -18,16 +18,19 @@
 package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 
 /**
  * Create default shadow algorithm rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateDefaultShadowAlgorithmStatement extends CreateRuleStatement {
     
     private final ShadowAlgorithmSegment shadowAlgorithmSegment;
+    
+    public CreateDefaultShadowAlgorithmStatement(final boolean ifNotExists, final ShadowAlgorithmSegment shadowAlgorithmSegment) {
+        super(ifNotExists);
+        this.shadowAlgorithmSegment = shadowAlgorithmSegment;
+    }
 }

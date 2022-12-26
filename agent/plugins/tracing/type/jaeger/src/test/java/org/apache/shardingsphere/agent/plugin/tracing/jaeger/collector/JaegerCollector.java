@@ -23,11 +23,11 @@ import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.plugin.tracing.rule.CollectorRule;
 import org.junit.rules.ExternalResource;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.List;
 
-public class JaegerCollector extends ExternalResource implements CollectorRule {
+public final class JaegerCollector extends ExternalResource implements CollectorRule {
     
     private MockTracer tracer;
     
@@ -37,8 +37,7 @@ public class JaegerCollector extends ExternalResource implements CollectorRule {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
         }
-        FieldReader fieldReader = new FieldReader(GlobalTracer.get(), GlobalTracer.class.getDeclaredField("tracer"));
-        tracer = (MockTracer) fieldReader.read();
+        tracer = (MockTracer) Plugins.getMemberAccessor().get(GlobalTracer.class.getDeclaredField("tracer"), GlobalTracer.get());
     }
     
     /**

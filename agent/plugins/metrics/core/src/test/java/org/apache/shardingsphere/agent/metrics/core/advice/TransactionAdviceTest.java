@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.core.fixture.FixtureWrapper;
@@ -49,8 +48,8 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
         when(commit.getName()).thenReturn(TransactionAdvice.COMMIT);
         when(rollback.getName()).thenReturn(TransactionAdvice.ROLLBACK);
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
-        transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());
+        transactionAdvice.beforeMethod(targetObject, commit, new Object[]{});
+        transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{});
         FixtureWrapper commitWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.TRANSACTION_COMMIT).get();
         assertTrue(MetricsPool.get(MetricIds.TRANSACTION_COMMIT).isPresent());
         assertThat(commitWrapper.getFixtureValue(), is(1.0));

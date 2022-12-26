@@ -69,7 +69,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         if (msg instanceof MySQLHandshakePacket) {
             MySQLHandshakePacket handshake = (MySQLHandshakePacket) msg;
-            MySQLHandshakeResponse41Packet handshakeResponsePacket = new MySQLHandshakeResponse41Packet(1, MAX_PACKET_SIZE, CHARACTER_SET, username);
+            MySQLHandshakeResponse41Packet handshakeResponsePacket = new MySQLHandshakeResponse41Packet(MAX_PACKET_SIZE, CHARACTER_SET, username);
             handshakeResponsePacket.setAuthResponse(generateAuthResponse(handshake.getAuthPluginData().getAuthenticationPluginData()));
             handshakeResponsePacket.setCapabilityFlags(generateClientCapability());
             handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
@@ -92,7 +92,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
                 default:
                     authPluginResponse = password.getBytes();
             }
-            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authSwitchRequest.getSequenceId() + 1, authPluginResponse));
+            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authPluginResponse));
             seed = authSwitchRequest.getAuthPluginData().getAuthenticationPluginData();
             return;
         }
@@ -116,10 +116,10 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         if (!publicKeyRequested) {
             if (PERFORM_FULL_AUTHENTICATION == authMoreData.getPluginData()[0]) {
                 publicKeyRequested = true;
-                ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authMoreData.getSequenceId() + 1, new byte[]{REQUEST_PUBLIC_KEY}));
+                ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(new byte[]{REQUEST_PUBLIC_KEY}));
             }
         } else {
-            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authMoreData.getSequenceId() + 1,
+            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(
                     PasswordEncryption.encryptWithRSAPublicKey(password, seed,
                             serverInfo.getServerVersion().greaterThanOrEqualTo(8, 0, 5) ? "RSA/ECB/OAEPWithSHA-1AndMGF1Padding" : "RSA/ECB/PKCS1Padding",
                             new String(authMoreData.getPluginData()))));

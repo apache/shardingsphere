@@ -122,7 +122,7 @@ public abstract class BaseDiscoveryE2EIT {
                 Statement statement = connection.createStatement()) {
             statement.execute("SHUTDOWN");
         }
-        ThreadUtil.sleep(30, TimeUnit.SECONDS);
+        ThreadUtil.sleep(35, TimeUnit.SECONDS);
     }
     
     private void assertPrimaryDataSourceChanged(final String oldPrimaryDataSourceName, final String newPrimaryDataSourceName) {

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
 
 public final class ExecuteEngineTest {
     
-    @Test(timeout = 30000)
+    @Test(timeout = 30000L)
     public void assertSubmitAndTaskSucceeded() throws ExecutionException, InterruptedException {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
@@ -50,7 +50,7 @@ public final class ExecuteEngineTest {
         verify(callback).onSuccess();
     }
     
-    @Test(timeout = 30000)
+    @Test(timeout = 30000L)
     public void assertSubmitAndTaskFailed() {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         RuntimeException expectedException = new RuntimeException("Expected");
@@ -61,10 +61,10 @@ public final class ExecuteEngineTest {
         Throwable actualCause = null;
         try {
             future.get();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException ex) {
             fail();
-        } catch (ExecutionException e) {
-            actualCause = e.getCause();
+        } catch (final ExecutionException ex) {
+            actualCause = ex.getCause();
         }
         assertThat(actualCause, is(expectedException));
         shutdownAndAwaitTerminal(executeEngine);
@@ -73,10 +73,8 @@ public final class ExecuteEngineTest {
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void shutdownAndAwaitTerminal(final ExecuteEngine executeEngine) {
-        Field field = ExecuteEngine.class.getDeclaredField("executorService");
-        field.setAccessible(true);
-        ExecutorService executorService = (ExecutorService) field.get(executeEngine);
+        ExecutorService executorService = (ExecutorService) Plugins.getMemberAccessor().get(ExecuteEngine.class.getDeclaredField("executorService"), executeEngine);
         executorService.shutdown();
-        executorService.awaitTermination(30, TimeUnit.SECONDS);
+        executorService.awaitTermination(30L, TimeUnit.SECONDS);
     }
 }

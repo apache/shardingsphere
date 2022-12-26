@@ -35,9 +35,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -172,8 +172,6 @@ public final class BackendTransactionManagerTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setLocalTransactionManager() {
-        Field field = BackendTransactionManager.class.getDeclaredField("localTransactionManager");
-        field.setAccessible(true);
-        field.set(backendTransactionManager, localTransactionManager);
+        Plugins.getMemberAccessor().set(BackendTransactionManager.class.getDeclaredField("localTransactionManager"), backendTransactionManager, localTransactionManager);
     }
 }

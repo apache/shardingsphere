@@ -74,12 +74,12 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     @Override
     public ASTNode visitCreateShadowRule(final CreateShadowRuleContext ctx) {
         List<ShadowRuleSegment> shadowRuleSegments = ctx.shadowRuleDefinition().stream().map(this::visit).map(each -> (ShadowRuleSegment) each).collect(Collectors.toList());
-        return new CreateShadowRuleStatement(autoCreateAlgorithmName(shadowRuleSegments));
+        return new CreateShadowRuleStatement(null != ctx.ifNotExists(), autoCreateAlgorithmName(shadowRuleSegments));
     }
     
     @Override
     public ASTNode visitCreateDefaultShadowAlgorithm(final CreateDefaultShadowAlgorithmContext ctx) {
-        return new CreateDefaultShadowAlgorithmStatement((ShadowAlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return new CreateDefaultShadowAlgorithmStatement(null != ctx.ifNotExists(), (ShadowAlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override

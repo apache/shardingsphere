@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.metrics.core.fixture.FixtureWrapper;
@@ -28,15 +27,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
-    
-    private final CommandExecutorTaskAdvice commandExecutorTaskAdvice = new CommandExecutorTaskAdvice();
     
     @Mock
     private Method run;
@@ -47,14 +44,15 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertExecuteLatency() {
         when(run.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_RUN);
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        commandExecutorTaskAdvice.beforeMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
+        advice.beforeMethod(targetObject, run, new Object[]{});
         try {
             Thread.sleep(500L);
         } catch (final InterruptedException ex) {
             ex.printStackTrace();
         }
-        commandExecutorTaskAdvice.afterMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
+        advice.afterMethod(targetObject, run, new Object[]{}, null);
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).get();
         assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).isPresent());
         assertThat(requestWrapper.getFixtureValue(), greaterThan(0.0));
@@ -64,7 +62,7 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     public void assertExecuteErrorTotal() {
         when(processException.getName()).thenReturn(CommandExecutorTaskAdvice.COMMAND_EXECUTOR_EXCEPTION);
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        commandExecutorTaskAdvice.afterMethod(targetObject, processException, new Object[]{}, new MethodInvocationResult());
+        new CommandExecutorTaskAdvice().afterMethod(targetObject, processException, new Object[]{}, null);
         FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).get();
         assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).isPresent());
         assertThat(requestWrapper.getFixtureValue(), greaterThan(0.0));

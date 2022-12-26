@@ -25,6 +25,8 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
@@ -35,6 +37,8 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.Consistenc
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -139,5 +143,32 @@ public final class FixtureCDCJobAPI implements InventoryIncrementalJobAPI, CDCJo
     @Override
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
         return false;
+    }
+    
+    @Override
+    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    }
+    
+    @Override
+    public PipelineProcessConfiguration showProcessConfiguration() {
+        return null;
+    }
+    
+    @Override
+    public void rollback(final String jobId) throws SQLException {
+    }
+    
+    @Override
+    public void commit(final String jobId) {
+    }
+    
+    @Override
+    public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
+        return null;
+    }
+    
+    @Override
+    public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
+        return null;
     }
 }

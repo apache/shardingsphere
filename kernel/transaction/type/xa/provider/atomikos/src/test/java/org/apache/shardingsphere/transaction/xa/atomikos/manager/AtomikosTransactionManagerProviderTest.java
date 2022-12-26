@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
@@ -57,9 +57,9 @@ public final class AtomikosTransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @Before
-    public void setUp() throws NoSuchFieldException {
-        new InstanceField(AtomikosTransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider).set(userTransactionManager);
-        new InstanceField(AtomikosTransactionManagerProvider.class.getDeclaredField("userTransactionService"), transactionManagerProvider).set(userTransactionService);
+    public void setUp() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(AtomikosTransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider, userTransactionManager);
+        Plugins.getMemberAccessor().set(AtomikosTransactionManagerProvider.class.getDeclaredField("userTransactionService"), transactionManagerProvider, userTransactionService);
     }
     
     @Test

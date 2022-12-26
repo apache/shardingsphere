@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -52,7 +53,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     @Test
     public void assertRefresh() throws SQLException {
         ShardingSphereDatabase actual = createDatabaseMetaData();
-        Optional<MetaDataRefreshedEvent> event = new RenameTableStatementSchemaRefresher().refresh(
+        Optional<MetaDataRefreshedEvent> event = new RenameTableStatementSchemaRefresher().refresh(mock(ModeContextManager.class),
                 actual, Collections.singleton("foo_ds"), "foo_schema", createRenameTableStatement(), new ConfigurationProperties(new Properties()));
         assertTrue(event.isPresent());
         assertThat(((SchemaAlteredEvent) event.get()).getDatabaseName(), is(DefaultDatabase.LOGIC_NAME));

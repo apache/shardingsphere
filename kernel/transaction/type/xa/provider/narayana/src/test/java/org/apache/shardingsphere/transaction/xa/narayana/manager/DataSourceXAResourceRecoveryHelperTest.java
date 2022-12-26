@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XAConnection;
@@ -69,8 +69,8 @@ public final class DataSourceXAResourceRecoveryHelperTest {
     }
     
     @Test
-    public void assertGetXAResourcesWithoutConnecting() throws SQLException, NoSuchFieldException {
-        new InstanceField(DataSourceXAResourceRecoveryHelper.class.getDeclaredField("delegate"), recoveryHelper).set(xaResource);
+    public void assertGetXAResourcesWithoutConnecting() throws SQLException, ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(DataSourceXAResourceRecoveryHelper.class.getDeclaredField("delegate"), recoveryHelper, xaResource);
         recoveryHelper.getXAResources();
         XAResource[] xaResources = recoveryHelper.getXAResources();
         assertThat(xaResources.length, is(1));

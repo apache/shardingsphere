@@ -58,9 +58,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.ResultSetMetaData;
@@ -313,11 +313,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<PostgreSQLColumnDescription> getColumnDescriptionsFromPacket(final PostgreSQLRowDescriptionPacket packet) {
-        Field field = PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions");
-        field.setAccessible(true);
-        return (Collection<PostgreSQLColumnDescription>) field.get(packet);
+        return (Collection<PostgreSQLColumnDescription>) Plugins.getMemberAccessor().get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), packet);
     }
     
     @SuppressWarnings("rawtypes")
@@ -384,9 +382,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private List<PostgreSQLColumnDescription> getColumnDescriptions(final PostgreSQLRowDescriptionPacket packet) {
-        Field columnDescriptionsField = PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions");
-        columnDescriptionsField.setAccessible(true);
-        return (List<PostgreSQLColumnDescription>) columnDescriptionsField.get(packet);
+        return (List<PostgreSQLColumnDescription>) Plugins.getMemberAccessor().get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), packet);
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)

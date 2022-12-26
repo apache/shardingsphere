@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.InstanceField;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
@@ -52,8 +52,8 @@ public final class BitronixXATransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @Before
-    public void setUp() throws NoSuchFieldException {
-        new InstanceField(BitronixXATransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider).set(transactionManager);
+    public void setUp() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(BitronixXATransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider, transactionManager);
     }
     
     @Test

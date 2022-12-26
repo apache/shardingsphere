@@ -293,8 +293,6 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private <T> T getField(final DatabaseCommunicationEngine target, final String fieldName) {
-        Field field = DatabaseCommunicationEngine.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return (T) field.get(target);
+        return (T) Plugins.getMemberAccessor().get(DatabaseCommunicationEngine.class.getDeclaredField(fieldName), target);
     }
 }

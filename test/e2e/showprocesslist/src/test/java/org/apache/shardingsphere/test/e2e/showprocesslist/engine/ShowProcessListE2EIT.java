@@ -97,7 +97,7 @@ public final class ShowProcessListE2EIT {
                     Connection connection = "proxy".equals(targetContainer) ? containerComposer.getProxyDataSource().getConnection() : containerComposer.getJdbcDataSource().getConnection();
                     Statement statement = connection.createStatement()) {
                 statement.executeQuery(SELECT_SLEEP);
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 throw new RuntimeException(ex);
             }
         };

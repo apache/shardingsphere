@@ -45,7 +45,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-single-table-core</artifactId>
+            <artifactId>shardingsphere-single-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         
