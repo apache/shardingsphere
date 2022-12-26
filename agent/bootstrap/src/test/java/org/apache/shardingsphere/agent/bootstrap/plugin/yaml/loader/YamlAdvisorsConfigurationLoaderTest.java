@@ -36,14 +36,14 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     
     @Test
     public void assertLoad() {
-        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/src/test/resources/conf/advisors.yaml"));
+        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/conf/advisors.yaml"));
         assertThat(actual.getAdvisors().size(), is(1));
         assertYamlAdvisorConfiguration(actual.getAdvisors().iterator().next());
     }
     
     private void assertYamlAdvisorConfiguration(final YamlAdvisorConfiguration actual) {
-        assertThat(actual.getTarget(), is("org.apache.shardingsphere.agent.core.plugin.yaml.fixture.YamlTargetObjectFixture"));
-        assertThat(actual.getAdvice(), is("org.apache.shardingsphere.agent.core.plugin.yaml.fixture.YamlAdviceFixture"));
+        assertThat(actual.getTarget(), is("org.apache.shardingsphere.agent.bootstrap.plugin.yaml.fixture.YamlTargetObjectFixture"));
+        assertThat(actual.getAdvice(), is("org.apache.shardingsphere.agent.bootstrap.plugin.yaml.fixture.YamlAdviceFixture"));
         assertThat(actual.getPointcuts().size(), is(8));
         List<YamlPointcutConfiguration> actualYamlPointcutConfigs = new ArrayList<>(actual.getPointcuts());
         assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(0), null, "constructor", Collections.emptyList());
@@ -84,7 +84,7 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     
     @Test
     public void assertLoadEmptyFile() {
-        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/src/test/resources/conf/empty-advisors.yaml"));
+        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/conf/empty-advisors.yaml"));
         assertTrue(actual.getAdvisors().isEmpty());
     }
 }

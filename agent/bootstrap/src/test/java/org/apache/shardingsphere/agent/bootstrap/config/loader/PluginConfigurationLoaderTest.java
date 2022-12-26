@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNotNull;
 
 public final class PluginConfigurationLoaderTest {
     
-    private static final String DEFAULT_CONFIG_PATH = "/src/test/resources/conf/agent.yaml";
+    private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
     @Test
     public void assertLoad() throws IOException, ReflectiveOperationException {
