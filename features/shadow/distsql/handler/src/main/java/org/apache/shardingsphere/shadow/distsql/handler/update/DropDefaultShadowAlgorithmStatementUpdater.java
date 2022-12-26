@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -33,25 +32,19 @@ import java.util.Collections;
  */
 public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
-    private static final String SHADOW = "shadow";
-    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
-        checkConfigurationExist(database.getName(), currentRuleConfig);
+        ShadowRuleStatementChecker.checkRuleConfigurationExists(database.getName(), currentRuleConfig);
         checkAlgorithm(database.getName(), sqlStatement, currentRuleConfig);
-    }
-    
-    private void checkConfigurationExist(final String databaseName, final DatabaseRuleConfiguration currentRuleConfig) {
-        ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     
     private void checkAlgorithm(final String databaseName, final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfExists()) {
             ShardingSpherePreconditions.checkNotNull(currentRuleConfig.getDefaultShadowAlgorithmName(),
-                    () -> new MissingRequiredAlgorithmException(SHADOW, databaseName, Collections.singleton("default")));
+                    () -> new MissingRequiredAlgorithmException("shadow", databaseName, Collections.singleton("default")));
         }
     }
     
