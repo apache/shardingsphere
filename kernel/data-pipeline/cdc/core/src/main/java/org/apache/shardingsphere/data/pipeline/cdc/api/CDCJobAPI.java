@@ -45,4 +45,5 @@ public interface CDCJobAPI extends InventoryIncrementalJobAPI, RequiredSPI {
      * @return job id
      */
     boolean createJob(CreateSubscriptionJobParameter event);
+    
 }

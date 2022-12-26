@@ -24,7 +24,8 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 /**
  * Pipeline changed job configuration processor.
  */
-public interface PipelineJobConfigurationChangedProcessor extends TypedSPI {
+// TODO rename to PipelineJobConfigurationChangedProcessor
+public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
     
     /**
      * Process changed job configuration.

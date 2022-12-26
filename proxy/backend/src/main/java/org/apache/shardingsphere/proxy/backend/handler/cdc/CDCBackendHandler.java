@@ -37,16 +37,13 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscr
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CreateSubscriptionResult;
-import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -115,18 +112,18 @@ public final class CDCBackendHandler {
         StartSubscriptionRequest startSubscriptionRequest = request.getStartSubscription();
         CDCJobAPI jobAPI = CDCJobAPIFactory.getInstance();
         String jobId = jobAPI.marshalJobId(new CDCJobId(startSubscriptionRequest.getDatabase(), startSubscriptionRequest.getSubscriptionName()));
-        String jobConfigText = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository().getDirectly(PipelineMetaDataNode.getJobConfigPath(jobId));
-        if (null == jobConfigText || jobConfigText.isEmpty()) {
+        CDCJobConfiguration cdcJobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
+        if (null == cdcJobConfig) {
             return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, String.format("the %s job config isn't exists",
                     startSubscriptionRequest.getSubscriptionName()));
         }
-        JobConfigurationPOJO jobConfigPOJO = YamlEngine.unmarshal(jobConfigText, JobConfigurationPOJO.class);
+        JobConfigurationPOJO jobConfigPOJO = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         if (!jobConfigPOJO.isDisabled()) {
             return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, String.format("the %s is being used", startSubscriptionRequest.getSubscriptionName()));
         }
         jobConfigPOJO.setDisabled(false);
+        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         CDCJob job = new CDCJob(new CDCImporterConnector(channel));
-        CDCJobConfiguration cdcJobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
         for (int i = 0; i < cdcJobConfig.getJobShardingCount(); i++) {
             PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
             OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
@@ -136,5 +133,17 @@ public final class CDCBackendHandler {
         connectionContext.setStatus(CDCConnectionStatus.SUBSCRIBED);
         connectionContext.setJobId(jobId);
         return CDCResponseGenerator.succeedBuilder(request.getRequestId()).build();
+    }
+    
+    /**
+     * Stop subscription.
+     *
+     * @param jobId job id
+     */
+    public void stopSubscription(final String jobId) {
+        PipelineJobCenter.stop(jobId);
+        JobConfigurationPOJO jobConfig = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        jobConfig.setDisabled(true);
+        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfig);
     }
 }

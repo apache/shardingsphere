@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -73,7 +72,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void channelInactive(final ChannelHandlerContext ctx) {
         CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
         if (null != connectionContext.getJobId()) {
-            PipelineJobCenter.stop(connectionContext.getJobId());
+            backendHandler.stopSubscription(connectionContext.getJobId());
         }
         ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(null);
     }

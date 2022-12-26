@@ -32,7 +32,7 @@ import java.util.Optional;
 public final class PipelineChangedJobConfigurationProcessorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(PipelineJobConfigurationChangedProcessor.class);
+        ShardingSphereServiceLoader.register(PipelineChangedJobConfigurationProcessor.class);
     }
     
     /**
@@ -41,7 +41,7 @@ public final class PipelineChangedJobConfigurationProcessorFactory {
      * @param jobType job type
      * @return instance
      */
-    public static Optional<PipelineJobConfigurationChangedProcessor> findInstance(final JobType jobType) {
-        return TypedSPIRegistry.findRegisteredService(PipelineJobConfigurationChangedProcessor.class, jobType.getTypeName());
+    public static Optional<PipelineChangedJobConfigurationProcessor> findInstance(final JobType jobType) {
+        return TypedSPIRegistry.findRegisteredService(PipelineChangedJobConfigurationProcessor.class, jobType.getTypeName());
     }
 }
