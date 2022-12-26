@@ -38,6 +38,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-shade-dependency</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -67,23 +72,21 @@
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
                                     <exclude>com.h2database:h2:jar:</exclude>
                                     <exclude>org.slf4j:*</exclude>
-                                    <exclude>org.apache.commons:logging:*</exclude>
-                                    <exclude>org.apache.shardingsphere:shardingsphere-agent-metrics-core</exclude>
+                                    <exclude>org.apache.commons:commons-logging</exclude>
+                                    <exclude>com.google.guava:guava</exclude>
+                                    <exclude>com.google.guava:failureaccess</exclude>
+                                    <exclude>org.yaml:snakeyaml</exclude>
+                                    <exclude>io.netty:netty-codec</exclude>
+                                    <exclude>io.netty:netty-transport</exclude>
+                                    <exclude>io.netty:netty-transport-classes-epoll</exclude>
+                                    <exclude>io.netty:netty-transport-native-unix-common</exclude>
+                                    <exclude>io.netty:netty-common</exclude>
+                                    <exclude>io.netty:netty-buffer</exclude>
+                                    <exclude>io.netty:netty-resolver</exclude>
+                                    <exclude>org:netty-resolver</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
-                                <relocation>
-                                    <pattern>net.bytebuddy</pattern>
-                                    <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.yaml</pattern>
-                                    <shadedPattern>${shade.package}.org.yaml</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
-                                </relocation>
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
