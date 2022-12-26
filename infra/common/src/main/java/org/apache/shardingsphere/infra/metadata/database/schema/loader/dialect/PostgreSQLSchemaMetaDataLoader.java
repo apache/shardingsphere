@@ -26,8 +26,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Con
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
@@ -111,7 +112,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         Collection<String> roleTableGrants = loadRoleTableGrants(connection, tables);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
-            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL")).load(connection.getMetaData());
+            Map<String, Integer> dataTypes = RequiredSPIRegistry.getRegisteredService(DataTypeLoader.class).load(connection.getMetaData());
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
                 String tableName = resultSet.getString("table_name");

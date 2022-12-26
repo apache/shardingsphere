@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -81,7 +80,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer")).load(connection.getMetaData());
+            Map<String, Integer> dataTypes = RequiredSPIRegistry.getRegisteredService(DataTypeLoader.class).load(connection.getMetaData());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
@@ -24,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
@@ -42,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -93,7 +95,9 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "Oracle")).load(connection.getMetaData());
+            Optional<DataTypeLoader> loader = TypedSPIRegistry.findRegisteredService(DataTypeLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "Oracle").getType());
+            Preconditions.checkState(loader.isPresent());
+            Map<String, Integer> dataTypes = loader.get().load(connection.getMetaData());
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
