@@ -26,7 +26,7 @@ import io.opentelemetry.context.Context;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;

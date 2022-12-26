@@ -25,7 +25,7 @@ import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.agent.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.core.util.TimeRecorder;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.core.util.TimeRecorder;
 
 import java.lang.reflect.Method;
 
