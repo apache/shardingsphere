@@ -20,9 +20,7 @@ tableName ::=
 
 ### Supplement
 
-- `tableName` can use an existing table or a table that will be created;
-- Only one broadcast rule can exist, but can contain multiple broadcast tables, so can not
-  execute `CREATE BROADCAST TABLE RULE` more than one time. 
+- `tableName` can use an existing table or a table that will be created.
 
 ### Example
 
