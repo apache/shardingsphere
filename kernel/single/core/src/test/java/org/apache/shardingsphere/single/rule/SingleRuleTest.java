@@ -157,7 +157,8 @@ public final class SingleRuleTest {
     @Test
     public void assertAssignNewDataSourceName() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
-        SingleRuleConfiguration singleTableRuleConfig = new SingleRuleConfiguration("foo_ds");
+        SingleRuleConfiguration singleTableRuleConfig = new SingleRuleConfiguration();
+        singleTableRuleConfig.setDefaultDataSource("foo_ds");
         SingleRule singleTableRule = new SingleRule(singleTableRuleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         assertThat(singleTableRule.assignNewDataSourceName(), is("foo_ds"));
     }

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.single.yaml.swapper.YamlSingleRuleConfiguration
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class YamlSingleRuleConfigurationSwapperTest {
@@ -46,7 +46,9 @@ public final class YamlSingleRuleConfigurationSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        assertThat(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(new SingleRuleConfiguration("ds_0")).getDefaultDataSource(), is("ds_0"));
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        singleRuleConfig.setDefaultDataSource("ds_0");
+        assertThat(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(singleRuleConfig).getDefaultDataSource(), is("ds_0"));
     }
     
     @Test

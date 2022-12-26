@@ -46,8 +46,9 @@ public final class SingleRuleBuilderTest {
     @Test
     public void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstances().iterator().next();
-        DatabaseRule actual = builder.build(
-                new SingleRuleConfiguration("foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
+        SingleRuleConfiguration singleRuleConfig = new SingleRuleConfiguration();
+        singleRuleConfig.setDefaultDataSource("foo_ds");
+        DatabaseRule actual = builder.build(singleRuleConfig, "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
 }

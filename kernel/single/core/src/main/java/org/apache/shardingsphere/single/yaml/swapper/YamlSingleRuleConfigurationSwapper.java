@@ -52,7 +52,8 @@ public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigu
     
     @Override
     public SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {
-        SingleRuleConfiguration result = new SingleRuleConfiguration(yamlConfig.getDefaultDataSource());
+        SingleRuleConfiguration result = new SingleRuleConfiguration();
+        result.setDefaultDataSource(yamlConfig.getDefaultDataSource());
         getDataSourceTables(yamlConfig.getTables()).forEach((key, value) -> result.getTables().add(new SingleTableRuleConfiguration(key, value)));
         return result;
     }

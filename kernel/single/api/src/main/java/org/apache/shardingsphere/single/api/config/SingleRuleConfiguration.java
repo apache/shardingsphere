@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.api.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.single.api.config.rule.SingleTableRuleConfiguration;
@@ -30,17 +30,13 @@ import java.util.Optional;
 /**
  * Single rule configuration.
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class SingleRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
     private final Collection<SingleTableRuleConfiguration> tables = new LinkedList<>();
     
-    private final String defaultDataSource;
-    
-    public SingleRuleConfiguration() {
-        defaultDataSource = null;
-    }
+    private String defaultDataSource;
     
     /**
      * Get default data source.
