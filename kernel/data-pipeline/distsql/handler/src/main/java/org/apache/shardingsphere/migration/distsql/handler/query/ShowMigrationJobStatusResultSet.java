@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
@@ -45,7 +44,7 @@ public final class ShowMigrationJobStatusResultSet implements DatabaseDistSQLRes
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, new MigrationJobType().getTypeName());
+        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION");
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(((ShowMigrationStatusStatement) sqlStatement).getJobId());
         long currentTimeMillis = System.currentTimeMillis();
         data = jobItemInfos.stream().map(each -> {

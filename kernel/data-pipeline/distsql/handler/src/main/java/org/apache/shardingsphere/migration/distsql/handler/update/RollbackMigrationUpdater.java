@@ -19,7 +19,6 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
@@ -33,8 +32,7 @@ public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrat
     
     @Override
     public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) throws SQLException {
-        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, new MigrationJobType().getTypeName());
-        jobAPI.rollback(sqlStatement.getJobId());
+        ((InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION")).rollback(sqlStatement.getJobId());
     }
     
     @Override

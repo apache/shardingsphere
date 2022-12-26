@@ -59,7 +59,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
-import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
@@ -261,7 +260,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         super.startDisabledJob(jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, new ConsistencyCheckJobType().getTypeName()).startDisabledJob(optional);
+                TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "CONSISTENCY_CHECK").startDisabledJob(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -274,7 +273,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     public void stop(final String jobId) {
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, new ConsistencyCheckJobType().getTypeName()).stop(optional);
+                TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class,"CONSISTENCY_CHECK").stop(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
