@@ -20,14 +20,14 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandlerFactory;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline meta data node watcher.
@@ -39,10 +39,8 @@ public final class PipelineMetaDataNodeWatcher {
     private final Map<Pattern, PipelineMetaDataChangedEventHandler> listenerMap = new ConcurrentHashMap<>();
     
     private PipelineMetaDataNodeWatcher() {
-        Collection<PipelineMetaDataChangedEventHandler> instances = PipelineMetaDataChangedEventHandlerFactory.findAllInstances();
-        for (PipelineMetaDataChangedEventHandler each : instances) {
-            listenerMap.put(each.getKeyPattern(), each);
-        }
+        listenerMap.putAll(ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedEventHandler.class)
+                .stream().collect(Collectors.toMap(PipelineMetaDataChangedEventHandler::getKeyPattern, each -> each, (key, value) -> value)));
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, this::dispatchEvent);
     }
     
