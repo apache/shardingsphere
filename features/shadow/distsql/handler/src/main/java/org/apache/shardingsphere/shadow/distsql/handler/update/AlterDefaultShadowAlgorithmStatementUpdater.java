@@ -70,8 +70,8 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
     private void checkAlgorithms(final String databaseName, final AlgorithmSegment algorithmSegment, final ShadowRuleConfiguration currentRuleConfig) {
         checkAlgorithmCompleteness(algorithmSegment);
         checkAlgorithmType(algorithmSegment);
-        Collection<String> requireAlgorithmNames = Collections.singleton(DEFAULT_ALGORITHM_NAME);
-        ShadowRuleStatementChecker.checkExisted(requireAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(),
+        Collection<String> requiredAlgorithmNames = Collections.singleton(DEFAULT_ALGORITHM_NAME);
+        ShadowRuleStatementChecker.checkExisted(requiredAlgorithmNames, currentRuleConfig.getShadowAlgorithms().keySet(),
                 notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", databaseName, notExistedAlgorithms));
     }
     

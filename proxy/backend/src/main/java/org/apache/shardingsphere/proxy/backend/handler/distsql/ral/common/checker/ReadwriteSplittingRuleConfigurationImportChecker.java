@@ -51,7 +51,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     }
     
     private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        Collection<String> requireResources = new LinkedHashSet<>();
+        Collection<String> requiredResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
             if (null != each.getDynamicStrategy()) {
@@ -59,14 +59,14 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
             }
             if (null != each.getStaticStrategy()) {
                 if (null != each.getStaticStrategy().getWriteDataSourceName()) {
-                    requireResources.add(each.getStaticStrategy().getWriteDataSourceName());
+                    requiredResources.add(each.getStaticStrategy().getWriteDataSourceName());
                 }
                 if (!each.getStaticStrategy().getReadDataSourceNames().isEmpty()) {
-                    requireResources.addAll(each.getStaticStrategy().getReadDataSourceNames());
+                    requiredResources.addAll(each.getStaticStrategy().getReadDataSourceNames());
                 }
             }
         });
-        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requireResources);
+        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requiredResources);
         ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(database);
         Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());

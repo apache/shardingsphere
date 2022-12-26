@@ -53,9 +53,9 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
     }
     
     private void checkResources(final String databaseName, final ShardingSphereDatabase database, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        Collection<String> requireResources = new LinkedHashSet<>();
-        currentRuleConfig.getDataSources().forEach(each -> requireResources.addAll(each.getDataSourceNames()));
-        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requireResources);
+        Collection<String> requiredResources = new LinkedHashSet<>();
+        currentRuleConfig.getDataSources().forEach(each -> requiredResources.addAll(each.getDataSourceNames()));
+        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requiredResources);
         ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
     }
     

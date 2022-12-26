@@ -137,21 +137,21 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkResourcesExist(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final ShardingSphereDatabase database) {
-        Collection<String> requireResources = new LinkedHashSet<>();
+        Collection<String> requiredResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         segments.forEach(each -> {
             if (Strings.isNullOrEmpty(each.getAutoAwareResource())) {
-                requireResources.add(each.getWriteDataSource());
-                requireResources.addAll(each.getReadDataSources());
+                requiredResources.add(each.getWriteDataSource());
+                requiredResources.addAll(each.getReadDataSources());
             } else {
                 requireDiscoverableResources.add(each.getAutoAwareResource());
             }
         });
-        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requireResources);
-        ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
+        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedResources(requiredResources);
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResources));
         Collection<String> logicResources = getLogicResources(database);
-        Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistLogicResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistLogicResources));
+        Collection<String> notExistedLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(notExistedLogicResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedLogicResources));
     }
     
     @SuppressWarnings("unchecked")

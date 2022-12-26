@@ -82,12 +82,12 @@ public class ShadowRuleStatementChecker {
     /**
      * Check if there are duplicated rules.
      *
-     * @param requireRules rules to be checked
+     * @param requiredRules required rules
      * @param currentRules current rules
      * @param thrower exception thrower
      */
-    public static void checkDuplicated(final Collection<String> requireRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) {
-        Collection<String> duplicated = getDuplicated(requireRules, currentRules);
+    public static void checkDuplicated(final Collection<String> requiredRules, final Collection<String> currentRules, final Function<Collection<String>, DistSQLException> thrower) {
+        Collection<String> duplicated = getDuplicated(requiredRules, currentRules);
         ShardingSpherePreconditions.checkState(duplicated.isEmpty(), () -> thrower.apply(duplicated));
     }
     

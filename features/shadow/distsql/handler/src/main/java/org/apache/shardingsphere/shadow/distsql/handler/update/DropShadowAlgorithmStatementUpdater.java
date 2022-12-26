@@ -52,18 +52,18 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     
     private void checkAlgorithm(final String databaseName, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
-        Collection<String> requireAlgorithms = sqlStatement.getNames();
+        Collection<String> requiredAlgorithms = sqlStatement.getNames();
         String defaultShadowAlgorithmName = currentRuleConfig.getDefaultShadowAlgorithmName();
         if (!sqlStatement.isIfExists()) {
-            ShadowRuleStatementChecker.checkExisted(requireAlgorithms, currentAlgorithms, notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", databaseName, notExistedAlgorithms));
+            ShadowRuleStatementChecker.checkExisted(requiredAlgorithms, currentAlgorithms, notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", databaseName, notExistedAlgorithms));
         }
-        checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException("Sharding", databaseName, identical));
-        ShardingSpherePreconditions.checkState(!requireAlgorithms.contains(defaultShadowAlgorithmName),
+        checkAlgorithmInUsed(requiredAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException("Sharding", databaseName, identical));
+        ShardingSpherePreconditions.checkState(!requiredAlgorithms.contains(defaultShadowAlgorithmName),
                 () -> new AlgorithmInUsedException("Shadow", databaseName, Collections.singleton(defaultShadowAlgorithmName)));
     }
     
-    private void checkAlgorithmInUsed(final Collection<String> requireAlgorithms, final Collection<String> currentAlgorithms, final Function<Collection<String>, DistSQLException> thrower) {
-        ShadowRuleStatementChecker.checkDuplicated(requireAlgorithms, currentAlgorithms, thrower);
+    private void checkAlgorithmInUsed(final Collection<String> requiredAlgorithms, final Collection<String> currentAlgorithms, final Function<Collection<String>, DistSQLException> thrower) {
+        ShadowRuleStatementChecker.checkDuplicated(requiredAlgorithms, currentAlgorithms, thrower);
     }
     
     private Collection<String> getAlgorithmInUse(final ShadowRuleConfiguration currentRuleConfig) {
