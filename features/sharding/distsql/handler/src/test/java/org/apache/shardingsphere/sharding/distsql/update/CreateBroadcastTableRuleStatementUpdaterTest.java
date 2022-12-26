@@ -79,12 +79,12 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
     
     @Test
     public void assertCreateBroadcastRuleWithIfNotExist() {
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         Collection<String> tables = new LinkedList<>();
         tables.add("t_1");
         tables.add("t_2");
         tables.add("t_order");
         tables.add("t_address");
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(true, tables);
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);

@@ -71,7 +71,7 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
             if (toBeCreatedRuleConfig.getBroadcastTables().isEmpty()) {
                 return;
             }
-                currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
+            currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
         }
     }
     
