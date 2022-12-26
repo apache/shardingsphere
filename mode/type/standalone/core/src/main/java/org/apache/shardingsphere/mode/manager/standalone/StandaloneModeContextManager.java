@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
@@ -47,12 +48,14 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void createDatabase(final String databaseName) {
         contextManager.addDatabase(databaseName);
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().addDatabase(databaseName);
+        clearServiceCache();
     }
     
     @Override
     public void dropDatabase(final String databaseName) {
         contextManager.dropDatabase(databaseName);
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().dropDatabase(databaseName);
+        clearServiceCache();
     }
     
     @Override
@@ -63,6 +66,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         metaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService()
                 .persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), schemaName, schema));
         metaDataContexts.getPersistService().getDataSourceService().append(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeRegisterStorageUnitProps);
+        clearServiceCache();
     }
     
     @Override
@@ -73,6 +77,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         metaDataContexts.getMetaData().getDatabases().putAll(contextManager.newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
         metaDataContexts.getPersistService().getDataSourceService().append(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeUpdatedStorageUnitProps);
         switchingResource.closeStaleDataSources();
+        clearServiceCache();
     }
     
     @Override
@@ -89,6 +94,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         Map<String, DataSourceProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
         metaDataContexts.getPersistService().getDataSourceService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeReversedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
+        clearServiceCache();
     }
     
     private Map<String, DataSourceProperties> getToBeDeletedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
@@ -107,12 +113,14 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         ShardingSphereDatabase reloadDatabase = metaDataContexts.getMetaData().getDatabase(databaseName);
         contextManager.alterSchemaMetaData(databaseName, reloadDatabase, currentDatabase);
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
+        clearServiceCache();
     }
     
     @Override
     public void alterGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
         contextManager.alterGlobalRuleConfiguration(globalRuleConfigs);
         metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+        clearServiceCache();
     }
     
     @Override
@@ -121,6 +129,11 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         if (null != metaDataContexts.getPersistService().getPropsService()) {
             metaDataContexts.getPersistService().getPropsService().persist(props);
         }
+        clearServiceCache();
+    }
+    
+    private void clearServiceCache() {
+        OrderedServicesCache.clearCache();
     }
     
     @Override
