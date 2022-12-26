@@ -36,6 +36,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-shade-dependency</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
