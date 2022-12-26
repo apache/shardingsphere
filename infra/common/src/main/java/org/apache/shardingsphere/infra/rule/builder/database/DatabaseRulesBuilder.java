@@ -95,7 +95,7 @@ public final class DatabaseRulesBuilder {
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getMissedDefaultRuleBuilderMap(final Collection<DatabaseRuleBuilder> configuredBuilders) {
         Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>();
         Map<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> defaultBuilders =
-                DefaultDatabaseRuleConfigurationBuilderFactory.getInstances(getMissedDefaultRuleBuilders(configuredBuilders));
+                OrderedSPIRegistry.getRegisteredServices(DefaultDatabaseRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(configuredBuilders));
         // TODO consider about order for new put items
         for (Entry<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
