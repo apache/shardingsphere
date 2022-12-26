@@ -26,13 +26,14 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Inventory incremental tasks' runner.
@@ -93,26 +94,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             }
             futures.addAll(each.start());
         }
-        AtomicInteger completedCount = new AtomicInteger(0);
-        for (CompletableFuture<?> each : futures) {
-            each.whenComplete((o, throwable) -> {
-                completedCount.addAndGet(1);
-                if (null != throwable) {
-                    log.error("onFailure, inventory task execute failed.", throwable);
-                    updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
-                    String jobId = jobItemContext.getJobId();
-                    jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-                    jobAPI.stop(jobId);
-                } else if (completedCount.get() == futures.size()) {
-                    if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-                        log.info("onSuccess, all inventory tasks finished.");
-                        executeIncrementalTask();
-                    } else {
-                        log.info("onSuccess, inventory tasks not finished");
-                    }
-                }
-            });
-        }
+        ExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
     }
     
     private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
@@ -137,20 +119,45 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             }
             futures.addAll(each.start());
         }
-        AtomicInteger completedCount = new AtomicInteger(0);
-        for (CompletableFuture<?> each : futures) {
-            each.whenComplete((o, throwable) -> {
-                completedCount.addAndGet(1);
-                if (null != throwable) {
-                    log.error("onFailure, incremental task execute failed.", throwable);
-                    updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
-                    String jobId = jobItemContext.getJobId();
-                    jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-                    jobAPI.stop(jobId);
-                } else if (completedCount.get() == futures.size()) {
-                    log.info("onSuccess, all incremental tasks finished.");
-                }
-            });
+        ExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
+    }
+    
+    private final class InventoryTaskExecuteCallback implements ExecuteCallback {
+        
+        @Override
+        public void onSuccess() {
+            if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+                log.info("onSuccess, all inventory tasks finished.");
+                executeIncrementalTask();
+            } else {
+                log.info("onSuccess, inventory tasks not finished");
+            }
+        }
+        
+        @Override
+        public void onFailure(final Throwable throwable) {
+            log.error("onFailure, inventory task execute failed.", throwable);
+            updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+            String jobId = jobItemContext.getJobId();
+            jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            jobAPI.stop(jobId);
+        }
+    }
+    
+    private final class IncrementalExecuteCallback implements ExecuteCallback {
+        
+        @Override
+        public void onSuccess() {
+            log.info("onSuccess, all incremental tasks finished.");
+        }
+        
+        @Override
+        public void onFailure(final Throwable throwable) {
+            log.error("onFailure, incremental task execute failed.", throwable);
+            updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
+            String jobId = jobItemContext.getJobId();
+            jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            jobAPI.stop(jobId);
         }
     }
 }

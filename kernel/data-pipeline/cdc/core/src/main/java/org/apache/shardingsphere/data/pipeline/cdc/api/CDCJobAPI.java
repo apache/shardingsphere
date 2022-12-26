@@ -39,10 +39,10 @@ public interface CDCJobAPI extends InventoryIncrementalJobAPI, RequiredSPI {
     CDCProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
-     * Create CDC job config and start.
+     * Create CDC job config.
      *
      * @param event create CDC job event
      * @return job id
      */
-    String createJobAndStart(CreateSubscriptionJobParameter event);
+    boolean createJob(CreateSubscriptionJobParameter event);
 }

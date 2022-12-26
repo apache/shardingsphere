@@ -23,12 +23,12 @@ import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.config.validator.RemotePluginConfigurationValidator;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.MetaDataInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.ProxyInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-        RemotePluginConfigurationValidator.validatePort(getType(), pluginConfig);
+        PluginConfigurationValidator.validatePort(getType(), pluginConfig);
         startServer(pluginConfig, isEnhancedForProxy);
         MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
     }

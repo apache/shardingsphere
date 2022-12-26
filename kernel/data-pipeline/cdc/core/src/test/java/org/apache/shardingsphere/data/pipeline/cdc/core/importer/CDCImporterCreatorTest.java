@@ -22,11 +22,14 @@ import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFactory;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class CDCImporterCreatorTest {
     
     @Mock
@@ -34,7 +37,7 @@ public final class CDCImporterCreatorTest {
     
     @Test
     public void assertCreateCDCImporter() {
-        Importer actual = ImporterCreatorFactory.getInstance("CDC").createImporter(importerConfig, new CDCImporterConnector(), null, null);
+        Importer actual = ImporterCreatorFactory.getInstance("CDC").createImporter(importerConfig, new CDCImporterConnector(null), null, null);
         assertThat(actual, instanceOf(CDCImporter.class));
     }
 }
