@@ -81,7 +81,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         removeSchemaMetaData(database, alterSchemaPOJO.getSchemaName());
         DatabaseMetaDataPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
         databaseMetaDataService.persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(), database.getSchema(alterSchemaPOJO.getRenameSchemaName()));
-        databaseMetaDataService.getViewMetaDataPersistService().persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(), database.getSchema(alterSchemaPOJO.getRenameSchemaName()).getViews());
+        databaseMetaDataService.getViewMetaDataPersistService().persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(),
+                database.getSchema(alterSchemaPOJO.getRenameSchemaName()).getViews());
         databaseMetaDataService.dropSchema(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getSchemaName());
     }
     
@@ -99,6 +100,32 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         });
     }
     
+    private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Map<String, ShardingSphereTable> toBeAddedTables,
+                             final Map<String, ShardingSphereView> toBeAddedViews) {
+        addTablesToDataNode(database, schemaName, logicDataSourceName, toBeAddedTables);
+        addViewsToDataNode(database, schemaName, logicDataSourceName, toBeAddedTables, toBeAddedViews);
+    }
+    
+    private void addTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final Map<String, ShardingSphereTable> toBeAddedTables) {
+        for (Entry<String, ShardingSphereTable> entry : toBeAddedTables.entrySet()) {
+            if (!containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
+                database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
+            }
+            database.getSchema(schemaName).putTable(entry.getKey(), entry.getValue());
+        }
+    }
+    
+    private void addViewsToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName,
+                                    final Map<String, ShardingSphereTable> toBeAddedTables, final Map<String, ShardingSphereView> toBeAddedViews) {
+        for (Entry<String, ShardingSphereView> entry : toBeAddedViews.entrySet()) {
+            if (!containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
+                database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
+            }
+            database.getSchema(schemaName).putTable(entry.getKey(), toBeAddedTables.get(entry.getKey().toLowerCase()));
+            database.getSchema(schemaName).putView(entry.getKey(), entry.getValue());
+        }
+    }
+    
     private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
                 .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
@@ -112,6 +139,23 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     private void removeDataNode(final Collection<MutableDataNodeRule> rules, final Collection<String> schemaNames, final Collection<String> tobeRemovedTables) {
         tobeRemovedTables.forEach(each -> rules.forEach(rule -> rule.remove(schemaNames, each)));
+    }
+    
+    private void removeDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> tobeRemovedTables, final Collection<String> tobeRemovedViews) {
+        removeTablesToDataNode(database, schemaName, tobeRemovedTables);
+        removeViewsToDataNode(database, schemaName, tobeRemovedTables, tobeRemovedViews);
+    }
+    
+    private void removeTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> toBeDroppedTables) {
+        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), schemaName, toBeDroppedTables);
+        toBeDroppedTables.forEach(each -> database.getSchema(schemaName).removeTable(each));
+    }
+    
+    private void removeViewsToDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> toBeDroppedTables, final Collection<String> toBeDroppedViews) {
+        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), schemaName, toBeDroppedViews);
+        ShardingSphereSchema schema = database.getSchema(schemaName);
+        toBeDroppedTables.forEach(schema::removeTable);
+        toBeDroppedViews.forEach(schema::removeView);
     }
     
     private void removeDataNode(final Collection<MutableDataNodeRule> rules, final String schemaName, final Collection<String> tobeRemovedTables) {
@@ -146,49 +190,6 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, schemaName, views);
         alterSchemaMetaDataPOJO.getDroppedTables().forEach(each -> databaseMetaDataService.getTableMetaDataPersistService().delete(databaseName, schemaName, each));
         alterSchemaMetaDataPOJO.getDroppedViews().forEach(each -> databaseMetaDataService.getViewMetaDataPersistService().delete(databaseName, schemaName, each));
-    }
-    
-    private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Map<String, ShardingSphereTable> toBeAddedTables,
-                             final Map<String, ShardingSphereView> toBeAddedViews) {
-        addTablesToDataNode(database, schemaName, logicDataSourceName, toBeAddedTables);
-        addViewsToDataNode(database, schemaName, logicDataSourceName, toBeAddedTables, toBeAddedViews);
-    }
-    
-    private void addTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final Map<String, ShardingSphereTable> toBeAddedTables) {
-        for (Entry<String, ShardingSphereTable> entry : toBeAddedTables.entrySet()) {
-            if (!containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
-                database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
-            }
-            database.getSchema(schemaName).putTable(entry.getKey(), entry.getValue());
-        }
-    }
-    
-    private void addViewsToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName,
-                                    final Map<String, ShardingSphereTable> toBeAddedTables, final Map<String, ShardingSphereView> toBeAddedViews) {
-        for (Entry<String, ShardingSphereView> entry : toBeAddedViews.entrySet()) {
-            if (!containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
-                database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
-            }
-            database.getSchema(schemaName).putTable(entry.getKey(), toBeAddedTables.get(entry.getKey().toLowerCase()));
-            database.getSchema(schemaName).putView(entry.getKey(), entry.getValue());
-        }
-    }
-    
-    private void removeDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> tobeRemovedTables, final Collection<String> tobeRemovedViews) {
-        removeTablesToDataNode(database, schemaName, tobeRemovedTables);
-        removeViewsToDataNode(database, schemaName, tobeRemovedTables, tobeRemovedViews);
-    }
-    
-    private void removeTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> toBeDroppedTables) {
-        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), schemaName, toBeDroppedTables);
-        toBeDroppedTables.forEach(each -> database.getSchema(schemaName).removeTable(each));
-    }
-    
-    private void removeViewsToDataNode(final ShardingSphereDatabase database, final String schemaName, final Collection<String> toBeDroppedTables, final Collection<String> toBeDroppedViews) {
-        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), schemaName, toBeDroppedViews);
-        ShardingSphereSchema schema = database.getSchema(schemaName);
-        toBeDroppedTables.forEach(schema::removeTable);
-        toBeDroppedViews.forEach(schema::removeView);
     }
     
     @Override
