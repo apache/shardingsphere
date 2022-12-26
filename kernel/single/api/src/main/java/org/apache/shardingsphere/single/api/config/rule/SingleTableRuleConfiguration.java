@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.api.config.rule;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
 import java.util.Collection;
@@ -30,10 +31,11 @@ import java.util.LinkedHashSet;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 @EqualsAndHashCode
 public final class SingleTableRuleConfiguration {
     
-    private final String dataSourceName;
-    
     private final Collection<QualifiedTable> tables = new LinkedHashSet<>();
+    
+    private String dataSourceName;
 }

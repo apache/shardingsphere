@@ -52,9 +52,15 @@ public final class SingleRuleConfiguration implements DatabaseRuleConfiguration,
     @Override
     public void put(final String dataSourceName, final String schemaName, final String tableName) {
         SingleTableRuleConfiguration singleTableRuleConfig =
-                tables.stream().filter(each -> each.getDataSourceName().equals(dataSourceName)).findFirst().orElse(new SingleTableRuleConfiguration(dataSourceName));
+                tables.stream().filter(each -> each.getDataSourceName().equals(dataSourceName)).findFirst().orElseGet(() -> createSingleTableRuleConfiguration(dataSourceName));
         singleTableRuleConfig.getTables().add(new QualifiedTable(schemaName, tableName));
         tables.add(singleTableRuleConfig);
+    }
+    
+    private SingleTableRuleConfiguration createSingleTableRuleConfiguration(final String dataSourceName) {
+        SingleTableRuleConfiguration result = new SingleTableRuleConfiguration();
+        result.setDataSourceName(dataSourceName);
+        return result;
     }
     
     @Override

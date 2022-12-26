@@ -85,13 +85,15 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test
     public void assertLoad() {
-        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        SingleRuleConfiguration ruleConfig = mock(SingleRuleConfiguration.class);
-        SingleTableRuleConfiguration singleTableRuleConfig1 = new SingleTableRuleConfiguration("ds0");
+        SingleTableRuleConfiguration singleTableRuleConfig1 = new SingleTableRuleConfiguration();
+        singleTableRuleConfig1.setDataSourceName("ds0");
         singleTableRuleConfig1.getTables().add(new QualifiedTable("logic_db", "dept"));
-        SingleTableRuleConfiguration singleTableRuleConfig2 = new SingleTableRuleConfiguration("ds1");
+        SingleTableRuleConfiguration singleTableRuleConfig2 = new SingleTableRuleConfiguration();
+        singleTableRuleConfig2.setDataSourceName("ds1");
         singleTableRuleConfig2.getTables().addAll(Arrays.asList(new QualifiedTable("logic_db", "teacher"), new QualifiedTable("logic_db", "class")));
+        SingleRuleConfiguration ruleConfig = mock(SingleRuleConfiguration.class);
         when(ruleConfig.getTables()).thenReturn(Arrays.asList(singleTableRuleConfig1, singleTableRuleConfig2));
+        Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(ruleConfig, DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables);
         assertFalse(actual.containsKey("employee"));
         assertFalse(actual.containsKey("salary"));
@@ -106,12 +108,14 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test
     public void assertLoadWithConflictTables() {
-        SingleRuleConfiguration ruleConfig = mock(SingleRuleConfiguration.class);
-        SingleTableRuleConfiguration singleTableRuleConfig1 = new SingleTableRuleConfiguration("ds0");
+        SingleTableRuleConfiguration singleTableRuleConfig1 = new SingleTableRuleConfiguration();
+        singleTableRuleConfig1.setDataSourceName("ds0");
         singleTableRuleConfig1.getTables().addAll(Arrays.asList(new QualifiedTable("logic_db", "employee"), new QualifiedTable("logic_db", "dept"), new QualifiedTable("logic_db", "salary")));
-        SingleTableRuleConfiguration singleTableRuleConfig2 = new SingleTableRuleConfiguration("ds1");
+        SingleTableRuleConfiguration singleTableRuleConfig2 = new SingleTableRuleConfiguration();
+        singleTableRuleConfig2.setDataSourceName("ds1");
         singleTableRuleConfig2.getTables().addAll(
                 Arrays.asList(new QualifiedTable("logic_db", "student"), new QualifiedTable("logic_db", "teacher"), new QualifiedTable("logic_db", "class"), new QualifiedTable("logic_db", "salary")));
+        SingleRuleConfiguration ruleConfig = mock(SingleRuleConfiguration.class);
         when(ruleConfig.getTables()).thenReturn(Arrays.asList(singleTableRuleConfig1, singleTableRuleConfig2));
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(ruleConfig, DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList());
         assertTrue(actual.containsKey("employee"));

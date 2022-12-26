@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.api.config.rule.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 
 import javax.sql.DataSource;
@@ -73,11 +74,50 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
         configuration = ruleConfig;
         defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSourceMap);
+        aggregateSingleRuleConfiguration(ruleConfig, getAggregateDataSourceNameMap(enabledDataSources, builtRules));
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(enabledDataSources, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
         singleTableDataNodes =
                 SingleTableDataNodeLoader.load(ruleConfig, databaseName, DatabaseTypeEngine.getStorageType(enabledDataSources.values()), aggregateDataSourceMap, getLoadedTables(builtRules));
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
+    }
+    
+    private void aggregateSingleRuleConfiguration(final SingleRuleConfiguration ruleConfig, final Map<String, Collection<String>> aggregateDataSourceNameMap) {
+        for (SingleTableRuleConfiguration each : ruleConfig.getTables()) {
+            for (Entry<String, Collection<String>> entry : aggregateDataSourceNameMap.entrySet()) {
+                if (entry.getValue().contains(each.getDataSourceName())) {
+                    each.setDataSourceName(entry.getKey());
+                }
+            }
+        }
+    }
+    
+    private Map<String, Collection<String>> getAggregateDataSourceNameMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (String each : dataSourceMap.keySet()) {
+            Collection<String> dataSourceNames = result.computeIfAbsent(each, key -> new LinkedHashSet<>());
+            dataSourceNames.add(each);
+        }
+        for (ShardingSphereRule each : builtRules) {
+            if (each instanceof DataSourceContainedRule) {
+                result = getAggregateDataSourceNameMap(result, (DataSourceContainedRule) each);
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, Collection<String>> getAggregateDataSourceNameMap(final Map<String, Collection<String>> dataSourceNameMap, final DataSourceContainedRule builtRule) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(dataSourceNameMap.size(), 1);
+        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
+            for (String each : entry.getValue()) {
+                if (dataSourceNameMap.containsKey(each)) {
+                    Collection<String> dataSourceNames = result.computeIfAbsent(entry.getKey(), key -> new LinkedHashSet<>());
+                    dataSourceNames.addAll(dataSourceNameMap.remove(each));
+                }
+            }
+        }
+        result.putAll(dataSourceNameMap);
+        return result;
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {

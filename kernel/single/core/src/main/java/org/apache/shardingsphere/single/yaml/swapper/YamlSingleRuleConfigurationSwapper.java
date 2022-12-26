@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -54,11 +55,12 @@ public final class YamlSingleRuleConfigurationSwapper implements YamlRuleConfigu
     public SingleRuleConfiguration swapToObject(final YamlSingleRuleConfiguration yamlConfig) {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.setDefaultDataSource(yamlConfig.getDefaultDataSource());
-        getDataSourceTables(yamlConfig.getTables()).forEach((key, value) -> {
-            SingleTableRuleConfiguration singleTableRuleConfig = new SingleTableRuleConfiguration(key);
-            singleTableRuleConfig.getTables().addAll(value);
+        for (Entry<String, Collection<QualifiedTable>> entry : getDataSourceTables(yamlConfig.getTables()).entrySet()) {
+            SingleTableRuleConfiguration singleTableRuleConfig = new SingleTableRuleConfiguration();
+            singleTableRuleConfig.setDataSourceName(entry.getKey());
+            singleTableRuleConfig.getTables().addAll(entry.getValue());
             result.getTables().add(singleTableRuleConfig);
-        });
+        }
         return result;
     }
     

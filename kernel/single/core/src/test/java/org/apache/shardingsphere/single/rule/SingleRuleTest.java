@@ -175,10 +175,12 @@ public final class SingleRuleTest {
     
     private SingleRuleConfiguration createSingleRuleConfiguration() {
         SingleRuleConfiguration result = new SingleRuleConfiguration();
-        SingleTableRuleConfiguration singleTableRuleConfig1 = new SingleTableRuleConfiguration("foo_ds");
+        SingleTableRuleConfiguration singleTableRuleConfig1 = new SingleTableRuleConfiguration();
+        singleTableRuleConfig1.setDataSourceName("foo_ds");
         singleTableRuleConfig1.getTables().addAll(Arrays.asList(new QualifiedTable("logic_db", "employee"), new QualifiedTable("logic_db", "t_order_0")));
         result.getTables().add(singleTableRuleConfig1);
-        SingleTableRuleConfiguration singleTableRuleConfig2 = new SingleTableRuleConfiguration("bar_ds");
+        SingleTableRuleConfiguration singleTableRuleConfig2 = new SingleTableRuleConfiguration();
+        singleTableRuleConfig2.setDataSourceName("bar_ds");
         singleTableRuleConfig2.getTables().addAll(Arrays.asList(new QualifiedTable("logic_db", "student"), new QualifiedTable("logic_db", "t_order_1")));
         result.getTables().add(singleTableRuleConfig2);
         return result;
