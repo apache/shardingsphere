@@ -60,3 +60,8 @@ rules:
         operation: select
         column: id
         regex: "[1]"
+
+- !SINGLE
+  tables:
+    - shadowDataSource0.t_order_0, shadowDataSource0.t_order_1, shadowDataSource0.t_order_item_0, shadowDataSource0.t_order_item_1, shadowDataSource0.t_order_auto_0, shadowDataSource0.t_order_auto_1
+    - shadowDataSource0.t_order_item_auto_0, shadowDataSource0.t_order_item_auto_1, shadowDataSource0.t_config, shadowDataSource0.t_user_0, shadowDataSource0.t_user_1, shadowDataSource0.t_encrypt, shadowDataSource0.t_query_encrypt, shadowDataSource0.t_encrypt_contains_column 
