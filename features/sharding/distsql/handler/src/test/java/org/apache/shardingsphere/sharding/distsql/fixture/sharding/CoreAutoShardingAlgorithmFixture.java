@@ -33,7 +33,7 @@ import java.util.Properties;
 /**
  * Modulo sharding algorithm.
  */
-public final class ModShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class CoreAutoShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
@@ -151,6 +151,6 @@ public final class ModShardingAlgorithmFixture implements StandardShardingAlgori
     
     @Override
     public String getType() {
-        return "MOD";
+        return "CORE.AUTO.FIXTURE";
     }
 }

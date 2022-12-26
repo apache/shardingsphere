@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Hint inline sharding algorithm.
  */
-public final class HintInlineShardingAlgorithmFixture implements HintShardingAlgorithm<Comparable<?>> {
+public final class CoreHintShardingAlgorithmFixture implements HintShardingAlgorithm<Comparable<?>> {
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
@@ -76,6 +76,6 @@ public final class HintInlineShardingAlgorithmFixture implements HintShardingAlg
     
     @Override
     public String getType() {
-        return "HINT_INLINE";
+        return "CORE.HINT.FIXTURE";
     }
 }
