@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.prepare.Migrat
 import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrierFactory;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -43,9 +43,9 @@ import java.util.concurrent.CompletableFuture;
 public final class MigrationChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
     
     @Override
-    public void process(final Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
-        String jobId = jobConfigPOJO.getJobName();
-        if (jobConfigPOJO.isDisabled()) {
+    public void process(final Type eventType, final JobConfiguration jobConfig) {
+        String jobId = jobConfig.getJobName();
+        if (jobConfig.isDisabled()) {
             Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
             PipelineJobCenter.stop(jobId);
             PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrierFactory.getInstance();
@@ -60,7 +60,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 if (PipelineJobCenter.isJobExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
+                    CompletableFuture.runAsync(() -> execute(jobConfig), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
                         if (null != throwable) {
                             log.error("execute failed, jobId={}", jobId, throwable);
                         }
@@ -68,7 +68,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 }
                 break;
             case DELETED:
-                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter()));
+                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
                 PipelineJobCenter.stop(jobId);
                 break;
             default:
@@ -76,10 +76,10 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
         }
     }
     
-    private void execute(final JobConfigurationPOJO jobConfigPOJO) {
+    private void execute(final JobConfiguration jobConfig) {
         MigrationJob job = new MigrationJob();
-        PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        PipelineJobCenter.addJob(jobConfig.getJobName(), job);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
