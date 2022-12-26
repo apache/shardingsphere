@@ -89,7 +89,7 @@ public final class ShardingTableRuleStatementChecker {
      *
      * @param database database
      * @param rules rules
-     * @param ifNotExists ifNotExists statement if exists
+     * @param ifNotExists if not exists
      * @param currentRuleConfig current rule configuration
      */
     public static void checkCreation(final ShardingSphereDatabase database, final Collection<AbstractTableRuleSegment> rules, final boolean ifNotExists,
@@ -211,31 +211,31 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkTables(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate,
                                     final boolean ifNotExists) {
         Collection<String> requiredTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toList());
-        Collection<String> duplicatedTables = getDuplicate(requiredTables);
-        ShardingSpherePreconditions.checkState(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedTables));
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(requiredTables);
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedRuleNames));
         Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
         if (isCreate) {
             if (!ifNotExists) {
-                Collection<String> identical = getIdentical(requiredTables, currentShardingTables);
-                ShardingSpherePreconditions.checkState(identical.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, identical));
+                duplicatedRuleNames.addAll(getDuplicatedRuleNames(requiredTables, currentShardingTables));
+                ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedRuleNames));
             }
         } else {
-            Collection<String> different = getDifferent(requiredTables, currentShardingTables);
-            ShardingSpherePreconditions.checkState(different.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, different));
+            Collection<String> notExistsRules = getNotExistsRules(requiredTables, currentShardingTables);
+            ShardingSpherePreconditions.checkState(notExistsRules.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, notExistsRules));
         }
     }
     
-    private static Collection<String> getDuplicate(final Collection<String> collection) {
+    private static Collection<String> getDuplicatedRuleNames(final Collection<String> collection) {
         Collection<String> duplicate = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         return collection.stream().filter(each -> containsIgnoreCase(duplicate, each)).collect(Collectors.toSet());
     }
     
-    private static Collection<String> getIdentical(final Collection<String> require, final Collection<String> current) {
+    private static Collection<String> getDuplicatedRuleNames(final Collection<String> require, final Collection<String> current) {
         return require.stream().filter(each -> containsIgnoreCase(current, each)).collect(Collectors.toSet());
     }
     
-    private static Set<String> getDifferent(final Collection<String> require, final Collection<String> current) {
+    private static Set<String> getNotExistsRules(final Collection<String> require, final Collection<String> current) {
         return require.stream().filter(each -> !containsIgnoreCase(current, each)).collect(Collectors.toSet());
     }
     

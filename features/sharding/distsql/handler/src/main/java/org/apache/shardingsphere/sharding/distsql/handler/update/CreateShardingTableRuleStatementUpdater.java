@@ -51,8 +51,8 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
             Collection<String> currentTables = new LinkedList<>();
             currentRuleConfig.getTables().forEach(each -> currentTables.add(each.getLogicTable()));
             currentRuleConfig.getAutoTables().forEach(each -> currentTables.add(each.getLogicTable()));
-            toBeCreatedRuleConfig.getTables().removeIf(shardingTableRuleConfiguration -> currentTables.contains(shardingTableRuleConfiguration.getLogicTable()));
-            toBeCreatedRuleConfig.getAutoTables().removeIf(shardingAutoTableRuleConfiguration -> currentTables.contains(shardingAutoTableRuleConfiguration.getLogicTable()));
+            toBeCreatedRuleConfig.getTables().removeIf(each -> currentTables.contains(each.getLogicTable()));
+            toBeCreatedRuleConfig.getAutoTables().removeIf(each -> currentTables.contains(each.getLogicTable()));
             if (toBeCreatedRuleConfig.getTables().isEmpty() && toBeCreatedRuleConfig.getAutoTables().isEmpty()) {
                 return;
             }
