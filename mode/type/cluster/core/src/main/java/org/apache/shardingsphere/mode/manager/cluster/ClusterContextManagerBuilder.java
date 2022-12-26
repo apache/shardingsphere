@@ -48,13 +48,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, param);
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), param.getInstanceMetaData(), param.getDatabaseConfigs());
-        InstanceContext instanceContext = buildInstanceContext(registryCenter, param);
+        InstanceContext instanceContext = buildInstanceContext(persistService, registryCenter, param);
         if (registryCenter.getRepository() instanceof InstanceContextAware) {
             ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
         }
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
+        setContextManagerAware(result);
         registerOnline(persistService, registryCenter, param, result);
         return result;
     }
@@ -65,9 +66,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param) {
+    private InstanceContext buildInstanceContext(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param) {
         return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, param.getInstanceMetaData()),
-                param.getModeConfiguration(), new GlobalLockContext(registryCenter.getGlobalLockPersistService()), registryCenter.getEventBusContext());
+                param.getModeConfiguration(), new ClusterModeContextManager(), new GlobalLockContext(registryCenter.getGlobalLockPersistService()), registryCenter.getEventBusContext());
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
@@ -75,6 +76,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 .forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persist(each.getName(), schemaName, schema)));
         metaDataContexts.getShardingSphereData().getDatabaseData().forEach((databaseName, databaseData) -> databaseData.getSchemaData().forEach((schemaName, schemaData) -> metaDataContexts
                 .getPersistService().getShardingSphereDataPersistService().persist(databaseName, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
+    }
+    
+    private void setContextManagerAware(final ContextManager contextManager) {
+        ((ClusterModeContextManager) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {

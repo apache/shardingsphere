@@ -22,8 +22,8 @@ import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResult
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableRuleResultSet;
-import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -48,10 +48,10 @@ public final class SingleTableRuleResultSetTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        SingleTableRule rule = mock(SingleTableRule.class);
-        when(rule.getConfiguration()).thenReturn(new SingleTableRuleConfiguration("foo_ds"));
+        SingleRule rule = mock(SingleRule.class);
+        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration("foo_ds"));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getSingleRule(SingleTableRule.class)).thenReturn(rule);
+        when(ruleMetaData.getSingleRule(SingleRule.class)).thenReturn(rule);
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }

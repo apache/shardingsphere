@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -29,7 +30,6 @@ import javax.transaction.RollbackException;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -113,9 +113,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private void close(final DataSource dataSource) {
         try {
-            Method method = dataSource.getClass().getDeclaredMethod("close");
-            method.setAccessible(true);
-            method.invoke(dataSource);
+            ReflectionUtil.invokeMethod(dataSource.getClass().getDeclaredMethod("close"), dataSource);
         } catch (final ReflectiveOperationException ignored) {
         }
     }

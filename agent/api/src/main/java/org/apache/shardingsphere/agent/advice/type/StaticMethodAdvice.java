@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.advice.type;
 
 import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 
@@ -34,9 +33,8 @@ public interface StaticMethodAdvice extends AgentAdvice {
      * @param clazz the target class
      * @param method the target method
      * @param args all method arguments
-     * @param result wrapped class of result to detect whether or not to execute the origin method
      */
-    default void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
     }
     
     /**
@@ -46,9 +44,9 @@ public interface StaticMethodAdvice extends AgentAdvice {
      * @param clazz the target class
      * @param method the target method
      * @param args all method arguments
-     * @param result wrapped class of result to detect whether or not to execute the origin method
+     * @param result original call result
      */
-    default void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
     }
     
     /**

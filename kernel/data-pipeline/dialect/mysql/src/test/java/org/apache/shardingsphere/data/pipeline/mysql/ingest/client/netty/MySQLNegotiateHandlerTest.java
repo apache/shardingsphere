@@ -86,7 +86,7 @@ public final class MySQLNegotiateHandlerTest {
     
     @Test
     public void assertChannelReadOkPacket() throws ReflectiveOperationException {
-        MySQLOKPacket okPacket = new MySQLOKPacket(0, 0);
+        MySQLOKPacket okPacket = new MySQLOKPacket(0);
         ServerInfo serverInfo = new ServerInfo();
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler, serverInfo);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);
@@ -96,7 +96,7 @@ public final class MySQLNegotiateHandlerTest {
     
     @Test(expected = RuntimeException.class)
     public void assertChannelReadErrorPacket() {
-        MySQLErrPacket errorPacket = new MySQLErrPacket(0, MySQLVendorError.ER_NO_DB_ERROR);
+        MySQLErrPacket errorPacket = new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket);
     }
 }

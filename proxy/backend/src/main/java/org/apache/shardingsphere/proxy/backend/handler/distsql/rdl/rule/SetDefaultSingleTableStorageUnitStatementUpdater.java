@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequi
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,10 +31,10 @@ import java.util.Collections;
 /**
  * Set default single table storage unit statement updater.
  */
-public final class SetDefaultSingleTableStorageUnitStatementUpdater implements RuleDefinitionCreateUpdater<SetDefaultSingleTableStorageUnitStatement, SingleTableRuleConfiguration> {
+public final class SetDefaultSingleTableStorageUnitStatementUpdater implements RuleDefinitionCreateUpdater<SetDefaultSingleTableStorageUnitStatement, SingleRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
         checkStorageUnitExist(database, sqlStatement);
     }
     
@@ -47,20 +47,20 @@ public final class SetDefaultSingleTableStorageUnitStatementUpdater implements R
     }
     
     @Override
-    public SingleTableRuleConfiguration buildToBeCreatedRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
-        SingleTableRuleConfiguration result = new SingleTableRuleConfiguration();
+    public SingleRuleConfiguration buildToBeCreatedRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
+        SingleRuleConfiguration result = new SingleRuleConfiguration();
         result.setDefaultDataSource(sqlStatement.getDefaultStorageUnit());
         return result;
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final SingleTableRuleConfiguration currentRuleConfig, final SingleTableRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final SingleRuleConfiguration currentRuleConfig, final SingleRuleConfiguration toBeCreatedRuleConfig) {
         currentRuleConfig.setDefaultDataSource(toBeCreatedRuleConfig.getDefaultDataSource().orElse(null));
     }
     
     @Override
-    public Class<SingleTableRuleConfiguration> getRuleConfigurationClass() {
-        return SingleTableRuleConfiguration.class;
+    public Class<SingleRuleConfiguration> getRuleConfigurationClass() {
+        return SingleRuleConfiguration.class;
     }
     
     @Override

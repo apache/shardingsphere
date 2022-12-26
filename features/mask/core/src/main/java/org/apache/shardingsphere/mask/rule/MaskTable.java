@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguratio
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -35,5 +36,15 @@ public final class MaskTable {
         for (MaskColumnRuleConfiguration each : config.getColumns()) {
             columns.put(each.getLogicColumn(), new MaskColumn(each.getLogicColumn(), each.getMaskAlgorithm()));
         }
+    }
+    
+    /**
+     * Find mask algorithm name.
+     *
+     * @param logicColumn column name
+     * @return mask algorithm name
+     */
+    public Optional<String> findMaskAlgorithmName(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getMaskAlgorithm()) : Optional.empty();
     }
 }

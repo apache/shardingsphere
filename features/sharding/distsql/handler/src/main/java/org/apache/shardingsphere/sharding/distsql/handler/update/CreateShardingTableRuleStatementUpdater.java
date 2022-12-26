@@ -24,14 +24,20 @@ import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableR
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Create sharding table rule statement updater.
  */
 public final class CreateShardingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
+    private boolean ifNotExists;
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig);
+        ifNotExists = sqlStatement.isIfNotExists();
+        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), ifNotExists, currentRuleConfig);
     }
     
     @Override
@@ -41,6 +47,16 @@ public final class CreateShardingTableRuleStatementUpdater implements RuleDefini
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        if (ifNotExists) {
+            Collection<String> currentTables = new LinkedList<>();
+            currentRuleConfig.getTables().forEach(each -> currentTables.add(each.getLogicTable()));
+            currentRuleConfig.getAutoTables().forEach(each -> currentTables.add(each.getLogicTable()));
+            toBeCreatedRuleConfig.getTables().removeIf(each -> currentTables.contains(each.getLogicTable()));
+            toBeCreatedRuleConfig.getAutoTables().removeIf(each -> currentTables.contains(each.getLogicTable()));
+            if (toBeCreatedRuleConfig.getTables().isEmpty() && toBeCreatedRuleConfig.getAutoTables().isEmpty()) {
+                return;
+            }
+        }
         currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
         currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
         currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());

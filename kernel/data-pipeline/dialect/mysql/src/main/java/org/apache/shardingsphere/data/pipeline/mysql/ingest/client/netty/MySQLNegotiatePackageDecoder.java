@@ -59,7 +59,7 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     }
     
     private MySQLPacket decodeResponsePacket(final MySQLPacketPayload payload, final List<Object> out) {
-        int header = payload.getByteBuf().getByte(1) & 0xff;
+        int header = payload.getByteBuf().getByte(0) & 0xff;
         switch (header) {
             case MySQLErrPacket.HEADER:
                 return new MySQLErrPacket(payload);

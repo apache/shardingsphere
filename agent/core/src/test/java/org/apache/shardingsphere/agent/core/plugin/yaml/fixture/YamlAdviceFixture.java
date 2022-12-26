@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.fixture;
 
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
@@ -32,19 +31,19 @@ public final class YamlAdviceFixture implements ConstructorAdvice, InstanceMetho
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
     }
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
     }
     
     @Override

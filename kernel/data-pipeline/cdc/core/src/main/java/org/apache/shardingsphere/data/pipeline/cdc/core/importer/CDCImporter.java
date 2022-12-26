@@ -17,13 +17,36 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
 /**
  * CDC importer.
  */
 public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final ImporterConfiguration importerConfig;
+    
+    private final PipelineChannel channel;
+    
+    private final PipelineJobProgressListener jobProgressListener;
+    
+    private final JobRateLimitAlgorithm rateLimitAlgorithm;
+    
+    public CDCImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel, final PipelineJobProgressListener jobProgressListener) {
+        this.importerConfig = importerConfig;
+        rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
+        this.channel = channel;
+        this.jobProgressListener = jobProgressListener;
+    }
     
     @Override
     protected void runBlocking() {

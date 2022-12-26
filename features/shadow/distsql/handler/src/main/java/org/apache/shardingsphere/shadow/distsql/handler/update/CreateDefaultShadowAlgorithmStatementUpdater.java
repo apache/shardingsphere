@@ -44,8 +44,6 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
     
-    private boolean ifNotExists;
-    
     @Override
     public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
@@ -61,7 +59,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     @Override
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeCreatedRuleConfig) {
-        if (!ifNotExists) {
+        if (getIdentical(currentRuleConfig).isEmpty()) {
             currentRuleConfig.getShadowAlgorithms().putAll(toBeCreatedRuleConfig.getShadowAlgorithms());
             currentRuleConfig.setDefaultShadowAlgorithmName(toBeCreatedRuleConfig.getDefaultShadowAlgorithmName());
         }
@@ -69,8 +67,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        ifNotExists = sqlStatement.isIfNotExists();
-        if (!ifNotExists) {
+        if (!sqlStatement.isIfNotExists()) {
             checkExist(database.getName(), currentRuleConfig);
         }
         checkAlgorithmCompleteness(Collections.singleton(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment()));

@@ -173,12 +173,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussExecuteStatement;
@@ -315,6 +318,12 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     }
     
     private Optional<String> findBinaryOperator(final AExprContext ctx) {
+        if (null != ctx.IS()) {
+            return Optional.of(ctx.IS().getText());
+        }
+        if (null != ctx.ISNULL()) {
+            return Optional.of("IS");
+        }
         if (1 == ctx.aExpr().size()) {
             return Optional.empty();
         }
@@ -354,6 +363,20 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     }
     
     private BinaryOperationExpression createBinaryOperationSegment(final AExprContext ctx, final String operator) {
+        if ("IS".equalsIgnoreCase(operator)) {
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+            String rightText;
+            ExpressionSegment right;
+            if (null != ctx.IS()) {
+                rightText = ctx.start.getInputStream().getText(new Interval(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex())).trim();
+                right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
+            } else {
+                rightText = ctx.start.getInputStream().getText(new Interval(ctx.ISNULL().getSymbol().getStartIndex() + 2, ctx.stop.getStopIndex())).trim();
+                right = new LiteralExpressionSegment(ctx.ISNULL().getSymbol().getStartIndex() + 2, ctx.stop.getStopIndex(), rightText);
+            }
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, "IS",
+                    ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex())));
+        }
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
@@ -372,11 +395,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             return result;
         }
         if (null != ctx.aexprConst()) {
-            ASTNode result = visit(ctx.aexprConst());
-            if (result instanceof StringLiteralValue || result instanceof BooleanLiteralValue || result instanceof NumberLiteralValue) {
-                return new LiteralExpressionSegment(ctx.aexprConst().start.getStartIndex(), ctx.aexprConst().stop.getStopIndex(), ((LiteralValue) result).getValue());
-            }
-            return result;
+            return visit(ctx.aexprConst());
         }
         if (null != ctx.aExpr()) {
             return visit(ctx.aExpr());
@@ -464,19 +483,21 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public ASTNode visitAexprConst(final AexprConstContext ctx) {
+        LiteralValue<?> value;
         if (null != ctx.numberConst()) {
-            return new NumberLiteralValue(ctx.numberConst().getText());
+            value = new NumberLiteralValue(ctx.numberConst().getText());
+        } else if (null != ctx.STRING_()) {
+            value = new StringLiteralValue(ctx.STRING_().getText());
+        } else if (null != ctx.FALSE()) {
+            value = new BooleanLiteralValue(ctx.FALSE().getText());
+        } else if (null != ctx.TRUE()) {
+            value = new BooleanLiteralValue(ctx.TRUE().getText());
+        } else if (null != ctx.NULL()) {
+            value = new NullLiteralValue(ctx.getText());
+        } else {
+            value = new OtherLiteralValue(ctx.getText());
         }
-        if (null != ctx.STRING_()) {
-            return new StringLiteralValue(ctx.STRING_().getText());
-        }
-        if (null != ctx.FALSE()) {
-            return new BooleanLiteralValue(ctx.FALSE().getText());
-        }
-        if (null != ctx.TRUE()) {
-            return new BooleanLiteralValue(ctx.TRUE().getText());
-        }
-        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        return SQLUtil.createLiteralExpression(value, ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override

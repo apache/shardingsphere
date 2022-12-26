@@ -61,6 +61,7 @@ public final class MySQLBinlogTableMapEventPacketTest {
         when(payload.readIntLenenc()).thenReturn(4L);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedShort()).thenReturn(10);
+        when(byteBuf.readerIndex()).thenReturn(1);
         MySQLBinlogTableMapEventPacket actual = new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload);
         assertThat(actual.getTableId(), is(1L));
         assertThat(actual.getFlags(), is(0));

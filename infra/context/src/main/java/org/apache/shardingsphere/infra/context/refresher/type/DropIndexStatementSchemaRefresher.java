@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -41,7 +42,7 @@ import java.util.Optional;
 public final class DropIndexStatementSchemaRefresher implements MetaDataRefresher<DropIndexStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
         DropIndexEvent event = new DropIndexEvent();
         for (IndexSegment each : sqlStatement.getIndexes()) {

@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
@@ -254,7 +255,9 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
     }
     
     private void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
-        MetaDataRefreshEngine metaDataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        MetaDataRefreshEngine metaDataRefreshEngine = new MetaDataRefreshEngine(contextManager.getInstanceContext().getModeContextManager(), database,
+                contextManager.getMetaDataContexts().getMetaData().getProps());
         Optional<MetaDataRefreshedEvent> event = metaDataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(event.get());

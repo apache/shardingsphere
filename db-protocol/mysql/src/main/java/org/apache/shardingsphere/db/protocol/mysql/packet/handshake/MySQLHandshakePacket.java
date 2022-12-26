@@ -64,7 +64,6 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
-        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL handshake packet must be `0`");
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         serverVersion = payload.readStringNul();
         connectionId = payload.readInt4();
@@ -140,10 +139,5 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     
     private boolean isClientPluginAuth() {
         return 0 != (capabilityFlagsUpper & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

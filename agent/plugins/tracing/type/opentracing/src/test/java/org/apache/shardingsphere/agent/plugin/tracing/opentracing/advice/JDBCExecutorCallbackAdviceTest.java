@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -44,8 +43,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class JDBCExecutorCallbackAdviceTest {
-    
-    private static final JDBCExecutorCallbackAdvice ADVICE = new JDBCExecutorCallbackAdvice();
     
     private static MockTracer tracer;
     
@@ -71,8 +68,9 @@ public final class JDBCExecutorCallbackAdviceTest {
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
-        ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        ADVICE.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
+        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap});
+        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null);
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
@@ -91,9 +89,10 @@ public final class JDBCExecutorCallbackAdviceTest {
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
-        ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        ADVICE.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
-        ADVICE.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
+        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap});
+        advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
+        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null);
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

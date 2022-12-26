@@ -98,7 +98,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
                 Thread.sleep(1000);
                 statement2.execute("update account set balance = balance + 1 where transaction_id = 1;");
                 connection.commit();
-            } catch (SQLException | InterruptedException ignored) {
+            } catch (final SQLException | InterruptedException ignored) {
             }
         }
     }

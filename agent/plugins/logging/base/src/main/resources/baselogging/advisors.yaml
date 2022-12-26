@@ -23,4 +23,4 @@ advisors:
         type: method
         params:
           - index: 3
-            name: storageNodes
+            type: java.util.Map

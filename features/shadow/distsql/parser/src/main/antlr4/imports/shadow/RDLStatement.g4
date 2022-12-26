@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 createShadowRule
-    : CREATE SHADOW RULE shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
+    : CREATE SHADOW RULE ifNotExists? shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
     ;
 
 alterShadowRule

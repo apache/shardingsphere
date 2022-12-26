@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
 import io.opentracing.mock.MockSpan;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
@@ -42,8 +41,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"}, new MethodInvocationResult());
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"});
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, null);
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -52,9 +51,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertExceptionHandle() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"}, new MethodInvocationResult());
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"});
         ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, null);
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

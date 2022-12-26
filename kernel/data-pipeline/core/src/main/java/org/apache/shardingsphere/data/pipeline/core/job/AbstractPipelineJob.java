@@ -25,11 +25,11 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrierFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrierFactory;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected void setJobId(final String jobId) {
         this.jobId = jobId;
-        jobAPI = PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
+        jobAPI = PipelineJobAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
     }
     
     protected void prepare(final PipelineJobItemContext jobItemContext) {

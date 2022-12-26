@@ -23,32 +23,32 @@ advisors:
       - type: constructor
         params:
           - index: 0
-            name: value
+            type: java.lang.String
       - name: call
         type: method
       - name: call
         type: method
         params:
           - index: 0
-            name: value
+            type: java.lang.String
       - name: call
         type: method
         params:
           - index: 0
-            name: value1
+            type: java.lang.String
           - index: 1
-            name: value2
+            type: java.lang.String
       - name: staticCall
         type: method
       - name: staticCall
         type: method
         params:
           - index: 0
-            name: value
+            type: java.lang.String
       - name: staticCall
         type: method
         params:
           - index: 0
-            name: value1
+            type: java.lang.String
           - index: 1
-            name: value2
+            type: java.lang.String

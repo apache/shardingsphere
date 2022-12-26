@@ -298,7 +298,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
             when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
                     .thenReturn(Collections.singletonList(connection));
             backendConnection.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             assertThat(ex, is(expectedException));
             verify(connection).close();
         }

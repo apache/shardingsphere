@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -40,6 +41,8 @@ import java.util.stream.Collectors;
 public final class MetaDataRefreshEngine {
     
     private static final Collection<Class<? extends SQLStatement>> IGNORED_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    
+    private final ModeContextManager modeContextManager;
     
     private final ShardingSphereDatabase database;
     
@@ -64,7 +67,7 @@ public final class MetaDataRefreshEngine {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName())).toLowerCase();
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            return schemaRefresher.get().refresh(database, logicDataSourceNames, schemaName, sqlStatementContext.getSqlStatement(), props);
+            return schemaRefresher.get().refresh(modeContextManager, database, logicDataSourceNames, schemaName, sqlStatementContext.getSqlStatement(), props);
         }
         IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         return Optional.empty();

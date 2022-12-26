@@ -18,18 +18,32 @@
 package org.apache.shardingsphere.proxy.backend.handler.cdc;
 
 import com.google.common.base.Strings;
+import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
+import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
+import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
+import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
+import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.TableName;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CreateSubscriptionResult;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -71,13 +85,65 @@ public final class CDCBackendHandler {
         }
         CreateSubscriptionJobParameter parameter = new CreateSubscriptionJobParameter(subscriptionRequest.getDatabase(), tableNames, subscriptionRequest.getSubscriptionName(),
                 subscriptionRequest.getSubscriptionMode().name(), actualDataNodesMap);
-        CDCJobAPIFactory.getInstance().createJobAndStart(parameter);
-        return CDCResponseGenerator.succeedBuilder(request.getRequestId()).build();
+        if (CDCJobAPIFactory.getInstance().createJob(parameter)) {
+            return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateSubscriptionResult(CreateSubscriptionResult.newBuilder()
+                    .setSubscriptionName(subscriptionRequest.getSubscriptionName()).setExisting(false).build()).build();
+        } else {
+            return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateSubscriptionResult(CreateSubscriptionResult.newBuilder()
+                    .setSubscriptionName(subscriptionRequest.getSubscriptionName()).setExisting(true).build()).build();
+        }
     }
     
     private List<DataNode> getActualDataNodes(final ShardingRule shardingRule, final String logicTableName) {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         // TODO support virtual data source name
         return tableRule.getActualDataNodes();
+    }
+    
+    /**
+     * Start subscription.
+     *
+     * @param request request
+     * @param channel channel
+     * @param connectionContext connection context
+     * @return CDC response
+     */
+    public CDCResponse startSubscription(final CDCRequest request, final Channel channel, final CDCConnectionContext connectionContext) {
+        StartSubscriptionRequest startSubscriptionRequest = request.getStartSubscription();
+        CDCJobAPI jobAPI = CDCJobAPIFactory.getInstance();
+        String jobId = jobAPI.marshalJobId(new CDCJobId(startSubscriptionRequest.getDatabase(), startSubscriptionRequest.getSubscriptionName()));
+        CDCJobConfiguration cdcJobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
+        if (null == cdcJobConfig) {
+            return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, String.format("the %s job config isn't exists",
+                    startSubscriptionRequest.getSubscriptionName()));
+        }
+        JobConfigurationPOJO jobConfigPOJO = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        if (!jobConfigPOJO.isDisabled()) {
+            return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, String.format("the %s is being used", startSubscriptionRequest.getSubscriptionName()));
+        }
+        jobConfigPOJO.setDisabled(false);
+        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
+        CDCJob job = new CDCJob(new CDCImporterConnector(channel));
+        for (int i = 0; i < cdcJobConfig.getJobShardingCount(); i++) {
+            PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
+            OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+            job.setJobBootstrap(oneOffJobBootstrap);
+            oneOffJobBootstrap.execute();
+        }
+        connectionContext.setStatus(CDCConnectionStatus.SUBSCRIBED);
+        connectionContext.setJobId(jobId);
+        return CDCResponseGenerator.succeedBuilder(request.getRequestId()).build();
+    }
+    
+    /**
+     * Stop subscription.
+     *
+     * @param jobId job id
+     */
+    public void stopSubscription(final String jobId) {
+        PipelineJobCenter.stop(jobId);
+        JobConfigurationPOJO jobConfig = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        jobConfig.setDisabled(true);
+        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfig);
     }
 }
