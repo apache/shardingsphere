@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 /**
  * Alter schema pojo.

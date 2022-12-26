@@ -50,12 +50,14 @@ public interface ModeContextManager {
      * Create schema.
      *
      * @param databaseName database name
+     * @param schemaName schema name
      */
     void createSchema(String databaseName, String schemaName);
     
     
     /**
      * Alter schema.
+     *
      * @param alterSchemaPOJO alter schema pojo
      */
     void alterSchema(AlterSchemaPOJO alterSchemaPOJO);

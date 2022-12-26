@@ -66,7 +66,8 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
-    private ShardingSphereSchema getSchema(final ShardingSphereDatabase database, final String schemaName, final String viewName, final String viewDefinition, final ConfigurationProperties props) throws SQLException {
+    private ShardingSphereSchema getSchema(final ShardingSphereDatabase database, final String schemaName, final String viewName,
+                                           final String viewDefinition, final ConfigurationProperties props) throws SQLException {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 database.getResourceMetaData().getStorageTypes(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
