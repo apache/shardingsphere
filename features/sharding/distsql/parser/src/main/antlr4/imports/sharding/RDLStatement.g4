@@ -32,7 +32,7 @@ dropShardingTableRule
     ;
 
 createShardingTableReferenceRule
-    : CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
+    : CREATE SHARDING TABLE REFERENCE RULE ifNotExists? tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
 alterShardingTableReferenceRule
