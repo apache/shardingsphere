@@ -72,11 +72,10 @@ Answer:
 1. ShardingSphere-Proxy could be considered as a MySQL server, so we recommend using MySQL command line tool to connect to and operate it.
 2. If users would like to use a third-party database tool, there may be some errors cause of the certain implementation/options.
 3. The currently tested third-party database tools are as follows:
-   - Navicat: 11.1.13, 15.0.20.
    - DataGrip: 2020.1, 2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
    - WorkBench: 8.0.25.
 
-### [Proxy] When using a client such as Navicat to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not add a resource, the client connection will fail?
+### [Proxy] When using a client to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not add a resource, the client connection will fail?
 
 Answer:
 

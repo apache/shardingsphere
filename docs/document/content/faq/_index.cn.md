@@ -70,11 +70,10 @@ DROP DATABASE sharding_db;
 1. ShardingSphere-Proxy 可以看做是一个 database server，所以首选支持 SQL 命令连接和操作。
 2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。
 3. 目前已测试的第三方数据库工具如下：
-   - Navicat：11.1.13、15.0.20。
    - DataGrip：2020.1、2021.1（使用 IDEA/DataGrip 时打开 `introspect using JDBC metadata` 选项）。
-   - WorkBench：8.0.25。
+   - MySQLWorkBench：8.0.25。
 
-### [Proxy] 使用 Navicat 等第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有添加 Storage Unit，连接失败？
+### [Proxy] 使用第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有添加 Storage Unit，连接失败？
 
 回答：
 
