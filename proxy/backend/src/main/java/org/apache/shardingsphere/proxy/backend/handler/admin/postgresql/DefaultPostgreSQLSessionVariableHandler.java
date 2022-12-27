@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariablesLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariables;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Default session variable handler for PostgreSQL.
@@ -29,7 +31,8 @@ import java.util.Collection;
 @Slf4j
 public final class DefaultPostgreSQLSessionVariableHandler implements PostgreSQLSessionVariableHandler {
     
-    private final Collection<String> replayRequiredSessionVariables = ReplayRequiredSessionVariablesLoader.getVariables("PostgreSQL");
+    private final Collection<String> replayRequiredSessionVariables = TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "PostgreSQL")
+            .orElseGet(() -> Collections::emptySet).getReplayRequiredVariables();
     
     @Override
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
