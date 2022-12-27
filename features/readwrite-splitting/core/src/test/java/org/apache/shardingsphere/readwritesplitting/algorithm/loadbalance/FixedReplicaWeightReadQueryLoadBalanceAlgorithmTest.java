@@ -107,7 +107,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("test_read_ds_1", "1");
         props.setProperty("test_read_ds_2", "2");
-        FixedReplicaWeightReadQueryLoadBalanceAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", props), ReadQueryLoadBalanceAlgorithm.class);
+        FixedReplicaWeightReadQueryLoadBalanceAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", props), ReadQueryLoadBalanceAlgorithm.class);
         algorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"), new TransactionConnectionContext());
         assertThat(algorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
     }

@@ -53,8 +53,9 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertExecuteWithXA() {
-        try (MockedStatic<ShardingSphereServiceLoader> mockFactory = mockStatic(ShardingSphereServiceLoader.class)) {
-            mockFactory.when(() -> ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
+        try (MockedStatic<ShardingSphereServiceLoader> shardingSphereServiceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            shardingSphereServiceLoader.when(
+                    () -> ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
             AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
             ShardingSphereMetaData metaData = createMetaData();
             updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
