@@ -26,9 +26,9 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrierFactory;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -40,9 +40,9 @@ import java.util.concurrent.CompletableFuture;
 public final class ConsistencyCheckChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
     
     @Override
-    public void process(final DataChangedEvent.Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
-        String jobId = jobConfigPOJO.getJobName();
-        if (jobConfigPOJO.isDisabled()) {
+    public void process(final Type eventType, final JobConfiguration jobConfig) {
+        String jobId = jobConfig.getJobName();
+        if (jobConfig.isDisabled()) {
             Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
             PipelineJobCenter.stop(jobId);
             for (Integer each : shardingItems) {
@@ -56,7 +56,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 if (PipelineJobCenter.isJobExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
+                    CompletableFuture.runAsync(() -> execute(jobConfig), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
                         if (null != throwable) {
                             log.error("execute failed, jobId={}", jobId, throwable);
                         }
@@ -71,10 +71,10 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
         }
     }
     
-    private void execute(final JobConfigurationPOJO jobConfigPOJO) {
+    private void execute(final JobConfiguration jobConfig) {
         ConsistencyCheckJob job = new ConsistencyCheckJob();
-        PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        PipelineJobCenter.addJob(jobConfig.getJobName(), job);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }

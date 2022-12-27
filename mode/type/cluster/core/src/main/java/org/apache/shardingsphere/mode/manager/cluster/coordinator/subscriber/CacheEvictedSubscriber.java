@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
-import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Pipeline changed job configuration processor.
+ * Cache evicted subscriber.
  */
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+public final class CacheEvictedSubscriber {
+    
+    public CacheEvictedSubscriber(final EventBusContext eventBusContext) {
+        eventBusContext.register(this);
+    }
     
     /**
-     * Process changed job configuration.
+     * Callback of any {@link GovernanceEvent}.
      *
-     * @param eventType event type
-     * @param jobConfig job configuration
+     * @param ignored unused
      */
-    void process(Type eventType, JobConfiguration jobConfig);
+    @SuppressWarnings({"UnstableApiUsage", "unused"})
+    @Subscribe
+    public void onGovernanceEvent(final GovernanceEvent ignored) {
+        OrderedServicesCache.clearCache();
+    }
 }
