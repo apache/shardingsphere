@@ -120,7 +120,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         updater.checkSQLStatement(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        algorithm = new AlgorithmSegment("user_id_algorithm", new Properties());;
+        algorithm = new AlgorithmSegment("user_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement statementWithIfNotExists = new CreateDefaultShardingStrategyStatement(true, "TABLE", "standard", "order_id", algorithm);
         updater.checkSQLStatement(database, statementWithIfNotExists, currentRuleConfig);
         toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statementWithIfNotExists);
