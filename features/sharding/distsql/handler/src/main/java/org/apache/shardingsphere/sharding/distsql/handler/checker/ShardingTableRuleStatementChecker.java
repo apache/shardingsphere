@@ -302,11 +302,34 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static void checkStrategy(final String databaseName, final Collection<TableRuleSegment> rules) {
-        Collection<AlgorithmSegment> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
-                .flatMap(Collection::stream).filter(Objects::nonNull).filter(ShardingTableRuleStatementChecker::isInvalidStrategy)
-                .map(ShardingStrategySegment::getShardingAlgorithm).collect(Collectors.toList());
-        Collection<String> invalidAlgorithmNames = invalidAlgorithms.stream().filter(Objects::nonNull).map(AlgorithmSegment::getName).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(databaseName, invalidAlgorithmNames));
+        rules.forEach(each -> {
+            Optional<ShardingStrategySegment> databaseStrategySegment = Optional.ofNullable(each.getDatabaseStrategySegment());
+            if (databaseStrategySegment.isPresent()) {
+                AlgorithmSegment databaseShardingAlgorithm = databaseStrategySegment.get().getShardingAlgorithm();
+                if (null != databaseShardingAlgorithm) {
+                    ShardingAlgorithm shardingAlgorithm = ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(databaseShardingAlgorithm.getName(), databaseShardingAlgorithm.getProps()));
+                    ShardingSpherePreconditions.checkState(!(shardingAlgorithm instanceof ShardingAutoTableAlgorithm),
+                            () -> new InvalidAlgorithmConfigurationException("sharding", shardingAlgorithm.getType(),
+                                    String.format("auto sharding algorithm cannot be used to create a table in Table mode `%s`", each.getLogicTable())));
+                }
+                ShardingSpherePreconditions.checkState(!isInvalidStrategy(each.getDatabaseStrategySegment()),
+                        () -> new InvalidAlgorithmConfigurationException(databaseName,
+                                null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
+            }
+            Optional<ShardingStrategySegment> tableStrategySegment = Optional.ofNullable(each.getTableStrategySegment());
+            if (tableStrategySegment.isPresent()) {
+                AlgorithmSegment tableShardingAlgorithm = tableStrategySegment.get().getShardingAlgorithm();
+                if (null != tableShardingAlgorithm) {
+                    ShardingAlgorithm shardingAlgorithm = ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration(tableShardingAlgorithm.getName(), tableShardingAlgorithm.getProps()));
+                    ShardingSpherePreconditions.checkState(!(shardingAlgorithm instanceof ShardingAutoTableAlgorithm),
+                            () -> new InvalidAlgorithmConfigurationException("sharding", shardingAlgorithm.getType(),
+                                    String.format("auto sharding algorithm cannot be used to create a table in Table mode `%s`", each.getLogicTable())));
+                }
+                ShardingSpherePreconditions.checkState(!isInvalidStrategy(each.getTableStrategySegment()),
+                        () -> new InvalidAlgorithmConfigurationException(databaseName,
+                                null == tableShardingAlgorithm ? null : tableShardingAlgorithm.getName()));
+            }
+        });
     }
     
     private static boolean isInvalidStrategy(final ShardingStrategySegment shardingStrategySegment) {
