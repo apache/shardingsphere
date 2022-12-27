@@ -81,6 +81,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
             synchronizedExecuteDropSQLs(connection, String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()));
         } catch (final SQLException | NoSuchTableException ignored) {
         }
+        waitCompleted();
     }
     
     private synchronized void synchronizedExecuteDropSQLs(final Connection connection, final String sql) throws SQLException {
@@ -202,7 +203,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void waitCompleted() {
-        TimeUnit.MILLISECONDS.sleep(100);
+    protected void waitCompleted() {
+        TimeUnit.MILLISECONDS.sleep(1500);
     }
 }

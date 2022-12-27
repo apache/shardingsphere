@@ -93,5 +93,6 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             assertFalse("Not a DDL statement.", preparedStatement.execute());
         }
+        waitCompleted();
     }
 }
