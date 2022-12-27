@@ -44,7 +44,7 @@ public final class AgentTransformer implements Transformer, AdviceCreateListener
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
+    private static final AtomicBoolean STARTED_FLAG = new AtomicBoolean(false);
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
@@ -69,7 +69,7 @@ public final class AgentTransformer implements Transformer, AdviceCreateListener
     
     @Override
     public void onComplete(final String adviceClassName, final ClassLoader classLoader) {
-        if (STARTED.compareAndSet(false, true)) {
+        if (STARTED_FLAG.compareAndSet(false, true)) {
             PluginBootServiceManager.startAllServices(pluginConfigs, classLoader, isEnhancedForProxy);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginBootServiceManager.closeAllServices(pluginJars)));
         }
