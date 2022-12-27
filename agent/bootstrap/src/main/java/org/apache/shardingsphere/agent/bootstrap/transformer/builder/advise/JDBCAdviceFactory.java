@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.bootstrap.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
-import org.apache.shardingsphere.agent.bootstrap.transformer.AdviceCreateListener;
+import org.apache.shardingsphere.agent.bootstrap.transformer.AdviceCreationListener;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public final class JDBCAdviceFactory {
     
     private final Collection<PluginJar> pluginJars;
     
-    private final AdviceCreateListener createAdviceListener;
+    private final AdviceCreationListener adviceCreationListener;
     
     /**
      * Get advice.
@@ -61,7 +61,7 @@ public final class JDBCAdviceFactory {
     private Object createAdviceForJDBC(final String adviceClassName) {
         ClassLoader pluginClassLoader = PLUGIN_CLASS_LOADERS.computeIfAbsent(classLoader, key -> new AgentClassLoader(key, pluginJars));
         Object result = Class.forName(adviceClassName, true, pluginClassLoader).getDeclaredConstructor().newInstance();
-        createAdviceListener.onComplete(adviceClassName, pluginClassLoader);
+        adviceCreationListener.onComplete(adviceClassName, pluginClassLoader);
         return result;
     }
 }

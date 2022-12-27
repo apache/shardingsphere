@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.bootstrap.classloader.AgentClassLoader;
-import org.apache.shardingsphere.agent.bootstrap.transformer.AdviceCreateListener;
+import org.apache.shardingsphere.agent.bootstrap.transformer.AdviceCreationListener;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +34,7 @@ public final class ProxyAdviceFactory {
     
     private static final Map<String, AgentAdvice> CACHED_ADVICES = new ConcurrentHashMap<>();
     
-    private final AdviceCreateListener createAdviceListener;
+    private final AdviceCreationListener adviceCreationListener;
     
     /**
      * Get advice.
@@ -49,7 +49,7 @@ public final class ProxyAdviceFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     private AgentAdvice createAdviceForProxy(final String adviceClassName) {
         AgentAdvice agentAdvice = (AgentAdvice) Class.forName(adviceClassName, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
-        createAdviceListener.onComplete(adviceClassName, AgentClassLoader.getClassLoader());
+        adviceCreationListener.onComplete(adviceClassName, AgentClassLoader.getClassLoader());
         return agentAdvice;
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.agent.bootstrap.transformer;
 
 /**
- * Advice Create listener.
+ * Advice creation listener.
  */
-public interface AdviceCreateListener {
+public interface AdviceCreationListener {
     
     /**
      * Create advice complete.

@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Agent transformer.
  */
 @RequiredArgsConstructor
-public final class AgentTransformer implements Transformer, AdviceCreateListener {
+public final class AgentTransformer implements Transformer, AdviceCreationListener {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
