@@ -169,7 +169,7 @@ The solutions are as follows:
 Answer:
 
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
-2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to s or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
+2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
 3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) for above rules.
 
 ### [DistSQL] How to solve ` Storage unit [xxx] is still used by [SingleTableRule].` exception when dropping a data source using DistSQL?
