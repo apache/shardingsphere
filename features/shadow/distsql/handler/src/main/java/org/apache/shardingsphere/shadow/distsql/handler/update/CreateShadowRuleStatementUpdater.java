@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStat
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Map;
@@ -93,7 +94,8 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     
     private void checkAlgorithmType(final CreateShadowRuleStatement sqlStatement) {
         Collection<String> nonexistentAlgorithmTypes = sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
-                .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet()).stream().filter(each -> !ShadowAlgorithmFactory.contains(each)).collect(Collectors.toSet());
+                .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet())
+                .stream().filter(each -> !TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(nonexistentAlgorithmTypes.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW, nonexistentAlgorithmTypes));
     }
     

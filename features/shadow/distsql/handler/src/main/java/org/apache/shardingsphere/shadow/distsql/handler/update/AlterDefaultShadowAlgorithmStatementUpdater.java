@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterDefaultShadowAlgorithmStatement;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -88,7 +89,8 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
     
     private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {
         String shadowAlgorithmType = algorithmSegment.getName();
-        ShardingSpherePreconditions.checkState(ShadowAlgorithmFactory.contains(shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException(SHADOW, shadowAlgorithmType));
+        ShardingSpherePreconditions.checkState(
+                TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType).isPresent(), () -> new InvalidAlgorithmConfigurationException(SHADOW, shadowAlgorithmType));
     }
     
     @Override
