@@ -84,3 +84,7 @@ rules:
           likeQueryColumn: telephone_like
           encryptorName: aes_encryptor
           likeQueryEncryptorName: like_encryptor
+
+- !SINGLE
+  tables:
+    - encrypt.t_user_item,encrypt.t_single_table

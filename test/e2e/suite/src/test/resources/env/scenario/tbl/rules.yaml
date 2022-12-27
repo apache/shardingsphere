@@ -91,5 +91,9 @@ rules:
     auditor_constant:
       type: IT.AUDITOR.FIXTURE
 
+- !SINGLE
+  tables:
+    - tbl.t_single_table
+
 props:
   sql-federation-type: ADVANCED

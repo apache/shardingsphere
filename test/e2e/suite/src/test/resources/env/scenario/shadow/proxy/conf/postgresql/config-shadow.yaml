@@ -82,3 +82,7 @@ rules:
       type: SIMPLE_HINT
       props:
         foo: bar
+
+- !SINGLE
+  tables:
+    - shadowDataSource.t_shadow
