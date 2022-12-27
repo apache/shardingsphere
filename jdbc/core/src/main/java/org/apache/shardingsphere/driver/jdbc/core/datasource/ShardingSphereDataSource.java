@@ -26,9 +26,10 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 
 import javax.sql.DataSource;
@@ -74,7 +75,10 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         databaseRuleConfigs.removeAll(globalRuleConfigs);
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
                 new DataSourceProvidedDatabaseConfiguration(dataSourceMap, databaseRuleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData, false);
-        return ContextManagerBuilderFactory.getInstance(modeConfig).build(param);
+        ContextManagerBuilder contextManagerBuilder = null == modeConfig
+                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class)
+                : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
+        return contextManagerBuilder.build(param);
     }
     
     @Override

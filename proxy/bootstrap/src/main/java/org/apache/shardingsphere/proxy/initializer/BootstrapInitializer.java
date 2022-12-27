@@ -23,10 +23,11 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
+import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
@@ -66,7 +67,10 @@ public final class BootstrapInitializer {
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
                 proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
                 createInstanceMetaData(proxyConfig, port), force);
-        return ContextManagerBuilderFactory.getInstance(modeConfig).build(param);
+        ContextManagerBuilder contextManagerBuilder = null == modeConfig
+                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class)
+                : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
+        return contextManagerBuilder.build(param);
     }
     
     private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
