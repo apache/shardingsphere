@@ -49,6 +49,8 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInImmutableDataNodeContainedRule(tableName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+            database.getRuleMetaData().findRuleConfigurations(MutableRuleConfiguration.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
+            modeContextManager.alterRuleConfiguration(database.getName(), database.getRuleMetaData().getConfigurations());
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 database.getResourceMetaData().getStorageTypes(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
@@ -58,8 +60,6 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
             database.getSchema(schemaName).putTable(tableName, actualTableMetaData.get());
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
             event.getAlteredTables().add(actualTableMetaData.get());
-            database.getRuleMetaData().findRuleConfigurations(MutableRuleConfiguration.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
-            modeContextManager.alterRuleConfiguration(database.getName(), database.getRuleMetaData().getConfigurations());
             return Optional.of(event);
         }
         return Optional.empty();
