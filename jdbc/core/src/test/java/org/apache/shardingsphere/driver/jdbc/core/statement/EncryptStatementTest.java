@@ -30,8 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
@@ -200,7 +200,9 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     @Test
     public void assertShowColumnsTable() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
+            System.out.println("----------start show columns");
             ResultSet resultSet = statement.executeQuery(SHOW_COLUMNS_SQL);
+            System.out.println("----------end show columns");
             int count = 0;
             while (resultSet.next()) {
                 if ("pwd".equals(resultSet.getString("FIELD"))) {
