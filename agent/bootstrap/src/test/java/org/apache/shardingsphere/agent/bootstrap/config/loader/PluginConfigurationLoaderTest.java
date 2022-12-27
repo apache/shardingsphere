@@ -35,7 +35,7 @@ public final class PluginConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException, ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(AgentPathBuilder.class.getDeclaredField("agentPath"), AgentPathBuilder.class, new File(getResourceUrl()));
+        Plugins.getMemberAccessor().set(AgentPathBuilder.class.getDeclaredField("AGENT_PATH"), AgentPathBuilder.class, new File(getResourceUrl()));
         assertNotNull(PluginConfigurationLoader.load());
     }
     
