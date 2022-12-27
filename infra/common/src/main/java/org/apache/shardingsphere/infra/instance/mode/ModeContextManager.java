@@ -54,7 +54,6 @@ public interface ModeContextManager {
      */
     void createSchema(String databaseName, String schemaName);
     
-    
     /**
      * Alter schema.
      *

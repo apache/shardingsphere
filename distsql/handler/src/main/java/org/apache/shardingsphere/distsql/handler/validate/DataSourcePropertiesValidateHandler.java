@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.validate;
 
-import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 
@@ -37,7 +37,7 @@ public final class DataSourcePropertiesValidateHandler {
     public void validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
         Collection<String> errorMessages = new DataSourcePropertiesValidator().validate(dataSourcePropertiesMap);
         if (!errorMessages.isEmpty()) {
-            throw new InvalidResourcesException(errorMessages);
+            throw new InvalidStorageUnitsException(errorMessages);
         }
     }
 }

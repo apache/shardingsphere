@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultSingleTableStorageUnitStatement;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -54,7 +54,7 @@ public final class SetDefaultSingleTableStorageUnitUpdaterTest {
         when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }
     
-    @Test(expected = MissingRequiredResourcesException.class)
+    @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertCheckWithInvalidResource() {
         updater.checkSQLStatement(database, new SetDefaultSingleTableStorageUnitStatement("ds_1"), currentConfig);
     }
