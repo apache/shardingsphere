@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.instance.mode;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -43,6 +45,37 @@ public interface ModeContextManager {
      * @param databaseName database name
      */
     void dropDatabase(String databaseName);
+    
+    /**
+     * Create schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     */
+    void createSchema(String databaseName, String schemaName);
+    
+    
+    /**
+     * Alter schema.
+     *
+     * @param alterSchemaPOJO alter schema pojo
+     */
+    void alterSchema(AlterSchemaPOJO alterSchemaPOJO);
+    
+    /**
+     * Drop schema.
+     *
+     * @param databaseName database name
+     * @param schemaNames schema names
+     */
+    void dropSchema(String databaseName, Collection<String> schemaNames);
+    
+    /**
+     * Alter schema metadata.
+     *
+     * @param alterSchemaMetaDataPOJO alter schema metadata pojo
+     */
+    void alterSchemaMetaData(AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO);
     
     /**
      * Register storage units.

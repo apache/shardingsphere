@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.type;
+package org.apache.shardingsphere.infra.context.refresher.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateSchemaStatementHandler;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Schema refresher for create schema statement.
@@ -37,16 +32,10 @@ import java.util.Optional;
 public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefresher<CreateSchemaStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        Optional<IdentifierValue> schema = sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement);
-        if (!schema.isPresent()) {
-            return Optional.empty();
-        }
-        String actualSchemaName = schema.get().getValue().toLowerCase();
-        database.putSchema(actualSchemaName, new ShardingSphereSchema());
-        AddSchemaEvent event = new AddSchemaEvent(database.getName(), actualSchemaName);
-        return Optional.of(event);
+    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                        final String schemaName, final CreateSchemaStatement sqlStatement, final ConfigurationProperties props) {
+        (sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName() : CreateSchemaStatementHandler.getUsername(sqlStatement))
+                .ifPresent(optional -> modeContextManager.createSchema(database.getName(), optional.getValue().toLowerCase()));
     }
     
     @Override

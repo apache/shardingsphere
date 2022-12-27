@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.type;
+package org.apache.shardingsphere.infra.context.refresher.type.view;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.LinkedList;
 
 /**
  * Schema refresher for alter view statement.
@@ -46,52 +47,48 @@ import java.util.Optional;
 public final class AlterViewStatementSchemaRefresher implements MetaDataRefresher<AlterViewStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                        final String schemaName, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames.iterator().next());
         Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
             String originalView = database.getSchema(schemaName).getView(viewName).getViewDefinition();
-            putTableMetaData(database, logicDataSourceNames, schemaName, renameViewName, originalView, props);
-            removeTableMetaData(database, schemaName, viewName);
-            event.getAlteredTables().add(database.getSchema(schemaName).getTable(renameViewName));
-            event.getAlteredViews().add(database.getSchema(schemaName).getView(renameViewName));
-            event.getDroppedTables().add(viewName);
-            event.getDroppedViews().add(viewName);
+            ShardingSphereSchema schema = getSchema(database, logicDataSourceNames, schemaName, renameViewName, originalView, props);
+            alterSchemaMetaDataPOJO.getAlteredTables().add(schema.getTable(renameViewName));
+            alterSchemaMetaDataPOJO.getAlteredViews().add(schema.getView(renameViewName));
+            alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
+            alterSchemaMetaDataPOJO.getDroppedViews().add(viewName);
         }
         Optional<String> viewDefinition = AlterViewStatementHandler.getViewDefinition(sqlStatement);
         if (viewDefinition.isPresent()) {
-            putTableMetaData(database, logicDataSourceNames, schemaName, viewName, viewDefinition.get(), props);
-            event.getAlteredTables().add(database.getSchema(schemaName).getTable(viewName));
-            event.getAlteredViews().add(database.getSchema(schemaName).getView(viewName));
+            ShardingSphereSchema schema = getSchema(database, logicDataSourceNames, schemaName, viewName, viewDefinition.get(), props);
+            alterSchemaMetaDataPOJO.getAlteredTables().add(schema.getTable(viewName));
+            alterSchemaMetaDataPOJO.getAlteredViews().add(schema.getView(viewName));
         }
-        return Optional.of(event);
+        modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
-    private void removeTableMetaData(final ShardingSphereDatabase database, final String schemaName, final String viewName) {
-        database.getSchema(schemaName).removeTable(viewName);
-        database.getSchema(schemaName).removeView(viewName);
-        database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, viewName));
-    }
-    
-    private void putTableMetaData(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                  final String schemaName, final String viewName, final String viewDefinition, final ConfigurationProperties props) throws SQLException {
+    private ShardingSphereSchema getSchema(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                                           final String schemaName, final String viewName, final String viewDefinition, final ConfigurationProperties props) throws SQLException {
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         if (!containsInImmutableDataNodeContainedRule(viewName, database)) {
-            database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
+            ruleMetaData.findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
-                database.getResourceMetaData().getStorageTypes(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
+                database.getResourceMetaData().getStorageTypes(), database.getResourceMetaData().getDataSources(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
-        actualViewMetaData.ifPresent(optional -> database.getSchema(schemaName).putTable(viewName, optional));
-        database.getSchema(schemaName).putView(viewName, new ShardingSphereView(viewName, viewDefinition));
+        ShardingSphereSchema result = new ShardingSphereSchema();
+        actualViewMetaData.ifPresent(optional -> result.putTable(viewName, optional));
+        result.putView(viewName, new ShardingSphereView(viewName, viewDefinition));
+        return result;
     }
     
-    private boolean containsInImmutableDataNodeContainedRule(final String viewName, final ShardingSphereDatabase database) {
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(viewName));
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
     }
     
     @Override

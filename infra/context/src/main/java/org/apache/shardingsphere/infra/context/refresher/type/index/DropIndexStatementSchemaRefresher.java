@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.type;
+package org.apache.shardingsphere.infra.context.refresher.type.index;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
@@ -23,9 +23,7 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.DropIndexEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -34,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexSta
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 /**
@@ -42,20 +41,20 @@ import java.util.Optional;
 public final class DropIndexStatementSchemaRefresher implements MetaDataRefresher<DropIndexStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                                                    final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
-        DropIndexEvent event = new DropIndexEvent();
+    public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                        final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
         for (IndexSegment each : sqlStatement.getIndexes()) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);
             Optional<String> logicTableName = findLogicTableName(database, sqlStatement, Collections.singletonList(each));
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            ShardingSphereTable table = database.getSchema(actualSchemaName).getTable(logicTableName.get());
+            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName, logicDataSourceNames.iterator().next());
+            ShardingSphereTable table = newShardingSphereTable(database.getSchema(actualSchemaName).getTable(logicTableName.get()));
             table.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
-            event.getSchemaAlteredEvents().add(buildSchemaAlteredEvent(database.getName(), actualSchemaName, table));
+            alterSchemaMetaDataPOJO.getAlteredTables().add(table);
+            modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
-        return Optional.of(event);
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereDatabase database, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
@@ -67,9 +66,12 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     
-    private SchemaAlteredEvent buildSchemaAlteredEvent(final String databaseName, final String schemaName, final ShardingSphereTable table) {
-        SchemaAlteredEvent result = new SchemaAlteredEvent(databaseName, schemaName);
-        result.getAlteredTables().add(table);
+    private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), new LinkedHashMap<>(table.getColumns()),
+                new LinkedHashMap<>(table.getIndexes()), new LinkedHashMap<>(table.getConstrains()));
+        result.getColumnNames().addAll(table.getColumnNames());
+        result.getVisibleColumns().addAll(table.getVisibleColumns());
+        result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
         return result;
     }
     

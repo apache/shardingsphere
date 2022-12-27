@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.model
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.Map;
 /**
  * ShardingSphere table.
  */
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
