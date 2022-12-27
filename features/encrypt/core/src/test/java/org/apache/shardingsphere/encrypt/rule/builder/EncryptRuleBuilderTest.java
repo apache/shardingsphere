@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilderFactory;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,7 +36,7 @@ public final class EncryptRuleBuilderTest {
     @Test
     public void assertBuild() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        DatabaseRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(EncryptRule.class));
     }
 }

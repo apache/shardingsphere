@@ -78,13 +78,13 @@ public final class DatabaseRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getDistributedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> distributedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
-        return DatabaseRuleBuilderFactory.getInstanceMap(distributedRuleConfigs, Comparator.reverseOrder());
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder());
     }
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getEnhancedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> enhancedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
-        return DatabaseRuleBuilderFactory.getInstanceMap(enhancedRuleConfigs);
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, enhancedRuleConfigs);
     }
     
     private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
@@ -106,6 +106,6 @@ public final class DatabaseRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<DatabaseRuleBuilder> getMissedDefaultRuleBuilders(final Collection<DatabaseRuleBuilder> configuredBuilders) {
         Collection<Class<DatabaseRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<DatabaseRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return DatabaseRuleBuilderFactory.getInstances().stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }
