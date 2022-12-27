@@ -21,8 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.bootstrap.classloader.AgentClassLoader;
-import org.apache.shardingsphere.agent.bootstrap.logging.LoggerFactory;
-import org.apache.shardingsphere.agent.bootstrap.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
 import org.apache.shardingsphere.agent.bootstrap.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.bootstrap.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
@@ -40,8 +38,6 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdvisorConfigurationLoader.class);
     
     /**
      * Load advisor configurations.

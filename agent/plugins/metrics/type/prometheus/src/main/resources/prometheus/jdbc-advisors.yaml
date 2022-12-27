@@ -14,3 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+advisors:
+  - target: org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory
+    advice: org.apache.shardingsphere.agent.metrics.core.advice.MetaDataContextsFactoryAdvice
+    pointcuts:
+      - name: create
+        type: method
+        params:
+          - index: 3
+            type: java.util.Map
