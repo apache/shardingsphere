@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
@@ -44,7 +45,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
                 setCodePointLimit(Integer.MAX_VALUE);
             }
         });
-        ShardingSphereYamlConstructFactory.getInstances().forEach(each -> typeConstructs.put(each.getType(), each));
+        ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
         ShardingSphereYamlShortcutsFactory.getAllYamlShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
         this.rootClass = rootClass;
     }
