@@ -20,7 +20,6 @@ tableName ::=
 ### 补充说明
 
 - `tableName` 可使用已经存在的表或者将要创建的表；
-- 只能存在一个广播规则，但可包含多个广播表，因此无法重复执行 `CREATE BROADCAST TABLE RULE`。
 
 ### 示例
 
