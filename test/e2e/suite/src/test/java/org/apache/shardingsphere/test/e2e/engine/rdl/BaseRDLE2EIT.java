@@ -88,7 +88,7 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
     
     protected void sleep() {
         try {
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(5);
         } catch (final InterruptedException ignored) {
         }
     }
