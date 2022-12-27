@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -54,7 +55,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.factory.SQLFederationExecutorFactory;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
@@ -78,6 +78,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -87,7 +88,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -141,14 +141,14 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
         when(backendConnection.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
         SQLFederationExecutor federationExecutor = mock(SQLFederationExecutor.class);
         try (
-                MockedStatic<SQLFederationExecutorFactory> federationExecutorFactory = mockStatic(SQLFederationExecutorFactory.class);
+                MockedStatic<TypedSPIRegistry> typedSPIRegistry = mockStatic(TypedSPIRegistry.class);
                 MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
             when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationExecutorContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
-            federationExecutorFactory.when(() -> SQLFederationExecutorFactory.getInstance(anyString())).thenReturn(federationExecutor);
+            typedSPIRegistry.when(() -> TypedSPIRegistry.findRegisteredService(SQLFederationExecutor.class, "NONE")).thenReturn(Optional.of(federationExecutor));
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
             SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration("ORIGINAL"));
             when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
