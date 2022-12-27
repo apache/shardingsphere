@@ -22,7 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.Test;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.xa.PGXAConnection;
@@ -50,7 +51,7 @@ public final class PostgreSQLXAConnectionWrapperTest {
     
     private XADataSource createXADataSource() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        return XADataSourceFactory.build(databaseType, dataSource);
+        return new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
     }
     
     private Connection mockConnection() throws SQLException {
