@@ -36,6 +36,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateEncryptRuleStatementUpdaterTest {
     
@@ -46,12 +50,12 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateEncryptRule() {
-        updater.checkSQLStatement(database, createSQLStatement("MD5"), getCurrentRuleConfig());
+        updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
-        updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null);
+        updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null);
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
@@ -61,17 +65,28 @@ public final class CreateEncryptRuleStatementUpdaterTest {
                 new AlgorithmSegment("test", new Properties()),
                 new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()), null);
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
-        CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
+        CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
         updater.checkSQLStatement(database, statement, null);
     }
     
-    private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {
+    @Test
+    public void assertCreateEncryptRuleWithIfNotExists() {
+        EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
+        CreateEncryptRuleStatement sqlStatement = createSQLStatement(true, "AES");
+        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        EncryptRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        assertThat(currentRuleConfig.getTables().size(), is(1));
+        assertTrue(currentRuleConfig.getEncryptors().isEmpty());
+    }
+    
+    private CreateEncryptRuleStatement createSQLStatement(final boolean ifNotExists, final String encryptorName) {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()), null);
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
-        return new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
+        return new CreateEncryptRuleStatement(ifNotExists, Collections.singleton(ruleSegment));
     }
     
     private EncryptRuleConfiguration getCurrentRuleConfig() {
