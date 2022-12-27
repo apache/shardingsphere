@@ -19,9 +19,10 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinitionFactory;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -40,6 +41,6 @@ public final class XADataSourceFactory {
      * @return XA data source
      */
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
-        return new DataSourceSwapper(XADataSourceDefinitionFactory.getInstance(databaseType)).swap(dataSource);
+        return new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
     }
 }
