@@ -52,7 +52,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
-        Map<String, MySQLSessionVariableHandler> handlers = sessionVariables.keySet().stream().collect(Collectors.toMap(Function.identity(), MySQLSessionVariableHandlerFactory::getHandler));
+        Map<String, MySQLSessionVariableHandler> handlers = sessionVariables.keySet().stream().collect(Collectors.toMap(Function.identity(),
+                value -> TypedSPIRegistry.findRegisteredService(MySQLSessionVariableHandler.class, value).orElseGet(DefaultMySQLSessionVariableHandler::new)));
         for (String each : handlers.keySet()) {
             handlers.get(each).handle(connectionSession, each, sessionVariables.get(each));
         }
