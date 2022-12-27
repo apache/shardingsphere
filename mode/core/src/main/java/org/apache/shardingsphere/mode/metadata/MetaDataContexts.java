@@ -57,7 +57,8 @@ public final class MetaDataContexts implements AutoCloseable {
         ShardingSphereData result = Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
                 // TODO can `protocolType instanceof OpenGaussDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
                 .flatMap(protocolType -> TypedSPIRegistry.findRegisteredService(ShardingSphereDataBuilder.class, protocolType instanceof OpenGaussDatabaseType ? "PostgreSQL" : protocolType.getType())
-                        .map(builder -> builder.build(metaData))).orElseGet(ShardingSphereData::new);
+                        .map(builder -> builder.build(metaData)))
+                .orElseGet(ShardingSphereData::new);
         Optional<ShardingSphereData> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
                 .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
         loadedShardingSphereData.ifPresent(sphereData -> useLoadedToReplaceInit(result, sphereData));
