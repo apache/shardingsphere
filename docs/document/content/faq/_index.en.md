@@ -73,7 +73,7 @@ Answer:
 2. If users would like to use a third-party database tool, there may be some errors cause of the certain implementation/options.
 3. The currently tested third-party database tools are as follows:
    - DataGrip: 2020.1, 2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
-   - WorkBench: 8.0.25.
+   - MySQLWorkBench: 8.0.25.
 
 ### [Proxy] When using a client to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not register a storage unit, the client connection will fail?
 
