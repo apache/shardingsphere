@@ -17,21 +17,30 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShadowTest;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.util.StatementTestUtil;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShadowPreparedStatementTest extends AbstractShardingSphereDataSourceForShadowTest {
+public final class ShadowPreparedStatementTest {
     
     private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
     
@@ -45,9 +54,36 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = ?";
     
+    private static ShardingSphereDataSource dataSource;
+    
+    private static DataSource actualDataSource0;
+    
+    private static DataSource actualDataSource1;
+    
+    private static final String CONFIG_FILE = "config/config-shadow.yaml";
+    
+    @BeforeClass
+    public static void initShadowDataSource() throws SQLException, IOException {
+        Map<String, DataSource> dataSources = new LinkedHashMap<>();
+        actualDataSource0 = StatementTestUtil.createDataSourcesWithInitFile("shadow_jdbc_prepared_0", "sql/jdbc_shadow_init.sql");
+        actualDataSource1 = StatementTestUtil.createDataSourcesWithInitFile("shadow_jdbc_prepared_1", "sql/jdbc_shadow_init.sql");
+        dataSources.put("shadow_jdbc_0", actualDataSource0);
+        dataSources.put("shadow_jdbc_1", actualDataSource1);
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(dataSources, getFile());
+    }
+    
+    private static File getFile() {
+        return new File(Objects.requireNonNull(ShadowPreparedStatementTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+    }
+    
+    @AfterClass
+    public static void close() throws Exception {
+        dataSource.close();
+    }
+    
     @Test
     public void assertInsertNativeCase() throws SQLException {
-        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(INSERT_SQL)) {
             preparedStatement.setObject(1, 2);
             preparedStatement.setString(2, "cipher");
             preparedStatement.setString(3, "plain");
@@ -58,7 +94,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     }
     
     private void assertResultSet(final boolean isShadow, final int resultSetCount, final Object cipherPwd) throws SQLException {
-        DataSource dataSource = isShadow ? getActualDataSources().get("shadow_jdbc_1") : getActualDataSources().get("shadow_jdbc_0");
+        DataSource dataSource = isShadow ? actualDataSource1 : actualDataSource0;
         try (Statement statement = dataSource.getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(RESULT_SELECT_SQL);
             int count = 0;
@@ -72,7 +108,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     @Test
     public void assertInsertShadowCase() throws SQLException {
-        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(INSERT_SQL)) {
             preparedStatement.setObject(1, 1);
             preparedStatement.setString(2, "cipher");
             preparedStatement.setString(3, "plain");
@@ -85,7 +121,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     @Test
     public void assertUpdateNativeCase() throws SQLException {
         int result;
-        try (Connection connection = getShadowDataSource().getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement insertPreparedStatement = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement.setObject(1, 2);
             insertPreparedStatement.setString(2, "cipher");
@@ -104,7 +140,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     @Test
     public void assertUpdateShadowCase() throws SQLException {
         int result;
-        try (Connection connection = getShadowDataSource().getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement insertPreparedStatement = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement.setObject(1, 1);
             insertPreparedStatement.setString(2, "cipher");
@@ -123,7 +159,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     @Test
     public void assertDeleteNativeCase() throws SQLException {
         int result;
-        try (Connection connection = getShadowDataSource().getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement insertPreparedStatement1 = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement1.setObject(1, 2);
             insertPreparedStatement1.setString(2, "cipher");
@@ -146,7 +182,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     @Test
     public void assertDeleteShadowCase() throws SQLException {
         int result;
-        try (Connection connection = getShadowDataSource().getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement insertPreparedStatement1 = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement1.setObject(1, 1);
             insertPreparedStatement1.setString(2, "cipher_pwd");
@@ -168,7 +204,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     @Test
     public void assertSelectNativeCase() throws SQLException {
-        try (Connection connection = getShadowDataSource().getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement insertPreparedStatement = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement.setObject(1, 2);
             insertPreparedStatement.setString(2, "cipher");
@@ -193,7 +229,7 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     @Test
     public void assertSelectShadowCase() throws SQLException {
-        try (Connection connection = getShadowDataSource().getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             PreparedStatement insertPreparedStatement = connection.prepareStatement(INSERT_SQL);
             insertPreparedStatement.setObject(1, 1);
             insertPreparedStatement.setString(2, "cipher_pwd");
@@ -218,10 +254,10 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     @After
     public void clean() throws SQLException {
-        try (Statement statement = getActualDataSources().get("shadow_jdbc_0").getConnection().createStatement()) {
+        try (Statement statement = actualDataSource0.getConnection().createStatement()) {
             statement.execute(CLEAN_SQL);
         }
-        try (Statement statement = getActualDataSources().get("shadow_jdbc_1").getConnection().createStatement()) {
+        try (Statement statement = actualDataSource1.getConnection().createStatement()) {
             statement.execute(CLEAN_SQL);
         }
     }

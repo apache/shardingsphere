@@ -17,23 +17,35 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.jdbc.util.StatementTestUtil;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.h2.tools.RunScript;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class EncryptPreparedStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
+public final class EncryptPreparedStatementTest {
     
     private static final String INSERT_SQL = "INSERT INTO t_query_encrypt(id, pwd) VALUES(?,?)";
     
@@ -53,11 +65,51 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
     
+    private static final String CONFIG_FILE_WITH_QUERY_WITH_PLAIN = "config/config-encrypt-query-with-plain.yaml";
+    
+    private static final String CONFIG_FILE_WITH_QUERY_WITH_CIPHER = "config/config-encrypt-query-with-cipher.yaml";
+    
+    private static DataSource actualDataSource;
+    
+    private static ShardingSphereDataSource queryWithPlainDataSource;
+    
+    private static ShardingSphereDataSource queryWithCipherDataSource;
+    
+    @BeforeClass
+    public static void initEncryptDataSource() throws SQLException, IOException {
+        actualDataSource = StatementTestUtil.createDataSourcesWithInitFile("encrypt_prepared_statement_test", "sql/jdbc_encrypt_init.sql");
+        queryWithPlainDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(actualDataSource, getFile(CONFIG_FILE_WITH_QUERY_WITH_CIPHER));
+        queryWithCipherDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(actualDataSource, getFile(CONFIG_FILE_WITH_QUERY_WITH_PLAIN));
+    }
+    
+    private static File getFile(final String fileName) {
+        return new File(Objects.requireNonNull(EncryptPreparedStatementTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
+    }
+    
+    @AfterClass
+    public static void close() throws Exception {
+        queryWithPlainDataSource.close();
+        queryWithCipherDataSource.close();
+    }
+    
+    @Before
+    public void initTable() {
+        try (Connection connection = queryWithPlainDataSource.getConnection()) {
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(EncryptPreparedStatementTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     @Test
     public void assertSQLShow() {
         assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
+    private ShardingSphereConnection getEncryptConnectionWithProps() {
+        return (ShardingSphereConnection) queryWithCipherDataSource.getConnection();
+    }
+
     @Test
     public void assertInsertWithExecute() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_SQL)) {
@@ -65,7 +117,28 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             preparedStatement.setObject(2, 'b');
             preparedStatement.execute();
         }
-        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
+        assertResultSet(3, 2);
+    }
+    
+    private void assertResultSet(final int resultSetCount, final int id) throws SQLException {
+        try (
+                Connection connection = actualDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_ALL_SQL);
+            int count = 1;
+            while (resultSet.next()) {
+                if (id == count) {
+                    assertThat(resultSet.getObject("cipher_pwd"), is("encryptValue"));
+                    assertThat(resultSet.getObject("assist_pwd"), is("assistedEncryptValue"));
+                }
+                count += 1;
+            }
+            assertThat(count - 1, is(resultSetCount));
+        }
+    }
+    
+    private Connection getEncryptConnection() {
+        return queryWithPlainDataSource.getConnection();
     }
     
     @Test
@@ -79,7 +152,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             preparedStatement.addBatch();
             preparedStatement.executeBatch();
         }
-        assertResultSet(4, 3, "encryptValue", "assistedEncryptValue");
+        assertResultSet(4, 3);
     }
     
     @Test
@@ -91,7 +164,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
         }
-        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
+        assertResultSet(3, 2);
     }
     
     @Test
@@ -103,29 +176,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             preparedStatement.addBatch();
             preparedStatement.executeBatch();
         }
-        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
-    }
-    
-    @Test
-    public void assertDeleteWithExecute() throws SQLException {
-        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(DELETE_SQL)) {
-            preparedStatement.setObject(1, 'a');
-            preparedStatement.setObject(2, 1);
-            preparedStatement.execute();
-        }
-        assertResultSet(1, 5, "encryptValue", "assistedEncryptValue");
-    }
-    
-    @Test
-    public void assertUpdateWithExecuteUpdate() throws SQLException {
-        int result;
-        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(UPDATE_SQL)) {
-            preparedStatement.setObject(1, 'f');
-            preparedStatement.setObject(2, 'a');
-            result = preparedStatement.executeUpdate();
-        }
-        assertThat(result, is(2));
-        assertResultSet(2, 1, "encryptValue", "assistedEncryptValue");
+        assertResultSet(3, 2);
     }
     
     @Test
@@ -182,21 +233,14 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
         }
     }
     
-    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assistPwd) throws SQLException {
-        try (
-                Connection connection = getActualDataSources().get("encrypt").getConnection();
-                Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_ALL_SQL);
-            int count = 1;
-            while (resultSet.next()) {
-                if (id == count) {
-                    assertThat(pwd, is(resultSet.getObject("cipher_pwd")));
-                    assertThat(assistPwd, is(resultSet.getObject("assist_pwd")));
-                }
-                count += 1;
-            }
-            assertThat(count - 1, is(resultSetCount));
+    @Test
+    public void assertDeleteWithExecute() throws SQLException {
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(DELETE_SQL)) {
+            preparedStatement.setObject(1, 'a');
+            preparedStatement.setObject(2, 1);
+            preparedStatement.execute();
         }
+        assertResultSet(1, 5);
     }
     
     @Test(expected = SQLException.class)
@@ -238,5 +282,17 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
                 assertThat(metaData.getColumnLabel(3), is("plain_pwd2"));
             }
         }
+    }
+    
+    @Test
+    public void assertUpdateWithExecuteUpdate() throws SQLException {
+        int result;
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(UPDATE_SQL)) {
+            preparedStatement.setObject(1, 'f');
+            preparedStatement.setObject(2, 'a');
+            result = preparedStatement.executeUpdate();
+        }
+        assertThat(result, is(2));
+        assertResultSet(2, 1);
     }
 }
