@@ -102,6 +102,10 @@
                                             <pattern>org.apache.commons</pattern>
                                             <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
                                         </relocation>
+                                        <relocation>
+                                            <pattern>io.netty</pattern>
+                                            <shadedPattern>${shade.package}.io.netty</shadedPattern>
+                                        </relocation>
                                     </relocations>
                                     <filters>
                                         <filter>
