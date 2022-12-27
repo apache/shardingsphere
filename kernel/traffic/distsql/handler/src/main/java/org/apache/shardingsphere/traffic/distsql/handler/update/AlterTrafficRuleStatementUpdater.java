@@ -32,9 +32,9 @@ import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration
 import org.apache.shardingsphere.traffic.distsql.handler.convert.TrafficRuleConverter;
 import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
-import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -79,7 +79,7 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     private Collection<String> getInvalidAlgorithmNames(final AlterTrafficRuleStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (TrafficRuleSegment each : sqlStatement.getSegments()) {
-            if (!TrafficAlgorithmFactory.contains(each.getAlgorithm().getName())) {
+            if (!TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, each.getAlgorithm().getName()).isPresent()) {
                 result.add(each.getAlgorithm().getName());
             }
             if (null != each.getLoadBalancer() && !TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName()).isPresent()) {
