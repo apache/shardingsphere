@@ -53,6 +53,9 @@
             <includes>
                 <include>**.jar</include>
             </includes>
+            <excludes>
+                <exclude>shardingsphere-agent-tracing-test-${project.version}.jar</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../plugins/metrics/target/plugins</directory>
