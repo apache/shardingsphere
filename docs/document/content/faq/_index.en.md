@@ -75,7 +75,7 @@ Answer:
    - DataGrip: 2020.1, 2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
    - WorkBench: 8.0.25.
 
-### [Proxy] When using a client to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not add a resource, the client connection will fail?
+### [Proxy] When using a client to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not add a storage unit, the client connection will fail?
 
 Answer:
 
