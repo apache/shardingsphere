@@ -35,7 +35,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewSt
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterViewStatementHandler;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.LinkedList;
 
 /**
  * Schema refresher for alter view statement.
