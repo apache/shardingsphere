@@ -19,13 +19,14 @@ package org.apache.shardingsphere.agent.bootstrap.path;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -34,15 +35,19 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AgentPathBuilder {
     
-    @Getter
-    private static File agentPath;
-    
-    @Getter
-    private static File pluginPath;
+    private static final File AGENT_PATH;
     
     static {
-        agentPath = buildAgentPath();
-        pluginPath = buildAgentPluginPath();
+        AGENT_PATH = buildAgentPath();
+    }
+    
+    /**
+     * Get agent path.
+     *
+     * @return agent path
+     */
+    public static File getAgentPath() {
+        return AGENT_PATH;
     }
     
     private static File buildAgentPath() {
@@ -71,7 +76,13 @@ public final class AgentPathBuilder {
         return new File(classLocation);
     }
     
-    private static File buildAgentPluginPath() {
-        return new File(String.join("/", agentPath.getPath(), "plugins"));
+    /**
+     * Get all plugin paths for classloader.
+     *
+     * @return plugin paths for classloader
+     */
+    public static List<File> getPluginPaths() {
+        return Arrays.asList(new File(String.join("/", AGENT_PATH.getPath(), "lib")),
+                new File(String.join("/", AGENT_PATH.getPath(), "plugins")));
     }
 }
