@@ -41,11 +41,11 @@ public final class AgentPathBuilder {
     private static File agentPath;
     
     @Getter
-    private static Collection<File> pluginPaths;
+    private static Collection<File> pluginClassPaths;
     
     static {
         agentPath = buildAgentPath();
-        pluginPaths = buildAgentPluginPath();
+        pluginClassPaths = buildAgentPluginPath();
     }
     
     private static File buildAgentPath() {

@@ -49,7 +49,7 @@ public final class AgentPluginLoader {
      */
     public static Collection<PluginJar> load() throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        AgentPathBuilder.getPluginPaths().forEach(
+        AgentPathBuilder.getPluginClassPaths().forEach(
                 path -> {
                     File[] jarFileArray = path.listFiles(each -> each.getName().endsWith(".jar"));
                     if (null != jarFileArray) {
