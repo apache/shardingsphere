@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.bootstrap.classloader.AgentClassLoader;
+import org.apache.shardingsphere.agent.bootstrap.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.bootstrap.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
 import org.apache.shardingsphere.agent.bootstrap.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.bootstrap.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
@@ -30,6 +32,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,6 +41,8 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
     
     /**
      * Load advisor configurations.
@@ -51,8 +56,12 @@ public final class AdvisorConfigurationLoader {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
         AgentClassLoader.init(pluginJars);
         for (String type : pluginTypes) {
-            Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper
-                    .swapToObject(YamlAdvisorsConfigurationLoader.load(getAdvisorsResourceStream(type, isEnhancedForProxy)), type);
+            InputStream advisorsResourceStream = getAdvisorsResourceStream(type, isEnhancedForProxy);
+            if (Objects.isNull(advisorsResourceStream)) {
+                LOGGER.error("No configuration of advisor for type `{}`", type);
+                continue;
+            }
+            Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), type);
             result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
         }
         return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
