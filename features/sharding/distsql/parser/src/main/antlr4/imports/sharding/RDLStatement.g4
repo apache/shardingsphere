@@ -44,7 +44,7 @@ dropShardingTableReferenceRule
     ;
 
 createBroadcastTableRule
-    : CREATE BROADCAST TABLE RULE tableName (COMMA_ tableName)*
+    : CREATE BROADCAST TABLE RULE ifNotExists? tableName (COMMA_ tableName)*
     ;
 
 dropBroadcastTableRule

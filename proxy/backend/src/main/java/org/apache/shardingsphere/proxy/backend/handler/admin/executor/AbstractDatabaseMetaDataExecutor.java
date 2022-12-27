@@ -66,6 +66,8 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     private final LinkedList<Map<String, Object>> rows = new LinkedList<>();
     
+    private final Collection<String> labels = new LinkedList<>();
+    
     @Override
     public final void execute(final ConnectionSession connectionSession) throws SQLException {
         List<String> databaseNames = getDatabaseNames(connectionSession);
@@ -79,10 +81,10 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     }
     
     private void handleResultSet(final String databaseName, final ResultSet resultSet) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
         while (resultSet.next()) {
             Map<String, Object> rowMap = new LinkedHashMap<>();
             Map<String, String> aliasMap = new LinkedHashMap<>();
-            ResultSetMetaData metaData = resultSet.getMetaData();
             for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
                 aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
                 rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
@@ -90,6 +92,11 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
             rowPostProcessing(databaseName, rowMap, aliasMap);
             if (!rowMap.isEmpty()) {
                 rows.addFirst(rowMap);
+            }
+        }
+        if (rows.isEmpty()) {
+            for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
+                labels.add(metaData.getColumnLabel(i));
             }
         }
     }
@@ -139,6 +146,10 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     }
     
     private RawQueryResultMetaData createQueryResultMetaData() {
+        if (rows.isEmpty() && !labels.isEmpty()) {
+            List<RawQueryResultColumnMetaData> columns = labels.stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
+            return new RawQueryResultMetaData(columns);
+        }
         List<RawQueryResultColumnMetaData> columns = rows.stream().flatMap(each -> each.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new))
                 .stream().map(each -> new RawQueryResultColumnMetaData("", each, each, Types.VARCHAR, "VARCHAR", 20, 0)).collect(Collectors.toList());
         return new RawQueryResultMetaData(columns);

@@ -156,7 +156,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateBroadcastTableRule(final CreateBroadcastTableRuleContext ctx) {
-        return new CreateBroadcastTableRuleStatement(ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new CreateBroadcastTableRuleStatement(null != ctx.ifNotExists(), ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
