@@ -17,77 +17,41 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.jdbc.util.StatementTestUtil;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForReadwriteSplittingTest;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ReadwriteSplittingPreparedStatementTest {
-    
-    private static final String CONFIG_FILE = "config/config-readwrite-splitting.yaml";
-    
-    private static ShardingSphereDataSource dataSource;
-    
-    @BeforeClass
-    public static void initReadwriteSplittingDataSources() throws SQLException, IOException {
-        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
-    }
-    
-    private static Map<String, DataSource> getDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        result.put("test_primary_ds", StatementTestUtil.createDataSourcesWithInitFile("test_primary_prepared_test_ds", "sql/jdbc_init.sql"));
-        result.put("test_replica_ds", StatementTestUtil.createDataSourcesWithInitFile("test_replica_prepared_test_ds", "sql/jdbc_init.sql"));
-        return result;
-    }
-    
-    private static File getFile() {
-        return new File(Objects.requireNonNull(
-                ReadwriteSplittingPreparedStatementTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
-    }
-    
-    @AfterClass
-    public static void clear() throws Exception {
-        dataSource.close();
-    }
+public final class ReadwriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(null)) {
+        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement(null)) {
             preparedStatement.executeQuery();
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement("")) {
+        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement("")) {
             preparedStatement.executeQuery();
         }
     }
     
     @Test
     public void assertGetParameterMetaData() throws SQLException {
-        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement("SELECT * FROM t_config where id = ?")) {
+        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement("SELECT * FROM t_config where id = ?")) {
             assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(1));
         }
     }
@@ -95,7 +59,8 @@ public final class ReadwriteSplittingPreparedStatementTest {
     @Test
     public void assertGetGeneratedKeys() throws SQLException {
         try (
-                PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement("INSERT INTO t_config(status) VALUES(?);", Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement preparedStatement = getReadwriteSplittingDataSource()
+                        .getConnection().prepareStatement("INSERT INTO t_config(status) VALUES(?);", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, "OK");
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -113,7 +78,8 @@ public final class ReadwriteSplittingPreparedStatementTest {
     @Test
     public void assertGetGeneratedKeysWithPrimaryKeyIsNull() throws SQLException {
         try (
-                PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement("INSERT INTO t_config(id, status) VALUES(?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement preparedStatement = getReadwriteSplittingDataSource()
+                        .getConnection().prepareStatement("INSERT INTO t_config(id, status) VALUES(?, ?);", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setObject(1, null);
             preparedStatement.setString(2, "OK");
             preparedStatement.executeUpdate();
@@ -132,7 +98,8 @@ public final class ReadwriteSplittingPreparedStatementTest {
     @Test
     public void assertGetGeneratedKeysWithPrimaryKeyIsNullInTransactional() throws SQLException {
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = getReadwriteSplittingDataSource()
+                        .getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_config(id, status) VALUES(?, ?);", Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             Object lastGeneratedId = null;

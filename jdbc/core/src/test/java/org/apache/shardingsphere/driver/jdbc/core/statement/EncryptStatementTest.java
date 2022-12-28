@@ -17,21 +17,10 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.jdbc.util.StatementTestUtil;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.h2.tools.RunScript;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -39,14 +28,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class EncryptStatementTest {
+public final class EncryptStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
     private static final String INSERT_SQL = "INSERT INTO t_encrypt(id, pwd) VALUES (2,'b')";
     
@@ -68,49 +56,9 @@ public final class EncryptStatementTest {
     
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
-    private static final String CONFIG_FILE_WITH_QUERY_WITH_PLAIN = "config/config-encrypt-query-with-plain.yaml";
-    
-    private static final String CONFIG_FILE_WITH_QUERY_WITH_CIPHER = "config/config-encrypt-query-with-cipher.yaml";
-    
-    private static DataSource actualDataSource;
-    
-    private static ShardingSphereDataSource queryWithPlainDataSource;
-    
-    private static ShardingSphereDataSource queryWithCipherDataSource;
-    
-    @BeforeClass
-    public static void initEncryptDataSource() throws SQLException, IOException {
-        actualDataSource = StatementTestUtil.createDataSourcesWithInitFile("encrypt_statement_test", "sql/jdbc_encrypt_init.sql");
-        queryWithPlainDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(actualDataSource, getFile(CONFIG_FILE_WITH_QUERY_WITH_CIPHER));
-        queryWithCipherDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(actualDataSource, getFile(CONFIG_FILE_WITH_QUERY_WITH_PLAIN));
-    }
-    
-    private static File getFile(final String fileName) {
-        return new File(Objects.requireNonNull(EncryptStatementTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
-    }
-    
-    @AfterClass
-    public static void close() throws Exception {
-        queryWithPlainDataSource.close();
-        queryWithCipherDataSource.close();
-    }
-    
-    @Before
-    public void initTable() {
-        try (Connection connection = queryWithPlainDataSource.getConnection()) {
-            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(EncryptStatementTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
     @Test
     public void assertSQLShow() {
         assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-    }
-    
-    private ShardingSphereConnection getEncryptConnectionWithProps() {
-        return (ShardingSphereConnection) queryWithCipherDataSource.getConnection();
     }
     
     @Test
@@ -119,10 +67,6 @@ public final class EncryptStatementTest {
             statement.execute(INSERT_SQL);
         }
         assertResultSet(3, 2, "encryptValue", "b");
-    }
-    
-    private Connection getEncryptConnection() {
-        return queryWithPlainDataSource.getConnection();
     }
     
     @Test
@@ -224,7 +168,7 @@ public final class EncryptStatementTest {
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
         try (
-                Connection connection = actualDataSource.getConnection();
+                Connection connection = getActualDataSources().get("encrypt").getConnection();
                 Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT);
             int count = 1;
