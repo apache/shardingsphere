@@ -32,8 +32,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Advisor configuration loader.
@@ -61,9 +59,15 @@ public final class AdvisorConfigurationLoader {
                 continue;
             }
             Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each);
-            result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
+            mergeAdvisorConfigurations(result, advisorConfigs);
         }
         return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
+    }
+    
+    private static void mergeAdvisorConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
+        for (AdvisorConfiguration each : advisorConfigs) {
+            advisorConfigMap.computeIfAbsent(each.getTargetClassName(), key -> new AdvisorConfiguration(each.getTargetClassName())).getAdvisors().addAll(each.getAdvisors());
+        }
     }
     
     private static InputStream getAdvisorsResourceStream(final String type, final boolean isEnhancedForProxy) {
