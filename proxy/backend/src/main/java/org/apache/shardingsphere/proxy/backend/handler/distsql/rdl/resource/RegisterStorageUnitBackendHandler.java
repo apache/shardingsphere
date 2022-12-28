@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
@@ -77,7 +77,7 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Register storage unit failed", ex);
-            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -99,7 +99,7 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
             }
             dataSourceNames.add(each.getName());
         }
-        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateResourceException(duplicatedDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedDataSourceNames));
     }
     
     private void checkDuplicatedLogicalDataSourceNames(final String databaseName, final Collection<String> requiredDataSourceNames) {
@@ -109,7 +109,7 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
         }
         Collection<String> duplicatedDataSourceNames = requiredDataSourceNames.stream().filter(logicalDataSourceNames::contains).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(),
-                () -> new InvalidResourcesException(Collections.singleton(String.format("%s already existed in rule", duplicatedDataSourceNames))));
+                () -> new InvalidStorageUnitsException(Collections.singleton(String.format("%s already existed in rule", duplicatedDataSourceNames))));
     }
     
     private Collection<String> getCurrentStorageUnitNames(final String databaseName) {
