@@ -196,7 +196,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         String defaultType = new IdentifierValue(ctx.type.getText()).getValue();
         String strategyType = getIdentifierValue(shardingStrategyContext.strategyType());
         String shardingColumn = buildShardingColumn(ctx.shardingStrategy().shardingColumnDefinition());
-        return new CreateDefaultShardingStrategyStatement(defaultType, strategyType, shardingColumn, algorithmSegment);
+        return new CreateDefaultShardingStrategyStatement(null != ctx.ifNotExists(), defaultType, strategyType, shardingColumn, algorithmSegment);
     }
     
     @Override

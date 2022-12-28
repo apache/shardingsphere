@@ -67,8 +67,8 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 database.getResourceMetaData().getStorageTypes(), database.getResourceMetaData().getDataSources(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), material);
-        return Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(tableName)).orElseGet(() ->
-                new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        return Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(tableName))
+                .orElseGet(() -> new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
     }
     
     private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {
