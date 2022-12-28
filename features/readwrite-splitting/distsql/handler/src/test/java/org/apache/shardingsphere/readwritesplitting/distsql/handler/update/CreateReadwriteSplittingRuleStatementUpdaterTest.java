@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -147,7 +146,6 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
             typedSPIRegistry.when(() -> TypedSPIRegistry.findRegisteredService(ReadQueryLoadBalanceAlgorithm.class, "TEST")).thenReturn(Optional.of(mock(ReadQueryLoadBalanceAlgorithm.class)));
             ReadwriteSplittingRuleSegment dynamicSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ms_group", "false", "TEST", new Properties());
             ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "TEST", new Properties());
-            ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
             CreateReadwriteSplittingRuleStatement statement = new CreateReadwriteSplittingRuleStatement(Arrays.asList(dynamicSegment, staticSegment));
             updater.checkSQLStatement(database, statement, null);
             ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
