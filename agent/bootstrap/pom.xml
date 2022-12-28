@@ -42,6 +42,7 @@
             <artifactId>shardingsphere-agent-plugin-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
