@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
@@ -122,24 +123,38 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     @Test
     public void assertUpdateWithIfNotExists() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
-        DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
+        DatabaseDiscoveryDefinitionSegment definitionSegmentDS1 = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_1",
+                Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
+        DatabaseDiscoveryDefinitionSegment definitionSegmentDS2 = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_2",
+                Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
+        Collection<AbstractDatabaseDiscoverySegment> currentRules = new LinkedList<>();
+        currentRules.add(definitionSegmentDS1);
+        currentRules.add(definitionSegmentDS2);
         DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(
-                new CreateDatabaseDiscoveryRuleStatement(false, Collections.singletonList(definitionSegment)));
+                new CreateDatabaseDiscoveryRuleStatement(false, currentRules));
         DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
-        definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1", "ds_read_3"), algorithmSegment, new Properties());
-        CreateDatabaseDiscoveryRuleStatement statement = new CreateDatabaseDiscoveryRuleStatement(true, Collections.singletonList(definitionSegment));
+        definitionSegmentDS1 = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1", "ds_read_3"), algorithmSegment, new Properties());
+        definitionSegmentDS2 = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_2", Arrays.asList("ds_read_0", "ds_read_1", "ds_read_3"), algorithmSegment, new Properties());
+        Collection<AbstractDatabaseDiscoverySegment> rules = new LinkedList<>();
+        rules.add(definitionSegmentDS1);
+        rules.add(definitionSegmentDS2);
+        CreateDatabaseDiscoveryRuleStatement statement = new CreateDatabaseDiscoveryRuleStatement(true, rules);
         updater.checkSQLStatement(database, statement, currentConfig);
         toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
-        assertThat(currentConfig.getDataSources().size(), is(1));
+        assertThat(currentConfig.getDataSources().size(), is(2));
         assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
+        assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
+                .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_2")));
         assertTrue(currentConfig.getDiscoveryTypes().containsKey("readwrite_ds_1_mysql_mgr"));
+        assertTrue(currentConfig.getDiscoveryTypes().containsKey("readwrite_ds_2_mysql_mgr"));
         assertTrue(currentConfig.getDiscoveryHeartbeats().containsKey("readwrite_ds_1_heartbeat"));
+        assertTrue(currentConfig.getDiscoveryHeartbeats().containsKey("readwrite_ds_2_heartbeat"));
         Collection<String> dataSources = new LinkedList<>();
         currentConfig.getDataSources().forEach(each -> dataSources.addAll(each.getDataSourceNames()));
-        assertThat(dataSources.size(), is(2));
+        assertThat(dataSources.size(), is(4));
         assertTrue(dataSources.contains("ds_read_0"));
         assertTrue(dataSources.contains("ds_read_1"));
         assertFalse(dataSources.contains("ds_read_3"));

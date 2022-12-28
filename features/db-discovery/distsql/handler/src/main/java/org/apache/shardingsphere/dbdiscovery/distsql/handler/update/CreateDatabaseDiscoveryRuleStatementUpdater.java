@@ -115,6 +115,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     
     private void removeDuplicatedRules(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
         Collection<String> currentRules = new LinkedList<>();
+        Collection<String> toBeRemovedDataSources = new LinkedList<>();
         Collection<String> toBeRemovedHeartBeats = new LinkedList<>();
         Collection<String> toBeRemovedTypes = new LinkedList<>();
         currentRuleConfig.getDataSources().forEach(each -> currentRules.add(each.getGroupName()));
@@ -122,9 +123,10 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
             if (currentRules.contains(each.getGroupName())) {
                 toBeRemovedHeartBeats.add(each.getDiscoveryHeartbeatName());
                 toBeRemovedTypes.add(each.getDiscoveryTypeName());
-                toBeCreatedRuleConfig.getDataSources().remove(each);
+                toBeRemovedDataSources.add(each.getGroupName());
             }
         });
+        toBeCreatedRuleConfig.getDataSources().removeIf(each -> toBeRemovedDataSources.contains(each.getGroupName()));
         toBeCreatedRuleConfig.getDiscoveryHeartbeats().keySet().removeIf(toBeRemovedHeartBeats::contains);
         toBeCreatedRuleConfig.getDiscoveryTypes().keySet().removeIf(toBeRemovedTypes::contains);
     }
