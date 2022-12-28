@@ -35,10 +35,6 @@ encryptRuleDefinition
     : tableName LP_ COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
     ;
 
-resourceDefinition
-    : RESOURCE EQ_ resourceName
-    ;
-
 resourceName
     : IDENTIFIER_
     ;
