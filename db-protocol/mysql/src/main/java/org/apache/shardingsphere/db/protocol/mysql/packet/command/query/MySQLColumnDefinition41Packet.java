@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 
 /**
  * Column definition above MySQL 4.1 packet protocol.
@@ -32,6 +29,7 @@ import java.sql.SQLException;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41">ColumnDefinition41</a>
  * @see <a href="https://mariadb.com/kb/en/library/resultset/#column-definition-packet">Column definition packet</a>
  */
+@RequiredArgsConstructor
 public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     
     private static final String CATALOG = "def";
@@ -60,13 +58,6 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     
     private final boolean containDefaultValues;
     
-    public MySQLColumnDefinition41Packet(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
-        this(MySQLServerInfo.DEFAULT_CHARSET.getId(), resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex),
-                resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex),
-                resultSetMetaData.getColumnDisplaySize(columnIndex), MySQLBinaryColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), resultSetMetaData.getScale(columnIndex),
-                false);
-    }
-    
     /*
      * Field description of column definition Packet.
      *
@@ -76,22 +67,6 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
                                          final String name, final String orgName, final int columnLength, final MySQLBinaryColumnType columnType,
                                          final int decimals, final boolean containDefaultValues) {
         this(characterSet, 0, schema, table, orgTable, name, orgName, columnLength, columnType, decimals, containDefaultValues);
-    }
-    
-    public MySQLColumnDefinition41Packet(final int characterSet, final int flags, final String schema, final String table, final String orgTable,
-                                         final String name, final String orgName, final int columnLength, final MySQLBinaryColumnType columnType,
-                                         final int decimals, final boolean containDefaultValues) {
-        this.characterSet = characterSet;
-        this.flags = flags;
-        this.schema = schema;
-        this.table = table;
-        this.orgTable = orgTable;
-        this.name = name;
-        this.orgName = orgName;
-        this.columnLength = columnLength;
-        this.columnType = columnType;
-        this.decimals = decimals;
-        this.containDefaultValues = containDefaultValues;
     }
     
     public MySQLColumnDefinition41Packet(final MySQLPacketPayload payload) {
