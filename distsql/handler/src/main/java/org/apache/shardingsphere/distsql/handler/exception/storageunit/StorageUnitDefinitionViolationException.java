@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.resource;
+package org.apache.shardingsphere.distsql.handler.exception.storageunit;
 
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
- * Resource definition violation exception.
+ * Storage unit definition violation exception.
  */
-public abstract class ResourceDefinitionViolationException extends DistSQLException {
+public abstract class StorageUnitDefinitionViolationException extends DistSQLException {
     
     private static final long serialVersionUID = -2686784350802985974L;
     
-    public ResourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    public StorageUnitDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, errorCode, reason, messageArgs);
     }
 }

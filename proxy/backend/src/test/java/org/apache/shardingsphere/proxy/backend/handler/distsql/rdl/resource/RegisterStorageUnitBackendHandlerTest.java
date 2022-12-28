@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
-import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
@@ -96,7 +96,7 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = DuplicateResourceException.class)
+    @Test(expected = DuplicateStorageUnitException.class)
     public void assertExecuteWithDuplicateStorageUnitNamesInStatement() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -104,7 +104,7 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatementWithDuplicateStorageUnitNames());
     }
     
-    @Test(expected = DuplicateResourceException.class)
+    @Test(expected = DuplicateStorageUnitException.class)
     public void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ProxyContext.init(contextManager);
@@ -112,7 +112,7 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
     }
     
-    @Test(expected = InvalidResourcesException.class)
+    @Test(expected = InvalidStorageUnitsException.class)
     public void assertExecuteWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
