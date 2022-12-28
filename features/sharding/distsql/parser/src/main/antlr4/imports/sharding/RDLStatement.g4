@@ -56,7 +56,7 @@ dropShardingAlgorithm
     ;
 
 createDefaultShardingStrategy
-    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP_ shardingStrategy RP_
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY ifNotExists? LP_ shardingStrategy RP_
     ;
 
 alterDefaultShardingStrategy

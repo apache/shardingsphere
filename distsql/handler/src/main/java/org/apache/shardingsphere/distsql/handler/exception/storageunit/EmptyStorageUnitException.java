@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.resource;
+package org.apache.shardingsphere.distsql.handler.exception.storageunit;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-import java.util.Collection;
-
 /**
- * Resource in used exception.
+ * Empty storage unit exception.
  */
-public final class ResourceInUsedException extends ResourceDefinitionViolationException {
+public final class EmptyStorageUnitException extends StorageUnitDefinitionViolationException {
     
-    private static final long serialVersionUID = -3427324685070457375L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public ResourceInUsedException(final String resourceName, final Collection<String> ruleTypes) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Resource `%s` is still used by `%s`.", resourceName, ruleTypes);
+    public EmptyStorageUnitException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "There is no storage unit in the database `%s`.", databaseName);
     }
 }

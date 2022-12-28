@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 /**
  * Create default sharding strategy statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateDefaultShardingStrategyStatement extends CreateRuleStatement {
     
@@ -36,4 +34,13 @@ public final class CreateDefaultShardingStrategyStatement extends CreateRuleStat
     private final String shardingColumn;
     
     private final AlgorithmSegment algorithmSegment;
+    
+    public CreateDefaultShardingStrategyStatement(final boolean ifNotExists, final String defaultType, final String strategyType,
+                                                  final String shardingColumn, final AlgorithmSegment algorithmSegment) {
+        super(ifNotExists);
+        this.defaultType = defaultType;
+        this.strategyType = strategyType;
+        this.shardingColumn = shardingColumn;
+        this.algorithmSegment = algorithmSegment;
+    }
 }

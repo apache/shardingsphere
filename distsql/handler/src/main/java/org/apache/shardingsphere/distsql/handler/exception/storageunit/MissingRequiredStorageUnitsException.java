@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.resource;
+package org.apache.shardingsphere.distsql.handler.exception.storageunit;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
+import java.util.Collection;
+
 /**
- * Empty resource exception.
+ * Missing required storage units exception.
  */
-public final class EmptyResourceException extends ResourceDefinitionViolationException {
+public final class MissingRequiredStorageUnitsException extends StorageUnitDefinitionViolationException {
     
     private static final long serialVersionUID = 1704331180489268L;
     
-    public EmptyResourceException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "There is no storage unit in the database `%s`.", databaseName);
+    public MissingRequiredStorageUnitsException(final String databaseName, final Collection<String> storageUnitNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Storage units `%s` do not exist in database `%s`.", storageUnitNames, databaseName);
     }
 }
