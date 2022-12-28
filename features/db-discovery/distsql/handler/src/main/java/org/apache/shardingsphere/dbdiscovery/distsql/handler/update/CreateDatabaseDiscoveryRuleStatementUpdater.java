@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,10 +49,15 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     
     private static final String RULE_TYPE = "Database discovery";
     
+    private boolean ifNotExists;
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
-        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
+        ifNotExists = sqlStatement.isIfNotExists();
+        if (!ifNotExists) {
+            checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
+        }
         checkResources(databaseName, sqlStatement, database.getResourceMetaData());
         checkDiscoverTypeAndHeartbeat(databaseName, sqlStatement, currentRuleConfig);
     }
@@ -95,10 +101,34 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     @Override
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
+            if (ifNotExists) {
+                removeDuplicatedRules(currentRuleConfig, toBeCreatedRuleConfig);
+            }
+            if (toBeCreatedRuleConfig.getDataSources().isEmpty()) {
+                return;
+            }
             currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
             currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
         }
+    }
+    
+    private void removeDuplicatedRules(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
+        Collection<String> currentRules = new LinkedList<>();
+        Collection<String> toBeRemovedDataSources = new LinkedList<>();
+        Collection<String> toBeRemovedHeartBeats = new LinkedList<>();
+        Collection<String> toBeRemovedTypes = new LinkedList<>();
+        currentRuleConfig.getDataSources().forEach(each -> currentRules.add(each.getGroupName()));
+        toBeCreatedRuleConfig.getDataSources().forEach(each -> {
+            if (currentRules.contains(each.getGroupName())) {
+                toBeRemovedHeartBeats.add(each.getDiscoveryHeartbeatName());
+                toBeRemovedTypes.add(each.getDiscoveryTypeName());
+                toBeRemovedDataSources.add(each.getGroupName());
+            }
+        });
+        toBeCreatedRuleConfig.getDataSources().removeIf(each -> toBeRemovedDataSources.contains(each.getGroupName()));
+        toBeCreatedRuleConfig.getDiscoveryHeartbeats().keySet().removeIf(toBeRemovedHeartBeats::contains);
+        toBeCreatedRuleConfig.getDiscoveryTypes().keySet().removeIf(toBeRemovedTypes::contains);
     }
     
     @Override

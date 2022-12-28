@@ -63,7 +63,8 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitCreateDatabaseDiscoveryRule(final CreateDatabaseDiscoveryRuleContext ctx) {
-        return new CreateDatabaseDiscoveryRuleStatement(ctx.databaseDiscoveryRule().stream().map(each -> (AbstractDatabaseDiscoverySegment) visit(each)).collect(Collectors.toList()));
+        return new CreateDatabaseDiscoveryRuleStatement(null != ctx.ifNotExists(),
+                ctx.databaseDiscoveryRule().stream().map(each -> (AbstractDatabaseDiscoverySegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
