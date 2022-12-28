@@ -44,7 +44,7 @@ public final class AdviceFactory {
     public AgentAdvice getAdvice(final String adviceClassName) {
         String adviceInstanceCacheKey = String.format("%s_%s@%s", adviceClassName, classLoaderContext.getAppClassLoader().getClass().getName(),
                 Integer.toHexString(classLoaderContext.getAppClassLoader().hashCode()));
-        return CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, this::createAdvice);
+        return CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, key -> createAdvice(adviceClassName));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
