@@ -11,7 +11,7 @@ The `CREATE DEFAULT SHARDING STRATEGY` syntax is used to create a default shardi
 
 ```sql
 CreateDefaultShardingStrategy ::=
-  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' ifNotExists '(' shardingStrategy ')'
+  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' ifNotExists? '(' shardingStrategy ')'
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'

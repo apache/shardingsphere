@@ -11,7 +11,7 @@ weight = 5
 
 ```sql
 CreateDefaultShardingStrategy ::=
-  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' ifNotExists '(' shardingStrategy ')'
+  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' ifNotExists? '(' shardingStrategy ')'
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'

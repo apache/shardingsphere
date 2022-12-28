@@ -11,7 +11,7 @@ The `CREATE DB_DISCOVERY RULE` syntax is used to create a database discovery rul
 
 ```sql
 CreateDatabaseDiscoveryRule ::=
-  'CREATE' 'DB_DISCOVERY' 'RULE' ifNotExists databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
+  'CREATE' 'DB_DISCOVERY' 'RULE' ifNotExists? databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'

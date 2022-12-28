@@ -11,7 +11,7 @@ weight = 2
 
 ```sql
 CreateDatabaseDiscoveryRule ::=
-  'CREATE' 'DB_DISCOVERY' 'RULE' ifNotExists databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
+  'CREATE' 'DB_DISCOVERY' 'RULE' ifNotExists? databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'

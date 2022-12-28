@@ -11,7 +11,7 @@ The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite split
 
 ```sql
 CreateReadwriteSplittingRule ::=
-  'CREATE' 'READWRITE_SPLITTING' 'RULE' ifNotExists readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
+  'CREATE' 'READWRITE_SPLITTING' 'RULE' ifNotExists? readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'

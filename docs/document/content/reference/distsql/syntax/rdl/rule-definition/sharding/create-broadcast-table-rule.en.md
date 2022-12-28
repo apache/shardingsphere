@@ -12,7 +12,7 @@ broadcast (broadcast tables)
 
 ```sql
 CreateBroadcastTableRule ::=
-  'CREATE' 'BROADCAST' 'TABLE' 'RULE' ifNotExists tableName (',' tableName)* 
+  'CREATE' 'BROADCAST' 'TABLE' 'RULE' ifNotExists? tableName (',' tableName)* 
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'

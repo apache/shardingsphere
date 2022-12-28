@@ -11,7 +11,7 @@ weight = 2
 
 ```sql
 CreateReadwriteSplittingRule ::=
-  'CREATE' 'READWRITE_SPLITTING' 'RULE' ifNotExists readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
+  'CREATE' 'READWRITE_SPLITTING' 'RULE' ifNotExists? readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
 
 ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
