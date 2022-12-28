@@ -61,7 +61,7 @@ public final class AgentPluginLoader {
         return result;
     }
     
-    private static List<File> collectJarFiles(File path) {
+    private static List<File> collectJarFiles(final File path) {
         File[] jarFiles = path.listFiles(each -> each.getName().endsWith(".jar"));
         return (null == jarFiles || jarFiles.length == 0) ? Collections.emptyList() : Arrays.asList(jarFiles);
     }
