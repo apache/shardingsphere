@@ -92,11 +92,11 @@ public final class CreateEncryptRuleStatementUpdaterTest {
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()), null);
-        EncryptRuleSegment t_encrypt_ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(tEncryptColumnSegment), null);
-        EncryptRuleSegment t_order_ruleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment), null);
+        EncryptRuleSegment tEncryptRuleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(tEncryptColumnSegment), null);
+        EncryptRuleSegment tOrderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment), null);
         Collection<EncryptRuleSegment> rules = new LinkedList<>();
-        rules.add(t_encrypt_ruleSegment);
-        rules.add(t_order_ruleSegment);
+        rules.add(tEncryptRuleSegment);
+        rules.add(tOrderRuleSegment);
         return new CreateEncryptRuleStatement(ifNotExists, rules);
     }
     
