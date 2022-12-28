@@ -108,15 +108,17 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void removeDuplicatedRules(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
         Collection<String> currentTables = new LinkedList<>();
         Collection<String> toBeRemovedEncryptors = new LinkedList<>();
+        Collection<String> toBeRemovedTables = new LinkedList<>();
         currentRuleConfig.getTables().forEach(each -> currentTables.add(each.getName()));
         toBeCreatedRuleConfig.getTables().forEach(each -> {
             if (currentTables.contains(each.getName())) {
                 toBeRemovedEncryptors.addAll(each.getColumns().stream().map(EncryptColumnRuleConfiguration::getEncryptorName).collect(Collectors.toList()));
                 toBeRemovedEncryptors.addAll(each.getColumns().stream().map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName).collect(Collectors.toList()));
                 toBeRemovedEncryptors.addAll(each.getColumns().stream().map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName).collect(Collectors.toList()));
-                toBeCreatedRuleConfig.getTables().remove(each);
+                toBeRemovedTables.add(each.getName());
             }
         });
+        toBeCreatedRuleConfig.getTables().removeIf(each -> toBeRemovedTables.contains(each.getName()));
         toBeCreatedRuleConfig.getEncryptors().keySet().removeIf(toBeRemovedEncryptors::contains);
     }
     

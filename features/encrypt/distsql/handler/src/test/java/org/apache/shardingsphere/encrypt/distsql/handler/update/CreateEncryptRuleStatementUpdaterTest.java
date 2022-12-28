@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,11 +33,14 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -76,20 +79,31 @@ public final class CreateEncryptRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         EncryptRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        assertThat(currentRuleConfig.getTables().size(), is(1));
+        assertThat(currentRuleConfig.getTables().size(), is(2));
         assertTrue(currentRuleConfig.getEncryptors().isEmpty());
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final boolean ifNotExists, final String encryptorName) {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
+        EncryptColumnSegment t_encrypt_columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment(encryptorName, new Properties()), null);
-        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
-        return new CreateEncryptRuleStatement(ifNotExists, Collections.singleton(ruleSegment));
+        EncryptColumnSegment t_order_columnSegment = new EncryptColumnSegment("order_id", "order_cipher", "order_plain", "assisted_column", "like_column",
+                new AlgorithmSegment(encryptorName, new Properties()),
+                new AlgorithmSegment(encryptorName, new Properties()),
+                new AlgorithmSegment(encryptorName, new Properties()), null);
+        EncryptRuleSegment t_encrypt_ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(t_encrypt_columnSegment), null);
+        EncryptRuleSegment t_order_ruleSegment = new EncryptRuleSegment("t_order", Collections.singleton(t_order_columnSegment), null);
+        Collection<EncryptRuleSegment> rules = new LinkedList<>();
+        rules.add(t_encrypt_ruleSegment);
+        rules.add(t_order_ruleSegment);
+        return new CreateEncryptRuleStatement(ifNotExists, rules);
     }
     
     private EncryptRuleConfiguration getCurrentRuleConfig() {
-        return new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList(), null)), Collections.emptyMap());
+        Collection<EncryptTableRuleConfiguration> rules = new LinkedList<>();
+        rules.add(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList(), null));
+        rules.add(new EncryptTableRuleConfiguration("t_order", Collections.emptyList(), null));
+        return new EncryptRuleConfiguration(rules, new HashMap<>());
     }
 }
