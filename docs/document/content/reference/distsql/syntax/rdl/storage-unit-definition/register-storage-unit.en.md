@@ -11,10 +11,13 @@ The `REGISTER STORAGE UNIT` syntax is used to register storage unit for the curr
 
 ```sql
 RegisterStorageUnit ::=
-  'REGISTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
+  'REGISTER' 'STORAGE' 'UNIT' ifNotExists? storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
   storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 storageUnitName ::=
   identifier
@@ -56,7 +59,8 @@ value ::=
 - `storageUnitName` needs to be unique within the current database;
 - `storageUnitName` name only allows letters, numbers and `_`, and must start with a letter;
 - `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
-  parameter name.
+  parameter name;
+- `ifNotExists` clause is used for avoid `Duplicate storage unit` error.
 
 ### Example
 
@@ -93,6 +97,18 @@ REGISTER STORAGE UNIT su_2 (
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+);
+```
+
+- Register storage unit with `ifNotExists` clause
+
+```sql
+REGISTER STORAGE UNIT IF NOT EXISTS su_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="db_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 

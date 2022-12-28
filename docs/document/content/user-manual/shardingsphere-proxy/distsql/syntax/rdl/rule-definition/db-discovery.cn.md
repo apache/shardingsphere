@@ -6,7 +6,7 @@ weight = 4
 ## 语法说明
 
 ```sql
-CREATE DB_DISCOVERY RULE ruleDefinition [, ruleDefinition] ...
+CREATE DB_DISCOVERY RULE ifNotExistsClause? ruleDefinition [, ruleDefinition] ...
 
 ALTER DB_DISCOVERY RULE ruleDefinition [, ruleDefinition] ...
 
@@ -15,6 +15,9 @@ DROP DB_DISCOVERY RULE ruleName [, ruleName] ...
 DROP DB_DISCOVERY TYPE discoveryTypeName [, discoveryTypeName] ...
 
 DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName [, discoveryHeartbeatName] ...
+
+ifNotExistsClause:
+    IF NOT EXISTS
 
 ruleDefinition:
     ruleName (storageUnits, typeDefinition, heartbeatDefinition)
@@ -57,7 +60,7 @@ property:
 ### 创建 `discoveryRule` 时同时创建 `discoveryType` 和 `discoveryHeartbeat`
 
 ```sql
-CREATE DB_DISCOVERY RULE db_discovery_group_0 (
+CREATE DB_DISCOVERY RULE IF NOT EXISTS db_discovery_group_0 (
 STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))

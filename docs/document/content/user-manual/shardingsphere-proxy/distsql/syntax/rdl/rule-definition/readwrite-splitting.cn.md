@@ -6,11 +6,14 @@ weight = 3
 ## 语法说明
 
 ```sql
-CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition [, readwriteSplittingRuleDefinition] ...
+CREATE READWRITE_SPLITTING RULE ifNotExistsClause? readwriteSplittingRuleDefinition [, readwriteSplittingRuleDefinition] ...
 
 ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition [, readwriteSplittingRuleDefinition] ...
 
 DROP READWRITE_SPLITTING RULE ruleName [, ruleName] ...
+
+ifNotExistsClause:
+    IF NOT EXISTS
 
 readwriteSplittingRuleDefinition:
     ruleName ([staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition] 
@@ -55,14 +58,14 @@ writeDataSourceQueryEnabled:
 
 ```sql
 // Static
-CREATE READWRITE_SPLITTING RULE ms_group_0 (
+CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
 WRITE_STORAGE_UNIT=write_ds,
 READ_STORAGE_UNITS(read_ds_0,read_ds_1),
 TYPE(NAME="random")
 );
 
 // Dynamic
-CREATE READWRITE_SPLITTING RULE ms_group_1 (
+CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
 AUTO_AWARE_RESOURCE=group_0,
 WRITE_DATA_SOURCE_QUERY_ENABLED=false,
 TYPE(NAME="random")
