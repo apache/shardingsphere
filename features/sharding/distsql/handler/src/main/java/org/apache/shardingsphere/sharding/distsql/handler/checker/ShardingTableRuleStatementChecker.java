@@ -53,11 +53,11 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractT
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
-import org.apache.shardingsphere.sharding.factory.ShardingAuditAlgorithmFactory;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -265,7 +265,8 @@ public final class ShardingTableRuleStatementChecker {
             requiredAuditors.addAll(each.getAuditorSegments().stream()
                     .map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList()).stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
         }
-        Collection<String> invalidAuditors = requiredAuditors.stream().distinct().filter(each -> !ShardingAuditAlgorithmFactory.contains(each)).collect(Collectors.toList());
+        Collection<String> invalidAuditors = requiredAuditors.stream()
+                .distinct().filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAuditAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidAuditors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("auditor", invalidAuditors));
     }
     

@@ -50,7 +50,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.GenerateKeyStrategyNotFoundException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
-import org.apache.shardingsphere.sharding.factory.ShardingAuditAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
@@ -120,7 +119,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         this.dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSourceNames);
         ruleConfig.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
         ruleConfig.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
-        ruleConfig.getAuditors().forEach((key, value) -> auditors.put(key, ShardingAuditAlgorithmFactory.newInstance(value)));
+        ruleConfig.getAuditors().forEach((key, value) -> auditors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAuditAlgorithm.class)));
         tableRules.putAll(createTableRules(ruleConfig.getTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(ruleConfig.getAutoTables(), ruleConfig.getDefaultKeyGenerateStrategy()));
         broadcastTables = createBroadcastTables(ruleConfig.getBroadcastTables());
