@@ -514,7 +514,7 @@ public final class ContextManager implements AutoCloseable {
      * @param schemaName schema name
      * @param tableName to be reloaded table name
      */
-    public void reloadTable(final String databaseName, final String schemaName, final String tableName) {
+    public synchronized void reloadTable(final String databaseName, final String schemaName, final String tableName) {
         Map<String, DataSource> dataSourceMap = metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources();
         try {
             reloadTable(databaseName, schemaName, tableName, dataSourceMap);
