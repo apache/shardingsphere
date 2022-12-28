@@ -41,7 +41,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-public final class StandaloneContextManagerBuilderTextTest {
+public final class StandaloneContextManagerBuilderTest {
     
     @Test
     public void assertBuild() throws SQLException {
