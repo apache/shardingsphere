@@ -11,7 +11,7 @@ The `DROP SHARDING TABLE RULE` syntax is used to drop sharding table rule for sp
 
 ```sql
 DropShardingTableRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
 
 shardingRuleName ::=
   identifier
@@ -29,13 +29,13 @@ databaseName ::=
 - Drop mutiple sharding table rules for specified database.
 
 ```sql
-DROP SHARDING TABLE RULE t_order, t_order_item FROM test1;
+DROP SHARDING RULE t_order, t_order_item FROM test1;
 ```
 
 - Drop a sharding table rule for current database.
 
 ```sql
-DROP SHARDING TABLE RULE t_order;
+DROP SHARDING RULE t_order;
 ```
 
 ### Reserved word

@@ -8,11 +8,11 @@ weight = 1
 ### Sharding Table Rule
 
 ```sql
-CREATE SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
+CREATE SHARDING RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
-ALTER SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
+ALTER SHARDING RULE shardingTableRuleDefinition [, shardingTableRuleDefinition] ...
 
-DROP SHARDING TABLE RULE tableName [, tableName] ...
+DROP SHARDING RULE tableName [, tableName] ...
 
 CREATE DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
 
@@ -100,11 +100,11 @@ algorithmProperty:
 ### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
+CREATE SHARDING REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
+ALTER SHARDING REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName [, ruleName] ...
+DROP SHARDING REFERENCE RULE ifExists? ruleName [, ruleName] ...
 
 tableReferenceRuleDefinition:
     ruleName (tableName [, tableName] ... )
@@ -114,9 +114,9 @@ tableReferenceRuleDefinition:
 ### Broadcast Table Rule
 
 ```sql
-CREATE BROADCAST TABLE RULE tableName [, tableName] ...
+CREATE BROADCAST RULE tableName [, tableName] ...
 
-DROP BROADCAST TABLE RULE tableName [, tableName] ...
+DROP BROADCAST RULE tableName [, tableName] ...
 ```
 
 ## Example
@@ -137,21 +137,21 @@ DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor;
 
 *Auto Table*
 ```sql
-CREATE SHARDING TABLE RULE t_order (
+CREATE SHARDING RULE t_order (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
-ALTER SHARDING TABLE RULE t_order (
+ALTER SHARDING RULE t_order (
 STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
-DROP SHARDING TABLE RULE t_order;
+DROP SHARDING RULE t_order;
 
 DROP SHARDING ALGORITHM t_order_hash_mod;
 ```
@@ -159,7 +159,7 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 *Table*
 
 ```sql
-CREATE SHARDING TABLE RULE t_order_item (
+CREATE SHARDING RULE t_order_item (
 DATANODES("ds_${0..1}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
@@ -167,7 +167,7 @@ KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
-ALTER SHARDING TABLE RULE t_order_item (
+ALTER SHARDING RULE t_order_item (
 DATANODES("ds_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}")))),
@@ -175,7 +175,7 @@ KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(TYPE(NAME="dml_sharding_conditions"),ALLOW_HINT_DISABLE=true)
 );
 
-DROP SHARDING TABLE RULE t_order_item;
+DROP SHARDING RULE t_order_item;
 
 DROP SHARDING ALGORITHM database_inline;
 
@@ -193,17 +193,17 @@ DROP DEFAULT SHARDING DATABASE STRATEGY;
 ### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_1,t_2);
+CREATE SHARDING REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_1,t_2);
 
-ALTER SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item,t_user);
+ALTER SHARDING REFERENCE RULE ref_0 (t_order,t_order_item,t_user);
 
-DROP SHARDING TABLE REFERENCE RULE ref_0, ref_1;
+DROP SHARDING REFERENCE RULE ref_0, ref_1;
 ```
 
 ### Broadcast Table Rule
 
 ```sql
-CREATE BROADCAST TABLE RULE t_a,t_b;
+CREATE BROADCAST RULE t_a,t_b;
 
-DROP BROADCAST TABLE RULE t_a;
+DROP BROADCAST RULE t_a;
 ```

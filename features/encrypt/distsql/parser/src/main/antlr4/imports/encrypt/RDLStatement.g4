@@ -32,7 +32,7 @@ dropEncryptRule
     ;
 
 encryptRuleDefinition
-    : tableName LP_ (resourceDefinition COMMA_)? COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
+    : tableName LP_ COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
     ;
 
 resourceDefinition

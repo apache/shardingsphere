@@ -11,7 +11,7 @@ The `DROP SHARDING TABLE REFERENCE RULE` syntax is used to drop specified shardi
 
 ```sql
 DropShardingTableReferenceRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
+  'DROP' 'SHARDING' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
 
 ruleName ::=
   identifier
@@ -22,13 +22,13 @@ ruleName ::=
 - Drop a specified sharding table reference rule
 
 ```sql
-DROP SHARDING TABLE REFERENCE RULE ref_0;
+DROP SHARDING REFERENCE RULE ref_0;
 ```
 
 - Drop multiple sharding table reference rules
 
 ```sql
-DROP SHARDING TABLE REFERENCE RULE ref_0, ref_1;
+DROP SHARDING REFERENCE RULE ref_0, ref_1;
 ```
 
 ### Reserved word

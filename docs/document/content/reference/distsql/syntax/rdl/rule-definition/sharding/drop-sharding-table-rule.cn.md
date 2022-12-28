@@ -11,7 +11,7 @@ weight = 4
 
 ```sql
 DropShardingTableRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
 
 shardingRuleName ::=
   identifier
@@ -29,13 +29,13 @@ databaseName ::=
 - 为指定逻辑库删除多个指定分片规则
  
 ```sql
-DROP SHARDING TABLE RULE t_order, t_order_item FROM test1;
+DROP SHARDING RULE t_order, t_order_item FROM test1;
 ```
 
 - 为当前逻辑库删除单个指定分片规则
 
 ```sql
-DROP SHARDING TABLE RULE t_order;
+DROP SHARDING RULE t_order;
 ```
 
 ### 保留字

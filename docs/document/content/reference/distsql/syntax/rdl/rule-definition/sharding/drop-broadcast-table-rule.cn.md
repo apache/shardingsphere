@@ -11,7 +11,7 @@ weight = 17
 
 ```sql
 DropBroadcastTableRule ::=
-  'DROP' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
+  'DROP' 'BROADCAST' 'RULE'  tableName (',' tableName)* 
 
 tableName ::=
   identifier
@@ -26,7 +26,7 @@ tableName ::=
 - 为指定广播表删除广播规则
  
 ```sql
-DROP BROADCAST TABLE RULE t_province, t_city;
+DROP BROADCAST RULE t_province, t_city;
 ```
 
 ### 保留字

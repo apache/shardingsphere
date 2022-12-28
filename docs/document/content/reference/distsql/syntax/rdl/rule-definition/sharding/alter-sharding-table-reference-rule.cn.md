@@ -11,7 +11,7 @@ weight = 14
 
 ```sql
 AlterShardingTableReferenceRule ::=
-  'ALTER' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
+  'ALTER' 'SHARDING' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
 
 referenceRelationshipDefinition ::=
   ruleName '(' tableName (',' tableName)* ')'
@@ -31,13 +31,13 @@ tableName ::=
 #### 1.修改关联关系
 
 ```sql
-ALTER SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item);
+ALTER SHARDING REFERENCE RULE ref_0 (t_order,t_order_item);
 ```
 
 #### 2.修改多个关联关系
 
 ```sql
-ALTER SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
+ALTER SHARDING REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
 ```
 
 ### 保留字

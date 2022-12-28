@@ -11,7 +11,7 @@ The `ALTER SHARDING TABLE REFERENCE RULE` syntax is used to alter sharding table
 
 ```sql
 AlterShardingTableReferenceRule ::=
-  'ALTER' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
+  'ALTER' 'SHARDING' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
 
 referenceRelationshipDefinition ::=
   ruleName '(' tableName (',' tableName)* ')'
@@ -32,13 +32,13 @@ tableName ::=
 #### 1. Alter a sharding table reference rule
 
 ```sql
-ALTER SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item);
+ALTER SHARDING REFERENCE RULE ref_0 (t_order,t_order_item);
 ```
 
 #### 2. Alter multiple sharding table reference rules
 
 ```sql
-ALTER SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
+ALTER SHARDING REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
 ```
 
 ### Reserved word

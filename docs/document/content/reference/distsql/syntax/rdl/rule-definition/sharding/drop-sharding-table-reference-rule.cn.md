@@ -11,7 +11,7 @@ weight = 15
 
 ```sql
 DropShardingTableReferenceRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
+  'DROP' 'SHARDING' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
 
 ruleName ::=
   identifier
@@ -22,7 +22,7 @@ ruleName ::=
 - 删除单个关联规则
  
 ```sql
-DROP SHARDING TABLE REFERENCE RULE ref_0;
+DROP SHARDING REFERENCE RULE ref_0;
 ```
 
 - 删除多个关联规则

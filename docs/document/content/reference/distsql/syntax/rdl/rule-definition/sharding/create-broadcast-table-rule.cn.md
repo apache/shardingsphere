@@ -11,7 +11,7 @@ weight = 16
 
 ```sql
 CreateBroadcastTableRule ::=
-  'CREATE' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
+  'CREATE' 'BROADCAST' 'RULE'  tableName (',' tableName)* 
 
 tableName ::=
   identifier
@@ -27,7 +27,7 @@ tableName ::=
 
 ```sql
 -- 将 t_province， t_city 添加到广播规则中 
-CREATE BROADCAST TABLE RULE t_province, t_city;
+CREATE BROADCAST RULE t_province, t_city;
 ```
 
 ### 保留字

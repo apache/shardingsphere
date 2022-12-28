@@ -11,7 +11,7 @@ The `CREATE SHARDING TABLE REFERENCE RULE` syntax is used to create reference ru
 
 ```sql
 CreateShardingTableReferenceRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
+  'CREATE' 'SHARDING' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
 
 referenceRelationshipDefinition ::=
    ruleName '(' tableName (',' tableName)* ')'
@@ -34,14 +34,14 @@ tableName ::=
 
 ```sql
 -- Before creating a sharding table reference rule, you need to create sharding table rules t_order, t_order_item
-CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item);
+CREATE SHARDING REFERENCE RULE ref_0 (t_order,t_order_item);
 ```
 
 #### 2.Create multiple sharding table reference rules
 
 ```sql
 -- Before creating sharding table reference rules, you need to create sharding table rules t_order, t_order_item, t_product, t_product_item
-CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
+CREATE SHARDING REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
 ```
 
 ### Reserved word

@@ -11,7 +11,7 @@ The `DROP BROADCAST TABLE RULE` syntax is used to drop broadcast table rule for 
 
 ```sql
 DropBroadcastTableRule ::=
-  'DROP' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
+  'DROP' 'BROADCAST' 'RULE'  tableName (',' tableName)* 
 
 tableName ::=
   identifier

@@ -11,7 +11,7 @@ weight = 2
 
 ```sql
 CreateShardingTableRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'RULE' (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
+  'CREATE' 'SHARDING' 'RULE' (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
 
 tableDefinition ::= 
   tableName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
@@ -84,7 +84,7 @@ strategyType ::=
 #### 1.标准分片规则
 
 ```sql
-CREATE SHARDING TABLE RULE t_order_item (
+CREATE SHARDING RULE t_order_item (
 DATANODES("ds_${0..1}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
@@ -96,7 +96,7 @@ AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
 #### 2.自动分片规则
 
 ```sql
-CREATE SHARDING TABLE RULE t_order (
+CREATE SHARDING RULE t_order (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),

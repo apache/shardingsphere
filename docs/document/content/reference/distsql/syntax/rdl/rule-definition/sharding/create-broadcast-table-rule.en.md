@@ -12,7 +12,7 @@ broadcast (broadcast tables)
 
 ```sql
 CreateBroadcastTableRule ::=
-  'CREATE' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
+  'CREATE' 'BROADCAST' 'RULE'  tableName (',' tableName)* 
 
 tableName ::=
   identifier
@@ -28,7 +28,7 @@ tableName ::=
 
 ```sql
 -- Add t_province, t_city to broadcast table rules
-CREATE BROADCAST TABLE RULE t_province, t_city;
+CREATE BROADCAST RULE t_province, t_city;
 ```
 
 ### Reserved word

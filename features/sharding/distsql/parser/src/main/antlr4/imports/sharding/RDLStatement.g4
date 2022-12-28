@@ -20,35 +20,35 @@ grammar RDLStatement;
 import BaseRule;
 
 createShardingTableRule
-    : CREATE SHARDING TABLE RULE ifNotExists? shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
+    : CREATE SHARDING TABLE? RULE ifNotExists? shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 alterShardingTableRule
-    : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
+    : ALTER SHARDING TABLE? RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA_ tableName)*
+    : DROP SHARDING TABLE? RULE ifExists? tableName (COMMA_ tableName)*
     ;
 
 createShardingTableReferenceRule
-    : CREATE SHARDING TABLE REFERENCE RULE ifNotExists? tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
+    : CREATE SHARDING TABLE? REFERENCE RULE ifNotExists? tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
 alterShardingTableReferenceRule
-    : ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
+    : ALTER SHARDING TABLE? REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
 dropShardingTableReferenceRule
-    : DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName (COMMA_ ruleName)*
+    : DROP SHARDING TABLE? REFERENCE RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
 createBroadcastTableRule
-    : CREATE BROADCAST TABLE RULE ifNotExists? tableName (COMMA_ tableName)*
+    : CREATE BROADCAST TABLE? RULE ifNotExists? tableName (COMMA_ tableName)*
     ;
 
 dropBroadcastTableRule
-    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA_ tableName)*
+    : DROP BROADCAST TABLE? RULE ifExists? tableName (COMMA_ tableName)*
     ;
 
 dropShardingAlgorithm
