@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,13 +54,13 @@ public final class AdvisorConfigurationLoader {
     public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
         AgentClassLoader.init(pluginJars);
-        for (String type : pluginTypes) {
-            InputStream advisorsResourceStream = getAdvisorsResourceStream(type, isEnhancedForProxy);
-            if (Objects.isNull(advisorsResourceStream)) {
-                LOGGER.error("No configuration of advisor for type `{}`", type);
+        for (String each : pluginTypes) {
+            InputStream advisorsResourceStream = getAdvisorsResourceStream(each, isEnhancedForProxy);
+            if (null == advisorsResourceStream) {
+                LOGGER.error("No configuration of advisor for type `{}`", each);
                 continue;
             }
-            Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), type);
+            Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each);
             result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
         }
         return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();

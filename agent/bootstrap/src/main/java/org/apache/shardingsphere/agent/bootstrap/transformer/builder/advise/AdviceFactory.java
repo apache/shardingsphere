@@ -17,29 +17,23 @@
 
 package org.apache.shardingsphere.agent.bootstrap.transformer.builder.advise;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
-import org.apache.shardingsphere.agent.bootstrap.transformer.AdviceCreationListener;
+import org.apache.shardingsphere.agent.bootstrap.classloader.ClassLoaderContext;
 
-import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Advice factory.
  */
+@RequiredArgsConstructor
 public final class AdviceFactory {
     
-    private final ProxyAdviceFactory proxyAdviceFactory;
+    private static final Map<String, AgentAdvice> CACHED_ADVICES = new ConcurrentHashMap<>();
     
-    private final JDBCAdviceFactory jdbcAdviceFactory;
-    
-    private final boolean isEnhancedForProxy;
-    
-    public AdviceFactory(final ClassLoader classLoader, final Collection<PluginJar> pluginJars,
-                         final boolean isEnhancedForProxy, final AdviceCreationListener adviceCreationListener) {
-        proxyAdviceFactory = new ProxyAdviceFactory(adviceCreationListener);
-        jdbcAdviceFactory = new JDBCAdviceFactory(classLoader, pluginJars, adviceCreationListener);
-        this.isEnhancedForProxy = isEnhancedForProxy;
-    }
+    private final ClassLoaderContext classLoaderContext;
     
     /**
      * Get advice.
@@ -48,6 +42,13 @@ public final class AdviceFactory {
      * @return got advance
      */
     public AgentAdvice getAdvice(final String adviceClassName) {
-        return isEnhancedForProxy ? proxyAdviceFactory.getAdvice(adviceClassName) : jdbcAdviceFactory.getAdvice(adviceClassName);
+        String adviceInstanceCacheKey = String.format("%s_%s@%s", adviceClassName, classLoaderContext.getAppClassLoader().getClass().getName(),
+                Integer.toHexString(classLoaderContext.getAppClassLoader().hashCode()));
+        return CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, this::createAdvice);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private AgentAdvice createAdvice(final String adviceClassName) {
+        return (AgentAdvice) Class.forName(adviceClassName, true, classLoaderContext.getAgentClassLoader()).getDeclaredConstructor().newInstance();
     }
 }

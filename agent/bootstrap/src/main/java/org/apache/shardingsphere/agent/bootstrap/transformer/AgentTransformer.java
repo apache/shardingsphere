@@ -25,6 +25,7 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.bootstrap.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.bootstrap.plugin.PluginBootServiceManager;
 import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
 import org.apache.shardingsphere.agent.bootstrap.transformer.builder.MethodAdvisorBuilder;
@@ -40,7 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Agent transformer.
  */
 @RequiredArgsConstructor
-public final class AgentTransformer implements Transformer, AdviceCreationListener {
+public final class AgentTransformer implements Transformer {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
@@ -60,15 +61,13 @@ public final class AgentTransformer implements Transformer, AdviceCreationListen
         if (!advisorConfigs.containsKey(typeDescription.getTypeName())) {
             return builder;
         }
-        Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        AdviceFactory adviceFactory = new AdviceFactory(classLoader, pluginJars, isEnhancedForProxy, this);
-        AdvisorConfiguration advisorConfig = advisorConfigs.get(typeDescription.getTypeName());
-        result = new MethodAdvisorBuilder(adviceFactory, advisorConfig, typeDescription).build(result);
-        return result;
+        ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
+        startAllServices(classLoaderContext.getAgentClassLoader());
+        return new MethodAdvisorBuilder(new AdviceFactory(classLoaderContext), advisorConfigs.get(typeDescription.getTypeName()), typeDescription)
+                .build(builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA)));
     }
     
-    @Override
-    public void onComplete(final String adviceClassName, final ClassLoader classLoader) {
+    private void startAllServices(final ClassLoader classLoader) {
         if (STARTED_FLAG.compareAndSet(false, true)) {
             PluginBootServiceManager.startAllServices(pluginConfigs, classLoader, isEnhancedForProxy);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginBootServiceManager.closeAllServices(pluginJars)));
