@@ -72,16 +72,15 @@ Answer:
 1. ShardingSphere-Proxy could be considered as a MySQL server, so we recommend using MySQL command line tool to connect to and operate it.
 2. If users would like to use a third-party database tool, there may be some errors cause of the certain implementation/options.
 3. The currently tested third-party database tools are as follows:
-   - Navicat: 11.1.13, 15.0.20.
    - DataGrip: 2020.1, 2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
-   - WorkBench: 8.0.25.
+   - MySQLWorkBench: 8.0.25.
 
-### [Proxy] When using a client such as Navicat to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not add a resource, the client connection will fail?
+### [Proxy] When using a client to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not register a storage unit, the client connection will fail?
 
 Answer:
 
-1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `Database` or does not add a `Storage Unit`, ShardingSphere-Proxy cannot execute SQL.
-2. It is recommended to create `database` and `storage unit` first, and then use third-party database tools to connect.
+1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `Database` or does not register a `Storage Unit`, ShardingSphere-Proxy cannot execute SQL.
+2. It is recommended to create `database` and register `storage unit` first, and then use third-party database tools to connect.
 3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) the details about `storage unit`.
 
 ## Sharding
@@ -173,12 +172,12 @@ Answer:
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
 3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) for above rules.
 
-### [DistSQL] How to solve ` Resource [xxx] is still used by [SingleTableRule].` exception when dropping a data source using DistSQL?
+### [DistSQL] How to solve ` Storage unit [xxx] is still used by [SingleTableRule].` exception when dropping a data source using DistSQL?
 
 Answer：
 
-1. Resources referenced by rules cannot be deleted
-2. If the resource is only referenced by single table rule, and the user confirms that the restriction can be ignored, the optional parameter ignore single tables can be added to perform forced deletion
+1. Storage units referenced by rules cannot be deleted
+2. If the storage unit is only referenced by single table rule, and the user confirms that the restriction can be ignored, the optional parameter ignore single tables can be added to perform forced deletion
 ```
 UNREGISTER STORAGE UNIT storageUnitName [, storageUnitName] ... [ignore single tables]
 ```

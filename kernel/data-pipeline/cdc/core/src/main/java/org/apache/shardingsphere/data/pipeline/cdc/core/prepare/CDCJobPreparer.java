@@ -54,7 +54,7 @@ public final class CDCJobPreparer {
      * @param jobItemContext job item context
      */
     public void prepare(final CDCJobItemContext jobItemContext) {
-        if (null == jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem())) {
+        if (!jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent()) {
             jobAPI.persistJobItemProgress(jobItemContext);
         }
         if (jobItemContext.isStopping()) {

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.ResourceInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -112,12 +112,12 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
         verify(modeContextManager).unregisterStorageUnits("test", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
-    @Test(expected = MissingRequiredResourcesException.class)
+    @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertStorageUnitNameNotExistedExecute() {
         unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
-    @Test(expected = ResourceInUsedException.class)
+    @Test(expected = StorageUnitInUsedException.class)
     public void assertStorageUnitNameInUseExecute() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
@@ -128,7 +128,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
         unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
-    @Test(expected = ResourceInUsedException.class)
+    @Test(expected = StorageUnitInUsedException.class)
     public void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");

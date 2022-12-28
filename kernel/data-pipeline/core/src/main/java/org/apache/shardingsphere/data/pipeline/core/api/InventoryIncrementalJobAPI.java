@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -60,7 +61,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(PipelineJobConfiguration pipelineJobConfig);
     
     @Override
-    InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
+    Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Get job infos.

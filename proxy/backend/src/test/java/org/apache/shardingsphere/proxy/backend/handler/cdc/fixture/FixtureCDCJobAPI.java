@@ -108,7 +108,7 @@ public final class FixtureCDCJobAPI implements InventoryIncrementalJobAPI, CDCJo
     }
     
     @Override
-    public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
+    public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
         return null;
     }
     
