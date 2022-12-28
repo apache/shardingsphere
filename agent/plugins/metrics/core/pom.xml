@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <target.directory>${project.basedir}/../target/plugins</target.directory>
+        <target.directory>${project.basedir}/../target/lib</target.directory>
     </properties>
     
     <dependencies>
