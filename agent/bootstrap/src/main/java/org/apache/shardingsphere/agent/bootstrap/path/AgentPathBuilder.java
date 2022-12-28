@@ -45,7 +45,7 @@ public final class AgentPathBuilder {
     
     static {
         agentPath = buildAgentPath();
-        pluginClassPaths = buildAgentPluginPath();
+        pluginClassPaths = buildAgentPluginClassPaths();
     }
     
     private static File buildAgentPath() {
@@ -74,7 +74,7 @@ public final class AgentPathBuilder {
         return new File(classLocation);
     }
     
-    private static List<File> buildAgentPluginPath() {
+    private static List<File> buildAgentPluginClassPaths() {
         return Arrays.asList(new File(String.join("/", agentPath.getPath(), "lib")),
                 new File(String.join("/", agentPath.getPath(), "plugins")));
     }

@@ -49,13 +49,7 @@ public final class AgentPluginLoader {
      */
     public static Collection<PluginJar> load() throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        AgentPathBuilder.getPluginClassPaths().forEach(
-                path -> {
-                    File[] jarFileArray = path.listFiles(each -> each.getName().endsWith(".jar"));
-                    if (null != jarFileArray) {
-                        jarFiles.addAll(Arrays.asList(jarFileArray));
-                    }
-                });
+        AgentPathBuilder.getPluginClassPaths().forEach(each -> jarFiles.addAll(collectJarFiles(each)));
         if (jarFiles.isEmpty()) {
             return Collections.emptyList();
         }
@@ -65,5 +59,10 @@ public final class AgentPluginLoader {
             LOGGER.info("Loaded jar: {}", each.getName());
         }
         return result;
+    }
+    
+    private static List<File> collectJarFiles(File path) {
+        File[] jarFiles = path.listFiles(each -> each.getName().endsWith(".jar"));
+        return (null == jarFiles || jarFiles.length == 0) ? Collections.emptyList() : Arrays.asList(jarFiles);
     }
 }
