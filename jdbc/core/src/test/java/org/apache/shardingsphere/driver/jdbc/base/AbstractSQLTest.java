@@ -69,6 +69,7 @@ public abstract class AbstractSQLTest {
         result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName));
         result.setUsername("sa");
         result.setPassword("");
+        result.setMinimumIdle(0);
         result.setMaximumPoolSize(50);
         return result;
     }
