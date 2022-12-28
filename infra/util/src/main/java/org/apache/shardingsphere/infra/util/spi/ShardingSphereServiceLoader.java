@@ -60,14 +60,6 @@ public final class ShardingSphereServiceLoader<T> {
     }
     
     /**
-     * register.
-     * 
-     * @param serviceInterface service interface
-     */
-    public static void register(final Class<?> serviceInterface) {
-    }
-    
-    /**
      * Get service instances.
      *
      * @param serviceInterface service interface
