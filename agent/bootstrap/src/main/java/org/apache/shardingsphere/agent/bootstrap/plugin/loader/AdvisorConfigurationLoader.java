@@ -64,12 +64,6 @@ public final class AdvisorConfigurationLoader {
         return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
     }
     
-    private static void mergeAdvisorConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
-        for (AdvisorConfiguration each : advisorConfigs) {
-            advisorConfigMap.computeIfAbsent(each.getTargetClassName(), key -> new AdvisorConfiguration(each.getTargetClassName())).getAdvisors().addAll(each.getAdvisors());
-        }
-    }
-    
     private static InputStream getAdvisorsResourceStream(final String type, final boolean isEnhancedForProxy) {
         InputStream result = AgentClassLoader.getClassLoader().getResourceAsStream(getAdvisorsResourceFile(type, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml"));
         return null == result ? AgentClassLoader.getClassLoader().getResourceAsStream(getAdvisorsResourceFile(type, "advisors.yaml")) : result;
@@ -77,5 +71,11 @@ public final class AdvisorConfigurationLoader {
     
     private static String getAdvisorsResourceFile(final String type, final String fileName) {
         return String.join("/", type.toLowerCase(), fileName);
+    }
+    
+    private static void mergeAdvisorConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
+        for (AdvisorConfiguration each : advisorConfigs) {
+            advisorConfigMap.computeIfAbsent(each.getTargetClassName(), key -> new AdvisorConfiguration(each.getTargetClassName())).getAdvisors().addAll(each.getAdvisors());
+        }
     }
 }
