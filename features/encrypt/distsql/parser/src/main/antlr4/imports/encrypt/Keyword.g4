@@ -178,3 +178,7 @@ SM4
 CHAR_DIGEST_LIKE
     : C H A R UL_ D I G E S T UL_ L I K E
     ;
+
+NOT
+    : N O T
+    ;

@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 createEncryptRule
-    : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA_ encryptRuleDefinition)*
+    : CREATE ENCRYPT RULE ifNotExists? encryptRuleDefinition (COMMA_ encryptRuleDefinition)*
     ;
 
 alterEncryptRule
@@ -109,4 +109,8 @@ queryWithCipherColumn
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;
