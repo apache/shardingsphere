@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.bootstrap.transformer.builder.advise;
+package org.apache.shardingsphere.agent.bootstrap.classloader;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.bootstrap.classloader.AgentClassLoader;
+import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Proxy Advice factory.
+ * Class loader context.
  */
 @RequiredArgsConstructor
-public final class ProxyAdviceFactory {
+@Getter
+public final class ClassLoaderContext {
     
-    private static final Map<String, AgentAdvice> CACHED_ADVICES = new ConcurrentHashMap<>();
+    private static final Map<ClassLoader, AgentClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
+    
+    private final ClassLoader appClassLoader;
+    
+    private final Collection<PluginJar> pluginJars;
     
     /**
-     * Get advice.
+     * Get agent class loader.
      *
-     * @param adviceClassName advice class name
-     * @return got advance
+     * @return agent class loader
      */
-    public AgentAdvice getAdvice(final String adviceClassName) {
-        return CACHED_ADVICES.computeIfAbsent(adviceClassName, this::createAdviceForProxy);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private AgentAdvice createAdviceForProxy(final String adviceClassName) {
-        return (AgentAdvice) Class.forName(adviceClassName, true, AgentClassLoader.getClassLoader()).getDeclaredConstructor().newInstance();
+    public AgentClassLoader getAgentClassLoader() {
+        return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentClassLoader(key, pluginJars));
     }
 }

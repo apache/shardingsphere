@@ -37,7 +37,7 @@ advisors:
     pointcuts:
       - name: route
         type: method
-  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager
+  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
     advice: org.apache.shardingsphere.agent.metrics.core.advice.TransactionAdvice
     pointcuts:
       - name: commit
@@ -49,3 +49,11 @@ advisors:
     pointcuts:
       - name: parse
         type: method
+  - target: org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory
+    advice: org.apache.shardingsphere.agent.metrics.core.advice.MetaDataContextsFactoryAdvice
+    pointcuts:
+      - name: create
+        type: method
+        params:
+          - index: 3
+            type: java.util.Map

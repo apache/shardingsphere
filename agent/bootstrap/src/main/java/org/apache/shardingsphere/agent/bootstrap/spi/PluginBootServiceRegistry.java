@@ -22,9 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
-import java.util.ServiceLoader;
 
 /**
  *  Plugin boot service registry.
@@ -49,19 +47,5 @@ public final class PluginBootServiceRegistry {
      */
     public static Collection<PluginBootService> getAllRegisteredServices() {
         return AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices();
-    }
-    
-    /**
-     * Create new instances.
-     *
-     * @param classLoader class loader
-     * @return created instances
-     */
-    public static Collection<PluginBootService> newInstances(final ClassLoader classLoader) {
-        Collection<PluginBootService> result = new LinkedList<>();
-        for (PluginBootService each : ServiceLoader.load(PluginBootService.class, classLoader)) {
-            result.add(each);
-        }
-        return result;
     }
 }
