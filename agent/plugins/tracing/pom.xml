@@ -42,6 +42,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-agent-plugin-core</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
                 <groupId>io.opentracing</groupId>
                 <artifactId>opentracing-api</artifactId>
                 <version>${opentracing.version}</version>
@@ -51,6 +58,7 @@
                 <artifactId>opentracing-util</artifactId>
                 <version>${opentracing.version}</version>
             </dependency>
+            
             <dependency>
                 <groupId>io.opentracing</groupId>
                 <artifactId>opentracing-mock</artifactId>
