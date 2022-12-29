@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
+package org.apache.shardingsphere.agent.metrics.core.advice;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 
 /**
- * Create readwrite-splitting rule statement.
+ * Meta data contexts factory advice.
  */
-@Getter
-public final class CreateReadwriteSplittingRuleStatement extends CreateRuleStatement {
-    
-    private final Collection<ReadwriteSplittingRuleSegment> rules;
-    
-    public CreateReadwriteSplittingRuleStatement(final boolean ifNotExists, final Collection<ReadwriteSplittingRuleSegment> rules) {
-        super(ifNotExists);
-        this.rules = rules;
-    }
+public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
 }

@@ -32,15 +32,6 @@
             <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources</directory>
-            <includes>
-                <include>logback.xml</include>
-            </includes>
-            <outputDirectory>conf</outputDirectory>
-            <fileMode>0644</fileMode>
-        </fileSet>
-
-        <fileSet>
             <directory>../../</directory>
             <includes>
                 <include>LICENSE</include>

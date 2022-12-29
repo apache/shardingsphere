@@ -22,21 +22,33 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Create readwrite-splitting rule statement updater.
  */
 public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
+    private Collection<String> duplicatedRuleNames = new LinkedList<>();
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig);
+        Collection<String> duplicatedRuleNames = new LinkedList<>();
+        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig, duplicatedRuleNames, sqlStatement.isIfNotExists());
+        this.duplicatedRuleNames = duplicatedRuleNames;
     }
     
     @Override
     public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
+        Collection<ReadwriteSplittingRuleSegment> segments = sqlStatement.getRules();
+        if (!duplicatedRuleNames.isEmpty()) {
+            segments.removeIf(each -> duplicatedRuleNames.contains(each.getName()));
+        }
+        return ReadwriteSplittingRuleStatementConverter.convert(segments);
     }
     
     @Override
