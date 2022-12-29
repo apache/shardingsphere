@@ -56,7 +56,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitCreateEncryptRule(final CreateEncryptRuleContext ctx) {
-        return new CreateEncryptRuleStatement(ctx.encryptRuleDefinition().stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
+        return new CreateEncryptRuleStatement(null != ctx.ifNotExists(), ctx.encryptRuleDefinition().stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override

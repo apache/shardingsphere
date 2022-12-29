@@ -34,8 +34,11 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+
+import java.util.Optional;
 
 /**
  * CDC job.
@@ -43,6 +46,8 @@ import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistr
 @RequiredArgsConstructor
 @Slf4j
 public final class CDCJob extends AbstractSimplePipelineJob {
+    
+    private final ImporterConnector importerConnector;
     
     private final CDCJobAPI jobAPI = RequiredSPIRegistry.getRegisteredService(CDCJobAPI.class);
     
@@ -59,10 +64,10 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     protected PipelineJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
         int shardingItem = shardingContext.getShardingItem();
         CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        InventoryIncrementalJobItemProgress initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);
+        Optional<InventoryIncrementalJobItemProgress> initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);
         CDCProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         CDCTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
-        return new CDCJobItemContext(jobConfig, shardingItem, initProgress, jobProcessContext, taskConfig, dataSourceManager);
+        return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, importerConnector);
     }
     
     protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {

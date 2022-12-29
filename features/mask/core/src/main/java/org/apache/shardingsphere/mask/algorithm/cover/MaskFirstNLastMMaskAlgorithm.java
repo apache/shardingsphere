@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -53,18 +53,17 @@ public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     }
     
     private Integer createFirstN(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(FIRST_N), "%s can not be null.", FIRST_N);
+        MaskAlgorithmUtil.checkIntegerTypeConfig(props, FIRST_N, getType());
         return Integer.parseInt(props.getProperty(FIRST_N));
     }
     
     private Integer createLastM(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(LAST_M), "%s can not be null.", LAST_M);
+        MaskAlgorithmUtil.checkIntegerTypeConfig(props, LAST_M, getType());
         return Integer.parseInt(props.getProperty(LAST_M));
     }
     
     private Character createReplaceChar(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
-        Preconditions.checkArgument(1 == props.getProperty(REPLACE_CHAR).length(), "%s's length must be one.", REPLACE_CHAR);
+        MaskAlgorithmUtil.checkSingleCharConfig(props, REPLACE_CHAR, getType());
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     

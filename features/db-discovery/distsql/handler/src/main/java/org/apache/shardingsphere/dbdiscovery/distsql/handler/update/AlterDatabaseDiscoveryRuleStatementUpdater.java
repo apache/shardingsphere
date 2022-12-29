@@ -27,8 +27,8 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatab
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -76,7 +76,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
     
     private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
         Collection<String> notExistedResources = resourceMetaData.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResources));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {

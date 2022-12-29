@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -53,18 +53,17 @@ public final class KeepFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
     }
     
     private Integer createFromX(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(FROM_X), "%s can not be null.", FROM_X);
+        MaskAlgorithmUtil.checkIntegerTypeConfig(props, FROM_X, getType());
         return Integer.parseInt(props.getProperty(FROM_X));
     }
     
     private Integer createToY(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(TO_Y), "%s can not be null.", TO_Y);
+        MaskAlgorithmUtil.checkIntegerTypeConfig(props, TO_Y, getType());
         return Integer.parseInt(props.getProperty(TO_Y));
     }
     
     private Character createReplaceChar(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(REPLACE_CHAR), "%s can not be null.", REPLACE_CHAR);
-        Preconditions.checkArgument(props.getProperty(REPLACE_CHAR).length() == 1, "%s's length must be one.", REPLACE_CHAR);
+        MaskAlgorithmUtil.checkSingleCharConfig(props, REPLACE_CHAR, getType());
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     

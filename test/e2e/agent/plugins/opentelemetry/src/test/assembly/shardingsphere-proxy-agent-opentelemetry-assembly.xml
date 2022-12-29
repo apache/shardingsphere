@@ -22,7 +22,7 @@
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-
+    
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/../../../../../agent/plugins/tracing/target/plugins</directory>

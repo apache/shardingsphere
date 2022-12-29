@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.distsql.handler.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
@@ -101,12 +101,12 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
         assertThat(alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = DuplicateResourceException.class)
+    @Test(expected = DuplicateStorageUnitException.class)
     public void assertExecuteWithDuplicateStorageUnitNames() {
         alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatementWithDuplicateStorageUnitNames());
     }
     
-    @Test(expected = MissingRequiredResourcesException.class)
+    @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertExecuteWithNotExistedStorageUnitNames() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -117,7 +117,7 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
         alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("not_existed"));
     }
     
-    @Test(expected = InvalidResourcesException.class)
+    @Test(expected = InvalidStorageUnitsException.class)
     public void assertExecuteWithAlterDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);

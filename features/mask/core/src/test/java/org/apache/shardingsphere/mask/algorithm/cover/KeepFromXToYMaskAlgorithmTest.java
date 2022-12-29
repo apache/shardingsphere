@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
+import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,7 +62,7 @@ public final class KeepFromXToYMaskAlgorithmTest {
         assertThat(actual, is("a"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MaskAlgorithmInitializationException.class)
     public void assertInitWhenConfigWrongProps() {
         KeepFirstNLastMMaskAlgorithm maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
         maskAlgorithm.init(createProperties("", "3", "+"));

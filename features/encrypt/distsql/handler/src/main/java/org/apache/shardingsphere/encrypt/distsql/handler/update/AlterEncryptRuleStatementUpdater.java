@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfi
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
@@ -98,6 +99,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
         dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        dropUnusedEncryptor(currentRuleConfig);
     }
     
     private void dropRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
@@ -105,13 +107,23 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
             Optional<EncryptTableRuleConfiguration> toBeRemovedTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each.getName())).findAny();
             Preconditions.checkState(toBeRemovedTableRuleConfig.isPresent());
             currentRuleConfig.getTables().remove(toBeRemovedTableRuleConfig.get());
-            toBeRemovedTableRuleConfig.get().getColumns().forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
         }
     }
     
     private void addRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
         currentRuleConfig.getEncryptors().putAll(toBeAlteredRuleConfig.getEncryptors());
+    }
+    
+    private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {
+        Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getEncryptorName)
+                .collect(Collectors.toSet());
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName)
+                .collect(Collectors.toSet()));
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName)
+                .collect(Collectors.toSet()));
+        Collection<String> unusedEncryptors = currentRuleConfig.getEncryptors().keySet().stream().filter(each -> !inUsedEncryptors.contains(each)).collect(Collectors.toSet());
+        unusedEncryptors.forEach(each -> currentRuleConfig.getEncryptors().remove(each));
     }
     
     @Override

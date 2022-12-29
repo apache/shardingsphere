@@ -63,12 +63,14 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
         try (Statement statement = connection.createStatement()) {
             assertFalse("Not a DDL statement.", statement.executeUpdate(getSQL()) > 0);
         }
+        waitCompleted();
     }
     
     private void executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             assertFalse("Not a DDL statement.", preparedStatement.executeUpdate() > 0);
         }
+        waitCompleted();
     }
     
     @Test
@@ -87,11 +89,13 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
         try (Statement statement = connection.createStatement()) {
             assertFalse("Not a DDL statement.", statement.execute(getSQL()));
         }
+        waitCompleted();
     }
     
     private void executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             assertFalse("Not a DDL statement.", preparedStatement.execute());
         }
+        waitCompleted();
     }
 }

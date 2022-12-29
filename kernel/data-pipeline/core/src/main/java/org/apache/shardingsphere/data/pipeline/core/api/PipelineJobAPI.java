@@ -131,7 +131,7 @@ public interface PipelineJobAPI extends TypedSPI {
      * @param shardingItem sharding item
      * @return job item progress, may be null
      */
-    PipelineJobItemProgress getJobItemProgress(String jobId, int shardingItem);
+    Optional<? extends PipelineJobItemProgress> getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Update job item status.

@@ -47,8 +47,8 @@ import java.util.Properties;
 public final class FixtureCDCJobAPI implements InventoryIncrementalJobAPI, CDCJobAPI {
     
     @Override
-    public String createJobAndStart(final CreateSubscriptionJobParameter event) {
-        return "";
+    public boolean createJob(final CreateSubscriptionJobParameter event) {
+        return true;
     }
     
     @Override
@@ -108,8 +108,8 @@ public final class FixtureCDCJobAPI implements InventoryIncrementalJobAPI, CDCJo
     }
     
     @Override
-    public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
-        return null;
+    public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
+        return Optional.empty();
     }
     
     @Override

@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * YAML mask rule configuration swapper.
@@ -57,7 +58,7 @@ public final class YamlMaskRuleConfigurationSwapper implements YamlRuleConfigura
     
     private Collection<MaskTableRuleConfiguration> swapTables(final YamlMaskRuleConfiguration yamlConfig) {
         Collection<MaskTableRuleConfiguration> result = new LinkedList<>();
-        for (Map.Entry<String, YamlMaskTableRuleConfiguration> entry : yamlConfig.getTables().entrySet()) {
+        for (Entry<String, YamlMaskTableRuleConfiguration> entry : yamlConfig.getTables().entrySet()) {
             YamlMaskTableRuleConfiguration yamlMaskTableRuleConfig = entry.getValue();
             yamlMaskTableRuleConfig.setName(entry.getKey());
             result.add(tableSwapper.swapToObject(yamlMaskTableRuleConfig));
@@ -67,7 +68,7 @@ public final class YamlMaskRuleConfigurationSwapper implements YamlRuleConfigura
     
     private Map<String, AlgorithmConfiguration> swapMaskAlgorithm(final YamlMaskRuleConfiguration yamlConfig) {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getMaskAlgorithms().size(), 1);
-        for (Map.Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getMaskAlgorithms().entrySet()) {
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getMaskAlgorithms().entrySet()) {
             result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
         }
         return result;

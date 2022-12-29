@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -135,7 +135,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) {
         Collection<String> notExistedResources = contextManager
                 .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getNotExistedResources(Collections.singleton(toBeDisabledResource));
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, Collections.singleton(toBeDisabledResource)));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
     private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {

@@ -11,7 +11,10 @@ The `CREATE SHARDING TABLE RULE` syntax is used to add sharding table rule for t
 
 ```sql
 CreateShardingTableRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'RULE' (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
+  'CREATE' 'SHARDING' 'TABLE' 'RULE' ifNotExists? (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 tableDefinition ::= 
   tableName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
@@ -84,10 +87,11 @@ strategyType ::=
 - The auto-generated primary key strategy naming rule is `tableName` _ `strategyType`;
 - `KEY_GENERATE_STRATEGY` is used to specify the primary key generation strategy, which is optional. For the primary key
   generation strategy, please refer
-  to [Distributed Primary Key](/en/user-manual/common-config/builtin-algorithm/keygen/).
+  to [Distributed Primary Key](/en/user-manual/common-config/builtin-algorithm/keygen/);
 - `AUDIT_STRATEGY` is used to specify the sharding audit strategy, which is optional. For the sharding audit
   generation strategy, please refer
-  to [Sharding Audit](/en/user-manual/common-config/builtin-algorithm/audit/).
+  to [Sharding Audit](/en/user-manual/common-config/builtin-algorithm/audit/);
+- `ifNotExists` clause is used for avoid `Duplicate sharding rule` error.
 
 ### Example
 
@@ -107,6 +111,30 @@ AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
 
 ```sql
 CREATE SHARDING TABLE RULE t_order (
+STORAGE_UNITS(ds_0,ds_1),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+);
+```
+
+#### 3.Create sharding rule with `ifNotExists` clause
+
+- Standard sharding table rule
+
+```sql
+CREATE SHARDING TABLE RULE IF NOT EXISTS t_order_item (
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+);
+```
+- Auto sharding table rule
+
+```sql
+CREATE SHARDING TABLE RULE IF NOT EXISTS t_order (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),

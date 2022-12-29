@@ -27,19 +27,24 @@ import java.util.Properties;
 /**
  * MD5 encrypt algorithm.
  */
-@Getter
 public final class MD5EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
+    private static final String SALT = "salt";
+    
+    private String salt;
+    
+    @Getter
     private Properties props;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
+        this.salt = props.getProperty(SALT, "");
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return null == plainValue ? null : DigestUtils.md5Hex(String.valueOf(plainValue));
+        return null == plainValue ? null : DigestUtils.md5Hex(plainValue + salt);
     }
     
     @Override

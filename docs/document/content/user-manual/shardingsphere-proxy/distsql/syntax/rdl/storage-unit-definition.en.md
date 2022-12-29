@@ -6,11 +6,14 @@ weight = 1
 ## Syntax
 
 ```sql
-REGISTER STORAGE UNIT storageUnitDefinition [, storageUnitDefinition] ...
+REGISTER STORAGE UNIT ifNotExistsClause? storageUnitDefinition [, storageUnitDefinition] ...
 
 ALTER STORAGE UNIT storageUnitDefinition [, storageUnitDefinition] ...
 
 UNREGISTER STORAGE UNIT storageUnitName [, storageUnitName] ... [ignore single tables]
+
+ifNotExistsClause:
+    IF NOT EXISTS
 
 storageUnitDefinition:
     simpleSource | urlSource
@@ -52,7 +55,7 @@ property:
 ## Example
 
 ```sql
-REGISTER STORAGE UNIT ds_0 (
+REGISTER STORAGE UNIT IF NOT EXISTS ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db0",

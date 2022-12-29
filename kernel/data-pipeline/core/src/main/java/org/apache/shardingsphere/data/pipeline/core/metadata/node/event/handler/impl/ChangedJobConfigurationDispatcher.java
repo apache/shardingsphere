@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
+import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -42,17 +43,17 @@ public final class ChangedJobConfigurationDispatcher implements PipelineMetaData
     
     @Override
     public void handle(final DataChangedEvent event) {
-        JobConfigurationPOJO jobConfigPOJO;
+        JobConfiguration jobConfig;
         try {
-            jobConfigPOJO = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true);
+            jobConfig = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true).toJobConfiguration();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("unmarshal job configuration pojo failed.", ex);
             return;
         }
-        log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfigPOJO.isDisabled());
-        TypedSPIRegistry.getRegisteredService(
-                PipelineChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfigPOJO.getJobName()).getTypeName()).process(event.getType(), jobConfigPOJO);
+        log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfig.isDisabled());
+        TypedSPIRegistry.findRegisteredService(PipelineChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getTypeName())
+                .ifPresent(optional -> optional.process(event.getType(), jobConfig));
     }
 }

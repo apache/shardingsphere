@@ -12,7 +12,10 @@ broadcast (broadcast tables)
 
 ```sql
 CreateBroadcastTableRule ::=
-  'CREATE' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
+  'CREATE' 'BROADCAST' 'TABLE' 'RULE' ifNotExists? tableName (',' tableName)* 
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 tableName ::=
   identifier
@@ -21,8 +24,7 @@ tableName ::=
 ### Supplement
 
 - `tableName` can use an existing table or a table that will be created;
-- Only one broadcast rule can exist, but can contain multiple broadcast tables, so can not
-  execute `CREATE BROADCAST TABLE RULE` more than one time. 
+- `ifNotExists` clause is used for avoid `Duplicate Broadcast rule` error.
 
 ### Example
 
@@ -31,6 +33,12 @@ tableName ::=
 ```sql
 -- Add t_province, t_city to broadcast table rules
 CREATE BROADCAST TABLE RULE t_province, t_city;
+```
+
+#### Create broadcast table rule with `ifNotExists` clause
+
+```sql
+CREATE BROADCAST TABLE RULE IF NOT EXISTS t_province, t_city;
 ```
 
 ### Reserved word

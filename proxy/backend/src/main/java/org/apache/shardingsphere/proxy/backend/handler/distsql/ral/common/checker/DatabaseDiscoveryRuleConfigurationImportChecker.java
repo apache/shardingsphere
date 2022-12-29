@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -49,15 +49,15 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
             return;
         }
         String databaseName = database.getName();
-        checkResources(databaseName, database, currentRuleConfig);
+        checkDataSources(databaseName, database, currentRuleConfig);
         checkDiscoverTypeAndHeartbeat(databaseName, currentRuleConfig);
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        Collection<String> requireResources = new LinkedHashSet<>();
-        currentRuleConfig.getDataSources().forEach(each -> requireResources.addAll(each.getDataSourceNames()));
-        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requireResources);
-        ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
+    private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        Collection<String> requiredDataSources = new LinkedHashSet<>();
+        currentRuleConfig.getDataSources().forEach(each -> requiredDataSources.addAll(each.getDataSourceNames()));
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedResources(requiredDataSources);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     
     private void checkDiscoverTypeAndHeartbeat(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {

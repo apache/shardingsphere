@@ -70,6 +70,6 @@ fi
 
 echo "The classpath is ${CLASS_PATH}"
 
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -javaagent:/opt/shardingsphere-proxy-agent-zipkin/shardingsphere-agent.jar  -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
+nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -javaagent:/opt/shardingsphere-proxy-agent-jaeger/shardingsphere-agent.jar  -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"

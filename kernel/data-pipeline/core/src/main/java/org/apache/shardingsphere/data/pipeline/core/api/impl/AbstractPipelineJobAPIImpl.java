@@ -96,21 +96,21 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             return Optional.of(jobId);
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobClassName());
-        repositoryAPI.persist(jobConfigKey, convertJobConfigurationToText(jobConfig));
+        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(convertJobConfiguration(jobConfig)));
         return Optional.of(jobId);
     }
     
     protected abstract String getJobClassName();
     
-    private String convertJobConfigurationToText(final PipelineJobConfiguration jobConfig) {
-        JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
-        jobConfigPOJO.setJobName(jobConfig.getJobId());
-        jobConfigPOJO.setShardingTotalCount(jobConfig.getJobShardingCount());
-        jobConfigPOJO.setJobParameter(YamlEngine.marshal(swapToYamlJobConfiguration(jobConfig)));
+    protected JobConfigurationPOJO convertJobConfiguration(final PipelineJobConfiguration jobConfig) {
+        JobConfigurationPOJO result = new JobConfigurationPOJO();
+        result.setJobName(jobConfig.getJobId());
+        result.setShardingTotalCount(jobConfig.getJobShardingCount());
+        result.setJobParameter(YamlEngine.marshal(swapToYamlJobConfiguration(jobConfig)));
         String createTimeFormat = LocalDateTime.now().format(DATE_TIME_FORMATTER);
-        jobConfigPOJO.getProps().setProperty("create_time", createTimeFormat);
-        jobConfigPOJO.getProps().setProperty("start_time_millis", System.currentTimeMillis() + "");
-        return YamlEngine.marshal(jobConfigPOJO);
+        result.getProps().setProperty("create_time", createTimeFormat);
+        result.getProps().setProperty("start_time_millis", System.currentTimeMillis() + "");
+        return result;
     }
     
     protected abstract YamlPipelineJobConfiguration swapToYamlJobConfiguration(PipelineJobConfiguration jobConfig);
