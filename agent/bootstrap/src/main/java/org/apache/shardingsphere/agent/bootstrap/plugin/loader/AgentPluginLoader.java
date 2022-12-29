@@ -26,9 +26,11 @@ import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.jar.JarFile;
 
 /**
@@ -46,8 +48,9 @@ public final class AgentPluginLoader {
      * @throws IOException IO exception
      */
     public static Collection<PluginJar> load() throws IOException {
-        File[] jarFiles = AgentPathBuilder.getPluginPath().listFiles(each -> each.getName().endsWith(".jar"));
-        if (null == jarFiles) {
+        List<File> jarFiles = new LinkedList<>();
+        AgentPathBuilder.getPluginClassPaths().forEach(each -> jarFiles.addAll(collectJarFiles(each)));
+        if (jarFiles.isEmpty()) {
             return Collections.emptyList();
         }
         Collection<PluginJar> result = new LinkedList<>();
@@ -56,5 +59,10 @@ public final class AgentPluginLoader {
             LOGGER.info("Loaded jar: {}", each.getName());
         }
         return result;
+    }
+    
+    private static List<File> collectJarFiles(final File path) {
+        File[] jarFiles = path.listFiles(each -> each.getName().endsWith(".jar"));
+        return (null == jarFiles || jarFiles.length == 0) ? Collections.emptyList() : Arrays.asList(jarFiles);
     }
 }
