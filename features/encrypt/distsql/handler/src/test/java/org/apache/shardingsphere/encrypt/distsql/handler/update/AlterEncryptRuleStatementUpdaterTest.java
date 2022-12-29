@@ -68,7 +68,7 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
-    public void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
+    public void assertCheckSQLStatementWithIncompleteDataType() {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
                 new AlgorithmSegment("test", new Properties()),
@@ -79,7 +79,7 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckSQLStatementWithIncompleteDataType() {
+    public void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
         EncryptRuleConfiguration currentRuleConfiguration = createCurrentRuleConfigurationWithMultipleTableRules();
         updater.updateCurrentRuleConfiguration(currentRuleConfiguration, createToBeAlteredRuleConfiguration());
         assertThat(currentRuleConfiguration.getEncryptors().size(), is(1));
