@@ -219,5 +219,4 @@ jobs:
       - name: Run Integration Test
         run: |
           ./mvnw -B clean install -f test/e2e/agent/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
-          ./mvnw clean install -B -T1C -Dmaven.javadoc.skip=true -Djacoco.skip=true -Drat.skip=true -DskipITs -DskipTests -Dcheckstyle.skip=true -Prelease
           ./mvnw -B clean install -f test/e2e/agent/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
