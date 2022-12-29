@@ -30,8 +30,9 @@
     
     <modules>
         <module>api</module>
-        <module>bootstrap</module>
+        <module>core</module>
         <module>plugins</module>
+        
         <module>distribution</module>
     </modules>
     
