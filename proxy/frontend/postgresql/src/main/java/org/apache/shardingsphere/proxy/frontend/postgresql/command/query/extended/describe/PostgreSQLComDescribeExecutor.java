@@ -196,9 +196,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                         .forEach(result::add);
             }
             if (each instanceof ColumnProjectionSegment) {
-                String columnName = ((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue();
-                ShardingSphereColumn column = columnsOfTable.getOrDefault(columnName, caseInsensitiveColumnsOfTable.get(columnName));
-                String alias = ((ColumnProjectionSegment) each).getAlias().orElseGet(column::getName);
+                ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
+                String columnName = segment.getColumn().getIdentifier().getValue();
+                ShardingSphereColumn column = columnsOfTable.getOrDefault(columnName, caseInsensitiveColumnsOfTable.getOrDefault(columnName, generateDefaultColumn(segment)));
+                String alias = segment.getAlias().orElseGet(column::getName);
                 result.add(new PostgreSQLColumnDescription(alias, 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""));
             }
             if (each instanceof ExpressionProjectionSegment) {
@@ -206,6 +207,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             }
         }
         return new PostgreSQLRowDescriptionPacket(result);
+    }
+    
+    private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
+        return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false, false, true, false);
     }
     
     private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
