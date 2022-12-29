@@ -42,7 +42,7 @@ public final class MD5EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertEncode() {
+    public void assertEncrypt() {
         assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
@@ -52,7 +52,15 @@ public final class MD5EncryptAlgorithmTest {
     }
     
     @Test
-    public void assertDecode() {
+    public void assertEncryptWhenConfigSalt() {
+        Properties props = new Properties();
+        props.setProperty("salt", "202cb962ac5907");
+        encryptAlgorithm.init(props);
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("0c243d2934937738f36514035d95344a"));
+    }
+    
+    @Test
+    public void assertDecrypt() {
         assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
     }
 }
