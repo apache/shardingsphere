@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
+import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,32 +27,33 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MaskBeforeSpecialCharAlgorithmTest {
+public final class MaskAfterSpecialCharsAlgorithmTest {
     
-    private MaskBeforeSpecialCharAlgorithm maskAlgorithm;
+    private MaskAfterSpecialCharsAlgorithm maskAlgorithm;
     
     @Before
     public void setUp() {
-        maskAlgorithm = new MaskBeforeSpecialCharAlgorithm();
+        maskAlgorithm = new MaskAfterSpecialCharsAlgorithm();
         maskAlgorithm.init(createProperties("d1"));
     }
     
-    private Properties createProperties(final String specialCharacters) {
+    private Properties createProperties(final String specialChars) {
         Properties result = new Properties();
-        result.setProperty("special-characters", specialCharacters);
+        result.setProperty("special-chars", specialChars);
+        result.setProperty("replace-char", "*");
         return result;
     }
     
     @Test
     public void assertMask() {
         String actual = maskAlgorithm.mask("abcd134");
-        assertThat(actual, is("***d134"));
+        assertThat(actual, is("abcd1**"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueMatchedMultipleSpecialCharacters() {
+    public void assertMaskWhenPlainValueMatchedMultipleSpecialChars() {
         String actual = maskAlgorithm.mask("abcd1234d1234");
-        assertThat(actual, is("***d1234d1234"));
+        assertThat(actual, is("abcd1********"));
     }
     
     @Test
@@ -67,14 +69,14 @@ public final class MaskBeforeSpecialCharAlgorithmTest {
     }
     
     @Test
-    public void assertMaskWhenPlainValueNotMatchedSpecialCharacters() {
+    public void assertMaskWhenPlainValueNotMatchedSpecialChars() {
         String actual = maskAlgorithm.mask("abcd234");
         assertThat(actual, is("abcd234"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MaskAlgorithmInitializationException.class)
     public void assertInitWhenConfigWrongProps() {
-        MaskBeforeSpecialCharAlgorithm maskAlgorithm = new MaskBeforeSpecialCharAlgorithm();
+        MaskBeforeSpecialCharsAlgorithm maskAlgorithm = new MaskBeforeSpecialCharsAlgorithm();
         maskAlgorithm.init(createProperties(""));
     }
 }
