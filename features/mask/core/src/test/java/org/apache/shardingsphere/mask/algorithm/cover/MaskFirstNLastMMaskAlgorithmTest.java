@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
+import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public final class MaskFirstNLastMMaskAlgorithmTest {
         assertThat(maskAlgorithm.mask("ab"), is("**"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MaskAlgorithmInitializationException.class)
     public void assertInitWhenConfigWrongProps() {
         maskAlgorithm.init(createProperties("", "3", "+"));
     }

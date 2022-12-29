@@ -17,21 +17,25 @@
 
 package org.apache.shardingsphere.mask.algorithm.cover;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
 
 /**
- * Mask before special char algorithm.
+ * Mask before special-chars algorithm.
  */
-public final class MaskBeforeSpecialCharAlgorithm implements MaskAlgorithm<Object, String> {
+public final class MaskBeforeSpecialCharsAlgorithm implements MaskAlgorithm<Object, String> {
     
-    private static final String SPECIAL_CHARACTERS = "special-characters";
+    private static final String SPECIAL_CHARS = "special-chars";
     
-    private String specialCharacters;
+    private static final String REPLACE_CHAR = "replace-char";
+    
+    private String specialChars;
+    
+    private Character replaceChar;
     
     @Getter
     private Properties props;
@@ -39,13 +43,18 @@ public final class MaskBeforeSpecialCharAlgorithm implements MaskAlgorithm<Objec
     @Override
     public void init(final Properties props) {
         this.props = props;
-        this.specialCharacters = createSpecialCharacters(props);
+        this.specialChars = createSpecialChars(props);
+        this.replaceChar = createReplaceChar(props);
     }
     
-    private String createSpecialCharacters(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SPECIAL_CHARACTERS), "%s can not be null.", SPECIAL_CHARACTERS);
-        Preconditions.checkArgument(props.getProperty(SPECIAL_CHARACTERS).length() > 0, "%s is not empty.", SPECIAL_CHARACTERS);
-        return props.getProperty(SPECIAL_CHARACTERS);
+    private String createSpecialChars(final Properties props) {
+        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, SPECIAL_CHARS, getType());
+        return props.getProperty(SPECIAL_CHARS);
+    }
+    
+    private Character createReplaceChar(final Properties props) {
+        MaskAlgorithmUtil.checkSingleCharConfig(props, REPLACE_CHAR, getType());
+        return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     
     @Override
@@ -54,16 +63,16 @@ public final class MaskBeforeSpecialCharAlgorithm implements MaskAlgorithm<Objec
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
-        int index = result.indexOf(specialCharacters);
+        int index = result.indexOf(specialChars);
         char[] chars = result.toCharArray();
         for (int i = 0; i < index; i++) {
-            chars[i] = '*';
+            chars[i] = replaceChar;
         }
         return new String(chars);
     }
     
     @Override
     public String getType() {
-        return "MASK_BEFORE_SPECIAL_CHAR";
+        return "MASK_BEFORE_SPECIAL_CHARS";
     }
 }
