@@ -53,6 +53,15 @@ rules:
         - user-id-delete-match-algorithm
         - user-id-select-match-algorithm
         - simple-hint-algorithm
+    t_merchant:
+      dataSourceNames:
+        - shadowDataSource
+      shadowAlgorithmNames:
+        - merchant-id-insert-match-algorithm
+        - merchant-id-update-match-algorithm
+        - merchant-id-delete-match-algorithm
+        - merchant-id-select-match-algorithm
+        - simple-hint-algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
       type: VALUE_MATCH
@@ -82,3 +91,27 @@ rules:
       type: SIMPLE_HINT
       props:
         foo: bar
+    merchant-id-insert-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: insert
+        column: merchant_id
+        value: 0
+    merchant-id-update-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: update
+        column: merchant_id
+        value: 0
+    merchant-id-delete-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: delete
+        column: merchant_id
+        value: 0
+    merchant-id-select-match-algorithm:
+      type: VALUE_MATCH
+      props:
+        operation: select
+        column: merchant_id
+        value: 0
