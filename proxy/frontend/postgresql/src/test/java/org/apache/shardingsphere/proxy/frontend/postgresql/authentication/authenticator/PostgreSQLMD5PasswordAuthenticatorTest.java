@@ -22,12 +22,11 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthe
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
-
-import java.lang.reflect.Method;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLMD5PasswordAuthenticatorTest {
@@ -47,15 +46,14 @@ public final class PostgreSQLMD5PasswordAuthenticatorTest {
     public void assertAuthenticate() {
         ShardingSphereUser user = new ShardingSphereUser(username, password, "");
         byte[] md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
-        String md5Digest = md5Encode(username, password, md5Salt);
+        String md5Digest = md5Encode(md5Salt);
         assertTrue(authenticator.authenticate(user, new Object[]{md5Digest, md5Salt}));
         assertFalse(authenticator.authenticate(user, new Object[]{"wrong", md5Salt}));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private String md5Encode(final String username, final String password, final byte[] md5Salt) {
-        Method method = PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
-        method.setAccessible(true);
-        return (String) method.invoke(new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
+    private String md5Encode(final byte[] md5Salt) {
+        return (String) Plugins.getMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
+                new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
     }
 }

@@ -45,7 +45,9 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkAlgorithm(databaseName, currentRuleConfig, sqlStatement);
-        checkExist(databaseName, sqlStatement, currentRuleConfig);
+        if (!sqlStatement.isIfNotExists()) {
+            checkExist(databaseName, sqlStatement, currentRuleConfig);
+        }
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
@@ -114,14 +116,17 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        if (!toBeCreatedRuleConfig.getShardingAlgorithms().isEmpty()) {
-            currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
-        }
         if (null != toBeCreatedRuleConfig.getDefaultTableShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy()) {
             currentRuleConfig.setDefaultTableShardingStrategy(toBeCreatedRuleConfig.getDefaultTableShardingStrategy());
+            if (!toBeCreatedRuleConfig.getShardingAlgorithms().isEmpty()) {
+                currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
+            }
         }
         if (null != toBeCreatedRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultDatabaseShardingStrategy()) {
             currentRuleConfig.setDefaultDatabaseShardingStrategy(toBeCreatedRuleConfig.getDefaultDatabaseShardingStrategy());
+            if (!toBeCreatedRuleConfig.getShardingAlgorithms().isEmpty()) {
+                currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
+            }
         }
     }
     

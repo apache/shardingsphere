@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.handler.update.GlobalRuleRALUpdater;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -42,12 +42,8 @@ public final class UpdatableGlobalRuleRALBackendHandler implements ProxyBackendH
     @Override
     public ResponseHeader execute() {
         updater.executeUpdate(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), sqlStatement);
-        persistNewRuleConfigurations();
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations());
         return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private void persistNewRuleConfigurations() {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
     }
 }

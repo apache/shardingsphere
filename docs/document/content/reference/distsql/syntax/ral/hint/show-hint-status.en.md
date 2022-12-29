@@ -11,7 +11,7 @@ The `SHOW HINT STATUS` syntax is used to query hint settings for current connect
 
 ```sql
 ShowHintStatus ::=
-  'SHOW' ('SHARDING'|'READWRITE_SPLITTING') 'HINT' 'STATUS'
+  'SHOW' ('SHARDING' | 'READWRITE_SPLITTING') 'HINT' 'STATUS'
 ```
 
 ### Supplement

@@ -22,7 +22,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 
 import javax.sql.DataSource;
@@ -67,7 +67,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     private volatile IngestPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
-                         final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
+                         final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
                          final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
                          final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine inventoryImporterExecuteEngine,
                          final PipelineJobProgressListener jobProgressListener) {
@@ -76,7 +76,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
         channel = createChannel(pipelineChannelCreator);
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = ImporterCreatorFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType()).createImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+        importer = ImporterCreatorFactory.getInstance(importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener);
         position = inventoryDumperConfig.getPosition();
     }
     

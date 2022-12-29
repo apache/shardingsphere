@@ -148,11 +148,11 @@ public final class ConvertYamlConfigurationHandlerTest {
     }
     
     private void assertParseSQL(final String actual) {
-        for (String each : Splitter.on(";").trimResults().splitToList(actual)) {
+        Splitter.on(";").trimResults().splitToList(actual).forEach(each -> {
             if (!Strings.isNullOrEmpty(each)) {
                 assertNotNull(sqlParserRule.getSQLParserEngine(new MySQLDatabaseType().getType()).parse(each, false));
             }
-        }
+        });
     }
     
     @SneakyThrows(IOException.class)

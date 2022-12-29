@@ -9,7 +9,7 @@ The `SHOW READWRITE_SPLITTING RULES` syntax is used to query readwrite splitting
 
 ### Syntax
 
-```
+```sql
 ShowReadWriteSplittingRule::=
   'SHOW' 'READWRITE_SPLITTING' 'RULES' ('FROM' databaseName)?
 

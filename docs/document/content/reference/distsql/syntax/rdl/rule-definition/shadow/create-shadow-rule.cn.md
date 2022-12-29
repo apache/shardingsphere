@@ -11,19 +11,19 @@ weight = 2
 
 ```sql
 CreateShadowRule ::=
-  'CREATE' 'SHADOW' 'RULE' shadowDefinition ( ',' shadowDefinition )*
+  'CREATE' 'SHADOW' 'RULE' shadowRuleDefinition (',' shadowRuleDefinition)*
 
-shadowDefinition ::=
-  ruleName '(' storageUnitMapping shadowTableRule ( ',' shadowTableRule )* ')'
+shadowRuleDefinition ::=
+  ruleName '(' storageUnitMapping shadowTableRule (',' shadowTableRule)* ')'
     
 storageUnitMapping ::=
-    'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
+  'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
 
 shadowTableRule ::=
-    tableName '(' shadowAlgorithm ')'
+  tableName '(' shadowAlgorithm ')'
     
 shadowAlgorithm ::=
-    'TYPE' '('  'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' ) ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefinition ')'
 
 ruleName ::=
   identifier
@@ -39,6 +39,15 @@ algorithmName ::=
 
 shadowAlgorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 
 ### 补充说明

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.junit.Before;
@@ -44,7 +44,7 @@ public final class LocalTransactionManagerTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private JDBCBackendConnection backendConnection;
+    private BackendConnection backendConnection;
     
     @Mock
     private TransactionStatus transactionStatus;

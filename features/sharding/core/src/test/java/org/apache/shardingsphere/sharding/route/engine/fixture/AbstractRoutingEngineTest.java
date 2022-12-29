@@ -34,8 +34,8 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 
 import javax.sql.DataSource;
@@ -239,9 +239,9 @@ public abstract class AbstractRoutingEngineTest {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    protected final SingleTableRule createSingleTableRule(final Collection<ShardingSphereRule> rules) {
+    protected final SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SingleTableRule result = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, rules);
+        SingleRule result = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, rules);
         result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
         return result;
     }

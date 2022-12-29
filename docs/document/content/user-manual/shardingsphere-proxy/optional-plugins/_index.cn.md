@@ -16,7 +16,6 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-opengauss-protocol`，数据库协议的 OpenGauss 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-core`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-mysql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 MySQL 实现
-- `org.apache.shardingsphere:shardingsphere-proxy-frontend-reactive-mysql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 MySQL 的 `vertx-sql-client` 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 PostgresSQL 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 openGauss 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-backend`，ShardingSphere Proxy 的后端

@@ -97,7 +97,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="61" stop-index="62" nulls-order-type="LAST" />
+            <column-item name="id" start-index="61" stop-index="62" />
         </order-by>
     </select>
 
@@ -127,7 +127,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="61" stop-index="62" nulls-order-type="LAST" />
+            <column-item name="id" start-index="61" stop-index="62" />
         </order-by>
         <limit start-index="64" stop-index="73">
             <offset value="1" start-index="70" stop-index="70" />
@@ -224,7 +224,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="92" stop-index="93" nulls-order-type="LAST" />
+            <column-item name="id" start-index="92" stop-index="93" />
         </order-by>
     </select>
 
@@ -272,7 +272,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="92" stop-index="93" nulls-order-type="LAST" />
+            <column-item name="id" start-index="92" stop-index="93" />
         </order-by>
         <limit start-index="95" stop-index="104">
             <offset value="1" start-index="101" stop-index="101" />
@@ -369,7 +369,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="94" stop-index="95" nulls-order-type="LAST" />
+            <column-item name="id" start-index="94" stop-index="95" />
         </order-by>
     </select>
 
@@ -417,7 +417,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="94" stop-index="95" nulls-order-type="LAST" />
+            <column-item name="id" start-index="94" stop-index="95" />
         </order-by>
         <limit start-index="97" stop-index="106">
             <offset value="1" start-index="103" stop-index="103" />
@@ -478,7 +478,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="57" stop-index="58" nulls-order-type="LAST" />
+            <column-item name="id" start-index="57" stop-index="58" />
         </order-by>
     </select>
 
@@ -508,7 +508,7 @@
             </right>
         </combine>
         <order-by>
-            <column-item name="id" start-index="57" stop-index="58" nulls-order-type="LAST" />
+            <column-item name="id" start-index="57" stop-index="58" />
         </order-by>
         <limit start-index="60" stop-index="69">
             <offset value="1" start-index="66" stop-index="66" />

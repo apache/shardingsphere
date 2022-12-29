@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
@@ -58,9 +58,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.ResultSetMetaData;
@@ -140,7 +140,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     public void assertDescribePortal() throws SQLException {
         when(packet.getType()).thenReturn('P');
         when(packet.getName()).thenReturn("P_1");
-        Portal<?> portal = mock(Portal.class);
+        Portal portal = mock(Portal.class);
         PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
         when(portal.describe()).thenReturn(expected);
         when(portalContext.get("P_1")).thenReturn(portal);
@@ -313,11 +313,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
+    @SneakyThrows(ReflectiveOperationException.class)
     private Collection<PostgreSQLColumnDescription> getColumnDescriptionsFromPacket(final PostgreSQLRowDescriptionPacket packet) {
-        Field field = PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions");
-        field.setAccessible(true);
-        return (Collection<PostgreSQLColumnDescription>) field.get(packet);
+        return (Collection<PostgreSQLColumnDescription>) Plugins.getMemberAccessor().get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), packet);
     }
     
     @SuppressWarnings("rawtypes")
@@ -360,7 +358,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     }
     
     private void prepareJDBCBackendConnection(final String sql) throws SQLException {
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
@@ -384,9 +382,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private List<PostgreSQLColumnDescription> getColumnDescriptions(final PostgreSQLRowDescriptionPacket packet) {
-        Field columnDescriptionsField = PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions");
-        columnDescriptionsField.setAccessible(true);
-        return (List<PostgreSQLColumnDescription>) columnDescriptionsField.get(packet);
+        return (List<PostgreSQLColumnDescription>) Plugins.getMemberAccessor().get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), packet);
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)

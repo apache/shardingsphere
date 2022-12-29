@@ -21,25 +21,25 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,12 +72,12 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadHandshakeInitPacket() throws NoSuchFieldException, IllegalAccessException {
+    public void assertChannelReadHandshakeInitPacket() throws ReflectiveOperationException {
         MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, new MySQLAuthPluginData(new byte[8], new byte[12]));
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
-        ServerInfo serverInfo = ReflectionUtil.getFieldValue(mysqlNegotiateHandler, "serverInfo", ServerInfo.class);
+        ServerInfo serverInfo = (ServerInfo) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler);
         assertNotNull(serverInfo);
         assertThat(serverInfo.getServerVersion().getMajor(), is(5));
         assertThat(serverInfo.getServerVersion().getMinor(), is(7));
@@ -85,10 +85,10 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadOkPacket() throws NoSuchFieldException, IllegalAccessException {
-        MySQLOKPacket okPacket = new MySQLOKPacket(0, 0);
+    public void assertChannelReadOkPacket() throws ReflectiveOperationException {
+        MySQLOKPacket okPacket = new MySQLOKPacket(0);
         ServerInfo serverInfo = new ServerInfo();
-        ReflectionUtil.setFieldValue(mysqlNegotiateHandler, "serverInfo", serverInfo);
+        Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler, serverInfo);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);
         verify(pipeline).remove(mysqlNegotiateHandler);
         verify(authResultCallback).setSuccess(serverInfo);
@@ -96,7 +96,7 @@ public final class MySQLNegotiateHandlerTest {
     
     @Test(expected = RuntimeException.class)
     public void assertChannelReadErrorPacket() {
-        MySQLErrPacket errorPacket = new MySQLErrPacket(0, MySQLVendorError.ER_NO_DB_ERROR);
+        MySQLErrPacket errorPacket = new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket);
     }
 }

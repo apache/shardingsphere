@@ -9,9 +9,9 @@ weight = 2
 
 ### 语法
 
-```
+```sql
 ShowEncryptRule::=
-  'SHOW' 'SHADOW' ('RULES'|'RULE' shadowRuleName) ('FROM' databaseName)?
+  'SHOW' 'SHADOW' ('RULES' | 'RULE' shadowRuleName) ('FROM' databaseName)?
 
 shadowRuleName ::=
   identifier

@@ -29,26 +29,42 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>opentracing</module>
-        <module>opentelemetry</module>
-        <module>jaeger</module>
-        <module>zipkin</module>
+        <module>type</module>
         <module>test</module>
     </modules>
     
     <properties>
-        <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
+        <opentracing.version>0.31.0</opentracing.version>
+        
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
     </properties>
     
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-api</artifactId>
+                <version>${opentracing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-util</artifactId>
+                <version>${opentracing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-mock</artifactId>
+                <version>${opentracing.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${tracing.target.directory}/${project.build.finalName}.jar</outputFile>
+                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
             </plugin>
         </plugins>

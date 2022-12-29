@@ -48,20 +48,22 @@ public final class InstanceMetaDataBuilderFactoryTest {
     
     @Test
     public void assertCreateJDBCInstanceMetaDataWithInstanceId() {
-        InstanceMetaData actual = InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.JDBC, "");
+        InstanceMetaData actual = InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.JDBC, "", "foo_version");
         assertThat(actual.getId(), is("foo_id"));
         assertNotNull(actual.getIp());
         assertThat(actual.getAttributes(), is(""));
+        assertThat(actual.getVersion(), is("foo_version"));
         assertThat(actual.getType(), is(InstanceType.JDBC));
     }
     
     @Test
     public void assertCreateProxyInstanceMetaDataWithInstanceId() {
-        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.PROXY, "127.0.0.1@3307");
+        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.PROXY, "127.0.0.1@3307", "foo_version");
         assertThat(actual.getId(), is("foo_id"));
         assertThat(actual.getIp(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3307));
         assertThat(actual.getAttributes(), is("127.0.0.1@3307"));
+        assertThat(actual.getVersion(), is("foo_version"));
         assertThat(actual.getType(), is(InstanceType.PROXY));
     }
 }

@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 createDatabaseDiscoveryRule
-    : CREATE DB_DISCOVERY RULE databaseDiscoveryRule (COMMA_ databaseDiscoveryRule)*
+    : CREATE DB_DISCOVERY RULE ifNotExists? databaseDiscoveryRule (COMMA_ databaseDiscoveryRule)*
     ;
 
 alterDatabaseDiscoveryRule
@@ -69,4 +69,8 @@ discoveryHeartbeatName
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

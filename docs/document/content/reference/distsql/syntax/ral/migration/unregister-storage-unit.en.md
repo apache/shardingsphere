@@ -10,8 +10,8 @@ The `UNREGISTER MIGRATION SOURCE STORAGE UNIT` syntax is used to unregister migr
 ### Syntax
 
 ```sql
-UnregisterStorageUnit ::=
-  'DROP' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* 
+UnregisterMigrationSourceStorageUnit ::=
+  'UNREGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitName  (',' storageUnitName)* 
 
 storageUnitName ::=
   identifier

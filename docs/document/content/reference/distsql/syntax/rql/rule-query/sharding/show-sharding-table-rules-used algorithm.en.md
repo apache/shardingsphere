@@ -10,7 +10,7 @@ weight = 11
 
 ### Syntax
 
-```
+```sql
 ShowShardingTableRulesUsedAlgorithm::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'ALGORITHM' algorithmName ('FROM' databaseName)?
 

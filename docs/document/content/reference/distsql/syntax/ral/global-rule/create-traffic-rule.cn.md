@@ -11,16 +11,19 @@ weight = 7
 
 ```sql
 CreateTrafficRule ::=
-  'CREATE' 'TRAFFIC' 'RULE'  '(' 'LABELS' '(' lableName ')' ',' trafficAlgorithmDefination ',' loadBalancerDefination ')'
+  'CREATE' 'TRAFFIC' 'RULE'  '(' 'LABELS' '(' lableName ')' ',' trafficAlgorithmDefinition ',' loadBalancerDefinition ')'
 
 lableName ::=
   identifier
 
-trafficAlgorithmDefination ::=
-  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' = trafficAlgorithmTypeName (',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')')? ')' ')'
+trafficAlgorithmDefinition ::=
+  'TRAFFIC_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' trafficAlgorithmTypeName (',' propertiesDefinition)? ')' ')'
 
-loadBalancerDefination ::=
-  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' = loadBalancerName (',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')')? ')' ')'
+loadBalancerDefinition ::=
+  'LOAD_BALANCER' '(' 'TYPE' '(' 'NAME' '=' loadBalancerName (',' propertiesDefinition)? ')' ')'
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 trafficAlgorithmTypeName ::=
   string
@@ -32,7 +35,7 @@ key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 
 ### 补充说明

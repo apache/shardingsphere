@@ -9,7 +9,7 @@ The `SHOW DEFAULT SHARDING STRATEGY` syntax is used to query default sharding st
 
 ### Syntax
 
-```
+```sql
 ShowDefaultShardingStrategy::=
   'SHOW' 'DEFAULT' 'SHARDING' 'STRATEGY' ('FROM' databaseName)?
 

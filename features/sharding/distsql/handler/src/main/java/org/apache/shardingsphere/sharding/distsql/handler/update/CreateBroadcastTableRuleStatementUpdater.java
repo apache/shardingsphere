@@ -34,10 +34,15 @@ import java.util.LinkedList;
  */
 public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateBroadcastTableRuleStatement, ShardingRuleConfiguration> {
     
+    private boolean ifNotExists;
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        checkDuplicate(sqlStatement, currentRuleConfig);
+        ifNotExists = sqlStatement.isIfNotExists();
+        if (!ifNotExists) {
+            checkDuplicate(sqlStatement, currentRuleConfig);
+        }
     }
     
     private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {
@@ -59,6 +64,13 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
+            if (ifNotExists) {
+                Collection<String> currentBroadCastTables = currentRuleConfig.getBroadcastTables();
+                toBeCreatedRuleConfig.getBroadcastTables().removeIf(currentBroadCastTables::contains);
+            }
+            if (toBeCreatedRuleConfig.getBroadcastTables().isEmpty()) {
+                return;
+            }
             currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
         }
     }

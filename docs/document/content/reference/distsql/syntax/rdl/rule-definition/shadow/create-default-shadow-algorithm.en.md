@@ -14,10 +14,19 @@ CreateDefaultShadowAlgorithm ::=
   'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
 
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefiinition ')'
     
 shadowAlgorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 
 ### Supplement
@@ -29,7 +38,7 @@ shadowAlgorithmType ::=
 - Create default shadow algorithm
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
 ```
 
 ### Reserved word

@@ -31,13 +31,9 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 @Getter
 public final class MySQLAuthSwitchResponsePacket implements MySQLPacket {
     
-    @Getter
-    private final int sequenceId;
-    
     private final byte[] authPluginResponse;
     
     public MySQLAuthSwitchResponsePacket(final MySQLPacketPayload payload) {
-        sequenceId = payload.readInt1();
         authPluginResponse = payload.readStringEOFByBytes();
     }
     

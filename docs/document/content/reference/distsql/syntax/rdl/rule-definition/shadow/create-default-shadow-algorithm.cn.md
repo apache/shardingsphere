@@ -14,10 +14,19 @@ CreateDefaultShadowAlgorithm ::=
   'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
 
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefiinition ')'
     
 shadowAlgorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 
 ### 补充说明
@@ -29,7 +38,7 @@ shadowAlgorithmType ::=
 - 创建默认影子库压测算法
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
 ```
 
 ### 保留字

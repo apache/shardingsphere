@@ -25,10 +25,10 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
@@ -55,7 +55,7 @@ public final class JobConfigurationBuilder {
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         result.setUniqueKeyColumn(createYamlPipelineColumnMetaData());
-        PipelineAPIFactory.getPipelineJobAPI(new MigrationJobType()).extendYamlJobConfiguration(result);
+        PipelineJobAPIFactory.getPipelineJobAPI(new MigrationJobType()).extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
     }
     
@@ -75,7 +75,7 @@ public final class JobConfigurationBuilder {
         String sourceTableName = RandomStringUtils.randomAlphabetic(32);
         MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getSourceResourceName(), yamlJobConfig.getSourceSchemaName(), sourceTableName,
                 yamlJobConfig.getTargetDatabaseName(), yamlJobConfig.getTargetTableName());
-        return MigrationJobAPIFactory.getInstance().marshalJobId(migrationJobId);
+        return new MigrationJobAPI().marshalJobId(migrationJobId);
     }
     
     private static YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final PipelineDataSourceConfiguration config) {

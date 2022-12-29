@@ -58,6 +58,8 @@ public final class CharDigestLikeEncryptAlgorithmTest {
     public void assertEncrypt() {
         assertThat(englishLikeEncryptAlgorithm.encrypt("1234567890%abcdefghijklmnopqrstuvwxyz%ABCDEFGHIJKLMNOPQRSTUVWXYZ",
                 mock(EncryptContext.class)), is("0145458981%`adedehihilmlmpqpqtutuxyxy%@ADEDEHIHILMLMPQPQTUTUXYXY"));
+        assertThat(englishLikeEncryptAlgorithm.encrypt("_1234__5678__",
+                mock(EncryptContext.class)), is("_0145__4589__"));
     }
     
     @Test

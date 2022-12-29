@@ -26,9 +26,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,9 +44,7 @@ public final class OpenGaussFrontendEngineTest {
     
     @Before
     public void setup() throws ReflectiveOperationException {
-        Field field = OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine");
-        field.setAccessible(true);
-        field.set(openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
+        Plugins.getMemberAccessor().set(OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine"), openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
     }
     
     @Test

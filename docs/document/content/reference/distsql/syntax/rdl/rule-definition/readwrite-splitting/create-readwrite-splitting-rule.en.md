@@ -11,24 +11,27 @@ The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite split
 
 ```sql
 CreateReadwriteSplittingRule ::=
-  'CREATE' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition ( ',' readwriteSplittingDefinition )*
+  'CREATE' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
 
 readwriteSplittingDefinition ::=
-  ruleName '(' ( staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition ) ( ',' loadBalancerDefinition )? ')'
+  ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
 
 staticReadwriteSplittingDefinition ::=
-    'WRITE_RESOURCE' '=' writeResourceName ',' 'READ_RESOURCES' '(' ruleName (',' ruleName)* ')'
+    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
 
 dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName ( ',' 'WRITE_DATA_SOURCE_QUERY_ENABLED' '=' ('TRUE' | 'FALSE') )?
+    'AUTO_AWARE_RESOURCE' '=' resourceName (',' 'WRITE_DATA_SOURCE_QUERY_ENABLED' '=' ('TRUE' | 'FALSE'))?
 
 loadBalancerDefinition ::=
-    'TYPE' '(' 'NAME' '=' loadBalancerType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
+    'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
 
 ruleName ::=
   identifier
 
-writeResourceName ::=
+writeStorageUnitName ::=
+  identifier
+
+storageUnitName ::=
   identifier
 
 resourceName ::=
@@ -36,6 +39,15 @@ resourceName ::=
     
 loadBalancerType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 
 ### Supplement
@@ -51,8 +63,8 @@ loadBalancerType ::=
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
-    WRITE_RESOURCE=write_ds,
-    READ_RESOURCES(read_ds_0,read_ds_1),
+    WRITE_STORAGE_UNIT=write_ds,
+    READ_STORAGE_UNITS(read_ds_0,read_ds_1),
     TYPE(NAME="random")
 );
 ```

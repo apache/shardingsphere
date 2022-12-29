@@ -9,7 +9,7 @@ weight = 3
 
 ### 语法
 
-```
+```sql
 ShowEncryptRule::=
   'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
 

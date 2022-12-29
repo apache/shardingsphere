@@ -11,7 +11,7 @@ weight = 8
 
 ```sql
 DropShadowAlgorithm ::=
-  'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName(',' shadowAlgorithmName)* ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
 
 shadowAlgorithmName ::=
   identifier

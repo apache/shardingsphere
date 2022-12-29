@@ -62,8 +62,6 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     @Getter
     private volatile ResponseType responseType;
     
-    private int currentSequenceId;
-    
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
@@ -101,9 +99,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
-        currentSequenceId = result.size();
-        return result;
+        return ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
     private Collection<DatabasePacket<?>> processUpdate(final UpdateResponseHeader updateResponseHeader) {
@@ -117,7 +113,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     @Override
     public MySQLPacket getQueryRowPacket() throws SQLException {
-        return new MySQLTextResultSetRowPacket(++currentSequenceId, proxyBackendHandler.getRowData().getData());
+        return new MySQLTextResultSetRowPacket(proxyBackendHandler.getRowData().getData());
     }
     
     @Override

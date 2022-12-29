@@ -11,7 +11,7 @@ weight = 4
 
 ```sql
 DropEncryptRule ::=
-  'DROP' 'ENCRYPT' 'RULE' tableName ( ',' tableName )*
+  'DROP' 'ENCRYPT' 'RULE' tableName (',' tableName)*
     
 tableName ::=
   identifier

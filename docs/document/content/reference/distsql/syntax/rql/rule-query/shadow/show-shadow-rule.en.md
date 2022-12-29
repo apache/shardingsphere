@@ -9,9 +9,9 @@ The `SHOW SHADOW RULE` syntax is used to query shadow rules for specified databa
 
 ### Syntax
 
-```
+```sql
 ShowEncryptRule::=
-  'SHOW' 'SHADOW' ('RULES'|'RULE' shadowRuleName) ('FROM' databaseName)?
+  'SHOW' 'SHADOW' ('RULES' | 'RULE' shadowRuleName) ('FROM' databaseName)?
 
 shadowRuleName ::=
   identifier

@@ -24,11 +24,4 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
  * Database packet for MySQL.
  */
 public interface MySQLPacket extends DatabasePacket<MySQLPacketPayload> {
-    
-    /**
-     * Get sequence ID.
-     *
-     * @return sequence ID
-     */
-    int getSequenceId();
 }

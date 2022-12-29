@@ -11,7 +11,7 @@ The `UNREGISTER STORAGE UNIT` syntax is used to unregister storage unit from the
 
 ```sql
 UnregisterStorageUnit ::=
-  'UNREGISTER' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
+  'UNREGISTER' 'STORAGE' 'UNIT' ('IF' 'EXISTS')? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
 
 storageUnitName ::=
   identifier

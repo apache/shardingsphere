@@ -32,7 +32,6 @@ import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownU
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -48,8 +47,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authen
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,7 +79,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     @Before
     public void init() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-        String md5Digest = md5Encode(username, password, md5Salt.getBytes(StandardCharsets.UTF_8));
+        String md5Digest = md5Encode(md5Salt.getBytes(StandardCharsets.UTF_8));
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
         passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
@@ -149,14 +148,13 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private String md5Encode(final String username, final String password, final byte[] md5Salt) {
-        Method method = PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
-        method.setAccessible(true);
-        return (String) method.invoke(new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
+    private String md5Encode(final byte[] md5Salt) {
+        return (String) Plugins.getMemberAccessor().invoke(PostgreSQLMD5PasswordAuthenticator.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class),
+                new PostgreSQLMD5PasswordAuthenticator(), username, password, md5Salt);
     }
 }

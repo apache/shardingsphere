@@ -35,10 +35,10 @@ public final class ImporterCreatorFactory {
     /**
      * Get importer creator instance.
      *
-     * @param databaseType database type
+     * @param importType import type
      * @return importer creator
      */
-    public static ImporterCreator getInstance(final String databaseType) {
-        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, databaseType);
+    public static ImporterCreator getInstance(final String importType) {
+        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, importType);
     }
 }

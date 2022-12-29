@@ -12,7 +12,7 @@ weight = 14
 
 ```sql
 ShowShardingBindingTableRules::=
-  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' 'RULES'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' 'RULES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

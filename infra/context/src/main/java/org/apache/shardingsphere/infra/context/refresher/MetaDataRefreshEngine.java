@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -41,6 +41,8 @@ public final class MetaDataRefreshEngine {
     
     private static final Collection<Class<? extends SQLStatement>> IGNORED_SQL_STATEMENT_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
     
+    private final ModeContextManager modeContextManager;
+    
     private final ShardingSphereDatabase database;
     
     private final ConfigurationProperties props;
@@ -51,22 +53,21 @@ public final class MetaDataRefreshEngine {
      * @param sqlStatementContext SQL statement context
      * @param routeUnits route units
      * @throws SQLException SQL exception
-     * @return meta data refreshed event
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
+    public void refresh(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
         if (IGNORED_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
-            return Optional.empty();
+            return;
         }
         Optional<MetaDataRefresher> schemaRefresher = MetaDataRefresherFactory.findInstance(sqlStatementClass);
         if (schemaRefresher.isPresent()) {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName())).toLowerCase();
             Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            return schemaRefresher.get().refresh(database, logicDataSourceNames, schemaName, sqlStatementContext.getSqlStatement(), props);
+            schemaRefresher.get().refresh(modeContextManager, database, logicDataSourceNames, schemaName, sqlStatementContext.getSqlStatement(), props);
+            return;
         }
         IGNORED_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
-        return Optional.empty();
     }
 }

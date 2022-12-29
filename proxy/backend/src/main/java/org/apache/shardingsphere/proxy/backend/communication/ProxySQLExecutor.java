@@ -40,11 +40,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrep
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -76,13 +74,13 @@ public final class ProxySQLExecutor {
     
     private final String type;
     
-    private final JDBCBackendConnection backendConnection;
+    private final BackendConnection backendConnection;
     
     private final ProxyJDBCExecutor jdbcExecutor;
     
     private final RawExecutor rawExecutor;
     
-    public ProxySQLExecutor(final String type, final JDBCBackendConnection backendConnection, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
+    public ProxySQLExecutor(final String type, final BackendConnection backendConnection, final DatabaseCommunicationEngine databaseCommunicationEngine) {
         this.type = type;
         this.backendConnection = backendConnection;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
@@ -160,7 +158,7 @@ public final class ProxySQLExecutor {
     
     private List<ExecuteResult> doExecuteWithImplicitCommitTransaction(final ExecutionContext executionContext) throws SQLException {
         List<ExecuteResult> result;
-        JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
+        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         try {
             transactionManager.begin();
             result = doExecute(executionContext);

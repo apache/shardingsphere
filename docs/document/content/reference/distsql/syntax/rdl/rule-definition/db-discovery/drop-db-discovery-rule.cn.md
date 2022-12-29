@@ -11,7 +11,7 @@ weight = 4
 
 ```sql
 DropDatabaseDiscoveryRule ::=
-  'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)* ('FROM' databaseName)?
 
 dbDiscoveryRuleName ::=
   identifier

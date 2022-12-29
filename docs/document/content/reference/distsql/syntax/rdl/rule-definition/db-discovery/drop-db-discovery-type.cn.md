@@ -11,7 +11,7 @@ weight = 6
 
 ```sql
 DropDatabaseDiscoveryType ::=
-  'DROP' 'DB_DISCOVERY' 'TYPE'  dbDiscoveryTypeName (',' dbDiscoveryTypeName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'TYPE'  dbDiscoveryTypeName (',' dbDiscoveryTypeName)* ('FROM' databaseName)?
 
 dbDiscoveryTypeName ::=
   identifier

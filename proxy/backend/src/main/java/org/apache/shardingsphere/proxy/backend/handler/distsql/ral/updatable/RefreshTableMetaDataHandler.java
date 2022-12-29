@@ -22,8 +22,8 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.distsql.handler.exception.resource.EmptyResourceException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -59,10 +59,10 @@ public final class RefreshTableMetaDataHandler extends UpdatableRALBackendHandle
     }
     
     private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
-        ShardingSpherePreconditions.checkState(!dataSources.isEmpty(), () -> new EmptyResourceException(databaseName));
+        ShardingSpherePreconditions.checkState(!dataSources.isEmpty(), () -> new EmptyStorageUnitException(databaseName));
         if (getSqlStatement().getStorageUnitName().isPresent()) {
             String storageUnitName = getSqlStatement().getStorageUnitName().get();
-            ShardingSpherePreconditions.checkState(dataSources.containsKey(storageUnitName), () -> new MissingRequiredResourcesException(databaseName, Collections.singletonList(storageUnitName)));
+            ShardingSpherePreconditions.checkState(dataSources.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singletonList(storageUnitName)));
         }
     }
     
