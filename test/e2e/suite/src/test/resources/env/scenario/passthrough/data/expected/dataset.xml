@@ -32,7 +32,7 @@
         <column name="col_smallint_unsigned" type="numeric" />
         <column name="col_tinyint_unsigned" type="numeric" />
     </metadata>
-    <metadata data-nodes="passthrough.t_data_type_floating_point">
+    <metadata data-nodes="expected_dataset.t_data_type_floating_point">
         <column name="id" type="numeric" />
         <column name="col_float" type="numeric" />
         <column name="col_double" type="numeric" />

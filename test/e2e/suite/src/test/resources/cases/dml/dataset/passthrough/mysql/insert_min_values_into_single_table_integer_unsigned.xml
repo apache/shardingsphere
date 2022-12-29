@@ -25,4 +25,6 @@
         <column name="col_tinyint_unsigned" type="numeric" />
     </metadata>
     <row data-node="passthrough.t_data_type_integer_unsigned" values="2, 0, 0, 0, 0, 0" />
+    <row data-node="passthrough.t_data_type_integer_unsigned" values="1001, 18446744073709551615, 4294967295, 16777215, 65535, 255" />
+    <row data-node="passthrough.t_data_type_integer_unsigned" values="1002, 0, 0, 0, 0, 0" />
 </dataset>
