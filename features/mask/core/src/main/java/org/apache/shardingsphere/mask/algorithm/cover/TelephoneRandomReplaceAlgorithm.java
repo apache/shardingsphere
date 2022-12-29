@@ -57,10 +57,10 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
         networkNumberLength = networkNumbers.stream().map(networkNumber -> String.valueOf(networkNumber).length()).distinct().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
     }
     
-    private String isNumeric(final String str) {
+    private String isNumeric(final String networkNumber) {
         try {
-            Integer.parseInt(str);
-            return str;
+            Integer.parseInt(networkNumber);
+            return networkNumber;
         } catch (NumberFormatException e) {
             throw new MaskAlgorithmInitializationException(getType(), "network-number can only be numbers and ,");
         }
