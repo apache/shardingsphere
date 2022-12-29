@@ -1218,4 +1218,9 @@
     <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM t_data_type_integer_unsigned" db-types="MySQL" scenario-types="passthrough" scenario-comments="Test ShardingSphere-Proxy MySQL compatibility for unsigned integer data types">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
 </integration-test-cases>
