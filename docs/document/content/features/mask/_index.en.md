@@ -20,8 +20,8 @@ According to industry's needs for data masking and the pain points of business t
 
 ## Application Scenarios
 
-Whether it is a new business launched quickly or a mature business that has already been launched, it can be connected to the data masking function of ShardingSphere to quickly complete the configuration of mask rules, and customers do not need to develop data masking functions coupled with business systems. 
-Users can transparently use the data masking function without changing any business logic and SQL.
+Whether it is a new business that is launched quickly or a mature business that has already been launched, you can access the data masking function of ShardingSphere to quickly complete the configuration of mask rules. 
+Customers can use data masking function transparently without developing a masking function coupled to the business system, and without changing any business logic and SQL.
 
 ## Related References
 
