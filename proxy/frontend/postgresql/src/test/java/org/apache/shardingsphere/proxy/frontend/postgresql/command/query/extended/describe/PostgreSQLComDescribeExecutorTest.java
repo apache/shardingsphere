@@ -255,7 +255,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
         String sql = "insert into t_order (k, c, pad) values (?, ?, ?) "
-                + "returning id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*";
+                + "returning id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
@@ -276,7 +276,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         DatabasePacket<?> actualRowDescriptionPacket = actualPacketsIterator.next();
         assertThat(actualRowDescriptionPacket, is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
         List<PostgreSQLColumnDescription> actualColumnDescriptions = new ArrayList<>(getColumnDescriptionsFromPacket((PostgreSQLRowDescriptionPacket) actualRowDescriptionPacket));
-        assertThat(actualColumnDescriptions.size(), is(11));
+        assertThat(actualColumnDescriptions.size(), is(12));
         assertThat(actualColumnDescriptions.get(0).getColumnName(), is("id"));
         assertThat(actualColumnDescriptions.get(0).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue()));
         assertThat(actualColumnDescriptions.get(0).getColumnLength(), is(4));
@@ -310,6 +310,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         assertThat(actualColumnDescriptions.get(10).getColumnName(), is("pad"));
         assertThat(actualColumnDescriptions.get(10).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_CHAR.getValue()));
         assertThat(actualColumnDescriptions.get(10).getColumnLength(), is(-1));
+        assertThat(actualColumnDescriptions.get(11).getColumnName(), is("t_order"));
+        assertThat(actualColumnDescriptions.get(11).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR.getValue()));
+        assertThat(actualColumnDescriptions.get(11).getColumnLength(), is(-1));
     }
     
     @SuppressWarnings("unchecked")
