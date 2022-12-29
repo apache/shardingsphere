@@ -23,11 +23,12 @@ import lombok.RequiredArgsConstructor;
 /**
  * MySQL Column Field Detail Flag.
  * 
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/group__group__cs__column__definition__flags.html">Column Definition Flags</a>
  * @see <a href="https://mariadb.com/kb/en/library/resultset/#field-detail-flag">Field detail flag</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLColumnFieldDetailFlag {
+public enum MySQLColumnDefinitionFlag {
     
     NOT_NULL(0x00000001),
     
