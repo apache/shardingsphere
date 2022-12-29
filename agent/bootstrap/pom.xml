@@ -52,10 +52,6 @@
             <artifactId>logback-classic</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport</artifactId>
-        </dependency>
     </dependencies>
     
     <build>
