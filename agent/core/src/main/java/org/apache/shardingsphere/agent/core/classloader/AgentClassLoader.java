@@ -36,7 +36,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
- *  Agent class loader.
+ * Agent class loader.
  */
 public final class AgentClassLoader extends ClassLoader {
     
