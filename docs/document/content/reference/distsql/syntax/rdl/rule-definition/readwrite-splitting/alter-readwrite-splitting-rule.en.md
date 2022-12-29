@@ -73,7 +73,7 @@ ALTER READWRITE_SPLITTING RULE ms_group_0 (
 ALTER READWRITE_SPLITTING RULE ms_group_1 (
     AUTO_AWARE_RESOURCE=group_0,
     WRITE_DATA_SOURCE_QUERY_ENABLED=false,
-    TYPE(NAME="random",PROPERTIES("read_weight"="2:1"))
+    TYPE(NAME="random")
 );
 ```
 
