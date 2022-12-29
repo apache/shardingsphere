@@ -15,41 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
+package org.apache.shardingsphere.mask.distsql.parser.statement;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- * Subquery projection.
+ * Create mask rule statement.
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class SubqueryProjection implements Projection {
+public final class CreateMaskRuleStatement extends CreateRuleStatement {
     
-    private final String expression;
+    private final Collection<MaskRuleSegment> rules;
     
-    private final String alias;
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.ofNullable(alias);
-    }
-    
-    @Override
-    public String getColumnLabel() {
-        return getAlias().orElse(expression);
-    }
-    
-    @Override
-    public Projection cloneWithOwner(final String ownerName) {
-        return new SubqueryProjection(expression, alias);
+    public CreateMaskRuleStatement(final boolean ifNotExists, final Collection<MaskRuleSegment> rules) {
+        super(ifNotExists);
+        this.rules = rules;
     }
 }
