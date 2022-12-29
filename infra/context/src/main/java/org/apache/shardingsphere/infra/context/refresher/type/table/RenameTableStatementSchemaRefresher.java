@@ -48,7 +48,8 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames.iterator().next());
+            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName,
+                    logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
             alterSchemaMetaDataPOJO.getAlteredTables().add(getTable(database, logicDataSourceNames, schemaName, each.getRenameTable().getTableName().getIdentifier().getValue(), props));
             alterSchemaMetaDataPOJO.getDroppedTables().add(each.getTable().getTableName().getIdentifier().getValue());
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
