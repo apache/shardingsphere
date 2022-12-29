@@ -67,7 +67,7 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>*:shardingsphere-agent-bootstrap</include>
+                <include>*:shardingsphere-agent-core</include>
             </includes>
             <binaries>
                 <unpack>false</unpack>
