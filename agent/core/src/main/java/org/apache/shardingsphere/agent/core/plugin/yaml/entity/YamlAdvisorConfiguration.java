@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.plugin.yaml.entity;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Constructor advice.
+ * YAML advisor configuration.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+@Getter
+@Setter
+public final class YamlAdvisorConfiguration {
     
-    /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    private String target;
+    
+    private String advice;
+    
+    private Collection<YamlPointcutConfiguration> pointcuts = new LinkedList<>();
 }

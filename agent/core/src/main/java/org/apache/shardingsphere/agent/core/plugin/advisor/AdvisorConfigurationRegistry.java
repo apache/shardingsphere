@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Constructor advice.
+ * Advisor configuration registry.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+public final class AdvisorConfigurationRegistry {
+    
+    private final Map<String, AdvisorConfiguration> advisors = new ConcurrentHashMap<>();
     
     /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * Get advisor configuration.
+     * 
+     * @param targetClassName to be advised class name
+     * @return advisor configuration
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    public AdvisorConfiguration getAdvisorConfiguration(final String targetClassName) {
+        return advisors.computeIfAbsent(targetClassName, AdvisorConfiguration::new);
+    }
 }

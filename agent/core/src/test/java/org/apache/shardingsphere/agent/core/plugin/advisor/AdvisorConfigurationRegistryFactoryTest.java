@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.junit.Test;
 
-/**
- * Constructor advice.
- */
-public interface ConstructorAdvice extends AgentAdvice {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class AdvisorConfigurationRegistryFactoryTest {
     
-    /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    @Test
+    public void assertGetRegistryWithType() {
+        assertThat(AdvisorConfigurationRegistryFactory.getRegistry("test"), instanceOf(AdvisorConfigurationRegistry.class));
+    }
 }

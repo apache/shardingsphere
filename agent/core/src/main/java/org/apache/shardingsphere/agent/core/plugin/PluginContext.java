@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
-
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+package org.apache.shardingsphere.agent.core.plugin;
 
 /**
- * Constructor advice.
+ * Plugin Context.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+public final class PluginContext {
+    
+    private static final String PLUGIN_ENABLED_KEY = "AGENT_PLUGINS_ENABLED";
     
     /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
+     * Check if the plugin is enabled.
      *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * @return the plugin enable value
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    public static boolean isPluginEnabled() {
+        return !Boolean.FALSE.toString().equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY)) && !"0".equals(System.getProperty(PLUGIN_ENABLED_KEY));
+    }
 }

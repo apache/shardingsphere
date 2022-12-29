@@ -24,27 +24,38 @@
         <artifactId>shardingsphere-agent</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-plugins</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-agent-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>core</module>
-        <module>metrics</module>
-        <module>tracing</module>
-        <module>logging</module>
-    </modules>
+    <properties>
+        <premain.class>org.apache.shardingsphere.agent.core.ShardingSphereAgent</premain.class>
+    </properties>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-api</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-plugin-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     
     <build>
+        <finalName>shardingsphere-agent</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -55,10 +66,19 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <minimizeJar>true</minimizeJar>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Premain-Class>${premain.class}</Premain-Class>
+                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
                             <artifactSet>
                                 <excludes>
                                     <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
@@ -66,9 +86,6 @@
                                     <exclude>com.google.guava:listenablefuture:jar:*</exclude>
                                     <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
-                                    <exclude>com.h2database:h2:jar:</exclude>
-                                    <exclude>org.slf4j:*</exclude>
-                                    <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations>
@@ -89,8 +106,12 @@
                                     <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>io.netty</pattern>
-                                    <shadedPattern>${shade.package}.io.netty</shadedPattern>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>ch.qos.logback</pattern>
+                                    <shadedPattern>${shade.package}.ch.qos.logback</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

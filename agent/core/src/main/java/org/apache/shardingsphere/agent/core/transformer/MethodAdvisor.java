@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.transformer;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
 
 /**
- * Constructor advice.
+ * Method advisor.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+@RequiredArgsConstructor
+@Getter
+public final class MethodAdvisor {
     
-    /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    private final MethodDescription pointcut;
+    
+    private final AdviceExecutor adviceExecutor;
 }

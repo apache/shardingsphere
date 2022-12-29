@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.plugin.executor;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.dynamic.DynamicType.Builder;
 
 /**
- * Constructor advice.
+ * Advice executor.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+public interface AdviceExecutor {
     
     /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
+     * Decorate advice builder.
      *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * @param builder original builder
+     * @param pointcut method pointcut
+     * @return decorated builder
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    Builder<?> decorateBuilder(Builder<?> builder, MethodDescription pointcut);
 }

@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.plugin.advisor;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Constructor advice.
+ * Advisor configuration registry factory.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AdvisorConfigurationRegistryFactory {
+    
+    private static final Map<String, AdvisorConfigurationRegistry> REGISTRIES = new ConcurrentHashMap<>();
     
     /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * Get advisor configuration registry.
+     * 
+     * @param type registry type
+     * @return advisor configuration registry
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    public static AdvisorConfigurationRegistry getRegistry(final String type) {
+        return REGISTRIES.computeIfAbsent(type, each -> new AdvisorConfigurationRegistry());
+    }
 }

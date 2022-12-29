@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.plugin.yaml.loader;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.InputStream;
 
 /**
- * Constructor advice.
+ * YAML advisors configuration loader.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class YamlAdvisorsConfigurationLoader {
     
     /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * Load advisors configuration.
+     * 
+     * @param inputStream input stream
+     * @return loaded advisors configuration
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    public static YamlAdvisorsConfiguration load(final InputStream inputStream) {
+        YamlAdvisorsConfiguration result = new Yaml().loadAs(inputStream, YamlAdvisorsConfiguration.class);
+        return null == result ? new YamlAdvisorsConfiguration() : result;
+    }
 }

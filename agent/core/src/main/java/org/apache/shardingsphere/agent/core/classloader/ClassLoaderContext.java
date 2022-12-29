@@ -15,22 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
+package org.apache.shardingsphere.agent.core.classloader;
 
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Constructor advice.
+ * Class loader context.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+@RequiredArgsConstructor
+@Getter
+public final class ClassLoaderContext {
+    
+    private static final Map<ClassLoader, AgentClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
+    
+    private final ClassLoader appClassLoader;
+    
+    private final Collection<PluginJar> pluginJars;
     
     /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
+     * Get agent class loader.
      *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * @return agent class loader
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    public AgentClassLoader getAgentClassLoader() {
+        return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentClassLoader(key, pluginJars));
+    }
 }
