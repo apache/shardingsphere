@@ -122,12 +122,10 @@ public final class CDCBackendHandler {
         jobConfigPOJO.setDisabled(false);
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         CDCJob job = new CDCJob(new CDCImporterConnector(channel));
-        for (int i = 0; i < jobConfigPOJO.getShardingTotalCount(); i++) {
-            PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-            OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
-            job.setJobBootstrap(oneOffJobBootstrap);
-            oneOffJobBootstrap.execute();
-        }
+        PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        job.setJobBootstrap(oneOffJobBootstrap);
+        oneOffJobBootstrap.execute();
         connectionContext.setStatus(CDCConnectionStatus.SUBSCRIBED);
         connectionContext.setJobId(jobId);
         return CDCResponseGenerator.succeedBuilder(request.getRequestId()).build();
