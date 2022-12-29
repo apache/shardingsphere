@@ -42,15 +42,15 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
-        checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
+        checkDuplicatedRuleNames(database.getName(), sqlStatement, currentRuleConfig);
         checkAlgorithms(sqlStatement);
     }
     
-    private void checkDuplicateRuleNames(final String databaseName, final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+    private void checkDuplicatedRuleNames(final String databaseName, final CreateMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
-            Collection<String> toBeCreatedDuplicateRuleNames = sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
-            ShardingSpherePreconditions.checkState(toBeCreatedDuplicateRuleNames.isEmpty(), () -> new DuplicateRuleException("mask", databaseName, toBeCreatedDuplicateRuleNames));
+            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
+            ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException("mask", databaseName, duplicateRuleNames));
         }
     }
     
