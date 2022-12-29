@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -39,9 +42,9 @@ public final class PostgreSQLSetVariableAdminExecutorTest {
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
         setStatement.getVariableAssigns().add(variableAssignSegment);
         PostgreSQLSetVariableAdminExecutor executor = new PostgreSQLSetVariableAdminExecutor(setStatement);
-        try (MockedStatic<PostgreSQLSessionVariableHandlerFactory> mockStatic = mockStatic(PostgreSQLSessionVariableHandlerFactory.class)) {
+        try (MockedStatic<TypedSPIRegistry> mockStatic = mockStatic(TypedSPIRegistry.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);
-            mockStatic.when(() -> PostgreSQLSessionVariableHandlerFactory.getHandler("key")).thenReturn(mockHandler);
+            mockStatic.when(() -> TypedSPIRegistry.findRegisteredService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
             executor.execute(null);
             verify(mockHandler).handle(null, "key", "value");
         }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.ordered;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixture;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixture;
@@ -37,10 +36,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class OrderedSPIRegistryTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(OrderedSPIFixture.class);
-    }
     
     @After
     public void cleanCache() throws ReflectiveOperationException {

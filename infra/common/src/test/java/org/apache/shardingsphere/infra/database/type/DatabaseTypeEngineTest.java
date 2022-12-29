@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
@@ -58,7 +59,7 @@ public final class DatabaseTypeEngineTest {
     
     @Test
     public void assertGetProtocolTypeFromDataSource() throws SQLException {
-        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("PostgreSQL"));
+        DataSource datasource = mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", datasource), Collections.singleton(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getProtocolType("sharding_db", databaseConfig, new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
@@ -66,7 +67,7 @@ public final class DatabaseTypeEngineTest {
     
     @Test
     public void assertGetStorageTypes() throws SQLException {
-        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("MySQL"));
+        DataSource datasource = mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_db", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
         assertTrue(DatabaseTypeEngine.getStorageTypes("foo_db", databaseConfig).containsKey("foo_db"));
         assertThat(DatabaseTypeEngine.getStorageTypes("foo_db", databaseConfig).get("foo_db"), instanceOf(MySQLDatabaseType.class));
@@ -79,13 +80,15 @@ public final class DatabaseTypeEngineTest {
     
     @Test
     public void assertGetStorageTypeWithDataSources() throws SQLException {
-        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(DatabaseTypeFactory.getInstance("H2")), mockDataSource(DatabaseTypeFactory.getInstance("H2")));
+        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")),
+                mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")));
         assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
     @Test
     public void assertGetStorageTypeWithDifferentDataSourceTypes() throws SQLException {
-        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(DatabaseTypeFactory.getInstance("H2")), mockDataSource(DatabaseTypeFactory.getInstance("MySQL")));
+        Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")),
+                mockDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")));
         assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
@@ -147,9 +150,9 @@ public final class DatabaseTypeEngineTest {
     
     @Test
     public void assertGetDefaultSchemaName() {
-        DatabaseType schemaSupportDatabaseType = DatabaseTypeFactory.getInstance("openGauss");
+        DatabaseType schemaSupportDatabaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "openGauss");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaSupportDatabaseType, ""), is("public"));
-        DatabaseType schemaNoSupportDatabaseType = DatabaseTypeFactory.getInstance("MySQL");
+        DatabaseType schemaNoSupportDatabaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("mysql"));
     }
 }

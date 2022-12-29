@@ -38,7 +38,7 @@ public final class AgentServiceLoader<T> {
     
     private AgentServiceLoader(final Class<T> service) {
         validate(service);
-        this.services = register(service);
+        this.services = load(service);
     }
     
     private void validate(final Class<T> service) {
@@ -46,7 +46,7 @@ public final class AgentServiceLoader<T> {
         Preconditions.checkArgument(service.isInterface(), "SPI class `%s` is not interface.", service);
     }
     
-    private Collection<T> register(final Class<T> service) {
+    private Collection<T> load(final Class<T> service) {
         Collection<T> result = new LinkedList<>();
         for (T each : ServiceLoader.load(service)) {
             result.add(each);

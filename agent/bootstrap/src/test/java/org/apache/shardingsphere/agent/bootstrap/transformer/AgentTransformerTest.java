@@ -48,7 +48,7 @@ public final class AgentTransformerTest {
     private static ResettableClassFileTransformer byteBuddyAgent;
     
     @BeforeClass
-    public static void setup() throws ReflectiveOperationException {
+    public static void setup() {
         ByteBuddyAgent.install();
         AgentClassLoader.init(Collections.emptyList());
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();

@@ -23,13 +23,14 @@ import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpda
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleStatementConverter;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.CreateMaskRuleStatement;
-import org.apache.shardingsphere.mask.factory.MaskAlgorithmFactory;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -57,7 +58,7 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     private void checkAlgorithms(final CreateMaskRuleStatement sqlStatement) {
         Collection<MaskColumnSegment> columns = new LinkedList<>();
         sqlStatement.getRules().forEach(each -> columns.addAll(each.getColumns()));
-        columns.forEach(each -> ShardingSpherePreconditions.checkState(MaskAlgorithmFactory.contains(each.getAlgorithm().getName()),
+        columns.forEach(each -> ShardingSpherePreconditions.checkState(TypedSPIRegistry.findRegisteredService(MaskAlgorithm.class, each.getAlgorithm().getName()).isPresent(),
                 () -> new InvalidAlgorithmConfigurationException("mask", each.getAlgorithm().getName())));
     }
     

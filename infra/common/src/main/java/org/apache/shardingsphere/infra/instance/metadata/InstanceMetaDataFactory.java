@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.state;
+package org.apache.shardingsphere.infra.instance.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.sql.Connection;
+import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 
 /**
- * Driver state context.
+ * Instance meta data factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DriverStateContext {
+public final class InstanceMetaDataFactory {
     
     /**
-     * Get connection.
-     *
-     * @param databaseName database name
-     * @param contextManager context manager
-     * @param jdbcContext JDBC context
-     * @return connection
+     * Create instance meta data.
+     * 
+     * @param instanceId instance ID
+     * @param instanceType instance type 
+     * @param attributes attributes
+     * @param version version
+     * @return created instance meta data
      */
-    public static Connection getConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
-        return TypedSPIRegistry.getRegisteredService(
-                DriverState.class, contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(databaseName, contextManager, jdbcContext);
+    public static InstanceMetaData create(final String instanceId, final InstanceType instanceType, final String attributes, final String version) {
+        return InstanceType.JDBC == instanceType ? new JDBCInstanceMetaData(instanceId, version) : new ProxyInstanceMetaData(instanceId, attributes, version);
     }
 }

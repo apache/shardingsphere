@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.typed;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.TypedSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.impl.TypedSPIFixtureImpl;
@@ -27,16 +26,12 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedSPIRegistryTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
-    }
     
     @Test
     public void assertFindRegisteredServiceWithoutProperties() {
