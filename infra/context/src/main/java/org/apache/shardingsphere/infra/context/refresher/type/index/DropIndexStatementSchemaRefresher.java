@@ -49,7 +49,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName, logicDataSourceNames.iterator().next());
+            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName, null);
             ShardingSphereTable table = newShardingSphereTable(database.getSchema(actualSchemaName).getTable(logicTableName.get()));
             table.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
             alterSchemaMetaDataPOJO.getAlteredTables().add(table);

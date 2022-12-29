@@ -56,7 +56,8 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(tableName));
         if (actualTableMetaData.isPresent()) {
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames.iterator().next());
+            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName,
+                    logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
             alterSchemaMetaDataPOJO.getAlteredTables().add(actualTableMetaData.get());
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }

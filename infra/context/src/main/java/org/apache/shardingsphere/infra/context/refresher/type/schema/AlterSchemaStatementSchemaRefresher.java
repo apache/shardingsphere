@@ -40,7 +40,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        modeContextManager.alterSchema(new AlterSchemaPOJO(database.getName(), logicDataSourceNames.iterator().next(),
+        modeContextManager.alterSchema(new AlterSchemaPOJO(database.getName(), logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),
                 sqlStatement.getSchemaName().getValue().toLowerCase(), renameSchemaName.get()));
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -95,7 +96,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Collection<String> tobeAddedTableNames) {
         tobeAddedTableNames.forEach(each -> {
-            if (!containsInImmutableDataNodeContainedRule(each, database)) {
+            if (!Strings.isNullOrEmpty(logicDataSourceName) && !containsInImmutableDataNodeContainedRule(each, database)) {
                 database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, each));
             }
         });
@@ -109,7 +110,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     private void addTablesToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final Map<String, ShardingSphereTable> toBeAddedTables) {
         for (Entry<String, ShardingSphereTable> entry : toBeAddedTables.entrySet()) {
-            if (!containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
+            if (!Strings.isNullOrEmpty(logicDataSourceName) && !containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
                 database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
             }
             database.getSchema(schemaName).putTable(entry.getKey(), entry.getValue());
@@ -119,7 +120,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     private void addViewsToDataNode(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName,
                                     final Map<String, ShardingSphereTable> toBeAddedTables, final Map<String, ShardingSphereView> toBeAddedViews) {
         for (Entry<String, ShardingSphereView> entry : toBeAddedViews.entrySet()) {
-            if (!containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
+            if (!Strings.isNullOrEmpty(logicDataSourceName) && !containsInImmutableDataNodeContainedRule(entry.getKey(), database)) {
                 database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, entry.getKey()));
             }
             database.getSchema(schemaName).putTable(entry.getKey(), toBeAddedTables.get(entry.getKey().toLowerCase()));

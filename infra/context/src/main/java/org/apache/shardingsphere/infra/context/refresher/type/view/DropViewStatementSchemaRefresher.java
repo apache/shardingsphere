@@ -34,7 +34,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) {
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames.iterator().next());
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, null);
         sqlStatement.getViews().forEach(each -> {
             String viewName = each.getTableName().getIdentifier().getValue();
             alterSchemaMetaDataPOJO.getDroppedTables().add(viewName);
