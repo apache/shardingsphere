@@ -56,7 +56,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
             newTable.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
             newTable.getIndexes().put(renameIndexName, new ShardingSphereIndex(renameIndexName));
-            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName, logicDataSourceNames.iterator().next());
+            AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName, null);
             alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
