@@ -37,12 +37,11 @@ services:
       - "19411:9411"
 
   shardingsphere-proxy-agent-tracing:
-    image: apache/shardingsphere-proxy-agent-zipkin-test
-    container_name: shardingsphere-proxy-agent-zipkin-test
+    image: apache/shardingsphere-proxy-agent-tracing-zipkin-test
+    container_name: shardingsphere-proxy-agent-tracing-zipkin-test
     ports:
       - "43071:3307"
       - "43081:3308"
-      - "19411:9411"
     links:
       - "mysql:mysql.agent.tracing.zipkin.host"
       - "zipkin:zipkin.agent.tracing.zipkin.host"
