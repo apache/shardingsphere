@@ -40,7 +40,7 @@ SHOW
     ;
 
 RULE
-    :  R U L E
+    : R U L E
     ;
 
 FROM

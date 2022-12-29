@@ -32,11 +32,7 @@ dropMaskRule
     ;
 
 maskRuleDefinition
-    : ruleName LP_ COLUMNS LP_ maskColumnDefinition (COMMA_ maskColumnDefinition)* RP_ RP_
-    ;
-
-maskColumnDefinition
-    : LP_ columnDefinition (COMMA_ columnDefinition)* RP_
+    : ruleName LP_ COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ RP_
     ;
 
 columnDefinition
