@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 /**
  * Default implementation of the sharding condition engine.
  */
-public class DefaultShardingConditionEngine implements ShardingConditionEngine<SQLStatementContext<?>> {
+public final class DefaultShardingConditionEngine implements ShardingConditionEngine<SQLStatementContext<?>> {
     
     private ShardingRule shardingRule;
     

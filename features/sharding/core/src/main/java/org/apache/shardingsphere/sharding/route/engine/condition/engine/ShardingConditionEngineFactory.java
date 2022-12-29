@@ -57,8 +57,8 @@ public final class ShardingConditionEngineFactory {
      * @return created instance
      */
     public static ShardingConditionEngine<?> createShardingConditionEngine(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database, final ShardingRule rule) {
-        ShardingConditionEngine conditionEngine = RequiredSPIRegistry.getRegisteredService(ShardingConditionEngine.class);
-        conditionEngine.init(rule, database);
-        return conditionEngine;
+        ShardingConditionEngine result = RequiredSPIRegistry.getRegisteredService(ShardingConditionEngine.class);
+        result.init(rule, database);
+        return result;
     }
 }
