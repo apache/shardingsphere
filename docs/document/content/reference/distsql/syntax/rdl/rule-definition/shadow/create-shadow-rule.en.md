@@ -11,7 +11,10 @@ The `CREATE SHADOW RULE` syntax is used to create a shadow rule.
 
 ```sql
 CreateShadowRule ::=
-  'CREATE' 'SHADOW' 'RULE' shadowRuleDefinition (',' shadowRuleDefinition)*
+  'CREATE' 'SHADOW' 'RULE' ifNotExists? shadowRuleDefinition (',' shadowRuleDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 shadowRuleDefinition ::=
   ruleName '(' storageUnitMapping shadowTableRule (',' shadowTableRule)* ')'
@@ -59,7 +62,8 @@ value ::=
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time;
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
   and `shadowAlgorithmType`;
-- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`.
+- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`;
+- `ifNotExists` caluse is used for avoid `Duplicate shadow rule` error.
 
 ### Example
 
@@ -67,6 +71,17 @@ value ::=
 
 ```sql
 CREATE SHADOW RULE shadow_rule(
+  SOURCE=demo_su,
+  SHADOW=demo_su_shadow,
+  t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
+  t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))
+);
+```
+
+- Create a shadow rule with `ifNotExists` clause
+
+```sql
+CREATE SHADOW RULE IF NOT EXISTS shadow_rule(
   SOURCE=demo_su,
   SHADOW=demo_su_shadow,
   t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 

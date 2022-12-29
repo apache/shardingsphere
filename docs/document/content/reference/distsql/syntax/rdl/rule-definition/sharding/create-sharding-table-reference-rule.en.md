@@ -11,7 +11,10 @@ The `CREATE SHARDING TABLE REFERENCE RULE` syntax is used to create reference ru
 
 ```sql
 CreateShardingTableReferenceRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
+  'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE' ifNotExists? referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 referenceRelationshipDefinition ::=
    ruleName '(' tableName (',' tableName)* ')'
@@ -27,6 +30,7 @@ tableName ::=
 - The referenced sharding tables should be sharded in the same storage units and have the same number of sharding nodes. For
   example `ds_${0..1}.t_order_${0..1}` and `ds_${0..1}.t_order_item_${0..1}`;
 - The referenced sharding tables should use consistent sharding algorithms. For example `t_order_{order_id % 2}` and `t_order_item_{order_item_id % 2}`;
+- `ifNotExists` clause used for avoid `Duplicate sharding table reference rule` error.
 
 ### Example
 
@@ -42,6 +46,12 @@ CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item);
 ```sql
 -- Before creating sharding table reference rules, you need to create sharding table rules t_order, t_order_item, t_product, t_product_item
 CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_product,t_product_item);
+```
+
+#### 3.Create a sharding table reference rule with `ifNotExists` clause
+
+```sql
+CREATE SHARDING TABLE REFERENCE RULE IF NOT EXISTS ref_0 (t_order,t_order_item);
 ```
 
 ### Reserved word

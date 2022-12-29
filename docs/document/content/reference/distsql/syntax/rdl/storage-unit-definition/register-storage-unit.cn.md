@@ -11,10 +11,13 @@ weight = 2
 
 ```sql
 RegisterStorageUnit ::=
-  'REGISTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
+  'REGISTER' 'STORAGE' 'UNIT' ifNotExists? storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
   storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 storageUnitName ::=
   identifier
@@ -54,7 +57,8 @@ value ::=
 - `storageUnitName` 区分大小写；
 - `storageUnitName` 在当前逻辑库中需要唯一；
 - `storageUnitName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
-- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致。
+- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致；
+- `ifNotExists` 子句用于避免出现 `Duplicate storage unit` 的错误。
 
 ### 示例
 
@@ -91,6 +95,18 @@ REGISTER STORAGE UNIT su_2 (
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+);
+```
+
+- 使用 `ifNotExists` 子句注册存储单元
+
+```sql
+REGISTER STORAGE UNIT IF NOT EXISTS su_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="db_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 

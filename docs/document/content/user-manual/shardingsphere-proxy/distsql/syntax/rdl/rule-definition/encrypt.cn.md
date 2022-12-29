@@ -6,11 +6,14 @@ weight = 5
 ## 语法说明
 
 ```sql
-CREATE ENCRYPT RULE encryptRuleDefinition [, encryptRuleDefinition] ...
+CREATE ENCRYPT RULE ifNotExistsClause? encryptRuleDefinition [, encryptRuleDefinition] ...
 
 ALTER ENCRYPT RULE encryptRuleDefinition [, encryptRuleDefinition] ...
 
 DROP ENCRYPT RULE tableName [, tableName] ...
+
+ifNotExistsClause:
+    IF NOT EXISTS
 
 encryptRuleDefinition:
     tableName(COLUMNS(columnDefinition [, columnDefinition] ...), QUERY_WITH_CIPHER_COLUMN=queryWithCipherColumn)
@@ -55,7 +58,7 @@ algorithmProperty:
 ## 示例
 
 ```sql
-CREATE ENCRYPT RULE t_encrypt (
+CREATE ENCRYPT RULE IF NOT EXISTS t_encrypt (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=user_assisted,LIKE_QUERY_COLUMN=user_like,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')), LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE'))),
 (NAME=order_id, CIPHER =order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='MD5')), QUERY_WITH_CIPHER_COLUMN=FALSE)
