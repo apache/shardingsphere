@@ -21,16 +21,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-features</artifactId>
+        <artifactId>shardingsphere-mask</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-mask</artifactId>
+    <artifactId>shardingsphere-mask-distsql</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>api</module>
-        <module>core</module>
-        <module>distsql</module>
+        <module>statement</module>
+        <module>parser</module>
+        <module>handler</module>
     </modules>
 </project>
