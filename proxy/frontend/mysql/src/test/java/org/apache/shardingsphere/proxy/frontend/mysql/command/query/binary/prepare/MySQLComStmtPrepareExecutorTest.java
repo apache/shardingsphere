@@ -125,7 +125,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     
     @Test
     public void assertPrepareSelectSubqueryStatement() {
-        String sql = "select *, '' from (select id, name, age from db.user where id = ?) t";
+        String sql = "select *, '' from (select u.id id_alias, name, age from db.user u where id = ?) t";
         when(packet.getSql()).thenReturn(sql);
         int connectionId = 2;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);

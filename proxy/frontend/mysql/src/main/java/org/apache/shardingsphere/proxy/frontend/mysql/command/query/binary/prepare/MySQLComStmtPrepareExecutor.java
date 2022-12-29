@@ -134,8 +134,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         for (Projection each : projections) {
             // TODO Calculate column definition flag for other projection types
             if (each instanceof ColumnProjection) {
-                String columnName = ((ColumnProjection) each).getName().toLowerCase();
-                result.add(Optional.ofNullable(columnToTableMap.get(columnName)).map(schema::getTable).map(table -> table.getColumns().get(columnName))
+                result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable).map(table -> table.getColumns().get(((ColumnProjection) each).getName()))
                         .map(column -> {
                             MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
                             return new MySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), "", "", "", "", "", 0, columnType, 0, false);
