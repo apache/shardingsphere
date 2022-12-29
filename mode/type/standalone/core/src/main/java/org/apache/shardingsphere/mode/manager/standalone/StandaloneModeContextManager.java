@@ -96,7 +96,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Collection<String> tobeAddedTableNames) {
         tobeAddedTableNames.forEach(each -> {
-            if (!containsInImmutableDataNodeContainedRule(each, database)) {
+            if (!Strings.isNullOrEmpty(logicDataSourceName) && !containsInImmutableDataNodeContainedRule(each, database)) {
                 database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, each));
             }
         });
