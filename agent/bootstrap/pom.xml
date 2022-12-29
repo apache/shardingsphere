@@ -113,10 +113,6 @@
                                     <pattern>ch.qos.logback</pattern>
                                     <shadedPattern>${shade.package}.ch.qos.logback</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>io.netty</pattern>
-                                    <shadedPattern>${shade.package}.io.netty</shadedPattern>
-                                </relocation>
                             </relocations>
                             <filters>
                                 <filter>
