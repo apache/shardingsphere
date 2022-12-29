@@ -48,17 +48,6 @@ public final class MaskAlgorithmMetaData {
     /**
      * Find mask algorithm.
      *
-     * @param tableName table name
-     * @param columnName column name
-     * @return maskAlgorithm
-     */
-    public Optional<MaskAlgorithm> findMaskAlgorithm(final String tableName, final String columnName) {
-        return maskRule.findMaskAlgorithm(tableName, columnName);
-    }
-    
-    /**
-     * Find mask algorithm.
-     *
      * @param columnIndex column index
      * @return maskAlgorithm
      */
@@ -71,8 +60,7 @@ public final class MaskAlgorithmMetaData {
         String schemaName = tablesContext.getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
                 Collections.singletonList(columnProjection.get()), database.getSchema(schemaName));
-        Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
-        return maskRule.findMaskAlgorithm(tableName.get(), columnProjection.get().getName());
+        return findTableName(columnProjection.get(), expressionTableNames).flatMap(optional -> maskRule.findMaskAlgorithm(optional, columnProjection.get().getName()));
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {
