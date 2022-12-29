@@ -11,7 +11,10 @@ weight = 2
 
 ```sql
 CreateShardingTableRule ::=
-  'CREATE' 'SHARDING' 'TABLE' 'RULE' (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
+  'CREATE' 'SHARDING' 'TABLE' 'RULE' ifNotExists? (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 tableDefinition ::= 
   tableName '(' 'DATANODES' '(' dataNode (',' dataNode)* ')' (','  'DATABASE_STRATEGY' '(' strategyDefinition ')')? (','  'TABLE_STRATEGY' '(' strategyDefinition ')')? (','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')')? (',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')')? ')'
@@ -75,9 +78,10 @@ strategyType ::=
 - 自动生成的算法命名规则为  `tableName` _ `strategyType` _ `algorithmType`；
 - 自动生成的主键策略命名规则为 `tableName` _ `strategyType；
 - `KEY_GENERATE_STRATEGY`
-  用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)。
+  用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
 - `AUDIT_STRATEGY`
-  用于指定分配审计生成策略，为可选项，关于分片审计生成策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)。
+  用于指定分配审计生成策略，为可选项，关于分片审计生成策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)；
+- `ifNotExists` 子句用于避免出现 `Duplicate sharding rule` 错误。
 
 ### 示例
 
@@ -97,6 +101,31 @@ AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
 
 ```sql
 CREATE SHARDING TABLE RULE t_order (
+STORAGE_UNITS(ds_0,ds_1),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+);
+```
+
+#### 3.使用 `ifNotExists` 子句创建分片规则
+
+- 标准分片规则
+
+```sql
+CREATE SHARDING TABLE RULE IF NOT EXISTS t_order_item (
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+);
+```
+
+- 自动分片规则
+
+```sql
+CREATE SHARDING TABLE RULE IF NOT EXISTS t_order (
 STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),

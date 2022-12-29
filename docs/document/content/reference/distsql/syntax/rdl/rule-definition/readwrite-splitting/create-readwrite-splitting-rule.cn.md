@@ -11,7 +11,10 @@ weight = 2
 
 ```sql
 CreateReadwriteSplittingRule ::=
-  'CREATE' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
+  'CREATE' 'READWRITE_SPLITTING' 'RULE' ifNotExists? readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 readwriteSplittingDefinition ::=
   ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
@@ -55,7 +58,8 @@ value ::=
 - 支持创建静态读写分离规则和动态读写分离规则；
 - 动态读写分离规则依赖于数据库发现规则；
 - `loadBalancerType` 指定负载均衡算法类型，请参考负载均衡算法；
-- 重复的 `ruleName` 将无法被创建。
+- 重复的 `ruleName` 将无法被创建；
+- `ifNotExists` 子句用于避免出现 `Duplicate readwrite_splitting rule` 错误。
 
 ### 示例
 
@@ -75,7 +79,29 @@ CREATE READWRITE_SPLITTING RULE ms_group_0 (
 CREATE READWRITE_SPLITTING RULE ms_group_1 (
     AUTO_AWARE_RESOURCE=group_0,
     WRITE_DATA_SOURCE_QUERY_ENABLED=false,
-    TYPE(NAME="random",PROPERTIES("read_weight"="2:1"))
+    TYPE(NAME="random")
+);
+```
+
+#### 使用 `ifNotExists` 子句创建读写分离规则
+
+- 静态读写分离规则
+
+```sql
+CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
+    WRITE_STORAGE_UNIT=write_ds,
+    READ_STORAGE_UNITS(read_ds_0,read_ds_1),
+    TYPE(NAME="random")
+);
+```
+
+- 动态读写分离规则
+
+```sql
+CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
+    AUTO_AWARE_RESOURCE=group_0,
+    WRITE_DATA_SOURCE_QUERY_ENABLED=false,
+    TYPE(NAME="random")
 );
 ```
 

@@ -6,7 +6,7 @@ weight = 6
 ## 语法说明
 
 ```sql
-CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
+CREATE SHADOW RULE ifNotExistsClause? shadowRuleDefinition [, shadowRuleDefinition] ... 
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
@@ -14,7 +14,7 @@ DROP SHADOW RULE ruleName [, ruleName] ...
 
 DROP SHADOW ALGORITHM algorithmName [, algorithmName] ...
 
-CREATE DEFAULT SHADOW ALGORITHM shadowAlgorithm
+CREATE DEFAULT SHADOW ALGORITHM ifNotExistsClause? shadowAlgorithm
 
 ALTER DEFAULT SHADOW ALGORITHM shadowAlgorithm
 
@@ -23,6 +23,9 @@ DROP DEFAULT SHADOW ALGORITHM [IF EXISTS]
 SHOW DEFAULT SHADOW ALGORITHM
 
 SHOW SHADOW ALGORITHMS
+
+ifNotExistsClause:
+    IF NOT EXISTS
 
 shadowRuleDefinition: ruleName(storageUnitMapping, shadowTableRule [, shadowTableRule] ...)
 
@@ -58,7 +61,7 @@ algorithmProperty: key=value
 ## 示例
 
 ```sql
-CREATE SHADOW RULE shadow_rule(
+CREATE SHADOW RULE IF NOT EXISTS shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
 t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
@@ -74,7 +77,7 @@ DROP SHADOW RULE shadow_rule;
 
 DROP SHADOW ALGORITHM simple_hint_algorithm;
 
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar"));
+CREATE DEFAULT SHADOW ALGORITHM IF NOT EXISTS TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar"));
 
 ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=false, "foo"="bar"));
     
