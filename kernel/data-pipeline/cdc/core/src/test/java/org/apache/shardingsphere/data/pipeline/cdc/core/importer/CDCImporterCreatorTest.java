@@ -26,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -37,7 +39,7 @@ public final class CDCImporterCreatorTest {
     
     @Test
     public void assertCreateCDCImporter() {
-        Importer actual = ImporterCreatorFactory.getInstance("CDC").createImporter(importerConfig, new CDCImporterConnector(null), null, null);
+        Importer actual = ImporterCreatorFactory.getInstance("CDC").createImporter(importerConfig, new CDCImporterConnector(null, "", 1, Collections.emptyList(), null), null, null, null);
         assertThat(actual, instanceOf(CDCImporter.class));
     }
 }

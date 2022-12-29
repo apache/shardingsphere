@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
@@ -100,6 +101,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                 dropStartSubscription(ctx, request);
                 break;
             case ACK_REQUEST:
+                processAckRequest(ctx, request);
                 break;
             default:
                 log.warn("Cannot handle this type of request {}", request);
@@ -159,6 +161,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         if (startSubscriptionRequest.getDatabase().isEmpty() || startSubscriptionRequest.getSubscriptionName().isEmpty()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal start subscription request parameter"))
                     .addListener(ChannelFutureListener.CLOSE);
+            return;
         }
         CDCResponse response = backendHandler.startSubscription(request, ctx.channel(), connectionContext);
         ctx.writeAndFlush(response);
@@ -173,5 +176,19 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     private void dropStartSubscription(final ChannelHandlerContext ctx, final CDCRequest request) {
         // TODO waiting for pipeline refactoring finished
         ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
+    }
+    
+    private void processAckRequest(final ChannelHandlerContext ctx, final CDCRequest request) {
+        if (!request.hasAckRequest()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss ack request body"))
+                    .addListener(ChannelFutureListener.CLOSE);
+            return;
+        }
+        AckRequest ackRequest = request.getAckRequest();
+        if (ackRequest.getAckId().isEmpty()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal ack request parameter"));
+            return;
+        }
+        backendHandler.processAck(ackRequest);
     }
 }

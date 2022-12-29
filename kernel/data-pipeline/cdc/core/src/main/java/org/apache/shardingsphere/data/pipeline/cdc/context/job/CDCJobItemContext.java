@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguratio
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterCo
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * CDC job item context.
@@ -72,6 +74,8 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
     
+    private final AtomicLong processedRecordsCount = new AtomicLong(0);
+    
     private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
         
         @Override
@@ -100,7 +104,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
-        // TODO to be implemented
+        PipelineJobProgressPersistService.notifyPersist(jobConfig.getJobId(), shardingItem);
     }
     
     /**
@@ -126,7 +130,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public long getProcessedRecordsCount() {
-        throw new UnsupportedOperationException();
+        return processedRecordsCount.get();
     }
     
     @Override

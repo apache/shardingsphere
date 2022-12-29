@@ -54,14 +54,14 @@ public final class ImporterCreatorFactoryTest {
     @Test
     public void assertCreateDataSourceImporter() {
         Importer actual = ImporterCreatorFactory.getInstance("DataSource").createImporter(createImporterConfiguration(), new DataSourceImporterConnector(dataSourceManager), channel,
-                new FixtureInventoryIncrementalJobItemContext());
+                new FixtureInventoryIncrementalJobItemContext(), null);
         assertThat(actual, instanceOf(DataSourceImporter.class));
     }
     
     @Test
     public void assertCreateFixtureImporter() {
         Importer actual = ImporterCreatorFactory.getInstance("FIXTURE").createImporter(createImporterConfiguration(), new DataSourceImporterConnector(dataSourceManager), channel,
-                new FixtureInventoryIncrementalJobItemContext());
+                new FixtureInventoryIncrementalJobItemContext(), null);
         assertThat(actual, instanceOf(FixtureImporter.class));
     }
     

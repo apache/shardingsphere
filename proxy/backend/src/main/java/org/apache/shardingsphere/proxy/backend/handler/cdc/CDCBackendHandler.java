@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.cdc;
 import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
@@ -31,6 +32,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCIm
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.generator.DataRecordComparatorGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.holder.CDCAckHolder;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.TableName;
@@ -47,6 +51,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -118,12 +123,12 @@ public final class CDCBackendHandler {
                     startSubscriptionRequest.getSubscriptionName()));
         }
         JobConfigurationPOJO jobConfigPOJO = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
-        if (!jobConfigPOJO.isDisabled()) {
-            return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, String.format("the %s is being used", startSubscriptionRequest.getSubscriptionName()));
-        }
+        // TODO, ensure that there is only one consumer at a time, job config disable may not be updated when the program is forced to close
         jobConfigPOJO.setDisabled(false);
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-        CDCJob job = new CDCJob(new CDCImporterConnector(channel));
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabase());
+        Comparator<DataRecord> dataRecordComparator = DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType());
+        CDCJob job = new CDCJob(new CDCImporterConnector(channel, cdcJobConfig.getDatabase(), cdcJobConfig.getJobShardingCount(), cdcJobConfig.getTableNames(), dataRecordComparator));
         for (int i = 0; i < cdcJobConfig.getJobShardingCount(); i++) {
             PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
             OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
@@ -145,5 +150,14 @@ public final class CDCBackendHandler {
         JobConfigurationPOJO jobConfig = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         jobConfig.setDisabled(true);
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfig);
+    }
+    
+    /**
+     * Process ack.
+     *
+     * @param ackRequest ack request
+     */
+    public void processAck(final AckRequest ackRequest) {
+        CDCAckHolder.getInstance().ack(ackRequest.getAckId());
     }
 }
