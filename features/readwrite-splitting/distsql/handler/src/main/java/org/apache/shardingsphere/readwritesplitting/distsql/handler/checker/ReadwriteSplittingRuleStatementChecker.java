@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -55,18 +55,21 @@ public final class ReadwriteSplittingRuleStatementChecker {
      * @param database database
      * @param segments segments
      * @param currentRuleConfig current rule config
+     * @param duplicatedRuleNames duplicated rule names
+     * @param ifNotExists rule if not exists
      */
-    public static void checkCreation(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public static void checkCreation(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments,
+                                     final ReadwriteSplittingRuleConfiguration currentRuleConfig, final Collection<String> duplicatedRuleNames, final boolean ifNotExists) {
         String databaseName = database.getName();
-        checkDuplicateRuleNames(databaseName, segments, currentRuleConfig, database.getResourceMetaData());
+        checkDuplicateRuleNames(databaseName, segments, currentRuleConfig, database.getResourceMetaData(), duplicatedRuleNames, ifNotExists);
         checkDataSourcesExist(databaseName, segments, database);
         checkDuplicatedDataSourceNames(databaseName, segments, currentRuleConfig, true);
         checkLoadBalancers(segments);
     }
     
     /**
-     *  Check alter readwrite splitting rule statement.
-     * 
+     * Check alter readwrite splitting rule statement.
+     *
      * @param database database
      * @param segments segments
      * @param currentRuleConfig current rule config
@@ -82,8 +85,8 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     /**
-     *  Check current rule configuration exist.
-     * 
+     * Check current rule configuration exist.
+     *
      * @param database database
      * @param currentRuleConfig current rule config
      */
@@ -94,46 +97,54 @@ public final class ReadwriteSplittingRuleStatementChecker {
     private static void checkRuleNamesExist(final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String databaseName) {
         Collection<String> requiredRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toList());
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistRuleNames = requiredRuleNames.stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new MissingRequiredRuleException(databaseName, notExistRuleNames));
+        Collection<String> notExistedRuleNames = requiredRuleNames.stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException(databaseName, notExistedRuleNames));
     }
     
-    private static void checkDuplicateRuleNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
-                                                final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResourceMetaData resourceMetaData) {
+    private static void checkDuplicateRuleNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+                                                final ShardingSphereResourceMetaData resourceMetaData, final Collection<String> duplicatedRuleNames, final boolean ifNotExists) {
         checkDuplicateRuleNamesWithSelf(databaseName, segments);
-        checkDuplicateRuleNamesWithResourceMetaData(segments, resourceMetaData);
-        checkDuplicateRuleNamesWithRuleConfiguration(databaseName, segments, currentRuleConfig);
+        checkDuplicateRuleNamesWithResourceMetaData(resourceMetaData, ifNotExists, duplicatedRuleNames, segments);
+        checkDuplicateRuleNamesWithRuleConfiguration(databaseName, currentRuleConfig, ifNotExists, duplicatedRuleNames, segments);
     }
     
     private static void checkDuplicateRuleNamesWithSelf(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments) {
-        Collection<String> requiredRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toList());
-        Collection<String> duplicateRuleNames = getDuplicate(requiredRuleNames);
-        ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException("Readwrite splitting", databaseName, duplicateRuleNames));
+        Collection<String> duplicatedRuleNames = getDuplicated(segments.stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toList()));
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Readwrite splitting", databaseName, duplicatedRuleNames));
     }
     
-    private static Collection<String> getDuplicate(final Collection<String> require) {
-        return require.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
+    private static Collection<String> getDuplicated(final Collection<String> required) {
+        return required.stream().collect(Collectors.groupingBy(each -> each, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
     
-    private static void checkDuplicateRuleNamesWithResourceMetaData(final Collection<ReadwriteSplittingRuleSegment> segments, final ShardingSphereResourceMetaData resourceMetaData) {
+    private static void checkDuplicateRuleNamesWithResourceMetaData(final ShardingSphereResourceMetaData resourceMetaData, final boolean ifNotExists, final Collection<String> duplicatedRuleNames,
+                                                                    final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> currentRuleNames = new LinkedList<>();
         if (null != resourceMetaData && null != resourceMetaData.getDataSources()) {
             currentRuleNames.addAll(resourceMetaData.getDataSources().keySet());
         }
-        Collection<String> duplicateRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new InvalidRuleConfigurationException("Readwrite splitting", duplicateRuleNames,
-                Collections.singleton(String.format("%s already exists in storage unit", duplicateRuleNames))));
+        Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
+        if (ifNotExists) {
+            duplicatedRuleNames.addAll(toBeCreatedRuleNames);
+            return;
+        }
+        ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new InvalidRuleConfigurationException("Readwrite splitting", toBeCreatedRuleNames,
+                Collections.singleton(String.format("%s already exists in storage unit", toBeCreatedRuleNames))));
     }
     
-    private static void checkDuplicateRuleNamesWithRuleConfiguration(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
-                                                                     final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    private static void checkDuplicateRuleNamesWithRuleConfiguration(final String databaseName, final ReadwriteSplittingRuleConfiguration currentRuleConfig, final boolean ifNotExists,
+                                                                     final Collection<String> duplicatedRuleNames, final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> currentRuleNames = new LinkedList<>();
         if (null != currentRuleConfig) {
             currentRuleNames.addAll(currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList()));
         }
-        Collection<String> duplicateRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException("Readwrite splitting", databaseName, duplicateRuleNames));
+        Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
+        if (ifNotExists) {
+            duplicatedRuleNames.addAll(toBeCreatedRuleNames);
+            return;
+        }
+        ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Readwrite splitting", databaseName, toBeCreatedRuleNames));
     }
     
     private static void checkDataSourcesExist(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final ShardingSphereDatabase database) {
@@ -173,12 +184,12 @@ public final class ReadwriteSplittingRuleStatementChecker {
         Collection<String> existedReadDataSourceNames = new HashSet<>();
         if (null != currentRuleConfig) {
             Collection<String> toBeAlteredRuleNames = isCreating ? Collections.emptySet() : getToBeAlteredRuleNames(segments);
-            for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
+            currentRuleConfig.getDataSources().forEach(each -> {
                 if (null != each.getStaticStrategy() && !toBeAlteredRuleNames.contains(each.getName())) {
                     existedWriteDataSourceNames.add(each.getStaticStrategy().getWriteDataSourceName());
                     existedReadDataSourceNames.addAll(each.getStaticStrategy().getReadDataSourceNames());
                 }
-            }
+            });
         }
         checkDuplicateWriteDataSourceNames(databaseName, segments, existedWriteDataSourceNames);
         checkDuplicateReadDataSourceNames(databaseName, segments, existedReadDataSourceNames);
@@ -189,25 +200,24 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkDuplicateWriteDataSourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final Collection<String> writeDataSourceNames) {
-        for (final ReadwriteSplittingRuleSegment each : segments) {
+        segments.forEach(each -> {
             if (!Strings.isNullOrEmpty(each.getWriteDataSource())) {
                 String writeDataSource = each.getWriteDataSource();
                 ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource), () -> new InvalidRuleConfigurationException("Readwrite splitting", each.getName(),
                         String.format("Can not config duplicate write storage unit `%s` in database `%s`", writeDataSource, databaseName)));
             }
-        }
+        });
     }
     
-    private static void checkDuplicateReadDataSourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
-                                                          final Collection<String> readDataSourceNames) {
-        for (ReadwriteSplittingRuleSegment each : segments) {
+    private static void checkDuplicateReadDataSourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final Collection<String> readDataSourceNames) {
+        segments.forEach(each -> {
             if (null != each.getReadDataSources()) {
-                for (String readDataSource : each.getReadDataSources()) {
+                each.getReadDataSources().forEach(readDataSource -> {
                     ShardingSpherePreconditions.checkState(readDataSourceNames.add(readDataSource), () -> new InvalidRuleConfigurationException("Readwrite splitting", each.getName(),
                             String.format("Can not config duplicate read storage unit `%s` in database `%s`", readDataSource, databaseName)));
-                }
+                });
             }
-        }
+        });
     }
     
     private static void checkLoadBalancers(final Collection<ReadwriteSplittingRuleSegment> segments) {
