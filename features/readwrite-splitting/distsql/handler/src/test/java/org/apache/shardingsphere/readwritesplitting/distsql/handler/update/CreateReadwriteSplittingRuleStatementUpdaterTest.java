@@ -143,8 +143,8 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
             ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
             CreateReadwriteSplittingRuleStatement statement = createSQLStatement(false, dynamicSegment, staticSegment);
             updater.checkSQLStatement(database, statement, null);
-            ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
             ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
+            ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
             updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
             assertThat(currentRuleConfig.getDataSources().size(), is(2));
         }

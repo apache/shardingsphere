@@ -95,7 +95,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processCreate(final T sqlStatement, final RuleDefinitionCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         if (null == currentRuleConfig) {
             return toBeCreatedRuleConfig;
         }

@@ -22,10 +22,10 @@ import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseD
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -70,7 +70,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     }
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDatabaseDiscoveryTypeStatement sqlStatement) {
+    public RuleConfiguration buildToBeCreatedRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final CreateDatabaseDiscoveryTypeStatement sqlStatement) {
         return DatabaseDiscoveryRuleStatementConverter.convertDiscoveryProviderAlgorithm(sqlStatement.getProviders());
     }
     

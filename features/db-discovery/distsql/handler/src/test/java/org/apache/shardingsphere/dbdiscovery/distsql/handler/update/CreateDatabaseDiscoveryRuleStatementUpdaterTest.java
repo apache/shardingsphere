@@ -23,9 +23,9 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractData
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.junit.Before;
@@ -97,7 +97,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
         DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryRuleConfiguration ruleConfig =
-                updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryRuleStatement(false, Collections.singletonList(definitionSegment)));
+                updater.buildToBeCreatedRuleConfiguration(null, new CreateDatabaseDiscoveryRuleStatement(false, Collections.singletonList(definitionSegment)));
         assertThat(ruleConfig.getDataSources().size(), is(1));
         assertTrue(ruleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
@@ -109,9 +109,9 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     public void assertUpdate() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
         DatabaseDiscoveryDefinitionSegment definitionSegment = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
-        DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(
-                new CreateDatabaseDiscoveryRuleStatement(false, Collections.singletonList(definitionSegment)));
         DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig,
+                new CreateDatabaseDiscoveryRuleStatement(false, Collections.singletonList(definitionSegment)));
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getDataSources().size(), is(1));
         assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
@@ -130,9 +130,9 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
         Collection<AbstractDatabaseDiscoverySegment> currentRules = new LinkedList<>();
         currentRules.add(definitionSegmentDS1);
         currentRules.add(definitionSegmentDS2);
-        DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(
-                new CreateDatabaseDiscoveryRuleStatement(false, currentRules));
         DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig,
+                new CreateDatabaseDiscoveryRuleStatement(false, currentRules));
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         definitionSegmentDS1 = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1", "ds_read_3"), algorithmSegment, new Properties());
         definitionSegmentDS2 = new DatabaseDiscoveryDefinitionSegment("readwrite_ds_2", Arrays.asList("ds_read_0", "ds_read_1", "ds_read_3"), algorithmSegment, new Properties());
@@ -141,7 +141,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
         rules.add(definitionSegmentDS2);
         CreateDatabaseDiscoveryRuleStatement statement = new CreateDatabaseDiscoveryRuleStatement(true, rules);
         updater.checkSQLStatement(database, statement, currentConfig);
-        toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, statement);
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getDataSources().size(), is(2));
         assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
