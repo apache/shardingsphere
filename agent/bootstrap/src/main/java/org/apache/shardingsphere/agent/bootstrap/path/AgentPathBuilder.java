@@ -28,7 +28,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -74,8 +73,7 @@ public final class AgentPathBuilder {
         return new File(classLocation);
     }
     
-    private static List<File> buildAgentPluginClassPaths() {
-        return Arrays.asList(new File(String.join("/", agentPath.getPath(), "lib")),
-                new File(String.join("/", agentPath.getPath(), "plugins")));
+    private static Collection<File> buildAgentPluginClassPaths() {
+        return Arrays.asList(new File(String.join("/", agentPath.getPath(), "lib")), new File(String.join("/", agentPath.getPath(), "plugins")));
     }
 }
