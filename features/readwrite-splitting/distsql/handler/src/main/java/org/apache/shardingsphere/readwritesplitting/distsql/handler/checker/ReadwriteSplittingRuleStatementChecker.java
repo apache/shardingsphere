@@ -55,7 +55,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
      * @param database database
      * @param segments segments
      * @param currentRuleConfig current rule config
-     * @param duplicatedRuleNames duplicate rule names
+     * @param duplicatedRuleNames duplicated rule names
      * @param ifNotExists rule if not exists
      */
     public static void checkCreation(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments,
