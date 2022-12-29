@@ -30,7 +30,7 @@ rules:
 
 ## 操作步骤
 
-1. 在 YAML 文件中配置数据加密规则，包含数据源、脱敏规则、全局属性等配置项；
+1. 在 YAML 文件中配置数据脱敏规则，包含数据源、脱敏规则、全局属性等配置项；
 2. 调用 YamlShardingSphereDataSourceFactory 对象的 createDataSource 方法，根据 YAML 文件中的配置信息创建 ShardingSphereDataSource。
 
 ## 配置示例

@@ -18,7 +18,7 @@ Attributes:
 | *Name*                    | *DataType*                                  | *Description*                                                                                  | *Default Value* |
 | ------------------------- | ------------------------------------------- |------------------------------------------------------------------------------------------------| --------------- |
 | tables (+)                | Collection\<MaskTableRuleConfiguration\> | Mask table rule configurations                                                                 |                 |
-| encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | Mask algorithm name and configurations                                                         |                 |
+| maskAlgorithms (+)            | Map\<String, AlgorithmConfiguration\>       | Mask algorithm name and configurations                                                         |                 |
 
 ### Mask Table Rule Configuration
 

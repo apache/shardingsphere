@@ -12,30 +12,6 @@ Based on the YAML configuration, ShardingSphere automatically completes the crea
 
 ```yaml
 rules:
-- !ENCRYPT
-  tables:
-    <table_name> (+): # Encrypt table name
-      columns:
-        <column_name> (+): # Encrypt logic column name
-          plainColumn (?): # Plain column name
-          cipherColumn: # Cipher column name
-          encryptorName: # Cipher encrypt algorithm name
-          assistedQueryColumn (?):  # Assisted query column name
-          assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
-          likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name
-      queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
-    
-  # Encrypt algorithm configuration
-  encryptors:
-    <encrypt_algorithm_name> (+): # Encrypt algorithm name
-      type: # Encrypt algorithm type
-      props: # Encrypt algorithm properties
-        # ...
-
-  queryWithCipherColumn: # Whether query with cipher column for data encrypt. User you can use plaintext to query if have
-
-rules:
 - !MASK
   tables:
     <table_name> (+): # Mask table name
