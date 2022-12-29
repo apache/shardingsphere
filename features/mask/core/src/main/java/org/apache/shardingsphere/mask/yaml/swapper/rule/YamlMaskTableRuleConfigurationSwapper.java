@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigur
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * YAML mask table rule configuration swapper.
@@ -47,7 +47,7 @@ public final class YamlMaskTableRuleConfigurationSwapper implements YamlConfigur
     @Override
     public MaskTableRuleConfiguration swapToObject(final YamlMaskTableRuleConfiguration yamlConfig) {
         Collection<MaskColumnRuleConfiguration> columns = new LinkedList<>();
-        for (Map.Entry<String, YamlMaskColumnRuleConfiguration> entry : yamlConfig.getColumns().entrySet()) {
+        for (Entry<String, YamlMaskColumnRuleConfiguration> entry : yamlConfig.getColumns().entrySet()) {
             YamlMaskColumnRuleConfiguration yamlMaskColumnRuleConfig = entry.getValue();
             yamlMaskColumnRuleConfig.setLogicColumn(entry.getKey());
             columns.add(columnSwapper.swapToObject(yamlMaskColumnRuleConfig));
