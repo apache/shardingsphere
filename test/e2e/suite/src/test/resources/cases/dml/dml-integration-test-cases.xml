@@ -297,6 +297,13 @@
         <assertion parameters="3:int, -1:long, -1:int, -1:int, 0:smallint, -1:tinyint" expected-data-file="insert_negative_values_into_single_table_integer.xml" />
         <!-- <assertion parameters="4:int, 0:int, 0:int, 0:int, -1:smallint, 0:int" expected-data-file="insert_negative_smallint_into_single_table_integer.xml" />-->
     </test-case>
+    
+    <test-case sql="INSERT INTO t_data_type_integer_unsigned (id, col_bigint_unsigned, col_int_unsigned, col_mediumint_unsigned, col_smallint_unsigned, col_tinyint_unsigned) values (?, ?, ?, ?, ?, ?)" db-types="MySQL" scenario-types="passthrough">
+        <!-- TODO Test unsigned with MySQL Connector/J 8.0.x client https://github.com/apache/shardingsphere/issues/14349 -->
+        <assertion parameters="1:int, 18446744073709551615:decimal, 4294967295:long, 16777215:int, 65535:int, 255:smallint" expected-data-file="insert_max_values_into_single_table_integer_unsigned.xml" />
+        <assertion parameters="2:int, 0:long, 0:int, 0:int, 0:smallint, 0:tinyint" expected-data-file="insert_min_values_into_single_table_integer_unsigned.xml" />
+    </test-case>
+    
     <test-case sql="INSERT INTO t_data_type_integer (id, col_bigint, col_int, col_mediumint, col_smallint, col_tinyint) values (?, ?, ?, ?, ?, ?)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
         <assertion parameters="1:int, 9223372036854775807:long, 2147483647:int, 8388607:int, 32767:smallint, 127:tinyint" expected-data-file="insert_max_values_into_single_table_integer.xml" />
         <assertion parameters="2:int, -9223372036854775808:long, -2147483648:int, -8388608:int, -32768:smallint, -128:tinyint" expected-data-file="insert_min_values_into_single_table_integer.xml" />
