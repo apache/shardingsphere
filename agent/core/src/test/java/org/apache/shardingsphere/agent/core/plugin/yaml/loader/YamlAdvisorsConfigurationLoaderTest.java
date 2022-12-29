@@ -42,8 +42,8 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     }
     
     private void assertYamlAdvisorConfiguration(final YamlAdvisorConfiguration actual) {
-        assertThat(actual.getTarget(), is("org.apache.shardingsphere.agent.bootstrap.plugin.yaml.fixture.YamlTargetObjectFixture"));
-        assertThat(actual.getAdvice(), is("org.apache.shardingsphere.agent.bootstrap.plugin.yaml.fixture.YamlAdviceFixture"));
+        assertThat(actual.getTarget(), is("org.apache.shardingsphere.agent.core.plugin.yaml.fixture.YamlTargetObjectFixture"));
+        assertThat(actual.getAdvice(), is("org.apache.shardingsphere.agent.core.plugin.yaml.fixture.YamlAdviceFixture"));
         assertThat(actual.getPointcuts().size(), is(8));
         List<YamlPointcutConfiguration> actualYamlPointcutConfigs = new ArrayList<>(actual.getPointcuts());
         assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(0), null, "constructor", Collections.emptyList());

@@ -55,7 +55,7 @@ public final class AgentTransformerTest {
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
-                        .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.bootstrap.transformer.fixture"))))
+                        .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.transformer.fixture"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
                 .type(new AgentJunction(advisorConfigs))
@@ -65,7 +65,7 @@ public final class AgentTransformerTest {
     }
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.bootstrap.transformer.fixture.targeted.TargetObjectFixture");
+        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.transformer.fixture.targeted.TargetObjectFixture");
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooAdvice.class.getName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), BarAdvice.class.getName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), FooAdvice.class.getName()));
