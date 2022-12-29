@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 /**
@@ -44,5 +45,15 @@ public final class MaskAlgorithmFactory {
      */
     public static <I, O> MaskAlgorithm<I, O> newInstance(final AlgorithmConfiguration maskAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(maskAlgorithmConfig, MaskAlgorithm.class);
+    }
+    
+    /**
+     * Judge whether contains mask algorithm.
+     *
+     * @param maskAlgorithmType mask algorithm type
+     * @return contains mask algorithm or not
+     */
+    public static boolean contains(final String maskAlgorithmType) {
+        return TypedSPIRegistry.findRegisteredService(MaskAlgorithm.class, maskAlgorithmType).isPresent();
     }
 }
