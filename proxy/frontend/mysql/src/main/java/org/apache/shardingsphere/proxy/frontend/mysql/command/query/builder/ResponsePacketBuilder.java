@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnFieldDetailFlag;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -58,29 +58,29 @@ public final class ResponsePacketBuilder {
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
-            result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
+            result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnDefinitionFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }
         result.add(new MySQLEofPacket(statusFlags));
         return result;
     }
     
-    private static int getColumnFieldDetailFlag(final QueryHeader header) {
+    private static int getColumnDefinitionFlag(final QueryHeader header) {
         int result = 0;
         if (header.isPrimaryKey()) {
-            result += MySQLColumnFieldDetailFlag.PRIMARY_KEY.getValue();
+            result += MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue();
         }
         if (header.isNotNull()) {
-            result += MySQLColumnFieldDetailFlag.NOT_NULL.getValue();
+            result += MySQLColumnDefinitionFlag.NOT_NULL.getValue();
         }
         if (!header.isSigned()) {
-            result += MySQLColumnFieldDetailFlag.UNSIGNED.getValue();
+            result += MySQLColumnDefinitionFlag.UNSIGNED.getValue();
         }
         if (header.isAutoIncrement()) {
-            result += MySQLColumnFieldDetailFlag.AUTO_INCREMENT.getValue();
+            result += MySQLColumnDefinitionFlag.AUTO_INCREMENT.getValue();
         }
         if (header.getColumnTypeName().contains(BINARY_COLUMN_TYPE_KEYWORD) || header.getColumnTypeName().contains(BLOB_COLUMN_TYPE_KEYWORD)) {
-            result += MySQLColumnFieldDetailFlag.BINARY_COLLATION.getValue();
+            result += MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue();
         }
         return result;
     }

@@ -15,49 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.query;
+package org.apache.shardingsphere.agent.bootstrap.classloader;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.bootstrap.plugin.PluginJar;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * MySQL Column Field Detail Flag.
- * 
- * @see <a href="https://mariadb.com/kb/en/library/resultset/#field-detail-flag">Field detail flag</a>
+ * Class loader context.
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLColumnFieldDetailFlag {
+public final class ClassLoaderContext {
     
-    NOT_NULL(0x00000001),
+    private static final Map<ClassLoader, AgentClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
     
-    PRIMARY_KEY(0x00000002),
+    private final ClassLoader appClassLoader;
     
-    UNIQUE_KEY(0x00000004),
+    private final Collection<PluginJar> pluginJars;
     
-    MULTIPLE_KEY(0x00000008),
-    
-    BLOB(0x00000010),
-    
-    UNSIGNED(0x00000020),
-    
-    ZEROFILL_FLAG(0x00000040),
-    
-    BINARY_COLLATION(0x00000080),
-    
-    ENUM(0x00000100),
-    
-    AUTO_INCREMENT(0x00000200),
-    
-    TIMESTAMP(0x00000400),
-    
-    SET(0x00000800),
-    
-    NO_DEFAULT_VALUE_FLAG(0x00001000),
-    
-    ON_UPDATE_NOW_FLAG(0x00002000),
-    
-    NUM_FLAG(0x00008000);
-    
-    private final int value;
+    /**
+     * Get agent class loader.
+     *
+     * @return agent class loader
+     */
+    public AgentClassLoader getAgentClassLoader() {
+        return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentClassLoader(key, pluginJars));
+    }
 }

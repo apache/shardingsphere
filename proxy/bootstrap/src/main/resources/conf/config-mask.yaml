@@ -52,22 +52,24 @@
 #        password:
 #          maskAlgorithm: md5_mask
 #        email:
-#          maskAlgorithm: mask_before_special_char_mask
+#          maskAlgorithm: mask_before_special_chars_mask
 #        telephone:
 #          maskAlgorithm: keep_first_n_last_m_mask
 #
 #  maskAlgorithms:
 #    md5_mask:
 #      type: MD5
-#    mask_before_special_char_mask:
-#      type: MASK_BEFORE_SPECIAL_CHAR
+#    mask_before_special_chars_mask:
+#      type: MASK_BEFORE_SPECIAL_CHARS
 #      props:
-#        special-characters: @
+#        special-chars: '@'
+#        replace-char: '*'
 #    keep_first_n_last_m_mask:
 #      type: KEEP_FIRST_N_LAST_M
 #      props:
 #        first-n: 3
 #        last-m: 4
+#        replace-char: '*'
 
 ######################################################################################################
 #
@@ -105,19 +107,21 @@
 #        password:
 #          maskAlgorithm: md5_mask
 #        email:
-#          maskAlgorithm: mask_before_special_char_mask
+#          maskAlgorithm: mask_before_special_chars_mask
 #        telephone:
 #          maskAlgorithm: keep_first_n_last_m_mask
 #
 #  maskAlgorithms:
 #    md5_mask:
 #      type: MD5
-#    mask_before_special_char_mask:
-#      type: MASK_BEFORE_SPECIAL_CHAR
+#    mask_before_special_chars_mask:
+#      type: MASK_BEFORE_SPECIAL_CHARS
 #      props:
-#        special-characters: @
+#        special-chars: '@'
+#        replace-char: '*'
 #    keep_first_n_last_m_mask:
 #      type: KEEP_FIRST_N_LAST_M
 #      props:
 #        first-n: 3
 #        last-m: 4
+#        replace-char: '*'

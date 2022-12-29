@@ -35,8 +35,8 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 public final class MaskResultDecoratorEngine implements ResultDecoratorEngine<MaskRule> {
     
     @Override
-    public ResultDecorator<?> newInstance(final ShardingSphereDatabase database,
-                                          final MaskRule maskRule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
+    public ResultDecorator<?> newInstance(final ShardingSphereDatabase database, final MaskRule maskRule,
+                                          final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             MaskAlgorithmMetaData algorithmMetaData = new MaskAlgorithmMetaData(database, maskRule, (SelectStatementContext) sqlStatementContext);
             return new MaskDQLResultDecorator(algorithmMetaData);
