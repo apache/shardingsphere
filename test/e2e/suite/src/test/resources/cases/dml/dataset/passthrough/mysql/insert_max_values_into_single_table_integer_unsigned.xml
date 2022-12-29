@@ -15,15 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata data-nodes="passthrough.t_data_type_integer">
-        <column name="id" type="numeric" />
-        <column name="col_bigint" type="numeric" />
-        <column name="col_int" type="numeric" />
-        <column name="col_mediumint" type="numeric" />
-        <column name="col_smallint" type="numeric" />
-        <column name="col_tinyint" type="numeric" />
-    </metadata>
+<dataset update-count="1">
     <metadata data-nodes="passthrough.t_data_type_integer_unsigned">
         <column name="id" type="numeric" />
         <column name="col_bigint_unsigned" type="numeric" />
@@ -32,9 +24,5 @@
         <column name="col_smallint_unsigned" type="numeric" />
         <column name="col_tinyint_unsigned" type="numeric" />
     </metadata>
-    <metadata data-nodes="passthrough.t_data_type_floating_point">
-        <column name="id" type="numeric" />
-        <column name="col_float" type="numeric" />
-        <column name="col_double" type="numeric" />
-    </metadata>
+    <row data-node="passthrough.t_data_type_integer_unsigned" values="1, 18446744073709551615, 4294967295, 16777215, 65535, 255" />
 </dataset>

@@ -24,6 +24,14 @@
         <column name="col_smallint" type="numeric" />
         <column name="col_tinyint" type="numeric" />
     </metadata>
+    <metadata data-nodes="expected_dataset.t_data_type_integer_unsigned">
+        <column name="id" type="numeric" />
+        <column name="col_bigint_unsigned" type="numeric" />
+        <column name="col_int_unsigned" type="numeric" />
+        <column name="col_mediumint_unsigned" type="numeric" />
+        <column name="col_smallint_unsigned" type="numeric" />
+        <column name="col_tinyint_unsigned" type="numeric" />
+    </metadata>
     <metadata data-nodes="passthrough.t_data_type_floating_point">
         <column name="id" type="numeric" />
         <column name="col_float" type="numeric" />
