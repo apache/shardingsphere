@@ -95,7 +95,10 @@ Attributes:
 
 ### Replace Data Masking Algorithm
 
-TODO
+
+#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE Masking Algorithm
+
+Type：PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
 
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.
@@ -114,6 +117,8 @@ rules:
           maskAlgorithm: mask_before_special_chars_mask
         telephone:
           maskAlgorithm: keep_first_n_last_m_mask
+        personal_identity_number:
+          maskAlgorithm: personal_identity_number_random_replace
 
   maskAlgorithms:
     md5_mask:
@@ -129,6 +134,8 @@ rules:
         first-n: 3
         last-m: 4
         replace-char: '*'
+    personal_identity_number_random_replace:
+      type: PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
 ```
 
 ## Related References
