@@ -9,6 +9,8 @@ The `DROP SHARDING TABLE RULE` syntax is used to drop sharding table rule for sp
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropShardingTableRule ::=
   'DROP' 'SHARDING' 'TABLE' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
@@ -19,6 +21,11 @@ shardingRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

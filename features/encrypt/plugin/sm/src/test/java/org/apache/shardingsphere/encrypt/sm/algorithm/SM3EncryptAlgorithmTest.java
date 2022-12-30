@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,14 +32,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
-@SuppressWarnings("unchecked")
 public final class SM3EncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM3", createProperties()));
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM3", createProperties()), EncryptAlgorithm.class);
     }
     
     private Properties createProperties() {

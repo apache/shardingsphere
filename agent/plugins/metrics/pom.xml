@@ -32,6 +32,7 @@
         <module>core</module>
         <module>type</module>
     </modules>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

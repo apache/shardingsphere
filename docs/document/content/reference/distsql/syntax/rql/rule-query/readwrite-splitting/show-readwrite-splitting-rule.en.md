@@ -9,6 +9,8 @@ The `SHOW READWRITE_SPLITTING RULES` syntax is used to query readwrite splitting
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowReadWriteSplittingRule::=
   'SHOW' 'READWRITE_SPLITTING' 'RULES' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ ShowReadWriteSplittingRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

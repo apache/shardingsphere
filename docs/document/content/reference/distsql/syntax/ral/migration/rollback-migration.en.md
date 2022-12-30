@@ -9,6 +9,8 @@ The `ROLLBACK MIGRATION` syntax is used to rollback migration process.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 RollbackMigration ::=
   'ROLLBACK' 'MIGRATION'  migrationJobId 
@@ -16,6 +18,12 @@ RollbackMigration ::=
 migrationJobId ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 
 ### Supplement
 

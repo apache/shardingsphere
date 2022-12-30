@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.ordered.cache;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixture;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedInterfaceFixtureImpl;
@@ -40,10 +39,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class OrderedServicesCacheTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(OrderedSPIFixture.class);
-    }
     
     @After
     public void cleanCache() throws ReflectiveOperationException {

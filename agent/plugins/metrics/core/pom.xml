@@ -27,6 +27,10 @@
     <artifactId>shardingsphere-agent-metrics-core</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <target.directory>${project.basedir}/../target/lib</target.directory>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -47,4 +51,15 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

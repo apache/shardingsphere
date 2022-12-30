@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.repository.cluster.lock.holder;
 
 import org.apache.shardingsphere.infra.util.props.TypedProperties;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
-import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreatorFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +40,7 @@ public final class DistributedLockHolder {
     
     @SuppressWarnings("unchecked")
     public DistributedLockHolder(final String type, final Object client, final TypedProperties<?> props) {
-        creator = DistributedLockCreatorFactory.newInstance(type);
+        creator = TypedSPIRegistry.getRegisteredService(DistributedLockCreator.class, type);
         this.client = client;
         this.props = props;
         locks = new ConcurrentHashMap<>();

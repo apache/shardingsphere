@@ -8,10 +8,17 @@ weight = 2
 The `SHOW COMPUTE NODE INFO` syntax is used to query current proxy instance information.
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowComputeNodeInfo ::=
   'SHOW' 'COMPUTE' 'NODE' 'INFO'
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

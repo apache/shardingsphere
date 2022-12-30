@@ -26,16 +26,23 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/../../../../../agent/plugins/metrics/target/plugins</directory>
-            <outputDirectory>./plugins</outputDirectory>
+            <outputDirectory>./agent/plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/bootstrap/target</directory>
-            <outputDirectory>./</outputDirectory>
+            <directory>${project.basedir}/../../../../../agent/core/target</directory>
+            <outputDirectory>./agent</outputDirectory>
             <includes>
                 <include>shardingsphere-agent.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../../../../../agent/plugins/metrics/target/lib</directory>
+            <outputDirectory>./agent/lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>

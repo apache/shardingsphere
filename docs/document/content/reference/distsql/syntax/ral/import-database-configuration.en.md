@@ -9,6 +9,8 @@ The `IMPORT DATABASE CONFIGURATION` syntax is used to import `YAML` configuratio
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ExportDatabaseConfiguration ::=
   'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath ('TO' databaseName)?
@@ -19,6 +21,11 @@ databaseName ::=
 filePath ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

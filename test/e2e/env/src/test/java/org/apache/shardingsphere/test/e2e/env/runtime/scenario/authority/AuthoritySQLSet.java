@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority;
 import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -72,6 +72,6 @@ public final class AuthoritySQLSet {
     }
     
     private Collection<DatabaseType> getDatabaseTypes() {
-        return Splitter.on(",").trimResults().splitToList(databaseTypes).stream().map(DatabaseTypeFactory::getInstance).collect(Collectors.toList());
+        return Splitter.on(",").trimResults().splitToList(databaseTypes).stream().map(each -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, each)).collect(Collectors.toList());
     }
 }

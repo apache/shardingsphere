@@ -9,6 +9,8 @@ weight = 4
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 UnregisterStorageUnit ::=
   'UNREGISTER' 'STORAGE' 'UNIT' ('IF' 'EXISTS')? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
@@ -16,6 +18,11 @@ UnregisterStorageUnit ::=
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

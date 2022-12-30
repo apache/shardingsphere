@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mask.factory.MaskAlgorithmFactory;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.junit.Before;
@@ -62,7 +62,7 @@ public final class MaskAlgorithmMetaDataTest {
     @Before
     public void setUp() {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        maskAlgorithm = MaskAlgorithmFactory.newInstance(new AlgorithmConfiguration("MD5", new Properties()));
+        maskAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MD5", new Properties()), MaskAlgorithm.class);
     }
     
     @SuppressWarnings("rawtypes")

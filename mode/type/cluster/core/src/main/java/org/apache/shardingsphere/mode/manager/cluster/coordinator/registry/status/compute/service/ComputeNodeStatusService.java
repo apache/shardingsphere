@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -106,7 +106,6 @@ public final class ComputeNodeStatusService {
      * @param instanceId instance id
      * @return status
      */
-    @SuppressWarnings("unchecked")
     public String loadInstanceStatus(final String instanceId) {
         return repository.getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
     }
@@ -148,7 +147,7 @@ public final class ComputeNodeStatusService {
                 continue;
             }
             ComputeNodeData computeNodeData = YamlEngine.unmarshal(value, ComputeNodeData.class);
-            result.add(loadComputeNodeInstance(InstanceMetaDataBuilderFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion())));
+            result.add(loadComputeNodeInstance(InstanceMetaDataFactory.create(each, instanceType, computeNodeData.getAttribute(), computeNodeData.getVersion())));
         }
         return result;
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.checker;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -29,14 +29,13 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingRuleConfigurationCheckerTest {
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertCheckSuccess() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
@@ -44,15 +43,20 @@ public final class ShardingRuleConfigurationCheckerTest {
         ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
         ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
-        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPIRegistry.getRegisteredServicesByClass(
+                RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
+    @SuppressWarnings("unchecked")
     @Test(expected = IllegalStateException.class)
     public void assertCheckTableConfigurationFailed() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
-        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPIRegistry.getRegisteredServicesByClass(
+                RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
+        checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {
@@ -89,12 +93,5 @@ public final class ShardingRuleConfigurationCheckerTest {
         when(result.getAuditStrategy()).thenReturn(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);
         when(result.getKeyGenerateStrategy()).thenReturn(null == keyGenerateStrategyConfig ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfig);
         return result;
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private RuleConfigurationChecker<ShardingRuleConfiguration> getChecker(final ShardingRuleConfiguration ruleConfig) {
-        Optional<RuleConfigurationChecker> result = RuleConfigurationCheckerFactory.findInstance(ruleConfig);
-        assertTrue(result.isPresent());
-        return result.get();
     }
 }

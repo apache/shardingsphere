@@ -796,6 +796,11 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d USING(product_id) WHERE p.product_id > ? ORDER BY p.product_id DESC FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select inner join fetch statement when use sharding feature and federation executor engine.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_order o NATURAL LEFT JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -817,6 +822,11 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id FETCH NEXT 3 ROW ONLY" db-types="openGauss" scenario-types="db"
+               scenario-comments="Test select natural join fetch statement when use sharding feature and federation executor engine.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
     <test-case sql="SELECT MIN(d.detail_id), MIN(p.category_id), p.product_id FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = ? GROUP BY p.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -825,6 +835,11 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_product p CROSS JOIN t_product_detail d WHERE p.product_id = ? ORDER BY d.product_id, 7 FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select cross join fetch statement when use sharding feature and federation executor engine.">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_product p LEFT JOIN t_product_detail d ON d.product_id = p.product_id WHERE p.category_id = ? ORDER BY p.product_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -899,6 +914,11 @@
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT u.user_id FROM t_user u ORDER BY user_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select union all fetch statement when use sharding feature and federation executor engine.">
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
@@ -908,6 +928,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_order INTERSECT ALL SELECT * FROM t_order ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select intersect all fetch statement when use sharding feature and federation executor engine.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_order WHERE order_id > ? INTERSECT SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
     </test-case>
@@ -1083,6 +1108,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_order_item_join_view FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select ... from join view fetch statement when use sharding feature and federation executor engine.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
     <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -1092,6 +1122,11 @@
     </test-case>
 
     <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select ... from subquery view fetch statement when use sharding feature and federation executor engine.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -1107,6 +1142,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_order_aggregation_view FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select ... from aggregation view fetch statement when use sharding feature and federation executor engine.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -1119,6 +1159,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id FETCH NEXT 3 ROW ONLY" db-types="PostgreSQL,openGauss" scenario-types="db"
+               scenario-comments="Test select ... from union view fetch statement when use sharding feature and federation executor engine.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -1187,40 +1232,63 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '%18')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in subquery select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '%18')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator percentage wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in subquery select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '_1000018')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in subquery select statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '_1000018')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator underscore wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in subquery select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select join statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator percentage wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select join statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator underscore wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '%18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select group by statement when use encrypt feature.">
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '%18' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator percentage wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+               scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM (SELECT * FROM t_merchant) temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
+               scenario-comments="Test encrypt shorthand expansion for subquery with simple select statement when use encrypt feature.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM (SELECT m1.* FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id) temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
+               scenario-comments="Test encrypt shorthand expansion for subquery with select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT * FROM t_data_type_integer_unsigned" db-types="MySQL" scenario-types="passthrough" scenario-comments="Test ShardingSphere-Proxy MySQL compatibility for unsigned integer data types">
         <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="INSERT INTO t_with_generated_id (val) values (?) RETURNING *, id, val aliased_val, t_with_generated_id" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss insert returning clause">
+        <assertion parameters="foo:String" expected-data-source-name="expected_dataset" />
     </test-case>
     
 </integration-test-cases>

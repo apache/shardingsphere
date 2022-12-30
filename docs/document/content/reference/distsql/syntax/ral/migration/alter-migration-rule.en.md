@@ -9,6 +9,8 @@ The `ALTER MIGRATION RULE` syntax is used to alter migration rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterMigrationRule ::=
   'ALTER' 'MIGRATION' 'RULE' ('(' (readConfiguration ',')?  (writeConfiguration  ',')? (dataChannel)? ')')?
@@ -46,6 +48,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

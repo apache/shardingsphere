@@ -37,6 +37,10 @@
         <column name="col_float" type="numeric" />
         <column name="col_double" type="numeric" />
     </metadata>
+    <metadata data-nodes="expected_dataset.t_with_generated_id">
+        <column name="id" type="numeric" />
+        <column name="val" type="varchar" />
+    </metadata>
     <row data-node="expected_dataset.t_data_type_integer_unsigned" values="1001, 18446744073709551615, 4294967295, 16777215, 65535, 255" />
     <row data-node="expected_dataset.t_data_type_integer_unsigned" values="1002, 0, 0, 0, 0, 0" />
 </dataset>

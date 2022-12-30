@@ -9,7 +9,13 @@ weight = 2
 
 ### 语法
 
+<<<<<<< HEAD
+{{< tabs >}}
+{{% tab name="语法" %}}
+```
+=======
 ```sql
+>>>>>>> 731b174a28364b0ec70755800459edb332b68209
 ShowShardingTableRule ::=
   'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 
@@ -19,6 +25,11 @@ tableName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

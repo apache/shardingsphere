@@ -22,8 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumper
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
-import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
@@ -46,7 +45,7 @@ import java.util.List;
 @Slf4j
 public final class CDCJobPreparer {
     
-    private final CDCJobAPI jobAPI = CDCJobAPIFactory.getInstance();
+    private final CDCJobAPI jobAPI = new CDCJobAPI();
     
     /**
      * Do prepare work.
