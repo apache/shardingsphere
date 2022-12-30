@@ -1241,4 +1241,9 @@
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
     
+    <test-case sql="INSERT INTO t_with_generated_id (val) values (?) RETURNING *, id, val aliased_val, t_with_generated_id" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss insert returning clause">
+        <assertion parameters="foo:String" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
 </integration-test-cases>
