@@ -52,9 +52,9 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     
     private void checkToBeAlteredRules(final String databaseName, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> currentMaskTableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistMaskTableNames = getToBeAlteredMaskTableNames(sqlStatement).stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
-        if (!notExistMaskTableNames.isEmpty()) {
-            throw new MissingRequiredRuleException("Mask", databaseName, notExistMaskTableNames);
+        Collection<String> notExistedMaskTableNames = getToBeAlteredMaskTableNames(sqlStatement).stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
+        if (!notExistedMaskTableNames.isEmpty()) {
+            throw new MissingRequiredRuleException("Mask", databaseName, notExistedMaskTableNames);
         }
     }
     
@@ -76,9 +76,7 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     
     private void dropRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
         for (MaskTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
-            Optional<MaskTableRuleConfiguration> toBeRemovedTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each.getName())).findAny();
-            Preconditions.checkState(toBeRemovedTableRuleConfig.isPresent());
-            currentRuleConfig.getTables().remove(toBeRemovedTableRuleConfig.get());
+            currentRuleConfig.getTables().removeIf(tableRule -> tableRule.getName().equals(each.getName()));
         }
     }
     
