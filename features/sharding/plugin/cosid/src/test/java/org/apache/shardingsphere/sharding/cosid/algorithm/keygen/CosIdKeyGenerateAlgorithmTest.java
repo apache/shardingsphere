@@ -26,9 +26,9 @@ import me.ahoo.cosid.provider.NotFoundIdGeneratorException;
 import me.ahoo.cosid.segment.DefaultSegmentId;
 import me.ahoo.cosid.segment.IdSegmentDistributor;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
-import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 
@@ -37,8 +37,8 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 public final class CosIdKeyGenerateAlgorithmTest {
     
@@ -47,7 +47,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String idName = "test-cosid";
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
-        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", createAsLongProperties(idName)));
+        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID", createAsLongProperties(idName)), KeyGenerateAlgorithm.class);
         assertThat(algorithm.generateKey(), is(1L));
         assertThat(algorithm.generateKey(), is(2L));
     }
@@ -62,7 +62,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenNotSetIdName() {
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.setShare(defaultSegmentId);
-        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", new Properties()));
+        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID", new Properties()), KeyGenerateAlgorithm.class);
         assertThat(algorithm.generateKey(), is(1L));
         assertThat(algorithm.generateKey(), is(2L));
     }
@@ -70,7 +70,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     @Test(expected = NotFoundIdGeneratorException.class)
     public void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
-        KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", new Properties())).generateKey();
+        ((KeyGenerateAlgorithm) ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID", new Properties()), KeyGenerateAlgorithm.class)).generateKey();
     }
     
     @Test
@@ -79,7 +79,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String prefix = "test_";
         IdGenerator idGeneratorDecorator = new StringIdGeneratorDecorator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));
         DefaultIdGeneratorProvider.INSTANCE.set(idName, idGeneratorDecorator);
-        KeyGenerateAlgorithm algorithm = KeyGenerateAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID", createAsStringProperties(idName)));
+        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID", createAsStringProperties(idName)), KeyGenerateAlgorithm.class);
         Comparable<?> actual = algorithm.generateKey();
         assertThat(actual, instanceOf(String.class));
         assertThat(actual.toString(), startsWith(prefix));

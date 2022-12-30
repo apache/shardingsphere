@@ -19,9 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
@@ -34,12 +34,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,10 +46,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     public void assertValidCheck() {
         ReadwriteSplittingRuleConfiguration config = createValidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.singleton(mock(DynamicDataSourceContainedRule.class)));
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.singleton(mock(DynamicDataSourceContainedRule.class)));
     }
     
     private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
@@ -69,10 +63,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
@@ -90,10 +82,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
                 "write_ds_0", Arrays.asList("ds_0", "ds_1")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("ds_2", "ds_3")));
         when(config.getDataSources()).thenReturn(configurations);
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config, mockDataSources(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, mockDataSources(), Collections.emptyList());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -103,10 +93,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_0")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("read_ds_0", "read_ds_0")));
         when(config.getDataSources()).thenReturn(configurations);
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config, mockDataSources(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, mockDataSources(), Collections.emptyList());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -120,22 +108,18 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         props.setProperty("read_ds_1", "2");
         AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", props);
         when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config, mockDataSources(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, mockDataSources(), Collections.emptyList());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckWhenConfigOtherRulesDatasource() {
         ReadwriteSplittingRuleConfiguration config = createContainsOtherRulesDatasourceConfig();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class, RETURNS_DEEP_STUBS);
         when(dataSourceContainedRule.getDataSourceMapper().containsKey("otherDatasourceName")).thenReturn(true);
-        checker.get().check("test", config, mockDataSources(), Collections.singleton(dataSourceContainedRule));
+        checker.check("test", config, mockDataSources(), Collections.singleton(dataSourceContainedRule));
     }
     
     private ReadwriteSplittingRuleConfiguration createContainsOtherRulesDatasourceConfig() {

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.yaml.config.shortcut;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -36,7 +36,7 @@ public final class YamlRuleConfigurationShortcuts implements ShardingSphereYamlS
     @Override
     @SneakyThrows(ReflectiveOperationException.class)
     public Map<String, Class<?>> getYamlShortcuts() {
-        Collection<YamlRuleConfigurationSwapper> swappers = YamlRuleConfigurationSwapperFactory.getAllInstances();
+        Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class);
         Map<String, Class<?>> result = new HashMap<>(swappers.size(), 1);
         for (YamlRuleConfigurationSwapper each : swappers) {
             Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());

@@ -19,10 +19,11 @@ package org.apache.shardingsphere.proxy.version;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Test;
@@ -49,11 +50,11 @@ public final class ShardingSphereProxyVersionTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("sharding_db");
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", DatabaseTypeFactory.getInstance("MySQL")));
+        when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")));
         DataSource dataSource = createDataSource("MySQL", "5.7.32");
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getProtocolType()).thenReturn(DatabaseTypeFactory.getInstance("MySQL"));
+        when(database.getProtocolType()).thenReturn(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
@@ -74,7 +75,7 @@ public final class ShardingSphereProxyVersionTest {
         DataSource dataSource = createDataSource("Oracle", "12.0.0");
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getProtocolType()).thenReturn(DatabaseTypeFactory.getInstance("MySQL"));
+        when(database.getProtocolType()).thenReturn(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
         ShardingSphereProxyVersion.setVersion(contextManager);
         assertThat(MySQLServerInfo.getServerVersion("sharding_db"), startsWith("5.7.22"));

@@ -52,6 +52,7 @@ public final class PluginConfigurationValidator {
     
     /**
      * Validate port.
+     * 
      * @param type plugin type
      * @param pluginConfig to be validated plugin configuration
      */

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
-import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJo
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Optional;
 
@@ -49,7 +49,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     private final ImporterConnector importerConnector;
     
-    private final CDCJobAPI jobAPI = CDCJobAPIFactory.getInstance();
+    private final CDCJobAPI jobAPI = RequiredSPIRegistry.getRegisteredService(CDCJobAPI.class);
     
     private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
     

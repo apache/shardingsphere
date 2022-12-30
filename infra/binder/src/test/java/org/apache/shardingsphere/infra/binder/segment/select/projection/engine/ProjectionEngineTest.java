@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Par
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -244,7 +244,7 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenShorthandProjectionContainsJoinUsingColumnForPostgreSQL() {
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
         when(schema.getVisibleColumnNames("t_order_item")).thenReturn(Arrays.asList("item_id", "order_id", "user_id", "product_id", "quantity", "creation_date"));
-        Optional<Projection> actual = new ProjectionEngine("public", Collections.singletonMap("public", schema), DatabaseTypeFactory.getInstance("PostgreSQL"))
+        Optional<Projection> actual = new ProjectionEngine("public", Collections.singletonMap("public", schema), TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"))
                 .createProjection(createJoinTableSegmentWithUsingColumn(), new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
@@ -257,8 +257,8 @@ public final class ProjectionEngineTest {
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
         when(schema.getVisibleColumnNames("t_order_item")).thenReturn(Arrays.asList("item_id", "order_id", "user_id", "product_id", "quantity", "creation_date"));
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), DatabaseTypeFactory.getInstance("MySQL")).createProjection(createJoinTableSegmentWithUsingColumn(),
-                        new ShorthandProjectionSegment(0, 0));
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema),
+                TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")).createProjection(createJoinTableSegmentWithUsingColumn(), new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(9));
@@ -271,8 +271,8 @@ public final class ProjectionEngineTest {
         ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
         projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
         Optional<Projection> actual =
-                new ProjectionEngine("public", Collections.singletonMap("public", schema), DatabaseTypeFactory.getInstance("PostgreSQL")).createProjection(createJoinTableSegmentWithUsingColumn(),
-                        projectionSegment);
+                new ProjectionEngine("public", Collections.singletonMap("public", schema),
+                        TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL")).createProjection(createJoinTableSegmentWithUsingColumn(), projectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
@@ -284,8 +284,8 @@ public final class ProjectionEngineTest {
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
         ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
         projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
-        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), DatabaseTypeFactory.getInstance("MySQL")).createProjection(createJoinTableSegmentWithUsingColumn(), projectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema),
+                TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")).createProjection(createJoinTableSegmentWithUsingColumn(), projectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
@@ -349,7 +349,7 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenShorthandProjectionContainsNaturalJoinForPostgreSQL() {
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
         when(schema.getVisibleColumnNames("t_order_item")).thenReturn(Arrays.asList("item_id", "order_id", "user_id", "product_id", "quantity", "creation_date"));
-        Optional<Projection> actual = new ProjectionEngine("public", Collections.singletonMap("public", schema), DatabaseTypeFactory.getInstance("PostgreSQL"))
+        Optional<Projection> actual = new ProjectionEngine("public", Collections.singletonMap("public", schema), TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"))
                 .createProjection(createJoinTableSegmentWithNaturalJoin(), new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
@@ -361,9 +361,8 @@ public final class ProjectionEngineTest {
     public void assertCreateProjectionWhenShorthandProjectionContainsNaturalJoinForMySQL() {
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
         when(schema.getVisibleColumnNames("t_order_item")).thenReturn(Arrays.asList("item_id", "order_id", "user_id", "product_id", "quantity", "creation_date"));
-        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), DatabaseTypeFactory.getInstance("MySQL")).createProjection(createJoinTableSegmentWithNaturalJoin(),
-                        new ShorthandProjectionSegment(0, 0));
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema),
+                TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")).createProjection(createJoinTableSegmentWithNaturalJoin(), new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(9));
@@ -376,8 +375,8 @@ public final class ProjectionEngineTest {
         ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
         projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
         Optional<Projection> actual =
-                new ProjectionEngine("public", Collections.singletonMap("public", schema), DatabaseTypeFactory.getInstance("PostgreSQL")).createProjection(createJoinTableSegmentWithNaturalJoin(),
-                        projectionSegment);
+                new ProjectionEngine("public", Collections.singletonMap("public", schema),
+                        TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL")).createProjection(createJoinTableSegmentWithNaturalJoin(), projectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
@@ -389,8 +388,8 @@ public final class ProjectionEngineTest {
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
         ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
         projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
-        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), DatabaseTypeFactory.getInstance("MySQL")).createProjection(createJoinTableSegmentWithNaturalJoin(), projectionSegment);
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema),
+                TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")).createProjection(createJoinTableSegmentWithNaturalJoin(), projectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));

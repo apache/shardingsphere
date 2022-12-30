@@ -20,7 +20,8 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetectorFactory;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +54,8 @@ public final class DataSourcePoolDestroyer {
     }
     
     private void waitUntilActiveConnectionComplete() {
-        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = DataSourcePoolActiveDetectorFactory.getInstance(dataSource.getClass().getName());
+        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = TypedSPIRegistry.findRegisteredService(DataSourcePoolActiveDetector.class, dataSource.getClass().getName())
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(DataSourcePoolActiveDetector.class));
         while (dataSourcePoolActiveDetector.containsActiveConnection(dataSource)) {
             try {
                 Thread.sleep(10L);

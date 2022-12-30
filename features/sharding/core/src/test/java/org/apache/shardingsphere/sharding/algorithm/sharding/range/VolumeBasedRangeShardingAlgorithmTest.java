@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +44,7 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        shardingAlgorithm = (VolumeBasedRangeShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("VOLUME_RANGE", createProperties()));
+        shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("VOLUME_RANGE", createProperties()), ShardingAlgorithm.class);
     }
     
     private Properties createProperties() {

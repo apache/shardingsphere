@@ -20,10 +20,11 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 import com.mysql.jdbc.jdbc2.optional.JDBC4MysqlXAConnection;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapperFactory;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -39,17 +40,17 @@ import static org.mockito.Mockito.when;
 
 public final class MySQLXAConnectionWrapperTest {
     
-    private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
+    private final DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
     
     @Test
     public void assertWrap() throws SQLException {
-        XAConnection actual = XAConnectionWrapperFactory.getInstance(databaseType).wrap(createXADataSource(), mockConnection());
+        XAConnection actual = TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
     }
     
     private XADataSource createXADataSource() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        return XADataSourceFactory.build(databaseType, dataSource);
+        return new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
     }
     
     private Connection mockConnection() throws SQLException {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.rule.builder;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilderFactory;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public final class MaskRuleBuilderTest {
     @Test
     public void assertBuild() {
         MaskRuleConfiguration ruleConfig = mock(MaskRuleConfiguration.class);
-        DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
+        DatabaseRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(MaskRule.class));
     }
 }

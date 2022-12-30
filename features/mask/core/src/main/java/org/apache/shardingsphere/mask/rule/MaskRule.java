@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mask.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mask.factory.MaskAlgorithmFactory;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
     
     public MaskRule(final MaskRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, MaskAlgorithmFactory.newInstance(value)));
+        ruleConfig.getMaskAlgorithms().forEach((key, value) -> maskAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, MaskAlgorithm.class)));
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new MaskTable(each)));
     }
     

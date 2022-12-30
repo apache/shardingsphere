@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -41,7 +42,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     
     public RawSQLExecutorCallback(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
-        callbacks = RawExecutorCallbackFactory.getAllInstances();
+        callbacks = ShardingSphereServiceLoader.getServiceInstances(RawExecutorCallback.class);
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
     

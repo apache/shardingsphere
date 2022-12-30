@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.binder.statement;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -59,22 +59,22 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLStatement) {
-            return DatabaseTypeFactory.getInstance("MySQL");
+            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
         }
         if (sqlStatement instanceof PostgreSQLStatement) {
-            return DatabaseTypeFactory.getInstance("PostgreSQL");
+            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL");
         }
         if (sqlStatement instanceof OracleStatement) {
-            return DatabaseTypeFactory.getInstance("Oracle");
+            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "Oracle");
         }
         if (sqlStatement instanceof SQLServerStatement) {
-            return DatabaseTypeFactory.getInstance("SQLServer");
-        }
-        if (sqlStatement instanceof SQL92Statement) {
-            return DatabaseTypeFactory.getInstance("SQL92");
+            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer");
         }
         if (sqlStatement instanceof OpenGaussStatement) {
-            return DatabaseTypeFactory.getInstance("openGauss");
+            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "openGauss");
+        }
+        if (sqlStatement instanceof SQL92Statement) {
+            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQL92");
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
