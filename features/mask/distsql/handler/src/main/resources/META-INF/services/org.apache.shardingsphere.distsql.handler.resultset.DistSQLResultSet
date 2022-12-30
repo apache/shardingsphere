@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.mask.distsql.handler.query.MaskRuleResultSet
-#org.apache.shardingsphere.mask.distsql.handler.query.CountMaskRuleResultSet
+org.apache.shardingsphere.mask.distsql.handler.query.CountMaskRuleResultSet
