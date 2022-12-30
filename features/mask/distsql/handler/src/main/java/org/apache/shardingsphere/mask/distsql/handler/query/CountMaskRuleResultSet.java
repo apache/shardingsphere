@@ -52,11 +52,11 @@ public final class CountMaskRuleResultSet implements DatabaseDistSQLResultSet {
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
         Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
-        rule.ifPresent(optional -> addEncryptData(result, database.getName(), rule.get()));
+        rule.ifPresent(optional -> addMaskData(result, database.getName(), rule.get()));
         data = result.entrySet().iterator();
     }
     
-    private void addEncryptData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final MaskRule rule) {
+    private void addMaskData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final MaskRule rule) {
         addData(rowMap, MASK, databaseName, () -> rule.getTables().size());
     }
     

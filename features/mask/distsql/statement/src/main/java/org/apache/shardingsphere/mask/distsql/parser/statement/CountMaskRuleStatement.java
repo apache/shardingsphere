@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Count encrypt rule statement.
+ * Count mask rule statement.
  */
 public final class CountMaskRuleStatement extends ShowRulesStatement {
     
