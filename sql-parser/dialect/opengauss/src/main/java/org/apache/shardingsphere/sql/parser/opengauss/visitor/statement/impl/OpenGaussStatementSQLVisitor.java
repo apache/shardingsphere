@@ -1327,17 +1327,13 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
                 return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
             }
             if (null != ctx.limitClause().selectFetchFirstValue()) {
-                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectFetchFirstValue());
-                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectFetchFirstValue());
+                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
             }
             LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
         }
-        if (null != ctx.offsetClause().selectOffsetValue()) {
-            LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
-            return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
-        }
-        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectFetchFirstValue());
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
     }
     

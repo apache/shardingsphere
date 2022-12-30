@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
-import lombok.Getter;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
-import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -44,29 +42,11 @@ public final class AgentClassLoader extends ClassLoader {
         registerAsParallelCapable();
     }
     
-    @Getter
-    private static volatile AgentClassLoader classLoader;
-    
     private final Collection<PluginJar> pluginJars;
     
     public AgentClassLoader(final ClassLoader classLoader, final Collection<PluginJar> pluginJars) {
         super(classLoader);
         this.pluginJars = pluginJars;
-    }
-    
-    /**
-     * Initialize agent class loader.
-     * 
-     * @param pluginJars plugin jars
-     */
-    public static void init(final Collection<PluginJar> pluginJars) {
-        if (null == classLoader) {
-            synchronized (AgentClassLoader.class) {
-                if (null == classLoader) {
-                    classLoader = new AgentClassLoader(AgentPluginLoader.class.getClassLoader(), pluginJars);
-                }
-            }
-        }
     }
     
     @Override
@@ -129,7 +109,7 @@ public final class AgentClassLoader extends ClassLoader {
     
     @Override
     protected URL findResource(final String name) {
-        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().map(Optional::get).orElse(null);
+        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get).orElse(null);
     }
     
     private Optional<URL> findResource(final String name, final PluginJar pluginJar) {

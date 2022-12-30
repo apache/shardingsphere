@@ -15,38 +15,29 @@
  * limitations under the License.
  */
 
-grammar RDLStatement;
+package org.apache.shardingsphere.infra.hint;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-createMaskRule
-    : CREATE MASK TABLE? RULE ifNotExists? maskRuleDefinition (COMMA_ maskRuleDefinition)*
-    ;
-
-alterMaskRule
-    : ALTER MASK TABLE? RULE maskRuleDefinition (COMMA_ maskRuleDefinition)*
-    ;
-
-dropMaskRule
-    : DROP MASK TABLE? RULE ifExists? ruleName (COMMA_ ruleName)*
-    ;
-
-maskRuleDefinition
-    : ruleName LP_ COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ RP_
-    ;
-
-columnDefinition
-    : LP_ NAME EQ_ columnName COMMA_ algorithmDefinition RP_
-    ;
-
-columnName
-    : IDENTIFIER_
-    ;
-
-ifExists
-    : IF EXISTS
-    ;
-
-ifNotExists
-    : IF NOT EXISTS
-    ;
+/**
+ * SQL hint token enum.
+ */
+@RequiredArgsConstructor
+@Getter
+public enum SQLHintTokenEnum {
+    
+    /**
+     * SQL start hint token.
+     */
+    SQL_START_HINT_TOKEN("/* SHARDINGSPHERE_HINT:", "/* ShardingSphere hint:"),
+    
+    /**
+     * SQL hint token.
+     */
+    SQL_HINT_TOKEN("shardingsphere_hint:", "shardingsphere hint:");
+    
+    private final String key;
+    
+    private final String alias;
+}

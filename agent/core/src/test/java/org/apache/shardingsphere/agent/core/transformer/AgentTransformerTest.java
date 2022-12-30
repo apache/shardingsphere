@@ -25,7 +25,6 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.transformer.fixture.advice.BarAdvice;
 import org.apache.shardingsphere.agent.core.transformer.fixture.advice.FooAdvice;
@@ -50,7 +49,6 @@ public final class AgentTransformerTest {
     @BeforeClass
     public static void setup() {
         ByteBuddyAgent.install();
-        AgentClassLoader.init(Collections.emptyList());
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
