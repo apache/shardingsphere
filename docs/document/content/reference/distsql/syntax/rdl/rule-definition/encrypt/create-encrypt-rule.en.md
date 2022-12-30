@@ -5,7 +5,7 @@ weight = 2
 
 ## Description
 
-The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite splitting rule.
+The `CREATE ENCRYPT RULE` syntax is used to create a encrypt rule.
 
 ### Syntax
 
