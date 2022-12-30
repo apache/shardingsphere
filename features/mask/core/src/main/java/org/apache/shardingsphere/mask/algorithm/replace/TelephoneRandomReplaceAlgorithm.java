@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.algorithm.cover;
+package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -24,11 +24,11 @@ import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +38,7 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     
     private static final String NETWORK_NUMBER = "network-number";
     
-    private Set<String> networkNumbers;
+    private Collection<String> networkNumbers;
     
     private List<Integer> networkNumberLength;
     
@@ -74,12 +74,12 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
         }
         Random random = new Random();
         char[] chars = result.toCharArray();
-        for (Integer length : networkNumberLength) {
-            if (networkNumbers.contains(result.substring(0, length))) {
-                for (int i = length; i != -1 && i < chars.length; i++) {
+        for (Integer each : networkNumberLength) {
+            if (networkNumbers.contains(result.substring(0, each))) {
+                for (int i = each; i != -1 && i < chars.length; i++) {
                     chars[i] = Character.forDigit(random.nextInt(10), 10);
                 }
-                continue;
+                break;
             }
         }
         return new String(chars);

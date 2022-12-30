@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mask.algorithm.cover;
+package org.apache.shardingsphere.mask.algorithm.replace;
 
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.junit.Before;

@@ -95,7 +95,15 @@ Attributes:
 
 ### Replace Data Masking Algorithm
 
-TODO
+#### TELEPHONE_RANDOM_REPLACE Data Masking Algorithm
+
+Type: TELEPHONE_RANDOM_REPLACE
+
+Attributes:
+
+| *Name* | *DataType* | *Description*                    |
+|----------------|--------|----------------------------------------|
+| network-number | String | Network number (separate input with ,) |
 
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.
