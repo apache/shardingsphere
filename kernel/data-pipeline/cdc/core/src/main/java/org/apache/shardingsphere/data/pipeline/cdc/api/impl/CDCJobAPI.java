@@ -89,10 +89,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * CDC job API impl.
+ * CDC job API.
  */
 @Slf4j
-public final class CDCJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl {
+public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
     

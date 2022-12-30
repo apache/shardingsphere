@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.cdc;
 import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
@@ -58,7 +58,7 @@ import java.util.Optional;
 @Slf4j
 public final class CDCBackendHandler {
     
-    private final CDCJobAPIImpl jobAPI = new CDCJobAPIImpl();
+    private final CDCJobAPI jobAPI = new CDCJobAPI();
     
     /**
      * Create subscription.
