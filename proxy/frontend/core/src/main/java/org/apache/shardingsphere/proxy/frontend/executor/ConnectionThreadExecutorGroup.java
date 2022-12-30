@@ -81,6 +81,9 @@ public final class ConnectionThreadExecutorGroup {
      */
     public void unregisterAndAwaitTermination(final int connectionId) {
         ExecutorService executorService = executorServices.remove(connectionId);
+        if (null == executorService) {
+            return;
+        }
         executorService.shutdown();
         try {
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);

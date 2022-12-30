@@ -40,6 +40,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPIRegistry.getRegisteredService(DatabaseProtocolFrontendEngine.class, databaseType.getType(), new Properties());
+        databaseProtocolFrontendEngine.initChannel(socketChannel);
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new ChannelAttrInitializer());
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));

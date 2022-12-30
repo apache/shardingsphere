@@ -126,6 +126,7 @@ public final class SQLNodeConverterEngineIT {
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset_fetch");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_fetch_count");
         SUPPORTED_SQL_CASE_IDS.add("select_with_null_keyword_in_projection");
         SUPPORTED_SQL_CASE_IDS.add("select_union");
         SUPPORTED_SQL_CASE_IDS.add("select_union_all");

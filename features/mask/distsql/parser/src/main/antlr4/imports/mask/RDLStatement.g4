@@ -36,7 +36,7 @@ maskRuleDefinition
     ;
 
 columnDefinition
-    : NAME EQ_ columnName COMMA_ algorithmDefinition
+    : LP_ NAME EQ_ columnName COMMA_ algorithmDefinition RP_
     ;
 
 columnName
