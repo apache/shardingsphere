@@ -20,6 +20,7 @@
         <column name="table_name" />
         <column name="storage_unit_name" />
     </metadata>
+    <row values="t_merchant| encrypt_ds_1" />
     <row values="t_order_federate| encrypt_ds_0" />
     <row values="t_order_item_federate| encrypt_ds_1" />
     <row values="t_single_table| encrypt_ds_0" />

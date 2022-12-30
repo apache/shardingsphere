@@ -36,4 +36,6 @@
     <row values="t_user_details| number_new| number_new_cipher| number_new_plain| | | AES| aes-key-value=123456abc| | | | | true" />
     <row values="t_user_encrypt_federate| pwd| cipher_pwd| plain_pwd| | | AES| aes-key-value=123456abc| | | | | true" />
     <row values="t_user_encrypt_federate_sharding| pwd| cipher_pwd| plain_pwd| | | AES| aes-key-value=123456abc| | | | | true" />
+    <row values="t_merchant| business_code| business_code_cipher| business_code_plain| | | AES| aes-key-value=123456abc| | | | | true" />
+    <row values="t_merchant| telephone| telephone_cipher| telephone_plain| | | AES| aes-key-value=123456abc| | | | | true" />
 </dataset>
