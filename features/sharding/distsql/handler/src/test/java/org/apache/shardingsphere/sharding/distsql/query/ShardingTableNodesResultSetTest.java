@@ -17,26 +17,29 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,60 +48,37 @@ public final class ShardingTableNodesResultSetTest {
     
     @Test
     public void assertGetRowData() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingRule shardingRule = createShardingRule();
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
+        assertOrder(database);
+        assertOrderItem(database);
+    }
+    
+    @SneakyThrows(IOException.class)
+    private ShardingRule createShardingRule() {
+        URL url = getClass().getClassLoader().getResource("yaml/config_sharding_for_table_nodes.yaml");
+        assertNotNull(url);
+        YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+        ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRootConfig.getRules());
+        return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_1", "ds_2", "ds_3"), null);
+    }
+    
+    private void assertOrder(final ShardingSphereDatabase database) {
         DatabaseDistSQLResultSet resultSet = new ShardingTableNodesResultSet();
-        resultSet.init(mockDatabase(), mock(ShowShardingTableNodesStatement.class));
+        resultSet.init(database, new ShowShardingTableNodesStatement("t_order", null));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("t_order"));
-        assertThat(actual.get(1), is("ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1"));
-        resultSet.next();
-        actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.get(0), is("t_product"));
-        assertThat(actual.get(1), is("ds_2.t_product_0, ds_3.t_product_1"));
-        actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.get(0), is("t_user"));
-        assertThat(actual.get(1), is("ds_2.t_user_0, ds_3.t_user_1, ds_2.t_user_2, ds_3.t_user_3"));
+        assertThat(actual.get(1), is("ds_1.t_order_0, ds_2.t_order_1, ds_1.t_order_2, ds_2.t_order_3, ds_1.t_order_4, ds_2.t_order_5"));
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingRule rule = mock(ShardingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
-        return result;
-    }
-    
-    private RuleConfiguration createRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(createShardingTableRuleConfiguration());
-        result.getAutoTables().add(createProductAutoTableConfiguration());
-        result.getAutoTables().add(createUserAutoTableConfiguration());
-        result.getShardingAlgorithms().put("t_product_algorithm", new AlgorithmConfiguration("FOO.DISTSQL.FIXTURE", newProperties("sharding-count", 2)));
-        result.getShardingAlgorithms().put("t_user_algorithm", new AlgorithmConfiguration("BAR.DISTSQL.FIXTURE", newProperties("sharding-ranges", "10,20,30")));
-        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
-        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
-        return result;
-    }
-    
-    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
-        return new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
-    }
-    
-    private ShardingAutoTableRuleConfiguration createProductAutoTableConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_product", "ds_2,ds_3");
-        result.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_product_algorithm"));
-        return result;
-    }
-    
-    private ShardingAutoTableRuleConfiguration createUserAutoTableConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_user", "ds_2,ds_3");
-        result.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "t_user_algorithm"));
-        return result;
-    }
-    
-    private Properties newProperties(final String key, final Object value) {
-        Properties result = new Properties();
-        result.put(key, value);
-        return result;
+    private void assertOrderItem(final ShardingSphereDatabase database) {
+        DatabaseDistSQLResultSet resultSet = new ShardingTableNodesResultSet();
+        resultSet.init(database, new ShowShardingTableNodesStatement("t_order_item", null));
+        List<Object> actual = new ArrayList<>(resultSet.getRowData());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("t_order_item"));
+        assertThat(actual.get(1), is("ds_2.t_order_item_0, ds_3.t_order_item_1, ds_2.t_order_item_2, ds_3.t_order_item_3, ds_2.t_order_item_4, ds_3.t_order_item_5"));
     }
 }
