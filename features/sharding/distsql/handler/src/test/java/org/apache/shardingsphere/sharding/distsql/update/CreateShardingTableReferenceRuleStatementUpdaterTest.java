@@ -66,7 +66,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
         CreateShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "foo", "t_order,t_order_item");
         ShardingRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         Collection<ShardingTableReferenceRuleConfiguration> referenceRuleConfigurations = currentRuleConfig.getBindingTableGroups();
         assertThat(referenceRuleConfigurations.size(), is(1));

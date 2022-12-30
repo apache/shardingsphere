@@ -55,7 +55,7 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateBroadcastTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final CreateBroadcastTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setBroadcastTables(sqlStatement.getTables());
         return result;

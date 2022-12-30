@@ -77,7 +77,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createSQLStatement(true, "AES");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        EncryptRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        EncryptRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         assertTrue(currentRuleConfig.getEncryptors().isEmpty());
