@@ -427,7 +427,7 @@ jQuery(document).ready(function() {
         appendFormElement('input', 'hidden', 'name', 'ui', form)
         
         // 可增加
-        appendFormElement('input', 'hidden', 'color', '#4065ff', form)
+        appendFormElement('input', 'hidden', 'color', '#FF8B00', form)
 
         appendFormElement('textarea', 'hidden', 'text', codeStr, form)
      
