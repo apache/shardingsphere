@@ -15,38 +15,21 @@
  * limitations under the License.
  */
 
-grammar RDLStatement;
+package org.apache.shardingsphere.mask.distsql.parser.statement;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 
-createMaskRule
-    : CREATE MASK TABLE? RULE ifNotExists? maskRuleDefinition (COMMA_ maskRuleDefinition)*
-    ;
+import java.util.Collection;
 
-alterMaskRule
-    : ALTER MASK TABLE? RULE maskRuleDefinition (COMMA_ maskRuleDefinition)*
-    ;
-
-dropMaskRule
-    : DROP MASK TABLE? RULE ifExists? ruleName (COMMA_ ruleName)*
-    ;
-
-maskRuleDefinition
-    : ruleName LP_ COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ RP_
-    ;
-
-columnDefinition
-    : LP_ NAME EQ_ columnName COMMA_ algorithmDefinition RP_
-    ;
-
-columnName
-    : IDENTIFIER_
-    ;
-
-ifExists
-    : IF EXISTS
-    ;
-
-ifNotExists
-    : IF NOT EXISTS
-    ;
+/**
+ * Alter mask rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterMaskRuleStatement extends AlterRuleStatement {
+    
+    private final Collection<MaskRuleSegment> rules;
+}
