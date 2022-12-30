@@ -9,6 +9,8 @@ The `LABEL|RELABEL COMPUTE NODES` syntax is used to label `PROXY` instance.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 LableRelabelComputeNodes ::=
   ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
@@ -19,6 +21,11 @@ instance_id ::=
 labelName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

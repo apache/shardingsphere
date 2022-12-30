@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.rule.builder;
 
 import org.apache.shardingsphere.infra.rule.builder.database.DefaultDatabaseRuleConfigurationBuilder;
-import org.apache.shardingsphere.infra.rule.builder.database.DefaultDatabaseRuleConfigurationBuilderFactory;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public final class DefaultSingleRuleConfigurationBuilderTest {
     @Test
     public void assertBuild() {
         DefaultDatabaseRuleConfigurationBuilder builder =
-                DefaultDatabaseRuleConfigurationBuilderFactory.getInstances(Collections.singletonList(new SingleRuleBuilder())).values().iterator().next();
+                OrderedSPIRegistry.getRegisteredServices(DefaultDatabaseRuleConfigurationBuilder.class, Collections.singleton(new SingleRuleBuilder())).values().iterator().next();
         assertThat(builder.build(), instanceOf(SingleRuleConfiguration.class));
     }
 }

@@ -23,7 +23,8 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -80,6 +81,8 @@ public final class ImporterConfiguration {
      * @return schema name. nullable
      */
     public String getSchemaName(final LogicTableName logicTableName) {
-        return DatabaseTypeFactory.getInstance(dataSourceConfig.getDatabaseType().getType()).isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
+        return TypedSPIRegistry.getRegisteredService(DatabaseType.class, dataSourceConfig.getDatabaseType().getType()).isSchemaAvailable()
+                ? tableNameSchemaNameMapping.getSchemaName(logicTableName)
+                : null;
     }
 }

@@ -9,6 +9,8 @@ weight = 3
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowEncryptRule::=
   'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ ShowEncryptRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

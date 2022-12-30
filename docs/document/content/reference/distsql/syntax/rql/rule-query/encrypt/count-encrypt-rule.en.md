@@ -9,6 +9,8 @@ The `COUNT ENCRYPT RULE` syntax is used to query the number of encrypt rules for
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountEncryptRule::=
   'COUNT' 'ENCRYPT' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountEncryptRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

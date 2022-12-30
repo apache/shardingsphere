@@ -9,6 +9,8 @@ The `STOP MIGRATION` syntax is used to stop migration process.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 StopMigration ::=
   'STOP' 'MIGRATION' migrationJobId 
@@ -16,6 +18,11 @@ StopMigration ::=
 migrationJobId ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

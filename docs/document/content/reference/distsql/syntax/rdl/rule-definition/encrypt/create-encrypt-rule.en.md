@@ -9,6 +9,8 @@ The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite split
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CreateEncryptRule ::=
   'CREATE' 'ENCRYPT' 'RULE' ifNotExists? encryptDefinition (',' encryptDefinition)*
@@ -61,6 +63,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

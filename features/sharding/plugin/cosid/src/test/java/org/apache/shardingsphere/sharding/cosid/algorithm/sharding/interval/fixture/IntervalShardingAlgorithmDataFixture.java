@@ -18,18 +18,20 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.fixture;
 
 import com.google.common.collect.Range;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Properties;
-import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.cosid.algorithm.Arguments;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.CosIdIntervalShardingAlgorithm;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Properties;
+import java.util.function.Function;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntervalShardingAlgorithmDataFixture {
@@ -124,7 +126,7 @@ public final class IntervalShardingAlgorithmDataFixture {
      * @return CosIdIntervalShardingAlgorithm
      */
     public static CosIdIntervalShardingAlgorithm createShardingAlgorithm() {
-        return (CosIdIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID_INTERVAL", createProperties()));
+        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID_INTERVAL", createProperties()), ShardingAlgorithm.class);
     }
     
     private static Properties createProperties() {

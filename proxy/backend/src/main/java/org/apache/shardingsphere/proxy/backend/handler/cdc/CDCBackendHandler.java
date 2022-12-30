@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
-import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -85,7 +85,7 @@ public final class CDCBackendHandler {
         }
         CreateSubscriptionJobParameter parameter = new CreateSubscriptionJobParameter(subscriptionRequest.getDatabase(), tableNames, subscriptionRequest.getSubscriptionName(),
                 subscriptionRequest.getSubscriptionMode().name(), actualDataNodesMap);
-        if (CDCJobAPIFactory.getInstance().createJob(parameter)) {
+        if (RequiredSPIRegistry.getRegisteredService(CDCJobAPI.class).createJob(parameter)) {
             return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateSubscriptionResult(CreateSubscriptionResult.newBuilder()
                     .setSubscriptionName(subscriptionRequest.getSubscriptionName()).setExisting(false).build()).build();
         } else {
@@ -110,7 +110,7 @@ public final class CDCBackendHandler {
      */
     public CDCResponse startSubscription(final CDCRequest request, final Channel channel, final CDCConnectionContext connectionContext) {
         StartSubscriptionRequest startSubscriptionRequest = request.getStartSubscription();
-        CDCJobAPI jobAPI = CDCJobAPIFactory.getInstance();
+        CDCJobAPI jobAPI = RequiredSPIRegistry.getRegisteredService(CDCJobAPI.class);
         String jobId = jobAPI.marshalJobId(new CDCJobId(startSubscriptionRequest.getDatabase(), startSubscriptionRequest.getSubscriptionName()));
         CDCJobConfiguration cdcJobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
         if (null == cdcJobConfig) {

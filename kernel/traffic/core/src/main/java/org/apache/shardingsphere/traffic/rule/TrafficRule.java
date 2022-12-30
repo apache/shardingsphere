@@ -19,6 +19,7 @@ package org.apache.shardingsphere.traffic.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -34,8 +35,6 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgor
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
-import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
-import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
@@ -71,7 +70,7 @@ public final class TrafficRule implements GlobalRule {
             if (null == trafficAlgorithms.get(each.getAlgorithmName())) {
                 break;
             }
-            result.put(each.getName() + "." + each.getAlgorithmName(), TrafficAlgorithmFactory.newInstance(trafficAlgorithms.get(each.getAlgorithmName())));
+            result.put(each.getName() + "." + each.getAlgorithmName(), ShardingSphereAlgorithmFactory.createAlgorithm(trafficAlgorithms.get(each.getAlgorithmName()), TrafficAlgorithm.class));
         }
         return result;
     }
@@ -82,7 +81,8 @@ public final class TrafficRule implements GlobalRule {
             if (null == loadBalancers.get(each.getLoadBalancerName())) {
                 break;
             }
-            result.put(each.getName() + "." + each.getLoadBalancerName(), TrafficLoadBalanceAlgorithmFactory.newInstance(loadBalancers.get(each.getLoadBalancerName())));
+            result.put(each.getName() + "." + each.getLoadBalancerName(),
+                    ShardingSphereAlgorithmFactory.createAlgorithm(loadBalancers.get(each.getLoadBalancerName()), TrafficLoadBalanceAlgorithm.class));
         }
         return result;
     }

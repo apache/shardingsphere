@@ -9,6 +9,8 @@ weight = 6
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 AlterDefaultShadowAlgorithm ::=
   'ALTER' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
@@ -28,6 +30,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

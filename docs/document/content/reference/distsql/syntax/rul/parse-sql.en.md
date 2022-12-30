@@ -9,10 +9,17 @@ The `PARSE SQL` syntax is used to parse `SQL` and output abstract syntax tree.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ParseSql ::=
   'PARSE' sqlStatement  
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

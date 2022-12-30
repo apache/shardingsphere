@@ -19,12 +19,14 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 
 /**
  * YAML mode configuration swapper.
  */
+@SuppressWarnings("unchecked")
 public final class YamlModeConfigurationSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
     
     @Override
@@ -32,7 +34,8 @@ public final class YamlModeConfigurationSwapper implements YamlConfigurationSwap
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType(data.getType());
         if (null != data.getRepository()) {
-            YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = YamlPersistRepositoryConfigurationSwapperFactory.getInstance(data.getType());
+            YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = TypedSPIRegistry.getRegisteredService(
+                    YamlPersistRepositoryConfigurationSwapper.class, data.getType());
             result.setRepository(swapper.swapToYamlConfiguration(data.getRepository()));
         }
         return result;
@@ -43,7 +46,8 @@ public final class YamlModeConfigurationSwapper implements YamlConfigurationSwap
         if (null == yamlConfig.getRepository()) {
             return new ModeConfiguration(yamlConfig.getType(), null);
         }
-        YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = YamlPersistRepositoryConfigurationSwapperFactory.getInstance(yamlConfig.getType());
+        YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = TypedSPIRegistry.getRegisteredService(
+                YamlPersistRepositoryConfigurationSwapper.class, yamlConfig.getType());
         return new ModeConfiguration(yamlConfig.getType(), swapper.swapToObject(yamlConfig.getRepository()));
     }
 }

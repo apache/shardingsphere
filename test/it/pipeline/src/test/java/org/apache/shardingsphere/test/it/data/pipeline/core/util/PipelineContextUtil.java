@@ -42,12 +42,12 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -74,7 +74,9 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG);
+                ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, PERSIST_REPOSITORY_CONFIG.getType(), PERSIST_REPOSITORY_CONFIG.getProps());
+                result.init(PERSIST_REPOSITORY_CONFIG);
+                return result;
             }
         };
     }

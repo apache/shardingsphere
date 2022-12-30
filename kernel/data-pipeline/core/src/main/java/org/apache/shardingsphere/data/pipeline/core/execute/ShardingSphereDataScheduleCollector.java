@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
-import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollectorFactory;
 import org.apache.shardingsphere.infra.metadata.data.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -102,13 +102,13 @@ public final class ShardingSphereDataScheduleCollector {
         
         private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
-            Optional<ShardingSphereDataCollector> shardingSphereDataCollector = ShardingSphereDataCollectorFactory.findInstance(table.getName());
-            if (!shardingSphereDataCollector.isPresent()) {
+            Optional<ShardingSphereDataCollector> dataCollector = TypedSPIRegistry.findRegisteredService(ShardingSphereDataCollector.class, table.getName());
+            if (!dataCollector.isPresent()) {
                 return;
             }
             Optional<ShardingSphereTableData> tableData = Optional.empty();
             try {
-                tableData = shardingSphereDataCollector.get().collect(databaseName, table, databases);
+                tableData = dataCollector.get().collect(databaseName, table, databases);
             } catch (final SQLException ex) {
                 log.error("Collect data failed!", ex);
             }

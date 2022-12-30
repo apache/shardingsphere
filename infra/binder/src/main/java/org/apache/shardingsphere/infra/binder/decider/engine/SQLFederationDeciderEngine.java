@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.decider.engine;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderFactory;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Map;
@@ -45,7 +45,7 @@ public final class SQLFederationDeciderEngine {
     
     public SQLFederationDeciderEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
-        deciders = SQLFederationDeciderFactory.getInstances(rules);
+        deciders = OrderedSPIRegistry.getRegisteredServices(SQLFederationDecider.class, rules);
     }
     
     /**

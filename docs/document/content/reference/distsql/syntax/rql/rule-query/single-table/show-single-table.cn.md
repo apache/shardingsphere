@@ -9,6 +9,8 @@ weight = 3
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowSingleTable::=
   'SHOW' 'SINGLE' ('TABLES' ('LIKE' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
@@ -19,6 +21,11 @@ tableName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

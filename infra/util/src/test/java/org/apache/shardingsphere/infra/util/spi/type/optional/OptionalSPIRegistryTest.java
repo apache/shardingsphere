@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.optional;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.optional.fixture.OptionalSPIFixture;
 import org.junit.Test;
 
@@ -26,10 +25,6 @@ import java.util.Optional;
 import static org.junit.Assert.assertTrue;
 
 public final class OptionalSPIRegistryTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(OptionalSPIFixture.class);
-    }
     
     @Test
     public void assertFindRegisteredService() {

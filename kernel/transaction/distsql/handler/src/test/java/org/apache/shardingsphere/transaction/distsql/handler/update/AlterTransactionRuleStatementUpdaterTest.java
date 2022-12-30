@@ -22,13 +22,14 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSphereTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
-import org.apache.shardingsphere.transaction.factory.ShardingSphereTransactionManagerFactory;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
@@ -37,13 +38,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -51,10 +50,12 @@ import static org.mockito.Mockito.when;
 
 public final class AlterTransactionRuleStatementUpdaterTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertExecuteWithXA() {
-        try (MockedStatic<ShardingSphereTransactionManagerFactory> mockFactory = mockStatic(ShardingSphereTransactionManagerFactory.class)) {
-            mockFactory.when(() -> ShardingSphereTransactionManagerFactory.getInstance(any())).thenReturn(Optional.of(new ShardingSphereTransactionManagerFixture()));
+        try (MockedStatic<ShardingSphereServiceLoader> shardingSphereServiceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            shardingSphereServiceLoader.when(
+                    () -> ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
             AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
             ShardingSphereMetaData metaData = createMetaData();
             updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
