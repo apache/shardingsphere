@@ -25,15 +25,17 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Create default shadow algorithm statement updater.
@@ -76,7 +78,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     private static Collection<String> getIdentical(final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> currentAlgorithmNames = null == currentRuleConfig ? Collections.emptyList() : currentRuleConfig.getShadowAlgorithms().keySet();
-        return Collections.singleton(DEFAULT_ALGORITHM_NAME).stream().filter(currentAlgorithmNames::contains).collect(Collectors.toSet());
+        return Stream.of(DEFAULT_ALGORITHM_NAME).filter(currentAlgorithmNames::contains).collect(Collectors.toSet());
     }
     
     private void checkExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
@@ -86,7 +88,8 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     private void checkAlgorithmType(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         String shadowAlgorithmType = sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName();
-        ShardingSpherePreconditions.checkState(ShadowAlgorithmFactory.contains(shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException(SHADOW, shadowAlgorithmType));
+        ShardingSpherePreconditions.checkState(
+                TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType).isPresent(), () -> new InvalidAlgorithmConfigurationException(SHADOW, shadowAlgorithmType));
     }
     
     private static void checkAlgorithmCompleteness(final Collection<AlgorithmSegment> algorithmSegments) {

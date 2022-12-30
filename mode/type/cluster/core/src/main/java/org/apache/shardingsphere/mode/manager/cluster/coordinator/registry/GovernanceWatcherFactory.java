@@ -28,10 +28,6 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 @RequiredArgsConstructor
 public final class GovernanceWatcherFactory {
     
-    static {
-        ShardingSphereServiceLoader.register(GovernanceWatcher.class);
-    }
-    
     private final ClusterPersistRepository repository;
     
     private final EventBusContext eventBusContext;

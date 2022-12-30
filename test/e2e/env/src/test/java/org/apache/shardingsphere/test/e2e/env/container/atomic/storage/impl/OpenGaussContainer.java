@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.time.Duration;
@@ -36,7 +37,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     private final StorageContainerConfiguration storageContainerConfig;
     
     public OpenGaussContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(containerImage) ? "enmotech/opengauss:3.0.0" : containerImage, scenario);
+        super(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "openGauss"), Strings.isNullOrEmpty(containerImage) ? "enmotech/opengauss:3.0.0" : containerImage, scenario);
         this.storageContainerConfig = storageContainerConfig;
     }
     

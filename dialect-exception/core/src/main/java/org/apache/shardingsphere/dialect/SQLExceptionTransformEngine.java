@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
-import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapperFactory;
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.DatabaseProtocolSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -54,7 +54,7 @@ public final class SQLExceptionTransformEngine {
             if (cause instanceof DatabaseProtocolException) {
                 return new DatabaseProtocolSQLException(cause.getMessage()).toSQLException();
             }
-            Optional<SQLDialectExceptionMapper> dialectExceptionMapper = SQLDialectExceptionMapperFactory.findInstance(databaseType);
+            Optional<SQLDialectExceptionMapper> dialectExceptionMapper = TypedSPIRegistry.findRegisteredService(SQLDialectExceptionMapper.class, databaseType);
             if (dialectExceptionMapper.isPresent()) {
                 return dialectExceptionMapper.get().convert((SQLDialectException) cause);
             }

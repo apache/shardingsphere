@@ -44,4 +44,12 @@ public interface Projection {
      * @return columnLabel
      */
     String getColumnLabel();
+    
+    /**
+     * Clone with owner.
+     * 
+     * @param ownerName owner name
+     * @return new projection
+     */
+    Projection cloneWithOwner(String ownerName);
 }

@@ -9,6 +9,8 @@ The `DROP SHARDING KEY GENERATOR` syntax is used to drop sharding key generator 
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropShardingKeyGenerator ::=
   'DROP' 'SHARDING' 'KEY' 'GENERATOR' keyGeneratorName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ keyGeneratorName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

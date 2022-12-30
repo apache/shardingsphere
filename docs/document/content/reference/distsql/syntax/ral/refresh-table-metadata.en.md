@@ -9,6 +9,8 @@ The `REFRESH TABLE METADATA` syntax is used to refresh table metadata.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 RefreshTableMetadata ::=
   'REFRESH' 'TABLE' 'METADATA' ((tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
@@ -19,6 +21,11 @@ tableName ::=
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

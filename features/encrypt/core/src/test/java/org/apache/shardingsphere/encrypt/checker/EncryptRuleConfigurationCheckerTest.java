@@ -22,16 +22,12 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,10 +37,8 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test
     public void assertCheckWhenConfigValidConfiguration() {
         EncryptRuleConfiguration config = createValidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createValidConfiguration() {
@@ -59,10 +53,8 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertCheckWhenConfigInvalidCipherColumn() {
         EncryptRuleConfiguration config = createInvalidCipherColumnConfig();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createInvalidCipherColumnConfig() {
@@ -77,10 +69,8 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertCheckWhenConfigInvalidAssistColumn() {
         EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createInvalidAssistColumnConfig() {
@@ -96,10 +86,8 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertCheckWhenConfigInvalidLikeColumn() {
         EncryptRuleConfiguration config = createInvalidLikeColumnConfig();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createInvalidLikeColumnConfig() {

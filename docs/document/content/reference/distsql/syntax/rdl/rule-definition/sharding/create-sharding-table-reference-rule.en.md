@@ -9,6 +9,8 @@ The `CREATE SHARDING TABLE REFERENCE RULE` syntax is used to create reference ru
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CreateShardingTableReferenceRule ::=
   'CREATE' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE' ifNotExists? referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
@@ -22,6 +24,11 @@ referenceRelationshipDefinition ::=
 tableName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

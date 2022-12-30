@@ -21,14 +21,16 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -54,7 +56,11 @@ public final class DatabaseRulesBuilder {
     public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseConfiguration databaseConfig, final InstanceContext instanceContext) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
-            RuleConfigurationCheckerFactory.findInstance(entry.getKey()).ifPresent(optional -> optional.check(databaseName, entry.getKey(), databaseConfig.getDataSources(), result));
+            RuleConfigurationChecker configChecker = OrderedSPIRegistry.getRegisteredServicesByClass(
+                    RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
+            if (null != configChecker) {
+                configChecker.check(databaseName, entry.getKey(), databaseConfig.getDataSources(), result);
+            }
             result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, instanceContext));
         }
         return result;
@@ -72,13 +78,13 @@ public final class DatabaseRulesBuilder {
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getDistributedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> distributedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, DistributedRuleConfiguration.class)).collect(Collectors.toList());
-        return DatabaseRuleBuilderFactory.getInstanceMap(distributedRuleConfigs, Comparator.reverseOrder());
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, distributedRuleConfigs, Comparator.reverseOrder());
     }
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getEnhancedRuleBuilderMap(final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> enhancedRuleConfigs = ruleConfigs.stream().filter(each -> isAssignableFrom(each, EnhancedRuleConfiguration.class)).collect(Collectors.toList());
-        return DatabaseRuleBuilderFactory.getInstanceMap(enhancedRuleConfigs);
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, enhancedRuleConfigs);
     }
     
     private static boolean isAssignableFrom(final RuleConfiguration ruleConfig, final Class<? extends RuleConfiguration> ruleConfigClass) {
@@ -89,7 +95,7 @@ public final class DatabaseRulesBuilder {
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getMissedDefaultRuleBuilderMap(final Collection<DatabaseRuleBuilder> configuredBuilders) {
         Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>();
         Map<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> defaultBuilders =
-                DefaultDatabaseRuleConfigurationBuilderFactory.getInstances(getMissedDefaultRuleBuilders(configuredBuilders));
+                OrderedSPIRegistry.getRegisteredServices(DefaultDatabaseRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(configuredBuilders));
         // TODO consider about order for new put items
         for (Entry<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
@@ -100,6 +106,6 @@ public final class DatabaseRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<DatabaseRuleBuilder> getMissedDefaultRuleBuilders(final Collection<DatabaseRuleBuilder> configuredBuilders) {
         Collection<Class<DatabaseRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<DatabaseRuleBuilder>) each.getClass()).collect(Collectors.toSet());
-        return DatabaseRuleBuilderFactory.getInstances().stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
+        return OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class).stream().filter(each -> !configuredBuilderClasses.contains(each.getClass())).collect(Collectors.toList());
     }
 }

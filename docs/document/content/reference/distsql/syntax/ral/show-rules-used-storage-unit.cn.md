@@ -9,6 +9,8 @@ weight = 11
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowRulesUsedStorageUnit ::=
   'SHOW' 'RULES' 'USED' 'STORAGE' 'UNIT' storageUnitName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ storageUnitName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 返回值说明
 

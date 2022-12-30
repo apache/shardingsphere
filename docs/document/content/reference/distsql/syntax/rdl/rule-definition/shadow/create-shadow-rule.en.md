@@ -9,6 +9,8 @@ The `CREATE SHADOW RULE` syntax is used to create a shadow rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CreateShadowRule ::=
   'CREATE' 'SHADOW' 'RULE' ifNotExists? shadowRuleDefinition (',' shadowRuleDefinition)*
@@ -52,6 +54,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
@@ -42,10 +41,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineAPIFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(PipelineJobAPI.class);
-    }
     
     private static final LazyInitializer<GovernanceRepositoryAPI> REPOSITORY_API_LAZY_INITIALIZER = new LazyInitializer<GovernanceRepositoryAPI>() {
         

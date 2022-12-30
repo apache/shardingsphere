@@ -8,6 +8,8 @@ weight = 10
 `DROP TRAFFIC RULE` 语法用于删除指定的双路由规则
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropTrafficRule ::=
   'DROP' 'TRAFFIC' 'RULE' ruleName (',' ruleName)?
@@ -15,6 +17,11 @@ DropTrafficRule ::=
 ruleName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 示例
 

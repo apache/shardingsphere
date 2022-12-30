@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.Ta
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -76,7 +76,7 @@ public final class SchemaMetaDataLoaderEngine {
     }
     
     private static Collection<SchemaMetaData> load(final SchemaMetaDataLoaderMaterial material) throws SQLException {
-        Optional<DialectSchemaMetaDataLoader> dialectSchemaMetaDataLoader = DialectSchemaMetaDataLoaderFactory.findInstance(material.getStorageType());
+        Optional<DialectSchemaMetaDataLoader> dialectSchemaMetaDataLoader = TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, material.getStorageType().getType());
         if (dialectSchemaMetaDataLoader.isPresent()) {
             try {
                 return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());

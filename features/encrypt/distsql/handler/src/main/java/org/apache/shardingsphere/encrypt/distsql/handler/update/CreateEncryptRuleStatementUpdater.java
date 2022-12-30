@@ -29,9 +29,10 @@ import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleSt
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
-        Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !EncryptAlgorithmFactory.contains(each)).collect(Collectors.toList());
+        Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors));
     }
     

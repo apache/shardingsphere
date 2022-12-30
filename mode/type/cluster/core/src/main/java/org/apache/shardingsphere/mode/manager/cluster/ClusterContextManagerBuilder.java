@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -33,7 +35,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 
 import java.sql.SQLException;
 
@@ -44,11 +45,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
-        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
+        ClusterPersistRepository repository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, param);
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), param.getInstanceMetaData(), param.getDatabaseConfigs());
-        InstanceContext instanceContext = buildInstanceContext(persistService, registryCenter, param);
+        InstanceContext instanceContext = buildInstanceContext(registryCenter, param);
         if (registryCenter.getRepository() instanceof InstanceContextAware) {
             ((InstanceContextAware) registryCenter.getRepository()).setInstanceContext(instanceContext);
         }
@@ -60,13 +61,20 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
+    private ClusterPersistRepository getClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
+        Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
+        ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
+        result.init(config);
+        return result;
+    }
+    
     private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param) {
         if (!param.isEmpty()) {
             persistService.persistConfigurations(param.getDatabaseConfigs(), param.getGlobalRuleConfigs(), param.getProps());
         }
     }
     
-    private InstanceContext buildInstanceContext(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param) {
+    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param) {
         return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, param.getInstanceMetaData()),
                 param.getModeConfiguration(), new ClusterModeContextManager(), new GlobalLockContext(registryCenter.getGlobalLockPersistService()), registryCenter.getEventBusContext());
     }

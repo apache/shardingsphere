@@ -9,6 +9,8 @@ The `CREATE DEFAULT SHARDING STRATEGY` syntax is used to create a default shardi
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CreateDefaultShardingStrategy ::=
   'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' ifNotExists? '(' shardingStrategy ')'
@@ -43,6 +45,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

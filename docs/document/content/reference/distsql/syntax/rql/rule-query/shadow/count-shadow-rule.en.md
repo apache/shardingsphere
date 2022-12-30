@@ -9,6 +9,8 @@ The `COUNT SHADOW RULE` syntax is used to query the number of shadow rules for s
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountShadowRule::=
   'COUNT' 'SHADOW' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountShadowRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

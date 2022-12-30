@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.DataNodesMissedWithShardingTableException;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -40,8 +41,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class TableRuleTest {
@@ -80,7 +81,7 @@ public final class TableRuleTest {
     public void assertCreateAutoTableRuleWithModAlgorithm() {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MOD", createProperties()), ShardingAlgorithm.class);
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
@@ -94,7 +95,7 @@ public final class TableRuleTest {
     public void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataSources() {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MOD", createProperties()), ShardingAlgorithm.class);
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));

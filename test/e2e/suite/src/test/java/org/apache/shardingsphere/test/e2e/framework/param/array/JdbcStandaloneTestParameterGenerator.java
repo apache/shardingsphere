@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.framework.param.array;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
@@ -39,7 +39,7 @@ public final class JdbcStandaloneTestParameterGenerator {
     
     private static final Collection<String> ADAPTERS = Collections.singleton(AdapterContainerConstants.JDBC);
     
-    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(DatabaseTypeFactory.getInstance("H2"));
+    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"));
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     

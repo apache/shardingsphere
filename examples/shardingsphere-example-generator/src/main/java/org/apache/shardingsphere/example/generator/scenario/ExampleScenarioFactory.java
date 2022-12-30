@@ -20,7 +20,6 @@ package org.apache.shardingsphere.example.generator.scenario;
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.transaction.TransactionExampleScenario;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Arrays;
@@ -41,12 +40,6 @@ public final class ExampleScenarioFactory {
     private final FrameworkExampleScenario frameworkScenario;
     
     private final TransactionExampleScenario transactionScenario;
-    
-    static {
-        ShardingSphereServiceLoader.register(FeatureExampleScenario.class);
-        ShardingSphereServiceLoader.register(FrameworkExampleScenario.class);
-        ShardingSphereServiceLoader.register(TransactionExampleScenario.class);
-    }
     
     public ExampleScenarioFactory(final String feature, final String framework, final String transaction) {
         featureScenarios = getFeatureScenarios(feature);

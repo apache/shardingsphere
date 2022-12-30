@@ -10,10 +10,17 @@ weight = 8
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowMigrationList ::=
   'SHOW' 'MIGRATION' 'LIST'
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 返回值说明
 

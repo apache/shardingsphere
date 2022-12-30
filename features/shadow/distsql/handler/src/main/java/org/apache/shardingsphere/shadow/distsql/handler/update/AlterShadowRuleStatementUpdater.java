@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdat
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -34,7 +35,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStat
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Map;
@@ -88,7 +89,8 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     
     private void checkAlgorithmType(final AlterShadowRuleStatement sqlStatement) {
         Collection<String> invalidAlgorithmTypes = sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
-                .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet()).stream().filter(each -> !ShadowAlgorithmFactory.contains(each)).collect(Collectors.toSet());
+                .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet()).stream()
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidAlgorithmTypes.isEmpty(), () -> new InvalidAlgorithmConfigurationException("shadow", invalidAlgorithmTypes));
     }
     

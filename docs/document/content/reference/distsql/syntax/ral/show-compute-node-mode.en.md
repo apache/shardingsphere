@@ -8,10 +8,17 @@ weight = 3
 The `SHOW COMPUTE NODE MODE` syntax is used to query current proxy instance mode configuration information.
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowComputeNodeInfo ::=
   'SHOW' 'COMPUTE' 'NODE' 'MODE'
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

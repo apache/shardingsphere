@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -112,7 +112,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
                 if (null == datetimeService) {
-                    datetimeService = DatetimeServiceFactory.getInstance();
+                    datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
                 }
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
             } else if (ExpressionConditionUtils.isNullExpression(each)) {

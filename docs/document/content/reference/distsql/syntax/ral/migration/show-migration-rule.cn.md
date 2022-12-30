@@ -9,10 +9,17 @@ weight = 2
 `SHOW MIGRATION RULE` 语法用于查询数据迁移规则
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowMigrationRule ::=
   'SHOW' 'MIGRATION' 'RULE'
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 返回值说明
 

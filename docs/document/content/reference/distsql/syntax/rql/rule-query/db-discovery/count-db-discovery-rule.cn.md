@@ -9,6 +9,8 @@ weight = 5
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 CountDBDiscoveryRule::=
   'COUNT' 'DB_DISCOVERY' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountDBDiscoveryRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

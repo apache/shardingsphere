@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResu
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.Test;
@@ -53,8 +53,8 @@ public final class SQLRewriteEntryTest {
     
     @Test
     public void assertRewriteForGenericSQLRewriteResult() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                DatabaseTypeFactory.getInstance("H2"), mockResource(), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), mockResource(),
+                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
@@ -66,8 +66,8 @@ public final class SQLRewriteEntryTest {
     
     @Test
     public void assertRewriteForRouteSQLRewriteResult() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                DatabaseTypeFactory.getInstance("H2"), mockResource(), mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), mockResource(),
+                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 database, new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();

@@ -55,6 +55,7 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
+                            <minimizeJar>true</minimizeJar>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <shadeSourcesContent>true</shadeSourcesContent>
@@ -86,6 +87,10 @@
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.netty</pattern>
+                                    <shadedPattern>${shade.package}.io.netty</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

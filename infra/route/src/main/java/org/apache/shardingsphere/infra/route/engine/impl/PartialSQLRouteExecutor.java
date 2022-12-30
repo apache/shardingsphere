@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
-import org.apache.shardingsphere.infra.route.SQLRouterFactory;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -52,7 +52,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     public PartialSQLRouteExecutor(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
-        routers = SQLRouterFactory.getInstances(rules);
+        routers = OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, rules);
     }
     
     @Override

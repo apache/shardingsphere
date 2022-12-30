@@ -21,9 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +57,7 @@ public final class DataConsistencyCalculateAlgorithmFixture implements DataConsi
     
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
-        return DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
     }
     
     @Override

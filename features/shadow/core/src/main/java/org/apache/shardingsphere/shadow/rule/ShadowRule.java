@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -74,7 +74,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private void initShadowAlgorithmConfigurations(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         shadowAlgorithmConfigs.forEach((key, value) -> {
-            ShadowAlgorithm algorithm = ShadowAlgorithmFactory.newInstance(value);
+            ShadowAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(value, ShadowAlgorithm.class);
             if (algorithm instanceof HintShadowAlgorithm<?>) {
                 hintShadowAlgorithmNames.add(key);
             }

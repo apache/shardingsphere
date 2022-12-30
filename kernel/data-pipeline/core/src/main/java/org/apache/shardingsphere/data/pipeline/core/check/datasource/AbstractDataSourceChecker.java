@@ -21,9 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -65,17 +66,14 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     }
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        String sql = getSQLBuilder().buildCheckEmptySQL(schemaName, tableName);
+        String sql = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, getDatabaseType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class)).buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             return !resultSet.next();
         }
-    }
-    
-    private PipelineSQLBuilder getSQLBuilder() {
-        return PipelineSQLBuilderFactory.getInstance(getDatabaseType());
     }
     
     protected abstract String getDatabaseType();

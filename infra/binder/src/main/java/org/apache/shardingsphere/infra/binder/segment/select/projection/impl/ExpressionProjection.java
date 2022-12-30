@@ -47,4 +47,10 @@ public final class ExpressionProjection implements Projection {
     public String getColumnLabel() {
         return getAlias().orElse(expression);
     }
+    
+    @Override
+    public Projection cloneWithOwner(final String ownerName) {
+        // TODO replace column owner when ExpressionProjection contains owner
+        return new ExpressionProjection(expression, alias);
+    }
 }

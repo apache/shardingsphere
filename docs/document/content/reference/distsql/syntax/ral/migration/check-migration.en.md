@@ -9,6 +9,8 @@ The `CHECK MIGRATION LIST` syntax is used to check data consistancy in migration
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowMigrationList ::=
   'CHECK' 'MIGRATION' migrationJobId 'BY' 'TYPE' '(' 'NAME' '=' migrationCheckAlgorithmType ')'
@@ -19,6 +21,11 @@ migrationJobId ::=
 migrationCheckAlgorithmType ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

@@ -24,3 +24,4 @@ CREATE DATABASE expected_dataset;
 CREATE TABLE expected_dataset.t_data_type_integer (id INT PRIMARY KEY, col_bigint BIGINT NOT NULL, col_int INT NOT NULL, col_mediumint MEDIUMINT NOT NULL, col_smallint SMALLINT NOT NULL, col_tinyint TINYINT NOT NULL);
 CREATE TABLE expected_dataset.t_data_type_integer_unsigned (id INT PRIMARY KEY, col_bigint_unsigned BIGINT UNSIGNED NOT NULL, col_int_unsigned INT UNSIGNED NOT NULL, col_mediumint_unsigned MEDIUMINT UNSIGNED NOT NULL, col_smallint_unsigned SMALLINT UNSIGNED NOT NULL, col_tinyint_unsigned TINYINT UNSIGNED NOT NULL);
 CREATE TABLE expected_dataset.t_data_type_floating_point (id INT PRIMARY KEY, col_float REAL NOT NULL, col_double DOUBLE PRECISION NOT NULL);
+CREATE TABLE expected_dataset.t_with_generated_id (id INT AUTO_INCREMENT PRIMARY KEY, val VARCHAR(100) NOT NULL);

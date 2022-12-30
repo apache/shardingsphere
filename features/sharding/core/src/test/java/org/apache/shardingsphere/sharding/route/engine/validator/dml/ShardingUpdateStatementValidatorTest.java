@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -136,7 +136,7 @@ public final class ShardingUpdateStatementValidatorTest {
     }
     
     private Map<String, ShardingAlgorithm> createShardingAlgorithmMap() {
-        return Collections.singletonMap("database_inline", ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createProperties())));
+        return Collections.singletonMap("database_inline", ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createProperties()), ShardingAlgorithm.class));
     }
     
     private Properties createProperties() {

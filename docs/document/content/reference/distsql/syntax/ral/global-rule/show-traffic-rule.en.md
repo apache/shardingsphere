@@ -9,6 +9,8 @@ The `SHOW TRAFFIC RULE` syntax is used to query specified dual routing rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowTrafficRule ::=
   'SHOW' 'TRAFFIC' ('RULES' | 'RULE' ruleName)?
@@ -16,6 +18,11 @@ ShowTrafficRule ::=
 ruleName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
