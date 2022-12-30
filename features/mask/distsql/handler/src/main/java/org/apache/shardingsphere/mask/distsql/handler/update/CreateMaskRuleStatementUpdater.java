@@ -73,7 +73,7 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     }
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateMaskRuleStatement sqlStatement) {
+    public RuleConfiguration buildToBeCreatedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final CreateMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
