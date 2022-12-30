@@ -11,7 +11,7 @@ weight = 3
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowSingleTable::=
   'SHOW' 'SINGLE' ('TABLES' ('LIKE' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
 

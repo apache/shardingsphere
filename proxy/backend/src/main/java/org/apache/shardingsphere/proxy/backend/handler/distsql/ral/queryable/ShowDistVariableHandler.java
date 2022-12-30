@@ -21,10 +21,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDist
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
-import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
@@ -71,11 +70,8 @@ public final class ShowDistVariableHandler extends QueryableRALBackendHandler<Sh
             case AGENT_PLUGINS_ENABLED:
                 return SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString());
             case CACHED_CONNECTIONS:
-                if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
-                    int connectionSize = ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize();
-                    return String.valueOf(connectionSize);
-                }
-                break;
+                int connectionSize = getConnectionSession().getBackendConnection().getConnectionSize();
+                return String.valueOf(connectionSize);
             case TRANSACTION_TYPE:
                 TransactionType transactionType = getConnectionSession().getTransactionStatus().getTransactionType();
                 return transactionType.name();

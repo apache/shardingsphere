@@ -11,7 +11,7 @@ The `SHOW DB_DISCOVERY HEARTBEATS` syntax is used to query database discovery he
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'HEARTBEATS' ('FROM' databaseName)?
 

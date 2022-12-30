@@ -13,7 +13,7 @@ weight = 6
 {{% tab name="语法" %}}
 ```sql
 ClearHint ::=
-  'CLEAR' ('SHARDING'|'READWRITE_SPLITTING')? 'HINT' 
+  'CLEAR' ('SHARDING' | 'READWRITE_SPLITTING')? 'HINT' 
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}

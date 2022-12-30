@@ -26,19 +26,24 @@ import java.util.Properties;
 /**
  * MD5 mask algorithm.
  */
-@Getter
 public final class MD5MaskAlgorithm implements MaskAlgorithm<Object, String> {
     
+    private static final String SALT = "salt";
+    
+    private String salt;
+    
+    @Getter
     private Properties props;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
+        this.salt = props.getProperty(SALT, "");
     }
     
     @Override
     public String mask(final Object plainValue) {
-        return null == plainValue ? null : DigestUtils.md5Hex(String.valueOf(plainValue));
+        return null == plainValue ? null : DigestUtils.md5Hex(plainValue + salt);
     }
     
     @Override

@@ -102,8 +102,8 @@ public final class TrafficEngineTest {
     
     private List<InstanceMetaData> mockComputeNodeInstances() {
         List<InstanceMetaData> result = new ArrayList<>();
-        result.add(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307"));
-        result.add(new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308"));
+        result.add(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version"));
+        result.add(new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_version"));
         return result;
     }
 }

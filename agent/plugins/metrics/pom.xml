@@ -29,11 +29,16 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>api</module>
-        <module>prometheus</module>
+        <module>core</module>
+        <module>type</module>
     </modules>
     
-    <properties>
-        <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
-    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-plugin-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

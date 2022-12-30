@@ -11,7 +11,7 @@ weight = 2
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowDefaultSingleTableStorageUnit::=
   'SHOW' 'DEFAULT' 'SINGLE' 'TABLE' 'STORAGE' 'UNIT' ('FROM' databaseName)?
   

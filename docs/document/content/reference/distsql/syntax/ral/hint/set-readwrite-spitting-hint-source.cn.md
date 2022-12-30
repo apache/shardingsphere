@@ -12,7 +12,7 @@ weight = 2
 {{% tab name="语法" %}}
 ```sql
 SetReadwriteSplittingHintSource ::=
-  'SET' 'READWRITE_SPLITTING' 'HINT' 'SOURCE' '='('auto'|'write')
+  'SET' 'READWRITE_SPLITTING' 'HINT' 'SOURCE' '='('auto' | 'write')
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}

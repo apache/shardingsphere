@@ -11,7 +11,7 @@ The `SHOW DB_DISCOVERY TYPES` syntax is used to query database discovery types f
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'TYPES' ('FROM' databaseName)?
 

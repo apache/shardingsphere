@@ -38,9 +38,4 @@ public abstract class MySQLCommandPacket implements MySQLPacket, CommandPacket {
     
     protected void doWrite(final MySQLPacketPayload payload) {
     }
-    
-    @Override
-    public final int getSequenceId() {
-        return 0;
-    }
 }

@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 createShardingTableRule
-    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
+    : CREATE SHARDING TABLE RULE ifNotExists? shardingTableRuleDefinition (COMMA_ shardingTableRuleDefinition)*
     ;
 
 alterShardingTableRule
@@ -32,7 +32,7 @@ dropShardingTableRule
     ;
 
 createShardingTableReferenceRule
-    : CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
+    : CREATE SHARDING TABLE REFERENCE RULE ifNotExists? tableReferenceRuleDefinition (COMMA_ tableReferenceRuleDefinition)*
     ;
 
 alterShardingTableReferenceRule
@@ -44,7 +44,7 @@ dropShardingTableReferenceRule
     ;
 
 createBroadcastTableRule
-    : CREATE BROADCAST TABLE RULE tableName (COMMA_ tableName)*
+    : CREATE BROADCAST TABLE RULE ifNotExists? tableName (COMMA_ tableName)*
     ;
 
 dropBroadcastTableRule
@@ -56,7 +56,7 @@ dropShardingAlgorithm
     ;
 
 createDefaultShardingStrategy
-    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY LP_ shardingStrategy RP_
+    : CREATE DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY ifNotExists? LP_ shardingStrategy RP_
     ;
 
 alterDefaultShardingStrategy
@@ -187,4 +187,8 @@ buildInStrategyType
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

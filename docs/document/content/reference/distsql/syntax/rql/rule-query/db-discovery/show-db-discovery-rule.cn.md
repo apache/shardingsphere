@@ -11,7 +11,7 @@ weight = 2
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowDatabaseDiscoveryRule::=
   'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
 

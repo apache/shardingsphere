@@ -11,7 +11,7 @@ weight = 5
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowDefaultShardingStrategy::=
   'SHOW' 'DEFAULT' 'SHARDING' 'STRATEGY' ('FROM' databaseName)?
 

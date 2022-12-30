@@ -11,7 +11,7 @@ weight = 4
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowEncryptAlgorithm::=
   'SHOW' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
 

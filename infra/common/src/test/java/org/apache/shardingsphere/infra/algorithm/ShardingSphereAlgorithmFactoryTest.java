@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.infra.algorithm;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.fixture.ShardingSphereAlgorithmFixture;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -30,11 +28,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ShardingSphereAlgorithmFactoryTest {
-    
-    @BeforeClass
-    public static void setUp() {
-        ShardingSphereServiceLoader.register(ShardingSphereAlgorithm.class);
-    }
     
     @Test
     public void assertCreateAlgorithm() {

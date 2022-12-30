@@ -11,9 +11,9 @@ weight = 9
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowUnusedShardingAuditors::=
-  'SHOW' 'SHARDING' 'AUDITOR'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'AUDITOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

@@ -17,21 +17,32 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.api;
 
+import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 
 /**
  * CDC job api.
  */
 @SingletonSPI
-public interface CDCJobAPI extends RequiredSPI {
+public interface CDCJobAPI extends InventoryIncrementalJobAPI, RequiredSPI {
+    
+    @Override
+    CDCTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration pipelineJobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
+    
+    @Override
+    CDCProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
-     * Create CDC job config and start.
+     * Create CDC job config.
      *
      * @param event create CDC job event
      * @return job id
      */
-    String createJobAndStart(CreateSubscriptionJobParameter event);
+    boolean createJob(CreateSubscriptionJobParameter event);
 }

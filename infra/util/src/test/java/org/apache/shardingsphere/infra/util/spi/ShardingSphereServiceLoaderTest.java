@@ -34,15 +34,14 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereServiceLoaderTest {
     
-    static {
-        ShardingSphereServiceLoader.register(EmptySPIFixture.class);
-        ShardingSphereServiceLoader.register(SingletonSPIFixture.class);
-        ShardingSphereServiceLoader.register(MultitonSPIFixture.class);
+    @Test(expected = NullPointerException.class)
+    public void assertGetServiceInstancesWithNullValue() {
+        ShardingSphereServiceLoader.getServiceInstances(null);
     }
     
-    @Test
-    public void assertGetServiceInstancesWithUnregisteredSPI() {
-        assertTrue(ShardingSphereServiceLoader.getServiceInstances(Object.class).isEmpty());
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetServiceInstancesWithNoInterface() {
+        ShardingSphereServiceLoader.getServiceInstances(Object.class);
     }
     
     @Test

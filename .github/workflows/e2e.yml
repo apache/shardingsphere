@@ -165,7 +165,7 @@ jobs:
     name: mixture rule
     needs: it-single-rule
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]

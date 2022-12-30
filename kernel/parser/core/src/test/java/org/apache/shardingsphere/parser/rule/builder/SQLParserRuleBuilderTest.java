@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.parser.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import java.util.HashMap;
 import java.util.Properties;
@@ -35,13 +33,10 @@ import static org.junit.Assert.assertTrue;
 
 public final class SQLParserRuleBuilderTest {
     
-    @Mock
-    private InstanceContext instanceContext;
-    
     @Test
     public void assertBuild() {
         SQLParserRuleConfiguration ruleConfig = new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7));
-        SQLParserRule actualResult = new SQLParserRuleBuilder().build(ruleConfig, new HashMap<>(), instanceContext, new ConfigurationProperties(new Properties()));
+        SQLParserRule actualResult = new SQLParserRuleBuilder().build(ruleConfig, new HashMap<>(), new ConfigurationProperties(new Properties()));
         assertThat(actualResult.getConfiguration(), is(ruleConfig));
         assertTrue(actualResult.isSqlCommentParseEnabled());
         assertThat(actualResult.getSqlStatementCache().getInitialCapacity(), is(4));

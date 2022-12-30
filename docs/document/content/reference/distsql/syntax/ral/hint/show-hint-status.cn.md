@@ -14,7 +14,7 @@ weight = 7
 {{% tab name="语法" %}}
 ```sql
 ShowHintStatus ::=
-  'SHOW' ('SHARDING'|'READWRITE_SPLITTING') 'HINT' 'STATUS'
+  'SHOW' ('SHARDING' | 'READWRITE_SPLITTING') 'HINT' 'STATUS'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}

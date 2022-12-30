@@ -11,7 +11,7 @@ The `SHOW READWRITE_SPLITTING RULES` syntax is used to query readwrite splitting
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowReadWriteSplittingRule::=
   'SHOW' 'READWRITE_SPLITTING' 'RULES' ('FROM' databaseName)?
 

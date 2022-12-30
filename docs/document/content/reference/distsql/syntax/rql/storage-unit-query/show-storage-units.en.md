@@ -13,7 +13,10 @@ The `SHOW STORAGE UNITS` syntax is used to query the storage units that have bee
 {{% tab name="Grammar" %}}
 ```sql
 ShowStorageUnit ::=
-  'SHOW' 'STORAGE' 'UNITS' ('FROM' databaseName)?
+  'SHOW' 'STORAGE' 'UNITS' ('WHERE' 'USAGE_COUNT' '=' usageCount)? ('FROM' databaseName)?
+
+usageCount ::=
+  int
 
 databaseName ::=
   identifier

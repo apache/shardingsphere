@@ -11,7 +11,7 @@ weight = 11
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowShardingTableRulesUsedAlgorithm::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'ALGORITHM' algorithmName ('FROM' databaseName)?
 

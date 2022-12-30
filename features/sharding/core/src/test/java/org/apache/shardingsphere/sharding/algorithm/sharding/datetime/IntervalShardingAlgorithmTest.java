@@ -19,11 +19,12 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,8 +48,8 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public final class IntervalShardingAlgorithmTest {
     
@@ -104,7 +105,7 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByQuarter() {
-        shardingAlgorithmByQuarter = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INTERVAL", createQuarterProperties()));
+        shardingAlgorithmByQuarter = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createQuarterProperties()), ShardingAlgorithm.class);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 4; j++) {
                 availableTablesForQuarterDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -124,7 +125,7 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByMonth() {
-        shardingAlgorithmByMonth = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INTERVAL", createMonthProperties()));
+        shardingAlgorithmByMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createMonthProperties()), ShardingAlgorithm.class);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForMonthDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -145,8 +146,7 @@ public final class IntervalShardingAlgorithmTest {
     
     private void initShardingStrategyByDay() {
         int stepAmount = 2;
-        shardingAlgorithmByDay = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INTERVAL", createDayProperties(stepAmount)));
+        shardingAlgorithmByDay = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createDayProperties(stepAmount)), ShardingAlgorithm.class);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -166,8 +166,8 @@ public final class IntervalShardingAlgorithmTest {
     
     private void initShardStrategyByDayWithMillisecond() {
         int stepAmount = 2;
-        shardingAlgorithmByDayWithMillisecond = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INTERVAL", createDayWithMillisecondProperties(stepAmount)));
+        shardingAlgorithmByDayWithMillisecond = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("INTERVAL", createDayWithMillisecondProperties(stepAmount)), ShardingAlgorithm.class);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForDayWithMillisecondDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -188,8 +188,7 @@ public final class IntervalShardingAlgorithmTest {
     
     private void initShardingStrategyByJDBCDate() {
         int stepAmount = 2;
-        shardingAlgorithmByJDBCDate = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INTERVAL", createJDBCDateProperties(stepAmount)));
+        shardingAlgorithmByJDBCDate = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createJDBCDateProperties(stepAmount)), ShardingAlgorithm.class);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForJDBCDateDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -209,8 +208,7 @@ public final class IntervalShardingAlgorithmTest {
     
     private void initShardingStrategyByJDBCTime() {
         int stepAmount = 2;
-        shardingAlgorithmByJDBCTime = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INTERVAL", createJDBCTimeProperties(stepAmount)));
+        shardingAlgorithmByJDBCTime = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createJDBCTimeProperties(stepAmount)), ShardingAlgorithm.class);
         for (int i = 2; i < 13; i++) {
             availableTablesForJDBCTimeDataSources.add(String.format("t_order_%02d%02d", i, 0));
         }
@@ -229,8 +227,7 @@ public final class IntervalShardingAlgorithmTest {
     
     private void initShardingStrategyByYear() {
         int stepAmount = 2;
-        shardingAlgorithmByYear = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INTERVAL", createYearProperties(stepAmount)));
+        shardingAlgorithmByYear = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createYearProperties(stepAmount)), ShardingAlgorithm.class);
         for (int i = 2000; i < 2023; i++) {
             availableTablesForYearDataSources.add(String.format("t_order_%04d", i));
         }
@@ -249,8 +246,7 @@ public final class IntervalShardingAlgorithmTest {
     
     private void initShardingStrategyByYearMonth() {
         int stepAmount = 2;
-        shardingAlgorithmByYearMonth = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INTERVAL", createYearMonthProperties(stepAmount)));
+        shardingAlgorithmByYearMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createYearMonthProperties(stepAmount)), ShardingAlgorithm.class);
         for (int i = 2016; i <= 2021; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForYearMonthDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -271,8 +267,7 @@ public final class IntervalShardingAlgorithmTest {
     
     private void initShardingStrategyByMonthInJSR310() {
         int stepAmount = 2;
-        shardingAlgorithmByMonthInJSR310 = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INTERVAL", createMonthInJSR310Properties(stepAmount)));
+        shardingAlgorithmByMonthInJSR310 = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createMonthInJSR310Properties(stepAmount)), ShardingAlgorithm.class);
         for (int i = 2; i < 13; i++) {
             availableTablesForMonthInJSR310DataSources.add(String.format("t_order_%02d", i));
         }

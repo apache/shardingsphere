@@ -13,9 +13,9 @@ The `ADD SHARDING HINT DATABASE_VALUE` syntax is used to add sharding database v
 {{% tab name="Grammar" %}}
 ```sql
 AddShardingHintDatabaseValue ::=
-  'ADD' 'SHARDING' 'HINT' 'DATABASE_VALUE' shardingHintDatabaseValueDefination
+  'ADD' 'SHARDING' 'HINT' 'DATABASE_VALUE' shardingHintDatabaseValueDefinition
   
-  shardingHintDatabaseValueDefination ::=
+  shardingHintDatabaseValueDefinition ::=
     tableName '=' databaseShardingValue
 
   tableName ::=

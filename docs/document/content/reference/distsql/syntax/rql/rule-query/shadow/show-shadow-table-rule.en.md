@@ -11,7 +11,7 @@ The `SHOW SHADOW TABLE RULE` syntax is used to query shadow table rules for spec
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowEncryptRule::=
   'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
 

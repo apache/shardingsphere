@@ -13,7 +13,7 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 EnableDisableComputeNode ::=
-  ( 'ENABLE' | 'DISABLE' ) 'COMPUTE' 'NODE' instanceId
+  ('ENABLE' | 'DISABLE') 'COMPUTE' 'NODE' instanceId
 
 instanceId ::=
   string

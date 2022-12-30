@@ -18,18 +18,21 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 
 import java.util.Collection;
 
 /**
  * Create readwrite-splitting rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateReadwriteSplittingRuleStatement extends CreateRuleStatement {
     
     private final Collection<ReadwriteSplittingRuleSegment> rules;
+    
+    public CreateReadwriteSplittingRuleStatement(final boolean ifNotExists, final Collection<ReadwriteSplittingRuleSegment> rules) {
+        super(ifNotExists);
+        this.rules = rules;
+    }
 }

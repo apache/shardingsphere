@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.base;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -106,7 +105,6 @@ public abstract class PipelineBaseE2EIT {
     
     private DataSource proxyDataSource;
     
-    @Setter
     private Thread increaseTaskThread;
     
     public PipelineBaseE2EIT(final PipelineTestParameter testParam) {
@@ -271,14 +269,14 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
-        setIncreaseTaskThread(new Thread(baseIncrementTask));
-        getIncreaseTaskThread().start();
+        increaseTaskThread = new Thread(baseIncrementTask);
+        increaseTaskThread.start();
     }
     
     // TODO use DAO to query via DistSQL
     protected List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) throws InterruptedException {
-        if (null != getIncreaseTaskThread()) {
-            TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
+        if (null != increaseTaskThread) {
+            TimeUnit.SECONDS.timedJoin(increaseTaskThread, 30);
         }
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);

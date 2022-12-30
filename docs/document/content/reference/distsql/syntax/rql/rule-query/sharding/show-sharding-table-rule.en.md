@@ -11,7 +11,7 @@ The `SHOW SHARDING TABLE RULE` syntax is used to query the sharding table rule i
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowShardingTableRule ::=
   'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 

@@ -12,7 +12,7 @@ weight = 13
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowShardingTableRulesUsedAuditor::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'AUDITOR' AuditortorName ('FROM' databaseName)?
 

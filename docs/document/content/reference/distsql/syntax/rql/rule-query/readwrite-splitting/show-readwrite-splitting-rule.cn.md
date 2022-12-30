@@ -11,7 +11,7 @@ weight = 2
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowReadWriteSplittingRule::=
   'SHOW' 'READWRITE_SPLITTING' 'RULES' ('FROM' databaseName)?
 

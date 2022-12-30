@@ -12,9 +12,9 @@ weight = 10
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowShardingTableNode::=
-  'SHOW' 'SHARDING' 'TABLE' 'NODE'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'NODE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

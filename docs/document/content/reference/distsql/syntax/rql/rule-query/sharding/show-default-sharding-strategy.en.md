@@ -11,7 +11,7 @@ The `SHOW DEFAULT SHARDING STRATEGY` syntax is used to query default sharding st
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowDefaultShardingStrategy::=
   'SHOW' 'DEFAULT' 'SHARDING' 'STRATEGY' ('FROM' databaseName)?
 

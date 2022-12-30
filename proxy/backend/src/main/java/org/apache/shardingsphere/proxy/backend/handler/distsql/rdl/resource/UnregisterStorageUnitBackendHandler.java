@@ -22,9 +22,9 @@ import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.ResourceInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHa
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -59,10 +59,10 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
     public ResponseHeader execute(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         try {
-            ProxyContext.getInstance().getContextManager().dropResources(databaseName, sqlStatement.getStorageUnitNames());
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().unregisterStorageUnits(databaseName, sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Unregister storage unit failed", ex);
-            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -78,7 +78,7 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
     private void checkExisted(final String databaseName, final Collection<String> storageUnitNames) {
         Map<String, DataSource> dataSources = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
         Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !dataSources.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedStorageUnits));
+        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnits));
     }
     
     private void checkInUsed(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
@@ -90,7 +90,7 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
                 checkInUsedIgnoreSingleTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits);
             } else {
                 String firstResource = inUsedStorageUnitNames.iterator().next();
-                throw new ResourceInUsedException(firstResource, inUsedStorageUnits.get(firstResource));
+                throw new StorageUnitInUsedException(firstResource, inUsedStorageUnits.get(firstResource));
             }
         }
     }
@@ -127,8 +127,8 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
     private void checkInUsedIgnoreSingleTables(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedStorageUnits) {
         for (String each : inUsedResourceNames) {
             Collection<String> inUsedRules = inUsedStorageUnits.get(each);
-            inUsedRules.remove(SingleTableRule.class.getSimpleName());
-            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new ResourceInUsedException(each, inUsedRules));
+            inUsedRules.remove(SingleRule.class.getSimpleName());
+            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new StorageUnitInUsedException(each, inUsedRules));
         }
     }
 }

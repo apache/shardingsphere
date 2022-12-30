@@ -18,30 +18,25 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.logging.base.threadlocal.ElapsedTimeThreadLocal;
+import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.core.util.TimeRecorder;
 
 import java.lang.reflect.Method;
 
 /**
- * Schema meta data loader advice.
+ * Meta data contexts factory advice.
  */
 @Slf4j
-public final class MetaDataContextsFactoryAdvice implements StaticMethodAroundAdvice {
+public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
+        TimeRecorder.INSTANCE.record();
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        try {
-            long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-            log.info("Build meta data contexts finished, cost {} milliseconds", elapsedTime);
-        } finally {
-            ElapsedTimeThreadLocal.INSTANCE.remove();
-        }
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
+        log.info("Build meta data contexts finished, cost {} milliseconds.", TimeRecorder.INSTANCE.getElapsedTime());
+        TimeRecorder.INSTANCE.clean();
     }
 }

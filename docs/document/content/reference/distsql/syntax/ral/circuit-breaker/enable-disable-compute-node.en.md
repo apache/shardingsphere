@@ -13,7 +13,7 @@ The `ENABLE/DISABLE COMPUTE NODE` syntax is used enable/disable a specified prox
 {{% tab name="Grammar" %}}
 ```sql
 EnableDisableComputeNode ::=
-  ( 'ENABLE' | 'DISABLE' ) 'COMPUTE' 'NODE' instanceId
+  ('ENABLE' | 'DISABLE') 'COMPUTE' 'NODE' instanceId
 
 instanceId ::=
   string

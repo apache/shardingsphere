@@ -11,7 +11,7 @@ The `COUNT SINGLE_TABLE RULE` syntax is used to query number of single table rul
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 CountSingleTableRule::=
   'COUNT' 'SINGLE_TABLE' 'RULE' ('FROM' databaseName)?
   

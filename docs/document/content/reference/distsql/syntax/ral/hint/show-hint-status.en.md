@@ -13,7 +13,7 @@ The `SHOW HINT STATUS` syntax is used to query hint settings for current connect
 {{% tab name="Grammar" %}}
 ```sql
 ShowHintStatus ::=
-  'SHOW' ('SHARDING'|'READWRITE_SPLITTING') 'HINT' 'STATUS'
+  'SHOW' ('SHARDING' | 'READWRITE_SPLITTING') 'HINT' 'STATUS'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}

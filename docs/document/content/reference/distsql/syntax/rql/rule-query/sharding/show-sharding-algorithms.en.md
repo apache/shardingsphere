@@ -11,7 +11,7 @@ The `SHOW SHARDING ALGORITHMS` syntax is used to query the sharding algorithms i
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowShardingAlgorithms::=
   'SHOW' 'SHARDING' 'ALGORITHMS' ('FROM' databaseName)?
 

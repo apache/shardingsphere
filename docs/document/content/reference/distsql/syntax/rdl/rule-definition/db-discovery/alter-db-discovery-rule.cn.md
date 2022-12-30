@@ -13,11 +13,14 @@ weight = 3
 {{% tab name="语法" %}}
 ```sql
 AlterDatabaseDiscoveryRule ::=
-  'ALTER' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition ( ',' databaseDiscoveryDefinition)*
+  'ALTER' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
-        
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' ',' 'TYPE' '(' 'NAME' '=' typeName (',' propertiesDefinition)? ')' ',' 'HEARTBEAT' '(' propertiesDefinition ')' ')' 
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
 ruleName ::=
   identifier
 
@@ -29,6 +32,12 @@ typeName ::=
 
 discoveryHeartbeatName ::=
   identifier
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}

@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 createShadowRule
-    : CREATE SHADOW RULE shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
+    : CREATE SHADOW RULE ifNotExists? shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
     ;
 
 alterShadowRule
@@ -36,7 +36,7 @@ dropShadowAlgorithm
     ;
 
 createDefaultShadowAlgorithm
-    : CREATE DEFAULT SHADOW ALGORITHM algorithmDefinition
+    : CREATE DEFAULT SHADOW ALGORITHM ifNotExists? algorithmDefinition
     ;
 
 dropDefaultShadowAlgorithm
@@ -73,4 +73,8 @@ algorithmName
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

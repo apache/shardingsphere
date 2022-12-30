@@ -19,12 +19,13 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,10 +52,10 @@ public final class InlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        inlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()));
-        inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()));
-        negativeNumberInlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createNegativeAllowRangeQueryProperties()));
+        inlineShardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()), ShardingAlgorithm.class);
+        inlineShardingAlgorithmWithSimplified = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()), ShardingAlgorithm.class);
+        negativeNumberInlineShardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("INLINE", createNegativeAllowRangeQueryProperties()), ShardingAlgorithm.class);
     }
     
     private Properties createAllowRangeQueryProperties() {

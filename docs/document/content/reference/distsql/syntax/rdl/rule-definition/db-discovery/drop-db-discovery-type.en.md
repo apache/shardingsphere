@@ -13,7 +13,7 @@ The `DROP DB_DISCOVERY TYPE` syntax is used to drop database discovery type for 
 {{% tab name="Grammar" %}}
 ```sql
 DropDatabaseDiscoveryType ::=
-  'DROP' 'DB_DISCOVERY' 'TYPE'  dbDiscoveryTypeName (',' dbDiscoveryTypeName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'TYPE'  dbDiscoveryTypeName (',' dbDiscoveryTypeName)* ('FROM' databaseName)?
 
 dbDiscoveryTypeName ::=
   identifier

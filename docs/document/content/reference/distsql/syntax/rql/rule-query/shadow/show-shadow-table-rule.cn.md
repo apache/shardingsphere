@@ -11,7 +11,7 @@ weight = 3
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowEncryptRule::=
   'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
 

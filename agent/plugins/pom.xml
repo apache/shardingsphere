@@ -29,6 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>core</module>
         <module>metrics</module>
         <module>tracing</module>
         <module>logging</module>
@@ -37,7 +38,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-core</artifactId>
+            <artifactId>shardingsphere-agent-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -54,18 +55,19 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
+                            <minimizeJar>true</minimizeJar>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
+                                    <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
+                                    <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
+                                    <exclude>com.google.guava:listenablefuture:jar:*</exclude>
+                                    <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
                                     <exclude>com.h2database:h2:jar:</exclude>
-                                    <exclude>com.google.*:*</exclude>
-                                    <exclude>com.google.guava:guava:*</exclude>
                                     <exclude>org.slf4j:*</exclude>
-                                    <exclude>org.yaml:snakeyaml:*</exclude>
                                     <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
@@ -85,6 +87,10 @@
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.netty</pattern>
+                                    <shadedPattern>${shade.package}.io.netty</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

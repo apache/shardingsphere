@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.exception.data.UnsupportedShadowColumnTypeException;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -31,19 +32,15 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Test
     public void assertIsShadow() {
-        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("REGEX_MATCH", createProperties()), ShadowAlgorithm.class);
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
         createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = UnsupportedShadowColumnTypeException.class)
     public void assertExceptionCase() {
-        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = createShadowAlgorithm();
+        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("REGEX_MATCH", createProperties()), ShadowAlgorithm.class);
         createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
-    }
-    
-    private ColumnRegexMatchedShadowAlgorithm createShadowAlgorithm() {
-        return (ColumnRegexMatchedShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()));
     }
     
     private Properties createProperties() {

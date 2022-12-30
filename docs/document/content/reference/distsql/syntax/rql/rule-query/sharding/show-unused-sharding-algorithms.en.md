@@ -11,7 +11,7 @@ The `SHOW UNUSED SHARDING ALGORITHMS` syntax is used to query the unused shardin
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowShardingAlgorithms::=
   'SHOW' 'UNUSED' 'SHARDING' 'ALGORITHMS' ('FROM' databaseName)?
 

@@ -40,7 +40,7 @@ public final class MySQLErrPacketFactory {
      */
     public static MySQLErrPacket newInstance(final Exception cause) {
         SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, "MySQL");
-        return null == sqlException.getSQLState() ? new MySQLErrPacket(1, MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : createErrPacket(sqlException);
+        return null == sqlException.getSQLState() ? new MySQLErrPacket(MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : createErrPacket(sqlException);
     }
     
     private static String getErrorMessage(final SQLException cause) {
@@ -48,6 +48,6 @@ public final class MySQLErrPacketFactory {
     }
     
     private static MySQLErrPacket createErrPacket(final SQLException cause) {
-        return new MySQLErrPacket(1, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
+        return new MySQLErrPacket(cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
 }

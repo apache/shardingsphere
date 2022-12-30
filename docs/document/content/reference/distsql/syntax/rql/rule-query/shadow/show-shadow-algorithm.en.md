@@ -11,7 +11,7 @@ The `SHOW SHADOW ALGORITHM` syntax is used to query shadow algorithms for specif
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowEncryptAlgorithm::=
   'SHOW' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
 

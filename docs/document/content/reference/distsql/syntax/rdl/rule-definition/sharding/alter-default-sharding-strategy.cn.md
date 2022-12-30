@@ -16,10 +16,13 @@ AlterDefaultShardingStrategy ::=
   'ALTER' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
 
 shardingStrategy ::=
-  'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
+  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' '=' columnName | 'SHARDING_COLUMNS' '=' columnNames) ',' 'SHARDING_ALGORITHM' '=' algorithmDefinition
+
+strategyType ::=
+  string
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ',' 'PROPERTIES'  '(' propertyDefinition ')' ')'  
+  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'  
 
 columnNames ::=
   columnName (',' columnName)+
@@ -27,11 +30,17 @@ columnNames ::=
 columnName ::=
   identifier
 
-algorithmName ::=
-  identifier
-  
 algorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}

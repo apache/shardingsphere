@@ -6,9 +6,9 @@ chapter = true
 
 ## Overview
 
-ShardingSphere provides a JDBC driver, and developers can configure `ShardingSphereDriver` in Spring to use ShardingSphere.
+ShardingSphere provides a JDBC driver. To use ShardingSphere, developers can configure `ShardingSphereDriver` in Spring.
 
-## Usage
+## Operation
 
 ### Import Maven Dependency
 

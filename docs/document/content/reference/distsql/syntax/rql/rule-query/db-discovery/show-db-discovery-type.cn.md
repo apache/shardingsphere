@@ -11,7 +11,7 @@ weight = 3
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'TYPES' ('FROM' databaseName)?
 

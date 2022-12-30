@@ -13,7 +13,7 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 DropEncryptRule ::=
-  'DROP' 'ENCRYPT' 'RULE' tableName ( ',' tableName )*
+  'DROP' 'ENCRYPT' 'RULE' tableName (',' tableName)*
     
 tableName ::=
   identifier

@@ -31,8 +31,8 @@
     <modules>
         <module>api</module>
         <module>core</module>
-        <module>bootstrap</module>
         <module>plugins</module>
+        
         <module>distribution</module>
     </modules>
     

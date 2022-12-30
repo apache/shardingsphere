@@ -11,7 +11,7 @@ weight = 4
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 CountSingleTableRule::=
   'COUNT' 'SINGLE_TABLE' 'RULE' ('FROM' databaseName)?
   

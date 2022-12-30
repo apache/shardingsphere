@@ -13,13 +13,19 @@ weight = 5
 {{% tab name="语法" %}}
 ```sql
 CreateDefaultShardingStrategy ::=
-  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
+  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' ifNotExists? '(' shardingStrategy ')'
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 shardingStrategy ::=
-  'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
+  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' '=' columnName | 'SHARDING_COLUMNS' '=' columnNames) ',' 'SHARDING_ALGORITHM' '=' algorithmDefinition
+
+strategyType ::=
+  string
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ',' 'PROPERTIES'  '(' propertyDefinition ')' ')'  
+  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'  
 
 columnNames ::=
   columnName (',' columnName)+
@@ -27,11 +33,17 @@ columnNames ::=
 columnName ::=
   identifier
 
-algorithmName ::=
-  identifier
-  
 algorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -42,7 +54,8 @@ algorithmType ::=
 ### 补充说明
 
 - 当使用复合分片算法时，需要通过 `SHARDING_COLUMNS` 指定多个分片键；
-- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)。
+- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
+- `ifNotExists` 子句用于避免出现 `Duplicate default sharding strategy` 错误。
 
 ### 示例
 
@@ -50,6 +63,14 @@ algorithmType ::=
 
 ```sql
 CREATE DEFAULT SHARDING TABLE STRATEGY (
+    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
+);
+```
+
+- 使用 `ifNotExists` 创建默认分表策略
+
+```sql
+CREATE DEFAULT SHARDING TABLE STRATEGY IF NOT EXISTS (
     TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
 ```

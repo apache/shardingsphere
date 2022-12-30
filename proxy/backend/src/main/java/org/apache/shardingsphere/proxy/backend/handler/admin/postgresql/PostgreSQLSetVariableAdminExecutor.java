@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
@@ -36,6 +37,8 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
         VariableAssignSegment variableAssignSegment = setStatement.getVariableAssigns().iterator().next();
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();
-        PostgreSQLSessionVariableHandlerFactory.getHandler(variableName).handle(connectionSession, variableName, assignValue);
+        PostgreSQLSessionVariableHandler variableHandler = TypedSPIRegistry.findRegisteredService(
+                PostgreSQLSessionVariableHandler.class, variableName).orElseGet(DefaultPostgreSQLSessionVariableHandler::new);
+        variableHandler.handle(connectionSession, variableName, assignValue);
     }
 }

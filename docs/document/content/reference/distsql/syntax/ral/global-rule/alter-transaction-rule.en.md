@@ -13,7 +13,10 @@ The `ALTER TRANSACTION RULE` syntax is used to alter transaction rule configurat
 {{% tab name="Grammar" %}}
 ```sql
 AlterTransactionRule ::=
-  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType ',' 'TYPE' '(' 'NAME' '=' transactionManager ',' 'PROPERTIES' '(' key '=' value (',' key '=' value)* ')' ')' ')'
+  'ALTER' 'TRANSACTION' 'RULE' '(' 'DEFAULT' '=' defaultTransactionType ',' 'TYPE' '(' 'NAME' '=' transactionManager ',' propertiesDefinition ')' ')'
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 defaultTransactionType ::=
   string
@@ -25,7 +28,7 @@ key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}

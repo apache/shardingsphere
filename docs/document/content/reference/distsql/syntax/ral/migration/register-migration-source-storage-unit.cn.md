@@ -16,7 +16,7 @@ RegisterStorageUnit ::=
   'REGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  StorageUnitName '('  'URL' '=' url ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
+  StorageUnitName '('  'URL' '=' url ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
 
 storageUnitName ::=
   identifier
@@ -30,17 +30,14 @@ user ::=
 password ::=
   string
 
-proerties ::=
-  PROPERTIES '(' property ( ',' property )* ')'
-
-property ::=
-  key '=' value
+propertiesDefinition ::=
+  'PROPERTIES' '(' ( key  '=' value ) ( ',' key  '=' value )* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}

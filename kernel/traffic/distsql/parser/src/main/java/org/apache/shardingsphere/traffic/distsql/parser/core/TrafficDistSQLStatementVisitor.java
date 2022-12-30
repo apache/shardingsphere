@@ -61,10 +61,7 @@ public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatemen
     
     @Override
     public ASTNode visitTrafficRuleDefinition(final TrafficRuleDefinitionContext ctx) {
-        AlgorithmSegment loadBalancerSegment = null;
-        if (null != ctx.loadBalancerDefinition()) {
-            loadBalancerSegment = (AlgorithmSegment) visit(ctx.loadBalancerDefinition().algorithmDefinition());
-        }
+        AlgorithmSegment loadBalancerSegment = null != ctx.loadBalancerDefinition() ? (AlgorithmSegment) visit(ctx.loadBalancerDefinition().algorithmDefinition()) : null;
         return new TrafficRuleSegment(
                 getIdentifierValue(ctx.ruleName()), buildLabels(ctx.labelDefinition()), (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), loadBalancerSegment);
     }

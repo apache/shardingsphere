@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
-import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +38,7 @@ public final class SQLRegexTrafficAlgorithmTest {
     
     @Before
     public void setUp() {
-        sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TrafficAlgorithmFactory.newInstance(new AlgorithmConfiguration("SQL_REGEX", createProperties()));
+        sqlRegexAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SQL_REGEX", createProperties()), TrafficAlgorithm.class);
     }
     
     private Properties createProperties() {

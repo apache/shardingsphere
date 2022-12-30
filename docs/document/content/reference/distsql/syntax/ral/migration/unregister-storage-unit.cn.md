@@ -13,7 +13,7 @@ weight = 5
 {{% tab name="语法" %}}
 ```sql
 UnregisterMigrationSourceStorageUnit ::=
-  'UNREGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitName  ( ',' storageUnitName )* 
+  'UNREGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitName  (',' storageUnitName)* 
 
 storageUnitName ::=
   identifier

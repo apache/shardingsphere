@@ -12,7 +12,7 @@ The `SET DIST VARIABLE` syntax is used to set system variables.
 {{% tab name="Grammar" %}}
 ```sql
 SetDistVariable ::=
-  'SET' 'DIST' 'VARIABLE' ( proxyPropertyName '=' proxyPropertyValue | 'transaction_type' '=' transactionType | 'agent_plugins_enable' '=' agentPluginsEnable )
+  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'transaction_type' '=' transactionType | 'agent_plugins_enable' '=' agentPluginsEnable)
 
 proxyPropertyName ::= 
   identifier

@@ -13,13 +13,25 @@ weight = 5
 {{% tab name="语法" %}}
 ```sql
 CreateDefaultShadowAlgorithm ::=
-  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
+  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' ifNotExists? shadowAlgorithm 
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 shadowAlgorithm ::=
-  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefiinition ')'
     
 shadowAlgorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -29,14 +41,21 @@ shadowAlgorithmType ::=
 
 ### 补充说明
 
-- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`。
+- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
+- `ifNotExists` 子句用于避免出现 `Duplicate default shadow algorithm` 错误。
 
 ### 示例
 
 - 创建默认影子库压测算法
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
+```
+
+- 使用 `ifNotExists` 子句创建默认影子库压测算法
+
+```sql
+CREATE DEFAULT SHADOW ALGORITHM IF NOT EXISTS TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
 ```
 
 ### 保留字

@@ -17,24 +17,27 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
-import org.apache.shardingsphere.distsql.handler.exception.resource.EmptyResourceException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -42,9 +45,14 @@ import java.util.stream.Collectors;
  */
 public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
     
+    private boolean ifNotExists;
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
+        ifNotExists = sqlStatement.isIfNotExists();
+        if (!ifNotExists) {
+            checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
+        }
         checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         checkDataSources(database);
@@ -71,12 +79,12 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
-        Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !EncryptAlgorithmFactory.contains(each)).collect(Collectors.toList());
+        Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors));
     }
     
     private void checkDataSources(final ShardingSphereDatabase database) {
-        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getDataSources().isEmpty(), () -> new EmptyResourceException(database.getName()));
+        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getDataSources().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
     }
     
     @Override
@@ -87,9 +95,32 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     @Override
     public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
+            if (ifNotExists) {
+                removeDuplicatedRules(currentRuleConfig, toBeCreatedRuleConfig);
+            }
+            if (toBeCreatedRuleConfig.getTables().isEmpty()) {
+                return;
+            }
             currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
             currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
         }
+    }
+    
+    private void removeDuplicatedRules(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
+        Collection<String> currentTables = new LinkedList<>();
+        Collection<String> toBeRemovedEncryptors = new LinkedList<>();
+        Collection<String> toBeRemovedTables = new LinkedList<>();
+        currentRuleConfig.getTables().forEach(each -> currentTables.add(each.getName()));
+        toBeCreatedRuleConfig.getTables().forEach(each -> {
+            if (currentTables.contains(each.getName())) {
+                toBeRemovedEncryptors.addAll(each.getColumns().stream().map(EncryptColumnRuleConfiguration::getEncryptorName).collect(Collectors.toList()));
+                toBeRemovedEncryptors.addAll(each.getColumns().stream().map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName).collect(Collectors.toList()));
+                toBeRemovedEncryptors.addAll(each.getColumns().stream().map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName).collect(Collectors.toList()));
+                toBeRemovedTables.add(each.getName());
+            }
+        });
+        toBeCreatedRuleConfig.getTables().removeIf(each -> toBeRemovedTables.contains(each.getName()));
+        toBeCreatedRuleConfig.getEncryptors().keySet().removeIf(toBeRemovedEncryptors::contains);
     }
     
     @Override

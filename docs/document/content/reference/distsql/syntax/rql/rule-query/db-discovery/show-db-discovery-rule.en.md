@@ -11,7 +11,7 @@ The `SHOW DB_DISCOVERY RULES` syntax is used to query database discovery rules f
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
-```
+```sql
 ShowDatabaseDiscoveryRule::=
   'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
 

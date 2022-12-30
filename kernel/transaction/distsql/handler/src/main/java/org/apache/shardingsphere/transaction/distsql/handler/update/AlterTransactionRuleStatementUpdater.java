@@ -22,16 +22,16 @@ import org.apache.shardingsphere.distsql.handler.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
-import org.apache.shardingsphere.transaction.factory.ShardingSphereTransactionManagerFactory;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.util.Collection;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Alter transaction rule statement handler.
@@ -66,11 +66,14 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     }
     
     private void checkTransactionManager(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
-        ShardingSphereTransactionManager transactionManager = ShardingSphereTransactionManagerFactory.getInstance(transactionType).orElse(null);
-        ShardingSpherePreconditions.checkState(Objects.nonNull(transactionManager),
+        Collection<ShardingSphereTransactionManager> transactionManagers = ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class);
+        ShardingSpherePreconditions.checkState(!transactionManagers.isEmpty(),
+                () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager with type `%s`", statement.getDefaultType())));
+        Optional<ShardingSphereTransactionManager> transactionManager = transactionManagers.stream().filter(each -> transactionType.equals(each.getTransactionType())).findFirst();
+        ShardingSpherePreconditions.checkState(transactionManager.isPresent(),
                 () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager with type `%s`", statement.getDefaultType())));
         if (TransactionType.XA.equals(transactionType)) {
-            checkTransactionManagerProviderType(transactionManager, statement.getProvider().getProviderType());
+            checkTransactionManagerProviderType(transactionManager.get(), statement.getProvider().getProviderType());
         }
     }
     

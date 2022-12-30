@@ -11,7 +11,7 @@ weight = 12
 
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
+```sql
 ShowShardingTableRulesUsedKeyGenerator::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'KEY' 'GENERATOR' keyGeneratorName ('FROM' databaseName)?
 
