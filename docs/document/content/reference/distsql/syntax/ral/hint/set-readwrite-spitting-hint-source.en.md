@@ -9,10 +9,17 @@ The `SET READWRITE_SPLITTING HINT SOURCE` syntax is used to set readwrite splitt
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 SetReadwriteSplittingHintSource ::=
   'SET' 'READWRITE_SPLITTING' 'HINT' 'SOURCE' '='('auto' | 'write')
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Example
 

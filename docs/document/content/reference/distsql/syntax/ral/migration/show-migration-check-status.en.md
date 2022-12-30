@@ -9,6 +9,8 @@ The `SHOW MIGRATION CHECK STATUS` syntax is used to query migration check status
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowMigrationCheckStatus ::=
   'SHOW' 'MIGRATION' 'CHECK' 'STATUS' migrationJobId 
@@ -16,6 +18,11 @@ ShowMigrationCheckStatus ::=
 migrationJobId ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

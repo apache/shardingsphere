@@ -9,6 +9,8 @@ weight = 6
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowShardingKeyGenerators::=
   'SHOW' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ ShowShardingKeyGenerators::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

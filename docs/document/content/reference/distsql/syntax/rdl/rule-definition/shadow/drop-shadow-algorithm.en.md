@@ -9,6 +9,8 @@ The `DROP SHADOW ALGORITHM` syntax is used to drop shadow algorithm for specifie
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropShadowAlgorithm ::=
   'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
@@ -19,6 +21,11 @@ shadowAlgorithmName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

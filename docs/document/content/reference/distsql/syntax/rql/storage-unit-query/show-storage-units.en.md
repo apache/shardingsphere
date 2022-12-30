@@ -9,6 +9,8 @@ The `SHOW STORAGE UNITS` syntax is used to query the storage units that have bee
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowStorageUnit ::=
   'SHOW' 'STORAGE' 'UNITS' ('WHERE' 'USAGE_COUNT' '=' usageCount)? ('FROM' databaseName)?
@@ -19,6 +21,11 @@ usageCount ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

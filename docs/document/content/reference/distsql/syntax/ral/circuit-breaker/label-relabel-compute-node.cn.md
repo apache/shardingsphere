@@ -9,6 +9,8 @@ weight = 6
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 LableRelabelComputeNodes ::=
   ('LABEL' | 'RELABEL') 'COMPUTE' 'NODE' instance_id 'WITH' labelName
@@ -19,6 +21,12 @@ instance_id ::=
 labelName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 ### 补充说明
 
 - `instance_id` 需要通过 [SHOW COMPUTE NODES](/cn/reference/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) 语法查询获得

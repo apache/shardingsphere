@@ -10,6 +10,8 @@ weight = 8
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowShardingAuditors::=
   'SHOW' 'SHARDING' 'AUDITOR' ('FROM' databaseName)?
@@ -17,6 +19,11 @@ ShowShardingAuditors::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

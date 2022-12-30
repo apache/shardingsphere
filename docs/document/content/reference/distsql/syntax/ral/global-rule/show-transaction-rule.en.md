@@ -9,10 +9,17 @@ The `SHOW TRANSACTION RULE` syntax is used to query transaction rule configurati
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowTransactionRule ::=
   'SHOW' 'TRANSACTION' 'RULE'
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

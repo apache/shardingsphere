@@ -9,10 +9,17 @@ The `FORMAT SQL` syntax is used to parse `SQL` and output formated `SQL` stateme
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ParseSql ::=
   'FORMAT' sqlStatement  
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

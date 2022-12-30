@@ -9,6 +9,8 @@ The `ADD SHARDING HINT DATABASE_VALUE` syntax is used to add sharding database v
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AddShardingHintDatabaseValue ::=
   'ADD' 'SHARDING' 'HINT' 'DATABASE_VALUE' shardingHintDatabaseValueDefinition
@@ -22,6 +24,11 @@ AddShardingHintDatabaseValue ::=
   databaseShardingValue ::=
     int
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Example
 

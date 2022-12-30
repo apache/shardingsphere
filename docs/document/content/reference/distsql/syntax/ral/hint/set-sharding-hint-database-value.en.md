@@ -9,6 +9,8 @@ The `SET SHARDING HINT DATABASE_VALUE` syntax is used to set sharding value for 
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 SetShardingHintDatabaseValue ::=
   'SET' 'SHARDING' 'HINT' 'DATABASE_VALUE' '=' databaseShardingValue
@@ -16,6 +18,11 @@ SetShardingHintDatabaseValue ::=
   databaseShardingValue ::=
     int
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Example
 
