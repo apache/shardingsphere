@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
