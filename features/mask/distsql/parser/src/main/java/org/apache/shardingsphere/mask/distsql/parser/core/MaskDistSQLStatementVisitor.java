@@ -65,9 +65,8 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     
     @Override
     public ASTNode visitShowMaskRules(final MaskDistSQLStatementParser.ShowMaskRulesContext ctx) {
-        return new ShowMaskRulesStatement(null == ctx.RULE()
-                ? null
-                : getIdentifierValue(ctx.ruleName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowMaskRulesStatement(null == ctx.RULE() ? null : getIdentifierValue(ctx.ruleName()),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

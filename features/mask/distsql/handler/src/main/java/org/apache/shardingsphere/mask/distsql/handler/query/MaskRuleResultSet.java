@@ -67,7 +67,7 @@ public final class MaskRuleResultSet implements DatabaseDistSQLResultSet {
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "logic_column", "mask_algorithm", "props");
+        return Arrays.asList("table", "column", "algorithm_type", "algorithm_props");
     }
     
     @Override
