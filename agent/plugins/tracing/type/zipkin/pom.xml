@@ -28,6 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
         <zipkin-brave.version>5.13.2</zipkin-brave.version>
         <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
     </properties>
@@ -55,4 +56,15 @@
             <version>${zipkin-reporter.version}</version>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
