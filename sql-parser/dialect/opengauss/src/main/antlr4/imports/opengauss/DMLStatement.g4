@@ -234,7 +234,7 @@ limitClause
 
 offsetClause
     : OFFSET selectOffsetValue
-    | OFFSET selectFetchFirstValue rowOrRows
+    | OFFSET selectOffsetValue rowOrRows
     ;
 
 selectLimitValue
