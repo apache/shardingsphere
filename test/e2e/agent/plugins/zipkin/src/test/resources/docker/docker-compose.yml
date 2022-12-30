@@ -48,6 +48,7 @@ services:
       - "zipkin:zipkin.agent.tracing.zipkin.host"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy-agent-tracing-zipkin/conf
+      - ./agent/conf:/opt/shardingsphere-proxy-agent-tracing-zipkin/agent/conf
     depends_on:
       - mysql
       - zipkin
