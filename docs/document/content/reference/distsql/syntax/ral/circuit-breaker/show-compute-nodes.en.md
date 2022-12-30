@@ -51,7 +51,7 @@ mysql> SHOW COMPUTE NODES;
 1 row in set (0.01 sec)
 ```
 
-### Reserved word
+### Dedicated Terminology
 
 `SHOW`, `COMPUTE`, `NODES`
 
