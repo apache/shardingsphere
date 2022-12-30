@@ -47,7 +47,7 @@
 #  providerType: Atomikos
 #
 #sqlParser:
-#  sqlCommentParseEnabled: true
+#  sqlCommentParseEnabled: false
 #  sqlStatementCache:
 #    initialCapacity: 2000
 #    maximumSize: 65535
