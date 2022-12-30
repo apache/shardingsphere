@@ -30,6 +30,5 @@
     
     <modules>
         <module>jdbc</module>
-        <module>r2dbc-mariadb</module>
     </modules>
 </project>

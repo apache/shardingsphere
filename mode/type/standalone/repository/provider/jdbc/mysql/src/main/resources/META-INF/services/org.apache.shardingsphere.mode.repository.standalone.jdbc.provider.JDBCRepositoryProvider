@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.repository.standalone.r2dbc.mariadb.R2DBCMariaDBRepository
+org.apache.shardingsphere.mode.repository.standalone.jdbc.mysql.MySQLJDBCRepositoryProvider
