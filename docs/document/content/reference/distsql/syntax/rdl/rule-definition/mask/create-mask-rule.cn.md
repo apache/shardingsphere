@@ -50,8 +50,8 @@ value ::=
 
 ### 补充说明
 
-- `maskAlgorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/);
-- 重复的 `ruleName` 将无法被创建；
+- `maskAlgorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)；
+- 重复的 `ruleName` 将无法被创建。
 
 ### 示例
 
