@@ -9,6 +9,8 @@ weight = 6
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 AlterSqlParserRule ::=
   'ALTER' 'SQL_PARSER' 'RULE' 'SQL_COMMENT_PARSE_ENABLE' '=' sqlCommentParseEnable ',' 'PARSE_TREE_CACHE' parseTreeCacheDefinition ',' 'SQL_STATEMENT_CACHE' sqlStatementCacheDefinition
@@ -31,6 +33,11 @@ maximumSize ::=
 concurrencyLevel ::=
   int
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

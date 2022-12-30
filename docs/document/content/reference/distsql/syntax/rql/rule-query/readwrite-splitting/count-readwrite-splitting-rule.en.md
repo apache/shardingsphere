@@ -9,6 +9,8 @@ The `COUNT READWRITE_SPLITTING RULE` syntax is used to query the number of readw
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountReadwriteSplittingRule::=
   'COUNT' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountReadwriteSplittingRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

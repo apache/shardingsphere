@@ -9,6 +9,8 @@ The `DROP BROADCAST TABLE RULE` syntax is used to drop broadcast table rule for 
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropBroadcastTableRule ::=
   'DROP' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
@@ -16,6 +18,11 @@ DropBroadcastTableRule ::=
 tableName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

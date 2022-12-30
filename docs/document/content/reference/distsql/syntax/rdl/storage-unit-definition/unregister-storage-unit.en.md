@@ -9,6 +9,8 @@ The `UNREGISTER STORAGE UNIT` syntax is used to unregister storage unit from the
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 UnregisterStorageUnit ::=
   'UNREGISTER' 'STORAGE' 'UNIT' ('IF' 'EXISTS')? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
@@ -16,6 +18,11 @@ UnregisterStorageUnit ::=
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

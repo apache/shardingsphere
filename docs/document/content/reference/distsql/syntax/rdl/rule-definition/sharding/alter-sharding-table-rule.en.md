@@ -9,6 +9,8 @@ The `ALTER SHARDING TABLE RULE` syntax is used to alter sharding table rule for 
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterShardingTableRule ::=
   'ALTER' 'SHARDING' 'TABLE' 'RULE' (tableDefinition | autoTableDefinition) (',' (tableDefinition | autoTableDefinition))*
@@ -58,6 +60,11 @@ algorithmType ::=
 strategyType ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

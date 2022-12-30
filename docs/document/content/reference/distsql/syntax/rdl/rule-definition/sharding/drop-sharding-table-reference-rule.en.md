@@ -9,6 +9,8 @@ The `DROP SHARDING TABLE REFERENCE RULE` syntax is used to drop specified shardi
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropShardingTableReferenceRule ::=
   'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
@@ -16,6 +18,11 @@ DropShardingTableReferenceRule ::=
 ruleName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Example
 
