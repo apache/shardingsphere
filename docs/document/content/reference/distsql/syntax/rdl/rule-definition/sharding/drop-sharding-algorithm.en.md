@@ -9,6 +9,8 @@ The `DROP SHARDING ALGORITHM` syntax is used to drop sharding algorithm for spec
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropShardingAlgorithm ::=
   'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ shardingAlgorithmName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

@@ -9,6 +9,8 @@ The `DROP DB_DISCOVERY TYPE` syntax is used to drop database discovery type for 
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropDatabaseDiscoveryType ::=
   'DROP' 'DB_DISCOVERY' 'TYPE'  dbDiscoveryTypeName (',' dbDiscoveryTypeName)* ('FROM' databaseName)?
@@ -19,6 +21,11 @@ dbDiscoveryTypeName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

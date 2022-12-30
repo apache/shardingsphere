@@ -9,6 +9,8 @@ The `STOP MIGRATION CHECK` syntax is used to stop migration check process.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 StopMigrationCheck ::=
   'STOP' 'MIGRATION' 'CHECK' migrationJobId 
@@ -16,6 +18,11 @@ StopMigrationCheck ::=
 migrationJobId ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

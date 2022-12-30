@@ -8,6 +8,8 @@ weight = 4
 The `SET DIST VARIABLE` syntax is used to set system variables.
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 SetDistVariable ::=
   'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'transaction_type' '=' transactionType | 'agent_plugins_enable' '=' agentPluginsEnable)
@@ -24,6 +26,11 @@ transactionType ::=
 agentPluginsEnable ::=
   boolean
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

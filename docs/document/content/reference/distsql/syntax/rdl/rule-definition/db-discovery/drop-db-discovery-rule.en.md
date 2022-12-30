@@ -9,6 +9,8 @@ The `DROP DB_DISCOVERY RULE` syntax is used to drop database discovery rule for 
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropDatabaseDiscoveryRule ::=
   'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)* ('FROM' databaseName)?
@@ -19,6 +21,11 @@ dbDiscoveryRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

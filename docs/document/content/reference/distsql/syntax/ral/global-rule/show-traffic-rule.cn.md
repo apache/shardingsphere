@@ -8,6 +8,8 @@ weight = 9
 `SHOW TRAFFIC RULE` 语法用于查询指定的双路由规则
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowTrafficRule ::=
   'SHOW' 'TRAFFIC' ('RULES' | 'RULE' ruleName)?
@@ -15,6 +17,12 @@ ShowTrafficRule ::=
 ruleName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 ### 补充说明
 
 - 未指定 `ruleName` 时，默认查询所有双路由规则

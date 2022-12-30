@@ -9,6 +9,8 @@ The `SHOW DB_DISCOVERY TYPES` syntax is used to query database discovery types f
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'TYPES' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ ShowDatabaseDiscoveryType::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

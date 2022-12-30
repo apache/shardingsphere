@@ -9,6 +9,8 @@ The `SET DEFAULT SINGLE TABLE STORAGE UNIT` syntax is used to set default single
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 SetDefaultSingleTableStorageUnit ::=
   'SET' 'DEFAULT' 'SINGLE' 'TABLE' 'STORAGE' 'UNIT' singleTableDefinition
@@ -19,6 +21,11 @@ singleTableDefinition ::=
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

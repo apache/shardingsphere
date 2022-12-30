@@ -9,6 +9,8 @@ The `CREATE DB_DISCOVERY RULE` syntax is used to create a database discovery rul
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CreateDatabaseDiscoveryRule ::=
   'CREATE' 'DB_DISCOVERY' 'RULE' ifNotExists? databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
@@ -40,6 +42,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

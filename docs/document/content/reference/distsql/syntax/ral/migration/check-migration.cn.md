@@ -10,6 +10,8 @@ weight = 11
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowMigrationList ::=
   'CHECK' 'MIGRATION' migrationJobId 'BY' 'TYPE' '(' 'NAME' '=' migrationCheckAlgorithmType ')'
@@ -20,6 +22,11 @@ migrationJobId ::=
 migrationCheckAlgorithmType ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

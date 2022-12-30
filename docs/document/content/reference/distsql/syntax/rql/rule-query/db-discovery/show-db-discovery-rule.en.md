@@ -9,6 +9,8 @@ The `SHOW DB_DISCOVERY RULES` syntax is used to query database discovery rules f
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowDatabaseDiscoveryRule::=
   'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ ShowDatabaseDiscoveryRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
