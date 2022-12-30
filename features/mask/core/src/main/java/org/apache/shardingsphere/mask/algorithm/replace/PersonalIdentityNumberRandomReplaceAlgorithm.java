@@ -25,8 +25,8 @@ import java.util.Properties;
 import java.util.Random;
 
 /**
- * personal identity number random replace
- * random replacement of the first 6 bits
+ * personal identity number random replace.
+ * random replacement of the first 6 bits.
  */
 public class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
@@ -38,7 +38,7 @@ public class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskAlgorit
     private Properties props;
     
     @Override
-    public String mask(Object plainValue) {
+    public String mask(final Object plainValue) {
         String result = null == plainValue ? null : String.valueOf(plainValue);
         if (Strings.isNullOrEmpty(result)) {
             return result;
@@ -54,7 +54,7 @@ public class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskAlgorit
     }
     
     @Override
-    public void init(Properties props) {
+    public void init(final Properties props) {
     }
     
     @Override
