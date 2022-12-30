@@ -1,19 +1,19 @@
 +++
-title = "CREATE MASK RULE"
-weight = 2
+title = "ALTER MASK RULE"
+weight = 3
 +++
 
 ## Description
 
-The `CREATE MASK RULE` syntax is used to create a mask rule.
+The `ALTER MASK RULE` syntax is used to create a mask rule.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-CreateEncryptRule ::=
-  'CREATE' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
+AlterEncryptRule ::=
+  'ALTER' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
 
 maskRuleDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)* ')' ')'
@@ -50,15 +50,14 @@ value ::=
 
 ### Supplement
 
-- `maskAlgorithmType` specifies the data masking algorithm type, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/);
-- Duplicate `ruleName` will not be created.
+- `maskAlgorithmType` specifies the data masking algorithm type, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/).
 
 ### Example
 
-#### Create a mask rule
+#### Alter a mask rule
 
 ```sql
-CREATE MASK RULE t_mask (
+ALTER MASK RULE t_mask (
 COLUMNS(
 (NAME=phone_number,TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES("from-x"=1, "to-y"=2, "replace-char"="*"))),
 (NAME=address,TYPE(NAME='MD5'))
@@ -67,7 +66,7 @@ COLUMNS(
 
 ### Reserved words
 
-`CREATE`, `MASK`, `RULE`, `COLUMNS`, `NAME`, `TYPE`
+`ALTER`, `MASK`, `RULE`, `COLUMNS`, `NAME`, `TYPE`
 
 ### Related links
 

@@ -50,8 +50,8 @@ value ::=
 
 ### 补充说明
 
-- `maskAlgorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/);
-- 重复的 `ruleName` 将无法被创建；
+- `maskAlgorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)；
+- 重复的 `ruleName` 将无法被创建。
 
 ### 示例
 
@@ -69,7 +69,7 @@ COLUMNS(
 
 `CREATE`、`MASK`、`RULE`、`COLUMNS`、`NAME`、`TYPE`
 
-### Related links
+### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
 - [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)

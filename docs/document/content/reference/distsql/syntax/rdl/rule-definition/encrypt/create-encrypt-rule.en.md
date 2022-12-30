@@ -108,7 +108,7 @@ COLUMNS(
 ), QUERY_WITH_CIPHER_COLUMN=FALSE);
 ```
 
-### Reserved word
+### Reserved words
 
 `CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `PLAIN`, `QUERY_WITH_CIPHER_COLUMN`, `TYPE`, `TRUE`, `FALSE`
 

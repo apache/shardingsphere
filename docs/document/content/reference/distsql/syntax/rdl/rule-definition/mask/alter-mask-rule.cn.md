@@ -1,19 +1,19 @@
 +++
-title = "CREATE MASK RULE"
-weight = 2
+title = "ALTER MASK RULE"
+weight = 3
 +++
 
-## Description
+## 描述
 
-The `CREATE MASK RULE` syntax is used to create a mask rule.
+The `ALTER MASK RULE` 语法用于修改数据脱敏规则.
 
-### Syntax
+### 语法定义
 
 {{< tabs >}}
-{{% tab name="Grammar" %}}
+{{% tab name="语法" %}}
 ```sql
 CreateEncryptRule ::=
-  'CREATE' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
+  'ALTER' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
 
 maskRuleDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)* ')' ')'
@@ -43,33 +43,32 @@ value ::=
   literal
 ```
 {{% /tab %}}
-{{% tab name="Railroad diagram" %}}
+{{% tab name="铁路图" %}}
 <iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
 {{% /tab %}}
 {{< /tabs >}}
 
-### Supplement
+### 补充说明
 
-- `maskAlgorithmType` specifies the data masking algorithm type, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/);
-- Duplicate `ruleName` will not be created.
+- `maskAlgorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)。
 
-### Example
+### 示例
 
-#### Create a mask rule
+#### 修改数据脱敏规则
 
 ```sql
-CREATE MASK RULE t_mask (
+ALTER MASK RULE t_mask (
 COLUMNS(
 (NAME=phone_number,TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES("from-x"=1, "to-y"=2, "replace-char"="*"))),
 (NAME=address,TYPE(NAME='MD5'))
 ));
 ```
 
-### Reserved words
+### 保留字
 
-`CREATE`, `MASK`, `RULE`, `COLUMNS`, `NAME`, `TYPE`
+`ALTER`、`MASK`、`RULE`、`COLUMNS`、`NAME`、`TYPE`
 
-### Related links
+### 相关链接
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/)
+- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)
