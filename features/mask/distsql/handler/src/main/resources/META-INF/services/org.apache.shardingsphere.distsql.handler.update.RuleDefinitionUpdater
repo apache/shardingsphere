@@ -17,4 +17,4 @@
 
 org.apache.shardingsphere.mask.distsql.handler.update.CreateMaskRuleStatementUpdater
 org.apache.shardingsphere.mask.distsql.handler.update.AlterMaskRuleStatementUpdater
-#org.apache.shardingsphere.mask.distsql.handler.update.DropMaskRuleStatementUpdater
+org.apache.shardingsphere.mask.distsql.handler.update.DropMaskRuleStatementUpdater

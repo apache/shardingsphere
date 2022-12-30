@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementPars
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlterMaskRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.CreateMaskRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.DropMaskRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.MaskRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertyContext;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.parser.statement.CreateMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -51,6 +53,11 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     @Override
     public ASTNode visitAlterMaskRule(final AlterMaskRuleContext ctx) {
         return new AlterMaskRuleStatement(ctx.maskRuleDefinition().stream().map(each -> (MaskRuleSegment) visit(each)).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitDropMaskRule(final DropMaskRuleContext ctx) {
+        return new DropMaskRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
