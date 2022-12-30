@@ -42,7 +42,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
@@ -67,8 +66,8 @@ import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtra
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -90,10 +89,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * CDC job API impl.
+ * CDC job API.
  */
 @Slf4j
-public final class CDCJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl implements CDCJobAPI {
+public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
     
@@ -101,7 +100,12 @@ public final class CDCJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl 
     
     private final YamlPipelineDataSourceConfigurationSwapper pipelineDataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
-    @Override
+    /**
+     * Create CDC job config.
+     *
+     * @param event create CDC job event
+     * @return job id
+     */
     public boolean createJob(final CreateSubscriptionJobParameter event) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setDatabase(event.getDatabase());
