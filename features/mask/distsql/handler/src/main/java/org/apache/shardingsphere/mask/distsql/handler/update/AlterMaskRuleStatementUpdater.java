@@ -1,0 +1,106 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mask.distsql.handler.update;
+
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleStatementConverter;
+import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
+import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * Alter mask rule statement updater.
+ */
+public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterMaskRuleStatement, MaskRuleConfiguration> {
+    
+    @Override
+    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+        String databaseName = database.getName();
+        checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
+        checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String databaseName, final MaskRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Mask", databaseName));
+    }
+    
+    private void checkToBeAlteredRules(final String databaseName, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+        Collection<String> currentMaskTableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> notExistMaskTableNames = getToBeAlteredMaskTableNames(sqlStatement).stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
+        if (!notExistMaskTableNames.isEmpty()) {
+            throw new MissingRequiredRuleException("Mask", databaseName, notExistMaskTableNames);
+        }
+    }
+    
+    private Collection<String> getToBeAlteredMaskTableNames(final AlterMaskRuleStatement sqlStatement) {
+        return sqlStatement.getRules().stream().map(MaskRuleSegment::getTableName).collect(Collectors.toList());
+    }
+    
+    @Override
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
+        return MaskRuleStatementConverter.convert(sqlStatement.getRules());
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
+        dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        dropUnusedAlgorithms(currentRuleConfig);
+    }
+    
+    private void dropRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
+        for (MaskTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
+            Optional<MaskTableRuleConfiguration> toBeRemovedTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each.getName())).findAny();
+            Preconditions.checkState(toBeRemovedTableRuleConfig.isPresent());
+            currentRuleConfig.getTables().remove(toBeRemovedTableRuleConfig.get());
+        }
+    }
+    
+    private void addRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
+        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
+        currentRuleConfig.getMaskAlgorithms().putAll(toBeAlteredRuleConfig.getMaskAlgorithms());
+    }
+    
+    private void dropUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
+        Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm)
+                .collect(Collectors.toSet());
+        Collection<String> unusedAlgorithms = currentRuleConfig.getMaskAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
+        unusedAlgorithms.forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
+    }
+    
+    @Override
+    public Class<MaskRuleConfiguration> getRuleConfigurationClass() {
+        return MaskRuleConfiguration.class;
+    }
+    
+    @Override
+    public String getType() {
+        return AlterMaskRuleStatement.class.getName();
+    }
+}
