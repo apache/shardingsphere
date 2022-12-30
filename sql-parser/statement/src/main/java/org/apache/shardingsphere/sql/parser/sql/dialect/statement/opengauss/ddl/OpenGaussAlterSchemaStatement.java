@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -31,7 +30,6 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class OpenGaussAlterSchemaStatement extends AlterSchemaStatement implements OpenGaussStatement {
     
     private IdentifierValue renameSchema;

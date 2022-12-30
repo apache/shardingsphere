@@ -20,7 +20,7 @@ grammar RALStatement;
 import BaseRule;
 
 setReadwriteSplittingHintSource
-    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
+    : SET READWRITE_SPLITTING HINT SOURCE EQ_ sourceValue
     ;
 
 showReadwriteSplittingHintStatus
@@ -31,18 +31,14 @@ clearReadwriteSplittingHint
     : CLEAR READWRITE_SPLITTING HINT
     ;
 
-enableReadDataSource
-    : ENABLE READWRITE_SPLITTING (READ)? resourceName (FROM databaseName)?
+alterReadwriteSplittingStorageUnitStatus
+    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
     ;
 
-disableReadDataSource
-    : DISABLE READWRITE_SPLITTING (READ)? resourceName (FROM databaseName)?
-    ;
-
-showReadwriteSplittingReadResources
-    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM databaseName)?
+showStatusFromReadwriteSplittingRules
+    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
     ;
 
 sourceValue
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

@@ -36,5 +36,5 @@ countDatabaseDiscoveryRule
     ;
 
 databaseName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

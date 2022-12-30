@@ -46,9 +46,9 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRo
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
-import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandlerFactory;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -82,7 +82,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         this.metaDataLoader = metaDataLoader;
         YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
         log.info("incremental dump, jdbcUrl={}", jdbcConfig.getUrl());
-        DataSourceMetaData metaData = DatabaseTypeFactory.getInstance("MySQL").getDataSourceMetaData(jdbcConfig.getUrl(), null);
+        DataSourceMetaData metaData = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getDataSourceMetaData(jdbcConfig.getUrl(), null);
         client = new MySQLClient(new ConnectInfo(new SecureRandom().nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
         catalog = metaData.getCatalog();
     }
@@ -91,39 +91,35 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     protected void runBlocking() {
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
-        int eventCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null == event) {
                 continue;
             }
-            eventCount += handleEvent(event);
+            handleEvent(event);
         }
-        log.info("incremental dump, eventCount={}", eventCount);
         channel.pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
-    private int handleEvent(final AbstractBinlogEvent event) {
+    private void handleEvent(final AbstractBinlogEvent event) {
         if (event instanceof PlaceholderEvent || !((AbstractRowsEvent) event).getDatabaseName().equals(catalog) || !dumperConfig.containsTable(((AbstractRowsEvent) event).getTableName())) {
             createPlaceholderRecord(event);
-            return 0;
+            return;
         }
         if (event instanceof WriteRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((WriteRowsEvent) event).getTableName());
             handleWriteRowsEvent((WriteRowsEvent) event, tableMetaData);
-            return 1;
+            return;
         }
         if (event instanceof UpdateRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((UpdateRowsEvent) event).getTableName());
             handleUpdateRowsEvent((UpdateRowsEvent) event, tableMetaData);
-            return 1;
+            return;
         }
         if (event instanceof DeleteRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((DeleteRowsEvent) event).getTableName());
             handleDeleteRowsEvent((DeleteRowsEvent) event, tableMetaData);
-            return 1;
         }
-        return 0;
     }
     
     private void createPlaceholderRecord(final AbstractBinlogEvent event) {
@@ -180,7 +176,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
-        Optional<MySQLDataTypeHandler> dataTypeHandler = MySQLDataTypeHandlerFactory.findInstance(columnMetaData.getDataTypeName());
+        Optional<MySQLDataTypeHandler> dataTypeHandler = TypedSPIRegistry.findRegisteredService(MySQLDataTypeHandler.class, columnMetaData.getDataTypeName());
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
     

@@ -28,10 +28,10 @@ import java.util.Collection;
 @Getter
 public final class DropShardingKeyGeneratorStatement extends DropRuleStatement {
     
-    private final Collection<String> keyGeneratorNames;
+    private final Collection<String> names;
     
-    public DropShardingKeyGeneratorStatement(final boolean ifExists, final Collection<String> keyGeneratorNames) {
+    public DropShardingKeyGeneratorStatement(final boolean ifExists, final Collection<String> names) {
         super(ifExists);
-        this.keyGeneratorNames = keyGeneratorNames;
+        this.names = names;
     }
 }

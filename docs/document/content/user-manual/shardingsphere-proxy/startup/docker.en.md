@@ -72,6 +72,14 @@ docker run -d \
 ShardingSphere-Proxy default portal `3307` can be designated according to environment variable `-e PORT`
 Customized JVM related parameters can be set according to environment variable `JVM_OPTS`
 
+Note: 
+
+Support setting environment variable CGROUP_ MEM_ OPTS: used to set related memory parameters in the container environment. The default values in the script are:
+
+```sql
+-XX:InitialRAMPercentage=80.0 -XX:MaxRAMPercentage=80.0 -XX:MinRAMPercentage=80.0
+```
+
 5. Use Client to connect to ShardingSphere-Proxy
 
 Please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -38,7 +38,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -61,61 +60,67 @@ public final class CreateShadowRuleStatementUpdaterTest {
     @Before
     public void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", new ShadowDataSourceConfiguration("initDs0", "initDs0Shadow")));
+        when(database.getName()).thenReturn("aa");
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("initRuleName", "initDs0", "initDs0Shadow")));
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicateRuleName() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), null);
+        updater.checkSQLStatement(database, createSQLStatement(false, ruleSegment, ruleSegment), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicateRuleNameInMetaData() {
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("ruleName", null));
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("ruleName", "ds", "ds_shadow")));
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
-        updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
+        updater.checkSQLStatement(database, createSQLStatement(false, ruleSegment), currentConfig);
     }
     
-    @Test(expected = MissingRequiredResourcesException.class)
+    @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertExecuteWithNotExistResource() {
-        List<String> dataSources = Arrays.asList("ds0", "ds1");
-        when(resourceMetaData.getNotExistedResources(any())).thenReturn(dataSources);
-        CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds1", null, null));
+        when(resourceMetaData.getNotExistedResources(any())).thenReturn(Arrays.asList("ds0", "ds1"));
+        CreateShadowRuleStatement sqlStatement = createSQLStatement(false, new ShadowRuleSegment("ruleName", "ds1", null, null));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteDuplicateAlgorithm() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
-        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
-        CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
-                new ShadowRuleSegment("ruleName1", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", createProperties()));
+        CreateShadowRuleStatement sqlStatement = createSQLStatement(false, new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
+                new ShadowRuleSegment("ruleName", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteDuplicateAlgorithmWithoutConfiguration() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
-        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
-        CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", createProperties()));
+        CreateShadowRuleStatement sqlStatement = createSQLStatement(false, new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("ruleName1", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
         updater.checkSQLStatement(database, sqlStatement, null);
     }
     
-    @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteDuplicateAlgorithmInMetaData() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("algorithmName", new AlgorithmConfiguration("type", prop)));
-        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("type", prop));
-        CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))));
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertInvalidAlgorithmConfiguration() {
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("type", createProperties()));
+        CreateShadowRuleStatement sqlStatement = createSQLStatement(false, new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
-    private CreateShadowRuleStatement createSQLStatement(final ShadowRuleSegment... ruleSegments) {
-        return new CreateShadowRuleStatement(Arrays.asList(ruleSegments));
+    @Test
+    public void assertExecuteWithIfNotExists() {
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", createProperties()));
+        CreateShadowRuleStatement sqlStatement = createSQLStatement(true, new ShadowRuleSegment("initRuleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))));
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
+    }
+    
+    private CreateShadowRuleStatement createSQLStatement(final boolean ifNotExists, final ShadowRuleSegment... ruleSegments) {
+        return new CreateShadowRuleStatement(ifNotExists, Arrays.asList(ruleSegments));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("type", "value");
+        return result;
     }
 }

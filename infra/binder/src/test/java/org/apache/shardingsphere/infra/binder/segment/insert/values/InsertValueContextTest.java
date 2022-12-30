@@ -25,45 +25,47 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class InsertValueContextTest {
     
-    @SuppressWarnings("unchecked")
     @Test
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Collection<ExpressionSegment> assignments = Collections.emptyList();
-        List<Object> parameters = Collections.emptyList();
-        int parametersOffset = 0;
-        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
-        Method getValueExpressionsMethod = InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
-        getValueExpressionsMethod.setAccessible(true);
-        List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(insertValueContext, new Object[]{assignments});
-        assertThat(insertValueContext.getValueExpressions(), is(getValueExpressionsResult));
-        Method getParametersMethod = InsertValueContext.class.getDeclaredMethod("getParameters", List.class, int.class);
-        getParametersMethod.setAccessible(true);
-        List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(insertValueContext, new Object[]{parameters, parametersOffset});
-        assertThat(insertValueContext.getParameters(), is(getParametersResult));
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 0);
+        assertThat(insertValueContext.getValueExpressions(), is(
+                Plugins.getMemberAccessor().invoke(InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class), insertValueContext, Collections.emptyList())));
+        assertThat(insertValueContext.getParameters(), is(
+                Plugins.getMemberAccessor().invoke(InsertValueContext.class.getDeclaredMethod("getParameters", List.class, int.class), insertValueContext, Collections.emptyList(), 0)));
     }
     
     @Test
-    public void assertGetLiteralValueWhenParameterMarker() {
+    public void assertGetLiteralValueWithParameterMarker() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         String parameterValue = "test";
-        List<Object> parameters = Collections.singletonList(parameterValue);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, Collections.singletonList(parameterValue), 0);
+        Optional<Object> valueFromInsertValueContext = insertValueContext.getLiteralValue(0);
+        assertTrue(valueFromInsertValueContext.isPresent());
+        assertThat(valueFromInsertValueContext.get(), is(parameterValue));
+    }
+    
+    @Test
+    public void assertGetLiteralValueWhenParameterIsNull() {
+        Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         int parametersOffset = 0;
-        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
-        Object valueFromInsertValueContext = insertValueContext.getLiteralValue(0).get();
-        assertThat(valueFromInsertValueContext, is(parameterValue));
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, Collections.singletonList(null), parametersOffset);
+        Optional<Object> literalValue = insertValueContext.getLiteralValue(0);
+        assertThat(false, is(literalValue.isPresent()));
     }
     
     private Collection<ExpressionSegment> makeParameterMarkerExpressionSegment() {
@@ -74,10 +76,10 @@ public final class InsertValueContextTest {
     public void assertGetLiteralValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
         Collection<ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
-        List<Object> parameters = Collections.emptyList();
-        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
-        Object valueFromInsertValueContext = insertValueContext.getLiteralValue(0).get();
-        assertThat(valueFromInsertValueContext, is(literalObject));
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, Collections.emptyList(), 0);
+        Optional<Object> valueFromInsertValueContext = insertValueContext.getLiteralValue(0);
+        assertTrue(valueFromInsertValueContext.isPresent());
+        assertThat(valueFromInsertValueContext.get(), is(literalObject));
     }
     
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
@@ -91,8 +93,7 @@ public final class InsertValueContextTest {
                 new ExpressionProjectionSegment(0, 10, ""),
                 new ParameterMarkerExpressionSegment(0, 10, 5),
                 new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("")), new ParameterMarkerExpressionSegment(0, 10, 5), "=", ""));
-        List<Object> parameters = Arrays.asList("", "");
-        InsertValueContext insertValueContext = new InsertValueContext(expressions, parameters, 0);
+        InsertValueContext insertValueContext = new InsertValueContext(expressions, Arrays.asList("", ""), 0);
         assertThat(insertValueContext.getParameterCount(), is(2));
     }
 }

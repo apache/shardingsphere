@@ -17,34 +17,32 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
 public final class HintShadowAlgorithmDeterminerTest {
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertIsShadow() {
-        assertTrue(HintShadowAlgorithmDeterminer.isShadow(createHintShadowAlgorithm(), createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())));
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private HintShadowAlgorithm<Comparable<?>> createHintShadowAlgorithm() {
-        return (HintShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("SIMPLE_HINT", createProperties()));
+        HintShadowAlgorithm hintShadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SIMPLE_HINT", createProperties()), ShadowAlgorithm.class);
+        assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration())));
     }
     
     private Properties createProperties() {
@@ -53,22 +51,22 @@ public final class HintShadowAlgorithmDeterminerTest {
         return result;
     }
     
-    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(createDataSources());
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), Collections.singleton("simple-hint-algorithm"))));
-        result.setShadowAlgorithms(Collections.singletonMap("simple-hint-algorithm", createHintShadowAlgorithm()));
+        result.setShadowAlgorithms(Collections.singletonMap("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", createProperties())));
         return result;
     }
     
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>(2, 1);
-        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        result.put("shadow-data-source-1", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
+    private Collection<ShadowDataSourceConfiguration> createDataSources() {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source-0", "ds", "ds_shadow"));
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source-1", "ds1", "ds1_shadow"));
         return result;
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT).initSQLComments(Collections.singleton("/*foo:foo_value*/"));
+        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT).initSQLComments(Collections.singleton("/* SHARDINGSPHERE_HINT: SHADOW=true */"));
     }
 }

@@ -11,7 +11,7 @@ Supported MySQL versions: 5.1.15 to 8.0.x.
 
 ### Authority required
 
-1. Enable `binlog`
+1. Enable `binlog` in source
 
 MySQL 5.7 `my.cnf` configuration sample:
 
@@ -41,11 +41,11 @@ If the following information is displayed, binlog is enabled.
 +-----------------------------------------+---------------------------------------+
 ```
 
-2. Grant Replication-related permissions for MySQL account.
+2. Grant Replication-related permissions for source MySQL account.
 
-Run the following command and see whether the user has migration permission.
+Run the following command to check whether the user has migration permission.
 ```
-SHOW GRANTS FOR 'user';
+SHOW GRANTS FOR 'migration_user';
 ```
 
 Result sample: 
@@ -58,13 +58,25 @@ Result sample:
 +------------------------------------------------------------------------------+
 ```
 
+3. Grant DDL DML permissions for MySQL account
+
+Source MySQL account needs SELECT permission. Example:
+```sql
+GRANT SELECT ON migration_ds_0.* TO `migration_user`@`%`;
+```
+
+Target MySQL account needs part of DDL and all DML permissions. Example:
+```sql
+GRANT CREATE, DROP, INDEX, SELECT, INSERT, UPDATE, DELETE ON *.* TO `migration_user`@`%`;
+```
+
+Please refer to [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
+
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in MySQL.
-
-Sample: 
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
@@ -79,8 +91,6 @@ INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,
 
 2. Prepare the target database in MySQL.
 
-Sample: 
-
 ```sql
 DROP DATABASE IF EXISTS migration_ds_10;
 CREATE DATABASE migration_ds_10 DEFAULT CHARSET utf8;
@@ -94,14 +104,14 @@ CREATE DATABASE migration_ds_12 DEFAULT CHARSET utf8;
 
 #### Procedure
 
-1. Create a new logical database in proxy and configure resources and rules.
+1. Create a new logical database in proxy and configure storage units and rules.
 
 ```sql
 CREATE DATABASE sharding_db;
 
 USE sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_10?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
@@ -119,7 +129,7 @@ ADD RESOURCE ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -128,10 +138,10 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+2. Configure the source storage units in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_0 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
@@ -158,10 +168,9 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
-| id                                    | tables  | sharding_total_count | active | create_time         | stop_time |
+| id                                    | tables  | job_item_count       | active | create_time         | stop_time |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | j01016e501b498ed1bdb2c373a2e85e2529a6 | t_order | 1                    | true   | 2022-10-13 11:16:01 | NULL      |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -169,8 +178,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -180,15 +193,18 @@ SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 
 6. Verify data consistency.
 
-```
+```sql
 CHECK MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6' BY TYPE (NAME='CRC32_MATCH');
-Query OK, 0 rows affected (0.09 sec)
 ```
 
 Data consistency check algorithm list:
 
-```
+```sql
 SHOW MIGRATION CHECK ALGORITHMS;
+```
+
+Result example:
+```
 +-------------+--------------------------------------------------------------+----------------------------+
 | type        | supported_database_types                                     | description                |
 +-------------+--------------------------------------------------------------+----------------------------+
@@ -204,6 +220,10 @@ If you are migrating to a heterogeneous database, then `DATA_MATCH` could be use
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
@@ -233,9 +253,9 @@ Supported PostgreSQL version: 9.4 or later.
 
 ### Authority required
 
-1. Enable [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html).
+1. Enable [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html) in source.
 
-2. Modify WAL Configuration.
+2. Modify WAL configuration in source.
 
 `postgresql.conf` configuration sample:
 ```
@@ -248,7 +268,7 @@ max_connections = 600
 
 Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) and [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html ) for details.
 
-3. Configure PostgreSQL and grant Proxy the replication permission.
+3. Grant replication permission for source PostgreSQL account.
 
 `pg_hba.conf` instance configuration:
 ```
@@ -257,9 +277,30 @@ host replication repl_acct 0.0.0.0/0 md5
 
 Please refer to [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-pg-hba-conf.html) for details.
 
+4. Grant DDL DML permissions for PostgreSQL account.
+
+If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
+
+```sql
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
+```
+
+The account also needs to have access to the migrated tables and schema. Take the t_order table under test schema as an example. 
+
+```sql
+\c migration_ds_0
+
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
+```
+
+PostgreSQL has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
+
+Please refer to [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html)
+
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in PostgreSQL.
 
@@ -289,14 +330,14 @@ CREATE DATABASE migration_ds_12;
 
 #### Procedure
 
-1. Create a new logical database in proxy and configure resources and rules.
+1. Create a new logical database in proxy and configure storage units and rules.
 
 ```sql
 CREATE DATABASE sharding_db;
 
 \c sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:postgresql://127.0.0.1:5432/migration_ds_10",
     USER="postgres",
     PASSWORD="root",
@@ -314,7 +355,7 @@ ADD RESOURCE ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -323,10 +364,10 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+2. Configure the source storage units in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_0 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:postgresql://127.0.0.1:5432/migration_ds_0",
     USER="postgres",
     PASSWORD="root",
@@ -359,10 +400,9 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
-| id                                    | tables  | sharding_total_count | active | create_time         | stop_time |
+| id                                    | tables  | job_item_count       | active | create_time         | stop_time |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | j01016e501b498ed1bdb2c373a2e85e2529a6 | t_order | 1                    | true   | 2022-10-13 11:16:01 | NULL      |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -370,8 +410,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -389,6 +433,10 @@ Query OK, 0 rows affected (0.09 sec)
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
@@ -418,7 +466,7 @@ Supported openGauss version: 2.0.1 to 3.0.0.
 
 ### Authority required
 
-1. Modify WAL configuration.
+1. Modify WAL configuration in source.
 
 `postgresql.conf` configuration sample:
 ```
@@ -431,7 +479,7 @@ max_connections = 600
 
 Please refer to [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) and [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html) for details.
 
-2. Configure openGauss and grant Proxy the replication permission.
+2. Grant replication permission for source openGauss account.
 
 `pg_hba.conf` instance configuration:
 ```
@@ -440,17 +488,60 @@ host replication repl_acct 0.0.0.0/0 md5
 
 Please refer to [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) and [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html) for details.
 
+3. Grant DDL DML permissions for openGauss account.
+
+If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
+
+```sql
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
+```
+
+The account also needs to have access to the migrated tables and schema. Take the t_order table under test schema as an example. 
+
+```sql
+\c migration_ds_0
+
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
+```
+
+openGauss has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
+
+openGauss does not allow normal accounts to operate in public schema, so if the migrated table is in public schema, you need to authorize additional.
+
+Please refer to [openGauss GRANT](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/grant.html)
+
+```sql
+GRANT ALL PRIVILEGES TO migration_user;
+```
+
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
-1. Prepare the source database, table, and data in openGauss.
+1. Prepare the source database, table, and data.
+
+1.1. Isomorphic database.
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0;
 
 \c migration_ds_0
+
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+```
+
+1.2. Heterogeneous database.
+
+MySQL example:
+```sql
+DROP DATABASE IF EXISTS migration_ds_0;
+CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
+
+USE migration_ds_0
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 
@@ -472,14 +563,20 @@ CREATE DATABASE migration_ds_12;
 
 #### Procedure
 
-1. Create a new logical database and configure resources and rules.
+1. Create a new logical database and configure storage units and rules.
+
+1.1. Create logic database.
 
 ```sql
 CREATE DATABASE sharding_db;
 
 \c sharding_db
+```
 
-ADD RESOURCE ds_2 (
+1.2. Register storage units.
+
+```sql
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_10",
     USER="gaussdb",
     PASSWORD="Root@123",
@@ -495,24 +592,49 @@ ADD RESOURCE ds_2 (
     PASSWORD="Root@123",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
+```
 
+1.3. Create sharding table rule.
+
+```sql
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
+1.4. Create target table.
+
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+MySQL example:
+```sql
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+```
+
+2. Configure the source storage units in proxy.
+
+2.1. Isomorphic database.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_2 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
+    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
+);
+```
+
+2.2. Heterogeneous database.
+
+MySQL example:
+```sql
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
+    USER="root",
+    PASSWORD="root",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
 ```
@@ -542,10 +664,9 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
-| id                                    | tables  | sharding_total_count | active | create_time         | stop_time |
+| id                                    | tables  | job_item_count       | active | create_time         | stop_time |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | j01016e501b498ed1bdb2c373a2e85e2529a6 | t_order | 1                    | true   | 2022-10-13 11:16:01 | NULL      |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -553,8 +674,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -572,6 +697,10 @@ Query OK, 0 rows affected (0.09 sec)
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+

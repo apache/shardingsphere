@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-encrypt</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-encrypt-core</artifactId>
     <name>${project.artifactId}</name>
@@ -51,13 +51,13 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-common</artifactId>
+            <artifactId>shardingsphere-test-fixture-jdbc</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-single-table-core</artifactId>
+            <artifactId>shardingsphere-single-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

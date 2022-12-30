@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.executor.check;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckException;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
+import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +48,7 @@ public final class SQLCheckEngine {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static boolean check(final String databaseName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(databaseName, grantee, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -61,25 +61,23 @@ public final class SQLCheckEngine {
      * Check SQL.
      *
      * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @param rules rules
      * @param currentDatabase current database
      * @param databases databases
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
+    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Collection<ShardingSphereRule> rules,
                              final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
-            SQLCheckResult checkResult = entry.getValue().check(sqlStatementContext, parameters, grantee, currentDatabase, databases, entry.getKey());
-            if (!checkResult.isPassed()) {
-                throw new SQLCheckException(checkResult.getErrorMessage());
-            }
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
+            entry.getValue().check(sqlStatementContext, params, grantee, currentDatabase, databases, entry.getKey());
         }
     }
     
     /**
      * Check user exists.
+     * 
      * @param user user
      * @param rules rules
      * @return check result
@@ -89,7 +87,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -111,7 +109,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, validate, cipher, entry.getKey());
             if (!checkResult) {
                 return false;

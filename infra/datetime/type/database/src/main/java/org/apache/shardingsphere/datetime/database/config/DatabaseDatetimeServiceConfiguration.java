@@ -43,11 +43,11 @@ public final class DatabaseDatetimeServiceConfiguration {
     
     private final DataSource dataSource;
     
-    private final DatabaseType databaseType;
+    private final DatabaseType storageType;
     
     private DatabaseDatetimeServiceConfiguration() {
         dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(loadDataSourceConfiguration()));
-        databaseType = DatabaseTypeEngine.getDatabaseType(Collections.singleton(dataSource));
+        storageType = DatabaseTypeEngine.getStorageType(Collections.singletonList(dataSource));
     }
     
     @SuppressWarnings("unchecked")

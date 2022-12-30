@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -25,6 +24,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer create trigger statement.
  */
-@ToString(callSuper = true)
 public final class SQLServerCreateTriggerStatement extends CreateTriggerStatement implements DDLStatement, SQLServerStatement {
 }

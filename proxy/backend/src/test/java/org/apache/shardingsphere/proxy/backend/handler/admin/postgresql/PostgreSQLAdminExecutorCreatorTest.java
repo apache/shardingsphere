@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor.SelectDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor.SelectTableExecutor;
@@ -42,6 +41,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,6 +64,20 @@ public final class PostgreSQLAdminExecutorCreatorTest {
             + "ORDER BY 1";
     
     private static final String SELECT_PG_CATALOG_WITH_SUBQUERY = "select * from (select * from pg_catalog.pg_namespace) t;";
+    
+    private static final String SELECT_PG_CLASS_AND_PG_NAMESPACE = "SELECT n.nspname as \"Schema\",\n"
+            + "       c.relname as \"Name\",\n"
+            + "CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' "
+            + "WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as \"Type\",\n"
+            + "pg_catalog.pg_get_userbyid(c.relowner) as \"Owner\"\n"
+            + "FROM pg_catalog.pg_class c\n"
+            + "       LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace\n"
+            + "WHERE c.relkind IN ('r','p','v','m','S','f','')\n"
+            + "       AND n.nspname <> 'pg_catalog'\n"
+            + "       AND n.nspname <> 'information_schema'\n"
+            + "       AND n.nspname !~ '^pg_toast'\n"
+            + "       AND pg_catalog.pg_table_is_visible(c.oid)\n"
+            + "ORDER BY 1,2;";
     
     @Test
     public void assertCreateWithOtherSQLStatementContextOnly() {
@@ -103,8 +117,16 @@ public final class PostgreSQLAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CATALOG_WITH_SUBQUERY, "");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(DefaultDatabaseMetadataExecutor.class));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    public void assertCreateWithSelectPgNamespaceAndPgClass() {
+        SQLStatement sqlStatement = parseSQL(SELECT_PG_CLASS_AND_PG_NAMESPACE);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CLASS_AND_PG_NAMESPACE, "");
+        assertFalse(actual.isPresent());
     }
     
     private static SQLStatement parseSQL(final String sql) {

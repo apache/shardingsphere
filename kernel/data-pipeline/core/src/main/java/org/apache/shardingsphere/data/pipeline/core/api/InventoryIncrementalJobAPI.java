@@ -19,17 +19,38 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Inventory incremental job API.
  */
 public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
+    
+    /**
+     * Alter process configuration.
+     *
+     * @param processConfig process configuration
+     */
+    void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
+    
+    /**
+     * Show process configuration.
+     *
+     * @return process configuration, non-null
+     */
+    PipelineProcessConfiguration showProcessConfiguration();
     
     /**
      * Get job progress.
@@ -40,7 +61,22 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(PipelineJobConfiguration pipelineJobConfig);
     
     @Override
-    InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
+    Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(String jobId, int shardingItem);
+    
+    /**
+     * Get job infos.
+     *
+     * @param jobId job id
+     * @return job item infos
+     */
+    List<InventoryIncrementalJobItemInfo> getJobItemInfos(String jobId);
+    
+    /**
+     * List all data consistency check algorithms from SPI.
+     *
+     * @return data consistency check algorithms
+     */
+    Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
      * Build data consistency calculate algorithm.
@@ -57,11 +93,11 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      *
      * @param pipelineJobConfig job configuration
      * @param calculateAlgorithm calculate algorithm
-     * @param checkJobItemContext consistency check job item context
+     * @param progressContext consistency check job item progress context
      * @return each logic table check result
      */
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm,
-                                                                 ConsistencyCheckJobItemContext checkJobItemContext);
+                                                                 ConsistencyCheckJobItemProgressContext progressContext);
     
     /**
      * Aggregate data consistency check results.
@@ -71,4 +107,19 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @return check success or not
      */
     boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
+    
+    /**
+     * Rollback pipeline job.
+     *
+     * @param jobId job id
+     * @throws SQLException when rollback underlying database data
+     */
+    void rollback(String jobId) throws SQLException;
+    
+    /**
+     * Commit pipeline job.
+     *
+     * @param jobId job id
+     */
+    void commit(String jobId);
 }

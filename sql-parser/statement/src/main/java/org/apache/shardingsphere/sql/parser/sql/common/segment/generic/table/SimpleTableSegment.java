@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -32,7 +31,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     private final TableNameSegment tableName;

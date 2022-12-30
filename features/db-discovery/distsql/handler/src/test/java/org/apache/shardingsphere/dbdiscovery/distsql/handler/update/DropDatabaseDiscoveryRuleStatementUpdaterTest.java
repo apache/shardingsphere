@@ -19,12 +19,13 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
@@ -75,9 +76,8 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(getExportData());
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
-        DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", null, null, null);
-        updater.checkSQLStatement(database, createSQLStatement(),
-                new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration), Collections.emptyMap(), Collections.emptyMap()));
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", null, null, null);
+        updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(config), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     private Map<String, Object> getExportData() {
@@ -105,9 +105,10 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig);
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig));
         assertTrue(databaseDiscoveryRuleConfig.getDataSources().isEmpty());
-        assertThat(databaseDiscoveryRuleConfig.getDiscoveryTypes().size(), is(1));
+        assertTrue(databaseDiscoveryRuleConfig.getDiscoveryTypes().isEmpty());
+        assertTrue(databaseDiscoveryRuleConfig.getDiscoveryHeartbeats().isEmpty());
     }
     
     @Test
@@ -137,9 +138,11 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha_heartbeat", "readwrite_ds_MGR");
-        Map<String, AlgorithmConfiguration> discoveryTypes = Collections.singletonMap(
-                "readwrite_ds_MGR", new AlgorithmConfiguration("readwrite_ds_MGR", new Properties()));
-        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap(), discoveryTypes);
+        Map<String, AlgorithmConfiguration> discoveryTypes = new LinkedHashMap<>(1, 1);
+        discoveryTypes.put("readwrite_ds_MGR", new AlgorithmConfiguration("readwrite_ds_MGR", new Properties()));
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new LinkedHashMap<>(1, 1);
+        discoveryHeartbeats.put("unused_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
+        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), discoveryHeartbeats, discoveryTypes);
     }
     
     private DatabaseDiscoveryRuleConfiguration createMultipleCurrentRuleConfigurations() {

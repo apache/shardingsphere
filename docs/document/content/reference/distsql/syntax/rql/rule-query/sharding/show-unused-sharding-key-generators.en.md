@@ -10,13 +10,20 @@ weight = 7
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowShardingKeyGenerators::=
-  'SHOW' 'SHARDING' 'KEY' 'GENERATOR'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -66,7 +73,7 @@ mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 
 ### Reserved word
 
-`SHOW`、`UNUSED`、`SHARDING`、`KEY`、`GENERATORS`、`FROM`
+`SHOW`, `UNUSED`, `SHARDING`, `KEY`, `GENERATORS`, `FROM`
 
 ### Related links
 

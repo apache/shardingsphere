@@ -35,7 +35,5 @@ public final class AlterDefaultShardingStrategyStatement extends AlterRuleStatem
     
     private final String shardingColumn;
     
-    private final String shardingAlgorithmName;
-    
     private final AlgorithmSegment algorithmSegment;
 }

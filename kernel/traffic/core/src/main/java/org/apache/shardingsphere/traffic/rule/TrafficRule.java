@@ -19,10 +19,11 @@ package org.apache.shardingsphere.traffic.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.hint.SQLHintProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -34,8 +35,6 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgor
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
-import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
-import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
@@ -46,9 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Traffic rule.
@@ -69,16 +66,23 @@ public final class TrafficRule implements GlobalRule {
     
     private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, AlgorithmConfiguration> trafficAlgorithms) {
         Map<String, TrafficAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, AlgorithmConfiguration> entry : trafficAlgorithms.entrySet()) {
-            result.put(entry.getKey(), TrafficAlgorithmFactory.newInstance(entry.getValue()));
+        for (TrafficStrategyConfiguration each : configuration.getTrafficStrategies()) {
+            if (null == trafficAlgorithms.get(each.getAlgorithmName())) {
+                break;
+            }
+            result.put(each.getName() + "." + each.getAlgorithmName(), ShardingSphereAlgorithmFactory.createAlgorithm(trafficAlgorithms.get(each.getAlgorithmName()), TrafficAlgorithm.class));
         }
         return result;
     }
     
     private Map<String, TrafficLoadBalanceAlgorithm> createTrafficLoadBalanceAlgorithms(final Map<String, AlgorithmConfiguration> loadBalancers) {
         Map<String, TrafficLoadBalanceAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, AlgorithmConfiguration> entry : loadBalancers.entrySet()) {
-            result.put(entry.getKey(), TrafficLoadBalanceAlgorithmFactory.newInstance(entry.getValue()));
+        for (TrafficStrategyConfiguration each : configuration.getTrafficStrategies()) {
+            if (null == loadBalancers.get(each.getLoadBalancerName())) {
+                break;
+            }
+            result.put(each.getName() + "." + each.getLoadBalancerName(),
+                    ShardingSphereAlgorithmFactory.createAlgorithm(loadBalancers.get(each.getLoadBalancerName()), TrafficLoadBalanceAlgorithm.class));
         }
         return result;
     }
@@ -88,7 +92,7 @@ public final class TrafficRule implements GlobalRule {
         Collection<TrafficStrategyRule> noneTransactionStrategyRules = new LinkedList<>();
         Collection<TrafficStrategyRule> result = new LinkedList<>();
         for (TrafficStrategyConfiguration each : trafficStrategies) {
-            TrafficAlgorithm trafficAlgorithm = getTrafficAlgorithm(trafficAlgorithms, each.getAlgorithmName());
+            TrafficAlgorithm trafficAlgorithm = getTrafficAlgorithm(each, trafficAlgorithms);
             TrafficStrategyRule trafficStrategyRule = createTrafficStrategyRule(each, trafficAlgorithm, loadBalancers);
             if (isTransactionStrategyRule(trafficAlgorithm)) {
                 result.add(trafficStrategyRule);
@@ -106,7 +110,7 @@ public final class TrafficRule implements GlobalRule {
         if (trafficAlgorithm instanceof SimplifiedTrafficAlgorithm) {
             result = new TrafficStrategyRule(strategyConfig.getName(), Collections.emptyList(), trafficAlgorithm, null);
         } else {
-            TrafficLoadBalanceAlgorithm loadBalancer = getLoadBalancer(loadBalancers, strategyConfig.getLoadBalancerName());
+            TrafficLoadBalanceAlgorithm loadBalancer = getLoadBalancer(strategyConfig, loadBalancers);
             result = new TrafficStrategyRule(strategyConfig.getName(), new LinkedHashSet<>(strategyConfig.getLabels()), trafficAlgorithm, loadBalancer);
         }
         return result;
@@ -132,8 +136,8 @@ public final class TrafficRule implements GlobalRule {
         return Optional.empty();
     }
     
-    private TrafficAlgorithm getTrafficAlgorithm(final Map<String, TrafficAlgorithm> trafficAlgorithms, final String algorithmName) {
-        TrafficAlgorithm result = trafficAlgorithms.get(algorithmName);
+    private TrafficAlgorithm getTrafficAlgorithm(final TrafficStrategyConfiguration strategyConfig, final Map<String, TrafficAlgorithm> trafficAlgorithms) {
+        TrafficAlgorithm result = trafficAlgorithms.get(strategyConfig.getName() + "." + strategyConfig.getAlgorithmName());
         Preconditions.checkState(null != result, "Traffic algorithm can not be null.");
         return result;
     }
@@ -144,10 +148,10 @@ public final class TrafficRule implements GlobalRule {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            SQLHintProperties sqlHintProps = queryContext.getSqlStatementContext() instanceof CommonSQLStatementContext
-                    ? ((CommonSQLStatementContext) queryContext.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties()
-                    : new SQLHintProperties(new Properties());
-            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, sqlHintProps);
+            HintValueContext hintValueContext = queryContext.getSqlStatementContext() instanceof CommonSQLStatementContext
+                    ? ((CommonSQLStatementContext) queryContext.getSqlStatementContext()).getSqlHintExtractor().getHintValueContext()
+                    : new HintValueContext();
+            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, hintValueContext);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
             SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
@@ -156,8 +160,8 @@ public final class TrafficRule implements GlobalRule {
         return false;
     }
     
-    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final SQLHintProperties sqlHintProps) {
-        HintTrafficValue hintTrafficValue = new HintTrafficValue(sqlHintProps);
+    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final HintValueContext hintValueContext) {
+        HintTrafficValue hintTrafficValue = new HintTrafficValue(hintValueContext);
         return trafficAlgorithm.match(hintTrafficValue);
     }
     
@@ -171,8 +175,8 @@ public final class TrafficRule implements GlobalRule {
         return trafficAlgorithm.match(transactionTrafficValue);
     }
     
-    private TrafficLoadBalanceAlgorithm getLoadBalancer(final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers, final String loadBalancerName) {
-        TrafficLoadBalanceAlgorithm result = loadBalancers.get(loadBalancerName);
+    private TrafficLoadBalanceAlgorithm getLoadBalancer(final TrafficStrategyConfiguration strategyConfig, final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers) {
+        TrafficLoadBalanceAlgorithm result = loadBalancers.get(strategyConfig.getName() + "." + strategyConfig.getLoadBalancerName());
         Preconditions.checkState(null != result, "Traffic load balance algorithm can not be null.");
         return result;
     }

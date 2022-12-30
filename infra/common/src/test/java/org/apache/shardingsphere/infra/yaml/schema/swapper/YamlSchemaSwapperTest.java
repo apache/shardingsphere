@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereSchema;
@@ -34,8 +36,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class YamlSchemaSwapperTest {
@@ -51,10 +53,10 @@ public final class YamlSchemaSwapperTest {
         assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
         YamlShardingSphereTable yamlTableMetaData = yamlSchema.getTables().get("t_order");
         assertThat(yamlTableMetaData.getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertColumn(yamlTableMetaData.getColumns());
+        assertYamlColumn(yamlTableMetaData.getColumns());
     }
     
-    private void assertColumn(final Map<String, YamlShardingSphereColumn> columns) {
+    private void assertYamlColumn(final Map<String, YamlShardingSphereColumn> columns) {
         assertThat(columns.size(), is(2));
         YamlShardingSphereColumn idColumn = columns.get("id");
         assertThat(idColumn.getName(), is("id"));
@@ -62,23 +64,35 @@ public final class YamlSchemaSwapperTest {
         assertThat(idColumn.getDataType(), is(0));
         assertFalse(idColumn.isGenerated());
         assertTrue(idColumn.isPrimaryKey());
+        assertFalse(idColumn.isUnsigned());
+        assertTrue(idColumn.isVisible());
         YamlShardingSphereColumn nameColumn = columns.get("name");
         assertThat(nameColumn.getName(), is("name"));
         assertTrue(nameColumn.isCaseSensitive());
         assertThat(nameColumn.getDataType(), is(10));
         assertTrue(nameColumn.isGenerated());
         assertFalse(nameColumn.isPrimaryKey());
+        assertTrue(nameColumn.isUnsigned());
+        assertFalse(nameColumn.isVisible());
     }
     
     @Test
     public void assertSwapToShardingSphereSchema() {
         YamlShardingSphereSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML), YamlShardingSphereSchema.class);
-        ShardingSphereSchema schema = new YamlSchemaSwapper().swapToObject(yamlSchema);
-        assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
-        assertThat(schema.getTable("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
-        assertThat(schema.getAllColumnNames("t_order").size(), is(2));
-        assertTrue(schema.containsColumn("t_order", "id"));
-        assertTrue(schema.containsColumn("t_order", "name"));
+        ShardingSphereSchema actualSchema = new YamlSchemaSwapper().swapToObject(yamlSchema);
+        assertThat(actualSchema.getAllTableNames(), is(Collections.singleton("t_order")));
+        ShardingSphereTable actualTable = actualSchema.getTable("t_order");
+        assertColumn(actualTable);
+        assertThat(actualTable.getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(actualSchema.getAllColumnNames("t_order").size(), is(2));
+        assertTrue(actualSchema.containsColumn("t_order", "id"));
+        assertTrue(actualSchema.containsColumn("t_order", "name"));
+    }
+    
+    private void assertColumn(final ShardingSphereTable table) {
+        assertThat(table.getColumns().size(), is(2));
+        assertThat(table.getColumns().get("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false)));
+        assertThat(table.getColumns().get("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true)));
     }
     
     @Test

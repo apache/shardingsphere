@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Executor engine.
@@ -81,25 +82,23 @@ public final class ExecuteEngine {
     }
     
     /**
-     * Submit a collection of {@code LifecycleExecutor} with callback {@code ExecuteCallback} to execute.
+     * Trigger.
      *
-     * @param lifecycleExecutors lifecycle executor
-     * @param executeCallback execute callback
-     * @return execute future of all
+     * @param futures futures
+     * @param executeCallback execute callback on all the futures
      */
-    public CompletableFuture<?> submitAll(final Collection<? extends LifecycleExecutor> lifecycleExecutors, final ExecuteCallback executeCallback) {
-        CompletableFuture<?>[] futures = new CompletableFuture[lifecycleExecutors.size()];
-        int i = 0;
-        for (LifecycleExecutor each : lifecycleExecutors) {
-            futures[i++] = CompletableFuture.runAsync(each, executorService);
+    public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
+        int futureCount = futures.size();
+        AtomicInteger successCount = new AtomicInteger(0);
+        // TODO call onFailure once
+        for (CompletableFuture<?> each : futures) {
+            each.whenComplete((unused, throwable) -> {
+                if (null != throwable) {
+                    executeCallback.onFailure(throwable);
+                } else if (successCount.addAndGet(1) == futureCount) {
+                    executeCallback.onSuccess();
+                }
+            });
         }
-        return CompletableFuture.allOf(futures).whenCompleteAsync((unused, throwable) -> {
-            if (null == throwable) {
-                executeCallback.onSuccess();
-            } else {
-                Throwable cause = throwable.getCause();
-                executeCallback.onFailure(null != cause ? cause : throwable);
-            }
-        }, executorService);
     }
 }

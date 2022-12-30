@@ -74,7 +74,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
             connection.setSchema(PG_CATALOG);
             try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
-                mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet, connectionSession.getDatabaseType())));
+                mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet, connectionSession.getProtocolType())));
             }
         }
     }

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Before;
@@ -59,7 +58,7 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.containsDataSource()).thenReturn(true);
         when(database.isComplete()).thenReturn(true);
-        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(database.getProtocolType()).thenReturn(new H2DatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);
@@ -68,7 +67,7 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
     
     @Test
     public void assertNewDatabaseCommunicationEngineWithoutParameter() {
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
+        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
@@ -79,7 +78,7 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
     
     @Test
     public void assertNewDatabaseCommunicationEngineWithParameters() {
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
+        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());

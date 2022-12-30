@@ -29,7 +29,7 @@ public abstract class SQLTranslationException extends FeatureSQLException {
     
     private static final int FEATURE_CODE = 4;
     
-    public SQLTranslationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, FEATURE_CODE, errorCode, reason, messageArguments);
+    public SQLTranslationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
     }
 }

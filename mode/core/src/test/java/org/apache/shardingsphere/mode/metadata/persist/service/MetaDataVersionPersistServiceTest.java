@@ -80,7 +80,7 @@ public final class MetaDataVersionPersistServiceTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("2"));
         verify(repository).persist("/metadata/foo_db/versions/2/rules", "1");
-        verify(repository).persist("/metadata/foo_db/versions/2/dataSources", "1");
+        verify(repository).persist("/metadata/foo_db/versions/2/data_sources", "1");
     }
     
     @Test

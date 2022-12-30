@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.sqlfederation.rule;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.factory.SQLFederationExecutorFactory;
+import org.apache.shardingsphere.sqlfederation.enums.SQLFederationTypeEnum;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 
 /**
@@ -35,11 +39,12 @@ public final class SQLFederationRule implements GlobalRule {
     @Getter
     private final SQLFederationRuleConfiguration configuration;
     
-    private final SQLFederationExecutor sqlFederationExecutor;
+    private SQLFederationExecutor sqlFederationExecutor;
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        sqlFederationExecutor = SQLFederationExecutorFactory.getInstance(ruleConfig.getSqlFederationType());
+        sqlFederationExecutor = TypedSPIRegistry.findRegisteredService(SQLFederationExecutor.class, configuration.getSqlFederationType())
+                .orElse(RequiredSPIRegistry.getRegisteredService(SQLFederationExecutor.class));
     }
     
     /**
@@ -55,6 +60,13 @@ public final class SQLFederationRule implements GlobalRule {
      */
     public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
                                                           final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
+        String sqlFederationType = metaData.getProps().getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
+        Preconditions.checkArgument(SQLFederationTypeEnum.isValidSQLFederationType(sqlFederationType), "%s is not a valid sqlFederationType.", sqlFederationType);
+        if (!configuration.getSqlFederationType().equals(sqlFederationType)) {
+            configuration.setSqlFederationType(sqlFederationType);
+            sqlFederationExecutor = TypedSPIRegistry.findRegisteredService(SQLFederationExecutor.class, configuration.getSqlFederationType())
+                    .orElse(RequiredSPIRegistry.getRegisteredService(SQLFederationExecutor.class));
+        }
         sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor, eventBusContext);
         return sqlFederationExecutor;
     }

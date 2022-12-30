@@ -21,12 +21,12 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
@@ -77,15 +77,30 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        if (null == result) {
-            return new YamlProxyServerConfiguration();
+        return null == result ? new YamlProxyServerConfiguration() : rebuildGlobalRuleConfiguration(result);
+    }
+    
+    private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfiguration) {
+        serverConfiguration.getRules().removeIf(each -> each instanceof YamlGlobalRuleConfiguration);
+        if (null != serverConfiguration.getAuthority()) {
+            serverConfiguration.getRules().add(serverConfiguration.getAuthority().convertToYamlAuthorityRuleConfiguration());
         }
-        // TODO authority will no longer be a global rule
-        result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
-        if (null != result.getAuthority()) {
-            result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
+        if (null != serverConfiguration.getTransaction()) {
+            serverConfiguration.getRules().add(serverConfiguration.getTransaction());
         }
-        return result;
+        if (null != serverConfiguration.getSqlParser()) {
+            serverConfiguration.getRules().add(serverConfiguration.getSqlParser());
+        }
+        if (null != serverConfiguration.getSqlTranslator()) {
+            serverConfiguration.getRules().add(serverConfiguration.getSqlTranslator());
+        }
+        if (null != serverConfiguration.getTraffic()) {
+            serverConfiguration.getRules().add(serverConfiguration.getTraffic());
+        }
+        if (null != serverConfiguration.getCdc()) {
+            serverConfiguration.getRules().add(serverConfiguration.getCdc());
+        }
+        return serverConfiguration;
     }
     
     private static Collection<YamlProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
@@ -113,11 +128,11 @@ public final class ProxyConfigurationLoader {
         return Optional.of(result);
     }
     
-    private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigurations, final File yamlFile) {
-        if (ruleConfigurations.isEmpty()) {
+    private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigs, final File yamlFile) {
+        if (ruleConfigs.isEmpty()) {
             return;
         }
-        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigurations.stream()
+        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigs.stream()
                 .collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
         Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfig = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
         if (duplicateRuleConfig.isPresent()) {
@@ -127,7 +142,8 @@ public final class ProxyConfigurationLoader {
     
     @SuppressWarnings("rawtypes")
     private static Object getDuplicateRuleTagName(final Class<? extends RuleConfiguration> ruleConfigClass) {
-        Optional<YamlRuleConfigurationSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream().filter(each -> ruleConfigClass.equals(each.getTypeClass())).findFirst();
+        Optional<YamlRuleConfigurationSwapper> result = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class)
+                .stream().filter(each -> ruleConfigClass.equals(each.getTypeClass())).findFirst();
         return result.orElseThrow(() -> new IllegalStateException("Not find rule tag name of class " + ruleConfigClass));
     }
     

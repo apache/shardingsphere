@@ -20,77 +20,61 @@ grammar RDLStatement;
 import BaseRule;
 
 createShadowRule
-    : CREATE SHADOW RULE shadowRuleDefinition (COMMA shadowRuleDefinition)*
+    : CREATE SHADOW RULE ifNotExists? shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
     ;
 
 alterShadowRule
-    : ALTER SHADOW RULE shadowRuleDefinition (COMMA shadowRuleDefinition)*
+    : ALTER SHADOW RULE shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
     ;
 
 dropShadowRule
-    : DROP SHADOW RULE ifExists? ruleName (COMMA ruleName)*
-    ;
-   
-createShadowAlgorithm
-    : CREATE SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
-    ;
-
-alterShadowAlgorithm
-    : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
+    : DROP SHADOW RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
 dropShadowAlgorithm
-    : DROP SHADOW ALGORITHM ifExists? algorithmName (COMMA algorithmName)*
+    : DROP SHADOW ALGORITHM ifExists? algorithmName (COMMA_ algorithmName)*
     ;
 
 createDefaultShadowAlgorithm
-    : CREATE DEFAULT SHADOW ALGORITHM NAME EQ algorithmName 
+    : CREATE DEFAULT SHADOW ALGORITHM ifNotExists? algorithmDefinition
     ;
 
 dropDefaultShadowAlgorithm
     : DROP DEFAULT SHADOW ALGORITHM ifExists?
     ;
 
+alterDefaultShadowAlgorithm
+    : ALTER DEFAULT SHADOW ALGORITHM algorithmDefinition
+    ;
+
 shadowRuleDefinition
-    :  ruleName LP SOURCE EQ source COMMA SHADOW EQ shadow COMMA shadowTableRule (COMMA shadowTableRule)* RP
+    :  ruleName LP_ SOURCE EQ_ source COMMA_ SHADOW EQ_ shadow COMMA_ shadowTableRule (COMMA_ shadowTableRule)* RP_
     ;
 
 shadowTableRule
-    : tableName LP shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)* RP
+    : tableName LP_ algorithmDefinition (COMMA_ algorithmDefinition)* RP_
     ;
 
 source
-    : IDENTIFIER | STRING
+    : IDENTIFIER_
     ;
 
 shadow
-    : IDENTIFIER | STRING
+    : IDENTIFIER_
     ;
 
 tableName
-    : IDENTIFIER
-    ;
-
-shadowAlgorithmDefinition
-    :  LP (algorithmName COMMA) ? TYPE LP NAME EQ shadowAlgorithmType COMMA PROPERTIES LP algorithmProperties RP RP RP
+    : IDENTIFIER_
     ;
 
 algorithmName
-    : IDENTIFIER
-    ;
-
-shadowAlgorithmType
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key = STRING EQ value = (NUMBER | INT | STRING)
+    : IDENTIFIER_
     ;
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

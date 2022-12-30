@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDefaultPrivilegesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter default privileges statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLAlterDefaultPrivilegesStatement extends AlterDefaultPrivilegesStatement implements PostgreSQLStatement {
 }

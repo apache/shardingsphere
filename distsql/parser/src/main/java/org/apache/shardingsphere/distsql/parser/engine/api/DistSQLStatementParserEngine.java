@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Dist SQL statement parser engine.
+ * DistSQL statement parser engine.
  */
 public final class DistSQLStatementParserEngine {
     
@@ -41,7 +41,7 @@ public final class DistSQLStatementParserEngine {
         } catch (final ParseCancellationException | SQLParsingException ignored) {
             try {
                 return new FeaturedDistSQLStatementParserEngine().parse(sql);
-            } catch (SQLParsingException ignoredToo) {
+            } catch (final SQLParsingException ignoredToo) {
                 return new UtilityDistSQLStatementParserEngine().parse(sql);
             }
         }

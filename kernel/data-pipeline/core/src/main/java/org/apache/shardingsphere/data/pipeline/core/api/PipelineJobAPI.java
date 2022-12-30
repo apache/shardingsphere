@@ -17,23 +17,35 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Pipeline job API.
  */
 @SingletonSPI
-public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI, TypedSPI {
+public interface PipelineJobAPI extends TypedSPI {
+    
+    /**
+     * Get job type.
+     *
+     * @return job type
+     */
+    JobType getJobType();
     
     /**
      * Marshal pipeline job id.
@@ -77,12 +89,58 @@ public interface PipelineJobAPI extends PipelineJobPublicAPI, PipelineJobItemAPI
     Optional<String> start(PipelineJobConfiguration jobConfig);
     
     /**
+     * Start disabled job.
+     *
+     * @param jobId job id
+     */
+    void startDisabledJob(String jobId);
+    
+    /**
+     * Stop pipeline job.
+     *
+     * @param jobId job id
+     */
+    void stop(String jobId);
+    
+    /**
      * Get job configuration.
      *
      * @param jobId job id
      * @return job configuration
      */
     PipelineJobConfiguration getJobConfiguration(String jobId);
+    
+    /**
+     * Get pipeline job info.
+     *
+     * @return job info list
+     */
+    List<? extends PipelineJobInfo> list();
+    
+    /**
+     * Persist job item progress.
+     *
+     * @param jobItemContext job item context
+     */
+    void persistJobItemProgress(PipelineJobItemContext jobItemContext);
+    
+    /**
+     * Get job item progress.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return job item progress, may be null
+     */
+    Optional<? extends PipelineJobItemProgress> getJobItemProgress(String jobId, int shardingItem);
+    
+    /**
+     * Update job item status.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param status status
+     */
+    void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
     
     /**
      * Get job item error message.

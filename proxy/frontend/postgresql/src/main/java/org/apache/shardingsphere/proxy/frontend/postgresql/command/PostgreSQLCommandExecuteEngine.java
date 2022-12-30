@@ -32,7 +32,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
@@ -83,10 +82,10 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), 0));
             return;
         }
-        processSimpleQuery(context, (JDBCBackendConnection) backendConnection, queryCommandExecutor);
+        processSimpleQuery(context, backendConnection, queryCommandExecutor);
     }
     
-    private void processSimpleQuery(final ChannelHandlerContext context, final JDBCBackendConnection backendConnection, final QueryCommandExecutor queryExecutor) throws SQLException {
+    private void processSimpleQuery(final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandExecutor queryExecutor) throws SQLException {
         if (ResponseType.UPDATE == queryExecutor.getResponseType()) {
             context.write(backendConnection.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
                     : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
@@ -100,7 +99,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
                 : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
     
-    private long writeDataPackets(final ChannelHandlerContext context, final JDBCBackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor) throws SQLException {
+    private long writeDataPackets(final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor) throws SQLException {
         long dataRows = 0;
         int flushCount = 0;
         int proxyFrontendFlushThreshold = ProxyContext.getInstance()

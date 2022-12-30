@@ -21,16 +21,14 @@ import com.google.common.base.Strings;
 import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -54,10 +52,24 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
      * @return add quote string
      */
     public String quote(final String item) {
-        // TODO quote by database type and keyword. need to compatible with case-sensitive table and column name
-        // return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
-        return item;
+        return isKeyword(item) ? getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString() : item;
     }
+    
+    protected abstract boolean isKeyword(String item);
+    
+    /**
+     * Get left identifier quote string.
+     *
+     * @return string
+     */
+    protected abstract String getLeftIdentifierQuoteString();
+    
+    /**
+     * Get right identifier quote string.
+     *
+     * @return string
+     */
+    protected abstract String getRightIdentifierQuoteString();
     
     @Override
     public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
@@ -75,7 +87,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     protected final String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (DatabaseTypeFactory.getInstance(getType()).isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
+        if (TypedSPIRegistry.getRegisteredService(DatabaseType.class, getType()).isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(quote(schemaName)).append(".");
         }
         result.append(quote(tableName));
@@ -83,7 +95,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
         String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(schemaName, dataRecord.getTableName(), dataRecord.getColumns()));
@@ -103,20 +115,14 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format("INSERT INTO %s(%s) VALUES(%s)", getQualifiedTableName(schemaName, tableName), columnsLiteral, holder);
     }
     
-    // TODO seems sharding column could be updated for insert statement on conflict by kernel now
-    protected final boolean isShardingColumn(final Map<LogicTableName, Set<String>> shardingColumnsMap, final String tableName, final String columnName) {
-        Set<String> shardingColumns = shardingColumnsMap.get(new LogicTableName(tableName));
-        return null != shardingColumns && shardingColumns.contains(columnName);
-    }
-    
     @Override
-    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    public String buildUpdateSQL(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(schemaName, dataRecord.getTableName(), conditionColumns));
         }
         StringBuilder updatedColumnString = new StringBuilder();
-        for (Column each : extractUpdatedColumns(dataRecord, shardingColumnsMap)) {
+        for (Column each : extractUpdatedColumns(dataRecord)) {
             updatedColumnString.append(String.format("%s = ?,", quote(each.getName())));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
@@ -128,7 +134,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord record, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    public List<Column> extractUpdatedColumns(final DataRecord record) {
         return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
     }
     

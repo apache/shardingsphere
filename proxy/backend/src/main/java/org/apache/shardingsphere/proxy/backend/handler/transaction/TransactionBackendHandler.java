@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
-import io.vertx.core.Future;
+import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.VertxLocalTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -65,45 +61,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;
-        if (connectionSession.getBackendConnection() instanceof JDBCBackendConnection) {
-            backendTransactionManager = new JDBCBackendTransactionManager((JDBCBackendConnection) connectionSession.getBackendConnection());
-        } else {
-            backendTransactionManager = new VertxLocalTransactionManager((VertxBackendConnection) connectionSession.getBackendConnection());
-        }
-    }
-    
-    @Override
-    public Future<ResponseHeader> executeFuture() {
-        VertxLocalTransactionManager transactionManager = (VertxLocalTransactionManager) backendTransactionManager;
-        Future<Void> future = determineFuture(transactionManager);
-        return future.compose(unused -> Future.succeededFuture(new UpdateResponseHeader(tclStatement)));
-    }
-    
-    private Future<Void> determineFuture(final VertxLocalTransactionManager transactionManager) {
-        switch (operationType) {
-            case BEGIN:
-                if (connectionSession.getTransactionStatus().isInTransaction()) {
-                    if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
-                        return transactionManager.commit().compose(unused -> transactionManager.begin());
-                    }
-                    if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
-                        return Future.failedFuture(new InTransactionException());
-                    }
-                }
-                return transactionManager.begin();
-            case SAVEPOINT:
-                return transactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
-            case ROLLBACK_TO_SAVEPOINT:
-                return transactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
-            case RELEASE_SAVEPOINT:
-                return transactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
-            case COMMIT:
-                return transactionManager.commit();
-            case ROLLBACK:
-                return transactionManager.rollback();
-            default:
-                return Future.failedFuture(new UnsupportedOperationException());
-        }
+        backendTransactionManager = new BackendTransactionManager(connectionSession.getBackendConnection());
     }
     
     @Override
@@ -139,9 +97,9 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private void handleBegin() throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
+            if (connectionSession.getProtocolType() instanceof MySQLDatabaseType) {
                 backendTransactionManager.commit();
-            } else if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+            } else if (connectionSession.getProtocolType() instanceof PostgreSQLDatabaseType || connectionSession.getProtocolType() instanceof OpenGaussDatabaseType) {
                 throw new InTransactionException();
             }
         }
@@ -167,7 +125,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     }
     
     private boolean isPostgreSQLOrOpenGauss() {
-        return connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType;
+        return connectionSession.getProtocolType() instanceof PostgreSQLDatabaseType || connectionSession.getProtocolType() instanceof OpenGaussDatabaseType;
     }
     
     private SQLStatement getSQLStatementByCommit() {

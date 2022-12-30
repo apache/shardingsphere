@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 
 /**
  * Aggregation distinct projection.
@@ -48,5 +49,11 @@ public final class AggregationDistinctProjection extends AggregationProjection {
      */
     public String getDistinctColumnLabel() {
         return getAlias().orElse(distinctInnerExpression);
+    }
+    
+    @Override
+    public Projection cloneWithOwner(final String ownerName) {
+        // TODO replace column owner when AggregationDistinctProjection contains owner
+        return new AggregationDistinctProjection(startIndex, stopIndex, getType(), getInnerExpression(), getAlias().orElse(null), distinctInnerExpression, getDatabaseType());
     }
 }

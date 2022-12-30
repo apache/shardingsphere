@@ -22,34 +22,27 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-plugins</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>core</module>
         <module>metrics</module>
         <module>tracing</module>
         <module>logging</module>
     </modules>
     
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-agent-api</artifactId>
-                <version>${project.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-proxy-frontend-core</artifactId>
-                <version>${project.version}</version>
-                <scope>provided</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
     
     <build>
         <plugins>
@@ -62,18 +55,19 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
+                            <minimizeJar>true</minimizeJar>
                             <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
+                                    <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
+                                    <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
+                                    <exclude>com.google.guava:listenablefuture:jar:*</exclude>
+                                    <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
                                     <exclude>com.h2database:h2:jar:</exclude>
-                                    <exclude>com.google.*:*</exclude>
-                                    <exclude>com.google.guava:guava:*</exclude>
                                     <exclude>org.slf4j:*</exclude>
-                                    <exclude>org.yaml:snakeyaml:*</exclude>
                                     <exclude>org.apache.commons:logging:*</exclude>
                                 </excludes>
                             </artifactSet>
@@ -81,6 +75,22 @@
                                 <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml</pattern>
+                                    <shadedPattern>${shade.package}.org.yaml</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.netty</pattern>
+                                    <shadedPattern>${shade.package}.io.netty</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

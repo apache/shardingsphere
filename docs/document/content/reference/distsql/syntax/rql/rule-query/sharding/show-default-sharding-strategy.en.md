@@ -9,13 +9,20 @@ The `SHOW DEFAULT SHARDING STRATEGY` syntax is used to query default sharding st
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowDefaultShardingStrategy::=
   'SHOW' 'DEFAULT' 'SHARDING' 'STRATEGY' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -70,7 +77,7 @@ mysql> SHOW DEFAULT SHARDING STRATEGY;
 
 ### Reserved word
 
-`SHOW`、`DEFAULT`、`SHARDING`、`STRATEGY`、`FROM`
+`SHOW`, `DEFAULT`, `SHARDING`, `STRATEGY`, `FROM`
 
 ### Related links
 

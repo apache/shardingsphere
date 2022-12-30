@@ -22,6 +22,7 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -32,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Database packet codec for MySQL.
@@ -59,7 +61,9 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
             in.resetReaderIndex();
             return;
         }
-        ByteBuf message = in.readRetainedSlice(SEQUENCE_LENGTH + payloadLength);
+        short sequenceId = in.readUnsignedByte();
+        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
+        ByteBuf message = in.readRetainedSlice(payloadLength);
         if (MAX_PACKET_LENGTH == payloadLength) {
             pendingMessages.add(message);
         } else if (pendingMessages.isEmpty()) {
@@ -74,10 +78,10 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
         Iterator<ByteBuf> pendingMessagesIterator = pendingMessages.iterator();
         result.addComponent(true, pendingMessagesIterator.next());
         while (pendingMessagesIterator.hasNext()) {
-            result.addComponent(true, pendingMessagesIterator.next().skipBytes(1));
+            result.addComponent(true, pendingMessagesIterator.next());
         }
-        if (lastMessage.readableBytes() > 1) {
-            result.addComponent(true, lastMessage.skipBytes(1));
+        if (lastMessage.readableBytes() > 0) {
+            result.addComponent(true, lastMessage);
         }
         out.add(result);
         pendingMessages.clear();
@@ -93,9 +97,13 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
             // CHECKSTYLE:ON
             out.resetWriterIndex();
             SQLException unknownSQLException = new UnknownSQLException(ex).toSQLException();
-            new MySQLErrPacket(1, unknownSQLException.getErrorCode(), unknownSQLException.getSQLState(), unknownSQLException.getMessage()).write(payload);
+            new MySQLErrPacket(unknownSQLException.getErrorCode(), unknownSQLException.getSQLState(), unknownSQLException.getMessage()).write(payload);
         } finally {
-            updateMessageHeader(out, message.getSequenceId());
+            if (out.readableBytes() - PAYLOAD_LENGTH - SEQUENCE_LENGTH < MAX_PACKET_LENGTH) {
+                updateMessageHeader(out, context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().getAndIncrement());
+            } else {
+                writeMultiPackets(context, out);
+            }
         }
     }
     
@@ -106,6 +114,23 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     private void updateMessageHeader(final ByteBuf byteBuf, final int sequenceId) {
         byteBuf.setMediumLE(0, byteBuf.readableBytes() - PAYLOAD_LENGTH - SEQUENCE_LENGTH);
         byteBuf.setByte(3, sequenceId);
+    }
+    
+    private void writeMultiPackets(final ChannelHandlerContext context, final ByteBuf byteBuf) {
+        int packetCount = (byteBuf.skipBytes(PAYLOAD_LENGTH + SEQUENCE_LENGTH).readableBytes() / MAX_PACKET_LENGTH) + 1;
+        CompositeByteBuf result = context.alloc().compositeBuffer(packetCount * 2);
+        AtomicInteger sequenceId = context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get();
+        for (int i = 0; i < packetCount; i++) {
+            ByteBuf header = context.alloc().ioBuffer(4, 4);
+            int packetLength = Math.min(byteBuf.readableBytes(), MAX_PACKET_LENGTH);
+            header.writeMediumLE(packetLength);
+            header.writeByte(sequenceId.getAndIncrement());
+            result.addComponent(true, header);
+            if (packetLength > 0) {
+                result.addComponent(true, byteBuf.readRetainedSlice(packetLength));
+            }
+        }
+        context.write(result);
     }
     
     @Override

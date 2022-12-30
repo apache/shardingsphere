@@ -27,9 +27,9 @@ import java.util.Optional;
 public interface FromDatabaseAvailable {
     
     /**
-     * Get schema.
+     * Get database.
      * 
-     * @return schema segment
+     * @return database segment
      */
     Optional<DatabaseSegment> getDatabase();
 }

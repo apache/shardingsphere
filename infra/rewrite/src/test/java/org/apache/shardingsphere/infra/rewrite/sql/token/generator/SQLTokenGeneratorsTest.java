@@ -22,12 +22,12 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,9 +41,9 @@ import static org.mockito.Mockito.when;
 public final class SQLTokenGeneratorsTest {
     
     @Test
-    public void assertAddAllWithList() throws Exception {
+    public void assertAddAllWithList() throws ReflectiveOperationException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSqlTokenGeneratorsMap(sqlTokenGenerators);
+        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
         SQLTokenGenerator mockSqlTokenGenerator = mock(SQLTokenGenerator.class);
         sqlTokenGenerators.addAll(Collections.singleton(mockSqlTokenGenerator));
         assertThat(actualSqlTokenGeneratorsMap.size(), is(1));
@@ -52,15 +52,15 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @Test
-    public void assertAddAllWithSameClass() throws Exception {
+    public void assertAddAllWithSameClass() throws ReflectiveOperationException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         SQLTokenGenerator expectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
         SQLTokenGenerator unexpectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
-        Collection<SQLTokenGenerator> collection = new ArrayList<>();
+        Collection<SQLTokenGenerator> collection = new LinkedList<>();
         collection.add(expectedSqlTokenGenerator);
         collection.add(unexpectedSqlTokenGenerator);
         sqlTokenGenerators.addAll(collection);
-        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSqlTokenGeneratorsMap(sqlTokenGenerators);
+        Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
         assertThat(actualSqlTokenGeneratorsMap.size(), is(1));
         SQLTokenGenerator actualSqlTokenGenerator = actualSqlTokenGeneratorsMap.get(expectedSqlTokenGenerator.getClass());
         assertThat(actualSqlTokenGenerator, is(expectedSqlTokenGenerator));
@@ -95,9 +95,7 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @SuppressWarnings("unchecked")
-    private Map<Class<?>, SQLTokenGenerator> getSqlTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws NoSuchFieldException, IllegalAccessException {
-        Field field = sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators");
-        field.setAccessible(true);
-        return (Map<Class<?>, SQLTokenGenerator>) field.get(sqlTokenGenerators);
+    private Map<Class<?>, SQLTokenGenerator> getSQLTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws ReflectiveOperationException {
+        return (Map<Class<?>, SQLTokenGenerator>) Plugins.getMemberAccessor().get(sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators"), sqlTokenGenerators);
     }
 }

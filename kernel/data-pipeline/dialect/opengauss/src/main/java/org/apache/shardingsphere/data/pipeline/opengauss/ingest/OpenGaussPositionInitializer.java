@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.opengauss.replication.LogSequenceNumber;
 
@@ -32,7 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * OpenGauss wal position initializer.
+ * OpenGauss WAL position initializer.
  */
 // TODO reuse PostgreSQLPositionInitializer
 @Slf4j
@@ -45,7 +45,7 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     private static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
     @Override
-    public WalPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+    public WALPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             createSlotIfNotExist(connection, slotNameSuffix);
             return getWalPosition(connection);
@@ -53,8 +53,8 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
     }
     
     @Override
-    public WalPosition init(final String data) {
-        return new WalPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data))));
+    public WALPosition init(final String data) {
+        return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(Long.parseLong(data))));
     }
     
     /**
@@ -92,12 +92,12 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
         }
     }
     
-    private WalPosition getWalPosition(final Connection connection) throws SQLException {
+    private WALPosition getWalPosition(final Connection connection) throws SQLException {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            return new WalPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
+            return new WALPosition(new OpenGaussLogSequenceNumber(LogSequenceNumber.valueOf(resultSet.getString(1))));
         }
     }
     

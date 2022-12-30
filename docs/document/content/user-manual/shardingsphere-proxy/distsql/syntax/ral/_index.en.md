@@ -4,19 +4,19 @@ weight = 3
 chapter = true
 +++
 
-RAL (Resource & Rule Administration Language) responsible for hint, circuit breaker, configuration import and export, scaling control and other management functions.
+RAL (Resource & Rule Administration Language) is used to manage hint, circuit breaker, configuration import and export, scaling control and other management functions.
 
 ## Hint
 
 | Statement                                            | Function                                                                                                    | Example                                        |
 | :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------- | :--------------------------------------------- |
-| SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | For current connection, set readwrite splitting routing strategy (automatic or forced to write data source) | SET READWRITE_SPLITTINGHINT SOURCE = write     |
+| SET READWRITE_SPLITTING HINT SOURCE = [auto / write] | For current connection, set read/write splitting routing strategy (automatic or forced to write data source) | SET READWRITE_SPLITTINGHINT SOURCE = write     |
 | SET SHARDING HINT DATABASE_VALUE = yy                | For current connection, set sharding value for database sharding only, yy: sharding value                   | SET SHARDING HINT DATABASE_VALUE = 100         |
 | ADD SHARDING HINT DATABASE_VALUE xx = yy             | For current connection, add sharding value for table, xx: logic table, yy: database sharding value          | ADD SHARDING HINT DATABASE_VALUE t_order = 100 |
 | ADD SHARDING HINT TABLE_VALUE xx = yy                | For current connection, add sharding value for table, xx: logic table, yy: table sharding value             | ADD SHARDING HINT TABLE_VALUE t_order = 100    |
 | CLEAR HINT                                           | For current connection, clear all hint settings                                                             | CLEAR HINT                                     |
-| CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | For current connection, clear hint settings of sharding or readwrite splitting                              | CLEAR READWRITE_SPLITTING HINT                 |
-| SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | For current connection, query hint settings of sharding or readwrite splitting                              | SHOW READWRITE_SPLITTING HINT STATUS           |
+| CLEAR [SHARDING HINT / READWRITE_SPLITTING HINT]     | For current connection, clear hint settings of sharding or read/write splitting                              | CLEAR READWRITE_SPLITTING HINT                 |
+| SHOW [SHARDING / READWRITE_SPLITTING] HINT STATUS    | For current connection, query hint settings of sharding or read/write splitting                              | SHOW READWRITE_SPLITTING HINT STATUS           |
 
 ## Migration
 
@@ -26,21 +26,25 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | SHOW MIGRATION LIST                                     | Query running list                             | SHOW MIGRATION LIST                             |
 | SHOW MIGRATION STATUS jobId                             | Query migration status                         | SHOW MIGRATION STATUS 1234                      |
 | STOP MIGRATION jobId                                    | Stop migration                                 | STOP MIGRATION 1234                             |
-| START MIGRATION jobId                                   | Start stopped migration                        | START MIGRATION 1234                            |
-| ROLLBACK MIGRATION jobId                                | Rollback migration                             | ROLLBACK MIGRATION 1234                         |
-| COMMIT MIGRATION jobId                                  | Commit migration                               | COMMIT MIGRATION 1234                           |
+| START MIGRATION jobId                                   | Restart stopped migration                        | START MIGRATION 1234                            |
 | CHECK MIGRATION jobId                                   | Data consistency check                         | CHECK MIGRATION 1234                            |
 | SHOW MIGRATION CHECK ALGORITHMS                         | Show available consistency check algorithms    | SHOW MIGRATION CHECK ALGORITHMS                 |
-| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | Data consistency check with defined algorithm  | CHECK MIGRATION 1234 by type(name="DATA_MATCH") |
+| CHECK MIGRATION jobId BY TYPE(NAME=algorithmTypeName)   | Data consistency check with defined algorithm  | CHECK MIGRATION 1234 BY TYPE(NAME="DATA_MATCH") |
+| SHOW MIGRATION CHECK STATUS jobId                       | Query data consistency check status            | SHOW MIGRATION CHECK STATUS 1234                |
+| STOP MIGRATION CHECK jobId                              | Stop data consistency check                    | STOP MIGRATION CHECK 1234                       |
+| START MIGRATION CHECK jobId                             | Start data consistency check                   | START MIGRATION CHECK 1234                      |
+| DROP MIGRATION CHECK jobId                              | Drop data consistency check                    | DROP MIGRATION CHECK 1234                       |
+| ROLLBACK MIGRATION jobId                                | Rollback migration                             | ROLLBACK MIGRATION 1234                         |
+| COMMIT MIGRATION jobId                                  | Commit migration                               | COMMIT MIGRATION 1234                           |
 
 ## Circuit Breaker
 
-| Statement                                                                       | Function                           | Example                                    |
-| :------------------------------------------------------------------------------ | :--------------------------------- | :----------------------------------------- |
-| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | Enable or disable read data source | ENABLE READWRITE_SPLITTING READ resource_0 |
-| [ENABLE / DISABLE] INSTANCE instanceId                                          | Enable or disable proxy instance   | DISABLE INSTANCE instance_1                |
-| SHOW INSTANCE LIST                                                              | Query proxy instance information   | SHOW INSTANCE LIST                         |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]               | Query all read resources status    | SHOW READWRITE_SPLITTING READ RESOURCES    |
+| Statement                                                                                           | Function                                                | Example                                                  |
+|:----------------------------------------------------------------------------------------------------|:--------------------------------------------------------|:---------------------------------------------------------|
+| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) storageUnitName [FROM databaseName] | Enable or disable read data source                      | ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_1  |
+| [ENABLE / DISABLE] COMPUTE NODE instanceId                                                          | Enable or disable proxy instance                        | DISABLE COMPUTE NODE instance_1                          |
+| SHOW COMPUTE NODES                                                                                  | Query proxy instance information                        | SHOW COMPUTE NODES                                       |
+| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                   | Query data sources status of read/write splitting groups | SHOW STATUS FROM READWRITE_SPLITTING RULES               |
 
 ## Global Rule
 
@@ -54,24 +58,25 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 
 ## Other
 
-| Statement                                                           | Function                                                                                                                                                | Example                                                    |
-| :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------- |
-| SHOW INSTANCE INFO                                                  | Query the instance information of the proxy                                                                                                             | SHOW INSTANCE INFO                                         |
-| SHOW MODE INFO                                                      | Query the mode configuration of the proxy                                                                                                               | SHOW MODE INFO                                             |
-| SET VARIABLE proxy_property_name = xx                               | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of proxy, name is split by underscore | SET VARIABLE sql_show = true                               |  
-| SET VARIABLE transaction_type = xx                                  | Modify transaction_type of the current connection, supports LOCAL, XA, BASE                                                                             | SET VARIABLE transaction_type = "XA"                       |
-| SET VARIABLE agent_plugins_enabled = [TRUE / FALSE]                 | Set whether the agent plugins are enabled, the default value is false                                                                                   | SET VARIABLE agent_plugins_enabled = TRUE                  |
-| SHOW ALL VARIABLES                                                  | Query proxy all properties configuration                                                                                                                | SHOW ALL VARIABLES                                         |
-| SHOW VARIABLE variable_name                                         | Query proxy variable, name is split by underscore                                                                                                       | SHOW VARIABLE sql_show                                     |
-| REFRESH TABLE METADATA                                              | Refresh the metadata of all tables                                                                                                                      | REFRESH TABLE METADATA                                     |
-| REFRESH TABLE METADATA tableName                                    | Refresh the metadata of the specified table                                                                                                             | REFRESH TABLE METADATA t_order                             |
-| REFRESH TABLE METADATA tableName FROM RESOURCE resourceName         | Refresh the tables' metadata in the specified data source                                                                                               | REFRESH TABLE METADATA t_order FROM RESOURCE ds_1          |
-| REFRESH TABLE METADATA FROM RESOURCE resourceName SCHEMA schemaName | Refresh the tables' metadata in a schema of a specified data source. If there are no tables in the schema, the schema will be deleted.                  | REFRESH TABLE METADATA FROM RESOURCE ds_1 SCHEMA db_schema |
-| SHOW TABLE METADATA tableName [, tableName] ...                     | Query table metadata                                                                                                                                    | SHOW TABLE METADATA t_order                                |
-| EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]    | Export resources and rule configurations to YAML format                                                                                                 | EXPORT DATABASE CONFIG FROM readwrite_splitting_db         |
-| IMPORT DATABASE CONFIG FILE="file_path"                             | Import resources and rule configuration from YAML, only supports import into an empty database                                                          | IMPORT DATABASE CONFIG FILE = "/xxx/config-sharding.yaml"  |
-| SHOW RULES USED RESOURCE resourceName [from database]               | Query the rules for using the specified resource in database                                                                                            | SHOW RULES USED RESOURCE ds_0 FROM databaseName            |
+| Statement                                                                   | Function                                                                                                                                                | Example                                                           |
+|:----------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------|
+| SHOW COMPUTE NODE INFO                                                      | Query the instance information of the proxy                                                                                                             | SHOW COMPUTE NODE INFO                                            |
+| SHOW COMPUTE NODE MODE                                                      | Query the mode configuration of the proxy                                                                                                               | SHOW COMPUTE NODE MODE                                            |
+| SET DIST VARIABLE proxy_property_name = xx                                  | proxy_property_name is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of proxy, name is split by underscore | SET DIST VARIABLE sql_show = true                                 |
+| SET DIST VARIABLE transaction_type = xx                                     | Modify transaction_type of the current connection, supports LOCAL, XA, BASE                                                                             | SET DIST VARIABLE transaction_type = "XA"                         |
+| SET DIST VARIABLE agent_plugins_enabled = [TRUE / FALSE]                    | Sets whether the agent plugins are enabled, the default value is false                                                                                   | SET DIST VARIABLE agent_plugins_enabled = TRUE                    |
+| SHOW DIST VARIABLES                                                         | Query proxy all properties configuration                                                                                                                | SHOW DIST VARIABLES                                               |
+| SHOW DIST VARIABLE WHERE name = variable_name                               | Query proxy variable, name is split by underscore                                                                                                       | SHOW DIST VARIABLE WHERE name = sql_show                          |
+| REFRESH TABLE METADATA                                                      | Refresh the metadata of all tables                                                                                                                      | REFRESH TABLE METADATA                                            |
+| REFRESH TABLE METADATA tableName                                            | Refresh the metadata of the specified table                                                                                                             | REFRESH TABLE METADATA t_order                                    |
+| REFRESH TABLE METADATA tableName FROM STORAGE UNIT storageUnitName          | Refresh the tables' metadata in the specified data source                                                                                               | REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1             |
+| REFRESH TABLE METADATA FROM STORAGE UNIT storageUnitName SCHEMA schemaName  | Refresh the tables' metadata in a schema of a specified data source. If there are no tables in the schema, the schema will be deleted.                  | REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema    |
+| REFRESH DATABASE METADATA [databaseName] FROM GOVERNANCE CENTER             | Pull the latest configuration from the governance center and refresh the metadata of the local logic database                                           | REFRESH DATABASE METADATA [databaseName] FROM GOVERNANCE CENTER   |
+| SHOW TABLE METADATA tableName [, tableName] ...                             | Query table metadata                                                                                                                                    | SHOW TABLE METADATA t_order                                       |
+| EXPORT DATABASE CONFIGURATION [FROM databaseName] [TO FILE "filePath"]      | Export data sources and rule configurations to YAML format                                                                                              | EXPORT DATABASE CONFIGURATION FROM readwrite_splitting_db         |
+| IMPORT DATABASE CONFIGURATION FILE="file_path"                              | Import data sources and rule configurations from YAML, only supports import into an empty database                                                      | IMPORT DATABASE CONFIGURATION FILE = "/xxx/config-sharding.yaml"  |
+| SHOW RULES USED STORAGE UNIT storageUnitName [FROM databaseName]            | Query the rules for using the specified data source in database                                                                                         | SHOW RULES USED STORAGE UNIT ds_0 FROM databaseName               |
 
 ## Notice
 
-ShardingSphere-Proxy does not support hint by default, to support it, set `proxy-hint-enabled` to true in `conf/server.yaml`.
+ShardingSphere-Proxy does not support hint by default. In order to support it, set `proxy-hint-enabled` to true in `conf/server.yaml`.

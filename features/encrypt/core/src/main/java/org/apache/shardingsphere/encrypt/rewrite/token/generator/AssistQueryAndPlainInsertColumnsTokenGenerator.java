@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -63,6 +63,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
     private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
         encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
+        encryptTable.findLikeQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         return result;
     }

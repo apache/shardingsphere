@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -60,7 +59,7 @@ public final class EncryptCreateTableTokenGeneratorTest {
     @Test
     public void assertGenerateSQLTokens() {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildCreateTableStatementContext());
-        assertThat(sqlTokens.size(), is(4));
+        assertThat(sqlTokens.size(), is(5));
         Iterator<SQLToken> iterator = sqlTokens.iterator();
         assertThat(iterator.next(), instanceOf(RemoveToken.class));
         SubstitutableColumnNameToken cipherToken = (SubstitutableColumnNameToken) iterator.next();
@@ -71,6 +70,10 @@ public final class EncryptCreateTableTokenGeneratorTest {
         assertThat(assistedToken.toString(mock(RouteUnit.class)), is(", assisted_certificate_number"));
         assertThat(assistedToken.getStartIndex(), is(79));
         assertThat(assistedToken.getStopIndex(), is(42));
+        SubstitutableColumnNameToken likeToken = (SubstitutableColumnNameToken) iterator.next();
+        assertThat(likeToken.toString(mock(RouteUnit.class)), is(", like_certificate_number"));
+        assertThat(likeToken.getStartIndex(), is(79));
+        assertThat(likeToken.getStopIndex(), is(42));
         SubstitutableColumnNameToken plainToken = (SubstitutableColumnNameToken) iterator.next();
         assertThat(plainToken.toString(mock(RouteUnit.class)), is(", certificate_number_plain"));
         assertThat(plainToken.getStartIndex(), is(79));
@@ -90,17 +93,18 @@ public final class EncryptCreateTableTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
-        when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         EncryptColumn column = mockEncryptColumn();
         when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipherColumn());
         when(result.findPlainColumn("t_encrypt", "certificate_number")).thenReturn(column.getPlainColumn());
         when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQueryColumn());
+        when(result.findLikeQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getLikeQueryColumn());
         when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "certificate_number_plain", "test", null);
+        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "certificate_number_plain", "test", null);
     }
 }

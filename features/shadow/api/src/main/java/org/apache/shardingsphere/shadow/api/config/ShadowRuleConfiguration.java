@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -35,11 +37,11 @@ import java.util.Map;
 @Setter
 public final class ShadowRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private String defaultShadowAlgorithmName;
-    
-    private Map<String, ShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    private Collection<ShadowDataSourceConfiguration> dataSources = new LinkedList<>();
     
     private Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
     
     private Map<String, AlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
+    
+    private String defaultShadowAlgorithmName;
 }

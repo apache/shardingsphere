@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.row;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,13 +29,13 @@ import java.util.List;
  */
 public final class MemoryEnumerator implements Enumerator<Object[]> {
     
-    private final List<ShardingSphereRowData> rows;
+    private final Collection<ShardingSphereRowData> rows;
     
     private Iterator<ShardingSphereRowData> rowDataIterator;
     
     private List<Object> current;
     
-    public MemoryEnumerator(final List<ShardingSphereRowData> rows) {
+    public MemoryEnumerator(final Collection<ShardingSphereRowData> rows) {
         this.rows = rows;
         rowDataIterator = rows.iterator();
     }

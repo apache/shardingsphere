@@ -25,17 +25,16 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -45,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Standard pipeline table metadata loader.
+ * Standard pipeline table meta data loader.
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -65,32 +64,25 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         try {
             loadTableMetaData(schemaName, tableName);
         } catch (final SQLException ex) {
-            throw new RuntimeException(String.format("Load metadata for schema '%s' and table '%s' failed", schemaName, tableName), ex);
+            throw new RuntimeException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
         result = tableMetaDataMap.get(new TableName(tableName));
         if (null == result) {
-            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
+            log.warn("getTableMetaData, can not load meta data for table '{}'", tableName);
         }
         return result;
     }
     
     private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            long startMillis = System.currentTimeMillis();
-            String schemaNameFinal = isSchemaAvailable() ? schemaName : null;
-            Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, schemaNameFinal, tableNamePattern);
-            log.info("loadTableMetaData, schemaNameFinal={}, tableNamePattern={}, result={}, cost time={} ms",
-                    schemaNameFinal, tableNamePattern, tableMetaDataMap, System.currentTimeMillis() - startMillis);
+            Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(
+                    connection, TypedSPIRegistry.getRegisteredService(DatabaseType.class, dataSource.getDatabaseType().getType()).isSchemaAvailable() ? schemaName : null, tableNamePattern);
             this.tableMetaDataMap.putAll(tableMetaDataMap);
         }
     }
     
-    private boolean isSchemaAvailable() {
-        return DatabaseTypeFactory.getInstance(dataSource.getDatabaseType().getType()).isSchemaAvailable();
-    }
-    
     private Map<TableName, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {
-        List<String> tableNames = new ArrayList<>();
+        Collection<String> tableNames = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, tableNamePattern, null)) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
@@ -119,7 +111,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                 }
             }
             Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
-                    .map(e -> new PipelineIndexMetaData(e.getKey(), e.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
+                    .map(entry -> new PipelineIndexMetaData(entry.getKey(), entry.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
             result.put(new TableName(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
         }
         return result;
@@ -137,9 +129,9 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             }
         }
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (Entry<String, SortedMap<Short, String>> each : orderedColumnsOfIndexes.entrySet()) {
-            Collection<String> columnNames = result.computeIfAbsent(each.getKey(), unused -> new LinkedList<>());
-            columnNames.addAll(each.getValue().values());
+        for (Entry<String, SortedMap<Short, String>> entry : orderedColumnsOfIndexes.entrySet()) {
+            Collection<String> columnNames = result.computeIfAbsent(entry.getKey(), unused -> new LinkedList<>());
+            columnNames.addAll(entry.getValue().values());
         }
         return result;
     }

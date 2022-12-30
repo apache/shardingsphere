@@ -82,9 +82,9 @@ public final class ShadowRuleConfigurationCheckerTest {
         return result;
     }
     
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
+    private Collection<ShadowDataSourceConfiguration> createDataSources() {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds_shadow"));
         return result;
     }
 }

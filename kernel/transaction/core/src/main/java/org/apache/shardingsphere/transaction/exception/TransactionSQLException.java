@@ -29,7 +29,7 @@ public abstract class TransactionSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 4;
     
-    public TransactionSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
+    public TransactionSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }

@@ -45,7 +45,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for traffic dist SQL.
+ * SQL statement visitor for traffic DistSQL.
  */
 public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
@@ -61,10 +61,7 @@ public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatemen
     
     @Override
     public ASTNode visitTrafficRuleDefinition(final TrafficRuleDefinitionContext ctx) {
-        AlgorithmSegment loadBalancerSegment = null;
-        if (null != ctx.loadBalancerDefinition()) {
-            loadBalancerSegment = (AlgorithmSegment) visit(ctx.loadBalancerDefinition().algorithmDefinition());
-        }
+        AlgorithmSegment loadBalancerSegment = null != ctx.loadBalancerDefinition() ? (AlgorithmSegment) visit(ctx.loadBalancerDefinition().algorithmDefinition()) : null;
         return new TrafficRuleSegment(
                 getIdentifierValue(ctx.ruleName()), buildLabels(ctx.labelDefinition()), (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), loadBalancerSegment);
     }

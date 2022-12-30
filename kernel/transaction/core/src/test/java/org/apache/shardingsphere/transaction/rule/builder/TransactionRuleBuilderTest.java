@@ -17,21 +17,14 @@
 
 package org.apache.shardingsphere.transaction.rule.builder;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
@@ -48,24 +41,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 public final class TransactionRuleBuilderTest {
-
+    
     @Test
     public void assertBuild() {
         TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "provider", new Properties());
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", null, new ShardingSphereResourceMetaData("db", createDataSourceMap()),
                 new ShardingSphereRuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)),
-                mock(WorkerIdGenerator.class), new ModeConfiguration("Standalone", null), mock(LockContext.class), new EventBusContext());
-        TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), instanceContext, mock(ConfigurationProperties.class));
+        TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ConfigurationProperties.class));
         assertNotNull(rule.getConfiguration());
         assertThat(rule.getDatabases().get("logic_db").getResourceMetaData().getDataSources().size(), is(2));
     }
-
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("not_change", new MockedDataSource());
         result.put("replace", new MockedDataSource());
         return result;
     }
-
 }

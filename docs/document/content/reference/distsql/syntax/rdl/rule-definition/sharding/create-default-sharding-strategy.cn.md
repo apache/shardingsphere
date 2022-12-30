@@ -9,15 +9,23 @@ weight = 5
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 CreateDefaultShardingStrategy ::=
-  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
+  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' ifNotExists? '(' shardingStrategy ')'
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 shardingStrategy ::=
-  'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
+  'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' '=' columnName | 'SHARDING_COLUMNS' '=' columnNames) ',' 'SHARDING_ALGORITHM' '=' algorithmDefinition
+
+strategyType ::=
+  string
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  
+  'TYPE' '(' 'NAME' '=' algorithmType ',' propertiesDefinition ')'  
 
 columnNames ::=
   columnName (',' columnName)+
@@ -25,39 +33,44 @@ columnNames ::=
 columnName ::=
   identifier
 
-algorithmName ::=
-  identifier
-  
 algorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
 - 当使用复合分片算法时，需要通过 `SHARDING_COLUMNS` 指定多个分片键；
-- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)。
+- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
+- `ifNotExists` 子句用于避免出现 `Duplicate default sharding strategy` 错误。
 
 ### 示例
 
-#### 1.通过已有的分片算法创建默认分库策略
+- 创建默认分表策略
 
 ```sql
--- 创建分片算法
-CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
-);
-
--- 创建默认分库策略
-CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline
+CREATE DEFAULT SHARDING TABLE STRATEGY (
+    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
 ```
 
-#### 2.同时创建分片算法和默认分表策略
+- 使用 `ifNotExists` 创建默认分表策略
 
 ```sql
--- 创建默认分表策略
-CREATE DEFAULT SHARDING TABLE STRATEGY (
+CREATE DEFAULT SHARDING TABLE STRATEGY IF NOT EXISTS (
     TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
 ```
@@ -69,4 +82,3 @@ CREATE DEFAULT SHARDING TABLE STRATEGY (
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
-- [CREATE SHARDING ALGORITHM](/cn/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)

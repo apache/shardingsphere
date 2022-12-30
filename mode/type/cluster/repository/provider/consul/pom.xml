@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-cluster-mode-repository-consul</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
         <consul.api.version>1.4.1</consul.api.version>
-        <httpclient.version>4.5.5</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
     </properties>
     
     <dependencies>

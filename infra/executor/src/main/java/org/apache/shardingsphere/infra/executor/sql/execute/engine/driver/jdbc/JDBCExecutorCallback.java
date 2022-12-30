@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -31,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
@@ -54,18 +53,13 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private final DatabaseType protocolType;
     
-    @Getter
-    private final DatabaseType databaseType;
+    private final Map<String, DatabaseType> storageTypes;
     
     private final SQLStatement sqlStatement;
     
     private final boolean isExceptionThrown;
     
     private final EventBusContext eventBusContext;
-    
-    public JDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown, final EventBusContext eventBusContext) {
-        this(databaseType, databaseType, sqlStatement, isExceptionThrown, eventBusContext);
-    }
     
     @Override
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
@@ -87,17 +81,18 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
      */
     private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(jdbcExecutionUnit.getStorageResource().getConnection().getMetaData());
+        DatabaseType storageType = storageTypes.get(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
+        DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(jdbcExecutionUnit.getStorageResource().getConnection().getMetaData(), storageType);
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             SQLUnit sqlUnit = jdbcExecutionUnit.getExecutionUnit().getSqlUnit();
             sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread, dataMap);
-            T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode());
+            T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
             finishReport(dataMap, jdbcExecutionUnit);
             return result;
         } catch (final SQLException ex) {
-            if (!databaseType.equals(protocolType)) {
+            if (!storageType.equals(protocolType)) {
                 Optional<T> saneResult = getSaneResult(sqlStatement, ex);
                 if (saneResult.isPresent()) {
                     return isTrunkThread ? saneResult.get() : null;
@@ -109,12 +104,12 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         }
     }
     
-    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
+    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData databaseMetaData, final DatabaseType storageType) throws SQLException {
         String url = databaseMetaData.getURL();
         if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
             return CACHED_DATASOURCE_METADATA.get(url);
         }
-        DataSourceMetaData result = databaseType.getDataSourceMetaData(url, databaseMetaData.getUserName());
+        DataSourceMetaData result = storageType.getDataSourceMetaData(url, databaseMetaData.getUserName());
         CACHED_DATASOURCE_METADATA.put(url, result);
         return result;
     }
@@ -125,7 +120,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         }
     }
     
-    protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
+    protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode, DatabaseType storageType) throws SQLException;
     
     protected abstract Optional<T> getSaneResult(SQLStatement sqlStatement, SQLException ex);
 }

@@ -10,13 +10,21 @@ weight = 9
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowUnusedShardingAuditors::=
-  'SHOW' 'SHARDING' 'AUDITOR'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'AUDITOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 
 ### Supplement
 
@@ -66,7 +74,7 @@ mysql> SHOW UNUSED SHARDING AUDITORS FROM test1;
 
 ### Reserved word
 
-`SHOW`、`UNUSED`、`SHARDING`、`AUDITORS`、`FROM`
+`SHOW`, `UNUSED`, `SHARDING`, `AUDITORS`, `FROM`
 
 ### Related links
 

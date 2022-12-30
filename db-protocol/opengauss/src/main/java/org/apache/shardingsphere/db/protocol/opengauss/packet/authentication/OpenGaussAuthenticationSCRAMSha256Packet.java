@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolVersion;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -33,9 +34,13 @@ public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQ
     
     private static final int PASSWORD_STORED_METHOD_SHA256 = 2;
     
+    private final int version;
+    
     private final byte[] random64Code;
     
     private final byte[] token;
+    
+    private final byte[] serverSignature;
     
     private final int serverIteration;
     
@@ -45,7 +50,12 @@ public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQ
         payload.writeInt4(PASSWORD_STORED_METHOD_SHA256);
         payload.writeBytes(random64Code);
         payload.writeBytes(token);
-        payload.writeInt4(serverIteration);
+        if (version < OpenGaussProtocolVersion.PROTOCOL_350.getVersion()) {
+            payload.writeBytes(serverSignature);
+        }
+        if (OpenGaussProtocolVersion.PROTOCOL_351.getVersion() == version) {
+            payload.writeInt4(serverIteration);
+        }
     }
     
     @Override

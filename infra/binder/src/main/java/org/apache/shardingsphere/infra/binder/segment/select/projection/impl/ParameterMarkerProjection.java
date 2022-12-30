@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 
 import java.util.Optional;
 
@@ -56,12 +56,8 @@ public final class ParameterMarkerProjection implements Projection {
         return Optional.ofNullable(alias);
     }
     
-    /**
-     * Get expression with alias.
-     *
-     * @return expression with alias
-     */
-    public String getExpressionWithAlias() {
-        return getExpression() + (null == alias ? "" : " AS " + alias);
+    @Override
+    public Projection cloneWithOwner(final String ownerName) {
+        return new ParameterMarkerProjection(parameterMarkerIndex, parameterMarkerType, alias);
     }
 }

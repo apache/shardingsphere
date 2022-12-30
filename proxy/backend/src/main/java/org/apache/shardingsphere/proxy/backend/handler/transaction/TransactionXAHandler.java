@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -37,7 +37,7 @@ import java.util.Collections;
 
 /**
  * XA transaction handler.
- * TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from distSQL.
+ * TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
  */
 @RequiredArgsConstructor
 public final class TransactionXAHandler implements ProxyBackendHandler {
@@ -46,7 +46,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
-    private final JDBCDatabaseCommunicationEngine backendHandler;
+    private final DatabaseCommunicationEngine backendHandler;
     
     public TransactionXAHandler(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         this.tclStatement = (XAStatement) sqlStatementContext.getSqlStatement();

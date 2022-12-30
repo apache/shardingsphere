@@ -19,6 +19,39 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
+literal
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
+    ;
+
+algorithmDefinition
+    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
+    ;
+
+algorithmTypeName
+    : buildinAlgorithmTypeName | STRING_
+    ;
+
+buildinAlgorithmTypeName
+    : MD5
+    | AES
+    | RC4
+    | SM3
+    | SM4
+    | CHAR_DIGEST_LIKE
+    ;
+
+propertiesDefinition
+    : PROPERTIES LP_ properties? RP_
+    ;
+
+properties
+    : property (COMMA_ property)*
+    ;
+
+property
+    : key=STRING_ EQ_ value=literal
+    ;
+
 tableName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

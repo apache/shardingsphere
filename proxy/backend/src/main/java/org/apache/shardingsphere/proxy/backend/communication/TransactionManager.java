@@ -21,59 +21,51 @@ import java.sql.SQLException;
 
 /**
  * Transaction manager interface for proxy.
- *
- * @param <T> return type of methods
  */
-public interface TransactionManager<T> {
+public interface TransactionManager {
     
     /**
      * Begin transaction.
      *
-     * @return can be Void or Future
      * @throws SQLException SQL exception
      */
-    T begin() throws SQLException;
+    void begin() throws SQLException;
     
     /**
      * Commit transaction.
      *
-     * @return can be Void or Future
      * @throws SQLException SQL exception
      */
-    T commit() throws SQLException;
+    void commit() throws SQLException;
     
     /**
      * Rollback transaction.
      *
-     * @return can be Void or Future
      * @throws SQLException SQL exception
      */
-    T rollback() throws SQLException;
+    void rollback() throws SQLException;
     
     /**
      * Set savepoint.
      *
      * @param savepointName savepoint name
-     * @return can be Void or Future
      * @throws SQLException SQL exception
      */
-    T setSavepoint(String savepointName) throws SQLException;
+    void setSavepoint(String savepointName) throws SQLException;
     
     /**
      * Rollback to savepoint.
      *
      * @param savepointName savepoint name
-     * @return can be Void or Future
      * @throws SQLException SQL exception
      */
-    T rollbackTo(String savepointName) throws SQLException;
+    void rollbackTo(String savepointName) throws SQLException;
     
     /**
      * Release savepoint.
      *
      * @param savepointName savepoint name
-     * @return can be Void or Future
      * @throws SQLException SQL exception
      */
-    T releaseSavepoint(String savepointName) throws SQLException;
+    void releaseSavepoint(String savepointName) throws SQLException;
 }

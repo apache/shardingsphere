@@ -11,7 +11,7 @@ In **Hugo**, pages are the core of your site. Once it is configured, pages are d
 Organize your site like [any other Hugo project](https://gohugo.io/content/organization/). Typically, you will have a *content* folder with all your pages.
 
     content
-    ├── level-one 
+    ├── level-one
     │   ├── level-two
     │   │   ├── level-three
     │   │   │   ├── level-four
@@ -45,7 +45,7 @@ Organize your site like [any other Hugo project](https://gohugo.io/content/organ
 A **Chapter** displays a page meant to be used as introduction for a set of child pages. Commonly, it contains a simple title and a catch line to define content that can be found under it.
 You can define any HTML as prefix for the menu. In the example below, it's just a number but that could be an [icon](https://fortawesome.github.io/Font-Awesome/).
 
-![Chapter page](/cont/pages/images/pages-chapter.png?width=50pc)
+![Chapter page](/en/cont/pages/images/pages-chapter.png?width=50pc)
 
 ```markdown
 +++
@@ -66,7 +66,7 @@ To tell **Hugo-theme-learn** to consider a page as a chapter, set `chapter=true`
 
 A **Default** page is any other content page.
 
-![Default page](/cont/pages/images/pages-default.png?width=50pc)
+![Default page](/en/cont/pages/images/pages-default.png?width=50pc)
 
 ```toml
 +++
@@ -85,7 +85,7 @@ Hugo provides a `new` command to create a new website.
 hugo new site <new_project>
 ```
 
-**Hugo-theme-learn** provides [archetypes]({{< relref "cont/archetypes.fr.md" >}}) to help you create this kind of pages.
+**Hugo-theme-learn** provides [archetypes]({{< relref "cont/archetypes.en.md" >}}) to help you create this kind of pages.
 
 ## Front Matter configuration
 
@@ -108,7 +108,7 @@ post = ""
 chapter = false
 # Hide a menu entry by setting this to true
 hidden = false
-# Display name of this page modifier. If set, it will be displayed in the footer. 
+# Display name of this page modifier. If set, it will be displayed in the footer.
 LastModifierDisplayName = ""
 # Email of this page modifier. If set with LastModifierDisplayName, it will be displayed in the footer
 LastModifierEmail = ""
@@ -122,11 +122,11 @@ In the page frontmatter, add a `pre` param to insert any HTML code before the me
 ```toml
 +++
 title = "Github repo"
-pre = "<i class='fa fa-github'></i> "
+pre = "<i class='fab fa-github'></i> "
 +++
 ```
 
-![Title with icon](/cont/pages/images/frontmatter-icon.png)
+![Title with icon](/en/cont/pages/images/frontmatter-icon.png)
 
 ### Ordering sibling menu/page entries
 
@@ -145,10 +145,10 @@ weight = 5
 
 By default, **Hugo-theme-learn** will use a page's `title` attribute for the menu item (or `linkTitle` if defined).
 
-But a page's title has to be descriptive on its own while the menu is a hierarchy.  
+But a page's title has to be descriptive on its own while the menu is a hierarchy.
 We've added the `menuTitle` parameter for that purpose:
 
-For example (for a page named `content/install/linux.md`): 
+For example (for a page named `content/install/linux.md`):
 
 ```toml
 +++

@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -48,8 +51,9 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
-    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION FROM information_schema.columns "
-            + "WHERE TABLE_SCHEMA=?";
+    private static final String TABLE_META_DATA_NO_ORDER =
+            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE FROM information_schema.columns "
+                    + "WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
     
@@ -103,7 +107,9 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(DatabaseTypeFactory.getInstance("MySQL")).load(connection.getMetaData());
+            Optional<DataTypeLoader> loader = TypedSPIRegistry.findRegisteredService(DataTypeLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getType());
+            Preconditions.checkState(loader.isPresent());
+            Map<String, Integer> dataTypes = loader.get().load(connection.getMetaData());
             String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -123,13 +129,14 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
-        boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
+        boolean primaryKey = "PRI".equalsIgnoreCase(resultSet.getString("COLUMN_KEY"));
         String extra = resultSet.getString("EXTRA");
         boolean generated = "auto_increment".equals(extra);
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
-        boolean visible = !"INVISIBLE".equals(extra);
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible);
+        boolean visible = !"INVISIBLE".equalsIgnoreCase(extra);
+        boolean unsigned = resultSet.getString("COLUMN_TYPE").toUpperCase().contains("UNSIGNED");
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible, unsigned);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

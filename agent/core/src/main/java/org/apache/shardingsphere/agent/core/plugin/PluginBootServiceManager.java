@@ -19,11 +19,13 @@ package org.apache.shardingsphere.agent.core.plugin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
-import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+import org.apache.shardingsphere.agent.core.spi.PluginBootServiceRegistry;
+import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -31,40 +33,58 @@ import java.util.Map.Entry;
  * Plugin boot service manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class PluginBootServiceManager {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(PluginBootServiceManager.class);
     
     /**
      * Start all services.
      *
-     * @param pluginConfigurationMap plugin configuration map
+     * @param pluginConfigs plugin configuration map
+     * @param classLoader class loader
+     * @param isEnhancedForProxy is enhanced for proxy
      */
-    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap) {
-        for (Entry<String, PluginConfiguration> entry : pluginConfigurationMap.entrySet()) {
-            AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
-                try {
-                    log.info("Start plugin: {}", optional.getType());
-                    optional.start(entry.getValue());
-                    // CHECKSTYLE:OFF
-                } catch (final Throwable ex) {
-                    // CHECKSTYLE:ON
-                    log.error("Failed to start service", ex);
-                }
-            });
+    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigs, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(classLoader);
+            for (Entry<String, PluginConfiguration> entry : pluginConfigs.entrySet()) {
+                PluginBootServiceRegistry.getRegisteredService(entry.getKey()).ifPresent(optional -> {
+                    try {
+                        LOGGER.info("Start plugin: {}", optional.getType());
+                        optional.start(entry.getValue(), isEnhancedForProxy);
+                        // CHECKSTYLE:OFF
+                    } catch (final Throwable ex) {
+                        // CHECKSTYLE:ON
+                        LOGGER.error("Failed to start service.", ex);
+                    }
+                });
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
     }
     
     /**
      * Close all services.
+     * 
+     * @param pluginJars plugin jars
      */
-    public static void closeAllServices() {
-        AgentTypedSPIRegistry.getAllRegisteredService(PluginBootService.class).forEach(each -> {
+    public static void closeAllServices(final Collection<PluginJar> pluginJars) {
+        PluginBootServiceRegistry.getAllRegisteredServices().forEach(each -> {
             try {
                 each.close();
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to close service", ex);
+                LOGGER.error("Failed to close service.", ex);
+            }
+        });
+        pluginJars.forEach(each -> {
+            try {
+                each.getJarFile().close();
+            } catch (final IOException ex) {
+                LOGGER.error("Failed to close jar file.", ex);
             }
         });
     }

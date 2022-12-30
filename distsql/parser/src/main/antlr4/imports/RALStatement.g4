@@ -19,36 +19,40 @@ grammar RALStatement;
 
 import BaseRule;
 
-setVariable
-    : SET VARIABLE variableName EQ variableValue
+setDistVariable
+    : SET DIST VARIABLE variableName EQ_ variableValue
     ;
 
-showVariable
-    : SHOW VARIABLE variableName
+showDistVariable
+    : SHOW DIST VARIABLE WHERE NAME EQ_ variableName
     ;
 
-showAllVariables
-    : SHOW ALL VARIABLES
+showDistVariables
+    : SHOW DIST VARIABLES
     ;
 
-alterInstance
-    : ALTER INSTANCE instanceId SET variableName EQ variableValues
+alterComputeNode
+    : ALTER COMPUTE NODE instanceId SET variableName EQ_ variableValues
     ;
 
-enableInstance
-    : ENABLE INSTANCE instanceId
+enableComputeNode
+    : ENABLE COMPUTE NODE instanceId
     ;
 
-disableInstance
-    : DISABLE INSTANCE instanceId
+disableComputeNode
+    : DISABLE COMPUTE NODE instanceId
     ;
 
-showInstanceList
-    : SHOW INSTANCE LIST
+showComputeNodes
+    : SHOW COMPUTE NODES
     ;
 
 clearHint
     : CLEAR HINT
+    ;
+
+refreshDatabaseMetadata
+    : REFRESH DATABASE METADATA databaseName? FROM GOVERNANCE CENTER
     ;
 
 refreshTableMetadata
@@ -56,107 +60,99 @@ refreshTableMetadata
     ;
 
 showTableMetadata
-    : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
+    : SHOW TABLE METADATA tableName (COMMA_ tableName*)? (FROM databaseName)?
     ;
 
-showInstanceInfo
-    : SHOW INSTANCE INFO
+showComputeNodeInfo
+    : SHOW COMPUTE NODE INFO
     ;
 
-showModeInfo
-    : SHOW MODE INFO
+showComputeNodeMode
+    : SHOW COMPUTE NODE MODE
     ;
 
-labelInstance
-    : (LABEL | RELABEL) INSTANCE instanceId WITH label (COMMA label)*
+labelComputeNode
+    : (LABEL | RELABEL) COMPUTE NODE instanceId WITH label (COMMA_ label)*
     ;
 
-unlabelInstance
-    : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
+unlabelComputeNode
+    : UNLABEL COMPUTE NODE instanceId (WITH label (COMMA_ label)*)?
     ;
 
 exportDatabaseConfiguration
-    : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
+    : EXPORT DATABASE CONFIGURATION (FROM databaseName)? (TO FILE filePath)?
     ;
 
 importDatabaseConfiguration
-    : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
+    : IMPORT DATABASE CONFIGURATION FROM FILE filePath
     ;
 
 convertYamlConfiguration
-    : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
+    : CONVERT YAML CONFIGURATION FROM FILE filePath
     ;
 
-showMigrationProcessConfiguration
-    : SHOW MIGRATION PROCESS CONFIGURATION
+showMigrationRule
+    : SHOW MIGRATION RULE
     ;
 
-createMigrationProcessConfiguration
-    : CREATE MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
+alterMigrationRule
+    : ALTER MIGRATION RULE inventoryIncrementalRule?
     ;
 
-alterMigrationProcessConfiguration
-    : ALTER MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
-    ;
-
-dropMigrationProcessConfiguration
-    : DROP MIGRATION PROCESS CONFIGURATION confPath
-    ;
-
-inventoryIncrementalProcessConfiguration
-    : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
+inventoryIncrementalRule
+    : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
 
 readDefinition
-    : READ LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
+    : READ LP_ workerThread? (COMMA_? batchSize)? (COMMA_? shardingSize)? (COMMA_? rateLimiter)? RP_
     ;
 
 writeDefinition
-    : WRITE LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    : WRITE LP_ workerThread? (COMMA_? batchSize)? (COMMA_? rateLimiter)? RP_
     ;
 
 workerThread
-    : WORKER_THREAD EQ intValue
+    : WORKER_THREAD EQ_ intValue
     ;
 
 batchSize
-    : BATCH_SIZE EQ intValue
+    : BATCH_SIZE EQ_ intValue
     ;
 
 shardingSize
-    : SHARDING_SIZE EQ intValue
+    : SHARDING_SIZE EQ_ intValue
     ;
 
 rateLimiter
-    : RATE_LIMITER LP algorithmDefinition RP
+    : RATE_LIMITER LP_ algorithmDefinition RP_
     ;
 
 streamChannel
-    : STREAM_CHANNEL LP algorithmDefinition RP
+    : STREAM_CHANNEL LP_ algorithmDefinition RP_
     ;
 
 confPath
-    : STRING
+    : STRING_
     ;
 
 filePath
-    : STRING
+    : STRING_
     ;
 
 variableName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 variableValues
-    : variableValue (COMMA variableValue)*
+    : variableValue (COMMA_ variableValue)*
     ;
 
 variableValue
-    : STRING | (MINUS)? INT | TRUE | FALSE
+    : literal
     ;
 
 instanceId
-    : IDENTIFIER | STRING
+    : IDENTIFIER_ | STRING_
     ;
 
 refreshScope
@@ -164,15 +160,15 @@ refreshScope
     ;
 
 fromSegment
-    : FROM RESOURCE resourceName (SCHEMA schemaName)?
+    : FROM STORAGE UNIT storageUnitName (SCHEMA schemaName)?
     ;
 
 label
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 intValue
-    : INT
+    : INT_
     ;
 
 prepareDistSQL

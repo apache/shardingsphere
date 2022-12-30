@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -39,10 +38,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -64,11 +63,11 @@ public final class AlterShadowRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        Map<String, ShadowDataSourceConfiguration> map = new HashMap<>();
-        map.put("initRuleName1", new ShadowDataSourceConfiguration("ds1", "ds_shadow1"));
-        map.put("initRuleName2", new ShadowDataSourceConfiguration("ds2", "ds_shadow2"));
+        Collection<ShadowDataSourceConfiguration> shadowDataSource = new LinkedList<>();
+        shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName1", "ds1", "ds_shadow1"));
+        shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName2", "ds2", "ds_shadow2"));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(currentConfig.getDataSources()).thenReturn(map);
+        when(currentConfig.getDataSources()).thenReturn(shadowDataSource);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
@@ -83,13 +82,13 @@ public final class AlterShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), currentConfig);
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteWithRuleNameNotInMetaData() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }
     
-    @Test(expected = MissingRequiredResourcesException.class)
+    @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertExecuteWithNotExistResource() {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resourceMetaData.getNotExistedResources(any())).thenReturn(dataSources);
@@ -121,8 +120,8 @@ public final class AlterShadowRuleStatementUpdaterTest {
     public void assertExecuteSuccess() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("name", prop));
-        ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("name", prop));
+        ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("SIMPLE_HINT", prop));
+        ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("SIMPLE_HINT", prop));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment2))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);

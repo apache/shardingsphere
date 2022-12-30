@@ -46,15 +46,15 @@ public final class PaginationContextEngine {
      * 
      * @param selectStatement SQL statement
      * @param projectionsContext projections context
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @param whereSegments where segments
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext,
-                                                     final List<Object> parameters, final Collection<WhereSegment> whereSegments) {
+                                                     final List<Object> params, final Collection<WhereSegment> whereSegments) {
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
         if (limitSegment.isPresent()) {
-            return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
+            return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), params);
         }
         Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
         Collection<ExpressionSegment> expressions = new LinkedList<>();
@@ -62,12 +62,12 @@ public final class PaginationContextEngine {
             expressions.add(each.getExpr());
         }
         if (topProjectionSegment.isPresent()) {
-            return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, parameters);
+            return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, params);
         }
         if (!expressions.isEmpty() && containsRowNumberPagination(selectStatement)) {
-            return new RowNumberPaginationContextEngine().createPaginationContext(expressions, projectionsContext, parameters);
+            return new RowNumberPaginationContextEngine().createPaginationContext(expressions, projectionsContext, params);
         }
-        return new PaginationContext(null, null, parameters);
+        return new PaginationContext(null, null, params);
     }
     
     private boolean containsRowNumberPagination(final SelectStatement selectStatement) {

@@ -41,7 +41,10 @@ public final class SpringNamespaceJpaExampleScenario implements FrameworkExample
     
     @Override
     public Map<String, String> getResourceTemplateMap() {
-        return Collections.singletonMap("resources/xml/application.ftl", "application.xml");
+        Map<String, String> result = new HashMap<>(2, 1);
+        result.put("resources/xml/application.ftl", "application.xml");
+        result.put("resources/yaml/config.ftl", "config.yaml");
+        return result;
     }
     
     @Override

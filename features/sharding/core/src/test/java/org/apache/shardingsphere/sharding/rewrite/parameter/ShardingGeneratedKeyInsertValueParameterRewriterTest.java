@@ -50,41 +50,40 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
     
     @Test
     public void assertIsNeedRewrite() {
-        ShardingGeneratedKeyInsertValueParameterRewriter shardingGeneratedKeyInsertValueParameterRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
+        ShardingGeneratedKeyInsertValueParameterRewriter paramRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(selectStatementContext));
+        assertFalse(paramRewriter.isNeedRewrite(selectStatementContext));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
+        assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
         when(insertStatementContext.getGeneratedKeyContext().isPresent()).thenReturn(Boolean.TRUE);
-        assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
+        assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
         when(insertStatementContext.getGeneratedKeyContext().get().isGenerated()).thenReturn(Boolean.TRUE);
         when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty()).thenReturn(Boolean.TRUE);
-        assertFalse(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
+        assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
         when(insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().isEmpty()).thenReturn(Boolean.FALSE);
-        assertTrue(shardingGeneratedKeyInsertValueParameterRewriter.isNeedRewrite(insertStatementContext));
+        assertTrue(paramRewriter.isNeedRewrite(insertStatementContext));
     }
     
     @Test
     public void assertRewrite() {
         InsertStatementContext insertStatementContext = getInsertStatementContext();
-        ParameterBuilder groupedParameterBuilder = getParameterBuilder();
-        ShardingGeneratedKeyInsertValueParameterRewriter shardingGeneratedKeyInsertValueParameterRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
-        shardingGeneratedKeyInsertValueParameterRewriter.rewrite(groupedParameterBuilder, insertStatementContext, null);
-        assertThat(((GroupedParameterBuilder) groupedParameterBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(TEST_PARAMETER_COUNT), hasItem(TEST_GENERATED_VALUE));
+        ParameterBuilder groupedParamBuilder = getParameterBuilder();
+        ShardingGeneratedKeyInsertValueParameterRewriter paramRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
+        paramRewriter.rewrite(groupedParamBuilder, insertStatementContext, null);
+        assertThat(((GroupedParameterBuilder) groupedParamBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(TEST_PARAMETER_COUNT), hasItem(TEST_GENERATED_VALUE));
     }
     
     private ParameterBuilder getParameterBuilder() {
-        StandardParameterBuilder standardParameterBuilder = mock(StandardParameterBuilder.class);
-        Map<Integer, Collection<Object>> addedIndexAndParameters = new HashMap<>();
-        when(standardParameterBuilder.getAddedIndexAndParameters()).thenReturn(addedIndexAndParameters);
+        StandardParameterBuilder standardParamBuilder = mock(StandardParameterBuilder.class);
+        Map<Integer, Collection<Object>> addedIndexAndParams = new HashMap<>();
+        when(standardParamBuilder.getAddedIndexAndParameters()).thenReturn(addedIndexAndParams);
         doAnswer((Answer<Void>) invocation -> {
             int index = invocation.getArgument(0);
-            Collection<Object> parameters = invocation.getArgument(1);
-            addedIndexAndParameters.put(index, parameters);
+            addedIndexAndParams.put(index, invocation.getArgument(1));
             return null;
-        }).when(standardParameterBuilder).addAddedParameters(anyInt(), anyCollection());
+        }).when(standardParamBuilder).addAddedParameters(anyInt(), anyCollection());
         GroupedParameterBuilder result = mock(GroupedParameterBuilder.class);
-        when(result.getParameterBuilders()).thenReturn(Collections.singletonList(standardParameterBuilder));
+        when(result.getParameterBuilders()).thenReturn(Collections.singletonList(standardParamBuilder));
         return result;
     }
     

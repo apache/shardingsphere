@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Order;
 <#if transaction?contains("xa")>
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 </#if>
 
@@ -51,7 +51,8 @@ public final class OrderRepository {
     }
     
     public void dropTable() throws SQLException {
-        String sql = "DROP TABLE t_order";
+        // todo fix in shadow
+        String sql = "DROP TABLE IF EXISTS t_order";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -68,7 +69,7 @@ public final class OrderRepository {
 <#if feature?contains("shadow")>
 
     public void createTableIfNotExistsShadow() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)) /*shadow:true,foo:bar*/";
+        String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)) /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -76,7 +77,7 @@ public final class OrderRepository {
     }
 
     public void dropTableShadow() throws SQLException {
-        String sql = "DROP TABLE t_order /*shadow:true,foo:bar*/";
+        String sql = "DROP TABLE IF EXISTS t_order /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
@@ -84,7 +85,7 @@ public final class OrderRepository {
     }
 
     public void truncateTableShadow() throws SQLException {
-        String sql = "TRUNCATE TABLE t_order /*shadow:true,foo:bar*/";
+        String sql = "TRUNCATE TABLE t_order /* SHARDINGSPHERE_HINT:shadow=true,foo=bar*/";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);

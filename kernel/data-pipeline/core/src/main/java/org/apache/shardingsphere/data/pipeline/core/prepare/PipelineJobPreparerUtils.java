@@ -27,22 +27,22 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.check.datasource.DataSourceCheckerFactory;
+import org.apache.shardingsphere.data.pipeline.core.check.datasource.BasicDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializerFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -64,25 +64,23 @@ public final class PipelineJobPreparerUtils {
      * @return true if supported, otherwise false
      */
     public static boolean isIncrementalSupported(final String databaseType) {
-        return IncrementalDumperCreatorFactory.findInstance(databaseType).isPresent();
+        return TypedSPIRegistry.findRegisteredService(IncrementalDumperCreator.class, databaseType).isPresent();
     }
     
     /**
      * Prepare target schema.
      *
      * @param databaseType database type
-     * @param prepareTargetSchemasParameter prepare target schemas parameter
+     * @param prepareTargetSchemasParam prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParameter) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
+    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
+        Optional<DataSourcePreparer> dataSourcePreparer = TypedSPIRegistry.findRegisteredService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        long startTimeMillis = System.currentTimeMillis();
-        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
-        log.info("prepareTargetSchema cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParam);
     }
     
     /**
@@ -93,7 +91,7 @@ public final class PipelineJobPreparerUtils {
      */
     public static ShardingSphereSQLParserEngine getSQLParserEngine(final String targetDatabaseName) {
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabases().get(targetDatabaseName);
+        ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
         return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType().getType());
     }
     
@@ -101,17 +99,17 @@ public final class PipelineJobPreparerUtils {
      * Prepare target tables.
      *
      * @param databaseType database type
-     * @param prepareTargetTablesParameter prepare target tables parameter
+     * @param prepareTargetTablesParam prepare target tables parameter
      * @throws SQLException SQL exception
      */
-    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParameter) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
+    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
+        Optional<DataSourcePreparer> dataSourcePreparer = TypedSPIRegistry.findRegisteredService(DataSourcePreparer.class, databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         long startTimeMillis = System.currentTimeMillis();
-        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
+        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
@@ -134,10 +132,8 @@ public final class PipelineJobPreparerUtils {
         }
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        long startTimeMillis = System.currentTimeMillis();
-        IngestPosition<?> result = PositionInitializerFactory.getInstance(databaseType).init(dataSource, dumperConfig.getJobId());
-        log.info("getIncrementalPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
-        return result;
+        return TypedSPIRegistry.findRegisteredService(PositionInitializer.class, databaseType)
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PositionInitializer.class)).init(dataSource, dumperConfig.getJobId());
     }
     
     /**
@@ -147,16 +143,13 @@ public final class PipelineJobPreparerUtils {
      * @param dataSources data source
      */
     public static void checkSourceDataSource(final String databaseType, final Collection<? extends DataSource> dataSources) {
-        if (null == dataSources || dataSources.isEmpty()) {
-            log.info("source data source is empty, skip check");
+        if (dataSources.isEmpty()) {
             return;
         }
-        final long startTimeMillis = System.currentTimeMillis();
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(databaseType);
+        DataSourceChecker dataSourceChecker = TypedSPIRegistry.findRegisteredService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
         dataSourceChecker.checkConnection(dataSources);
         dataSourceChecker.checkPrivilege(dataSources);
         dataSourceChecker.checkVariable(dataSources);
-        log.info("checkSourceDataSource cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**
@@ -167,15 +160,13 @@ public final class PipelineJobPreparerUtils {
      * @param targetDataSources target data sources
      */
     public static void checkTargetDataSource(final String databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(databaseType);
+        DataSourceChecker dataSourceChecker = TypedSPIRegistry.findRegisteredService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
         if (null == targetDataSources || targetDataSources.isEmpty()) {
             log.info("target data source is empty, skip check");
             return;
         }
-        long startTimeMillis = System.currentTimeMillis();
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
-        log.info("checkTargetDataSource cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**
@@ -187,7 +178,8 @@ public final class PipelineJobPreparerUtils {
      */
     public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
-        PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
+        PositionInitializer positionInitializer = TypedSPIRegistry.findRegisteredService(PositionInitializer.class, databaseType.getType())
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PositionInitializer.class));
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {

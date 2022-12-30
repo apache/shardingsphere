@@ -24,19 +24,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Global table map event mapping.
- * // TODO still save at memory, if restart the Proxy, the data will be lost.
  */
-public class GlobalTableMapEventMapping {
+public final class GlobalTableMapEventMapping {
     
+    // TODO Still save in memory, if proxy restart, the data will be lost.
     private static final Map<String, Map<Long, MySQLBinlogTableMapEventPacket>> TABLE_MAP_EVENT_MAPPING = new ConcurrentHashMap<>();
     
     /**
-     * Get table map event map by database url.
+     * Get table map event map by database URL.
      *
-     * @param databaseUrl database url
+     * @param databaseURL database URL
      * @return table map event map
      */
-    public static Map<Long, MySQLBinlogTableMapEventPacket> getTableMapEventMap(final String databaseUrl) {
-        return TABLE_MAP_EVENT_MAPPING.computeIfAbsent(databaseUrl, k -> new ConcurrentHashMap<>());
+    public static Map<Long, MySQLBinlogTableMapEventPacket> getTableMapEventMap(final String databaseURL) {
+        return TABLE_MAP_EVENT_MAPPING.computeIfAbsent(databaseURL, k -> new ConcurrentHashMap<>());
     }
 }

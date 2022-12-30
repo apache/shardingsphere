@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.metadata.data.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -31,8 +33,11 @@ public final class ShardingSphereSchemaDataRegistrySubscriber {
     
     private final ShardingSphereDataPersistService persistService;
     
-    public ShardingSphereSchemaDataRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
+    private final GlobalLockPersistService lockPersistService;
+    
+    public ShardingSphereSchemaDataRegistrySubscriber(final ClusterPersistRepository repository, final GlobalLockPersistService globalLockPersistService, final EventBusContext eventBusContext) {
         persistService = new ShardingSphereDataPersistService(repository);
+        lockPersistService = globalLockPersistService;
         eventBusContext.register(this);
     }
     
@@ -45,6 +50,15 @@ public final class ShardingSphereSchemaDataRegistrySubscriber {
     public void update(final ShardingSphereSchemaDataAlteredEvent event) {
         String databaseName = event.getDatabaseName();
         String schemaName = event.getSchemaName();
-        persistService.persistTables(databaseName, schemaName, event.getAlteredTables());
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition("sys_data_" + event.getDatabaseName() + event.getSchemaName() + event.getTableName());
+        if (lockPersistService.tryLock(lockDefinition, 10_000)) {
+            try {
+                persistService.getTableRowDataPersistService().persist(databaseName, schemaName, event.getTableName(), event.getAddedRows());
+                persistService.getTableRowDataPersistService().persist(databaseName, schemaName, event.getTableName(), event.getUpdatedRows());
+                persistService.getTableRowDataPersistService().delete(databaseName, schemaName, event.getTableName(), event.getDeletedRows());
+            } finally {
+                lockPersistService.unlock(lockDefinition);
+            }
+        }
     }
 }

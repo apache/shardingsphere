@@ -26,11 +26,11 @@ execute
     | showShadowRules
     | showShadowTableRules
     | showShadowAlgorithms
+    | showDefaultShadowAlgorithm
     | dropShadowAlgorithm
     | dropDefaultShadowAlgorithm
     | createDefaultShadowAlgorithm
-    | alterShadowAlgorithm
-    | createShadowAlgorithm
+    | alterDefaultShadowAlgorithm
     | countShadowRule
     ) SEMI?
     ;

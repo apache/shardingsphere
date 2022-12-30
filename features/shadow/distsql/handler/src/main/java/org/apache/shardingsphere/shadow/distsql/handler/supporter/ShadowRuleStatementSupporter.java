@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,11 +43,11 @@ public final class ShadowRuleStatementSupporter {
      * @return rule names
      */
     public static List<String> getRuleNames(final ShadowRuleConfiguration ruleConfig) {
-        return null == ruleConfig ? Collections.emptyList() : new ArrayList<>(ruleConfig.getDataSources().keySet());
+        return null == ruleConfig ? Collections.emptyList() : getDataSources(ruleConfig);
     }
     
     /**
-     * Get rule names from the rules.
+     * Get rule names from the segments.
      *
      * @param segments shadow rule segments
      * @return rule names
@@ -55,13 +56,19 @@ public final class ShadowRuleStatementSupporter {
         return segments.isEmpty() ? Collections.emptyList() : segments.stream().map(ShadowRuleSegment::getRuleName).collect(Collectors.toList());
     }
     
+    private static List<String> getDataSources(final ShadowRuleConfiguration ruleConfig) {
+        List<String> result = new LinkedList<>();
+        ruleConfig.getDataSources().forEach(each -> result.add(each.getName()));
+        return result;
+    }
+    
     /**
-     * Get the resource names from the rules.
+     * Get storage unit names from the segments.
      *
      * @param segments shadow rule segments
-     * @return resource names
+     * @return storage unit names
      */
-    public static List<String> getResourceNames(final Collection<ShadowRuleSegment> segments) {
+    public static List<String> getStorageUnitNames(final Collection<ShadowRuleSegment> segments) {
         return segments.isEmpty()
                 ? Collections.emptyList()
                 : segments.stream().map(each -> Arrays.asList(each.getSource(), each.getShadow())).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());

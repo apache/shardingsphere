@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateExtensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL create extension statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLCreateExtensionStatement extends CreateExtensionStatement implements PostgreSQLStatement {
 }

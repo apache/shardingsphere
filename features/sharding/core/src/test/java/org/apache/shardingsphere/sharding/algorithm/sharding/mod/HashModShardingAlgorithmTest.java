@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +43,7 @@ public final class HashModShardingAlgorithmTest {
     
     @Before
     public void setup() {
-        shardingAlgorithm = (HashModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("HASH_MOD", createProperties()));
+        shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("HASH_MOD", createProperties()), ShardingAlgorithm.class);
     }
     
     private Properties createProperties() {

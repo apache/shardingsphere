@@ -21,11 +21,12 @@ import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryProperties;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryPropertyKey;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProvider;
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProviderFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -66,18 +67,13 @@ public final class JDBCRepository implements StandalonePersistRepository {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            provider = JDBCRepositoryProviderFactory.getInstance(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
+            String type = jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER);
+            provider = null == type ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class) : TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, type);
             if (!jdbcUrl.contains(H2_FILE_MODE_KEY)) {
                 statement.execute(provider.dropTableSQL());
             }
             statement.execute(provider.createTableSQL());
         }
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
     }
     
     @Override
@@ -175,7 +171,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("Update {} data to key: {} failed", getType(), key, ex);
         }
     }

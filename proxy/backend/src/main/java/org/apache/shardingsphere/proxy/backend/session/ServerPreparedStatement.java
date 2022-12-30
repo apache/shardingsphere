@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.session;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Optional;
 
 /**
  * Server prepared statement for clients of ShardingSphere-Proxy.
@@ -35,16 +32,9 @@ public interface ServerPreparedStatement {
     String getSql();
     
     /**
-     * Get {@link SQLStatement} of server prepared statement.
+     * Get {@link SQLStatementContext} of server prepared statement.
      *
-     * @return {@link SQLStatement}
+     * @return {@link SQLStatementContext}
      */
-    SQLStatement getSqlStatement();
-    
-    /**
-     * Get optional {@link SQLStatementContext} of server prepared statement.
-     *
-     * @return optional {@link SQLStatementContext}
-     */
-    Optional<SQLStatementContext<?>> getSqlStatementContext();
+    SQLStatementContext<?> getSqlStatementContext();
 }

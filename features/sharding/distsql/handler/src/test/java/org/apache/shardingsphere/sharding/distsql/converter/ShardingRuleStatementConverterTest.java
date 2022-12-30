@@ -22,13 +22,13 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public final class ShardingRuleStatementConverterTest {
         assertThat(tableRule.getLogicTable(), is("t_order"));
         assertThat(tableRule.getActualDataNodes(), is("ds0,ds1"));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
-        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("order_id_algorithm"));
+        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_order_id_algorithm"));
         assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         assertThat(config.getAutoTables().size(), is(2));
@@ -64,7 +64,7 @@ public final class ShardingRuleStatementConverterTest {
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         autoTableRule = autoTableConfigs.next();
         assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("snowflake_algorithm"));
-        assertThat(config.getShardingAlgorithms().size(), is(3));
+        assertThat(config.getShardingAlgorithms().size(), is(4));
         assertThat(config.getShardingAlgorithms().get("t_order_mod").getType(), is("mod"));
         assertThat(config.getShardingAlgorithms().get("t_order_mod").getProps().getProperty("sharding_count"), is("2"));
         assertThat(config.getKeyGenerators().size(), is(1));
@@ -81,13 +81,13 @@ public final class ShardingRuleStatementConverterTest {
         AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding_count", "2")),
                 new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"),
-                new AuditStrategySegment(Collections.singleton("sharding_key_required_auditor"), Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
+                new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
-                new ShardingStrategySegment("standard", "order_id", null, databaseAlgorithmSegment),
-                new ShardingStrategySegment("standard", "order_id", "order_id_algorithm", null),
+                new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment),
+                new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("order_id_algorithm", new Properties())),
                 new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("snowflake", newProperties("", ""))),
-                new AuditStrategySegment(Collections.singleton("sharding_key_required_auditor"), Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
+                new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         result.add(autoTableRuleSegment1);
         result.add(autoTableRuleSegment2);

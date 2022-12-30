@@ -22,6 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
@@ -29,9 +30,8 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurati
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -71,8 +71,6 @@ import java.util.Map.Entry;
  */
 public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement> {
     
-    private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-    
     private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
     
     private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
@@ -80,6 +78,8 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     private final DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigurationImportChecker = new DatabaseDiscoveryRuleConfigurationImportChecker();
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
+    
+    private final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
     
     @Override
     protected void update(final ContextManager contextManager) throws SQLException {
@@ -114,8 +114,8 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         Preconditions.checkState(!dataSources.isEmpty(), "Data source configurations in file `%s` is required", file.getName());
     }
     
-    private void addDatabase(final String databaseName) throws SQLException {
-        ProxyContext.getInstance().getContextManager().addDatabaseAndPersist(databaseName);
+    private void addDatabase(final String databaseName) {
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().createDatabase(databaseName);
     }
     
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
@@ -123,11 +123,11 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
         }
-        validator.validate(dataSourcePropsMap, getConnectionSession().getDatabaseType());
+        validateHandler.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
-            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
     }
     
@@ -167,6 +167,6 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     }
     
     private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().dropDatabaseAndPersist(databaseName);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(databaseName);
     }
 }

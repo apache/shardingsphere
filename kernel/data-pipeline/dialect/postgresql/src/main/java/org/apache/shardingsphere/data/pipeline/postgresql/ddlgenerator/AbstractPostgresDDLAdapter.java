@@ -54,11 +54,11 @@ public abstract class AbstractPostgresDDLAdapter {
         this.minorVersion = minorVersion;
     }
     
-    @SneakyThrows
-    protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> parameters, final String path) {
+    @SneakyThrows(SQLException.class)
+    protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> params, final String path) {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(PostgreSQLPipelineFreemarkerManager.getSQLByVersion(parameters, path, majorVersion, minorVersion))) {
+                ResultSet resultSet = statement.executeQuery(PostgreSQLPipelineFreemarkerManager.getSQLByVersion(params, path, majorVersion, minorVersion))) {
             return getRows(resultSet);
         }
     }

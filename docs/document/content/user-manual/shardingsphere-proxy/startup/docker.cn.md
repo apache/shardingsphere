@@ -72,6 +72,14 @@ docker run -d \
 ShardingSphere-Proxy 默认端口 `3307`，可以通过环境变量 `-e PORT` 指定。
 自定义 JVM 相关参数可通过环境变量 `JVM_OPTS` 设置。
 
+说明：
+
+支持设置 CGROUP_MEM_OPTS 环境变量: 用于在容器环境中设置相关内存参数，脚本中的默认值为：
+
+```sql
+-XX:InitialRAMPercentage=80.0 -XX:MaxRAMPercentage=80.0 -XX:MinRAMPercentage=80.0
+```
+
 5. 使用客户端连接 ShardingSphere-Proxy
 
 请参考 [ShardingSphere-Proxy 启动手册 - 使用二进制发布包](/cn/user-manual/shardingsphere-proxy/startup/bin/)。

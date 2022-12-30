@@ -19,10 +19,11 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.persist;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collections;
 import java.util.Map;
@@ -56,7 +57,6 @@ public final class PipelineJobProgressPersistService {
      * @param jobId job id
      */
     public static void removeJobProgressPersistContext(final String jobId) {
-        log.info("Remove job progress persist context, jobId={}", jobId);
         JOB_PROGRESS_PERSIST_MAP.remove(jobId);
     }
     
@@ -67,7 +67,6 @@ public final class PipelineJobProgressPersistService {
      * @param shardingItem sharding item
      */
     public static void addJobProgressPersistContext(final String jobId, final int shardingItem) {
-        log.info("Add job progress persist context, jobId={}, shardingItem={}", jobId, shardingItem);
         JOB_PROGRESS_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new PipelineJobProgressPersistContext(jobId, shardingItem));
     }
     
@@ -81,7 +80,6 @@ public final class PipelineJobProgressPersistService {
         Map<Integer, PipelineJobProgressPersistContext> persistContextMap = JOB_PROGRESS_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
         PipelineJobProgressPersistContext persistContext = persistContextMap.get(shardingItem);
         if (null == persistContext) {
-            log.debug("persistContext is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
         persistContext.getHasNewEvents().set(true);
@@ -102,7 +100,7 @@ public final class PipelineJobProgressPersistService {
         }
         persistContext.getHasNewEvents().set(false);
         long startTimeMillis = System.currentTimeMillis();
-        PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId)).persistJobItemProgress(jobItemContext.get());
+        TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName()).persistJobItemProgress(jobItemContext.get());
         persistContext.getBeforePersistingProgressMillis().set(null);
         if (6 == ThreadLocalRandom.current().nextInt(100)) {
             log.info("persist, jobId={}, shardingItem={}, cost {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);

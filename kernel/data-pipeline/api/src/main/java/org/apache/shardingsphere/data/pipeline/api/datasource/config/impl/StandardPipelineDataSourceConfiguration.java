@@ -22,11 +22,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtensionFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
@@ -58,31 +58,29 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     private final DatabaseType databaseType;
     
     @SuppressWarnings("unchecked")
-    public StandardPipelineDataSourceConfiguration(final String parameter) {
-        this(parameter, YamlEngine.unmarshal(parameter, Map.class));
+    public StandardPipelineDataSourceConfiguration(final String param) {
+        this(param, YamlEngine.unmarshal(param, Map.class));
     }
     
-    public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
-        this(YamlEngine.marshal(yamlDataSourceConfig), yamlDataSourceConfig);
+    public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlConfig) {
+        this(YamlEngine.marshal(yamlConfig), yamlConfig);
     }
     
-    private StandardPipelineDataSourceConfiguration(final String parameter, final Map<String, Object> yamlConfig) {
-        this.parameter = parameter;
-        if (!yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME)) {
-            yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
-        }
+    private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> yamlConfig) {
+        parameter = param;
         for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
             yamlConfig.put(each, "1");
         }
-        dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
-        yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
         if (yamlConfig.containsKey("jdbcUrl")) {
             yamlConfig.put("url", yamlConfig.get("jdbcUrl"));
             yamlConfig.remove("jdbcUrl");
         }
+        yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
         jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
         databaseType = DatabaseTypeEngine.getDatabaseType(jdbcConfig.getUrl());
-        appendJdbcQueryProperties(databaseType.getType());
+        yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
+        appendJdbcQueryProperties(databaseType.getType(), yamlConfig);
+        dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
     }
     
     public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
@@ -98,8 +96,8 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         return result;
     }
     
-    private void appendJdbcQueryProperties(final String databaseType) {
-        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance(databaseType);
+    private void appendJdbcQueryProperties(final String databaseType, final Map<String, Object> yamlConfig) {
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }
@@ -107,7 +105,9 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         if (queryProps.isEmpty()) {
             return;
         }
-        jdbcConfig.setUrl(new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getUrl(), queryProps));
+        String url = new JdbcUrlAppender().appendQueryProperties(jdbcConfig.getUrl(), queryProps);
+        jdbcConfig.setUrl(url);
+        yamlConfig.put("url", url);
     }
     
     @Override

@@ -51,5 +51,3 @@ System.out.println(sqlStatement.toString());
    
 ## Related References
 - [YAML Configuration: SQL Parser](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/)
-- [Spring Boot Starter: SQL Parser](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/sql-parser/)
-- [Spring Namespace: SQL Parser](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/sql-parser/)

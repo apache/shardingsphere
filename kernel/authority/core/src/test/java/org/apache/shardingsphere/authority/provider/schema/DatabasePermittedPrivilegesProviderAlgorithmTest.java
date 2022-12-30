@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.authority.provider.schema;
 
-import org.apache.shardingsphere.authority.factory.AuthorityProviderAlgorithmFactory;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -36,17 +37,13 @@ public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
     
     @Test
     public void assertBuildAuthorityRegistry() {
-        DatabasePermittedPrivilegesProviderAlgorithm algorithm = createAuthorityProviderAlgorithm();
+        DatabasePermittedPrivilegesProviderAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("DATABASE_PERMITTED", createProperties()), AuthorityProviderAlgorithm.class);
         AuthorityRegistry actual = algorithm.buildAuthorityRegistry(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
         assertTrue(privileges.get().hasPrivileges("test"));
         assertTrue(privileges.get().hasPrivileges("db_dal_admin"));
-    }
-    
-    private DatabasePermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
-        return (DatabasePermittedPrivilegesProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("DATABASE_PERMITTED", createProperties()));
     }
     
     private Properties createProperties() {

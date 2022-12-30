@@ -32,13 +32,14 @@ public enum VariableEnum {
     
     /**
      * Returns the variable constant of the specified variable name.
+     * 
      * @param variableName variable name
      * @return variable constant
      */
     public static VariableEnum getValueOf(final String variableName) {
         try {
             return valueOf(variableName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new UnsupportedVariableException(variableName);
         }
     }

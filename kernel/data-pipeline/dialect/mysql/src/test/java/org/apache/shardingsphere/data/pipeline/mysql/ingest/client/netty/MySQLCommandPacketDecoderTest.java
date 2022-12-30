@@ -64,7 +64,7 @@ public final class MySQLCommandPacketDecoderTest {
     
     private ByteBuf mockOkPacket() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLOKPacket.HEADER);
-        when(byteBuf.getByte(1)).thenReturn((byte) MySQLOKPacket.HEADER);
+        when(byteBuf.getByte(0)).thenReturn((byte) MySQLOKPacket.HEADER);
         return byteBuf;
     }
     
@@ -77,8 +77,8 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     private ByteBuf mockErrPacket() {
-        when(byteBuf.getByte(1)).thenReturn((byte) MySQLErrPacket.HEADER);
-        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLErrPacket.HEADER);
+        when(byteBuf.getByte(0)).thenReturn((byte) MySQLErrPacket.HEADER);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) MySQLErrPacket.HEADER);
         return byteBuf;
     }
     
@@ -95,13 +95,13 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     private ByteBuf mockEmptyResultSetPacket() {
-        when(byteBuf.getByte(1)).thenReturn((byte) 3);
+        when(byteBuf.getByte(0)).thenReturn((byte) 3);
         return byteBuf;
     }
     
     private ByteBuf mockFieldDefinition41Packet() {
-        when(byteBuf.getByte(1)).thenReturn((byte) 3);
-        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) 3, (short) 0x0c);
+        when(byteBuf.getByte(0)).thenReturn((byte) 3);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 3, (short) 0x0c);
         when(byteBuf.readBytes(new byte[3])).then(invocationOnMock -> {
             byte[] input = invocationOnMock.getArgument(0);
             System.arraycopy("def".getBytes(), 0, input, 0, input.length);
@@ -111,8 +111,8 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     private ByteBuf mockEofPacket() {
-        when(byteBuf.getByte(1)).thenReturn((byte) MySQLEofPacket.HEADER);
-        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLEofPacket.HEADER);
+        when(byteBuf.getByte(0)).thenReturn((byte) MySQLEofPacket.HEADER);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) MySQLEofPacket.HEADER);
         return byteBuf;
     }
     

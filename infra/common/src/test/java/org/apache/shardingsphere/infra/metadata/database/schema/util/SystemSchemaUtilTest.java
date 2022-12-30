@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
@@ -39,7 +40,17 @@ public final class SystemSchemaUtilTest {
         ShardingSphereDatabase shardingSchemaDatabase = mockShardingSphereDatabase("sharding_db", false);
         assertFalse(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Collections.singletonList("sharding_db"), shardingSchemaDatabase));
         ShardingSphereDatabase customizedInformationSchemaDatabase = mockShardingSphereDatabase("information_schema", true);
-        assertFalse(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), customizedInformationSchemaDatabase));
+        assertTrue(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), customizedInformationSchemaDatabase));
+    }
+    
+    @Test
+    public void assertContainsSystemSchemaForOpenGaussSQL() {
+        ShardingSphereDatabase informationSchemaDatabase = mockShardingSphereDatabase("information_schema", false);
+        assertTrue(SystemSchemaUtil.containsSystemSchema(new OpenGaussDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), informationSchemaDatabase));
+        ShardingSphereDatabase shardingSchemaDatabase = mockShardingSphereDatabase("sharding_db", false);
+        assertFalse(SystemSchemaUtil.containsSystemSchema(new OpenGaussDatabaseType(), Collections.singletonList("sharding_db"), shardingSchemaDatabase));
+        ShardingSphereDatabase customizedInformationSchemaDatabase = mockShardingSphereDatabase("information_schema", true);
+        assertTrue(SystemSchemaUtil.containsSystemSchema(new OpenGaussDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), customizedInformationSchemaDatabase));
     }
     
     @Test

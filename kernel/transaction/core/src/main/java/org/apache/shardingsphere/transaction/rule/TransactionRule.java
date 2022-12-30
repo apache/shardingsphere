@@ -17,25 +17,22 @@
 
 package org.apache.shardingsphere.transaction.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Transaction rule.
@@ -56,35 +53,31 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     
     private volatile ShardingSphereTransactionManagerEngine resource;
     
-    public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        log.debug("Create transaction rule");
+    public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
-        this.databases = databases;
-        resource = createTransactionManagerEngine(databases);
+        this.databases = new ConcurrentHashMap<>(databases);
+        resource = createTransactionManagerEngine(this.databases);
     }
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
         if (databases.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine();
         }
-        Map<String, DataSource> dataSourceMap = new HashMap<>(databases.size());
-        Set<DatabaseType> databaseTypes = new HashSet<>();
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(databases.size(), 1);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(databases.size(), 1);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             ShardingSphereDatabase database = entry.getValue();
             database.getResourceMetaData().getDataSources().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value));
-            if (null != entry.getValue().getResourceMetaData().getDatabaseType()) {
-                databaseTypes.add(entry.getValue().getResourceMetaData().getDatabaseType());
-            }
+            database.getResourceMetaData().getStorageTypes().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value));
         }
-        Preconditions.checkState(databaseTypes.size() < 2, "Multiple types of databases are not supported");
         if (dataSourceMap.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine();
         }
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
-        result.init(databaseTypes.iterator().next(), dataSourceMap, providerType);
+        result.init(databaseTypes, dataSourceMap, providerType);
         return result;
     }
     
@@ -94,7 +87,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (null == database) {
             return;
         }
-        log.debug("Transaction rule add resource: {}", database.getName());
+        databases.put(database.getName(), database);
         rebuildEngine();
     }
     
@@ -103,13 +96,13 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (!databases.containsKey(databaseName.toLowerCase())) {
             return;
         }
-        log.debug("Transaction rule close resource: {}", databaseName);
+        databases.remove(databaseName);
         rebuildEngine();
     }
     
     @Override
     public synchronized void closeStaleResource() {
-        log.debug("Transaction rule close all resources");
+        databases.clear();
         closeEngine();
     }
     

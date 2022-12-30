@@ -35,7 +35,7 @@ public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
     private boolean seataBranch;
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters,
+    public void start(final String dataSourceName, final String sql, final List<Object> params,
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         if (isTrunkThread) {
             if (RootContext.inGlobalTransaction()) {

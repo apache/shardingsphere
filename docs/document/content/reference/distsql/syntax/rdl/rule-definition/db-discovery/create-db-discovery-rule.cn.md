@@ -9,20 +9,25 @@ weight = 2
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 CreateDatabaseDiscoveryRule ::=
-  'CREATE' 'DB_DISCOVERY' 'RULE' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) ( ',' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) )*
+  'CREATE' 'DB_DISCOVERY' 'RULE' ifNotExists? databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
-    
-databaseDiscoveryConstruction ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '=' discoveryTypeName ',' 'HEARTBEAT' '=' discoveryHeartbeatName ')'
-    
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' ',' 'TYPE' '(' 'NAME' '=' typeName (',' propertiesDefinition)? ')' ',' 'HEARTBEAT' '(' propertiesDefinition ')' ')' 
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
 ruleName ::=
   identifier
 
-resourceName ::=
+storageUnitName ::=
   identifier
 
 typeName ::=
@@ -30,38 +35,50 @@ typeName ::=
 
 discoveryHeartbeatName ::=
   identifier
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
 - `discoveryType` 指定数据库发现服务类型，`ShardingSphere` 内置支持 `MySQL.MGR`；
-- 重复的 `ruleName` 将无法被创建。
+- 重复的 `ruleName` 将无法被创建；
+- `ifNotExists` 子句用于避免出现 `Duplicate db_discovery rule` 错误。
 
 ### 示例
 
-#### 创建 `discoveryRule` 时同时创建 `discoveryType` 和 `discoveryHeartbeat`
+- 创建数据库发现规则
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-    RESOURCES(ds_0, ds_1, ds_2),
+    STORAGE_UNITS(su_0, su_1, su_2),
     TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
     HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 
-#### 使用已有的 `discoveryType` 和 `discoveryHeartbeat` 创建 `discoveryRule`
+- 使用 `ifNotExists` 子句创建数据库发现规则
 
 ```sql
-CREATE DB_DISCOVERY RULE db_discovery_group_1 (
-    RESOURCES(ds_0, ds_1, ds_2),
-    TYPE=db_discovery_group_1_mgr,
-    HEARTBEAT=db_discovery_group_1_heartbeat
+CREATE DB_DISCOVERY RULE IF NOT EXISTS db_discovery_group_0 (
+    STORAGE_UNITS(su_0, su_1, su_2),
+    TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
+    HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 
 ### 保留字
 
-`CREATE`、`DB_DISCOVERY`、`RULE`、`RESOURCES`、`TYPE`、`NAME`、`PROPERTIES`、`HEARTBEAT`
+`CREATE`、`DB_DISCOVERY`、`RULE`、`STORAGE_UNITS`、`TYPE`、`NAME`、`PROPERTIES`、`HEARTBEAT`
 
 ### 相关链接
 

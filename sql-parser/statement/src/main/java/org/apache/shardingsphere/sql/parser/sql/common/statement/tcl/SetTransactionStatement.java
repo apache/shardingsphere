@@ -19,18 +19,18 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OperationScope;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
  * Set transaction statement.
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
     
     private TransactionIsolationLevel isolationLevel;
@@ -38,4 +38,22 @@ public abstract class SetTransactionStatement extends AbstractSQLStatement imple
     private OperationScope scope;
     
     private TransactionAccessType accessMode;
+    
+    /**
+     * Get isolation level.
+     * 
+     * @return isolation level
+     */
+    public Optional<TransactionIsolationLevel> getIsolationLevel() {
+        return Optional.ofNullable(isolationLevel);
+    }
+    
+    /**
+     * Get access mode.
+     * 
+     * @return access mode 
+     */
+    public Optional<TransactionAccessType> getAccessMode() {
+        return Optional.ofNullable(accessMode);
+    }
 }

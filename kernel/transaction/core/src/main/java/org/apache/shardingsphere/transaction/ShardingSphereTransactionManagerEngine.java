@@ -20,17 +20,14 @@ package org.apache.shardingsphere.transaction;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManagerFactory;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere transaction manager engine.
@@ -45,7 +42,7 @@ public final class ShardingSphereTransactionManagerEngine {
     }
     
     private void loadTransactionManager() {
-        for (ShardingSphereTransactionManager each : ShardingSphereTransactionManagerFactory.getAllInstances()) {
+        for (ShardingSphereTransactionManager each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)) {
             if (transactionManagers.containsKey(each.getTransactionType())) {
                 log.warn("Find more than one {} transaction manager implementation class, use `{}` now",
                         each.getTransactionType(), transactionManagers.get(each.getTransactionType()).getClass().getName());
@@ -58,16 +55,12 @@ public final class ShardingSphereTransactionManagerEngine {
     /**
      * Initialize transaction managers.
      *
-     * @param databaseType database type
+     * @param databaseTypes database types
      * @param dataSourceMap data source map
      * @param providerType transaction manager provider type
      */
-    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String providerType) {
-        transactionManagers.forEach((key, value) -> value.init(databaseType, getResourceDataSources(dataSourceMap), providerType));
-    }
-    
-    private Collection<ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().map(entry -> new ResourceDataSource(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSourceMap, final String providerType) {
+        transactionManagers.forEach((key, value) -> value.init(databaseTypes, dataSourceMap, providerType));
     }
     
     /**

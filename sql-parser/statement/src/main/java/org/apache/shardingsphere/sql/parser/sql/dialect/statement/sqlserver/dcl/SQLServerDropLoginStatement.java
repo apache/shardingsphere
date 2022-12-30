@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dcl.LoginSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class SQLServerDropLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
     
     private LoginSegment loginSegment;

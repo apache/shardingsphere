@@ -82,21 +82,21 @@ public final class ShardingSphereSchemaTest {
     @Test
     public void assertContainsColumn() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("col", 0, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).containsColumn("tbl", "col"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("col", 0, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("col", 0, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl1", table), Collections.emptyMap()).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
     }
     
@@ -109,14 +109,14 @@ public final class ShardingSphereSchemaTest {
     @Test
     public void assertGetVisibleColumnNamesWhenContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("col", 0, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).getVisibleColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetVisibleColumnNamesWhenNotContainsKey() {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
-                new ShardingSphereColumn("col", 0, false, false, false, false)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("col", 0, false, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
         assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap()).getVisibleColumnNames("tbl"), is(Collections.emptyList()));
     }
 }

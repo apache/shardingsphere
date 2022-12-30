@@ -164,7 +164,7 @@ public enum ShardingStrategyType {
         try {
             return valueOf(name.toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            throw new UnsupportedSQLOperationException(String.format("unsupported strategy type %s", name));
+            throw new UnsupportedSQLOperationException(String.format("unsupported strategy type `%s`", name));
         }
     }
     
@@ -182,12 +182,12 @@ public enum ShardingStrategyType {
     }
     
     /**
-     * Determine whether the specified type is included.
+     * Determine whether contains type.
      *
-     * @param name name
-     * @return have data or not
+     * @param type type
+     * @return contains or not
      */
-    public static boolean contain(final String name) {
-        return Arrays.stream(values()).map(Enum::name).anyMatch(each -> each.equalsIgnoreCase(name));
+    public static boolean contains(final String type) {
+        return Arrays.stream(values()).map(Enum::name).anyMatch(each -> each.equalsIgnoreCase(type));
     }
 }

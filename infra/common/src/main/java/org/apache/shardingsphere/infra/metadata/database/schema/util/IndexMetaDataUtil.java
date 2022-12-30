@@ -84,12 +84,12 @@ public class IndexMetaDataUtil {
      *
      * @param database database
      * @param indexes indexes
-     * @param type database type
+     * @param protocolType protocol type
      * @return table names
      */
-    public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final DatabaseType type, final Collection<IndexSegment> indexes) {
+    public static Collection<QualifiedTable> getTableNames(final ShardingSphereDatabase database, final DatabaseType protocolType, final Collection<IndexSegment> indexes) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(type, database.getName());
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, database.getName());
         for (IndexSegment each : indexes) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             findLogicTableNameFromMetaData(database.getSchema(actualSchemaName),

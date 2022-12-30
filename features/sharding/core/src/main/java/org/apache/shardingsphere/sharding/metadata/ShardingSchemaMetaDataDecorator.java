@@ -48,11 +48,11 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     @Override
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final ShardingRule rule, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
-        boolean checkTableMetadataEnabled = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
+        boolean checkTableMetaDataEnabled = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Collection<TableMetaData> tables = new LinkedList<>();
             for (Entry<String, Collection<TableMetaData>> tableEntry : getLogicTableMetaDataMap(entry.getValue(), rule).entrySet()) {
-                if (checkTableMetadataEnabled) {
+                if (checkTableMetaDataEnabled) {
                     checkUniformed(tableEntry.getKey(), tableEntry.getValue());
                 }
                 tables.add(tableEntry.getValue().iterator().next());
@@ -96,7 +96,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         Collection<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : tableMetaData.getColumns()) {
             boolean generated = each.getName().equalsIgnoreCase(tableRule.getGenerateKeyColumn().orElse(null));
-            result.add(new ColumnMetaData(each.getName(), each.getDataType(), each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible()));
+            result.add(new ColumnMetaData(each.getName(), each.getDataType(), each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
         }
         return result;
     }

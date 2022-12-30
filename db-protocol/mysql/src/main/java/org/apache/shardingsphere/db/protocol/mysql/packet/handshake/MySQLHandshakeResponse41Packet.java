@@ -35,8 +35,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 @Setter
 public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     
-    private final int sequenceId;
-    
     private final int maxPacketSize;
     
     private final int characterSet;
@@ -52,7 +50,6 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     private String authPluginName;
     
     public MySQLHandshakeResponse41Packet(final MySQLPacketPayload payload) {
-        sequenceId = payload.readInt1();
         capabilityFlags = payload.readInt4();
         maxPacketSize = payload.readInt4();
         characterSet = payload.readInt1();

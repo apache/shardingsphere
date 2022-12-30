@@ -22,28 +22,29 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>bootstrap</module>
         <module>api</module>
         <module>core</module>
         <module>plugins</module>
+        
         <module>distribution</module>
     </modules>
+    
+    <properties>
+        <bytebuddy.version>1.12.12</bytebuddy.version>
+    </properties>
     
     <dependencies>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-agent</artifactId>
+            <version>${bytebuddy.version}</version>
         </dependency>
     </dependencies>
 </project>

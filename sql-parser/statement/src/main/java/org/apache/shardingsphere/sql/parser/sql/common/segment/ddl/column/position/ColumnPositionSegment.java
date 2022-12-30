@@ -19,16 +19,14 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.posit
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 /**
  * Column position segment.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public abstract class ColumnPositionSegment implements SQLSegment, Comparable<ColumnPositionSegment> {
     
     private final int startIndex;

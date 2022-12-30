@@ -32,15 +32,6 @@
             <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources</directory>
-            <includes>
-                <include>logback.xml</include>
-            </includes>
-            <outputDirectory>conf</outputDirectory>
-            <fileMode>0644</fileMode>
-        </fileSet>
-
-        <fileSet>
             <directory>../../</directory>
             <includes>
                 <include>LICENSE</include>
@@ -62,10 +53,20 @@
             <includes>
                 <include>**.jar</include>
             </includes>
+            <excludes>
+                <exclude>shardingsphere-agent-tracing-test-${project.version}.jar</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>../plugins/metrics/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../plugins/metrics/target/lib</directory>
+            <outputDirectory>./lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
@@ -76,13 +77,13 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>*:shardingsphere-agent-bootstrap</include>
+                <include>*:shardingsphere-agent-core</include>
             </includes>
             <binaries>
                 <unpack>false</unpack>
                 <outputDirectory>./</outputDirectory>
                 <includeDependencies>false</includeDependencies>
-                <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
+                <outputFileNameMapping>shardingsphere-agent-${project.version}.jar</outputFileNameMapping>
             </binaries>
         </moduleSet>
     </moduleSets>

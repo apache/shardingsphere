@@ -87,8 +87,7 @@ public final class MetaDataPersistService {
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             String databaseName = entry.getKey();
             Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
-            Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
-            if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
+            if (dataSourcePropertiesMap.isEmpty() && entry.getValue().getRuleConfigurations().isEmpty()) {
                 databaseMetaDataService.addDatabase(databaseName);
             } else {
                 dataSourceService.conditionalPersist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()));
@@ -99,8 +98,8 @@ public final class MetaDataPersistService {
     
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
-            result.put(each.getKey(), DataSourcePropertiesCreator.create(each.getValue()));
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         return result;
     }

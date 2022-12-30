@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProces
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalProcessConfigurationSegment;
+import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
@@ -39,7 +39,7 @@ public final class InventoryIncrementalProcessConfigurationSegmentConverter {
      * @param segment process configuration segment
      * @return pipeline process configuration
      */
-    public static PipelineProcessConfiguration convert(final InventoryIncrementalProcessConfigurationSegment segment) {
+    public static PipelineProcessConfiguration convert(final InventoryIncrementalRuleSegment segment) {
         PipelineReadConfiguration readConfig = convertToReadConfiguration(segment.getReadSegment());
         PipelineWriteConfiguration writeConfig = convertToWriteConfiguration(segment.getWriteSegment());
         AlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());

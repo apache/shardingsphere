@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -30,7 +29,6 @@ import java.util.Optional;
  * SQLServer select statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class SQLServerSelectStatement extends SelectStatement implements SQLServerStatement {
     
     private LimitSegment limit;

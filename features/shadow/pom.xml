@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-features</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-shadow</artifactId>
     <packaging>pom</packaging>
@@ -32,6 +32,5 @@
         <module>api</module>
         <module>core</module>
         <module>distsql</module>
-        <module>spring</module>
     </modules>
 </project>

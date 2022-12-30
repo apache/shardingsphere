@@ -17,42 +17,84 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.DuplicateAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Create default shadow algorithm statement updater.
  */
 public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleDefinitionCreateUpdater<CreateDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
+    private static final String SHADOW = "shadow";
+    
+    private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
+    
     @Override
     public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setDefaultShadowAlgorithmName(sqlStatement.getAlgorithmName());
+        result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
+        result.setDefaultShadowAlgorithmName(DEFAULT_ALGORITHM_NAME);
         return result;
+    }
+    
+    private Map<String, AlgorithmConfiguration> buildAlgorithmMap(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
+        return Collections.singletonMap(DEFAULT_ALGORITHM_NAME, new AlgorithmConfiguration(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName(),
+                sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getProps()));
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeCreatedRuleConfig) {
-        currentRuleConfig.setDefaultShadowAlgorithmName(toBeCreatedRuleConfig.getDefaultShadowAlgorithmName());
+        if (getIdentical(currentRuleConfig).isEmpty()) {
+            currentRuleConfig.getShadowAlgorithms().putAll(toBeCreatedRuleConfig.getShadowAlgorithms());
+            currentRuleConfig.setDefaultShadowAlgorithmName(toBeCreatedRuleConfig.getDefaultShadowAlgorithmName());
+        }
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        checkAlgorithmExist(database.getName(), sqlStatement, currentRuleConfig);
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+        if (!sqlStatement.isIfNotExists()) {
+            checkExist(database.getName(), currentRuleConfig);
+        }
+        checkAlgorithmCompleteness(Collections.singleton(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment()));
+        checkAlgorithmType(sqlStatement);
     }
     
-    private void checkAlgorithmExist(final String databaseName, final CreateDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkState(currentRuleConfig.getShadowAlgorithms().containsKey(sqlStatement.getAlgorithmName()),
-                () -> new MissingRequiredAlgorithmException(databaseName, Collections.singleton(sqlStatement.getAlgorithmName())));
+    private static Collection<String> getIdentical(final ShadowRuleConfiguration currentRuleConfig) {
+        Collection<String> currentAlgorithmNames = null == currentRuleConfig ? Collections.emptyList() : currentRuleConfig.getShadowAlgorithms().keySet();
+        return Stream.of(DEFAULT_ALGORITHM_NAME).filter(currentAlgorithmNames::contains).collect(Collectors.toSet());
+    }
+    
+    private void checkExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
+        Collection<String> identical = getIdentical(currentRuleConfig);
+        ShardingSpherePreconditions.checkState(identical.isEmpty(), () -> new DuplicateAlgorithmException(SHADOW, databaseName, identical));
+    }
+    
+    private void checkAlgorithmType(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
+        String shadowAlgorithmType = sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName();
+        ShardingSpherePreconditions.checkState(
+                TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType).isPresent(), () -> new InvalidAlgorithmConfigurationException(SHADOW, shadowAlgorithmType));
+    }
+    
+    private static void checkAlgorithmCompleteness(final Collection<AlgorithmSegment> algorithmSegments) {
+        Set<AlgorithmSegment> incompleteAlgorithms = algorithmSegments.stream().filter(each -> each.getName().isEmpty() || each.getProps().isEmpty()).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(incompleteAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW));
     }
     
     @Override

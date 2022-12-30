@@ -86,7 +86,7 @@ public final class PostgreSQLPipelineFreemarkerManager {
             }
             try {
                 return TEMPLATE_CONFIG.getTemplate(String.format(pathFormat, entry.getValue()));
-            } catch (TemplateNotFoundException ignored) {
+            } catch (final TemplateNotFoundException ignored) {
             }
         }
         return TEMPLATE_CONFIG.getTemplate(String.format(pathFormat, "default"));

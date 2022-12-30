@@ -46,3 +46,4 @@ ShardingSphere-UI:
 
 ElasticJob-UI
 [CVE-2022-22733](https://www.cve.org/CVERecord?id=CVE-2022-22733)
+[CVE-2022-31764](https://www.cve.org/CVERecord?id=CVE-2022-31764)

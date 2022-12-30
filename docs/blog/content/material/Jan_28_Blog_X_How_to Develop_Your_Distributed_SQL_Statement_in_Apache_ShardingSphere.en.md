@@ -119,7 +119,7 @@ When you complete the basic feature development, to ensure its continuous usabil
 
 ![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_11.png)
 
-In addition to the unit test, you are also required to complete a parsing test for the grammar definition in `shardingsphere-parser-test`. The purpose is to parse the input DistSQL into a `DistSQLStatement` and then compare the parsed statement with your expected `TestCase` object. The steps are as follows:
+In addition to the unit test, you are also required to complete a parsing test for the grammar definition in `shardingsphere-test-it-parser`. The purpose is to parse the input DistSQL into a `DistSQLStatement` and then compare the parsed statement with your expected `TestCase` object. The steps are as follows:
 
 a. Add the SQL you want to test in `src/main/resources/sql/supported/rql/show.xml`;
 

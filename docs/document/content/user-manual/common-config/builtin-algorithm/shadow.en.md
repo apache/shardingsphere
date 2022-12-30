@@ -72,24 +72,3 @@ shadowAlgorithms:
       operation: insert
       value: 1
 ```
-
-- Spring Boot Starter:
-
-```properties
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.type=VALUE_MATCH
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.operation=insert
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.column=user_id
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.value=1
-```
-
-- Spring Namespace:
-
-```xml
-<shadow:shadow-algorithm id="user-id-insert-algorithm" type="VALUE_MATCH">
-    <props>
-        <prop key="operation">insert</prop>
-        <prop key="column">user_id</prop>
-        <prop key="value">1</prop>
-    </props>
-</shadow:shadow-algorithm>
-```

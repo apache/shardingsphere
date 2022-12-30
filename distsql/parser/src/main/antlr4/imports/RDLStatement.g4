@@ -19,68 +19,56 @@ grammar RDLStatement;
 
 import BaseRule;
 
-addResource
-    : ADD RESOURCE resourceDefinition (COMMA resourceDefinition)*
+registerStorageUnit
+    : REGISTER STORAGE UNIT ifNotExists? storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
 
-alterResource
-    : ALTER RESOURCE resourceDefinition (COMMA resourceDefinition)*
+alterStorageUnit
+    : ALTER STORAGE UNIT storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
 
-dropResource
-    : DROP RESOURCE ifExists? resourceName (COMMA resourceName)* ignoreSingleTables?
+unregisterStorageUnit
+    : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA_ storageUnitName)* ignoreSingleTables?
     ;
 
-createDefaultSingleTableRule
-    : CREATE DEFAULT SINGLE TABLE RULE RESOURCE EQ resourceName
+setDefaultSingleTableStorageUnit
+    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
     ;
 
-alterDefaultSingleTableRule
-    : ALTER DEFAULT SINGLE TABLE RULE RESOURCE EQ resourceName
-    ;
-
-dropDefaultSingleTableRule
-    : DROP  DEFAULT SINGLE TABLE RULE ifExists?
-    ;
-
-resourceDefinition
-    : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
-    ;
-
-resourceName
-    : IDENTIFIER
+storageUnitDefinition
+    : storageUnitName LP_ (simpleSource | urlSource) COMMA_ USER EQ_ user (COMMA_ PASSWORD EQ_ password)? (COMMA_ propertiesDefinition)? RP_
     ;
 
 simpleSource
-    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
+    : HOST EQ_ hostname COMMA_ PORT EQ_ port COMMA_ DB EQ_ dbName
     ;
 
 urlSource
-    : URL EQ url
+    : URL EQ_ url
     ;
 
 hostname
-    : STRING
+    : STRING_
     ;
 
 port
-    : INT
+    : INT_
     ;
 
 dbName
-    : STRING
+    : STRING_
     ;
 
 url
-    : STRING
+    : STRING_
     ;
 
 user
-    : STRING
+    : STRING_
     ;
 
 password
-    : STRING
+    : STRING_
     ;
 
 ignoreSingleTables
@@ -89,4 +77,8 @@ ignoreSingleTables
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

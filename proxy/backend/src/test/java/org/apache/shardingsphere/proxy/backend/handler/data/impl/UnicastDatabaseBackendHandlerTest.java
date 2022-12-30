@@ -42,9 +42,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,7 +97,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.containsDataSource()).thenReturn(true);
-            when(database.getResourceMetaData().getDatabaseType()).thenReturn(new H2DatabaseType());
+            when(database.getProtocolType()).thenReturn(new H2DatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
@@ -110,9 +110,8 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setBackendHandlerFactory(final DatabaseBackendHandler schemaDatabaseBackendHandler) {
-        Field field = schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory");
-        field.setAccessible(true);
-        field.set(schemaDatabaseBackendHandler, databaseCommunicationEngineFactory);
+        Plugins.getMemberAccessor()
+                .set(schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory"), schemaDatabaseBackendHandler, databaseCommunicationEngineFactory);
     }
     
     @Test

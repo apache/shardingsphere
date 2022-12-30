@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
@@ -104,7 +104,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
     private ConnectionSession connectionSession;
     
     @Mock
-    private JDBCBackendConnection backendConnection;
+    private BackendConnection backendConnection;
     
     @Before
     public void setUp() {
@@ -120,31 +120,33 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", prepareSelectStatement(), selectStatementContext));
+                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", selectStatementContext));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
+        when(updateStatementContext.getSqlStatement()).thenReturn(prepareUpdateStatement());
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
-                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", prepareUpdateStatement(), updateStatementContext));
+                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", updateStatementContext));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
-                .thenReturn(new MySQLServerPreparedStatement("commit", new MySQLCommitStatement(), new CommonSQLStatementContext<>(new MySQLCommitStatement())));
+                .thenReturn(new MySQLServerPreparedStatement("commit", new CommonSQLStatementContext<>(new MySQLCommitStatement())));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
         return result;
-    }
-    
-    private MySQLSelectStatement prepareSelectStatement() {
-        MySQLSelectStatement sqlStatement = new MySQLSelectStatement();
-        sqlStatement.setProjections(new ProjectionsSegment(0, 0));
-        return sqlStatement;
     }
     
     private SQLStatementContext<?> prepareSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(result.getSqlStatement()).thenReturn(prepareSelectStatement());
+        return result;
+    }
+    
+    private MySQLSelectStatement prepareSelectStatement() {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        result.setProjections(new ProjectionsSegment(0, 0));
         return result;
     }
     
@@ -161,7 +163,9 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getStatementId()).thenReturn(1);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
+        QueryHeader queryHeader = mock(QueryHeader.class);
+        when(queryHeader.getColumnTypeName()).thenReturn("VARCHAR");
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(queryHeader)));
         when(proxyBackendHandler.next()).thenReturn(true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         Iterator<DatabasePacket<?>> actual;
@@ -178,7 +182,6 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         assertTrue(mysqlComStmtExecuteExecutor.next());
         MySQLPacket actualQueryRowPacket = mysqlComStmtExecuteExecutor.getQueryRowPacket();
         assertThat(actualQueryRowPacket, instanceOf(MySQLBinaryResultSetRowPacket.class));
-        assertThat(actualQueryRowPacket.getSequenceId(), is(4));
         mysqlComStmtExecuteExecutor.close();
         verify(proxyBackendHandler).close();
     }

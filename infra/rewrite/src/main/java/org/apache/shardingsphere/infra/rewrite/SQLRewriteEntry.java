@@ -25,12 +25,12 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
-import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecoratorFactory;
 import org.apache.shardingsphere.infra.rewrite.engine.GenericSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.List;
@@ -55,33 +55,33 @@ public final class SQLRewriteEntry {
         this.database = database;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
-        decorators = SQLRewriteContextDecoratorFactory.getInstance(database.getRuleMetaData().getRules());
+        decorators = OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class, database.getRuleMetaData().getRules());
     }
     
     /**
      * Rewrite.
      * 
      * @param sql SQL
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @param sqlStatementContext SQL statement context
      * @param routeContext route context
      * @param connectionContext connection context
      * @return route unit and SQL rewrite result map
      */
-    public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext,
+    public SQLRewriteResult rewrite(final String sql, final List<Object> params, final SQLStatementContext<?> sqlStatementContext,
                                     final RouteContext routeContext, final ConnectionContext connectionContext) {
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext, connectionContext);
+        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, params, sqlStatementContext, routeContext, connectionContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
         DatabaseType protocolType = database.getProtocolType();
-        DatabaseType storageType = database.getResourceMetaData().getDatabaseType();
+        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         return routeContext.getRouteUnits().isEmpty()
-                ? new GenericSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext)
-                : new RouteSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext, routeContext);
+                ? new GenericSQLRewriteEngine(rule, protocolType, storageTypes).rewrite(sqlRewriteContext)
+                : new RouteSQLRewriteEngine(rule, protocolType, storageTypes).rewrite(sqlRewriteContext, routeContext);
     }
     
-    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext,
+    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> params, final SQLStatementContext<?> sqlStatementContext,
                                                       final RouteContext routeContext, final ConnectionContext connectionContext) {
-        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, parameters, connectionContext);
+        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, params, connectionContext);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

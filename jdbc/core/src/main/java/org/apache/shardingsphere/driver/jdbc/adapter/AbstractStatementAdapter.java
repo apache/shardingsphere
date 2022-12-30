@@ -195,7 +195,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
         if (connection.getConnectionManager().getConnectionTransaction().isInTransaction()) {
-            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getDatabaseType();
+            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
             if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
                 connection.getConnectionManager().getConnectionTransaction().setRollbackOnly(true);
             }

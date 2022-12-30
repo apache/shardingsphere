@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatypeloader.MySQLDataTypeLoader
-org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatypeloader.OracleDataTypeLoader
+org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatype.MySQLDataTypeLoader
+org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatype.OracleDataTypeLoader
 org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DefaultDataTypeLoader

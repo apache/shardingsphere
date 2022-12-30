@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +47,7 @@ public final class ShardingSphereDatabasesFactory {
     public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props);
-        Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(Collections.singletonMap(databaseName, databaseConfig));
+        Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(databaseName, databaseConfig);
         return ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, databaseConfig, props, instanceContext);
     }
     
@@ -76,7 +75,7 @@ public final class ShardingSphereDatabasesFactory {
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
-                Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(Collections.singletonMap(entry.getKey(), entry.getValue()));
+                Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(entry.getKey(), entry.getValue());
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, entry.getValue(), props, instanceContext));
             }
         }

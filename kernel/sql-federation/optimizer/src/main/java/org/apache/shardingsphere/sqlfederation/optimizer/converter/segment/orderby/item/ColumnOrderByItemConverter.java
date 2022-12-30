@@ -19,15 +19,16 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orde
 
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -38,8 +39,15 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
     @Override
     public Optional<SqlNode> convert(final ColumnOrderByItemSegment segment) {
         Optional<SqlNode> result = new ColumnConverter().convert(segment.getColumn());
-        if (result.isPresent() && Objects.equals(OrderDirection.DESC, segment.getOrderDirection())) {
+        if (!result.isPresent()) {
+            return Optional.empty();
+        }
+        if (OrderDirection.DESC.equals(segment.getOrderDirection())) {
             result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result.get()), SqlParserPos.ZERO));
+        }
+        if (segment.getNullsOrderType().isPresent()) {
+            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST.equals(segment.getNullsOrderType().get()) ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
+            result = Optional.of(new SqlBasicCall(nullsOrderType, Collections.singletonList(result.get()), SqlParserPos.ZERO));
         }
         return result;
     }

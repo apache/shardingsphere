@@ -76,9 +76,8 @@ public final class RequiredSessionVariableRecorder {
     
     private String aggregateToMySQLSetSQL() {
         StringJoiner result = new StringJoiner(",", "SET ", "");
-        for (Entry<String, String> stringStringEntry : sessionVariables.entrySet()) {
-            String s = stringStringEntry.getKey() + "=" + stringStringEntry.getValue();
-            result.add(s);
+        for (Entry<String, String> entry : sessionVariables.entrySet()) {
+            result.add(entry.getKey() + "=" + entry.getValue());
         }
         return result.toString();
     }

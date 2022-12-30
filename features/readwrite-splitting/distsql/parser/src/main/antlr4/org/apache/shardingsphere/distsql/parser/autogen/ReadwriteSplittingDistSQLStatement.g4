@@ -27,9 +27,8 @@ execute
     | setReadwriteSplittingHintSource
     | showReadwriteSplittingHintStatus
     | clearReadwriteSplittingHint
-    | enableReadDataSource
-    | disableReadDataSource
-    | showReadwriteSplittingReadResources
+    | alterReadwriteSplittingStorageUnitStatus
+    | showStatusFromReadwriteSplittingRules
     | countReadwriteSplittingRule
     ) SEMI?
     ;

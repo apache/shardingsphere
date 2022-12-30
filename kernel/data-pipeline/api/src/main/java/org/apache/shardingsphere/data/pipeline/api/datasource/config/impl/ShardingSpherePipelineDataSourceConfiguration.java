@@ -25,10 +25,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtensionFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -57,9 +57,9 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     
     private final DatabaseType databaseType;
     
-    public ShardingSpherePipelineDataSourceConfiguration(final String parameter) {
-        this.parameter = parameter;
-        rootConfig = YamlEngine.unmarshal(parameter, YamlRootConfiguration.class, true);
+    public ShardingSpherePipelineDataSourceConfiguration(final String param) {
+        parameter = param;
+        rootConfig = YamlEngine.unmarshal(param, YamlRootConfiguration.class, true);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
         appendJdbcQueryProperties(databaseType.getType());
@@ -67,8 +67,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
-        YamlParameterConfiguration parameterConfig = new YamlParameterConfiguration(rootConfig.getDataSources(), rootConfig.getRules());
-        this.parameter = YamlEngine.marshal(parameterConfig);
+        parameter = YamlEngine.marshal(new YamlParameterConfiguration(rootConfig.getDataSources(), rootConfig.getRules()));
         this.rootConfig = rootConfig;
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
@@ -83,7 +82,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     private void appendJdbcQueryProperties(final String databaseType) {
-        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance(databaseType);
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }
@@ -114,6 +113,18 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     @Override
     public String getType() {
         return TYPE;
+    }
+    
+    /**
+     * Get actual data source configuration.
+     *
+     * @param actualDataSourceName actual data source name
+     * @return actual data source configuration
+     */
+    public StandardPipelineDataSourceConfiguration getActualDataSourceConfiguration(final String actualDataSourceName) {
+        Map<String, Object> yamlDataSourceConfig = rootConfig.getDataSources().get(actualDataSourceName);
+        Preconditions.checkNotNull(yamlDataSourceConfig, "actualDataSourceName '{}' does not exist", actualDataSourceName);
+        return new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
     }
     
     /**

@@ -21,8 +21,10 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
  * Lock persist service.
+ * 
+ * @param <T> type of lock definition
  */
-public interface LockPersistService {
+public interface LockPersistService<T extends LockDefinition> {
     
     /**
      * Try lock.
@@ -31,12 +33,12 @@ public interface LockPersistService {
      * @param timeoutMillis timeout millis
      * @return is locked or not
      */
-    boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
+    boolean tryLock(T lockDefinition, long timeoutMillis);
     
     /**
      * Unlock.
      *
      * @param lockDefinition lock definition
      */
-    void unlock(LockDefinition lockDefinition);
+    void unlock(T lockDefinition);
 }

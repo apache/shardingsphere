@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
@@ -35,6 +36,8 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     @Override
     public void execute(final ConnectionSession connectionSession) {
         String variableName = resetParameterStatement.getConfigurationParameter();
-        PostgreSQLSessionVariableHandlerFactory.getHandler(variableName).handle(connectionSession, variableName, DEFAULT);
+        PostgreSQLSessionVariableHandler variableHandler = TypedSPIRegistry.findRegisteredService(
+                PostgreSQLSessionVariableHandler.class, variableName).orElseGet(DefaultPostgreSQLSessionVariableHandler::new);
+        variableHandler.handle(connectionSession, variableName, DEFAULT);
     }
 }

@@ -9,20 +9,25 @@ The `CREATE DB_DISCOVERY RULE` syntax is used to create a database discovery rul
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CreateDatabaseDiscoveryRule ::=
-  'CREATE' 'DB_DISCOVERY' 'RULE' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) ( ',' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) )*
+  'CREATE' 'DB_DISCOVERY' 'RULE' ifNotExists? databaseDiscoveryDefinition (',' databaseDiscoveryDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
-    
-databaseDiscoveryConstruction ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '=' discoveryTypeName ',' 'HEARTBEAT' '=' discoveryHeartbeatName ')'
-    
+  ruleName '(' 'STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' ',' 'TYPE' '(' 'NAME' '=' typeName (',' propertiesDefinition)? ')' ',' 'HEARTBEAT' '(' propertiesDefinition ')' ')' 
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
 ruleName ::=
   identifier
 
-resourceName ::=
+storageUnitName ::=
   identifier
 
 typeName ::=
@@ -30,41 +35,50 @@ typeName ::=
 
 discoveryHeartbeatName ::=
   identifier
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
 - `discoveryType` specifies the database discovery service type, `ShardingSphere` has built-in support for `MySQL.MGR`;
-- Duplicate `ruleName` will not be created.
+- Duplicate `ruleName` will not be created;
+- `ifNotExists` clause used for avoid `Duplicate db_discovery rule` error.
 
 ### Example
 
-#### When creating a `discoveryRule`, create both `discoveryType` and `discoveryHeartbeat`
+- Create database discovery rule
 
 ```sql
-CREATE
-DB_DISCOVERY RULE db_discovery_group_0 (
-    RESOURCES(ds_0, ds_1, ds_2),
+CREATE DB_DISCOVERY RULE db_discovery_group_0 (
+    STORAGE_UNITS(su_0, su_1, su_2),
     TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
     HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 
-#### Use the existing `discoveryType` and `discoveryHeartbeat` to create a `discoveryRule`
+- Create database discovery rule with `ifNotExists` clause
 
 ```sql
-CREATE
-DB_DISCOVERY RULE db_discovery_group_1 (
-    RESOURCES(ds_0, ds_1, ds_2),
-    TYPE=db_discovery_group_1_mgr,
-    HEARTBEAT=db_discovery_group_1_heartbeat
+CREATE DB_DISCOVERY RULE IF NOT EXISTS db_discovery_group_0 (
+    STORAGE_UNITS(su_0, su_1, su_2),
+    TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
+    HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
-
 ```
 
 ### Reserved word
 
-`CREATE`, `DB_DISCOVERY`, `RULE`, `RESOURCES`, `TYPE`, `NAME`, `PROPERTIES`, `HEARTBEAT`
+`CREATE`, `DB_DISCOVERY`, `RULE`, `STORAGE_UNITS`, `TYPE`, `NAME`, `PROPERTIES`, `HEARTBEAT`
 
 ### Related links
 

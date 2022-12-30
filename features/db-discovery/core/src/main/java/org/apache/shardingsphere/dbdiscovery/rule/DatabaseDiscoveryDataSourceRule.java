@@ -25,9 +25,9 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -124,10 +124,9 @@ public final class DatabaseDiscoveryDataSourceRule {
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(dataSourceNames.size(), 1);
-        for (String each : dataSourceNames) {
-            result.put(groupName, Collections.singletonList(each));
-        }
+        Map<String, Collection<String>> result = new HashMap<>(1, 1);
+        Collection<String> actualDataSourceNames = new LinkedList<>(dataSourceNames);
+        result.put(groupName, actualDataSourceNames);
         return result;
     }
 }

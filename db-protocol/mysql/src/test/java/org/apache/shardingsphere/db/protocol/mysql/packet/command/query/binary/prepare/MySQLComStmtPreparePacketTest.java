@@ -38,7 +38,6 @@ public final class MySQLComStmtPreparePacketTest {
     public void assertNew() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl WHERE id=?");
         MySQLComStmtPreparePacket actual = new MySQLComStmtPreparePacket(payload);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getSql(), is("SELECT id FROM tbl WHERE id=?"));
     }
     

@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-cluster-mode-repository</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>zookeeper-curator</module>
+        <module>zookeeper</module>
         <module>etcd</module>
         <module>nacos</module>
         <module>consul</module>

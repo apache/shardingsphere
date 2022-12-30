@@ -37,11 +37,13 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByRangeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -76,7 +78,7 @@ public final class InventoryTaskSplitter {
         long startTimeMillis = System.currentTimeMillis();
         PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobItemContext, dumperConfig)) {
-            result.add(new InventoryTask(each, importerConfig, pipelineChannelCreator, jobItemContext.getDataSourceManager(), sourceDataSource, jobItemContext.getSourceMetaDataLoader(),
+            result.add(new InventoryTask(each, importerConfig, pipelineChannelCreator, jobItemContext.getImporterConnector(), sourceDataSource, jobItemContext.getSourceMetaDataLoader(),
                     jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getInventoryImporterExecuteEngine(), jobItemContext));
         }
         log.info("splitInventoryData cost {} ms", System.currentTimeMillis() - startTimeMillis);
@@ -95,7 +97,7 @@ public final class InventoryTaskSplitter {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         dumperConfig.getTableNameMap().forEach((key, value) -> {
             InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(dumperConfig);
-            // use original table name, for metadata loader, since some database table name case-sensitive
+            // use original table name, for meta data loader, since some database table name case-sensitive
             inventoryDumperConfig.setActualTableName(key.getOriginal());
             inventoryDumperConfig.setLogicTableName(value.getOriginal());
             inventoryDumperConfig.setPosition(new PlaceholderPosition());
@@ -158,34 +160,33 @@ public final class InventoryTaskSplitter {
                                                                               final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new LinkedList<>();
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
-        String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType())
+        String sql = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class))
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getUniqueKey());
         int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getRead().getShardingSize();
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             // TODO query minimum value less than 0
             long beginId = 0;
             long recordsCount = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
-                ps.setLong(1, beginId);
-                ps.setLong(2, shardingSize);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
-                        log.info("getPositionByPrimaryKeyRange, rs.next false, break");
+                preparedStatement.setLong(1, beginId);
+                preparedStatement.setLong(2, shardingSize);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (!resultSet.next()) {
                         break;
                     }
-                    long endId = rs.getLong(1);
-                    recordsCount += rs.getLong(2);
+                    long endId = resultSet.getLong(1);
+                    recordsCount += resultSet.getLong(2);
                     if (0 == endId) {
-                        log.info("getPositionByPrimaryKeyRange, endId is 0, break, tableName={}, primaryKey={}, beginId={}", dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), beginId);
                         break;
                     }
                     result.add(new IntegerPrimaryKeyPosition(beginId, endId));
                     beginId = endId + 1;
                 }
             }
-            jobItemContext.initInventoryRecordsCount(recordsCount);
+            jobItemContext.updateInventoryRecordsCount(recordsCount);
             // fix empty table missing inventory task
             if (result.isEmpty()) {
                 result.add(new IntegerPrimaryKeyPosition(0, 0));
@@ -201,13 +202,14 @@ public final class InventoryTaskSplitter {
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
-        String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType()).buildCountSQL(schemaName, actualTableName);
+        String sql = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class)).buildCountSQL(schemaName, actualTableName);
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                jobItemContext.initInventoryRecordsCount(rs.getLong(1));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                jobItemContext.updateInventoryRecordsCount(resultSet.getLong(1));
             }
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), ex);

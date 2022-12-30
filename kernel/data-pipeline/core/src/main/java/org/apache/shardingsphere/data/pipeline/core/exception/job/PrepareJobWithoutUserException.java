@@ -28,6 +28,6 @@ public final class PrepareJobWithoutUserException extends PipelineSQLException {
     private static final long serialVersionUID = 7250019436391155770L;
     
     public PrepareJobWithoutUserException(final String username) {
-        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 88, "User `%s` does exist.", username);
+        super(XOpenSQLState.PRIVILEGE_NOT_GRANTED, 88, String.format("User `%s` does exist.", username));
     }
 }

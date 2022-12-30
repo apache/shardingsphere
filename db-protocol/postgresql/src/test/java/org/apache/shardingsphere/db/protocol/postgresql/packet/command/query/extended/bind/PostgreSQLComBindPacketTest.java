@@ -18,20 +18,16 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind;
 
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLComBindPacketTest {
     
@@ -47,15 +43,7 @@ public final class PostgreSQLComBindPacketTest {
         PostgreSQLComBindPacket actual = new PostgreSQLComBindPacket(new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BIND_MESSAGE_BYTES), StandardCharsets.UTF_8));
         assertThat(actual.getPortal(), is(""));
         assertThat(actual.getStatementId(), is("S_1"));
-        List<Object> actualParameters = actual.readParameters(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
-        assertThat(actualParameters, is(Collections.singletonList(10)));
-        List<PostgreSQLValueFormat> actualResultFormats = actual.readResultFormats();
-        assertTrue(actualResultFormats.isEmpty());
-    }
-    
-    @Test
-    public void getMessageType() {
-        PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(mock(PostgreSQLPacketPayload.class));
-        assertThat(bindPacket.getIdentifier(), is(PostgreSQLCommandPacketType.BIND_COMMAND));
+        assertThat(actual.readParameters(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)), is(Collections.singletonList(10)));
+        assertTrue(actual.readResultFormats().isEmpty());
     }
 }

@@ -40,12 +40,13 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableM
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -53,6 +54,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 
 /**
@@ -74,14 +76,18 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
+    private volatile Statement dumpStatement;
+    
     public InventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
-        sqlBuilder = PipelineSQLBuilderFactory.getInstance(dumperConfig.getDataSourceConfig().getDatabaseType().getType());
-        columnValueReader = ColumnValueReaderFactory.getInstance(dumperConfig.getDataSourceConfig().getDatabaseType().getType());
+        sqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        columnValueReader = TypedSPIRegistry.findRegisteredService(ColumnValueReader.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType())
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(ColumnValueReader.class));
         this.metaDataLoader = metaDataLoader;
     }
     
@@ -90,7 +96,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         String firstSQL = buildInventoryDumpSQL(true);
         String laterSQL = buildInventoryDumpSQL(false);
         IngestPosition<?> position = dumperConfig.getPosition();
-        log.info("Inventory dump, uniqueKeyDataType={}, firstSQL={}, laterSQL={}, position={}.", dumperConfig.getUniqueKeyDataType(), firstSQL, laterSQL, position);
         if (position instanceof FinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
@@ -103,7 +108,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             while ((maxUniqueKeyValue = dump(tableMetaData, connection, 1 == round ? firstSQL : laterSQL, beginUniqueKeyValue, round++)).isPresent()) {
                 beginUniqueKeyValue = maxUniqueKeyValue.get();
                 if (!isRunning()) {
-                    log.info("Broke because of inventory dump is not running.");
                     break;
                 }
             }
@@ -112,7 +116,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
             throw new IngestException(ex);
         } finally {
-            log.info("Inventory dump, before put FinishedRecord.");
             channel.pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }
@@ -134,6 +137,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
         int batchSize = dumperConfig.getBatchSize();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            dumpStatement = preparedStatement;
             setParameters(preparedStatement, batchSize, beginUniqueKeyValue);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -151,6 +155,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 if (0 == round % 50) {
                     log.info("Dumping, round={}, rowCount={}, maxUniqueKeyValue={}.", round, rowCount, maxUniqueKeyValue);
                 }
+                dumpStatement = null;
                 return Optional.ofNullable(maxUniqueKeyValue);
             }
         }
@@ -190,6 +195,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    protected void doStop() {
+    protected void doStop() throws SQLException {
+        cancelStatement(dumpStatement);
     }
 }

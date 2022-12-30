@@ -34,8 +34,8 @@ import java.util.Collections;
 /**
  * Show transaction executor.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class ShowTransactionExecutor implements DatabaseAdminQueryExecutor {
     
     public static final String TRANSACTION_READ_ONLY = "@@session.transaction_read_only";

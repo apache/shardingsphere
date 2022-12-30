@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
@@ -42,13 +43,14 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     
     @SuppressWarnings("MagicConstant")
     @Override
-    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
     @SuppressWarnings("MagicConstant")
     @Override
-    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
+                                           final DatabaseType databaseType) throws SQLException {
         Statement result = cachedStatements.get(new CacheKey(executionUnit, connectionMode));
         if (null == result) {
             String sql = executionUnit.getSqlUnit().getSql();

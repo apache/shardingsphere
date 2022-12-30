@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -72,7 +72,7 @@ public final class EncryptAssignmentTokenGeneratorTest {
         when(updateStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singletonList(assignmentSegment));
         when(assignmentSegment.getColumns().get(0).getIdentifier().getValue()).thenReturn("columns");
-        when(encryptRule.findEncryptor(eq("table"), eq("columns"))).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(encryptRule.findEncryptor(eq("table"), eq("columns"))).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(insertStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(setAssignmentSegment.getAssignments()).thenReturn(Collections.singletonList(assignmentSegment));
     }

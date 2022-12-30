@@ -49,4 +49,11 @@ public interface InstanceMetaData {
      * @return attributes
      */
     String getAttributes();
+    
+    /**
+     * Get version.
+     *
+     * @return version
+     */
+    String getVersion();
 }

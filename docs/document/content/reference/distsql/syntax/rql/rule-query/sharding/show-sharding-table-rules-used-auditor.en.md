@@ -10,7 +10,9 @@ weight = 13
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowShardingTableRulesUsedAuditor::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'AUDITOR' AuditortorName ('FROM' databaseName)?
 
@@ -20,6 +22,11 @@ AuditortorName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -68,7 +75,7 @@ mysql> SHOW SHARDING TABLE RULES USED AUDITOR sharding_key_required_auditor;
 
 ### Reserved word
 
-`SHOW`、`SHARDING`、`TABLE`、`RULES`、`USED`、`AUDITOR`、`FROM`
+`SHOW`, `SHARDING`, `TABLE`, `RULES`, `USED`, `AUDITOR`, `FROM`
 
 ### Related links
 

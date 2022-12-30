@@ -16,7 +16,7 @@ For example, with Alibaba Druid 1.2.9, using url instead of jdbcUrl in the examp
 
 ```yaml
 dataSources: # Data sources configuration, multiple <data-source-name> available
-  <data-source-name>: # Data source name
+  <data_source_name>: # Data source name
     dataSourceClassName: # Data source class name
     driverClassName: # The database driver class name is subject to the configuration of the database connection pool itself
     jdbcUrl: # The database URL connection is subject to the configuration of the database connection pool itself

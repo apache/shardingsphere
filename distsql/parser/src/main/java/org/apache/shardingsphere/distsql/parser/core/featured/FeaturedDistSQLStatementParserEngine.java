@@ -22,6 +22,8 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -29,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Featured dist SQL statement parser engine.
+ * Featured DistSQL statement parser engine.
  */
 public final class FeaturedDistSQLStatementParserEngine {
     
@@ -45,7 +47,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     }
     
     private FeaturedDistSQLParseASTNode parseToASTNode(final String sql) {
-        for (FeaturedDistSQLStatementParserFacade each : FeaturedDistSQLStatementParserFacadeFactory.getAllInstances()) {
+        for (FeaturedDistSQLStatementParserFacade each : ShardingSphereServiceLoader.getServiceInstances(FeaturedDistSQLStatementParserFacade.class)) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new FeaturedDistSQLParseASTNode(each.getType(), parseASTNode);
@@ -58,7 +60,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
-        SQLVisitor visitor = FeaturedDistSQLStatementParserFacadeFactory.getInstance(featureType).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = TypedSPIRegistry.getRegisteredService(FeaturedDistSQLStatementParserFacade.class, featureType).getVisitorClass().getDeclaredConstructor().newInstance();
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException(sql);
         }

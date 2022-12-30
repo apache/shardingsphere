@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -25,6 +24,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer revert statement.
  */
-@ToString(callSuper = true)
 public final class SQLServerRevertStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
 }

@@ -34,7 +34,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -51,9 +50,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -64,6 +63,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -97,13 +97,12 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(context.channel()).thenReturn(channel);
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetConnectionIdGenerator() {
-        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
-        field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), 0);
+        Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         mysqlFrontendEngine = new MySQLFrontendEngine();
     }
     
@@ -137,9 +136,9 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         AuthenticationResult actual = mysqlFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
-        assertThat(actual.getUsername(), is("root"));
+        assertNull(actual.getUsername());
         assertNull(actual.getDatabase());
-        assertTrue(actual.isFinished());
+        assertFalse(actual.isFinished());
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
     
@@ -152,17 +151,15 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[]{(byte) 192, (byte) 168, (byte) 0, (byte) 102}), 3307));
         AuthenticationResult actual = mysqlFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
-        assertThat(actual.getUsername(), is("root"));
+        assertNull(actual.getUsername());
         assertNull(actual.getDatabase());
-        assertTrue(actual.isFinished());
+        assertFalse(actual.isFinished());
         verify(context).writeAndFlush(argThat((ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
-        field.setAccessible(true);
-        field.set(mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
     }
     
     private void initProxyContext(final ShardingSphereUser user) {
@@ -181,7 +178,7 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
             result.put(String.format(SCHEMA_PATTERN, i), database);
         }
         return result;
@@ -189,7 +186,7 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
 }

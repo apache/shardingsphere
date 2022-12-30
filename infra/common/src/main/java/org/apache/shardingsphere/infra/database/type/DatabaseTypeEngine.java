@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -25,6 +24,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -52,7 +53,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig)));
+        return findConfiguredDatabaseType(props).orElseGet(() -> getStorageType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig)));
     }
     
     /**
@@ -64,7 +65,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        return configuredDatabaseType.orElseGet(() -> getDatabaseType(getEnabledDataSources(databaseConfigs).values()));
+        return configuredDatabaseType.orElseGet(() -> getStorageType(getEnabledDataSources(databaseConfigs).values()));
     }
     
     private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
@@ -78,13 +79,15 @@ public final class DatabaseTypeEngine {
     /**
      * Get storage types.
      *
-     * @param databaseConfigs database configs
+     * @param databaseName database name
+     * @param databaseConfig database configuration
      * @return storage types
      */
-    public static Map<String, DatabaseType> getStorageTypes(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfigs.size(), 1);
-        for (Entry<String, DataSource> entry : getEnabledDataSources(databaseConfigs).entrySet()) {
-            result.put(entry.getKey(), getDatabaseType(entry.getValue()));
+    public static Map<String, DatabaseType> getStorageTypes(final String databaseName, final DatabaseConfiguration databaseConfig) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, databaseConfig.getDataSources());
+        for (Entry<String, DataSource> entry : enabledDataSources.entrySet()) {
+            result.put(entry.getKey(), getStorageType(entry.getValue()));
         }
         return result;
     }
@@ -96,26 +99,21 @@ public final class DatabaseTypeEngine {
      * @return database type
      */
     public static DatabaseType getDatabaseType(final String url) {
-        return DatabaseTypeFactory.getInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.getInstance("SQL92"));
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)
+                .stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQL92"));
     }
     
     /**
-     * Get database type.
-     * 
+     * Get storage type.
+     *
      * @param dataSources data sources
-     * @return database type
+     * @return storage type
      */
-    public static DatabaseType getDatabaseType(final Collection<DataSource> dataSources) {
-        DatabaseType result = null;
-        for (DataSource each : dataSources) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
-            result = databaseType;
-        }
-        return null == result ? DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE) : result;
+    public static DatabaseType getStorageType(final Collection<DataSource> dataSources) {
+        return dataSources.isEmpty() ? TypedSPIRegistry.getRegisteredService(DatabaseType.class, DEFAULT_DATABASE_TYPE) : getStorageType(dataSources.iterator().next());
     }
     
-    private static DatabaseType getDatabaseType(final DataSource dataSource) {
+    private static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             return getDatabaseType(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
@@ -139,7 +137,7 @@ public final class DatabaseTypeEngine {
      * @return trunk database type
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
-        DatabaseType databaseType = DatabaseTypeFactory.getInstance(name);
+        DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, name);
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : databaseType;
     }
     
@@ -156,21 +154,21 @@ public final class DatabaseTypeEngine {
     /**
      * Get default schema name.
      * 
-     * @param databaseType database type
+     * @param protocolType protocol type
      * @param databaseName database name
      * @return default schema name
      */
-    public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName.toLowerCase();
+    public static String getDefaultSchemaName(final DatabaseType protocolType, final String databaseName) {
+        return protocolType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) protocolType).getDefaultSchema() : databaseName.toLowerCase();
     }
     
     /**
      * Get default schema name.
      *
-     * @param databaseType database type
+     * @param protocolType protocol type
      * @return default schema name
      */
-    public static Optional<String> getDefaultSchemaName(final DatabaseType databaseType) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? Optional.of(((SchemaSupportedDatabaseType) databaseType).getDefaultSchema()) : Optional.empty();
+    public static Optional<String> getDefaultSchemaName(final DatabaseType protocolType) {
+        return protocolType instanceof SchemaSupportedDatabaseType ? Optional.of(((SchemaSupportedDatabaseType) protocolType).getDefaultSchema()) : Optional.empty();
     }
 }

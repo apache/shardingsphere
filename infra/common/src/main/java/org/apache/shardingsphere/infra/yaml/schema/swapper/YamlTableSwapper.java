@@ -74,7 +74,7 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
     }
     
     private ShardingSphereColumn swapColumn(final YamlShardingSphereColumn column) {
-        return new ShardingSphereColumn(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive(), column.isVisible());
+        return new ShardingSphereColumn(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive(), column.isVisible(), column.isUnsigned());
     }
     
     private Map<String, YamlShardingSphereConstraint> swapYamlConstraints(final Map<String, ShardingSphereConstraint> constrains) {
@@ -110,6 +110,7 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
         result.setPrimaryKey(column.isPrimaryKey());
         result.setDataType(column.getDataType());
         result.setVisible(column.isVisible());
+        result.setUnsigned(column.isUnsigned());
         return result;
     }
 }

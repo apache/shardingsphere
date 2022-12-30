@@ -7,21 +7,6 @@ chapter = true
 
 ## JDBC
 
-### [JDBC] 为什么配置了某个数据连接池的 spring-boot-starter（比如 druid）和 shardingsphere-jdbc-spring-boot-starter 时，系统启动会报错？
-
-回答：
-
-1. 因为数据连接池的 starter（比如 druid）可能会先加载并且其创建一个默认数据源，这将会使得 ShardingSphere-JDBC 创建数据源时发生冲突。
-2. 解决办法为，去掉数据连接池的 starter 即可，ShardingSphere-JDBC 自己会创建数据连接池。
-
-### [JDBC] 使用 Spring 命名空间时找不到 xsd?
-
-回答：
-
-Spring 命名空间使用规范并未强制要求将 xsd 文件部署至公网地址，但考虑到部分用户的需求，我们也将相关 xsd 文件部署至 ShardingSphere 官网。
-实际上 shardingsphere-jdbc-spring-namespace 的 jar 包中 META-INF\spring.schemas 配置了 xsd 文件的位置：
-META-INF\namespace\sharding.xsd 和 META-INF\namespace\readwrite-splitting.xsd，只需确保 jar 包中该文件存在即可。
-
 ### [JDBC] 引入 `shardingsphere-transaction-xa-core` 后，如何避免 spring-boot 自动加载默认的 JtaTransactionManager？
 
 回答:
@@ -85,17 +70,16 @@ DROP DATABASE sharding_db;
 1. ShardingSphere-Proxy 可以看做是一个 database server，所以首选支持 SQL 命令连接和操作。
 2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。
 3. 目前已测试的第三方数据库工具如下：
-   - Navicat：11.1.13、15.0.20。
    - DataGrip：2020.1、2021.1（使用 IDEA/DataGrip 时打开 `introspect using JDBC metadata` 选项）。
-   - WorkBench：8.0.25。
+   - MySQLWorkBench：8.0.25。
 
-### [Proxy] 使用 Navicat 等第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有添加 Resource，连接失败？
+### [Proxy] 使用第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有注册 Storage Unit，连接失败？
 
 回答：
 
-1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `database` 或者没有添加 `resource` 时，ShardingSphere-Proxy 无法执行 SQL。
-2. 推荐先创建 `database` 和 `resource` 之后再使用第三方数据库工具连接。
-3. 有关 `resource` 的详情请参考。[相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)
+1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `database` 或者没有注册 `storage unit` 时，ShardingSphere-Proxy 无法执行 SQL。
+2. 推荐先创建 `database` 并注册 `storage unit` 之后再使用第三方数据库工具连接。
+3. 有关 `storage unit` 的详情请参考。[相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)
 
 ## 分片
 
@@ -183,16 +167,16 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 1. 如需自定义 JDBC 参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere 预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
-3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)。
+3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)。
 
-### [DistSQL] 使用 `DistSQL` 删除资源时，出现 `Resource [xxx] is still used by [SingleTableRule]`。
+### [DistSQL] 使用 `DistSQL` 删除 `storage unit` 时，出现 `Storage unit [xxx] is still used by [SingleTableRule]`。
 
 回答：
 
-1. 被规则引用的资源将无法被删除。
-2. 若资源只被 single table rule 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
+1. 被规则引用的 `storage unit` 将无法被删除。
+2. 若 `storage unit` 只被 `single table rule` 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
 
-### [DistSQL] 使用 `DistSQL` 添加资源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
+### [DistSQL] 使用 `DistSQL` 添加数据源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
 
 回答：
 
@@ -334,44 +318,3 @@ ShardingSphere 中很多功能实现类的加载方式是通过 [SPI](/cn/concep
 ```
 更多关于 alias 使用方法请参考 [Proxool官网](http://proxool.sourceforge.net/configure.html)。
 PS：sourceforge 网站需要翻墙访问。
-
-### [其他] 使用 Spring Boot 2.x 集成 ShardingSphere 时，配置文件中的属性设置不生效？
-
-回答：
-
-需要特别注意，Spring Boot 2.x 环境下配置文件的属性名称约束为仅允许小写字母、数字和短横线，即 `[a-z][0-9]` 和 `-`。
-原因如下:
-Spring Boot 2.x 环境下，ShardingSphere 通过 Binder 来绑定配置文件，属性名称不规范（如：驼峰或下划线等）会导致属性设置不生效从而校验属性值时抛出 `NullPointerException` 异常。参考以下错误示例：
-下划线示例：database_inline
-```
-spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds-$->{user_id % 2}
-```
-```
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'database_inline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        ... 
-Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
-        at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
-        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
-        ... 
-```
-驼峰示例：databaseInline
-```
-spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.databaseInline.props.algorithm-expression=ds-$->{user_id % 2}
-```
-```
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'databaseInline': Initialization of bean failed; nested exception is java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        ... 
-Caused by: java.lang.NullPointerException: Inline sharding algorithm expression cannot be null.
-        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:897)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.getAlgorithmExpression(InlineShardingAlgorithm.java:58)
-        at org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm.init(InlineShardingAlgorithm.java:52)
-        at org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry.postProcessAfterInitialization(AbstractAlgorithmProvidedBeanRegistry.java:98)
-        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsAfterInitialization(AbstractAutowireCapableBeanFactory.java:431)
-        ... 
-```
-从异常堆栈中分析可知： `AbstractAlgorithmProvidedBeanRegistry.registerBean` 方法调用 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法判断指定前缀 `prefix` 的配置是否存在，而 `PropertyUtil.containPropertyPrefix(environment, prefix)` 方法，在 Spring Boot 2.x 环境下使用了 Binder，不规范的属性名称（如：驼峰或下划线等）会导致属性设置不生效。

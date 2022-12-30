@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.parser.yaml.swapper;
 
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.constant.SQLParserOrder;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 public final class YamlSQLParserRuleConfigurationSwapperTest {
     
@@ -44,9 +42,9 @@ public final class YamlSQLParserRuleConfigurationSwapperTest {
     
     @Test
     public void assertSwapToObjectWithDefaultConfig() {
-        YamlSQLParserRuleConfiguration configuration = new YamlSQLParserRuleConfiguration();
-        configuration.setSqlCommentParseEnabled(true);
-        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(configuration);
+        YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
+        yamlConfig.setSqlCommentParseEnabled(true);
+        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(1024L));
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(2000));
@@ -55,33 +53,18 @@ public final class YamlSQLParserRuleConfigurationSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlSQLParserRuleConfiguration configuration = new YamlSQLParserRuleConfiguration();
-        configuration.setSqlCommentParseEnabled(true);
-        configuration.setParseTreeCache(new YamlSQLParserCacheOptionRuleConfiguration());
-        configuration.getParseTreeCache().setInitialCapacity(2);
-        configuration.getParseTreeCache().setMaximumSize(5L);
-        configuration.setSqlStatementCache(new YamlSQLParserCacheOptionRuleConfiguration());
-        configuration.getSqlStatementCache().setInitialCapacity(4);
-        configuration.getSqlStatementCache().setMaximumSize(7L);
-        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(configuration);
+        YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
+        yamlConfig.setSqlCommentParseEnabled(true);
+        yamlConfig.setParseTreeCache(new YamlSQLParserCacheOptionRuleConfiguration());
+        yamlConfig.getParseTreeCache().setInitialCapacity(2);
+        yamlConfig.getParseTreeCache().setMaximumSize(5L);
+        yamlConfig.setSqlStatementCache(new YamlSQLParserCacheOptionRuleConfiguration());
+        yamlConfig.getSqlStatementCache().setInitialCapacity(4);
+        yamlConfig.getSqlStatementCache().setMaximumSize(7L);
+        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(2));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(5L));
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(4));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(7L));
-    }
-    
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(new YamlSQLParserRuleConfigurationSwapper().getTypeClass().toString(), is(SQLParserRuleConfiguration.class.toString()));
-    }
-    
-    @Test
-    public void assertGetRuleTagName() {
-        assertThat(new YamlSQLParserRuleConfigurationSwapper().getRuleTagName(), is("SQL_PARSER"));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        assertThat(new YamlSQLParserRuleConfigurationSwapper().getOrder(), is(SQLParserOrder.ORDER));
     }
 }

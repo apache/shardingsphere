@@ -33,15 +33,15 @@ public final class PipelineDataSourceConfigurationFactory {
      * Create new instance of pipeline data source configuration.
      *
      * @param type type of pipeline data source configuration
-     * @param parameter parameter of pipeline data source configuration
+     * @param param parameter of pipeline data source configuration
      * @return created instance
      */
-    public static PipelineDataSourceConfiguration newInstance(final String type, final String parameter) {
+    public static PipelineDataSourceConfiguration newInstance(final String type, final String param) {
         switch (type) {
             case StandardPipelineDataSourceConfiguration.TYPE:
-                return new StandardPipelineDataSourceConfiguration(parameter);
+                return new StandardPipelineDataSourceConfiguration(param);
             case ShardingSpherePipelineDataSourceConfiguration.TYPE:
-                return new ShardingSpherePipelineDataSourceConfiguration(parameter);
+                return new ShardingSpherePipelineDataSourceConfiguration(param);
             default:
                 throw new UnsupportedSQLOperationException(String.format("Unsupported data source type `%s`", type));
         }

@@ -92,7 +92,7 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetVersionByDatabasePath() {
-        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/versions/0/dataSources");
+        Optional<String> actualVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath("/metadata/logic_db/versions/0/data_sources");
         assertTrue(actualVersion.isPresent());
         assertThat(actualVersion.get(), is("0"));
     }
@@ -131,6 +131,6 @@ public class DatabaseMetaDataNodeTest {
     
     @Test
     public void assertGetMetaDataDataSourcePath() {
-        assertThat(DatabaseMetaDataNode.getMetaDataDataSourcePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/dataSources"));
+        assertThat(DatabaseMetaDataNode.getMetaDataDataSourcePath(DefaultDatabase.LOGIC_NAME, "0"), is("/metadata/logic_db/versions/0/data_sources"));
     }
 }

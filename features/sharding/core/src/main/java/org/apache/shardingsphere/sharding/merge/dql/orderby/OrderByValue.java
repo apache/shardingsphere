@@ -49,27 +49,29 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private final List<Boolean> orderValuesCaseSensitive;
     
+    private final SelectStatementContext selectStatementContext;
+    
     private List<Comparable<?>> orderValues;
     
     public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems,
                         final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         this.queryResult = queryResult;
         this.orderByItems = orderByItems;
-        orderValuesCaseSensitive = getOrderValuesCaseSensitive(selectStatementContext, schema);
+        this.selectStatementContext = selectStatementContext;
+        orderValuesCaseSensitive = getOrderValuesCaseSensitive(schema);
     }
     
-    private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    private List<Boolean> getOrderValuesCaseSensitive(final ShardingSphereSchema schema) throws SQLException {
         List<Boolean> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem eachOrderByItem : orderByItems) {
-            result.add(getOrderValuesCaseSensitiveFromTables(selectStatementContext, schema, eachOrderByItem));
+            result.add(getOrderValuesCaseSensitiveFromTables(schema, eachOrderByItem));
         }
         return result;
     }
     
-    private boolean getOrderValuesCaseSensitiveFromTables(final SelectStatementContext selectStatementContext,
-                                                          final ShardingSphereSchema schema, final OrderByItem eachOrderByItem) throws SQLException {
-        for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
-            String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
+    private boolean getOrderValuesCaseSensitiveFromTables(final ShardingSphereSchema schema, final OrderByItem eachOrderByItem) throws SQLException {
+        for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
+            String tableName = each.getTableName().getIdentifier().getValue();
             ShardingSphereTable table = schema.getTable(tableName);
             Map<String, ShardingSphereColumn> columns = table.getColumns();
             OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
@@ -114,11 +116,11 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     }
     
     @Override
-    public int compareTo(final OrderByValue o) {
+    public int compareTo(final OrderByValue orderByValue) {
         int i = 0;
         for (OrderByItem each : orderByItems) {
-            int result = CompareUtil.compareTo(orderValues.get(i), o.orderValues.get(i), each.getSegment().getOrderDirection(),
-                    each.getSegment().getNullOrderDirection(), orderValuesCaseSensitive.get(i));
+            int result = CompareUtil.compareTo(orderValues.get(i), orderByValue.orderValues.get(i), each.getSegment().getOrderDirection(),
+                    each.getSegment().getNullsOrderType(selectStatementContext.getDatabaseType().getType()), orderValuesCaseSensitive.get(i));
             if (0 != result) {
                 return result;
             }

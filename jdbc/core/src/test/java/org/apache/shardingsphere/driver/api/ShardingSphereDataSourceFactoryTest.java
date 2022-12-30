@@ -21,11 +21,11 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -92,8 +92,6 @@ public final class ShardingSphereDataSourceFactoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void assertDataSource(final DataSource actualDataSource, final String expectedDataSourceName) {
-        Field field = ShardingSphereDataSource.class.getDeclaredField("databaseName");
-        field.setAccessible(true);
-        assertThat((String) field.get(actualDataSource), is(expectedDataSourceName));
+        assertThat(Plugins.getMemberAccessor().get(ShardingSphereDataSource.class.getDeclaredField("databaseName"), actualDataSource), is(expectedDataSourceName));
     }
 }

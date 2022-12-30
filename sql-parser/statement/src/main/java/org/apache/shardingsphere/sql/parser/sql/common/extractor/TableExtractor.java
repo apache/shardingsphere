@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.Routi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -73,7 +74,7 @@ public final class TableExtractor {
      * @param selectStatement select statement
      */
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
-        if (null != selectStatement.getFrom()) {
+        if (null != selectStatement.getFrom() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromTableSegment(selectStatement.getFrom());
         }
         if (selectStatement.getWhere().isPresent()) {
@@ -88,11 +89,12 @@ public final class TableExtractor {
         if (selectStatement.getOrderBy().isPresent()) {
             extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems());
         }
-        if (SelectStatementHandler.getLockSegment(selectStatement).isPresent()) {
-            extractTablesFromLock(SelectStatementHandler.getLockSegment(selectStatement).get());
-        }
+        Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
+        lockSegment.ifPresent(this::extractTablesFromLock);
         if (selectStatement.getCombine().isPresent()) {
-            extractTablesFromSelect(selectStatement.getCombine().get().getSelectStatement());
+            CombineSegment combineSegment = selectStatement.getCombine().get();
+            extractTablesFromSelect(combineSegment.getLeft());
+            extractTablesFromSelect(combineSegment.getRight());
         }
     }
     
@@ -326,9 +328,9 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewritten from sql statement.
+     * Extract table that should be rewritten from SQL statement.
      *
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      */
     public void extractTablesFromSQLStatement(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
