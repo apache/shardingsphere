@@ -85,6 +85,8 @@ We deeply appreciate [community contributors](https://shardingsphere.apache.org/
 
 :link: [Twitter](https://twitter.com/ShardingSphere). Best for: keeping up to date on everything ShardingSphere.
 
+:link: [LinkedIn](https://www.linkedin.com/showcase/apache-shardingsphere/e). Best for: professional networking and career development with other ShardingSphere contributors.
+
 ##
 
 ### STATUS👀
