@@ -129,9 +129,9 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
             return false;
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClassName());
-        JobConfigurationPOJO jobConfigurationPOJO = convertJobConfiguration(jobConfig);
-        jobConfigurationPOJO.setDisabled(true);
-        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigurationPOJO));
+        JobConfigurationPOJO jobConfigPOJO = convertJobConfiguration(jobConfig);
+        jobConfigPOJO.setDisabled(true);
+        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
         return true;
     }
     

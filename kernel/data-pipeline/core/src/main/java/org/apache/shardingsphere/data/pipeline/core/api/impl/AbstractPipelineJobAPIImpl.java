@@ -113,7 +113,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected abstract YamlPipelineJobConfiguration swapToYamlJobConfiguration(PipelineJobConfiguration jobConfig);
     
-    protected abstract PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
+    protected abstract PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO) throws PipelineJobNotFoundException;
     
     @Override
     public void startDisabledJob(final String jobId) {
@@ -150,7 +150,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
     
-    protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
+    protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) throws PipelineJobNotFoundException {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineJobNotFoundException(jobId));
         return result;
