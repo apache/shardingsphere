@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -51,9 +52,7 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     private void checkToBeAlteredRules(final String databaseName, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> currentMaskTableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedMaskTableNames = getToBeAlteredMaskTableNames(sqlStatement).stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
-        if (!notExistedMaskTableNames.isEmpty()) {
-            throw new MissingRequiredRuleException("Mask", databaseName, notExistedMaskTableNames);
-        }
+        ShardingSpherePreconditions.checkState(notExistedMaskTableNames.isEmpty(), () -> new MissingRequiredRuleException("Mask", databaseName, notExistedMaskTableNames));
     }
     
     private Collection<String> getToBeAlteredMaskTableNames(final AlterMaskRuleStatement sqlStatement) {
@@ -73,9 +72,8 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     }
     
     private void dropRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
-        for (MaskTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
-            currentRuleConfig.getTables().removeIf(tableRule -> tableRule.getName().equals(each.getName()));
-        }
+        Collection<String> toBeAlteredRuleName = toBeAlteredRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
+        currentRuleConfig.getTables().removeIf(each -> toBeAlteredRuleName.contains(each.getName()));
     }
     
     private void addRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeAlteredRuleConfig) {
