@@ -95,7 +95,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     public void assertUpdate() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
@@ -157,7 +157,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     public void assertUpdateWithIfNotExistsStatement() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order_item_input", Collections.singletonList("logic_ds"));
         autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("test_product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
@@ -170,7 +170,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         tableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, Arrays.asList(autoTableRuleSegment, tableRuleSegment));
         updater.checkSQLStatement(database, statementWithIfNotExists, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfigWithIfNotExists = updater.buildToBeCreatedRuleConfiguration(statement);
+        ShardingRuleConfiguration toBeCreatedRuleConfigWithIfNotExists = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfigWithIfNotExists);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();

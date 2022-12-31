@@ -60,12 +60,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -104,6 +106,12 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     private void resetConnectionIdGenerator() {
         Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         mysqlFrontendEngine = new MySQLFrontendEngine();
+    }
+    
+    @Test
+    public void assertInitChannel() {
+        mysqlFrontendEngine.initChannel(channel);
+        verify(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).set(any(AtomicInteger.class));
     }
     
     @Test

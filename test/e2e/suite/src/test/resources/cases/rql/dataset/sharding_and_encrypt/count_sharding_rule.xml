@@ -21,7 +21,7 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="sharding_table| sharding_and_encrypt| 6" />
-    <row values="sharding_table_reference| sharding_and_encrypt| 1" />
-    <row values="broadcast_table| sharding_and_encrypt| 0" />
+    <row values="sharding_table| sharding_and_encrypt| 8" />
+    <row values="sharding_table_reference| sharding_and_encrypt| 2" />
+    <row values="broadcast_table| sharding_and_encrypt| 2" />
 </dataset>

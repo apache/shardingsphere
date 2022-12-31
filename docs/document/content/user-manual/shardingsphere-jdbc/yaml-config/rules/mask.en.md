@@ -32,7 +32,7 @@ Please refer to [Built-in Mask Algorithm List](/en/user-manual/common-config/bui
 ## Procedure
 
 1. Configure data masking rules in the YAML file, including data sources, mask rules, global attributes, and other configuration items.
-2. Using the createDataSource of calling the YamlShardingSphereDataSourceFactory object to create ShardingSphereDataSource based on the configuration information in the YAML file.
+2. Using the `createDataSource` of calling the YamlShardingSphereDataSourceFactory object to create `ShardingSphereDataSource` based on the configuration information in the YAML file.
 
 ## Sample
 
@@ -75,7 +75,7 @@ rules:
         replace-char: '*'
 ```
 
-Read the YAML configuration to create a data source according to the createDataSource method of YamlShardingSphereDataSourceFactory.
+Read the YAML configuration to create a data source according to the `createDataSource` method of `YamlShardingSphereDataSourceFactory`.
 
 ```java
 YamlShardingSphereDataSourceFactory.createDataSource(getFile());

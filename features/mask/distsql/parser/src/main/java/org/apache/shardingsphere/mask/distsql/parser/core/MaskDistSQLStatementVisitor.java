@@ -20,19 +20,30 @@ package org.apache.shardingsphere.mask.distsql.parser.core;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlterMaskRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.CreateMaskRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.DropMaskRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.MaskRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.CountMaskRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
+import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.statement.CountMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.parser.statement.CreateMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -44,6 +55,27 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     @Override
     public ASTNode visitCreateMaskRule(final CreateMaskRuleContext ctx) {
         return new CreateMaskRuleStatement(null != ctx.ifNotExists(), ctx.maskRuleDefinition().stream().map(each -> (MaskRuleSegment) visit(each)).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitAlterMaskRule(final AlterMaskRuleContext ctx) {
+        return new AlterMaskRuleStatement(ctx.maskRuleDefinition().stream().map(each -> (MaskRuleSegment) visit(each)).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitDropMaskRule(final DropMaskRuleContext ctx) {
+        return new DropMaskRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitShowMaskRules(final ShowMaskRulesContext ctx) {
+        return new ShowMaskRulesStatement(null == ctx.RULE() ? null : getIdentifierValue(ctx.ruleName()),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+    }
+    
+    @Override
+    public ASTNode visitCountMaskRule(final CountMaskRuleContext ctx) {
+        return new CountMaskRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
     }
     
     @Override
@@ -74,5 +106,10 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
+    }
+
+    @Override
+    public ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
 }

@@ -95,7 +95,15 @@ weight = 9
 
 ### 替换脱敏算法
 
-TODO
+#### TELEPHONE_RANDOM_REPLACE 脱敏算法
+
+类型：TELEPHONE_RANDOM_REPLACE
+
+可配置属性：
+
+| *名称*         | *数据类型* | *说明*         |
+|----------------|----------|----------------|
+| network-number | String   | ⽹号（以,分割输入）|
 
 ## 操作步骤
 1. 在脱敏规则中配置脱敏算法；

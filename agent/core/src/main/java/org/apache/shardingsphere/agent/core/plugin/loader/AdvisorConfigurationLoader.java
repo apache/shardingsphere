@@ -51,9 +51,9 @@ public final class AdvisorConfigurationLoader {
      */
     public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
-        AgentClassLoader.init(pluginJars);
+        AgentClassLoader classLoader = new AgentClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
         for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getAdvisorsResourceStream(each, isEnhancedForProxy);
+            InputStream advisorsResourceStream = getAdvisorsResourceStream(classLoader, each, isEnhancedForProxy);
             if (null == advisorsResourceStream) {
                 LOGGER.error("No configuration of advisor for type `{}`", each);
                 continue;
@@ -64,9 +64,9 @@ public final class AdvisorConfigurationLoader {
         return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
     }
     
-    private static InputStream getAdvisorsResourceStream(final String type, final boolean isEnhancedForProxy) {
-        InputStream result = AgentClassLoader.getClassLoader().getResourceAsStream(getAdvisorsResourceFile(type, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml"));
-        return null == result ? AgentClassLoader.getClassLoader().getResourceAsStream(getAdvisorsResourceFile(type, "advisors.yaml")) : result;
+    private static InputStream getAdvisorsResourceStream(final ClassLoader classLoader, final String type, final boolean isEnhancedForProxy) {
+        InputStream result = classLoader.getResourceAsStream(getAdvisorsResourceFile(type, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml"));
+        return null == result ? classLoader.getResourceAsStream(getAdvisorsResourceFile(type, "advisors.yaml")) : result;
     }
     
     private static String getAdvisorsResourceFile(final String type, final String fileName) {

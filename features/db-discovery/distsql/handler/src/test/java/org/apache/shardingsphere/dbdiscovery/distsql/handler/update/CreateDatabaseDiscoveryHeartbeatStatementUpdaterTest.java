@@ -64,8 +64,8 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     public void assertUpdate() {
         DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_1", createProperties("key_1", "value_1"));
         DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_2", createProperties("key_2", "value_2"));
-        DatabaseDiscoveryRuleConfiguration ruleConfig = updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)));
         DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        DatabaseDiscoveryRuleConfiguration ruleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new CreateDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)));
         updater.updateCurrentRuleConfiguration(currentConfig, ruleConfig);
         assertThat(currentConfig.getDiscoveryHeartbeats().size(), is(2));
         assertThat(currentConfig.getDiscoveryHeartbeats().get("heartbeat_1").getProps(), is(createProperties("key_1", "value_1")));

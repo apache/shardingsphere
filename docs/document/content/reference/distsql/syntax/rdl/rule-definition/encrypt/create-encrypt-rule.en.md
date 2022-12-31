@@ -5,7 +5,7 @@ weight = 2
 
 ## Description
 
-The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite splitting rule.
+The `CREATE ENCRYPT RULE` syntax is used to create a encrypt rule.
 
 ### Syntax
 
@@ -108,7 +108,7 @@ COLUMNS(
 ), QUERY_WITH_CIPHER_COLUMN=FALSE);
 ```
 
-### Reserved word
+### Reserved words
 
 `CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `PLAIN`, `QUERY_WITH_CIPHER_COLUMN`, `TYPE`, `TRUE`, `FALSE`
 

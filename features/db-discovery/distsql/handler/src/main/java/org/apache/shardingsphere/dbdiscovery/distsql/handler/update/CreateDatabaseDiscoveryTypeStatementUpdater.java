@@ -71,7 +71,7 @@ public final class CreateDatabaseDiscoveryTypeStatementUpdater implements RuleDe
     }
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDatabaseDiscoveryTypeStatement sqlStatement) {
+    public RuleConfiguration buildToBeCreatedRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final CreateDatabaseDiscoveryTypeStatement sqlStatement) {
         return DatabaseDiscoveryRuleStatementConverter.convertDiscoveryProviderAlgorithm(sqlStatement.getProviders());
     }
     

@@ -47,7 +47,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
+    public RuleConfiguration buildToBeCreatedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
         result.setDefaultShadowAlgorithmName(DEFAULT_ALGORITHM_NAME);

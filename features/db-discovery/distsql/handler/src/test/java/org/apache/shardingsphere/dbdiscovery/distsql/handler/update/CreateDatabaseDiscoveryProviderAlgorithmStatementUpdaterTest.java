@@ -21,10 +21,10 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,9 +82,9 @@ public final class CreateDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest 
         Collection<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryTypeStatement(algorithmSegments), null);
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig =
-                (DatabaseDiscoveryRuleConfiguration) updater.buildToBeCreatedRuleConfiguration(new CreateDatabaseDiscoveryTypeStatement(algorithmSegments));
         DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig =
+                (DatabaseDiscoveryRuleConfiguration) updater.buildToBeCreatedRuleConfiguration(currentConfig, new CreateDatabaseDiscoveryTypeStatement(algorithmSegments));
         updater.updateCurrentRuleConfiguration(currentConfig, databaseDiscoveryRuleConfig);
         assertThat(currentConfig.getDiscoveryTypes().size(), is(1));
         assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));

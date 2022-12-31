@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Create rule definition updater.
- * 
+ *
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
@@ -30,15 +30,16 @@ public interface RuleDefinitionCreateUpdater<T extends SQLStatement, R extends R
     
     /**
      * Build to be created rule configuration.
-     * 
+     *
+     * @param currentRuleConfig current rule configuration to be updated
      * @param sqlStatement SQL statement
      * @return built to be created rule configuration
      */
-    RuleConfiguration buildToBeCreatedRuleConfiguration(T sqlStatement);
+    RuleConfiguration buildToBeCreatedRuleConfiguration(R currentRuleConfig, T sqlStatement);
     
     /**
      * Update current rule configuration.
-     * 
+     *
      * @param currentRuleConfig current rule configuration to be updated
      * @param toBeCreatedRuleConfig to be created rule configuration
      */
