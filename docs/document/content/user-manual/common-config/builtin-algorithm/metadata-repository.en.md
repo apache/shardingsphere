@@ -19,7 +19,7 @@ Attributes:
 
 | *Name*   | *Type* | *Description*                                              | *Default Value*                                                         |
 |----------|--------|------------------------------------------------------------|-------------------------------------------------------------------------|
-| provider | String | Type for metadata persist, the optional value is H2, MYSQL | H2                                                                      |
+| provider | String | Type for metadata persist, the optional value is H2, MySQL | H2                                                                      |
 | jdbc_url | String | JDBC URL                                                   | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
 | username | String | username                                                   | sa                                                                      |
 | password | String | password                                                   |                                                                         |
