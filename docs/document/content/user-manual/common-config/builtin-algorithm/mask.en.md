@@ -95,6 +95,16 @@ Attributes:
 
 ### Replace Data Masking Algorithm
 
+#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE Data Masking Algorithm
+
+Type: PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*                      | *DataType* | *Description*                                             |
+|-----------------------------|--------|-----------------------------------------------------------|
+| alpha-two-country-area-code | String | alpha two country area code (Optional, default value: CN) |
+
 #### TELEPHONE_RANDOM_REPLACE Data Masking Algorithm
 
 Type: TELEPHONE_RANDOM_REPLACE
@@ -104,16 +114,6 @@ Attributes:
 | *Name*          | *DataType* | *Description*                         |
 |-----------------|--------|---------------------------------------|
 | network-numbers | String | Network numbers (separate with comma) |
-
-#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE Data Masking Algorithm
-
-Type: PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
-
-Attributes:
-
-| *Name* | *DataType* | *Description*                    |
-|----------------|--------|----------------------------------------|
-| area | String | area (optional,default:CN) |
 
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.

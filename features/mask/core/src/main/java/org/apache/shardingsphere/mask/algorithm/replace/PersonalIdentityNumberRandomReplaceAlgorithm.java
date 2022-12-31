@@ -25,15 +25,13 @@ import java.util.Properties;
 import java.util.Random;
 
 /**
- * Personal identity number random replace.
+ * Personal identity number random replace algorithm.
  */
 public final class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
-    private static final String AREA = "area";
+    private static final String ALPHA_TWO_COUNTRY_AREA_CODE = "alpha-two-country-area-code";
     
-    private String area;
-    
-    private final Random random = new Random();
+    private String alphaTwoCountryAreaCode;
     
     @Getter
     private Properties props;
@@ -41,7 +39,7 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskA
     @Override
     public void init(final Properties props) {
         this.props = props;
-        this.area = props.getProperty(AREA, "CN");
+        this.alphaTwoCountryAreaCode = props.getProperty(ALPHA_TWO_COUNTRY_AREA_CODE, "CN");
     }
     
     @Override
@@ -50,17 +48,14 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskA
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
-        switch (area) {
-            case "CN":
-                return randomReplaceForCN(result);
-            default:
+        if ("CN".equals(alphaTwoCountryAreaCode)) {
+            return randomReplaceForChinesePersonalIdentityNumber(result);
         }
         return result;
     }
     
-    private String randomReplaceForCN(final String result) {
-        int length = result.length();
-        switch (length) {
+    private String randomReplaceForChinesePersonalIdentityNumber(final String result) {
+        switch (result.length()) {
             case 15:
                 return randomReplaceNumber(result, 6, 12);
             case 18:
@@ -72,6 +67,7 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskA
     
     private String randomReplaceNumber(final String result, final int from, final int to) {
         char[] chars = result.toCharArray();
+        Random random = new Random();
         for (int i = from; i < to; i++) {
             chars[i] = Character.forDigit(random.nextInt(10), 10);
         }
