@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.agent.core.plugin.loader;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -51,26 +50,25 @@ public final class AdvisorConfigurationLoader {
      */
     public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
-        AgentClassLoader classLoader = new AgentClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
+        AgentClassLoader agentClassLoader = new AgentClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
         for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getAdvisorsResourceStream(classLoader, each, isEnhancedForProxy);
+            InputStream advisorsResourceStream = getAdvisorsResourceStream(agentClassLoader, each, isEnhancedForProxy);
             if (null == advisorsResourceStream) {
-                LOGGER.error("No configuration of advisor for type `{}`", each);
-                continue;
+                LOGGER.info("No configuration of advisor for type `{}`.", each);
+            } else {
+                mergeAdvisorConfigurations(result, YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
             }
-            Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each);
-            mergeAdvisorConfigurations(result, advisorConfigs);
         }
-        return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
+        return result;
     }
     
-    private static InputStream getAdvisorsResourceStream(final ClassLoader classLoader, final String type, final boolean isEnhancedForProxy) {
-        InputStream result = classLoader.getResourceAsStream(getAdvisorsResourceFile(type, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml"));
-        return null == result ? classLoader.getResourceAsStream(getAdvisorsResourceFile(type, "advisors.yaml")) : result;
+    private static InputStream getAdvisorsResourceStream(final ClassLoader agentClassLoader, final String pluginType, final boolean isEnhancedForProxy) {
+        InputStream accurateResourceStream = getAdvisorsResourceStream(agentClassLoader, pluginType, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml");
+        return null == accurateResourceStream ? getAdvisorsResourceStream(agentClassLoader, pluginType, "advisors.yaml") : accurateResourceStream;
     }
     
-    private static String getAdvisorsResourceFile(final String type, final String fileName) {
-        return String.join("/", type.toLowerCase(), fileName);
+    private static InputStream getAdvisorsResourceStream(final ClassLoader agentClassLoader, final String pluginType, final String fileName) {
+        return agentClassLoader.getResourceAsStream(String.join("/", pluginType.toLowerCase(), fileName));
     }
     
     private static void mergeAdvisorConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {

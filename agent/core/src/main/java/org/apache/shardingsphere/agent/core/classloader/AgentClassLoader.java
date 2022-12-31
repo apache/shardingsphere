@@ -120,7 +120,7 @@ public final class AgentClassLoader extends ClassLoader {
         try {
             return Optional.of(new URL(String.format("jar:file:%s!/%s", pluginJar.getSourcePath().getAbsolutePath(), name)));
         } catch (final MalformedURLException ignored) {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }
