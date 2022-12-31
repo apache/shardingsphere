@@ -29,6 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementPars
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.CountMaskRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
@@ -105,5 +106,10 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
+    }
+
+    @Override
+    public ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
 }
