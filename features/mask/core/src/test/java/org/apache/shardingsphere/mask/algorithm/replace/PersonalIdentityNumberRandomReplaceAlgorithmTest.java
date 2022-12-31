@@ -33,7 +33,7 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new PersonalIdentityNumberRandomReplaceAlgorithm();
-        maskAlgorithm.init(createProperties("CN"));
+        maskAlgorithm.init(createProperties());
     }
     
     @Test
@@ -45,9 +45,9 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask(""), is(""));
     }
     
-    private Properties createProperties(final String area) {
+    private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty("area", area);
+        result.setProperty("alpha-two-country-area-code", "CN");
         return result;
     }
 }
