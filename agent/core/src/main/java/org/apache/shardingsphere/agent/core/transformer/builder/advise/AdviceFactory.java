@@ -42,8 +42,8 @@ public final class AdviceFactory {
      * @return got advance
      */
     public AgentAdvice getAdvice(final String adviceClassName) {
-        String adviceInstanceCacheKey = String.format("%s_%s@%s", adviceClassName, classLoaderContext.getAppClassLoader().getClass().getName(),
-                Integer.toHexString(classLoaderContext.getAppClassLoader().hashCode()));
+        String adviceInstanceCacheKey = String.format("%s_%s@%s", adviceClassName,
+                classLoaderContext.getAppClassLoader().getClass().getName(), Integer.toHexString(classLoaderContext.getAppClassLoader().hashCode()));
         return CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, key -> createAdvice(adviceClassName));
     }
     
