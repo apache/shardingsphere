@@ -31,7 +31,7 @@ import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.transformer.builder.MethodAdvisorBuilder;
 import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.api.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
