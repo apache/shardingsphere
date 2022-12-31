@@ -39,7 +39,7 @@ public final class TelephoneRandomReplaceAlgorithmTest {
     }
     
     @Test(expected = MaskAlgorithmInitializationException.class)
-    public void assertKeyNotNumber() {
+    public void assertInitWhenConfigNotNumberProps() {
         maskAlgorithm.init(createProperties("130, x130, 155,1702"));
     }
     
@@ -55,9 +55,9 @@ public final class TelephoneRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("13012345678"), not("13012345678"));
     }
     
-    private Properties createProperties(final String networkNumber) {
+    private Properties createProperties(final String networkNumbers) {
         Properties result = new Properties();
-        result.setProperty("network-number", networkNumber);
+        result.setProperty("network-numbers", networkNumbers);
         return result;
     }
 }
