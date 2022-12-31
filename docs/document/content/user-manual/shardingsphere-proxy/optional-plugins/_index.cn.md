@@ -47,6 +47,7 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-readwrite-splitting-core`，读写分离核心
 - `org.apache.shardingsphere:shardingsphere-db-discovery-core`，高可用核心
 - `org.apache.shardingsphere:shardingsphere-encrypt-core`，数据加密核心
+- `org.apache.shardingsphere:shardingsphere-mask-core`，数据脱敏核心
 - `org.apache.shardingsphere:shardingsphere-shadow-core`，影子库核心
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`，联邦查询执行器核心
 - `org.apache.shardingsphere:shardingsphere-sql-federation-executor-advanced`，联邦查询执行器的 `advanced` 实现
@@ -57,6 +58,8 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 
 下以 `groupId:artifactId` 的表现形式列出所有的可选插件。
 
+- 单机模式配置信息持久化定义
+  - `org.apache.shardingsphere:shardingsphere-standalone-mode-repository-jdbc-mysql`，基于 MySQL 的持久化
 - 集群模式配置信息持久化定义
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-nacos`，基于 Nacos 的持久化
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-consul`，基于 Consul 的持久化

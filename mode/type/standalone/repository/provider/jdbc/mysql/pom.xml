@@ -27,10 +27,6 @@
     
     <artifactId>shardingsphere-standalone-mode-repository-jdbc-mysql</artifactId>
     
-    <properties>
-        <testcontainers.version>1.17.6</testcontainers.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
