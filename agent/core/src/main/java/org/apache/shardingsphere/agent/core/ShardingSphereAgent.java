@@ -31,7 +31,7 @@ import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.transformer.AgentJunction;
 import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
