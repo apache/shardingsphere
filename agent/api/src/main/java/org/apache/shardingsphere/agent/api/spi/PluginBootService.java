@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi;
+package org.apache.shardingsphere.agent.api.spi;
 
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.config.PluginConfiguration;
 
 /**
  * Plugin boot service that the lifecycle is from the agent start to shutdown.

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.autoconfigure.OpenTelemetrySdkAutoConfiguration;
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.api.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.spi.PluginBootService;
 
 public class OpenTelemetryTracingPluginBootService implements PluginBootService {
     

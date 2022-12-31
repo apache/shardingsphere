@@ -22,14 +22,14 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.MetaDataInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.ProxyInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.api.spi.PluginBootService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

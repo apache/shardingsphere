@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.api.spi.PluginBootService;
 
 import java.util.Collection;
 import java.util.Optional;
