@@ -48,11 +48,11 @@ databaseName ::=
 - Query mask rules for specified database
 
 ```sql
-SHOW MASK RULES FROM test1;
+SHOW MASK RULES FROM mask_db;
 ```
 
 ```sql
-mysql> SHOW MASK RULES FROM test1;
+mysql> SHOW MASK RULES FROM mask_db;
 +---------+----------+------------------+--------------------------------+
 | table   | column   | algorithm_type   | algorithm_props                |
 +---------+----------+------------------+--------------------------------+
@@ -86,11 +86,11 @@ mysql> SHOW MASK RULES;
 - Query specified mask rule for specified database
 
 ```sql
-SHOW MASK RULE t_mask FROM test1;
+SHOW MASK RULE t_mask FROM mask_db;
 ```
 
 ```sql
-mysql> SHOW MASK RULE t_mask FROM test1;
+mysql> SHOW MASK RULE t_mask FROM mask_db;
 +--------+--------------+------------------+--------------------------------+
 | table  | logic_column | mask_algorithm   | props                          |
 +--------+--------------+------------------+--------------------------------+

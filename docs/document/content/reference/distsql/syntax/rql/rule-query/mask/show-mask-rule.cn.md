@@ -45,11 +45,11 @@ databaseName ::=
 - 查询指定逻辑库中的所有数据脱敏规则
 
 ```sql
-SHOW MASK RULES FROM test1;
+SHOW MASK RULES FROM mask_db;
 ```
 
 ```sql
-mysql> SHOW MASK RULES FROM test1;
+mysql> SHOW MASK RULES FROM mask_db;
 +---------+----------+------------------+--------------------------------+
 | table   | column   | algorithm_type   | algorithm_props                |
 +---------+----------+------------------+--------------------------------+
@@ -83,11 +83,11 @@ mysql> SHOW MASK RULES;
 - 查询指定逻辑库中的指定数据脱敏算法
 
 ```sql
-SHOW MASK RULE t_mask FROM test1;
+SHOW MASK RULE t_mask FROM mask_db;
 ```
 
 ```sql
-mysql> SHOW MASK RULE t_mask FROM test1;
+mysql> SHOW MASK RULE t_mask FROM mask_db;
 +--------+--------------+------------------+--------------------------------+
 | table  | logic_column | mask_algorithm   | props                          |
 +--------+--------------+------------------+--------------------------------+
