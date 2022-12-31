@@ -39,7 +39,7 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     
     private Collection<String> networkNumbers;
     
-    private Collection<Integer> reverseOrderedNetworkNumbersLengths;
+    private Collection<Integer> reverseOrderedNetworkNumberLengths;
     
     @Getter
     private Properties props;
@@ -48,7 +48,7 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     public void init(final Properties props) {
         this.props = props;
         this.networkNumbers = createNetworkNumbers(props);
-        this.reverseOrderedNetworkNumbersLengths = createReverseOrderedNetworkNumbersLengths(networkNumbers);
+        this.reverseOrderedNetworkNumberLengths = createReverseOrderedNetworkNumberLengths(networkNumbers);
     }
     
     private Collection<String> createNetworkNumbers(final Properties props) {
@@ -65,7 +65,7 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
         }
     }
     
-    private Collection<Integer> createReverseOrderedNetworkNumbersLengths(final Collection<String> networkNumbers) {
+    private Collection<Integer> createReverseOrderedNetworkNumberLengths(final Collection<String> networkNumbers) {
         return networkNumbers.stream().map(String::length).distinct().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
     }
     
@@ -77,7 +77,7 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
         }
         Random random = new Random();
         char[] chars = result.toCharArray();
-        for (Integer each : reverseOrderedNetworkNumbersLengths) {
+        for (Integer each : reverseOrderedNetworkNumberLengths) {
             if (networkNumbers.contains(result.substring(0, each))) {
                 for (int i = each; i < chars.length; i++) {
                     chars[i] = Character.forDigit(random.nextInt(10), 10);
