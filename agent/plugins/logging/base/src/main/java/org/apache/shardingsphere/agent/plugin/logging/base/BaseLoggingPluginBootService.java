@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.logging.base;
 
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 /**
