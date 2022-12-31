@@ -53,7 +53,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     @Override
     public RuleConfiguration buildToBeCreatedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = null;
-        if (sqlStatement.isIfNotExists() && getDuplicatedRuleNames(currentRuleConfig).isEmpty()) {
+        if (getDuplicatedRuleNames(currentRuleConfig).isEmpty()) {
             result = new ShadowRuleConfiguration();
             result.setShadowAlgorithms(buildAlgorithmMap(sqlStatement));
             result.setDefaultShadowAlgorithmName("default_shadow_algorithm");
