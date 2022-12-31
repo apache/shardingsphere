@@ -107,7 +107,7 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));

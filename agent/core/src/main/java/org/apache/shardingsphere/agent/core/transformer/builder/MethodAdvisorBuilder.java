@@ -31,7 +31,7 @@ import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdvi
 import org.apache.shardingsphere.agent.core.plugin.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.transformer.MethodAdvisor;
-import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
 
 import java.util.Collection;
