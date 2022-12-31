@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfigurationRegistryFactory;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPointcutConfiguration;

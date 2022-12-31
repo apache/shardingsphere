@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -125,8 +125,14 @@ public final class DatabaseDiscoveryDataSourceRule {
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>(dataSourceNames);
-        result.put(groupName, actualDataSourceNames);
+        result.put(groupName, getActualDataSourceNames());
+        return result;
+    }
+    
+    private Collection<String> getActualDataSourceNames() {
+        Collection<String> result = new LinkedHashSet<>();
+        result.add(primaryDataSourceName);
+        result.addAll(dataSourceNames);
         return result;
     }
 }

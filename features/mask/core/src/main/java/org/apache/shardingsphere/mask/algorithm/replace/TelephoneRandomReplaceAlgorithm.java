@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -36,11 +35,11 @@ import java.util.stream.Collectors;
  */
 public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
-    private static final String NETWORK_NUMBER = "network-number";
+    private static final String NETWORK_NUMBERS = "network-numbers";
     
     private Collection<String> networkNumbers;
     
-    private List<Integer> networkNumberLength;
+    private Collection<Integer> reverseOrderedNetworkNumberLengths;
     
     @Getter
     private Properties props;
@@ -48,22 +47,26 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     @Override
     public void init(final Properties props) {
         this.props = props;
-        createNetworkNumbers(props);
+        this.networkNumbers = createNetworkNumbers(props);
+        this.reverseOrderedNetworkNumberLengths = createReverseOrderedNetworkNumberLengths(networkNumbers);
     }
     
-    private void createNetworkNumbers(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, NETWORK_NUMBER, getType());
-        networkNumbers = Splitter.on(",").trimResults().splitToStream(props.getProperty(NETWORK_NUMBER)).map(networkNumber -> isNumeric(networkNumber)).collect(Collectors.toSet());
-        networkNumberLength = networkNumbers.stream().map(networkNumber -> String.valueOf(networkNumber).length()).distinct().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+    private Collection<String> createNetworkNumbers(final Properties props) {
+        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, NETWORK_NUMBERS, getType());
+        return Splitter.on(",").trimResults().splitToList(props.getProperty(NETWORK_NUMBERS)).stream().map(this::getNetworkNumber).collect(Collectors.toSet());
     }
     
-    private String isNumeric(final String networkNumber) {
+    private String getNetworkNumber(final String networkNumber) {
         try {
             Integer.parseInt(networkNumber);
             return networkNumber;
-        } catch (NumberFormatException e) {
-            throw new MaskAlgorithmInitializationException(getType(), "network-number can only be numbers and ,");
+        } catch (final NumberFormatException ex) {
+            throw new MaskAlgorithmInitializationException(getType(), String.format("network-number %s can only be integer number.", networkNumber));
         }
+    }
+    
+    private Collection<Integer> createReverseOrderedNetworkNumberLengths(final Collection<String> networkNumbers) {
+        return networkNumbers.stream().map(String::length).distinct().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
     }
     
     @Override
@@ -74,9 +77,9 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
         }
         Random random = new Random();
         char[] chars = result.toCharArray();
-        for (Integer each : networkNumberLength) {
+        for (Integer each : reverseOrderedNetworkNumberLengths) {
             if (networkNumbers.contains(result.substring(0, each))) {
-                for (int i = each; i != -1 && i < chars.length; i++) {
+                for (int i = each; i < chars.length; i++) {
                     chars[i] = Character.forDigit(random.nextInt(10), 10);
                 }
                 break;

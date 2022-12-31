@@ -24,9 +24,11 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public final class StandardPipelineDataSourceConfigurationTest {
     
@@ -52,12 +54,23 @@ public final class StandardPipelineDataSourceConfigurationTest {
         yamlDataSourceConfig.put("password", PASSWORD);
         yamlDataSourceConfig.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         yamlDataSourceConfig.put("minPoolSize", "20");
+        Map<String, Object> backup = new HashMap<>(yamlDataSourceConfig);
         StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
+        assertParameterUnchanged(backup, yamlDataSourceConfig);
         assertGetConfig(actual);
         yamlDataSourceConfig.remove("url");
         yamlDataSourceConfig.put("jdbcUrl", JDBC_URL);
         actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
         assertGetConfig(actual);
+    }
+    
+    private void assertParameterUnchanged(final Map<String, Object> backup, final Map<String, Object> handled) {
+        assertThat(handled.size(), is(backup.size()));
+        for (Entry<String, Object> entry : backup.entrySet()) {
+            Object actual = handled.get(entry.getKey());
+            assertNotNull("value of '" + entry.getKey() + "' doesn't exist", actual);
+            assertThat("value of '" + entry.getKey() + "' doesn't match", actual, is(entry.getValue()));
+        }
     }
     
     private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {

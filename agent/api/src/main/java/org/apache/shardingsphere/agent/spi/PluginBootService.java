@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.spi;
 
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 
 /**
  * Plugin boot service that the lifecycle is from the agent start to shutdown.

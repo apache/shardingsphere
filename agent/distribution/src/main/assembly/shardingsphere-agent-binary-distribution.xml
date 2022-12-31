@@ -65,6 +65,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>../plugins/core/target/lib</directory>
+            <outputDirectory>./lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>../plugins/metrics/target/lib</directory>
             <outputDirectory>./lib</outputDirectory>
             <includes>

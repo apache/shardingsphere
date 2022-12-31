@@ -29,11 +29,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Class loader context.
  */
 @RequiredArgsConstructor
-@Getter
 public final class ClassLoaderContext {
     
     private static final Map<ClassLoader, AgentClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
     
+    @Getter
     private final ClassLoader appClassLoader;
     
     private final Collection<PluginJar> pluginJars;

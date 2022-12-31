@@ -30,5 +30,6 @@
     <modules>
         <module>core</module>
         <module>h2</module>
+        <module>mysql</module>
     </modules>
 </project>
