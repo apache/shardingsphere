@@ -41,13 +41,13 @@ public final class PluginBootServiceManager {
      * Start all services.
      *
      * @param pluginConfigs plugin configuration map
-     * @param classLoader class loader
+     * @param agentClassLoader agent class loader
      * @param isEnhancedForProxy is enhanced for proxy
      */
-    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigs, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
+    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigs, final ClassLoader agentClassLoader, final boolean isEnhancedForProxy) {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(classLoader);
+            Thread.currentThread().setContextClassLoader(agentClassLoader);
             for (Entry<String, PluginConfiguration> entry : pluginConfigs.entrySet()) {
                 PluginBootServiceRegistry.getRegisteredService(entry.getKey()).ifPresent(optional -> {
                     try {

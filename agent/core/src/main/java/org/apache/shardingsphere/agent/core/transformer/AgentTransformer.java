@@ -63,13 +63,14 @@ public final class AgentTransformer implements Transformer {
         }
         ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
         startAllServices(classLoaderContext.getAgentClassLoader());
-        return new MethodAdvisorBuilder(new AdviceFactory(classLoaderContext), advisorConfigs.get(typeDescription.getTypeName()), typeDescription)
-                .build(builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA)));
+        Builder<?> targetAdviceObjectBuilder = builder.defineField(EXTRA_DATA,
+                Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
+        return new MethodAdvisorBuilder(new AdviceFactory(classLoaderContext), advisorConfigs.get(typeDescription.getTypeName()), typeDescription).build(targetAdviceObjectBuilder);
     }
     
-    private void startAllServices(final ClassLoader classLoader) {
+    private void startAllServices(final ClassLoader agentClassLoader) {
         if (STARTED_FLAG.compareAndSet(false, true)) {
-            PluginBootServiceManager.startAllServices(pluginConfigs, classLoader, isEnhancedForProxy);
+            PluginBootServiceManager.startAllServices(pluginConfigs, agentClassLoader, isEnhancedForProxy);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginBootServiceManager.closeAllServices(pluginJars)));
         }
     }
