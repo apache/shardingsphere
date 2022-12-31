@@ -105,6 +105,16 @@ weight = 9
 |-----------------|----------|-------------|
 | network-numbers | String   | ⽹号（以英文逗号分隔） |
 
+#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE 脱敏算法
+
+类型：PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
+
+可配置属性：
+
+| *名称*         | *数据类型* | *说明*         |
+|----------------|----------|----------------|
+| area | String   | 地区（可选，默认：中国）|
+
 ## 操作步骤
 1. 在脱敏规则中配置脱敏算法；
 2. 为脱敏算法指定脱敏算法类型。

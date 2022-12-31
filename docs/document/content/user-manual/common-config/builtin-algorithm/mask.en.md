@@ -105,6 +105,16 @@ Attributes:
 |-----------------|--------|---------------------------------------|
 | network-numbers | String | Network numbers (separate with comma) |
 
+#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE Data Masking Algorithm
+
+Type: PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
+
+Attributes:
+
+| *Name* | *DataType* | *Description*                    |
+|----------------|--------|----------------------------------------|
+| area | String | area (optional,default:CN) |
+
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.
 2. Use relevant algorithm types in maskAlgorithms.
