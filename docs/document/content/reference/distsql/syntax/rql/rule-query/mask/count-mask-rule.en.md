@@ -42,15 +42,15 @@ databaseName ::=
 - Query the number of mask rules for specified database.
 
 ```sql
-COUNT MASK RULE FROM test1;
+COUNT MASK RULE FROM mask_db;
 ```
 
 ```sql
-mysql> COUNT MASK RULE FROM test1;
+mysql> COUNT MASK RULE FROM mask_db;
 +-----------+----------+-------+
 | rule_name | database | count |
 +-----------+----------+-------+
-| mask      | test1    | 3     |
+| mask      | mask_db  | 3     |
 +-----------+----------+-------+
 1 row in set (0.50 sec)
 ```
@@ -66,7 +66,7 @@ mysql> COUNT MASK RULE;
 +-----------+----------+-------+
 | rule_name | database | count |
 +-----------+----------+-------+
-| mask      | test1    | 3     |
+| mask      | mask_db  | 3     |
 +-----------+----------+-------+
 1 row in set (0.50 sec)
 ```
