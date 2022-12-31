@@ -61,11 +61,6 @@ public final class MySQLJDBCRepositoryProvider implements JDBCRepositoryProvider
     
     @Override
     public String getType() {
-        return "MYSQL";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return false;
+        return "MySQL";
     }
 }
