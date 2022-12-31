@@ -22,7 +22,7 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.MetaDataInfoCollector;
@@ -62,13 +62,13 @@ public final class PrometheusPluginBootService implements PluginBootService {
         }
     }
     
-    private void registerCollector(final boolean isJVMInformationCollection, final boolean isEnhancedForProxy) {
+    private void registerCollector(final boolean isCollectJVMInformation, final boolean isEnhancedForProxy) {
         new BuildInfoCollector(isEnhancedForProxy).register();
         if (isEnhancedForProxy) {
             new ProxyInfoCollector().register();
             new MetaDataInfoCollector().register();
         }
-        if (isJVMInformationCollection) {
+        if (isCollectJVMInformation) {
             DefaultExports.initialize();
         }
     }
