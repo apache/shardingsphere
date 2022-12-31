@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.spi;
+package org.apache.shardingsphere.agent.spi;
 
 import org.apache.shardingsphere.agent.api.config.PluginConfiguration;
 

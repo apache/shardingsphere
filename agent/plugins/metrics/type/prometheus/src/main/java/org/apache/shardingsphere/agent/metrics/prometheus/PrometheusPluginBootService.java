@@ -29,7 +29,7 @@ import org.apache.shardingsphere.agent.metrics.prometheus.collector.MetaDataInfo
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.ProxyInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
-import org.apache.shardingsphere.agent.api.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

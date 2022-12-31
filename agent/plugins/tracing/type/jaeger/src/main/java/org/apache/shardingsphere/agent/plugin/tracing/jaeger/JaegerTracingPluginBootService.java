@@ -21,7 +21,7 @@ import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
-import org.apache.shardingsphere.agent.api.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.util.Optional;
 
