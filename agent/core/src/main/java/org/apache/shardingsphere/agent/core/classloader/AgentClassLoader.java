@@ -44,8 +44,8 @@ public final class AgentClassLoader extends ClassLoader {
     
     private final Collection<PluginJar> pluginJars;
     
-    public AgentClassLoader(final ClassLoader classLoader, final Collection<PluginJar> pluginJars) {
-        super(classLoader);
+    public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars) {
+        super(appClassLoader);
         this.pluginJars = pluginJars;
     }
     
@@ -120,7 +120,7 @@ public final class AgentClassLoader extends ClassLoader {
         try {
             return Optional.of(new URL(String.format("jar:file:%s!/%s", pluginJar.getSourcePath().getAbsolutePath(), name)));
         } catch (final MalformedURLException ignored) {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }
