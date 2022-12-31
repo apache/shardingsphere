@@ -172,7 +172,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             boolean isRownumColumn = proj instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) proj).getColumn().getIdentifier().getValue().equalsIgnoreCase("ROWNUM");
             Optional<SelectStatement> subquery = Optional.empty();
             if (getSqlStatement().getFrom() instanceof SubqueryTableSegment) {
-                subquery = Optional.of((OracleSelectStatement) ((SubqueryTableSegment) getSqlStatement().getFrom()).getSubquery().getSelect());
+                subquery = Optional.of(((SubqueryTableSegment) getSqlStatement().getFrom()).getSubquery().getSelect());
             }
             if (isRownumColumn && subquery.isPresent()) {
                 ColumnProjectionSegment rowNumSegment = (ColumnProjectionSegment) proj;
