@@ -32,18 +32,18 @@ databaseName ::=
 
 | 列                | 说明      |
 |------------------|-----------|
- |  broadcast_table | 广播表名称 |
+|  broadcast_table | 广播表名称 |
 
 ### 示例
 
 - 查询指定数据库中具有广播规则的表
 
 ```sql
-SHOW BROADCAST TABLE RULES FROM test1;
+SHOW BROADCAST TABLE RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW BROADCAST TABLE RULES FROM test1;
+mysql> SHOW BROADCAST TABLE RULES FROM sharding_db;
 +-----------------+
 | broadcast_table |
 +-----------------+

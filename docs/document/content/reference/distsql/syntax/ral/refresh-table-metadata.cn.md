@@ -38,7 +38,7 @@ storageUnitName ::=
 - 刷新指定存储单于中指定表的元数据
 
 ```sql
-REFRESH TABLE METADATA t_order FROM STORAGE UNIT su_1;
+REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1;
 ```
 
 - 刷新指定表的元数据

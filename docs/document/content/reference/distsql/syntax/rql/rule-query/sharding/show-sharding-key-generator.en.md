@@ -41,11 +41,11 @@ databaseName ::=
 - Query the sharding key generators of the specified logical database
 
 ```sql
-SHOW SHARDING KEY GENERATORS FROM test1;
+SHOW SHARDING KEY GENERATORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING KEY GENERATORS FROM test1;
+mysql> SHOW SHARDING KEY GENERATORS FROM sharding_db;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+

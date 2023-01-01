@@ -41,11 +41,11 @@ databaseName ::=
 - Query sharding table nodes for the specified logical database
 
 ```sql
-SHOW SHARDING TABLE NODES FROM test1;
+SHOW SHARDING TABLE NODES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE NODES FROM test1;
+mysql> SHOW SHARDING TABLE NODES FROM sharding_db;
 +--------------+------------------------------------------------------------------------------------------------------------+
 | name         | nodes                                                                                                      |
 +--------------+------------------------------------------------------------------------------------------------------------+

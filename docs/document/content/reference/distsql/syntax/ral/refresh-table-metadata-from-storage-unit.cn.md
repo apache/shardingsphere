@@ -37,7 +37,7 @@ schemaName ::=
 - 刷新指定存储单元中指定 `SCHEMA` 中表的元数据
 
 ```sql
-REFRESH TABLE METADATA FROM STORAGE UNIT su_1 SCHEMA db_schema;
+REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema;
 ```
 
 ### 保留字

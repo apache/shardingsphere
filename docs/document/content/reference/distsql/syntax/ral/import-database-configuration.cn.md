@@ -38,13 +38,13 @@ filePath ::=
 - 将 `YAML` 中的配置导入到指定逻辑库中
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml" TO test1;
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml" TO sharding_db;
 ```
 
 - 将 `YAML` 中的配置导入到当前逻辑库中
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml";
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 ```
 
 ### 保留字

@@ -41,11 +41,11 @@ databaseName ::=
 - 查询指定逻辑库中的分片审计器
 
 ```sql
-SHOW SHARDING AUDITORS FROM test1;
+SHOW SHARDING AUDITORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING AUDITORS FROM test1;
+mysql> SHOW SHARDING AUDITORS FROM sharding_db;
 +-------------------------------+-------------------------+-------+
 | name                          | type                    | props |
 +-------------------------------+-------------------------+-------+

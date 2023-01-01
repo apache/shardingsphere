@@ -60,7 +60,7 @@ value ::=
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-    STORAGE_UNITS(su_0, su_1, su_2),
+    STORAGE_UNITS(ds_0, ds_1, ds_2),
     TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
     HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
@@ -70,7 +70,7 @@ CREATE DB_DISCOVERY RULE db_discovery_group_0 (
 
 ```sql
 CREATE DB_DISCOVERY RULE IF NOT EXISTS db_discovery_group_0 (
-    STORAGE_UNITS(su_0, su_1, su_2),
+    STORAGE_UNITS(ds_0, ds_1, ds_2),
     TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
     HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );

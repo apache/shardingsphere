@@ -44,11 +44,11 @@ databaseName ::=
 - 查询指定逻辑库中使用指定分片算法的分片规则
 
 ```sql
-SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 +-------+--------------+
 | type  | name         |
 +-------+--------------+

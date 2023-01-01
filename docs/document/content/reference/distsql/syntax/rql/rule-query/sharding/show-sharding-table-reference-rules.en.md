@@ -40,11 +40,11 @@ databaseName ::=
 - Query sharding table reference rules for the specified logical database
 
 ```sql
-SHOW SHARDING TABLE REFERENCE RULES FROM test1;
+SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE REFERENCE RULES FROM test1;
+mysql> SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
 +-------+--------------------------+
 | name  | sharding_table_reference |
 +-------+--------------------------+

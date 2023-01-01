@@ -38,7 +38,7 @@ databaseName ::=
 - 为指定数据库删除多个数据库发现类型
  
 ```sql
-DROP DB_DISCOVERY TYPE group_0_mysql_mgr, group_1_mysql_mgr FROM test1;
+DROP DB_DISCOVERY TYPE group_0_mysql_mgr, group_1_mysql_mgr FROM discovery_db;
 ```
 
 - 为当前数据库删除单个数据库发现类型

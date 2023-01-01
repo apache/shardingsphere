@@ -42,11 +42,11 @@ databaseName ::=
 - Query sharding auditors for the specified logical database
 
 ```sql
-SHOW SHARDING AUDITORS FROM test1;
+SHOW SHARDING AUDITORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING AUDITORS FROM test1;
+mysql> SHOW SHARDING AUDITORS FROM sharding_db;
 +-------------------------------+-------------------------+-------+
 | name                          | type                    | props |
 +-------------------------------+-------------------------+-------+

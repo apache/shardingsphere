@@ -33,7 +33,7 @@ databaseName ::=
 - 为指定数据库删除默认影子库压测算法
 
 ```sql
-DROP DEFAULT SHADOW ALGORITHM FROM test1;
+DROP DEFAULT SHADOW ALGORITHM FROM shadow_db;
 ```
 
 - 为当前数据库删除默认影子库压测算法

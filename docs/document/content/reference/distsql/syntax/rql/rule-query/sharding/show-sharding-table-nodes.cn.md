@@ -40,11 +40,11 @@ databaseName ::=
 - 查询指定逻辑库中的分片表的节点分布
 
 ```sql
-SHOW SHARDING TABLE NODES FROM test1;
+SHOW SHARDING TABLE NODES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE NODES FROM test1;
+mysql> SHOW SHARDING TABLE NODES FROM sharding_db;
 +--------------+------------------------------------------------------------------------------------------------------------+
 | name         | nodes                                                                                                      |
 +--------------+------------------------------------------------------------------------------------------------------------+

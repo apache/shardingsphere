@@ -36,7 +36,7 @@ databaseName ::=
 - Drop sharding key generator for specified database.
 
 ```sql
-DROP SHARDING KEY GENERATOR t_order_snowflake FROM test1;
+DROP SHARDING KEY GENERATOR t_order_snowflake FROM sharding_db;
 ```
 
 - Drop sharding key generator for current database.

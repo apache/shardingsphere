@@ -38,25 +38,25 @@ storageUnitName ::=
 - Drop a storage unit
 
 ```sql
-UNREGISTER STORAGE UNIT su_0;
+UNREGISTER STORAGE UNIT ds_0;
 ```
 
 - Drop multiple storage units
 
 ```sql
-UNREGISTER STORAGE UNIT su_1, su_2;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
 - Ignore single table rule remove storage unit
 
 ```sql
-UNREGISTER STORAGE UNIT su_1 IGNORE SINGLE TABLES;
+UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;
 ```
 
 - Drop the storage unit if it exists
 
 ```sql
-UNREGISTER STORAGE UNIT IF EXISTS su_2;
+UNREGISTER STORAGE UNIT IF EXISTS ds_0;
 ```
 
 ### Reserved word

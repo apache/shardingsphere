@@ -13,7 +13,10 @@ The `SHOW ENCRYPT RULES` syntax is used to query encrypt rules for specified dat
 {{% tab name="Grammar" %}}
 ```sql
 ShowEncryptRule::=
-  'SHOW' 'ENCRYPT' 'RULES' ('FROM' databaseName)?
+  'SHOW' 'ENCRYPT' ('RULES' | 'TABLE' 'RULE' ruleName) ('FROM' databaseName)?
+
+ruleName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -54,11 +57,11 @@ databaseName ::=
 - Query encrypt rules for specified database.
 
 ```sql
-SHOW ENCRYPT RULES FROM test1;
+SHOW ENCRYPT RULES FROM encrypt_db;
 ```
 
 ```sql
-mysql> SHOW ENCRYPT RULES FROM test1;
+mysql> SHOW ENCRYPT RULES FROM encrypt_db;
 +-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
 | table     | logic_column | cipher_column | plain_column | assisted_query_column | like_query_column | encryptor_type | encryptor_props         | assisted_query_type | assisted_query_props | like_query_type | like_query_props | query_with_cipher_column |
 +-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
@@ -85,9 +88,41 @@ mysql> SHOW ENCRYPT RULES;
 2 rows in set (0.00 sec)
 ```
 
+- Query specified encrypt rule in specified database.
+
+```sql
+SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db;
+```
+
+```sql
+mysql> SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db;
++-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
+| table     | logic_column | cipher_column | plain_column | assisted_query_column | like_query_column | encryptor_type | encryptor_props         | assisted_query_type | assisted_query_props | like_query_type | like_query_props | query_with_cipher_column |
++-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
+| t_encrypt | pwd          | pwd_cipher    | pwd_plain    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  | true                     |
++-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
+1 row in set (0.01 sec)
+```
+
+- Query specified encrypt rule in current database.
+
+```sql
+SHOW ENCRYPT TABLE RULE t_encrypt;
+```
+
+```sql
+mysql> SHOW ENCRYPT TABLE RULE t_encrypt;
++-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
+| table     | logic_column | cipher_column | plain_column | assisted_query_column | like_query_column | encryptor_type | encryptor_props         | assisted_query_type | assisted_query_props | like_query_type | like_query_props | query_with_cipher_column |
++-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
+| t_encrypt | pwd          | pwd_cipher    | pwd_plain    |                       |                   | AES            | aes-key-value=123456abc |                     |                      |                 |                  | true                     |
++-----------+--------------+---------------+--------------+-----------------------+-------------------+----------------+-------------------------+---------------------+----------------------+-----------------+------------------+--------------------------+
+1 row in set (0.01 sec)
+```
+
 ### Reserved word
 
-`SHOW`, `ENCRYPT`, `RULES`, `FROM`
+`SHOW`, `ENCRYPT`, `TABLE`, `RULE`, `RULES`, `FROM`
 
 ### Related links
 

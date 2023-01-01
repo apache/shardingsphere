@@ -42,16 +42,16 @@ databaseName ::=
 - Query the number of shadow rules for specified database.
 
 ```sql
-COUNT SHADOW RULE FROM test1;
+COUNT SHADOW RULE FROM shadow_db;
 ```
 
 ```sql
-mysql> COUNT SHADOW RULE FROM test1;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| shadow    | test1    | 1     |
-+-----------+----------+-------+
+mysql> COUNT SHADOW RULE FROM shadow_db;
++-----------+--------------+-------+
+| rule_name | database     | count |
++-----------+--------------+-------+
+| shadow    | shadow_db    | 1     |
++-----------+--------------+-------+
 1 row in set (0.00 sec)
 ```
 
@@ -63,11 +63,11 @@ COUNT SHADOW RULE;
 
 ```sql
 mysql> COUNT SHADOW RULE;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| shadow    | test1    | 1     |
-+-----------+----------+-------+
++-----------+--------------+-------+
+| rule_name | database     | count |
++-----------+--------------+-------+
+| shadow    | shadow_db    | 1     |
++-----------+--------------+-------+
 1 row in set (0.01 sec)
 ```
 

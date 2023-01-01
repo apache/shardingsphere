@@ -36,7 +36,7 @@ schemaName ::=
 - Refresh the tables’ metadata in a schema of a specified storage unit
 
 ```sql
-REFRESH TABLE METADATA FROM STORAGE UNIT su_1 SCHEMA db_schema;
+REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema;
 ```
 
 ### Reserved word

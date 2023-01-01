@@ -42,16 +42,16 @@ databaseName ::=
 - 查询指定逻辑库中的数据库发现规则数量
 
 ```sql
-COUNT DB_DISCOVERY RULE FROM test1;
+COUNT DB_DISCOVERY RULE FROM discovery_db;
 ```
 
 ```sql
-mysql> COUNT DB_DISCOVERY RULE FROM test1;
-+--------------+----------+-------+
-| rule_name    | database | count |
-+--------------+----------+-------+
-| db_discovery | test1    | 1     |
-+--------------+----------+-------+
+mysql> COUNT DB_DISCOVERY RULE FROM discovery_db;
++--------------+-----------------+-------+
+| rule_name    | database        | count |
++--------------+-----------------+-------+
+| db_discovery | discovery_db    | 1     |
++--------------+-----------------+-------+
 1 row in set (0.00 sec)
 ```
 
@@ -63,11 +63,11 @@ COUNT DB_DISCOVERY RULE;
 
 ```sql
 mysql> COUNT DB_DISCOVERY RULE;
-+--------------+----------+-------+
-| rule_name    | database | count |
-+--------------+----------+-------+
-| db_discovery | test1    | 1     |
-+--------------+----------+-------+
++--------------+-----------------+-------+
+| rule_name    | database        | count |
++--------------+-----------------+-------+
+| db_discovery | discovery_db    | 1     |
++--------------+-----------------+-------+
 1 row in set (0.00 sec)
 ```
 

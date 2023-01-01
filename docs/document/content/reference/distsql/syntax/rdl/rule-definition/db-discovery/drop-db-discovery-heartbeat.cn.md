@@ -36,7 +36,7 @@ databaseName ::=
 - 为指定数据库删除多个数据库发现心跳
  
 ```sql
-DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM test1;
+DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM discovery_db;
 ```
 
 - 为当前数据库删除单个数据库发现心跳

@@ -44,11 +44,11 @@ databaseName ::=
 - Query specified single table for specified database.
 
 ```sql
-SHOW SINGLE TABLE t_user FROM test1;
+SHOW SINGLE TABLE t_user FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLE t_user FROM test1;
+mysql> SHOW SINGLE TABLE t_user FROM sharding_db;
 +------------+---------------+
 | table_name | resource_name |
 +------------+---------------+
@@ -76,11 +76,11 @@ mysql> SHOW SINGLE TABLE t_user;
 - Query single tables for specified database.
 
 ```sql
-SHOW SINGLE TABLES FROM test1;
+SHOW SINGLE TABLES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES FROM test1;
+mysql> SHOW SINGLE TABLES FROM sharding_db;
 +------------+---------------+
 | table_name | resource_name |
 +------------+---------------+
@@ -108,11 +108,11 @@ mysql> SHOW SINGLE TABLES;
 - Query the single tables whose table name end with `order_5` for the specified logic database.
 
 ```sql
-SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
+SHOW SINGLE TABLES LIKE '%order_5' FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
+mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM sharding_db;
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+

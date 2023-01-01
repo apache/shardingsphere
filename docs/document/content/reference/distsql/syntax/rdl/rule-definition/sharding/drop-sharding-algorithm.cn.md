@@ -36,7 +36,7 @@ databaseName ::=
 - 删除指定逻辑库的指定分片算法
 
 ```sql
-DROP SHARDING ALGORITHM t_order_hash_mod FROM test1;
+DROP SHARDING ALGORITHM t_order_hash_mod FROM sharding_db;
 ```
 
 - 删除当前逻辑库的指定分片算法

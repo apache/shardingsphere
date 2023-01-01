@@ -36,7 +36,7 @@ databaseName ::=
 - 为指定数据库删除影子库压测规则
  
 ```sql
-DROP SHADOW RULE shadow_rule FROM test1;
+DROP SHADOW RULE shadow_rule FROM shadow_db;
 ```
 
 - 为当前数据库删除影子库压测规则

@@ -42,16 +42,16 @@ databaseName ::=
 - Query the number of encrypt rules for specified database.
 
 ```sql
-COUNT ENCRYPT RULE FROM test1;
+COUNT ENCRYPT RULE FROM encrypt_db;
 ```
 
 ```sql
-mysql> COUNT ENCRYPT RULE FROM test1;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| encrypt   | test1    | 2     |
-+-----------+----------+-------+
+mysql> COUNT ENCRYPT RULE FROM encrypt_db;
++-----------+---------------+-------+
+| rule_name | database      | count |
++-----------+---------------+-------+
+| encrypt   | encrypt_db    | 2     |
++-----------+---------------+-------+
 1 row in set (0.01 sec)
 ```
 
@@ -63,11 +63,11 @@ COUNT ENCRYPT RULE;
 
 ```sql
 mysql> COUNT ENCRYPT RULE;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| encrypt   | test1    | 2     |
-+-----------+----------+-------+
++-----------+---------------+-------+
+| rule_name | database      | count |
++-----------+---------------+-------+
+| encrypt   | encrypt_db    | 2     |
++-----------+---------------+-------+
 1 row in set (0.01 sec)
 ```
 

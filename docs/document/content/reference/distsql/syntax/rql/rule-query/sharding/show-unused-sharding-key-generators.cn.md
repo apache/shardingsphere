@@ -41,11 +41,11 @@ databaseName ::=
 - 查询指定逻辑库中未被使用的分布式主键生成器
 
 ```sql
-SHOW UNUSED SHARDING KEY GENERATORS FROM test1;
+SHOW UNUSED SHARDING KEY GENERATORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW UNUSED SHARDING KEY GENERATORS FROM test1;
+mysql> SHOW UNUSED SHARDING KEY GENERATORS FROM sharding_db;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+

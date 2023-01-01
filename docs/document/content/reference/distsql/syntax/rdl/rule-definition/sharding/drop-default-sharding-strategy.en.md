@@ -33,7 +33,7 @@ databaseName ::=
 - Drop default sharding table strategy for specified database.
 
 ```sql
-DROP DEFAULT SHARDING TABLE STRATEGY FROM test1;
+DROP DEFAULT SHARDING TABLE STRATEGY FROM sharding_db;
 ```
 
 - Drop default sharding database strategy for current database.

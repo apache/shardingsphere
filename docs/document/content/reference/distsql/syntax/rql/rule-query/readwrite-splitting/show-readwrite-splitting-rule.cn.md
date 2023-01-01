@@ -46,11 +46,11 @@ databaseName ::=
 - 查询指定逻辑库中的读写分离规则
 
 ```sql
-SHOW READWRITE_SPLITTING RULES FROM sharding_db;
+SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
 ```
 
 ```sql
-mysql> SHOW READWRITE_SPLITTING RULES FROM sharding_db;
+mysql> SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
 +------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
 | name       | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+

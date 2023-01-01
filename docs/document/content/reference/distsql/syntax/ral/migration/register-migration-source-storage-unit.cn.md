@@ -60,8 +60,8 @@ value ::=
 - 注册数据迁移源存储单元
 
 ```sql
-REGISTER MIGRATION SOURCE STORAGE UNIT su_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/migration_su_0?serverTimezone=UTC&useSSL=false",
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="123456"
 );
@@ -70,8 +70,8 @@ REGISTER MIGRATION SOURCE STORAGE UNIT su_0 (
 - 注册数据迁移源存储单元并设置连接池参数
 
 ```sql
-REGISTER MIGRATION SOURCE STORAGE UNIT su_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/migration_su_0?serverTimezone=UTC&useSSL=false",
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="123456",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")

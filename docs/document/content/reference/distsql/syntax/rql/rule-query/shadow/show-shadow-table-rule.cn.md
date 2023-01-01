@@ -40,11 +40,11 @@ databaseName ::=
 - 查询指定逻辑库中的影子表规则
 
 ```sql
-SHOW SHADOW TABLE RULES FROM test1;
+SHOW SHADOW TABLE RULES FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW TABLE RULES FROM test1;
+mysql> SHOW SHADOW TABLE RULES FROM shadow_db;
 +--------------+-------------------------------------------------------+
 | shadow_table | shadow_algorithm_name                                 |
 +--------------+-------------------------------------------------------+

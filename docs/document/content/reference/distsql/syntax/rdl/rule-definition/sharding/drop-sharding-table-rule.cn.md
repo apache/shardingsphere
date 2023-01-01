@@ -36,7 +36,7 @@ databaseName ::=
 - 为指定逻辑库删除多个指定分片规则
  
 ```sql
-DROP SHARDING TABLE RULE t_order, t_order_item FROM test1;
+DROP SHARDING TABLE RULE t_order, t_order_item FROM sharding_db;
 ```
 
 - 为当前逻辑库删除单个指定分片规则

@@ -45,7 +45,7 @@ MIGRATE TABLE ds_0.t_order INTO t_order;
 - Migrate table from source to specified database
 
 ```sql
-UNREGISTER MIGRATION SOURCE STORAGE UNIT su_1, su_2;
+UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_1, ds_2;
 ```
 
 ### Reserved word

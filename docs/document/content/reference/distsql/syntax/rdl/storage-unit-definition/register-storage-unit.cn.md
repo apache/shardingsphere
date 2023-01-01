@@ -72,7 +72,7 @@ value ::=
 - 使用标准模式注册存储单元
 
 ```sql
-REGISTER STORAGE UNIT su_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_0",
@@ -84,7 +84,7 @@ REGISTER STORAGE UNIT su_0 (
 - 使用标准模式注册存储单元并设置连接池参数
 
 ```sql
-REGISTER STORAGE UNIT su_1 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_1",
@@ -97,7 +97,7 @@ REGISTER STORAGE UNIT su_1 (
 - 使用 URL 模式注册存储单元并设置连接池参数
 
 ```sql
-REGISTER STORAGE UNIT su_2 (
+REGISTER STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
@@ -108,7 +108,7 @@ REGISTER STORAGE UNIT su_2 (
 - 使用 `ifNotExists` 子句注册存储单元
 
 ```sql
-REGISTER STORAGE UNIT IF NOT EXISTS su_0 (
+REGISTER STORAGE UNIT IF NOT EXISTS ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_0",

@@ -48,11 +48,11 @@ databaseName ::=
 - Query specified shadow rule in specified database.
 
 ```sql
-SHOW SHADOW RULE shadow_rule FROM test1;
+SHOW SHADOW RULE shadow_rule FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW RULE shadow_rule FROM test1;
+mysql> SHOW SHADOW RULE shadow_rule FROM shadow_db;
 +-------------+-------------+-------------+----------------------+
 | rule_name   | source_name | shadow_name | shadow_table         |
 +-------------+-------------+-------------+----------------------+
@@ -80,11 +80,11 @@ mysql> SHOW SHADOW RULE shadow_rule;
 - Query shadow rules for specified database.
 
 ```sql
-SHOW SHADOW RULES FROM test1;
+SHOW SHADOW RULES FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW RULES FROM test1;
+mysql> SHOW SHADOW RULES FROM shadow_db;
 +-------------+-------------+-------------+----------------------+
 | rule_name   | source_name | shadow_name | shadow_table         |
 +-------------+-------------+-------------+----------------------+

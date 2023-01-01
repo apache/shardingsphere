@@ -36,7 +36,7 @@ databaseName ::=
 - Drop mutiple database discovery rule for specified database
 
 ```sql
-DROP DB_DISCOVERY RULE group_0, group_1 FROM test1;
+DROP DB_DISCOVERY RULE group_0, group_1 FROM discovery_db;
 ```
 
 - Drop single database discovery rule for current database

@@ -36,7 +36,7 @@ databaseName ::=
 - Drop mutiple sharding table rules for specified database.
 
 ```sql
-DROP SHARDING TABLE RULE t_order, t_order_item FROM test1;
+DROP SHARDING TABLE RULE t_order, t_order_item FROM sharding_db;
 ```
 
 - Drop a sharding table rule for current database.

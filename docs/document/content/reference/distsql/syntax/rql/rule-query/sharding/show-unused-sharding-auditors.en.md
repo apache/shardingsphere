@@ -14,7 +14,7 @@ weight = 9
 {{% tab name="Grammar" %}}
 ```sql
 ShowUnusedShardingAuditors::=
-  'SHOW' 'SHARDING' 'AUDITOR' ('FROM' databaseName)?
+  'SHOW' 'UNUSED' 'SHARDING' 'AUDITOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -43,11 +43,11 @@ databaseName ::=
 - Query sharding auditors that are not used in the specified logical database
 
 ```sql
-SHOW SHARDING AUDITORS FROM test1;
+SHOW UNUSED SHARDING AUDITORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING AUDITORS FROM test1;
+mysql> SHOW UNUSED SHARDING AUDITORS FROM sharding_db;
 +-------------------------------+-------------------------+-------+
 | name                          | type                    | props |
 +-------------------------------+-------------------------+-------+
@@ -59,11 +59,11 @@ mysql> SHOW SHARDING AUDITORS FROM test1;
 - Query sharding auditors are not used in the current logical database
 
 ```sql
-SHOW UNUSED SHARDING AUDITORS FROM test1;
+SHOW UNUSED SHARDING AUDITORS;
 ```
 
 ```sql
-mysql> SHOW UNUSED SHARDING AUDITORS FROM test1;
+mysql> SHOW UNUSED SHARDING AUDITORS;
 +-------------------------------+-------------------------+-------+
 | name                          | type                    | props |
 +-------------------------------+-------------------------+-------+
