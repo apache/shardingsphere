@@ -682,6 +682,23 @@
                 <plugin>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>${maven-shade-plugin.version}</version>
+                    <configuration>
+                        <minimizeJar>true</minimizeJar>
+                        <shadedArtifactAttached>false</shadedArtifactAttached>
+                        <shadeSourcesContent>true</shadeSourcesContent>
+                        <createDependencyReducedPom>false</createDependencyReducedPom>
+                        <createSourcesJar>false</createSourcesJar>
+                        <filters>
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <exclude>META-INF/*.SF</exclude>
+                                    <exclude>META-INF/*.DSA</exclude>
+                                    <exclude>META-INF/*.RSA</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>

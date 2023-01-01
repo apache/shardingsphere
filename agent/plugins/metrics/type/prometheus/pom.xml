@@ -92,8 +92,6 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
                 <executions>
@@ -125,24 +123,10 @@
                                     <shadedPattern>${shade.package}.org.checkerframework</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.google.errorprone.annotations</pattern>
                                     <shadedPattern>${shade.package}.com.google.errorprone.annotations</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>
