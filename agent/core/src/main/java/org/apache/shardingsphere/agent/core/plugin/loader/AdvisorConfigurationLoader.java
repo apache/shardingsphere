@@ -67,16 +67,16 @@ public final class AdvisorConfigurationLoader {
         return null == accurateResourceStream ? getResourceStream(agentClassLoader, getFileName(pluginType)) : accurateResourceStream;
     }
     
+    private static InputStream getResourceStream(final ClassLoader agentClassLoader, final String fileName) {
+        return agentClassLoader.getResourceAsStream(String.join("/", "META-INF", "conf", fileName));
+    }
+    
     private static String getFileName(final String pluginType, final boolean isEnhancedForProxy) {
         return String.join("-", pluginType.toLowerCase(), isEnhancedForProxy ? "proxy" : "jdbc", "advisors.yaml");
     }
     
     private static String getFileName(final String pluginType) {
         return String.join("-", pluginType.toLowerCase(), "advisors.yaml");
-    }
-    
-    private static InputStream getResourceStream(final ClassLoader agentClassLoader, final String fileName) {
-        return agentClassLoader.getResourceAsStream(String.join("/", "META-INF", "conf", fileName));
     }
     
     private static void mergeConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
