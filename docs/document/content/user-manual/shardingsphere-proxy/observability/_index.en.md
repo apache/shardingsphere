@@ -39,7 +39,7 @@ tree
 ```
 * Configuration file
 
-`conf/agent.yaml` is used to manage agent configuration.
+`META-INF/conf/agent.yaml` is used to manage agent configuration.
 Built-in plugins include Jaeger, OpenTracing, Zipkin, OpenTelemetry, BaseLogging and Prometheus.
 No plugin is enabled by default.
 
