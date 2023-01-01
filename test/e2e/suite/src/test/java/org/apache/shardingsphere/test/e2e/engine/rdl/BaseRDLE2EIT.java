@@ -84,6 +84,7 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
+        sleep();
     }
     
     protected void sleep() {
