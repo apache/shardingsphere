@@ -156,7 +156,14 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     @Override
-    public void closeHeartBeatJob() {
+    public void closeSingleHeartBeatJob(final String groupName) {
+        DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(groupName);
+        Preconditions.checkNotNull(dataSourceRule, "Can not find database discovery data source rule in database `%s`", databaseName);
+        scheduleContext.closeSchedule(dataSourceRule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + dataSourceRule.getGroupName());
+    }
+    
+    @Override
+    public void closeAllHeartBeatJob() {
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             DatabaseDiscoveryDataSourceRule rule = entry.getValue();
             scheduleContext.closeSchedule(rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName());
