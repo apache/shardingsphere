@@ -9,6 +9,8 @@ The `DROP ENCRYPT RULE` syntax is used to drop an existing encryption rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropEncryptRule ::=
   'DROP' 'ENCRYPT' 'RULE' tableName (',' tableName)*
@@ -16,6 +18,11 @@ DropEncryptRule ::=
 tableName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Example
 

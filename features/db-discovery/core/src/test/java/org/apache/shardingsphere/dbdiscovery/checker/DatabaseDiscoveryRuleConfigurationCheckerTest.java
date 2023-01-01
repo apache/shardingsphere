@@ -20,15 +20,11 @@ package org.apache.shardingsphere.dbdiscovery.checker;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,10 +34,8 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     @Test
     public void assertValidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getValidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private DatabaseDiscoveryRuleConfiguration getValidConfiguration() {
@@ -56,10 +50,8 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getInvalidConfiguration();
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
-        assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private DatabaseDiscoveryRuleConfiguration getInvalidConfiguration() {

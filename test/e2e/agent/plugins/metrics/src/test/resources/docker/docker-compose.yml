@@ -54,6 +54,7 @@ services:
       - "mysql:mysql.agent.metrics.host"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy-agent-metrics/conf
+      - ./agent/conf:/opt/shardingsphere-proxy-agent-metrics/agent/conf
     depends_on:
       - mysql
     environment:

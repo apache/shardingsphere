@@ -9,9 +9,14 @@ weight = 2
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 CreateShadowRule ::=
-  'CREATE' 'SHADOW' 'RULE' shadowRuleDefinition (',' shadowRuleDefinition)*
+  'CREATE' 'SHADOW' 'RULE' ifNotExists? shadowRuleDefinition (',' shadowRuleDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 shadowRuleDefinition ::=
   ruleName '(' storageUnitMapping shadowTableRule (',' shadowTableRule)* ')'
@@ -49,6 +54,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -57,7 +67,8 @@ value ::=
   ，请参考 [存储单元](https://shardingsphere.apache.org/document/current/cn/reference/distsql/syntax/rdl/storage-unit-definition/)；
 - `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`；
 - `algorithmName` 会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成；
-- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`。
+- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
+- `ifNotExists` 子句用于避免出现 `Duplicate shadow rule` 错误。
 
 ### 示例
 
@@ -65,6 +76,17 @@ value ::=
 
 ```sql
 CREATE SHADOW RULE shadow_rule(
+  SOURCE=demo_su,
+  SHADOW=demo_su_shadow,
+  t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
+  t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))
+);
+```
+
+- 使用 `ifNotExists` 子句创建影子库压测规则
+
+```sql
+CREATE SHADOW RULE IF NOT EXISTS shadow_rule(
   SOURCE=demo_su,
   SHADOW=demo_su_shadow,
   t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 

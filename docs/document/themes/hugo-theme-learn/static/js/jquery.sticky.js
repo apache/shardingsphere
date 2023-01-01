@@ -94,7 +94,7 @@
               .css('position', 'fixed')
               .css('top', newTop)
               .css('z-index', s.zIndex);
-            
+
             s.stickyElement.parent().addClass(s.className);
             $TableOfContents.addClass('sticky')
 

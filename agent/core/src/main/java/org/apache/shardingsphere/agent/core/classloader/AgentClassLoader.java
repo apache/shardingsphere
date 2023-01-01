@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
-import lombok.Getter;
-import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
 import java.io.IOException;
@@ -36,7 +34,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
- *  Agent class loader.
+ * Agent class loader.
  */
 public final class AgentClassLoader extends ClassLoader {
     
@@ -44,29 +42,11 @@ public final class AgentClassLoader extends ClassLoader {
         registerAsParallelCapable();
     }
     
-    @Getter
-    private static volatile AgentClassLoader classLoader;
-    
     private final Collection<PluginJar> pluginJars;
     
-    public AgentClassLoader(final ClassLoader classLoader, final Collection<PluginJar> pluginJars) {
-        super(classLoader);
+    public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars) {
+        super(appClassLoader);
         this.pluginJars = pluginJars;
-    }
-    
-    /**
-     * Initialize agent class loader.
-     * 
-     * @param pluginJars plugin jars
-     */
-    public static void init(final Collection<PluginJar> pluginJars) {
-        if (null == classLoader) {
-            synchronized (AgentClassLoader.class) {
-                if (null == classLoader) {
-                    classLoader = new AgentClassLoader(AgentPluginLoader.class.getClassLoader(), pluginJars);
-                }
-            }
-        }
     }
     
     @Override
@@ -129,7 +109,7 @@ public final class AgentClassLoader extends ClassLoader {
     
     @Override
     protected URL findResource(final String name) {
-        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().map(Optional::get).orElse(null);
+        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get).orElse(null);
     }
     
     private Optional<URL> findResource(final String name, final PluginJar pluginJar) {
@@ -140,7 +120,7 @@ public final class AgentClassLoader extends ClassLoader {
         try {
             return Optional.of(new URL(String.format("jar:file:%s!/%s", pluginJar.getSourcePath().getAbsolutePath(), name)));
         } catch (final MalformedURLException ignored) {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 }

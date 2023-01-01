@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
 import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 /**

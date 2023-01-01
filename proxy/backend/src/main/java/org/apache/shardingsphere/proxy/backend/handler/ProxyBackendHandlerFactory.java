@@ -68,10 +68,6 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyBackendHandlerFactory {
     
-    static {
-        ShardingSphereServiceLoader.register(ExtraProxyBackendHandler.class);
-    }
-    
     /**
      * Create new instance of backend handler.
      *
@@ -82,41 +78,11 @@ public final class ProxyBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
-        return newInstance(databaseType, sql, connectionSession, new HintValueContext());
-    }
-    
-    /**
-     * Create new instance of backend handler.
-     *
-     * @param databaseType database type
-     * @param sql SQL to be executed
-     * @param connectionSession connection session
-     * @param hintValueContext hint query context
-     * @return created instance
-     * @throws SQLException SQL exception
-     */
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession,
-                                                  final HintValueContext hintValueContext) throws SQLException {
         if (Strings.isNullOrEmpty(SQLUtil.trimComment(sql))) {
             return new SkipBackendHandler(new EmptyStatement());
         }
         SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
-        return newInstance(databaseType, sql, sqlStatement, connectionSession, hintValueContext);
-    }
-    
-    /**
-     * Create new instance of backend handler.
-     *
-     * @param databaseType database type
-     * @param sql SQL to be executed
-     * @param sqlStatement SQL statement
-     * @param connectionSession connection session
-     * @return created instance
-     * @throws SQLException SQL exception
-     */
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
-                                                  final ConnectionSession connectionSession) throws SQLException {
         return newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
     }
     

@@ -1,4 +1,8 @@
 @charset "UTF-8";
+
+/* Tags */
+@import "tags.css";
+
 #top-github-link, #body #breadcrumbs {
     position: relative;
     top: 50%;
@@ -257,7 +261,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 #sidebar ul.topics ul ul {
     padding-bottom: 0;
 }
-#sidebar ul.topics li.parent>ul, #sidebar ul.topics > li.active>ul {
+#sidebar ul.topics li.parent ul, #sidebar ul.topics > li.active ul {
     display: block;
 }
 #sidebar ul.topics > li > a {
@@ -433,7 +437,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 }
 #chapter p {
     text-align: center;
-    /* font-size: 1.2rem; */
+    font-size: 1.2rem;
 }
 #footer {
     padding: 3rem 1rem;
@@ -492,8 +496,9 @@ div.notices p:first-child:before {
     position: absolute;
     top: 2px;
     color: #fff;
-    font-family: FontAwesome;
-    content: '';
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f06a";
     left: 10px;
 }
 div.notices p:first-child:after {
@@ -641,7 +646,7 @@ code + .copy-to-clipboard {
 pre {
     padding: 1rem;
     margin: 2rem 0;
-    background: #1d1f21;
+    background: #282c34;
     border: 0;
     border-radius: 2px;
     line-height: 1.15;
@@ -1073,12 +1078,12 @@ pre .copy-to-clipboard {
     position: absolute;
     right: 4px;
     top: 4px;
-    background-color: #4d5257;
+    background-color: #C1C4C6;
     color: #ccc;
     border-radius: 2px;
 }
 pre .copy-to-clipboard:hover {
-    background-color: #656c72;
+    background-color: #00bdf3;
     color: #fff;
 }
 .parent-element {
@@ -1122,8 +1127,17 @@ pre .copy-to-clipboard:hover {
     padding-left: 1rem;
 }
 
+#homelinks {
+  background-color: #9c6fb6;
+  color: #fff;
+  padding: 7px 0;
+  border-bottom: 4px solid #9c6fb6;
+}
+
 #searchResults {
     text-align: left;
 }
 
-/*# sourceMappingURL=theme.css.map */
+option {
+    color: initial;
+}

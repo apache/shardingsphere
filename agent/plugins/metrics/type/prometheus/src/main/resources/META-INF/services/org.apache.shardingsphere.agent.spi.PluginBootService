@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.metrics.prometheus.PrometheusPluginBootService
+org.apache.shardingsphere.agent.plugin.metrics.prometheus.PrometheusPluginBootService

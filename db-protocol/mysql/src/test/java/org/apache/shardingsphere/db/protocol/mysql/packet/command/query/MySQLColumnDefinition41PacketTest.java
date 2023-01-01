@@ -25,10 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,23 +33,7 @@ import static org.mockito.Mockito.when;
 public final class MySQLColumnDefinition41PacketTest {
     
     @Mock
-    private ResultSetMetaData resultSetMetaData;
-    
-    @Mock
     private MySQLPacketPayload payload;
-    
-    @Test
-    public void assertWriteWithResultSetMetaData() throws SQLException {
-        when(resultSetMetaData.getSchemaName(1)).thenReturn("logic_db");
-        when(resultSetMetaData.getTableName(1)).thenReturn("tbl");
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("id");
-        when(resultSetMetaData.getColumnName(1)).thenReturn("id");
-        when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(10);
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(resultSetMetaData, 1);
-        actual.write(payload);
-        verifyWrite();
-    }
     
     @Test
     public void assertWriteWithPayload() {

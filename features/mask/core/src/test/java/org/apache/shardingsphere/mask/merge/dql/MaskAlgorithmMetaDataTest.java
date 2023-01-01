@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mask.factory.MaskAlgorithmFactory;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -52,7 +54,7 @@ public final class MaskAlgorithmMetaDataTest {
     @Mock
     private MaskRule maskRule;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SelectStatementContext selectStatementContext;
     
     private MaskAlgorithm<?, ?> maskAlgorithm;
@@ -60,15 +62,17 @@ public final class MaskAlgorithmMetaDataTest {
     @Before
     public void setUp() {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        maskAlgorithm = (MaskAlgorithm<?, ?>) MaskAlgorithmFactory.newInstance(new AlgorithmConfiguration("MD5", new Properties()));
+        maskAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MD5", new Properties()), MaskAlgorithm.class);
     }
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertFindMaskAlgorithm() {
-        when(maskRule.findMaskAlgorithm("t_order", "id")).thenReturn(Optional.of(maskAlgorithm));
+    public void assertFindMaskAlgorithmByColumnIndex() {
+        when(maskRule.findMaskAlgorithm("t_order", "order_id")).thenReturn(Optional.of(maskAlgorithm));
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(new ColumnProjection(null, "order_id", null)));
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         MaskAlgorithmMetaData maskAlgorithmMetaData = new MaskAlgorithmMetaData(database, maskRule, selectStatementContext);
-        Optional<MaskAlgorithm> actual = maskAlgorithmMetaData.findMaskAlgorithm("t_order", "id");
+        Optional<MaskAlgorithm> actual = maskAlgorithmMetaData.findMaskAlgorithmByColumnIndex(1);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is("MD5"));
     }

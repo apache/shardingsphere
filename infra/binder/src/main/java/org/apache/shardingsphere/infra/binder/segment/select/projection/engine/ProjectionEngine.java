@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -182,7 +183,23 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getActualProjections(projections);
+        String subqueryTableAlias = table.getAlias().orElse(null);
+        return getSubqueryTableActualProjections(projections, subqueryTableAlias);
+    }
+    
+    private Collection<Projection> getSubqueryTableActualProjections(final Collection<Projection> projections, final String subqueryTableAlias) {
+        if (Strings.isNullOrEmpty(subqueryTableAlias)) {
+            return getActualProjections(projections);
+        }
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection) {
+                result.addAll(getSubqueryTableActualProjections(((ShorthandProjection) each).getActualColumns().values(), subqueryTableAlias));
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each.cloneWithOwner(subqueryTableAlias));
+            }
+        }
+        return result;
     }
     
     private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final String owner, final ProjectionSegment projectionSegment) {

@@ -9,6 +9,8 @@ The `SHOW SHARDING ALGORITHMS` syntax is used to query the sharding algorithms i
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowShardingAlgorithms::=
   'SHOW' 'SHARDING' 'ALGORITHMS' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ ShowShardingAlgorithms::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

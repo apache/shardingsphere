@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;

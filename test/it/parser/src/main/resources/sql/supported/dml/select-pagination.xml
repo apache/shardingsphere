@@ -37,4 +37,5 @@
     <sql-case id="select_pagination_with_offset_fetch" value="SELECT * FROM t_order ORDER BY order_id OFFSET 0 ROW FETCH NEXT ? ROWS ONLY" db-types="SQLServer" />
     <sql-case id="select_pagination_with_limit_offset_and_row_count" value="SELECT order_id, user_id FROM t_order LIMIT 1, 2" db-types="MySQL,openGauss" />
     <sql-case id="select_pagination_with_limit_row_count" value="SELECT order_id, user_id FROM t_order LIMIT 2" db-types="MySQL" />
+    <sql-case id="select_pagination_with_limit_fetch_count" value="SELECT * FROM t_new_order FETCH NEXT 3 ROW ONLY" db-types="openGauss,PostgreSQL" />
 </sql-cases>

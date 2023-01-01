@@ -9,6 +9,8 @@ weight = 3
 `ALTER MIGRATION RULE` 语法用于修改数据迁移规则
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 AlterMigrationRule ::=
   'ALTER' 'MIGRATION' 'RULE' ('(' (readConfiguration ',')?  (writeConfiguration  ',')? (dataChannel)? ')')?
@@ -46,6 +48,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 

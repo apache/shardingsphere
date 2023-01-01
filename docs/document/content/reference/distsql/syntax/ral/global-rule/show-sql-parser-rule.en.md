@@ -9,10 +9,17 @@ The `SHOW SQL_PARSER RULE` syntax is used to query sql parser rule configuration
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowSqlParserRule ::=
   'SHOW' 'SQL_PARSER' 'RULE'
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

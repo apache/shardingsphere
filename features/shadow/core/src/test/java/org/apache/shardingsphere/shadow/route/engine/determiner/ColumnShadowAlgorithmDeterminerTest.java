@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
-import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
+import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -34,12 +34,8 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
-        assertTrue(ColumnShadowAlgorithmDeterminer.isShadow(createColumnShadowAlgorithms(), createShadowDetermineCondition()));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithms() {
-        return (ColumnShadowAlgorithm<Comparable<?>>) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()));
+        assertTrue(ColumnShadowAlgorithmDeterminer.isShadow(
+                ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("REGEX_MATCH", createProperties()), ShadowAlgorithm.class), createShadowDetermineCondition()));
     }
     
     private Properties createProperties() {

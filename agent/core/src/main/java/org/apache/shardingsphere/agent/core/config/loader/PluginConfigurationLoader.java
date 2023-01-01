@@ -20,10 +20,10 @@ package org.apache.shardingsphere.agent.core.config.loader;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginsConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlPluginsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;

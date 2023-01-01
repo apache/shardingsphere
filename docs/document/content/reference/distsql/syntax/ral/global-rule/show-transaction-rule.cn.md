@@ -8,10 +8,17 @@ weight = 3
 `SHOW TRANSACTION RULE` 语法用于查询事务规则配置
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowTransactionRule ::=
   'SHOW' 'TRANSACTION' 'RULE'
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 返回值说明
 

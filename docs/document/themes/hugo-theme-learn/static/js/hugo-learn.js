@@ -10,10 +10,8 @@ var getUrlParameter = function getUrlParameter(sPageURL) {
           sParameterName = sURLVariables[i].split('=');
           obj[sParameterName[0]] = sParameterName[1];
       }
-      return obj;
-    } else {
-      return undefined;
     }
+    return obj;
 };
 
 // Execute actions on images generated from Markdown pages
@@ -21,8 +19,13 @@ var images = $("div#body-inner img").not(".inline");
 // Wrap image inside a featherlight (to get a full size view in a popup)
 images.wrap(function(){
   var image =$(this);
-  if (!image.parent("a").length) {
-    return "<a href='" + image[0].src + "' data-featherlight='image'></a>";
+  var o = getUrlParameter(image[0].src);
+  var f = o['featherlight'];
+  // IF featherlight is false, do not use feather light
+  if (f != 'false') {
+    if (!image.parent("a").length) {
+      return "<a href='" + image[0].src + "' data-featherlight='image'></a>";
+    }
   }
 });
 
@@ -65,13 +68,13 @@ $(document).ready(function(){
 
 jQuery(document).ready(function() {
   // Add link button for every
-  var text, clip = new Clipboard('.anchor');
+  var text, clip = new ClipboardJS('.anchor');
   $("h1~h2,h1~h3,h1~h4,h1~h5,h1~h6").append(function(index, html){
     var element = $(this);
-    var url = document.location.origin + document.location.pathname;
+    var url = encodeURI(document.location.origin + document.location.pathname);
     var link = url + "#"+element[0].id;
     return " <span class='anchor' data-clipboard-text='"+link+"'>" +
-      "<i class='fa fa-link fa-lg'></i>" +
+      "<i class='fas fa-link fa-lg'></i>" +
       "</span>"
     ;
   });
@@ -84,9 +87,11 @@ jQuery(document).ready(function() {
       e.clearSelection();
       $(e.trigger).attr('aria-label', 'Link copied to clipboard!').addClass('tooltipped tooltipped-s');
   });
-
+  $('code.language-mermaid').each(function(index, element) {
+    var content = $(element).html().replace(/&amp;/g, '&');
+    $(element).parent().replaceWith('<div class="mermaid" align="center">' + content + '</div>');
+  });
 });
-
 
 jQuery(document).ready(function(){
 	$("#sidebar .topics li svg").click(function(event){   
@@ -97,4 +102,3 @@ jQuery(document).ready(function(){
 		that.closest("li").children("ul").slideToggle('fast',"linear");
 	});
 })
-

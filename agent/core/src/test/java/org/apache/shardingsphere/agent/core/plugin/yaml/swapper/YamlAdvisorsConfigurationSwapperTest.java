@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.advisor.MethodAdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAdvisorsConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.fixture.YamlAdviceFixture;
 import org.apache.shardingsphere.agent.core.plugin.yaml.fixture.YamlTargetObjectFixture;

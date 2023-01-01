@@ -22,8 +22,8 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.distsql.handler.exception.resource.EmptyResourceException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -80,7 +80,7 @@ public final class RefreshTableMetaDataHandlerTest extends ProxyContextRestorer 
         backendHandler.execute();
     }
     
-    @Test(expected = EmptyResourceException.class)
+    @Test(expected = EmptyStorageUnitException.class)
     public void assertEmptyResource() throws SQLException {
         when(connectionSession.getDatabaseName()).thenReturn("sharding_db");
         when(shardingSphereMetaData.containsDatabase("sharding_db")).thenReturn(true);
@@ -90,7 +90,7 @@ public final class RefreshTableMetaDataHandlerTest extends ProxyContextRestorer 
         backendHandler.execute();
     }
     
-    @Test(expected = MissingRequiredResourcesException.class)
+    @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertMissingRequiredResources() throws SQLException {
         when(connectionSession.getDatabaseName()).thenReturn("sharding_db");
         when(shardingSphereMetaData.containsDatabase("sharding_db")).thenReturn(true);

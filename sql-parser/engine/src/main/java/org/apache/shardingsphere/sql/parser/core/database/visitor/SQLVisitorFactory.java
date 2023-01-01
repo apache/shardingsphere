@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
@@ -44,7 +45,7 @@ public final class SQLVisitorFactory {
      * @return created instance
      */
     public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule, final Properties props) {
-        SQLVisitorFacade facade = SQLVisitorFacadeFactory.getInstance(databaseType, visitorType);
+        SQLVisitorFacade facade = TypedSPIRegistry.getRegisteredService(SQLVisitorFacade.class, String.join(".", databaseType, visitorType));
         return createParseTreeVisitor(facade, visitorRule.getType(), props);
     }
     

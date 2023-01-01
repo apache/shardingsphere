@@ -26,6 +26,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -38,11 +40,11 @@ public final class AgentPathBuilder {
     private static File agentPath;
     
     @Getter
-    private static File pluginPath;
+    private static Collection<File> pluginClassPaths;
     
     static {
         agentPath = buildAgentPath();
-        pluginPath = buildAgentPluginPath();
+        pluginClassPaths = buildAgentPluginClassPaths();
     }
     
     private static File buildAgentPath() {
@@ -71,7 +73,7 @@ public final class AgentPathBuilder {
         return new File(classLocation);
     }
     
-    private static File buildAgentPluginPath() {
-        return new File(String.join("/", agentPath.getPath(), "plugins"));
+    private static Collection<File> buildAgentPluginClassPaths() {
+        return Arrays.asList(new File(String.join("/", agentPath.getPath(), "lib")), new File(String.join("/", agentPath.getPath(), "plugins")));
     }
 }

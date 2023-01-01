@@ -28,12 +28,13 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.util.Litmus;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.SQLParserTestCases;
@@ -125,6 +126,7 @@ public final class SQLNodeConverterEngineIT {
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset_fetch");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_fetch_count");
         SUPPORTED_SQL_CASE_IDS.add("select_with_null_keyword_in_projection");
         SUPPORTED_SQL_CASE_IDS.add("select_union");
         SUPPORTED_SQL_CASE_IDS.add("select_union_all");
@@ -220,7 +222,9 @@ public final class SQLNodeConverterEngineIT {
     private Properties createSQLDialectProperties(final String databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll(OptimizerSQLDialectBuilderFactory.build(DatabaseTypeFactory.getInstance(databaseType)));
+        result.putAll((null == databaseType
+                ? RequiredSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class)
+                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType)).build());
         return result;
     }
 }

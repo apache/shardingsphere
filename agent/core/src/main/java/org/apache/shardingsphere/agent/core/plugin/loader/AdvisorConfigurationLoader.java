@@ -17,29 +17,28 @@
 
 package org.apache.shardingsphere.agent.core.plugin.loader;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.yaml.swapper.YamlAdvisorsConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.spi.PluginBootServiceRegistry;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Advisor configuration loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
     
     /**
      * Load advisor configurations.
@@ -51,23 +50,30 @@ public final class AdvisorConfigurationLoader {
      */
     public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
-        AgentClassLoader.init(pluginJars);
-        for (PluginBootService each : PluginBootServiceRegistry.newInstances(AgentClassLoader.getClassLoader())) {
-            if (pluginTypes.contains(each.getType())) {
-                Collection<AdvisorConfiguration> advisorConfigs = YamlAdvisorsConfigurationSwapper
-                        .swapToObject(YamlAdvisorsConfigurationLoader.load(getAdvisorsResourceStream(each, isEnhancedForProxy)), each.getType());
-                result.putAll(advisorConfigs.stream().collect(Collectors.toMap(AdvisorConfiguration::getTargetClassName, Function.identity())));
+        AgentClassLoader agentClassLoader = new AgentClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
+        for (String each : pluginTypes) {
+            InputStream advisorsResourceStream = getAdvisorsResourceStream(agentClassLoader, each, isEnhancedForProxy);
+            if (null == advisorsResourceStream) {
+                LOGGER.info("No configuration of advisor for type `{}`.", each);
+            } else {
+                mergeAdvisorConfigurations(result, YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
             }
         }
-        return ImmutableMap.<String, AdvisorConfiguration>builder().putAll(result).build();
+        return result;
     }
     
-    private static InputStream getAdvisorsResourceStream(final PluginBootService pluginBootService, final boolean isEnhancedForProxy) {
-        InputStream result = pluginBootService.getClass().getResourceAsStream(getAdvisorsResourceFile(pluginBootService, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml"));
-        return null == result ? pluginBootService.getClass().getResourceAsStream(getAdvisorsResourceFile(pluginBootService, "advisors.yaml")) : result;
+    private static InputStream getAdvisorsResourceStream(final ClassLoader agentClassLoader, final String pluginType, final boolean isEnhancedForProxy) {
+        InputStream accurateResourceStream = getAdvisorsResourceStream(agentClassLoader, pluginType, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml");
+        return null == accurateResourceStream ? getAdvisorsResourceStream(agentClassLoader, pluginType, "advisors.yaml") : accurateResourceStream;
     }
     
-    private static String getAdvisorsResourceFile(final PluginBootService pluginBootService, final String fileName) {
-        return String.join("/", "", pluginBootService.getType().toLowerCase(), fileName);
+    private static InputStream getAdvisorsResourceStream(final ClassLoader agentClassLoader, final String pluginType, final String fileName) {
+        return agentClassLoader.getResourceAsStream(String.join("/", pluginType.toLowerCase(), fileName));
+    }
+    
+    private static void mergeAdvisorConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
+        for (AdvisorConfiguration each : advisorConfigs) {
+            advisorConfigMap.computeIfAbsent(each.getTargetClassName(), key -> new AdvisorConfiguration(each.getTargetClassName())).getAdvisors().addAll(each.getAdvisors());
+        }
     }
 }

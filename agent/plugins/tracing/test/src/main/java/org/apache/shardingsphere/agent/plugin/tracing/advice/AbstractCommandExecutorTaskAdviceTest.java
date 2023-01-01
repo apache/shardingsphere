@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import io.netty.util.DefaultAttributeMap;
 import lombok.Getter;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.agent.plugin.tracing.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;

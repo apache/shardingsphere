@@ -19,11 +19,12 @@ package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public final class ShardingSchemaMetaDataDecoratorTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable(TABLE_NAME)).thenReturn(Optional.of(TABLE_NAME));
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingSchemaMetaDataDecorator builder = (ShardingSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(shardingRule);
+        ShardingSchemaMetaDataDecorator builder = (ShardingSchemaMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(shardingRule);
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(createTableMetaData());
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);

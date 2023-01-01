@@ -9,6 +9,8 @@ The `ALTER READWRITE_SPLITTING RULE` syntax is used to alter a readwrite splitti
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterReadwriteSplittingRule ::=
   'ALTER' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
@@ -49,6 +51,11 @@ key ::=
 value ::=
   literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -73,7 +80,7 @@ ALTER READWRITE_SPLITTING RULE ms_group_0 (
 ALTER READWRITE_SPLITTING RULE ms_group_1 (
     AUTO_AWARE_RESOURCE=group_0,
     WRITE_DATA_SOURCE_QUERY_ENABLED=false,
-    TYPE(NAME="random",PROPERTIES("read_weight"="2:1"))
+    TYPE(NAME="random")
 );
 ```
 

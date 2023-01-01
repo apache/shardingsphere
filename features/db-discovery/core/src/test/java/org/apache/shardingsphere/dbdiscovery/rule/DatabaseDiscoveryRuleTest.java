@@ -23,8 +23,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.BeforeClass;
@@ -34,7 +34,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -76,14 +76,7 @@ public final class DatabaseDiscoveryRuleTest {
     public void assertGetDataSourceMapper() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = getDataSourceMapper();
-        assertThat(actual, is(expected));
-    }
-    
-    private Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        result.put("replica_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"));
-        return result;
+        assertThat(actual, is(Collections.singletonMap("replica_ds", new HashSet<>(Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1")))));
     }
     
     @Test

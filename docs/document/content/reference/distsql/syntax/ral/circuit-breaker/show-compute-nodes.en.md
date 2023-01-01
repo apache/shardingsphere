@@ -8,10 +8,17 @@ weight = 3
 The `SHOW COMPUTE NODES` syntax is used to query proxy instance information.
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowComputeNodes ::=
   'SHOW' 'COMPUTE' 'NODES'
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 
@@ -44,7 +51,7 @@ mysql> SHOW COMPUTE NODES;
 1 row in set (0.01 sec)
 ```
 
-### Reserved word
+### Dedicated Terminology
 
 `SHOW`, `COMPUTE`, `NODES`
 

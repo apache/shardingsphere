@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet().stream()
+        return OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet().stream()
                 .map(entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
     }
     
@@ -53,7 +53,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         Collection<Class<?>> ruleConfigTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
-        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(ruleConfigTypes).entrySet()) {
+        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(YamlRuleConfigurationSwapper.class, ruleConfigTypes).entrySet()) {
             result.addAll(swapToRuleConfigurations(yamlRuleConfigs, entry.getKey(), entry.getValue()));
         }
         return result;
@@ -64,18 +64,5 @@ public final class YamlRuleConfigurationSwapperEngine {
                                                                    final Class<?> ruleConfigType, final YamlRuleConfigurationSwapper swapper) {
         return yamlRuleConfigs.stream()
                 .filter(each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
-    }
-    
-    /**
-     * Swap from YAML rule configuration to rule configuration.
-     *
-     * @param yamlRuleConfig YAML rule configuration
-     * @return rule configuration
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public RuleConfiguration swapToRuleConfiguration(final YamlRuleConfiguration yamlRuleConfig) {
-        Collection<Class<?>> types = Collections.singletonList(yamlRuleConfig.getRuleConfigurationType());
-        YamlRuleConfigurationSwapper swapper = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(types).get(yamlRuleConfig.getRuleConfigurationType());
-        return (RuleConfiguration) swapper.swapToObject(yamlRuleConfig);
     }
 }

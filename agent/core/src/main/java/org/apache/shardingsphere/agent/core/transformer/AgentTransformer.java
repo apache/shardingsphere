@@ -24,15 +24,18 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.config.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
+import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.transformer.builder.MethodAdvisorBuilder;
 import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Agent transformer.
@@ -41,6 +44,8 @@ import java.util.Map;
 public final class AgentTransformer implements Transformer {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
+    
+    private static final AtomicBoolean STARTED_FLAG = new AtomicBoolean(false);
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
@@ -56,10 +61,17 @@ public final class AgentTransformer implements Transformer {
         if (!advisorConfigs.containsKey(typeDescription.getTypeName())) {
             return builder;
         }
-        Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        AdviceFactory adviceFactory = new AdviceFactory(classLoader, pluginConfigs, pluginJars, isEnhancedForProxy);
-        AdvisorConfiguration advisorConfig = advisorConfigs.get(typeDescription.getTypeName());
-        result = new MethodAdvisorBuilder(adviceFactory, advisorConfig, typeDescription).build(result);
-        return result;
+        ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
+        startAllServices(classLoaderContext.getAgentClassLoader());
+        Builder<?> targetAdviceObjectBuilder = builder.defineField(EXTRA_DATA,
+                Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
+        return new MethodAdvisorBuilder(new AdviceFactory(classLoaderContext), advisorConfigs.get(typeDescription.getTypeName()), typeDescription).build(targetAdviceObjectBuilder);
+    }
+    
+    private void startAllServices(final ClassLoader agentClassLoader) {
+        if (STARTED_FLAG.compareAndSet(false, true)) {
+            PluginBootServiceManager.startAllServices(pluginConfigs, agentClassLoader, isEnhancedForProxy);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginBootServiceManager.closeAllServices(pluginJars)));
+        }
     }
 }

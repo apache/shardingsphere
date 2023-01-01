@@ -20,7 +20,7 @@ grammar RDLStatement;
 import BaseRule;
 
 createReadwriteSplittingRule
-    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA_ readwriteSplittingRuleDefinition)*
+    : CREATE READWRITE_SPLITTING RULE ifNotExists? readwriteSplittingRuleDefinition (COMMA_ readwriteSplittingRuleDefinition)*
     ;
 
 alterReadwriteSplittingRule
@@ -61,4 +61,8 @@ ifExists
 
 writeDataSourceQueryEnabled
     : TRUE | FALSE
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

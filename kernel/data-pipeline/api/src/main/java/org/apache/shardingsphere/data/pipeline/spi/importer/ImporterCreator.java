@@ -40,6 +40,5 @@ public interface ImporterCreator extends TypedSPI {
      * @param jobProgressListener job progress listener
      * @return importer
      */
-    Importer createImporter(ImporterConfiguration importerConfig, ImporterConnector importerConnector, PipelineChannel channel,
-                            PipelineJobProgressListener jobProgressListener);
+    Importer createImporter(ImporterConfiguration importerConfig, ImporterConnector importerConnector, PipelineChannel channel, PipelineJobProgressListener jobProgressListener);
 }

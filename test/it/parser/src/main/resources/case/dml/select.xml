@@ -4796,18 +4796,6 @@
         </from>
     </select>
 
-    <select sql-case-id="select_with_offset">
-        <projections start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7" />
-        </projections>
-        <from>
-            <simple-table name="t_new_order" start-index="14" stop-index="24" />
-        </from>
-        <limit start-index="26" stop-index="46">
-            <offset value="3" start-index="37" stop-index="37" />
-        </limit>
-    </select>
-
     <select sql-case-id="select_with_null_keyword_in_projection">
         <projections start-index="7" stop-index="31">
             <expression-projection text="null" alias="order_id" start-index="7" stop-index="22">
