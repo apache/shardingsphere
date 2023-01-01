@@ -78,15 +78,6 @@
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
-                                    <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
-                                    <exclude>com.google.guava:listenablefuture:jar:*</exclude>
-                                    <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
-                                    <exclude>org.checkerframework:checker-qual:jar:</exclude>
-                                </excludes>
-                            </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>com.google</pattern>
