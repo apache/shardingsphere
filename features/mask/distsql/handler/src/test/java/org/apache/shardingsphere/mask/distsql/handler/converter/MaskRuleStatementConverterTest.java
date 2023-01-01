@@ -49,7 +49,7 @@ public final class MaskRuleStatementConverterTest {
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty("MD5-key", "MD5-value");
+        result.setProperty("salt", "test_salt");
         return result;
     }
 }
