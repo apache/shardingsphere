@@ -38,7 +38,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginConfigurationLoader {
     
-    private static final String CONFIG_PATH = "META-INF/conf/agent.yaml";
+    private static final String CONFIG_PATH = "/conf/agent.yaml";
     
     /**
      * Load plugin configurations.
