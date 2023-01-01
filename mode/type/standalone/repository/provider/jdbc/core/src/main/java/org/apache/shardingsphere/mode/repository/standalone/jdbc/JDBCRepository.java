@@ -184,7 +184,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
             preparedStatement.setString(1, key);
             preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
-            log.error(String.format("Delete %s data by key: {} failed", getType()), key, ex);
+            log.error("Delete {} data by key: {} failed", getType(), key, ex);
         }
     }
     

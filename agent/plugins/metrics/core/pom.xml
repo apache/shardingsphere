@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <target.directory>${project.basedir}/../target/lib</target.directory>
+        <target.directory>${project.basedir}/target/lib</target.directory>
     </properties>
     
     <dependencies>
@@ -57,8 +57,40 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
+                    <minimizeJar>true</minimizeJar>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>${shade.package}.com.google.common</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.bytebuddy</pattern>
+                                    <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

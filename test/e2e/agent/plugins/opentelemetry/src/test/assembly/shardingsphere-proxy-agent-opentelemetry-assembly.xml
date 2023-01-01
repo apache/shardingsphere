@@ -25,7 +25,7 @@
     
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/plugins/tracing/target/plugins</directory>
+            <directory>${project.basedir}/../../../../../agent/plugins/tracing/type/target/plugins</directory>
             <outputDirectory>./agent/plugins</outputDirectory>
             <includes>
                 <include>shardingsphere-agent-tracing-opentelemetry-*.jar</include>

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginsConfiguration;
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

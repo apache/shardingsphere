@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import lombok.Getter;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.runner.RunWith;

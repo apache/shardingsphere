@@ -95,6 +95,16 @@ Attributes:
 
 ### Replace Data Masking Algorithm
 
+#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE Data Masking Algorithm
+
+Type: PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*                      | *DataType* | *Description*                                             |
+|-----------------------------|--------|-----------------------------------------------------------|
+| alpha-two-country-area-code | String | alpha two country area code (Optional, default value: CN) |
+
 #### TELEPHONE_RANDOM_REPLACE Data Masking Algorithm
 
 Type: TELEPHONE_RANDOM_REPLACE

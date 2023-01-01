@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.core.transformer.fixture.advice;
 
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.advice.type.ConstructorAdvice;
-import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
+import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 
 import java.lang.reflect.Method;
 import java.util.List;

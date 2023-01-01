@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.transformer.builder.advise;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 
 import java.util.Map;
