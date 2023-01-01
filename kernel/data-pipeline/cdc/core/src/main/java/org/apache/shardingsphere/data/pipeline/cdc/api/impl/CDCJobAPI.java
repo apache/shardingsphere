@@ -108,6 +108,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         yamlJobConfig.setTableNames(event.getSubscribeTableNames());
         yamlJobConfig.setSubscriptionName(event.getSubscriptionName());
         yamlJobConfig.setSubscriptionMode(event.getSubscriptionMode());
+        yamlJobConfig.setDecodeWithTX(event.isDecodeWithTX());
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(event.getDatabase());
         yamlJobConfig.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtil.convertDataNodesToLines(event.getDataNodesMap());
@@ -178,21 +179,22 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(Collections.emptyMap());
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfiguration = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
-        DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), dataSourceName, actualDataSourceConfiguration, tableNameMap, tableNameSchemaNameMapping);
+        DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, dataSourceName, actualDataSourceConfiguration, tableNameMap, tableNameSchemaNameMapping);
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, jobConfig.getTableNames(), tableNameSchemaNameMapping);
         CDCTaskConfiguration result = new CDCTaskConfiguration(dumperConfig, importerConfig);
         log.debug("buildTaskConfiguration, result={}", result);
         return result;
     }
     
-    private static DumperConfiguration buildDumperConfiguration(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSourceConfig,
+    private static DumperConfiguration buildDumperConfiguration(final CDCJobConfiguration jobConfig, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSourceConfig,
                                                                 final Map<ActualTableName, LogicTableName> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         DumperConfiguration result = new DumperConfiguration();
-        result.setJobId(jobId);
+        result.setJobId(jobConfig.getJobId());
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(sourceDataSourceConfig);
         result.setTableNameMap(tableNameMap);
         result.setTableNameSchemaNameMapping(tableNameSchemaNameMapping);
+        result.setDecodeWithTX(jobConfig.isDecodeWithTX());
         return result;
     }
     
@@ -230,13 +232,13 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     @Override
     protected PipelineJobInfo getJobInfo(final String jobId) {
-        // TODO to be implemented
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Override
     public void rollback(final String jobId) throws SQLException {
-        // TODO to be implemented
+        stop(jobId);
+        dropJob(jobId);
     }
     
     @Override

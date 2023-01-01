@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
@@ -74,7 +75,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     protected void runBlocking() {
         int batchSize = importerConfig.getBatchSize();
         if (ImporterType.INCREMENTAL == importerType) {
-            importerConnector.sendIncrementalStartEvent(batchSize);
+            importerConnector.sendIncrementalStartEvent(this, batchSize);
         }
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(batchSize, 3);
@@ -84,6 +85,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
                     processDataRecords(recordList);
                 } catch (final SQLException ex) {
                     log.error("process data records failed", ex);
+                    throw new RuntimeException(ex);
                 }
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                     break;
@@ -105,15 +107,15 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     /**
      * Ack with last data record.
      *
-     * @param lastDataRecord last data record
+     * @param cdcAckPosition cdc ack position
      */
-    public void ackWithLastDataRecord(final Record lastDataRecord) {
-        channel.ack(Collections.singletonList(lastDataRecord));
-        jobProgressListener.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
+    public void ackWithLastDataRecord(final CDCAckPosition cdcAckPosition) {
+        channel.ack(Collections.singletonList(cdcAckPosition.getLastRecord()));
+        jobProgressListener.onProgressUpdated(new PipelineJobProgressUpdatedParameter(cdcAckPosition.getDataRecordCount()));
     }
     
     @Override
     protected void doStop() {
-        
+        importerConnector.clean();
     }
 }

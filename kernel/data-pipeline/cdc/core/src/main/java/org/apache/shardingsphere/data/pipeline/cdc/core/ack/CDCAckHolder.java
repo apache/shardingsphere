@@ -15,26 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.holder;
+package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CDC ack holder.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCAckHolder {
+    
+    private static final int TIMEOUT_ACK_MILLIS = 60 * 1000 * 5;
     
     private static final CDCAckHolder INSTANCE = new CDCAckHolder();
     
-    private final Map<String, Map<CDCImporter, Record>> ackIdImporterMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<CDCImporter, CDCAckPosition>> ackIdImporterMap = new ConcurrentHashMap<>();
+    
+    private final ScheduledThreadPoolExecutor scheduleExecutor = new ScheduledThreadPoolExecutor(1);
+    
+    private CDCAckHolder() {
+        scheduleExecutor.scheduleWithFixedDelay(this::cleanUpTimeoutAckId, 60L, 60L, TimeUnit.SECONDS);
+    }
+    
+    private void cleanUpTimeoutAckId() {
+        if (ackIdImporterMap.isEmpty()) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        ackIdImporterMap.entrySet().removeIf(entry -> entry.getValue().values().stream().anyMatch(each -> now - each.getCreateTimeMills() >= TIMEOUT_ACK_MILLIS));
+    }
     
     /**
      * the ack of CDC.
@@ -42,7 +56,7 @@ public final class CDCAckHolder {
      * @param ackId ack id
      */
     public void ack(final String ackId) {
-        Map<CDCImporter, Record> importerDataRecordMap = ackIdImporterMap.get(ackId);
+        Map<CDCImporter, CDCAckPosition> importerDataRecordMap = ackIdImporterMap.remove(ackId);
         if (null != importerDataRecordMap) {
             importerDataRecordMap.forEach(CDCImporter::ackWithLastDataRecord);
         }
@@ -54,10 +68,11 @@ public final class CDCAckHolder {
      * @param importerDataRecordMap import data record map
      * @return ack id
      */
-    public String bindAckId(final Map<CDCImporter, Record> importerDataRecordMap) {
-        String ackId = generateAckId();
-        ackIdImporterMap.put(ackId, importerDataRecordMap);
-        return ackId;
+    public String bindAckIdWithPosition(final Map<CDCImporter, CDCAckPosition> importerDataRecordMap) {
+        String result = generateAckId();
+        // TODO it's might need to persist to registry center in cluster mode.
+        ackIdImporterMap.put(result, importerDataRecordMap);
+        return result;
     }
     
     private String generateAckId() {

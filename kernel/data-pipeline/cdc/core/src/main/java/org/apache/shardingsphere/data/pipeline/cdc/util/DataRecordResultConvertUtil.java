@@ -55,9 +55,9 @@ public final class DataRecordResultConvertUtil {
         if (IngestDataChangeType.INSERT.equals(dataRecord.getType())) {
             dataChangeType = DataChangeType.INSERT;
         } else if (IngestDataChangeType.UPDATE.equals(dataRecord.getType())) {
-            dataChangeType = DataChangeType.INSERT;
+            dataChangeType = DataChangeType.UPDATE;
         } else if (IngestDataChangeType.DELETE.equals(dataRecord.getType())) {
-            dataChangeType = DataChangeType.INSERT;
+            dataChangeType = DataChangeType.DELETE;
         }
         return DataRecordResult.Record.newBuilder().setTableMetaData(metaData).putAllBefore(beforeMap).putAllAfter(afterMap).setDataChangeType(dataChangeType).build();
     }

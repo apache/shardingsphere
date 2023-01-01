@@ -45,6 +45,7 @@ import org.apache.shardingsphere.proxy.backend.handler.cdc.CDCBackendHandler;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -98,7 +99,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                 stopStartSubscription(ctx, request, connectionContext);
                 break;
             case DROP_SUBSCRIPTION:
-                dropStartSubscription(ctx, request);
+                dropStartSubscription(ctx, request, connectionContext);
                 break;
             case ACK_REQUEST:
                 processAckRequest(ctx, request);
@@ -168,14 +169,18 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     }
     
     private void stopStartSubscription(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        // TODO waiting for pipeline refactoring finished
+        backendHandler.stopSubscription(connectionContext.getJobId());
         connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
         ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
     }
     
-    private void dropStartSubscription(final ChannelHandlerContext ctx, final CDCRequest request) {
-        // TODO waiting for pipeline refactoring finished
-        ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
+    private void dropStartSubscription(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+        try {
+            backendHandler.dropSubscription(connectionContext.getJobId());
+            ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
+        } catch (final SQLException ex) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, ex.getMessage()));
+        }
     }
     
     private void processAckRequest(final ChannelHandlerContext ctx, final CDCRequest request) {

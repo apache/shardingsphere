@@ -76,6 +76,8 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     private final AtomicLong processedRecordsCount = new AtomicLong(0);
     
+    private final AtomicLong inventoryRecordsCount = new AtomicLong(0);
+    
     private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
         
         @Override
@@ -104,6 +106,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
+        processedRecordsCount.addAndGet(param.getProcessedRecordsCount());
         PipelineJobProgressPersistService.notifyPersist(jobConfig.getJobId(), shardingItem);
     }
     
@@ -135,11 +138,11 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public void updateInventoryRecordsCount(final long recordsCount) {
-        // TODO to be implemented
+        inventoryRecordsCount.addAndGet(recordsCount);
     }
     
     @Override
     public long getInventoryRecordsCount() {
-        return 0;
+        return inventoryRecordsCount.get();
     }
 }

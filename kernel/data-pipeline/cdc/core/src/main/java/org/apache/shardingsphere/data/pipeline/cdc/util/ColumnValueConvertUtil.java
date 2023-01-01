@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
+import com.google.gson.Gson;
 import com.google.protobuf.BoolValue;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.BytesValue;
@@ -24,12 +25,17 @@ import com.google.protobuf.DoubleValue;
 import com.google.protobuf.FloatValue;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
+import com.google.protobuf.Message.Builder;
 import com.google.protobuf.StringValue;
+import com.google.protobuf.Struct;
+import com.google.protobuf.util.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ClobValue;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.LocalTimeValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.NullValue;
 
 import java.math.BigDecimal;
@@ -40,6 +46,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -48,6 +55,8 @@ import java.util.Date;
  */
 @Slf4j
 public final class ColumnValueConvertUtil {
+    
+    private static final Gson GSON = new Gson();
     
     /**
      * Convert java object to protobuf message.
@@ -101,6 +110,10 @@ public final class ColumnValueConvertUtil {
         if (object instanceof LocalDate) {
             return converToProtobufTimestamp(Timestamp.valueOf(((LocalDate) object).atStartOfDay()));
         }
+        if (object instanceof LocalTime) {
+            LocalTime localTime = (LocalTime) object;
+            return LocalTimeValue.newBuilder().setValue(localTime.toString()).build();
+        }
         if (object instanceof ZonedDateTime) {
             return converToProtobufTimestamp(Timestamp.valueOf(((ZonedDateTime) object).toLocalDateTime()));
         }
@@ -117,12 +130,21 @@ public final class ColumnValueConvertUtil {
                 throw new RuntimeException(ex);
             }
         }
-        log.warn(" {} can't convert to protobuf message, value {}", object.getClass().getName(), object);
-        throw new UnsupportedOperationException(String.format("Not support convert %s to protobuf message now", object.getClass()));
+        return fromJson(GSON.toJson(object));
     }
     
     private static com.google.protobuf.Timestamp converToProtobufTimestamp(final Date timestamp) {
         long millis = timestamp.getTime();
         return com.google.protobuf.Timestamp.newBuilder().setSeconds(millis / 1000).setNanos((int) ((millis % 1000) * 1000000)).build();
+    }
+    
+    private static Message fromJson(final String json) {
+        Builder structBuilder = Struct.newBuilder();
+        try {
+            JsonFormat.parser().ignoringUnknownFields().merge(json, structBuilder);
+        } catch (final InvalidProtocolBufferException ex) {
+            throw new RuntimeException(ex);
+        }
+        return structBuilder.build();
     }
 }

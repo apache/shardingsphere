@@ -15,14 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
 /**
- * Importer type.
+ * CDC ack position.
  */
-public enum ImporterType {
+@Getter
+public final class CDCAckPosition {
     
-    INVENTORY,
+    @Setter
+    private Record lastRecord;
     
-    INCREMENTAL
+    @Setter
+    private int dataRecordCount;
+    
+    private final long createTimeMills;
+    
+    public CDCAckPosition(final Record lastRecord, final int dataRecordCount) {
+        this(lastRecord, dataRecordCount, System.currentTimeMillis());
+    }
+    
+    public CDCAckPosition(final Record lastRecord, final int dataRecordCount, final long createTimeMills) {
+        this.lastRecord = lastRecord;
+        this.dataRecordCount = dataRecordCount;
+        this.createTimeMills = createTimeMills;
+    }
 }

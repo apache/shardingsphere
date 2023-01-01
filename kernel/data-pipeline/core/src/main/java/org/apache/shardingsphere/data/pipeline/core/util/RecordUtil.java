@@ -15,14 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer;
+package org.apache.shardingsphere.data.pipeline.core.util;
+
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+
+import java.util.List;
 
 /**
- * Importer type.
+ * Record util.
  */
-public enum ImporterType {
+public final class RecordUtil {
     
-    INVENTORY,
-    
-    INCREMENTAL
+    /**
+     * Get last normal record.
+     *
+     * @param records records
+     * @return last normal record.
+     */
+    public static Record getLastNormalRecord(final List<Record> records) {
+        for (int index = records.size() - 1; index >= 0; index--) {
+            Record record = records.get(index);
+            if (record.getPosition() instanceof PlaceholderPosition) {
+                continue;
+            }
+            return record;
+        }
+        return null;
+    }
 }

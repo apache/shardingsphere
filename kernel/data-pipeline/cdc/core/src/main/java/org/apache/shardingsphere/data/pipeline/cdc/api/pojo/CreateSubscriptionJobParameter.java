@@ -40,4 +40,6 @@ public final class CreateSubscriptionJobParameter {
     private final String subscriptionMode;
     
     private final Map<String, List<DataNode>> dataNodesMap;
+    
+    private final boolean decodeWithTX;
 }

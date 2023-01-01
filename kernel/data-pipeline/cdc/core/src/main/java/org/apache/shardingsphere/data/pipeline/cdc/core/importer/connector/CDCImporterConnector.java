@@ -26,16 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
+import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
-import org.apache.shardingsphere.data.pipeline.cdc.holder.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,7 +51,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 /**
  * CDC importer connector.
@@ -108,27 +108,40 @@ public final class CDCImporterConnector implements ImporterConnector {
      * @param importerType importer type
      */
     public void write(final List<Record> recordList, final CDCImporter cdcImporter, final ImporterType importerType) {
+        if (recordList.isEmpty()) {
+            return;
+        }
         if (ImporterType.INVENTORY == importerType || null == dataRecordComparator) {
-            Map<CDCImporter, Record> importerDataRecordMap = new HashMap<>();
-            importerDataRecordMap.put(cdcImporter, recordList.get(recordList.size() - 1));
+            Map<CDCImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
+            int dataRecordCount = (int) recordList.stream().filter(each -> each instanceof DataRecord).count();
+            Record lastRecord = recordList.get(recordList.size() - 1);
+            if (lastRecord instanceof FinishedRecord && 0 == dataRecordCount) {
+                cdcImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
+                return;
+            }
+            importerDataRecordMap.put(cdcImporter, new CDCAckPosition(RecordUtil.getLastNormalRecord(recordList), dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
         } else if (ImporterType.INCREMENTAL == importerType) {
             writeIntoQueue(recordList, cdcImporter);
         }
     }
     
-    private void writeImmediately(final List<Record> recordList, final Map<CDCImporter, Record> importerDataRecordMap) {
-        while (!channel.isWritable() && channel.isActive()) {
+    private void writeImmediately(final List<? extends Record> recordList, final Map<CDCImporter, CDCAckPosition> importerDataRecordMap) {
+        while (!channel.isWritable() && channel.isActive() && running) {
             doAwait();
+        }
+        if (!channel.isActive() || !running) {
+            return;
         }
         List<DataRecordResult.Record> records = new LinkedList<>();
         for (Record each : recordList) {
-            if (each instanceof DataRecord) {
-                DataRecord dataRecord = (DataRecord) each;
-                records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database, tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
+            if (!(each instanceof DataRecord)) {
+                continue;
             }
+            DataRecord dataRecord = (DataRecord) each;
+            records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database, tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
         }
-        String ackId = CDCAckHolder.getInstance().bindAckId(importerDataRecordMap);
+        String ackId = CDCAckHolder.getInstance().bindAckIdWithPosition(importerDataRecordMap);
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecords(records).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseGenerator.succeedBuilder("").setDataRecordResult(dataRecordResult).build());
     }
@@ -145,7 +158,11 @@ public final class CDCImporterConnector implements ImporterConnector {
     
     @SneakyThrows(InterruptedException.class)
     private void writeIntoQueue(final List<Record> dataRecords, final CDCImporter cdcImporter) {
-        BlockingQueue<Record> blockingQueue = incrementalRecordMap.computeIfAbsent(cdcImporter, ignored -> new ArrayBlockingQueue<>(500));
+        BlockingQueue<Record> blockingQueue = incrementalRecordMap.get(cdcImporter);
+        if (null == blockingQueue) {
+            log.warn("not find the queue to write");
+            return;
+        }
         for (Record each : dataRecords) {
             blockingQueue.put(each);
         }
@@ -154,9 +171,11 @@ public final class CDCImporterConnector implements ImporterConnector {
     /**
      * Send finished record event.
      *
+     * @param cdcImporter cdc importer
      * @param batchSize batch size
      */
-    public void sendIncrementalStartEvent(final int batchSize) {
+    public void sendIncrementalStartEvent(final CDCImporter cdcImporter, final int batchSize) {
+        incrementalRecordMap.computeIfAbsent(cdcImporter, ignored -> new ArrayBlockingQueue<>(batchSize));
         int count = runningIncrementalTaskCount.incrementAndGet();
         if (count < jobShardingCount || null == dataRecordComparator) {
             return;
@@ -166,6 +185,14 @@ public final class CDCImporterConnector implements ImporterConnector {
             incrementalImporterTask = new Thread(new CDCIncrementalImporterTask(batchSize));
             incrementalImporterTask.start();
         }
+    }
+    
+    /**
+     * Clean CDC importer connector.
+     */
+    public void clean() {
+        running = false;
+        incrementalRecordMap.clear();
     }
     
     @Override
@@ -181,38 +208,62 @@ public final class CDCImporterConnector implements ImporterConnector {
         @Override
         public void run() {
             while (running && null != dataRecordComparator) {
-                int index = 0;
-                List<Record> dataRecords = new LinkedList<>();
-                Map<CDCImporter, Record> pipelineChannelPositions = new HashMap<>(incrementalRecordMap.size(), 1);
-                while (index < batchSize) {
-                    Map<Record, CDCImporter> recordChannelMap = new HashMap<>(incrementalRecordMap.size(), 1);
-                    for (Entry<CDCImporter, BlockingQueue<Record>> entry : incrementalRecordMap.entrySet()) {
-                        BlockingQueue<Record> blockingQueue = entry.getValue();
-                        if (null == blockingQueue.peek()) {
-                            continue;
-                        }
-                        Record record = blockingQueue.poll();
-                        if (record instanceof FinishedRecord) {
-                            continue;
-                        }
-                        recordChannelMap.put(record, entry.getKey());
-                        pipelineChannelPositions.computeIfAbsent(entry.getKey(), key -> record);
-                    }
-                    List<DataRecord> filterRecord = recordChannelMap.keySet().stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList());
-                    if (filterRecord.isEmpty()) {
+                final Map<CDCImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
+                List<DataRecord> dataRecords = new LinkedList<>();
+                for (int i = 0; i < batchSize; i++) {
+                    DataRecord minimumDataRecord = findMinimumDataRecordAndSavePosition(cdcAckPositionMap);
+                    if (null == minimumDataRecord) {
                         break;
                     }
-                    DataRecord minDataRecord = Collections.min(filterRecord, dataRecordComparator);
-                    dataRecords.add(minDataRecord);
-                    pipelineChannelPositions.put(recordChannelMap.get(minDataRecord), minDataRecord);
-                    index++;
+                    dataRecords.add(minimumDataRecord);
                 }
                 if (dataRecords.isEmpty()) {
                     ThreadUtil.sleep(200, TimeUnit.MILLISECONDS);
                 } else {
-                    writeImmediately(dataRecords, pipelineChannelPositions);
+                    writeImmediately(dataRecords, cdcAckPositionMap);
                 }
             }
+        }
+        
+        private DataRecord findMinimumDataRecordAndSavePosition(final Map<CDCImporter, CDCAckPosition> cdcAckPositionMap) {
+            Map<CDCImporter, DataRecord> waitSortedMap = new HashMap<>();
+            for (Entry<CDCImporter, BlockingQueue<Record>> entry : incrementalRecordMap.entrySet()) {
+                Record peek = entry.getValue().peek();
+                if (null == peek) {
+                    continue;
+                }
+                if (peek instanceof DataRecord) {
+                    waitSortedMap.put(entry.getKey(), (DataRecord) peek);
+                }
+            }
+            if (waitSortedMap.isEmpty()) {
+                return null;
+            }
+            DataRecord minRecord = null;
+            CDCImporter belongImporter = null;
+            for (Entry<CDCImporter, DataRecord> entry : waitSortedMap.entrySet()) {
+                if (null == minRecord) {
+                    minRecord = entry.getValue();
+                    belongImporter = entry.getKey();
+                    continue;
+                }
+                if (dataRecordComparator.compare(minRecord, entry.getValue()) > 0) {
+                    minRecord = entry.getValue();
+                    belongImporter = entry.getKey();
+                }
+            }
+            if (null == minRecord) {
+                return null;
+            }
+            incrementalRecordMap.get(belongImporter).poll();
+            CDCAckPosition cdcAckPosition = cdcAckPositionMap.get(belongImporter);
+            if (null == cdcAckPosition) {
+                cdcAckPositionMap.put(belongImporter, new CDCAckPosition(minRecord, 1));
+            } else {
+                cdcAckPosition.setLastRecord(minRecord);
+                cdcAckPosition.setDataRecordCount(cdcAckPosition.getDataRecordCount());
+            }
+            return minRecord;
         }
     }
 }

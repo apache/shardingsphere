@@ -63,6 +63,10 @@ message BigDecimalValue {
   string value = 1;
 }
 
+message LocalTimeValue {
+  string value = 1;
+}
+
 message ClobValue {
   string value = 1;
 }
@@ -91,7 +95,7 @@ message DataRecordResult {
       DROP_INDEX = 9;
     }
     DataChangeType data_change_type = 5;
-    bool isDDL = 6;
+    bool is_ddl = 6;
     optional string ddl_SQL = 7;
   }
   string ack_id = 1;

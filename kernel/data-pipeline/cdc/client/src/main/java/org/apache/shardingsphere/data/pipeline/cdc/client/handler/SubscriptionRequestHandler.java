@@ -54,11 +54,13 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     private final SubscriptionMode subscribeMode;
     
+    private final boolean incrementalGlobalOrderly;
+    
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof CreateSubscriptionEvent) {
             CreateSubscriptionRequest createSubscriptionRequest = CreateSubscriptionRequest.newBuilder().setDatabase(database).setSubscriptionMode(subscribeMode).setSubscriptionName(subscriptionName)
-                    .addAllTableNames(subscribeTables).build();
+                    .addAllTableNames(subscribeTables).setIncrementalGlobalOrderly(incrementalGlobalOrderly).build();
             CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(createSubscriptionRequest).setRequestId(RequestIdUtil.generateRequestId()).build();
             ctx.writeAndFlush(request);
         }
@@ -100,7 +102,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     private void subscribeDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
         List<Record> recordsList = result.getRecordsList();
         log.debug("received records {}", recordsList);
-        // TODO to be implemented
+        // TODO data needs to be processed, such as writing to a database
         ctx.channel().writeAndFlush(CDCRequest.newBuilder().setAckRequest(AckRequest.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     
