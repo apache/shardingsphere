@@ -36,7 +36,7 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     
     @Test
     public void assertLoad() {
-        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/conf/advisors.yaml"));
+        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml"));
         assertThat(actual.getAdvisors().size(), is(1));
         assertYamlAdvisorConfiguration(actual.getAdvisors().iterator().next());
     }
@@ -84,7 +84,7 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     
     @Test
     public void assertLoadEmptyFile() {
-        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/conf/empty-advisors.yaml"));
+        YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/META-INF/conf/empty-advisors.yaml"));
         assertTrue(actual.getAdvisors().isEmpty());
     }
 }
