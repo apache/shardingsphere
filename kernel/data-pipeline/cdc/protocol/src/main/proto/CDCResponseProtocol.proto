@@ -71,6 +71,10 @@ message ClobValue {
   string value = 1;
 }
 
+message BlobValue {
+  bytes value = 1;
+}
+
 message DataRecordResult {
   message Record {
     map<string, google.protobuf.Any> before = 1;

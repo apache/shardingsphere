@@ -34,12 +34,14 @@ import com.google.protobuf.util.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BlobValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ClobValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.LocalTimeValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.NullValue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -127,6 +129,15 @@ public final class ColumnValueConvertUtil {
                 return ClobValue.newBuilder().setValue(clob.getSubString(1, (int) clob.length())).build();
             } catch (final SQLException ex) {
                 log.error("get clob length failed", ex);
+                throw new RuntimeException(ex);
+            }
+        }
+        if (object instanceof Blob) {
+            Blob blob = (Blob) object;
+            try {
+                return BlobValue.newBuilder().setValue(ByteString.copyFrom(blob.getBytes(1, (int) blob.length()))).build();
+            } catch (final SQLException ex) {
+                log.error("get blob bytes failed", ex);
                 throw new RuntimeException(ex);
             }
         }
