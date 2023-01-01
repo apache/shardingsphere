@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice;
+package org.apache.shardingsphere.agent.api;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Properties;
 
 /**
- * Wrapped class for target and provide a context to store variable during invocation.
+ * Plugin configuration.
  */
-public interface TargetAdviceObject {
+@RequiredArgsConstructor
+@Getter
+public final class PluginConfiguration {
     
-    /**
-     * Get the variable from context.
-     *
-     * @return the attachment
-     */
-    Object getAttachment();
+    private final String host;
     
-    /**
-     * Store a variable into context.
-     *
-     * @param attachment what variable you want to store
-     */
-    void setAttachment(Object attachment);
+    private final int port;
+    
+    private final String password;
+    
+    private final Properties props;
 }

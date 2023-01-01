@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice.type;
-
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+package org.apache.shardingsphere.agent.api.advice;
 
 /**
- * Constructor advice.
+ * Wrapped class for target and provide a context to store variable during invocation.
  */
-public interface ConstructorAdvice extends AgentAdvice {
+public interface TargetAdviceObject {
     
     /**
-     * Intercept the target's constructor.
-     * This method is woven after the constructor execution.
+     * Get the variable from context.
      *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * @return the attachment
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    Object getAttachment();
+    
+    /**
+     * Store a variable into context.
+     *
+     * @param attachment what variable you want to store
+     */
+    void setAttachment(Object attachment);
 }

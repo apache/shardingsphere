@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.transformer.builder.advise;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 
 import java.util.Map;
@@ -42,9 +42,9 @@ public final class AdviceFactory {
      * @return got advance
      */
     public AgentAdvice getAdvice(final String adviceClassName) {
-        String adviceInstanceCacheKey = String.format("%s_%s@%s", adviceClassName, classLoaderContext.getAppClassLoader().getClass().getName(),
-                Integer.toHexString(classLoaderContext.getAppClassLoader().hashCode()));
-        return CACHED_ADVICES.computeIfAbsent(adviceInstanceCacheKey, key -> createAdvice(adviceClassName));
+        ClassLoader appClassLoader = classLoaderContext.getAppClassLoader();
+        String cacheKey = String.format("%s_%s@%s", adviceClassName, appClassLoader.getClass().getName(), Integer.toHexString(appClassLoader.hashCode()));
+        return CACHED_ADVICES.computeIfAbsent(cacheKey, key -> createAdvice(adviceClassName));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

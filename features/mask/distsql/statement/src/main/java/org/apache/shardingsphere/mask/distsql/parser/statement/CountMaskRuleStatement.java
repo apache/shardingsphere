@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config.advisor;
+package org.apache.shardingsphere.mask.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Advisor configuration.
+ * Count mask rule statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AdvisorConfiguration {
+public final class CountMaskRuleStatement extends ShowRulesStatement {
     
-    private final String targetClassName;
-    
-    private final Collection<MethodAdvisorConfiguration> advisors = new LinkedList<>();
+    public CountMaskRuleStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }

@@ -17,9 +17,9 @@ Type: MD5
 
 Attributes:
 
-| *Name* | *DataType* | *Description*        |
-|--------| ---------- |----------------------|
-| salt   | String     | Salt value(optional) |
+| *Name* | *DataType* | *Description*         |
+|--------| ---------- |-----------------------|
+| salt   | String     | Salt value (optional) |
 
 ### Mask Data Masking Algorithm
 
@@ -95,7 +95,25 @@ Attributes:
 
 ### Replace Data Masking Algorithm
 
-TODO
+#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE Data Masking Algorithm
+
+Type: PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*                      | *DataType* | *Description*                                             |
+|-----------------------------|--------|-----------------------------------------------------------|
+| alpha-two-country-area-code | String | alpha two country area code (Optional, default value: CN) |
+
+#### TELEPHONE_RANDOM_REPLACE Data Masking Algorithm
+
+Type: TELEPHONE_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*          | *DataType* | *Description*                         |
+|-----------------|--------|---------------------------------------|
+| network-numbers | String | Network numbers (separate with comma) |
 
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.

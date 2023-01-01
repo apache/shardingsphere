@@ -142,8 +142,8 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
             ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "TEST", new Properties());
             CreateReadwriteSplittingRuleStatement statement = createSQLStatement(false, dynamicSegment, staticSegment);
             updater.checkSQLStatement(database, statement, null);
-            ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
             ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
+            ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
             updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
             assertThat(currentRuleConfig.getDataSources().size(), is(2));
         }

@@ -75,7 +75,7 @@ rules:
         replace-char: '*'
 ```
 
-Read the YAML configuration to create a data source according to the createDataSource method of `YamlShardingSphereDataSourceFactory`.
+Read the YAML configuration to create a data source according to the `createDataSource` method of `YamlShardingSphereDataSourceFactory`.
 
 ```java
 YamlShardingSphereDataSourceFactory.createDataSource(getFile());

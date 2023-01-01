@@ -27,7 +27,7 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;

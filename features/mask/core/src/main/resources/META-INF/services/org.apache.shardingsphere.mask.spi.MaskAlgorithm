@@ -22,3 +22,5 @@ org.apache.shardingsphere.mask.algorithm.cover.MaskAfterSpecialCharsAlgorithm
 org.apache.shardingsphere.mask.algorithm.cover.MaskBeforeSpecialCharsAlgorithm
 org.apache.shardingsphere.mask.algorithm.cover.MaskFirstNLastMMaskAlgorithm
 org.apache.shardingsphere.mask.algorithm.cover.MaskFromXToYMaskAlgorithm
+org.apache.shardingsphere.mask.algorithm.replace.TelephoneRandomReplaceAlgorithm
+org.apache.shardingsphere.mask.algorithm.replace.PersonalIdentityNumberRandomReplaceAlgorithm

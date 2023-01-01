@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config.plugin;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+package org.apache.shardingsphere.agent.api.advice;
 
 /**
- * Plugin configuration.
+ * Agent advice.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PluginConfiguration {
-    
-    private final String host;
-    
-    private final int port;
-    
-    private final String password;
-    
-    private final Properties props;
+public interface AgentAdvice {
 }

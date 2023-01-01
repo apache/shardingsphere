@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.advice;
+package org.apache.shardingsphere.agent.api.advice.type;
+
+import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 
 /**
- * Agent advice.
+ * Constructor advice.
  */
-public interface AgentAdvice {
+public interface ConstructorAdvice extends AgentAdvice {
+    
+    /**
+     * Intercept the target's constructor.
+     * This method is woven after the constructor execution.
+     *
+     * @param target intercepted target object
+     * @param args all arguments of the intercepted constructor
+     */
+    void onConstructor(TargetAdviceObject target, Object[] args);
 }

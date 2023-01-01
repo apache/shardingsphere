@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 
 /**
  * Meta data contexts factory advice.

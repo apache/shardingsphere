@@ -88,7 +88,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final CreateEncryptRuleStatement sqlStatement) {
         return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

@@ -21,7 +21,7 @@ import brave.Tracing;
 import brave.sampler.BoundarySampler;
 import brave.sampler.RateLimitingSampler;
 import brave.sampler.Sampler;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;

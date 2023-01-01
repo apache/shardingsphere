@@ -43,7 +43,8 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+                                                                                 final CreateReadwriteSplittingRuleStatement sqlStatement) {
         Collection<ReadwriteSplittingRuleSegment> segments = sqlStatement.getRules();
         if (!duplicatedRuleNames.isEmpty()) {
             segments.removeIf(each -> duplicatedRuleNames.contains(each.getName()));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 
 public final class MockTargetAdviceObject implements TargetAdviceObject {
     

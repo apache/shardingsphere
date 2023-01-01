@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -59,7 +58,7 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     }
     
     @Override
-    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
+    public MaskRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

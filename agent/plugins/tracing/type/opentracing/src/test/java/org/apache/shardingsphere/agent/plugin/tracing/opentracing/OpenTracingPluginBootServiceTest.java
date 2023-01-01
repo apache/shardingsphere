@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
 
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
 
