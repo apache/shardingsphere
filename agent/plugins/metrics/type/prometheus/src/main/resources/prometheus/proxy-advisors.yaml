@@ -17,14 +17,14 @@
 
 advisors:
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
-    advice: org.apache.shardingsphere.agent.metrics.core.advice.CommandExecutorTaskAdvice
+    advice: CommandExecutorTaskAdvice
     pointcuts:
       - name: run
         type: method
       - name: processException
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
-    advice: org.apache.shardingsphere.agent.metrics.core.advice.ChannelHandlerAdvice
+    advice: ChannelHandlerAdvice
     pointcuts:
       - name: channelActive
         type: method
@@ -33,24 +33,24 @@ advisors:
       - name: channelInactive
         type: method
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
-    advice: org.apache.shardingsphere.agent.metrics.core.advice.SQLRouteEngineAdvice
+    advice: SQLRouteEngineAdvice
     pointcuts:
       - name: route
         type: method
   - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
-    advice: org.apache.shardingsphere.agent.metrics.core.advice.TransactionAdvice
+    advice: TransactionAdvice
     pointcuts:
       - name: commit
         type: method
       - name: rollback
         type: method
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
-    advice: org.apache.shardingsphere.agent.metrics.core.advice.SQLParserEngineAdvice
+    advice: SQLParserEngineAdvice
     pointcuts:
       - name: parse
         type: method
   - target: org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory
-    advice: org.apache.shardingsphere.agent.metrics.core.advice.MetaDataContextsFactoryAdvice
+    advice: MetaDataContextsFactoryAdvice
     pointcuts:
       - name: create
         type: method
