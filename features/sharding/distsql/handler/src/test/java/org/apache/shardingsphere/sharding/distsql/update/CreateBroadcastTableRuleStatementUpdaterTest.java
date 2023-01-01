@@ -49,7 +49,7 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Arrays.asList("t_1", "t_2"));
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getBroadcastTables().size(), is(2));
         assertTrue(currentRuleConfig.getBroadcastTables().contains("t_1"));
@@ -68,7 +68,7 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Arrays.asList("t_1", "t_2"));
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getBroadcastTables().size(), is(4));
         assertTrue(currentRuleConfig.getBroadcastTables().contains("t_1"));
@@ -87,7 +87,7 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(true, tables);
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getBroadcastTables().size(), is(4));
         assertTrue(currentRuleConfig.getBroadcastTables().contains("t_1"));

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -62,8 +63,8 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         this(param, YamlEngine.unmarshal(param, Map.class));
     }
     
-    public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlConfig) {
-        this(YamlEngine.marshal(yamlConfig), yamlConfig);
+    public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
+        this(YamlEngine.marshal(yamlDataSourceConfig), new HashMap<>(yamlDataSourceConfig));
     }
     
     private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> yamlConfig) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
 
 import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;

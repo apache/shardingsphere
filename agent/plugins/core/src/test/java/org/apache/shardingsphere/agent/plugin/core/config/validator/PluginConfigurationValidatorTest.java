@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.core.config.validator;
 
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThrows;

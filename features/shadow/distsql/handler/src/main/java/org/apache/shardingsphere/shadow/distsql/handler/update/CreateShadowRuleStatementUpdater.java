@@ -46,7 +46,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     private Collection<String> duplicatedRuleNames = new LinkedList<>();
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShadowRuleStatement sqlStatement) {
+    public RuleConfiguration buildToBeCreatedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final CreateShadowRuleStatement sqlStatement) {
         Collection<ShadowRuleSegment> segments = sqlStatement.getRules();
         if (!duplicatedRuleNames.isEmpty()) {
             segments.removeIf(each -> duplicatedRuleNames.contains(each.getRuleName()));

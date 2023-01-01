@@ -65,10 +65,12 @@ public final class ShardingSphereServiceLoader<T> {
      * @param serviceInterface service interface
      * @param <T> type of service interface
      * @return service instances
+     * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
-        return ((ShardingSphereServiceLoader<T>) LOADERS.computeIfAbsent(serviceInterface, ShardingSphereServiceLoader::new)).getServiceInstances();
+        ShardingSphereServiceLoader<?> result = LOADERS.get(serviceInterface);
+        return (Collection<T>) (null != result ? result.getServiceInstances() : LOADERS.computeIfAbsent(serviceInterface, ShardingSphereServiceLoader::new).getServiceInstances());
     }
     
     private Collection<T> getServiceInstances() {

@@ -95,7 +95,25 @@ weight = 9
 
 ### 替换脱敏算法
 
-TODO
+#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE 脱敏算法
+
+类型：PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
+
+可配置属性：
+
+| *名称*                        | *数据类型* | *说明*                 |
+|------------------------------|----------|----------------------|
+| alpha-two-country-area-code  | String   | 两位字母国家/地区编码（可选，默认：CN）|
+
+#### TELEPHONE_RANDOM_REPLACE 脱敏算法
+
+类型：TELEPHONE_RANDOM_REPLACE
+
+可配置属性：
+
+| *名称*            | *数据类型* | *说明*        |
+|-----------------|----------|-------------|
+| network-numbers | String   | ⽹号（以英文逗号分隔） |
 
 ## 操作步骤
 1. 在脱敏规则中配置脱敏算法；

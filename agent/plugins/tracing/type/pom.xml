@@ -36,7 +36,7 @@
     </modules>
     
     <properties>
-        <target.directory>${project.basedir}/../../target/plugins</target.directory>
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
     </properties>
     
     <dependencies>
@@ -54,15 +54,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

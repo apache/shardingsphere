@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
 
 import brave.Tracing;
-import org.apache.shardingsphere.agent.config.plugin.PluginConfiguration;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
