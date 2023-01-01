@@ -56,11 +56,10 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
-        // readable bytes must greater + seqId(1b) + statusCode(1b) + header-length(19b) +
-        while (in.readableBytes() >= 2 + MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
+        // readable bytes must greater + statusCode(1b) + header-length(19b) +
+        while (in.readableBytes() >= 1 + MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
             in.markReaderIndex();
             MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
-            skipSequenceId(payload);
             checkError(payload);
             MySQLBinlogEventHeader binlogEventHeader = new MySQLBinlogEventHeader(payload, binlogContext.getChecksumLength());
             // make sure event has complete body
@@ -106,16 +105,12 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 return decodeDeleteRowsEventV2(binlogEventHeader, payload);
             default:
                 PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);
-                int remainDataLength = binlogEventHeader.getEventSize() + 2 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
+                int remainDataLength = binlogEventHeader.getEventSize() + 1 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
                 if (remainDataLength > 0) {
                     payload.skipReserved(remainDataLength);
                 }
                 return result;
         }
-    }
-    
-    private void skipSequenceId(final MySQLPacketPayload payload) {
-        payload.readInt1();
     }
     
     private void checkError(final MySQLPacketPayload payload) {

@@ -42,12 +42,9 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    private final int sequenceId;
-    
     private final Collection<Object> data;
     
     public MySQLTextResultSetRowPacket(final MySQLPacketPayload payload, final int columnCount) {
-        sequenceId = payload.readInt1();
         data = new ArrayList<>(columnCount);
         for (int i = 0; i < columnCount; i++) {
             data.add(payload.readStringLenenc());

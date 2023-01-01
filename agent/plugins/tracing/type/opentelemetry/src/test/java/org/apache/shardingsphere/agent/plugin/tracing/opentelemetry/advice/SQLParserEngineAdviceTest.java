@@ -23,7 +23,6 @@ import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
@@ -36,8 +35,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
@@ -61,8 +60,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(2));
@@ -76,9 +75,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
         advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(2));

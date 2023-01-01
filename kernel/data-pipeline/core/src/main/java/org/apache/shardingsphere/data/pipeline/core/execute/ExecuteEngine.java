@@ -22,9 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Executor engine.
@@ -77,5 +79,26 @@ public final class ExecuteEngine {
                 executeCallback.onFailure(null != cause ? cause : throwable);
             }
         }, executorService);
+    }
+    
+    /**
+     * Trigger.
+     *
+     * @param futures futures
+     * @param executeCallback execute callback on all the futures
+     */
+    public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
+        int futureCount = futures.size();
+        AtomicInteger successCount = new AtomicInteger(0);
+        // TODO call onFailure once
+        for (CompletableFuture<?> each : futures) {
+            each.whenComplete((unused, throwable) -> {
+                if (null != throwable) {
+                    executeCallback.onFailure(throwable);
+                } else if (successCount.addAndGet(1) == futureCount) {
+                    executeCallback.onSuccess();
+                }
+            });
+        }
     }
 }

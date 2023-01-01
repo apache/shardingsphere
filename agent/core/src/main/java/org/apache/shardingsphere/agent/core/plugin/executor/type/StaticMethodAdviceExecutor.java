@@ -27,7 +27,6 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
@@ -60,15 +59,13 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult invocationResult = new MethodInvocationResult();
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         if (adviceEnabled) {
-            interceptBefore(klass, method, args, invocationResult);
+            interceptBefore(klass, method, args);
         }
-        Object result;
+        Object result = null;
         try {
-            result = invocationResult.isRebased() ? invocationResult.getResult() : callable.call();
-            invocationResult.rebase(result);
+            result = callable.call();
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -78,16 +75,16 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
             throw ex;
         } finally {
             if (adviceEnabled) {
-                interceptAfter(klass, method, args, invocationResult);
+                interceptAfter(klass, method, args, result);
             }
         }
-        return invocationResult.isRebased() ? invocationResult.getResult() : result;
+        return result;
     }
     
-    private void interceptBefore(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptBefore(final Class<?> klass, final Method method, final Object[] args) {
         try {
             for (StaticMethodAdvice each : executors) {
-                each.beforeMethod(klass, method, args, invocationResult);
+                each.beforeMethod(klass, method, args);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -108,10 +105,10 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         }
     }
     
-    private void interceptAfter(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptAfter(final Class<?> klass, final Method method, final Object[] args, final Object result) {
         try {
             for (StaticMethodAdvice each : executors) {
-                each.afterMethod(klass, method, args, invocationResult);
+                each.afterMethod(klass, method, args, result);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {

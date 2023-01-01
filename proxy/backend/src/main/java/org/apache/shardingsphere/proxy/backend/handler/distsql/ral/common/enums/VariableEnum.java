@@ -39,7 +39,7 @@ public enum VariableEnum {
     public static VariableEnum getValueOf(final String variableName) {
         try {
             return valueOf(variableName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new UnsupportedVariableException(variableName);
         }
     }

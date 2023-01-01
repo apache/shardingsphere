@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALB
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -137,8 +137,8 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
             return ((EncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
         } else if (ruleConfig instanceof ShadowRuleConfiguration) {
             return ((ShadowRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof SingleTableRuleConfiguration) {
-            return !((SingleTableRuleConfiguration) ruleConfig).getDefaultDataSource().isPresent();
+        } else if (ruleConfig instanceof SingleRuleConfiguration) {
+            return !((SingleRuleConfiguration) ruleConfig).getDefaultDataSource().isPresent();
         }
         return false;
     }

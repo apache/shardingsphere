@@ -24,7 +24,6 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
@@ -38,7 +37,7 @@ public class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
                 .spanBuilder(OPERATION_NAME)
                 .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
@@ -49,7 +48,7 @@ public class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         ((Span) target.getAttachment()).end();
         ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
     }

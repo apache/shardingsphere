@@ -18,9 +18,11 @@
 <dataset>
     <metadata data-nodes="expected_dataset.t_user">
         <column name="user_id" type="numeric" />
-        <column name="address_id" type="numeric" />
-        <column name="pwd" type="varchar" />
-        <column name="status" type="varchar" />
+        <column name="user_name" type="varchar" />
+        <column name="password" type="varchar" />
+        <column name="email" type="varchar" />
+        <column name="telephone" type="varchar" />
+        <column name="creation_date" type="datetime" />
     </metadata>
     <metadata data-nodes="expected_dataset.t_user_item">
         <column name="item_id" type="numeric" />
@@ -45,10 +47,26 @@
     <row data-node="expected_dataset.t_single_table" values="2, 11, init" />
     <row data-node="expected_dataset.t_single_table" values="3, 12, init" />
     <row data-node="expected_dataset.t_single_table" values="4, 13, init" />
-    <row data-node="expected_dataset.t_user" values="10, 10000, a10, init" />
-    <row data-node="expected_dataset.t_user" values="11, 11000, b11, init" />
-    <row data-node="expected_dataset.t_user" values="12, 12000, c12, init" />
-    <row data-node="expected_dataset.t_user" values="13, 13000, d13, init" />
+    <row data-node="expected_dataset.t_user" values="10, zhangsan, 111111, zhangsan@gmail.com, 12345678900, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="11, lisi, 222222, lisi@gmail.com, 12345678901, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="12, wangwu, 333333, wangwu@gmail.com, 12345678902, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="13, zhaoliu, 444444, zhaoliu@gmail.com, 12345678903, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="14, zhuqi, 555555, zhuqi@gmail.com, 12345678904, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="15, liba, 666666, liba@gmail.com, 12345678905, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="16, wangjiu, 777777, wangjiu@gmail.com, 12345678906, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="17, zhuda, 888888, zhuda@gmail.com, 12345678907, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="18, suner, 999999, suner@gmail.com, 12345678908, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="19, zhousan, 123456, zhousan@gmail.com, 12345678909, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="20, tom, 234567, tom@gmail.com, 12345678910, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="21, kobe, 345678, kobe@gmail.com, 12345678911, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="22, jerry, 456789, jerry@gmail.com, 12345678912, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="23, james, 567890, james@gmail.com, 12345678913, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="24, wade, 012345, wade@gmail.com, 12345678914, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="25, rose, 000000, rose@gmail.com, 12345678915, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="26, bosh, 111222, bosh@gmail.com, 12345678916, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="27, jack, 222333, jack@gmail.com, 12345678917, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="28, jordan, 333444, jordan@gmail.com, 12345678918, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="29, julie, 444555, julie@gmail.com, 12345678919, 2017-08-08" />
     <row data-node="expected_dataset.t_user_item" values="100000, 10, init, 2017-08-08" />
     <row data-node="expected_dataset.t_user_item" values="110000, 11, init, 2017-08-08" />
     <row data-node="expected_dataset.t_user_item" values="120000, 12, init, 2017-08-08" />

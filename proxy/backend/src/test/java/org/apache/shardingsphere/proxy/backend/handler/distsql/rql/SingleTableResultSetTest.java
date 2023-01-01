@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableResultSet;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -139,8 +139,8 @@ public final class SingleTableResultSetTest {
         assertThat(iterator.next(), is("ds_2"));
     }
     
-    private SingleTableRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
-        SingleTableRule result = mock(SingleTableRule.class);
+    private SingleRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
+        SingleRule result = mock(SingleRule.class);
         when(result.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
         return result;
     }

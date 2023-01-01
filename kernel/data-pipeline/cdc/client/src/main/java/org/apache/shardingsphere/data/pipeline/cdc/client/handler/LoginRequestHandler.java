@@ -20,9 +20,10 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 import com.google.common.hash.Hashing;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.AttributeKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
+import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
@@ -34,8 +35,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 
-import java.util.Objects;
-
 /**
  * Login request handler.
  */
@@ -43,50 +42,57 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     
-    private static final AttributeKey<String> LOGIN_REQUEST_ID_KEY = AttributeKey.valueOf("login.request.id");
-    
     private final String username;
     
     private final String password;
     
-    private boolean loggedIn;
+    @Override
+    public void channelActive(final ChannelHandlerContext ctx) {
+        ClientConnectionContext context = new ClientConnectionContext();
+        context.setStatus(ClientConnectionStatus.CONNECTED);
+        ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).setIfAbsent(context);
+    }
     
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
-        ctx.channel().attr(LOGIN_REQUEST_ID_KEY).set(null);
+        ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).setIfAbsent(null);
     }
     
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
-        if (loggedIn) {
-            ctx.fireChannelRead(msg);
-            return;
-        }
         CDCResponse response = (CDCResponse) msg;
-        if (response.hasServerGreetingResult()) {
-            ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
-            log.info("Server greeting result, server version: {}, protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
-            sendLoginRequest(ctx);
-            return;
-        }
-        if (Status.FAILED == response.getStatus()) {
-            log.error("login failed, {}", msg);
-            return;
-        }
-        if (Status.SUCCEED == response.getStatus() && Objects.equals(ctx.channel().attr(LOGIN_REQUEST_ID_KEY).get(), response.getRequestId())) {
-            log.info("login success, username {}", username);
-            loggedIn = true;
-            ctx.fireUserEventTriggered(new CreateSubscriptionEvent());
+        ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
+        switch (connectionContext.getStatus()) {
+            case CONNECTED:
+                setLogindRequest(ctx, response, connectionContext);
+                break;
+            case NOT_LOGGED_IN:
+                sendSubscriptionEvent(ctx, response, connectionContext);
+                break;
+            default:
+                ctx.fireChannelRead(msg);
         }
     }
     
-    private void sendLoginRequest(final ChannelHandlerContext ctx) {
+    private void setLogindRequest(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
+        ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
+        log.info("Server greeting result, server version: {}, protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
         String encryptPassword = Hashing.sha256().hashBytes(password.getBytes()).toString().toUpperCase();
         LoginRequest loginRequest = LoginRequest.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(username).setPassword(encryptPassword).build()).build();
         String loginRequestId = RequestIdUtil.generateRequestId();
-        ctx.channel().attr(LOGIN_REQUEST_ID_KEY).setIfAbsent(loginRequestId);
         CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(loginRequestId).setLogin(loginRequest).build();
         ctx.writeAndFlush(data);
+        connectionContext.setStatus(ClientConnectionStatus.NOT_LOGGED_IN);
+    }
+    
+    private void sendSubscriptionEvent(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
+        if (response.getStatus() == Status.SUCCEED) {
+            log.info("login success, username {}", username);
+            connectionContext.setStatus(ClientConnectionStatus.LOGGING_IN);
+            ctx.fireUserEventTriggered(new CreateSubscriptionEvent());
+        } else {
+            log.error("login failed, username {}", username);
+        }
     }
     
     @Override

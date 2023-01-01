@@ -115,7 +115,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     }
     
     private void addDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().addDatabaseAndPersist(databaseName);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().createDatabase(databaseName);
     }
     
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
@@ -125,7 +125,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         validateHandler.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }
@@ -167,6 +167,6 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     }
     
     private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().dropDatabaseAndPersist(databaseName);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(databaseName);
     }
 }

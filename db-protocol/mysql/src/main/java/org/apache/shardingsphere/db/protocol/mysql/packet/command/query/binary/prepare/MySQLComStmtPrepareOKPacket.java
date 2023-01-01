@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -31,9 +30,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 public final class MySQLComStmtPrepareOKPacket implements MySQLPacket {
     
     private static final int STATUS = 0x00;
-    
-    @Getter
-    private final int sequenceId;
     
     private final int statementId;
     

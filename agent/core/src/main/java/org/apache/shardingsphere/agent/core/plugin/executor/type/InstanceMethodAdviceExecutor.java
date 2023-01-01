@@ -28,7 +28,6 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
@@ -62,15 +61,13 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        MethodInvocationResult invocationResult = new MethodInvocationResult();
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         if (adviceEnabled) {
-            interceptBefore(target, method, args, invocationResult);
+            interceptBefore(target, method, args);
         }
-        Object result;
+        Object result = null;
         try {
-            result = invocationResult.isRebased() ? invocationResult.getResult() : callable.call();
-            invocationResult.rebase(result);
+            result = callable.call();
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -80,16 +77,16 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
             throw ex;
         } finally {
             if (adviceEnabled) {
-                interceptAfter(target, method, args, invocationResult);
+                interceptAfter(target, method, args, result);
             }
         }
-        return invocationResult.isRebased() ? invocationResult.getResult() : result;
+        return result;
     }
     
-    private void interceptBefore(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptBefore(final TargetAdviceObject target, final Method method, final Object[] args) {
         try {
             for (InstanceMethodAdvice each : advices) {
-                each.beforeMethod(target, method, args, invocationResult);
+                each.beforeMethod(target, method, args);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -110,10 +107,10 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
         }
     }
     
-    private void interceptAfter(final TargetAdviceObject target, final Method method, final Object[] args, final MethodInvocationResult invocationResult) {
+    private void interceptAfter(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         try {
             for (InstanceMethodAdvice each : advices) {
-                each.afterMethod(target, method, args, invocationResult);
+                each.afterMethod(target, method, args, result);
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {

@@ -31,5 +31,7 @@ import java.util.Collection;
 @Getter
 public final class RegisterStorageUnitStatement extends StorageUnitDefinitionStatement {
     
+    private final boolean ifNotExists;
+    
     private final Collection<DataSourceSegment> storageUnits;
 }

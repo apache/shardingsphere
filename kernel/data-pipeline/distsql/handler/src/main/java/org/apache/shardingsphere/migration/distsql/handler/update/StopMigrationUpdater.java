@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationStatement;
 
@@ -27,11 +26,11 @@ import org.apache.shardingsphere.migration.distsql.statement.StopMigrationStatem
  */
 public final class StopMigrationUpdater implements RALUpdater<StopMigrationStatement> {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
+    private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
     @Override
     public void executeUpdate(final String databaseName, final StopMigrationStatement sqlStatement) {
-        JOB_API.stop(sqlStatement.getJobId());
+        jobAPI.stop(sqlStatement.getJobId());
     }
     
     @Override
