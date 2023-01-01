@@ -82,9 +82,9 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
+                sleep();
             }
         }
-        sleep();
     }
     
     protected void sleep() {
