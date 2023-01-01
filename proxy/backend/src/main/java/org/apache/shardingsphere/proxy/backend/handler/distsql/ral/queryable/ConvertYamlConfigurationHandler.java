@@ -39,6 +39,11 @@ import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceP
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
@@ -120,6 +125,8 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 appendEncryptDistSQL((EncryptRuleConfiguration) each, result);
             } else if (each instanceof ShadowRuleConfiguration) {
                 appendShadowDistSQL((ShadowRuleConfiguration) each, result);
+            } else if (each instanceof MaskRuleConfiguration) {
+                appendMaskDistSQL((MaskRuleConfiguration) each, result);
             }
         });
         return result.toString();
@@ -143,6 +150,9 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             } else if (each instanceof YamlShadowRuleConfiguration) {
                 YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
                 result.put(swapper.getOrder(), swapper.swapToObject((YamlShadowRuleConfiguration) each));
+            } else if (each instanceof YamlMaskRuleConfiguration) {
+                YamlMaskRuleConfigurationSwapper swapper = new YamlMaskRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlMaskRuleConfiguration) each));
             }
         });
         return result;
@@ -565,6 +575,38 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             }
         }
         return result.toString();
+    }
+    
+    private void appendMaskDistSQL(final MaskRuleConfiguration ruleConfig, final StringBuilder result) {
+        if (ruleConfig.getTables().isEmpty()) {
+            return;
+        }
+        result.append(DistSQLScriptConstants.CREATE_MASK);
+        Iterator<MaskTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
+        while (iterator.hasNext()) {
+            MaskTableRuleConfiguration tableRuleConfig = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.MASK, tableRuleConfig.getName(), getMaskColumns(tableRuleConfig.getColumns(), ruleConfig.getMaskAlgorithms())));
+            if (iterator.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
+            }
+        }
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+    }
+    
+    private String getMaskColumns(final Collection<MaskColumnRuleConfiguration> columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        StringBuilder result = new StringBuilder();
+        Iterator<MaskColumnRuleConfiguration> iterator = columnRuleConfig.iterator();
+        if (iterator.hasNext()) {
+            MaskColumnRuleConfiguration column = iterator.next();
+            String columnName = column.getLogicColumn();
+            result.append(String.format(DistSQLScriptConstants.MASK_COLUMN, columnName, getMaskAlgorithms(column, maskAlgorithms)));
+        }
+        return result.toString();
+    }
+    
+    private String getMaskAlgorithms(final MaskColumnRuleConfiguration columnRuleConfig, final Map<String, AlgorithmConfiguration> maskAlgorithms) {
+        String algorithmName = columnRuleConfig.getMaskAlgorithm();
+        return getAlgorithmType(maskAlgorithms.get(algorithmName));
     }
     
     private String getAlgorithmType(final AlgorithmConfiguration algorithmConfig) {
