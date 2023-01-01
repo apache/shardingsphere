@@ -30,6 +30,7 @@
     
     <modules>
         <module>core</module>
+        
         <module>metrics</module>
         <module>tracing</module>
         <module>logging</module>
