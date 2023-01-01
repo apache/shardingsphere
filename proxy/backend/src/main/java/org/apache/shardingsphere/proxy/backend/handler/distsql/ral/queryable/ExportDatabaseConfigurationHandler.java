@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
@@ -137,6 +138,8 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
             return ((EncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
         } else if (ruleConfig instanceof ShadowRuleConfiguration) {
             return ((ShadowRuleConfiguration) ruleConfig).getTables().isEmpty();
+        } else if (ruleConfig instanceof MaskRuleConfiguration) {
+            return ((MaskRuleConfiguration) ruleConfig).getTables().isEmpty();
         } else if (ruleConfig instanceof SingleRuleConfiguration) {
             return !((SingleRuleConfiguration) ruleConfig).getDefaultDataSource().isPresent();
         }
