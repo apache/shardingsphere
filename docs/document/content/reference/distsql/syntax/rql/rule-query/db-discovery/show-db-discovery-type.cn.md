@@ -42,11 +42,11 @@ databaseName ::=
 - 查询指定逻辑库中的数据库发现类型
 
 ```sql
-SHOW DB_DISCOVERY TYPES FROM test1;
+SHOW DB_DISCOVERY TYPES FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY TYPES FROM test1;
+mysql> SHOW DB_DISCOVERY TYPES FROM discovery_db;
 +-------------------+-----------+---------------------------------------------------+
 | name              | type      | props                                             |
 +-------------------+-----------+---------------------------------------------------+

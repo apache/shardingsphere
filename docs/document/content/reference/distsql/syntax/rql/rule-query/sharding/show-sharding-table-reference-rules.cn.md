@@ -41,11 +41,11 @@ databaseName ::=
 - 查询指定逻辑库中的分片表关联规则
 
 ```sql
-SHOW SHARDING TABLE REFERENCE RULES FROM test1;
+SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE REFERENCE RULES FROM test1;
+mysql> SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
 +-------+--------------------------+
 | name  | sharding_table_reference |
 +-------+--------------------------+

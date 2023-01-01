@@ -37,7 +37,7 @@ storageUnitName ::=
 - Set a default single table storage unit
 
 ```sql
-SET DEFAULT SINGLE TABLE STORAGE UNIT = su_0;
+SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;
 ```
 
 - Set the default single table storage unit to random storage

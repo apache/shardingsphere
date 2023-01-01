@@ -42,11 +42,11 @@ databaseName ::=
 - 查询指定逻辑库中未被使用的分片审计器
 
 ```sql
-SHOW UNUSED SHARDING AUDITORS FROM test1;
+SHOW UNUSED SHARDING AUDITORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW UNUSED SHARDING AUDITORS FROM test1;
+mysql> SHOW UNUSED SHARDING AUDITORS FROM sharding_db;
 +-------------------------------+-------------------------+-------+
 | name                          | type                    | props |
 +-------------------------------+-------------------------+-------+

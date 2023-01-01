@@ -43,11 +43,11 @@ databaseName ::=
 - 查询指定逻辑库中使用指定分片主键生成器的分片规则
 
 ```sql
-SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM test1;
+SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM test1;
+mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM sharding_db;
 +-------+--------------+
 | type  | name         |
 +-------+--------------+

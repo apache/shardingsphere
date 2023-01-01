@@ -36,7 +36,7 @@ databaseName ::=
 - 删除指定逻辑库的指定分片主键生成器
 
 ```sql
-DROP SHARDING KEY GENERATOR t_order_snowflake FROM test1;
+DROP SHARDING KEY GENERATOR t_order_snowflake FROM sharding_db;
 ```
 
 - 删除当前逻辑库的指定分片主键生成器

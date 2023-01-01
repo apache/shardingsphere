@@ -42,11 +42,11 @@ databaseName ::=
 - Query sharding key generators that are not used in the specified logical database
 
 ```sql
-SHOW UNUSED SHARDING KEY GENERATORS FROM test1;
+SHOW UNUSED SHARDING KEY GENERATORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW UNUSED SHARDING KEY GENERATORS FROM test1;
+mysql> SHOW UNUSED SHARDING KEY GENERATORS FROM sharding_db;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+

@@ -41,6 +41,23 @@ databaseName ::=
 - Query the sharding table algorithms of the specified logical database
 
 ```sql
+SHOW SHARDING ALGORITHMS FROM sharding_db;
+```
+
+```sql
+mysql> SHOW SHARDING ALGORITHMS FROM sharding_db;
++-------------------------+--------+-----------------------------------------------------+
+| name                    | type   | props                                               |
++-------------------------+--------+-----------------------------------------------------+
+| t_order_inline          | INLINE | algorithm-expression=t_order_${order_id % 2}        |
+| t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
++-------------------------+--------+-----------------------------------------------------+
+2 row in set (0.01 sec)
+```
+
+- Query the sharding table algorithms of the current logical database
+
+```sql
 SHOW SHARDING ALGORITHMS;
 ```
 

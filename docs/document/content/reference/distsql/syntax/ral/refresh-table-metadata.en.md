@@ -38,7 +38,7 @@ storageUnitName ::=
 - Refresh metadata for specified table in specified storage unit
 
 ```sql
-REFRESH TABLE METADATA t_order FROM STORAGE UNIT su_1;
+REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1;
 ```
 
 - Refresh metadata for specified table

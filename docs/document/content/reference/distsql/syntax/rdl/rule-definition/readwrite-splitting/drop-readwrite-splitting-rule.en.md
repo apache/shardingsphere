@@ -33,7 +33,7 @@ databaseName ::=
 - Drop readwrite splitting rule for specified database
 
 ```sql
-DROP READWRITE_SPLITTING RULE ms_group_1 FROM test1;
+DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
 ```
 
 - Drop readwrite splitting rule for current database

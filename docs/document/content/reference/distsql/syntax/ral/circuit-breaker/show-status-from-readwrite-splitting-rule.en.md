@@ -44,18 +44,18 @@ databaseName ::=
 - Query readwrite splitting storage unit status for specified readwrite splitting rule in specified database.
 
 ```sql
-SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM test1;
+SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM test1;
+mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 +----------+---------+----------------+
 | resource | status  | delay_time(ms) |
 +----------+---------+----------------+
-| su_0     | enabled | 0              |
-| su_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
+| ds_0     | enabled | 0              |
 | ds_1     | enabled | 0              |
+| ds_2     | enabled | 0              |
+| ds_3     | enabled | 0              |
 +----------+---------+----------------+
 4 rows in set (0.01 sec)
 ```
@@ -63,18 +63,18 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM test1;
 - Query all readwrite splitting storage unit from specified database
 
 ```sql
-SHOW STATUS FROM READWRITE_SPLITTING RULES FROM test1;
+SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM test1;
+mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 +----------+---------+----------------+
 | resource | status  | delay_time(ms) |
 +----------+---------+----------------+
-| su_0     | enabled | 0              |
-| su_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
+| ds_0     | enabled | 0              |
 | ds_1     | enabled | 0              |
+| ds_2     | enabled | 0              |
+| ds_3     | enabled | 0              |
 +----------+---------+----------------+
 4 rows in set (0.00 sec)
 ```
@@ -90,10 +90,10 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 +----------+---------+----------------+
 | resource | status  | delay_time(ms) |
 +----------+---------+----------------+
-| su_0     | enabled | 0              |
-| su_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
+| ds_0     | enabled | 0              |
 | ds_1     | enabled | 0              |
+| ds_2     | enabled | 0              |
+| ds_3     | enabled | 0              |
 +----------+---------+----------------+
 4 rows in set (0.01 sec)
 ```
@@ -109,10 +109,10 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 +----------+---------+----------------+
 | resource | status  | delay_time(ms) |
 +----------+---------+----------------+
-| su_0     | enabled | 0              |
-| su_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
+| ds_0     | enabled | 0              |
 | ds_1     | enabled | 0              |
+| ds_2     | enabled | 0              |
+| ds_3     | enabled | 0              |
 +----------+---------+----------------+
 4 rows in set (0.01 sec)
 ```

@@ -33,7 +33,7 @@ databaseName ::=
 - 为指定逻辑库删除读写分离规则
  
 ```sql
-DROP READWRITE_SPLITTING RULE ms_group_1 FROM test1;
+DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
 ```
 
 - 为当前逻辑库删除读写分离规则

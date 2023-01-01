@@ -72,7 +72,7 @@ value ::=
 - Alter storage unit using standard mode
 
 ```sql
-ALTER STORAGE UNIT su_0 (
+ALTER STORAGE UNIT ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_0,
@@ -84,7 +84,7 @@ ALTER STORAGE UNIT su_0 (
 - Alter storage unit and set connection pool parameters using standard mode
 
 ```sql
-ALTER STORAGE UNIT su_1 (
+ALTER STORAGE UNIT ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_1,
@@ -97,7 +97,7 @@ ALTER STORAGE UNIT su_1 (
 - Alter storage unit and set connection pool parameters using URL patterns
 
 ```sql
-ALTER STORAGE UNIT su_2 (
+ALTER STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,

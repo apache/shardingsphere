@@ -33,7 +33,7 @@ databaseName ::=
 - 为指定逻辑库删除默认表分片策略
  
 ```sql
-DROP DEFAULT SHARDING TABLE STRATEGY FROM test1;
+DROP DEFAULT SHARDING TABLE STRATEGY FROM sharding_db;
 ```
 
 - 为当前逻辑库删除默认库分片策略

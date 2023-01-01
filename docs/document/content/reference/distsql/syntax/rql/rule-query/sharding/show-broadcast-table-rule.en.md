@@ -39,11 +39,11 @@ databaseName ::=
 - Query broadcast tables for specified database.
 
 ```sql
-SHOW BROADCAST TABLE RULES FROM test1;
+SHOW BROADCAST TABLE RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW BROADCAST TABLE RULES FROM test1;
+mysql> SHOW BROADCAST TABLE RULES FROM sharding_db;
 +-----------------+
 | broadcast_table |
 +-----------------+

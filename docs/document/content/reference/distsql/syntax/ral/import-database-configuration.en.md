@@ -38,13 +38,13 @@ filePath ::=
 - Import the configuration in `YAML` into the specified database
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml" TO test1;
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml" TO sharding_db;
 ```
 
 - Import the configuration in `YAML` into the current database
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml";
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 ```
 
 ### Reserved word

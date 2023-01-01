@@ -45,11 +45,11 @@ databaseName ::=
 - Query database discovery rules for specified database.
 
 ```sql
-SHOW DB_DISCOVERY RULES FROM test1;
+SHOW DB_DISCOVERY RULES FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY RULES FROM test1;
+mysql> SHOW DB_DISCOVERY RULES FROM discovery_db;
 +------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
 | group_name | data_source_names | primary_data_source_name | discovery_type                                                                                    | discovery_heartbeat                                             |
 +------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+

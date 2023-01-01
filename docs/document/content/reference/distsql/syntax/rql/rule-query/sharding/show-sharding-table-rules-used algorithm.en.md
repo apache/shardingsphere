@@ -45,11 +45,11 @@ databaseName ::=
 - Query sharding table rules for the specified sharding algorithm in spicified logical database
 
 ```sql
-SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 +-------+--------------+
 | type  | name         |
 +-------+--------------+

@@ -37,7 +37,7 @@ storageUnitName ::=
 - 设置默认的单表存储单元
 
 ```sql
-SET DEFAULT SINGLE TABLE STORAGE UNIT = su_0;
+SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;
 ```
 
 - 设置默认的单表存储单元为随机储存

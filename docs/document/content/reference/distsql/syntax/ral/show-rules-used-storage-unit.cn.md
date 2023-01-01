@@ -43,11 +43,11 @@ databaseName ::=
 - 查询指定逻辑库中使用指定存储单元的规则
 
 ```sql
-SHOW RULES USED STORAGE UNIT su_1 FROM test1;
+SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW RULES USED STORAGE UNIT su_1 FROM test1;
+mysql> SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 +---------------------+------------+
 | type                | name       |
 +---------------------+------------+
@@ -60,11 +60,11 @@ mysql> SHOW RULES USED STORAGE UNIT su_1 FROM test1;
 - 查询当前逻辑库中使用指定存储单元的规则
 
 ```sql
-SHOW RULES USED STORAGE UNIT su_1;
+SHOW RULES USED STORAGE UNIT ds_1;
 ```
 
 ```sql
-mysql> SHOW RULES USED STORAGE UNIT su_1;
+mysql> SHOW RULES USED STORAGE UNIT ds_1;
 +---------------------+------------+
 | type                | name       |
 +---------------------+------------+

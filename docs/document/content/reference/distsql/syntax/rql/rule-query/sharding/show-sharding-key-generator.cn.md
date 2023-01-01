@@ -41,11 +41,11 @@ databaseName ::=
 - 查询指定逻辑库的分布式主键生成器
 
 ```sql
-SHOW SHARDING KEY GENERATORS FROM test1;
+SHOW SHARDING KEY GENERATORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING KEY GENERATORS FROM test1;
+mysql> SHOW SHARDING KEY GENERATORS FROM sharding_db;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+

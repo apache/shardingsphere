@@ -44,11 +44,11 @@ databaseName ::=
 - 查询指定逻辑库的默认分片策略
 
 ```sql
-SHOW DEFAULT SHARDING STRATEGY FROM test1;
+SHOW DEFAULT SHARDING STRATEGY FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW DEFAULT SHARDING STRATEGY FROM test1;
+mysql> SHOW DEFAULT SHARDING STRATEGY FROM sharding_db;
 +----------+----------+-----------------+-------------------------+-------------------------+-----------------------------------------------------+
 | name     | type     | sharding_column | sharding_algorithm_name | sharding_algorithm_type | sharding_algorithm_props                            |
 +----------+----------+-----------------+-------------------------+-------------------------+-----------------------------------------------------+

@@ -33,7 +33,7 @@ databaseName ::=
 - Drop default shadow algorithm for specified database
 
 ```sql
-DROP DEFAULT SHADOW ALGORITHM FROM test1;
+DROP DEFAULT SHADOW ALGORITHM FROM shadow_db;
 ```
 
 - Drop default shadow algorithm for current database

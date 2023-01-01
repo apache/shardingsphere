@@ -44,11 +44,11 @@ databaseName ::=
 - Query default sharding strategy in specified database.
 
 ```sql
-SHOW DEFAULT SHARDING STRATEGY FROM test1;
+SHOW DEFAULT SHARDING STRATEGY FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW DEFAULT SHARDING STRATEGY FROM test1;
+mysql> SHOW DEFAULT SHARDING STRATEGY FROM sharding_db;
 +----------+----------+-----------------+-------------------------+-------------------------+-----------------------------------------------------+
 | name     | type     | sharding_column | sharding_algorithm_name | sharding_algorithm_type | sharding_algorithm_props                            |
 +----------+----------+-----------------+-------------------------+-------------------------+-----------------------------------------------------+

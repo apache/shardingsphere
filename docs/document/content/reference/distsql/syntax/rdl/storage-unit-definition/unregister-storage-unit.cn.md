@@ -35,25 +35,25 @@ storageUnitName ::=
 - 移除存储单元
 
 ```sql
-UNREGISTER STORAGE UNIT su_0;
+UNREGISTER STORAGE UNIT ds_0;
 ```
 
 - 移除多个存储单元
 
 ```sql
-UNREGISTER STORAGE UNIT su_1, su_2;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
 - 忽略单表移除存储单元
 
 ```sql
-UNREGISTER STORAGE UNIT su_3 IGNORE SINGLE TABLES;
+UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;
 ```
 
 - 如果存储单元存在则移除
 
 ```sql
-UNREGISTER STORAGE UNIT IF EXISTS su_4;
+UNREGISTER STORAGE UNIT IF EXISTS ds_0;
 ```
 
 ### 保留字

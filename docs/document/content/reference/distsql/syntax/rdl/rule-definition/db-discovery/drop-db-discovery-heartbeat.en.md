@@ -36,7 +36,7 @@ databaseName ::=
 - Drop mutiple database discovery heartbeat for specified database
 
 ```sql
-DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM test1;
+DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM discovery_db;
 ```
 
 - Drop single database discovery heartbeat for current database

@@ -43,11 +43,11 @@ databaseName ::=
 - Query database discovery heartbeats for specified database.
 
 ```sql
-SHOW DB_DISCOVERY HEARTBEATS FROM test1;
+SHOW DB_DISCOVERY HEARTBEATS FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY HEARTBEATS FROM test1;
+mysql> SHOW DB_DISCOVERY HEARTBEATS FROM discovery_db;
 +-------------------+---------------------------------+
 | name              | props                           |
 +-------------------+---------------------------------+

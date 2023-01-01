@@ -38,7 +38,7 @@ databaseName ::=
 - Drop mutiple database discovery type for specified database
 
 ```sql
-DROP DB_DISCOVERY TYPE group_0_mysql_mgr, group_1_mysql_mgr FROM test1;
+DROP DB_DISCOVERY TYPE group_0_mysql_mgr, group_1_mysql_mgr FROM discovery_db;
 ```
 
 - Drop single database discovery type for current database

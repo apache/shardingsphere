@@ -36,7 +36,7 @@ databaseName ::=
 - Drop sharding algorithm for specified database.
 
 ```sql
-DROP SHARDING ALGORITHM t_order_hash_mod FROM test1;
+DROP SHARDING ALGORITHM t_order_hash_mod FROM sharding_db;
 ```
 
 - Drop sharding algorithm for current database.

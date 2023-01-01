@@ -36,7 +36,7 @@ databaseName ::=
 - Drop shadow rule for specified database
 
 ```sql
-DROP SHADOW RULE shadow_rule FROM test1;
+DROP SHADOW RULE shadow_rule FROM shadow_db;
 ```
 
 - Drop shadow rule for current database

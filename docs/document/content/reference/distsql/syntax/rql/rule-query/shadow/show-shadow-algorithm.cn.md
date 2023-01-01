@@ -42,11 +42,11 @@ databaseName ::=
 - 查询指定逻辑库中的影子算法
 
 ```sql
-SHOW SHADOW ALGORITHMS FROM test1;
+SHOW SHADOW ALGORITHMS FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW ALGORITHMS FROM test1;
+mysql> SHOW SHADOW ALGORITHMS FROM shadow_db;
 +-------------------------+-------------+-----------------------------------------+------------+
 | shadow_algorithm_name   | type        | props                                   | is_default |
 +-------------------------+-------------+-----------------------------------------+------------+

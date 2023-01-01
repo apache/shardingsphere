@@ -45,42 +45,42 @@ databaseName ::=
 - 查询指定逻辑库中多个表的元数据
 
 ```sql
-SHOW TABLE METADATA t_order, t_order_1 FROM test1;
+SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW TABLE METADATA t_order, t_order_1 FROM test1;
-+-------------+------------+--------+----------+
-| schema_name | table_name | type   | name     |
-+-------------+------------+--------+----------+
-| test1       | t_order_1  | COLUMN | order_id |
-| test1       | t_order_1  | COLUMN | user_id  |
-| test1       | t_order_1  | COLUMN | status   |
-| test1       | t_order_1  | INDEX  | PRIMARY  |
-| test1       | t_order    | COLUMN | order_id |
-| test1       | t_order    | COLUMN | user_id  |
-| test1       | t_order    | COLUMN | status   |
-| test1       | t_order    | INDEX  | PRIMARY  |
-+-------------+------------+--------+----------+
+mysql> SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
++-------------------+------------+--------+----------+
+| schema_name       | table_name | type   | name     |
++-------------------+------------+--------+----------+
+| sharding_db       | t_order_1  | COLUMN | order_id |
+| sharding_db       | t_order_1  | COLUMN | user_id  |
+| sharding_db       | t_order_1  | COLUMN | status   |
+| sharding_db       | t_order_1  | INDEX  | PRIMARY  |
+| sharding_db       | t_order    | COLUMN | order_id |
+| sharding_db       | t_order    | COLUMN | user_id  |
+| sharding_db       | t_order    | COLUMN | status   |
+| sharding_db       | t_order    | INDEX  | PRIMARY  |
++-------------------+------------+--------+----------+
 8 rows in set (0.01 sec)
 ```
 
 - 查询指定逻辑库中单个表的元数据
 
 ```sql
-SHOW TABLE METADATA t_order FROM test1;
+SHOW TABLE METADATA t_order FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW TABLE METADATA t_order FROM test1;
-+-------------+------------+--------+----------+
-| schema_name | table_name | type   | name     |
-+-------------+------------+--------+----------+
-| test1       | t_order    | COLUMN | order_id |
-| test1       | t_order    | COLUMN | user_id  |
-| test1       | t_order    | COLUMN | status   |
-| test1       | t_order    | INDEX  | PRIMARY  |
-+-------------+------------+--------+----------+
+mysql> SHOW TABLE METADATA t_order FROM sharding_db;
++-------------------+------------+--------+----------+
+| schema_name       | table_name | type   | name     |
++-------------------+------------+--------+----------+
+| sharding_db       | t_order    | COLUMN | order_id |
+| sharding_db       | t_order    | COLUMN | user_id  |
+| sharding_db       | t_order    | COLUMN | status   |
+| sharding_db       | t_order    | INDEX  | PRIMARY  |
++-------------------+------------+--------+----------+
 4 rows in set (0.00 sec)
 ```
 
@@ -92,18 +92,18 @@ SHOW TABLE METADATA t_order, t_order_1;
 
 ```sql
 mysql> SHOW TABLE METADATA t_order, t_order_1;
-+-------------+------------+--------+----------+
-| schema_name | table_name | type   | name     |
-+-------------+------------+--------+----------+
-| test1       | t_order_1  | COLUMN | order_id |
-| test1       | t_order_1  | COLUMN | user_id  |
-| test1       | t_order_1  | COLUMN | status   |
-| test1       | t_order_1  | INDEX  | PRIMARY  |
-| test1       | t_order    | COLUMN | order_id |
-| test1       | t_order    | COLUMN | user_id  |
-| test1       | t_order    | COLUMN | status   |
-| test1       | t_order    | INDEX  | PRIMARY  |
-+-------------+------------+--------+----------+
++-------------------+------------+--------+----------+
+| schema_name       | table_name | type   | name     |
++-------------------+------------+--------+----------+
+| sharding_db       | t_order_1  | COLUMN | order_id |
+| sharding_db       | t_order_1  | COLUMN | user_id  |
+| sharding_db       | t_order_1  | COLUMN | status   |
+| sharding_db       | t_order_1  | INDEX  | PRIMARY  |
+| sharding_db       | t_order    | COLUMN | order_id |
+| sharding_db       | t_order    | COLUMN | user_id  |
+| sharding_db       | t_order    | COLUMN | status   |
+| sharding_db       | t_order    | INDEX  | PRIMARY  |
++-------------------+------------+--------+----------+
 8 rows in set (0.00 sec)
 ```
 
@@ -115,14 +115,14 @@ SHOW TABLE METADATA t_order;
 
 ```sql
 mysql> SHOW TABLE METADATA t_order;
-+-------------+------------+--------+----------+
-| schema_name | table_name | type   | name     |
-+-------------+------------+--------+----------+
-| test1       | t_order    | COLUMN | order_id |
-| test1       | t_order    | COLUMN | user_id  |
-| test1       | t_order    | COLUMN | status   |
-| test1       | t_order    | INDEX  | PRIMARY  |
-+-------------+------------+--------+----------+
++-------------------+------------+--------+----------+
+| schema_name       | table_name | type   | name     |
++-------------------+------------+--------+----------+
+| sharding_db       | t_order    | COLUMN | order_id |
+| sharding_db       | t_order    | COLUMN | user_id  |
+| sharding_db       | t_order    | COLUMN | status   |
+| sharding_db       | t_order    | INDEX  | PRIMARY  |
++-------------------+------------+--------+----------+
 4 rows in set (0.01 sec)
 ```
 
