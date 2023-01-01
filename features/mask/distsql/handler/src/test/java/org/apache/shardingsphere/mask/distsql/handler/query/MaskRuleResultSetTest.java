@@ -57,7 +57,7 @@ public final class MaskRuleResultSetTest {
     }
     
     @Test
-    public void assertGetRowDataWithOutMaskRule() {
+    public void assertGetRowDataWithoutMaskRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         DatabaseDistSQLResultSet resultSet = new MaskRuleResultSet();
         resultSet.init(database, mock(ShowMaskRulesStatement.class));
