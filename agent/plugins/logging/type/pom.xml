@@ -24,37 +24,11 @@
         <artifactId>shardingsphere-agent-plugin-logging</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-logging-base</artifactId>
+    <artifactId>shardingsphere-agent-logging-type</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <target.directory>${project.basedir}/target/plugins</target.directory>
-    </properties>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>base</module>
+    </modules>
 </project>

@@ -40,13 +40,27 @@
         </fileSet>
         
         <fileSet>
-            <directory>../plugins/logging/base/target/plugins</directory>
-            <outputDirectory>./plugins</outputDirectory>
+            <directory>../plugins/core/target/lib</directory>
+            <outputDirectory>./lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../plugins/metrics/core/target/lib</directory>
+            <outputDirectory>./lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         
+        <fileSet>
+            <directory>../plugins/logging/type/target/plugins</directory>
+            <outputDirectory>./plugins</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>../plugins/tracing/type/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
@@ -57,20 +71,6 @@
         <fileSet>
             <directory>../plugins/metrics/type/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
-            <includes>
-                <include>**.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../plugins/core/target/lib</directory>
-            <outputDirectory>./lib</outputDirectory>
-            <includes>
-                <include>**.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../plugins/metrics/core/target/lib</directory>
-            <outputDirectory>./lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
