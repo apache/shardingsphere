@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class MetricsQueryResult {
+public final class MetricsQueryResult implements JsonConfiguration {
     
     private String status;
     

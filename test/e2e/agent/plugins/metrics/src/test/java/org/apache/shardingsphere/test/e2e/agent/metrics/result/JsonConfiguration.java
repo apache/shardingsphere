@@ -17,35 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics.result;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
-import java.util.Map;
-
-
 /**
- * Metrics meta data result.
+ * JSON configuration.
  */
-@Getter
-@Setter
-public final class MetricsMetaDataResult implements JsonConfiguration {
-    
-    private String status;
-    
-    private Map<String, List<Metric>> data;
-    
-    /**
-     * Metric.
-     */
-    @Getter
-    @Setter
-    public static final class Metric {
-        
-        private String type;
-        
-        private String help;
-        
-        private String unit;
-    }
+public interface JsonConfiguration {
 }
