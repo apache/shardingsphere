@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-agent-logging-type</artifactId>
         <version>5.3.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-logging-base</artifactId>
+    <artifactId>shardingsphere-agent-logging-file</artifactId>
     <name>${project.artifactId}</name>
     
     <build>
