@@ -27,7 +27,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -86,7 +86,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     }
     
     private Collection<String> buildMetricsNames() {
-        Collection<String> result = new HashSet<>();
+        Collection<String> result = new LinkedHashSet<>();
         result.add(PROXY_REQUEST);
         result.add(PROXY_COLLECTION);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
