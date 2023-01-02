@@ -35,10 +35,6 @@
         <module>zipkin</module>
     </modules>
     
-    <properties>
-        <target.directory>${project.basedir}/../target/plugins</target.directory>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

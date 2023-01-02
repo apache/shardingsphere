@@ -28,6 +28,8 @@
     <name>${project.artifactId}</name>
     
     <properties>
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
+        
         <zipkin-brave.version>5.13.2</zipkin-brave.version>
         <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
     </properties>
