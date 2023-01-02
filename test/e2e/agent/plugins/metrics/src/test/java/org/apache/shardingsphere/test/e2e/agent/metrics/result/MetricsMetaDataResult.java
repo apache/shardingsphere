@@ -23,11 +23,12 @@ import lombok.Setter;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * Metrics meta data result.
+ */
 @Getter
 @Setter
-/**
- * Metrics metadata result.
- */
 public final class MetricsMetaDataResult {
     
     private String status;

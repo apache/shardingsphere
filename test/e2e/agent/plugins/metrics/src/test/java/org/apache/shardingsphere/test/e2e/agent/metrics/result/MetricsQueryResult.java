@@ -23,11 +23,11 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
 /**
  * Metrics query result.
  */
+@Getter
+@Setter
 public final class MetricsQueryResult {
     
     private String status;
