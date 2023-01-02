@@ -83,7 +83,7 @@ public final class ProxyConfigurationLoader {
     private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfiguration) {
         serverConfiguration.getRules().removeIf(each -> each instanceof YamlGlobalRuleConfiguration);
         if (null != serverConfiguration.getAuthority()) {
-            serverConfiguration.getRules().add(serverConfiguration.getAuthority().convertToYamlAuthorityRuleConfiguration());
+            serverConfiguration.getRules().add(serverConfiguration.getAuthority());
         }
         if (null != serverConfiguration.getTransaction()) {
             serverConfiguration.getRules().add(serverConfiguration.getTransaction());
