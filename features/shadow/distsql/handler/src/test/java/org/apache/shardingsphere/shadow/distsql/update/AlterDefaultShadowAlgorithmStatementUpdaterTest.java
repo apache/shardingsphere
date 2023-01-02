@@ -62,7 +62,8 @@ public final class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteAlgorithmNotInMetaData() {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new AlgorithmConfiguration("type", props)));
-        AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
+        AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
+                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
