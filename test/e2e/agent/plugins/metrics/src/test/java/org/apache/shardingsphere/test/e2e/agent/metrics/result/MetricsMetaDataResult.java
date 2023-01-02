@@ -23,7 +23,6 @@ import lombok.Setter;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Metrics meta data result.
  */
