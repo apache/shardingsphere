@@ -21,12 +21,14 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -83,14 +85,10 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     
     @Test
     public void assertBuildAndUpdate() {
-        Properties currentProps = new Properties();
-        currentProps.put("key", "value");
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
-                Collections.singletonMap("discovery_type", new AlgorithmConfiguration("DISTSQL.FIXTURE", currentProps)));
-        Properties props = new Properties();
-        props.put("key", "value_1");
+                Collections.singletonMap("discovery_type", new AlgorithmConfiguration("DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("key", "foo_value")))));
         Set<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(
-                new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", props)));
+                new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("key", "bar_value")))));
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments), currentRuleConfig);
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig =
                 (DatabaseDiscoveryRuleConfiguration) updater.buildToBeAlteredRuleConfiguration(new AlterDatabaseDiscoveryTypeStatement(algorithmSegments));
@@ -98,6 +96,6 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
         updater.updateCurrentRuleConfiguration(currentConfig, databaseDiscoveryRuleConfig);
         assertThat(currentConfig.getDiscoveryTypes().size(), is(1));
         assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getType(), is("DISTSQL.FIXTURE"));
-        assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getProps().getProperty("key"), is("value_1"));
+        assertThat(currentConfig.getDiscoveryTypes().get("discovery_type").getProps().getProperty("key"), is("bar_value"));
     }
 }

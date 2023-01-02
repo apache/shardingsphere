@@ -20,6 +20,8 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -27,7 +29,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,10 +66,8 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     
     @Test
     public void assertLoadReplicaStatus() throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("delay-milliseconds-threshold", "15000");
         DatabaseDiscoveryProviderAlgorithm algorithm = new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm();
-        algorithm.init(props);
+        algorithm.init(PropertiesBuilder.build(new Property("delay-milliseconds-threshold", "15000")));
         DataSource dataSource = mockDataSourceForReplicaStatus();
         ReplicaDataSourceStatus actual = algorithm.loadReplicaStatus(dataSource);
         assertTrue(actual.isOnline());
