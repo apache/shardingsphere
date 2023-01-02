@@ -74,11 +74,10 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         String queryURL = props.getProperty("prometheus.query.url");
         Collection<String> metricsNames = buildMetricsNames();
         for (String each : metricsNames) {
-            String metricUrlWithParam = buildMetricURL(metaDataURL, each);
-            String queryUrlWithParam = buildMetricURL(queryURL, each);
-            
+            String metadataUrlWithParam = buildURLWithParameter(metaDataURL, each);
+            String queryUrlWithParam = buildURLWithParameter(queryURL, each);
             try {
-                assertMetadata(OkHttpUtils.getInstance().get(metricUrlWithParam, MetadataResult.class));
+                assertMetadata(OkHttpUtils.getInstance().get(metadataUrlWithParam, MetadataResult.class));
                 assertQuery(OkHttpUtils.getInstance().get(queryUrlWithParam, QueryResult.class));
             } catch (final IOException ex) {
                 log.info("http get prometheus is error :", ex);
@@ -103,12 +102,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         return result;
     }
     
-    private String buildMetricURL(final String url, final String metricsName) {
+    private String buildURLWithParameter(final String url, final String metricsName) {
         return String.join("", url, metricsName);
-    }
-    
-    private String buildMetricContentURL(final String url, final String metricsName) {
-        return String.join("", url, metricsName, "/content");
     }
     
     private void assertMetadata(final MetadataResult metadataResult) {
