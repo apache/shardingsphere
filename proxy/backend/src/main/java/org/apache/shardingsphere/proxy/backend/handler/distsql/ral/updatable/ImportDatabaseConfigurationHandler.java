@@ -35,6 +35,9 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidSt
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
@@ -159,6 +162,10 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
                 ShadowRuleConfiguration shadowRuleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject((YamlShadowRuleConfiguration) each);
                 // TODO check
                 ruleConfigs.add(shadowRuleConfig);
+            } else if (each instanceof YamlMaskRuleConfiguration) {
+                MaskRuleConfiguration maskRuleConfig = new YamlMaskRuleConfigurationSwapper().swapToObject((YamlMaskRuleConfiguration) each);
+                // TODO check
+                ruleConfigs.add(maskRuleConfig);
             }
         }
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
