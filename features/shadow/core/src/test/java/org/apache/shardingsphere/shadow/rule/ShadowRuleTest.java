@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +33,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,24 +56,13 @@ public final class ShadowRuleTest {
     
     private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
-        result.put("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", createHintProperties()));
-        result.put("user-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert")));
-        result.put("user-id-update-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update")));
-        result.put("order-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert")));
-        return result;
-    }
-    
-    private Properties createHintProperties() {
-        Properties result = new Properties();
-        result.setProperty("shadow", Boolean.TRUE.toString());
-        return result;
-    }
-    
-    private Properties createColumnProperties(final String column, final String operation) {
-        Properties result = new Properties();
-        result.setProperty("column", column);
-        result.setProperty("operation", operation);
-        result.setProperty("regex", "[1]");
+        result.put("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
+        result.put("user-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
+        result.put("user-id-update-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "update"), new Property("regex", "[1]"))));
+        result.put("order-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "order_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
         return result;
     }
     

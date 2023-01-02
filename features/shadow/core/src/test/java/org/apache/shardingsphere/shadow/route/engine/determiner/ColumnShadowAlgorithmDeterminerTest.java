@@ -23,6 +23,8 @@ import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.condition.ShadowDetermineCondition;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -34,16 +36,9 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
+        Properties props = PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "insert"), new Property("regex", "[1]"));
         assertTrue(ColumnShadowAlgorithmDeterminer.isShadow(
-                ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("REGEX_MATCH", createProperties()), ShadowAlgorithm.class), createShadowDetermineCondition()));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("column", "user_id");
-        result.setProperty("operation", "insert");
-        result.setProperty("regex", "[1]");
-        return result;
+                ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("REGEX_MATCH", props), ShadowAlgorithm.class), createShadowDetermineCondition()));
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
