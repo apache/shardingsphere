@@ -17,28 +17,49 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics.result;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
-public final class MatrixMetadataResult {
+public final class MetricsQueryResult {
     
     private String status;
     
-    private Map<String, List<Metric>> data;
+    private QueryData data;
     
     @Getter
     @Setter
-    public static final class Metric {
+    public static final class QueryData {
+        
+        private String resultType;
+        
+        private List<QueryDataResult> result;
+    }
+    
+    @Getter
+    @Setter
+    public static final class QueryDataResult {
+        
+        private QueryDataResultMetric queryDataResultMetric;
+        
+        private List<String> value;
+    }
+    
+    public static final class QueryDataResultMetric {
+    
+        @SerializedName("__name__")
+        private String name;
+        
+        private String instance;
+        
+        private String job;
+        
+        private String sql;
         
         private String type;
-        
-        private String help;
-        
-        private String unit;
     }
 }
