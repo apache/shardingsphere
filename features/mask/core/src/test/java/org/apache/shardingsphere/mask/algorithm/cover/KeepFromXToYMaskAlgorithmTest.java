@@ -53,12 +53,12 @@ public final class KeepFromXToYMaskAlgorithmTest {
     
     @Test(expected = MaskAlgorithmInitializationException.class)
     public void assertInitWhenFromXIsEmpty() {
-        new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "3"), new Property("replace-char", "+")));
+        new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
     @Test(expected = MaskAlgorithmInitializationException.class)
     public void assertInitWhenToYIsEmpty() {
-        new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "2"), new Property("to-y", ""), new Property("replace-char", "+")));
+        new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "2"), new Property("to-y", ""), new Property("replace-char", "*")));
     }
     
     @Test(expected = MaskAlgorithmInitializationException.class)
