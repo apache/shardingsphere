@@ -50,7 +50,7 @@ public final class PropertiesBuilder {
     public static class Property {
         
         private final String key;
-    
+        
         private final String value;
     }
 }
