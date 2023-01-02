@@ -27,10 +27,6 @@
     <artifactId>shardingsphere-agent-tracing-opentracing</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <target.directory>${project.basedir}/../target/plugins</target.directory>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>io.opentracing</groupId>

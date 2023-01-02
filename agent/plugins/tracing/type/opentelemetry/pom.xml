@@ -28,8 +28,6 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <target.directory>${project.basedir}/../target/plugins</target.directory>
-        
         <opentelemetry.version>1.3.0</opentelemetry.version>
         <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
     </properties>

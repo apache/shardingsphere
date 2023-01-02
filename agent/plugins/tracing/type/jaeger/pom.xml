@@ -28,8 +28,6 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <target.directory>${project.basedir}/../target/plugins</target.directory>
-        
         <jaeger-client.version>0.31.0</jaeger-client.version>
     </properties>
     
