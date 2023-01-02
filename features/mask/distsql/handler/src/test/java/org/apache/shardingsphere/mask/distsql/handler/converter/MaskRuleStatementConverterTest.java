@@ -21,11 +21,12 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,12 +45,6 @@ public final class MaskRuleStatementConverterTest {
     }
     
     private Collection<MaskColumnSegment> createColumns() {
-        return Collections.singleton(new MaskColumnSegment("user_id", new AlgorithmSegment("MD5", createProperties())));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("salt", "test_salt");
-        return result;
+        return Collections.singleton(new MaskColumnSegment("user_id", new AlgorithmSegment("MD5", PropertiesBuilder.build(new Property("salt", "test_salt")))));
     }
 }

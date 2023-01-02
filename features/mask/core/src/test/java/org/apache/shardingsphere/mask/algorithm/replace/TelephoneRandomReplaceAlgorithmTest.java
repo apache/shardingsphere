@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mask.algorithm.replace;
 
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -35,12 +35,7 @@ public final class TelephoneRandomReplaceAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new TelephoneRandomReplaceAlgorithm();
-        maskAlgorithm.init(createProperties("130, 130, 155,1702"));
-    }
-    
-    @Test(expected = MaskAlgorithmInitializationException.class)
-    public void assertInitWhenConfigNotNumberProps() {
-        maskAlgorithm.init(createProperties("130, x130, 155,1702"));
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, 130, 155,1702")));
     }
     
     @Test
@@ -55,9 +50,8 @@ public final class TelephoneRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("13012345678"), not("13012345678"));
     }
     
-    private Properties createProperties(final String networkNumbers) {
-        Properties result = new Properties();
-        result.setProperty("network-numbers", networkNumbers);
-        return result;
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenConfigNotNumberProps() {
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, x130, 155,1702")));
     }
 }

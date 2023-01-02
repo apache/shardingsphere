@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -33,7 +33,7 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new PersonalIdentityNumberRandomReplaceAlgorithm();
-        maskAlgorithm.init(createProperties());
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("alpha-two-country-area-code", "CN")));
     }
     
     @Test
@@ -43,11 +43,5 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("1234567891011121314"), is("1234567891011121314"));
         assertThat(maskAlgorithm.mask("123456"), is("123456"));
         assertThat(maskAlgorithm.mask(""), is(""));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("alpha-two-country-area-code", "CN");
-        return result;
     }
 }
