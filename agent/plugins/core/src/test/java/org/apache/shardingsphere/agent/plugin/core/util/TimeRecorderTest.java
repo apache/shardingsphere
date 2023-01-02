@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 public final class TimeRecorderTest {
     
@@ -37,7 +37,7 @@ public final class TimeRecorderTest {
     public void assertGetElapsedTimeWithRecorded() throws InterruptedException {
         TimeRecorder.INSTANCE.record();
         Thread.sleep(5L);
-        assertTrue(TimeRecorder.INSTANCE.getElapsedTime() >= 5L);
+        assertThat(TimeRecorder.INSTANCE.getElapsedTime(), greaterThanOrEqualTo(5L));
     }
     
     @Test
