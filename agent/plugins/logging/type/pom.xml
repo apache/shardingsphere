@@ -31,4 +31,8 @@
     <modules>
         <module>base</module>
     </modules>
+    
+    <properties>
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
+    </properties>
 </project>

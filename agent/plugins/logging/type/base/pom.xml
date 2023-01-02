@@ -27,10 +27,6 @@
     <artifactId>shardingsphere-agent-logging-base</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <target.directory>${project.basedir}/../target/plugins</target.directory>
-    </properties>
-    
     <build>
         <plugins>
             <plugin>
