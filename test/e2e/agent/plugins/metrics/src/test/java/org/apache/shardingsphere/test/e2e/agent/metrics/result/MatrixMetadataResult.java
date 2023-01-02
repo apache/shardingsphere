@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public final class MetadataResult {
+public final class MatrixMetadataResult {
     
     private String status;
     

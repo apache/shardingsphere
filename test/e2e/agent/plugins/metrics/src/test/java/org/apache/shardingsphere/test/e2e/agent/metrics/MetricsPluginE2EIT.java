@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
-import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetadataMatrixResult;
-import org.apache.shardingsphere.test.e2e.agent.metrics.result.QueryMatrixResult;
+import org.apache.shardingsphere.test.e2e.agent.metrics.result.MatrixMetadataResult;
+import org.apache.shardingsphere.test.e2e.agent.metrics.result.MatrixQueryResult;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -77,8 +77,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
             String metadataUrlWithParam = buildUrlWithParameter(metaDataURL, each);
             String queryUrlWithParam = buildUrlWithParameter(queryURL, each);
             try {
-                assertMetadata(OkHttpUtils.getInstance().get(metadataUrlWithParam, MetadataMatrixResult.class));
-                assertQuery(OkHttpUtils.getInstance().get(queryUrlWithParam, QueryMatrixResult.class));
+                assertMetadata(OkHttpUtils.getInstance().get(metadataUrlWithParam, MatrixMetadataResult.class));
+                assertQuery(OkHttpUtils.getInstance().get(queryUrlWithParam, MatrixQueryResult.class));
             } catch (final IOException ex) {
                 log.info("http get prometheus is error :", ex);
             }
@@ -106,14 +106,15 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         return String.join("", url, metricsName);
     }
     
-    private void assertMetadata(final MetadataMatrixResult metadataMatrixResult) {
-        assertThat(metadataMatrixResult.getStatus(), is("success"));
-        assertNotNull(metadataMatrixResult.getData());
+    // TODO remove if metadata result is not detailed.
+    private void assertMetadata(final MatrixMetadataResult matrixMetadataResult) {
+        assertThat(matrixMetadataResult.getStatus(), is("success"));
+        assertNotNull(matrixMetadataResult.getData());
     }
     
-    private static void assertQuery(final QueryMatrixResult queryMatrixResult) {
-        assertThat(queryMatrixResult.getStatus(), is("success"));
-        assertNotNull(queryMatrixResult.getData());
-        assertFalse(queryMatrixResult.getData().getResult().isEmpty());
+    // TODO add more detailed assert
+    private static void assertQuery(final MatrixQueryResult matrixQueryResult) {
+        assertThat(matrixQueryResult.getStatus(), is("success"));
+        assertFalse(matrixQueryResult.getData().getResult().isEmpty());
     }
 }

@@ -237,7 +237,7 @@ Reasons:
     private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem each : orderByItems) {
-            Object value = queryMatrixResult.getValue(each.getIndex(), Object.class);
+            Object value = matrixQueryResult.getValue(each.getIndex(), Object.class);
             Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
         }
