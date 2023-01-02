@@ -80,7 +80,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
                 assertMetadata(OkHttpUtils.getInstance().get(metadataURLWithParam, MetricsMetadataResult.class));
                 assertQuery(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
             } catch (final IOException ex) {
-                log.info("http get prometheus is error :", ex);
+                log.info("access prometheus HTTP Rest API error :", ex);
             }
         }
     }
