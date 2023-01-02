@@ -25,7 +25,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public final class QueryResult {
+public final class QueryMatrixResult {
     
     private String status;
     
