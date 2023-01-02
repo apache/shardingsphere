@@ -17,23 +17,31 @@
 
 package org.apache.shardingsphere.agent.plugin.core.util;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThrows;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TimeRecorderTest {
-
-    @Test
-    public void assertRecordedElapsedTimeIsCorrectWhenCurrentRecorderIsPresent() throws InterruptedException {
-        TimeRecorder.INSTANCE.record();
-        Thread.sleep(5);
-        assertTrue(TimeRecorder.INSTANCE.getElapsedTime() >= 5);
-    }
-
-    @Test
-    public void assertElapsedTimeThrowsNullPointerExceptionWhenCurrentRecorderIsNotPresent() {
+    
+    @Before
+    @After
+    public void reset() {
         TimeRecorder.INSTANCE.clean();
-        assertThrows(NullPointerException.class, TimeRecorder.INSTANCE::getElapsedTime);
+    }
+    
+    @Test
+    public void assertGetElapsedTimeWithRecorded() throws InterruptedException {
+        TimeRecorder.INSTANCE.record();
+        Thread.sleep(5L);
+        assertTrue(TimeRecorder.INSTANCE.getElapsedTime() >= 5L);
+    }
+    
+    @Test
+    public void assertGetElapsedTimeWithoutRecorded() {
+        assertThat(TimeRecorder.INSTANCE.getElapsedTime(), is(0L));
     }
 }
