@@ -74,11 +74,11 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         String queryURL = props.getProperty("prometheus.query.url");
         Collection<String> metricsNames = buildMetricsNames();
         for (String each : metricsNames) {
-            String metadataUrlWithParam = buildUrlWithParameter(metaDataURL, each);
-            String queryUrlWithParam = buildUrlWithParameter(queryURL, each);
+            String metadataURLWithParam = buildURLWithParameter(metaDataURL, each);
+            String queryURLWithParam = buildURLWithParameter(queryURL, each);
             try {
-                assertMetadata(OkHttpUtils.getInstance().get(metadataUrlWithParam, MetricsMetadataResult.class));
-                assertQuery(OkHttpUtils.getInstance().get(queryUrlWithParam, MetricsQueryResult.class));
+                assertMetadata(OkHttpUtils.getInstance().get(metadataURLWithParam, MetricsMetadataResult.class));
+                assertQuery(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
             } catch (final IOException ex) {
                 log.info("http get prometheus is error :", ex);
             }
@@ -102,14 +102,14 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         return result;
     }
     
-    private String buildUrlWithParameter(final String url, final String metricsName) {
+    private String buildURLWithParameter(final String url, final String metricsName) {
         return String.join("", url, metricsName);
     }
     
     // TODO remove if metadata result is not detailed.
-    private void assertMetadata(final MetricsMetadataResult matrixMetadataResult) {
-        assertThat(matrixMetadataResult.getStatus(), is("success"));
-        assertNotNull(matrixMetadataResult.getData());
+    private void assertMetadata(final MetricsMetadataResult metricsMetadataResult) {
+        assertThat(metricsMetadataResult.getStatus(), is("success"));
+        assertNotNull(metricsMetadataResult.getData());
     }
     
     // TODO add more detailed assert
