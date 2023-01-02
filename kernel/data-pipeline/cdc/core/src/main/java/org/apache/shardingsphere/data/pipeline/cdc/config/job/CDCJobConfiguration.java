@@ -50,6 +50,8 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final List<JobDataNodeLine> jobShardingDataNodes;
     
+    private final boolean decodeWithTX;
+    
     private final int concurrency;
     
     private final int retryTimes;

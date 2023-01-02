@@ -49,6 +49,8 @@ public final class YamlCDCJobConfiguration implements YamlPipelineJobConfigurati
     
     private List<String> jobShardingDataNodes;
     
+    private boolean decodeWithTX;
+    
     private int concurrency = 1;
     
     private int retryTimes;

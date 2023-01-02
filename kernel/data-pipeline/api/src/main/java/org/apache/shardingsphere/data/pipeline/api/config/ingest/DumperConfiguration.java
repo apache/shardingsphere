@@ -50,6 +50,8 @@ public class DumperConfiguration {
     
     private TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
+    private boolean decodeWithTX;
+    
     /**
      * Get logic table name.
      *

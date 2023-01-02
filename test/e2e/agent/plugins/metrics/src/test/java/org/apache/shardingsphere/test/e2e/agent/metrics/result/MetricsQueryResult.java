@@ -62,7 +62,7 @@ public final class MetricsQueryResult implements JsonConfiguration {
      * Query data result metric.
      */
     public static final class QueryDataResultMetric {
-    
+        
         @SerializedName("__name__")
         private String name;
         
