@@ -38,7 +38,7 @@ public final class KeepFirstNLastMMaskAlgorithmTest {
     
     @Test
     public void assertMask() {
-        assertThat( maskAlgorithm.mask("abc123456"), is("ab**23456"));
+        assertThat(maskAlgorithm.mask("abc123456"), is("ab**23456"));
     }
     
     @Test
