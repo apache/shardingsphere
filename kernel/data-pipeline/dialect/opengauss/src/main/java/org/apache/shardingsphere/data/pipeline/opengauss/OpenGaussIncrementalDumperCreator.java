@@ -34,7 +34,7 @@ public final class OpenGaussIncrementalDumperCreator implements IncrementalDumpe
     @Override
     public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WALPosition> position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new OpenGaussWALDumper(dumperConfig, position, channel, metaDataLoader, false);
+        return new OpenGaussWALDumper(dumperConfig, position, channel, metaDataLoader);
     }
     
     @Override

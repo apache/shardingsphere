@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnect
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
@@ -33,6 +34,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscr
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.util.List;
 
@@ -51,11 +54,13 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     private final SubscriptionMode subscribeMode;
     
+    private final boolean incrementalGlobalOrderly;
+    
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof CreateSubscriptionEvent) {
             CreateSubscriptionRequest createSubscriptionRequest = CreateSubscriptionRequest.newBuilder().setDatabase(database).setSubscriptionMode(subscribeMode).setSubscriptionName(subscriptionName)
-                    .addAllTableNames(subscribeTables).build();
+                    .addAllTableNames(subscribeTables).setIncrementalGlobalOrderly(incrementalGlobalOrderly).build();
             CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(createSubscriptionRequest).setRequestId(RequestIdUtil.generateRequestId()).build();
             ctx.writeAndFlush(request);
         }
@@ -64,7 +69,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         CDCResponse response = (CDCResponse) msg;
-        if (response.getStatus() == Status.FAILED) {
+        if (response.getStatus() != Status.SUCCEED) {
             log.error("received error response {}", msg);
         }
         ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
@@ -77,7 +82,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
         } else if (connectionContext.getStatus() == ClientConnectionStatus.CREATING_SUBSCRIPTION) {
             startSubscription(response, connectionContext);
         } else {
-            subscribeDataRecords(ctx);
+            subscribeDataRecords(ctx, response.getDataRecordResult());
         }
     }
     
@@ -94,8 +99,11 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
         connectionContext.setStatus(ClientConnectionStatus.SUBSCRIBING);
     }
     
-    private void subscribeDataRecords(final ChannelHandlerContext ctx) {
-        // TODO to be implemented
+    private void subscribeDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
+        List<Record> recordsList = result.getRecordsList();
+        log.debug("received records {}", recordsList);
+        // TODO data needs to be processed, such as writing to a database
+        ctx.channel().writeAndFlush(CDCRequest.newBuilder().setAckRequest(AckRequest.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
+import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
@@ -26,8 +27,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CDCImporterCreatorTest {
@@ -37,6 +41,7 @@ public final class CDCImporterCreatorTest {
     
     @Test
     public void assertCreateCDCImporter() {
-        assertThat(TypedSPIRegistry.getRegisteredService(ImporterCreator.class, "CDC").createImporter(importerConfig, new CDCImporterConnector(null), null, null), instanceOf(CDCImporter.class));
+        CDCImporterConnector importerConnector = new CDCImporterConnector(mock(Channel.class), "test", 1, Collections.emptyList(), null);
+        assertThat(TypedSPIRegistry.getRegisteredService(ImporterCreator.class, "CDC").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(CDCImporter.class));
     }
 }

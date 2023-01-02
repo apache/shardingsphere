@@ -15,31 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-
-import java.util.List;
-import java.util.Map;
+package org.apache.shardingsphere.data.pipeline.spi.importer;
 
 /**
- * Create subscription job parameter.
+ * Importer type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateSubscriptionJobParameter {
+public enum ImporterType {
     
-    private final String database;
+    INVENTORY,
     
-    private final List<String> subscribeTableNames;
-    
-    private final String subscriptionName;
-    
-    private final String subscriptionMode;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
+    INCREMENTAL
 }

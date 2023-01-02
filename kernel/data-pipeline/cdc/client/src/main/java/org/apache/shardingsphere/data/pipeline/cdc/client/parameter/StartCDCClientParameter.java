@@ -46,4 +46,6 @@ public final class StartCDCClientParameter {
     private String subscriptionName;
     
     private SubscriptionMode subscriptionMode = SubscriptionMode.INCREMENTAL;
+    
+    private boolean incrementalGlobalOrderly;
 }

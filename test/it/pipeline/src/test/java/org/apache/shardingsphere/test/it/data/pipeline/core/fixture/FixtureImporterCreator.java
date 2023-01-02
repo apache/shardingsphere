@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
+import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 /**
@@ -32,7 +33,7 @@ public final class FixtureImporterCreator implements ImporterCreator {
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig,
                                    final ImporterConnector importerConnector, final PipelineChannel channel,
-                                   final PipelineJobProgressListener jobProgressListener) {
+                                   final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
         return new FixtureImporter(importerConfig, importerConnector, channel, jobProgressListener);
     }
     

@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-
-import java.util.List;
-import java.util.Map;
+import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
 /**
- * Create subscription job parameter.
+ * CDC ack position.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateSubscriptionJobParameter {
+@AllArgsConstructor
+public final class CDCAckPosition {
     
-    private final String database;
+    @Setter
+    private Record lastRecord;
     
-    private final List<String> subscribeTableNames;
+    @Setter
+    private int dataRecordCount;
     
-    private final String subscriptionName;
+    private final long createTimeMills;
     
-    private final String subscriptionMode;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
+    public CDCAckPosition(final Record lastRecord, final int dataRecordCount) {
+        this(lastRecord, dataRecordCount, System.currentTimeMillis());
+    }
 }
