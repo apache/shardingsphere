@@ -25,6 +25,9 @@ import java.util.List;
 
 @Getter
 @Setter
+/**
+ * Metrics query result.
+ */
 public final class MetricsQueryResult {
     
     private String status;

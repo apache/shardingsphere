@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
-import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetadataResult;
+import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult;
 import org.junit.Test;
 
@@ -74,13 +74,13 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         String queryURL = props.getProperty("prometheus.query.url");
         Collection<String> metricsNames = buildMetricsNames();
         for (String each : metricsNames) {
-            String metadataURLWithParam = buildURLWithParameter(metaDataURL, each);
+            String metaDataURLWithParam = buildURLWithParameter(metaDataURL, each);
             String queryURLWithParam = buildURLWithParameter(queryURL, each);
             try {
-                assertMetadata(OkHttpUtils.getInstance().get(metadataURLWithParam, MetricsMetadataResult.class));
+                assertMetadata(OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class));
                 assertQuery(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
             } catch (final IOException ex) {
-                log.info("access prometheus HTTP Rest API error :", ex);
+                log.info("access prometheus HTTP restful API error :", ex);
             }
         }
     }
@@ -107,9 +107,9 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     }
     
     // TODO remove if metadata result is not detailed.
-    private void assertMetadata(final MetricsMetadataResult metricsMetadataResult) {
-        assertThat(metricsMetadataResult.getStatus(), is("success"));
-        assertNotNull(metricsMetadataResult.getData());
+    private void assertMetadata(final MetricsMetaDataResult metricsMetaDataResult) {
+        assertThat(metricsMetaDataResult.getStatus(), is("success"));
+        assertNotNull(metricsMetaDataResult.getData());
     }
     
     // TODO add more detailed assert

@@ -25,7 +25,10 @@ import java.util.Map;
 
 @Getter
 @Setter
-public final class MetricsMetadataResult {
+/**
+ * Metrics metadata result.
+ */
+public final class MetricsMetaDataResult {
     
     private String status;
     
