@@ -22,6 +22,8 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,13 +40,7 @@ public final class AESEncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("AES", createProperties()), EncryptAlgorithm.class);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("aes-key-value", "test");
-        return result;
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "test"))), EncryptAlgorithm.class);
     }
     
     @Test(expected = IllegalArgumentException.class)

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,9 +56,7 @@ public final class MD5EncryptAlgorithmTest {
     
     @Test
     public void assertEncryptWhenConfigSalt() {
-        Properties props = new Properties();
-        props.setProperty("salt", "202cb962ac5907");
-        encryptAlgorithm.init(props);
+        encryptAlgorithm.init(PropertiesBuilder.build(new Property("salt", "202cb962ac5907")));
         assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("0c243d2934937738f36514035d95344a"));
     }
     
