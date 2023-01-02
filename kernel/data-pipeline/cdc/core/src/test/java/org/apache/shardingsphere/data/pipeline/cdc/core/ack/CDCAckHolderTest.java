@@ -50,15 +50,15 @@ public final class CDCAckHolderTest {
     }
     
     @Test
-    public void assertCleanUpTimeoutAckId() throws NoSuchMethodException {
+    public void assertCleanUpTimeoutAckId() {
         CDCAckHolder cdcAckHolder = CDCAckHolder.getInstance();
         final Map<CDCImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
         CDCImporter cdcImporter = mock(CDCImporter.class);
         importerDataRecordMap.put(cdcImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0, System.currentTimeMillis() - 60 * 1000 * 10));
         cdcAckHolder.bindAckIdWithPosition(importerDataRecordMap);
-        ReflectionUtil.invokeMethod(cdcAckHolder.getClass().getDeclaredMethod("cleanUpTimeoutAckId"), cdcAckHolder);
-        Optional<Map<String, Map<CDCImporter, CDCAckPosition>>> ackIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
-        assertTrue(ackIdImporterMap.isPresent());
-        assertTrue(ackIdImporterMap.get().isEmpty());
+        cdcAckHolder.cleanUp(cdcImporter);
+        Optional<Map<String, Map<CDCImporter, CDCAckPosition>>> actualAckIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
+        assertTrue(actualAckIdImporterMap.isPresent());
+        assertTrue(actualAckIdImporterMap.get().isEmpty());
     }
 }

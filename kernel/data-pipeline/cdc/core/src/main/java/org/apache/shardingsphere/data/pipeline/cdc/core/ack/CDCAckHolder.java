@@ -17,38 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * CDC ack holder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCAckHolder {
-    
-    private static final int TIMEOUT_ACK_MILLIS = 60 * 1000 * 5;
     
     private static final CDCAckHolder INSTANCE = new CDCAckHolder();
     
     private final Map<String, Map<CDCImporter, CDCAckPosition>> ackIdImporterMap = new ConcurrentHashMap<>();
-    
-    private final ScheduledThreadPoolExecutor scheduleExecutor = new ScheduledThreadPoolExecutor(1);
-    
-    private CDCAckHolder() {
-        scheduleExecutor.scheduleWithFixedDelay(this::cleanUpTimeoutAckId, 60L, 60L, TimeUnit.SECONDS);
-    }
-    
-    private void cleanUpTimeoutAckId() {
-        if (ackIdImporterMap.isEmpty()) {
-            return;
-        }
-        long now = System.currentTimeMillis();
-        ackIdImporterMap.entrySet().removeIf(entry -> entry.getValue().values().stream().anyMatch(each -> now - each.getCreateTimeMills() >= TIMEOUT_ACK_MILLIS));
-    }
     
     /**
      * the ack of CDC.
@@ -77,6 +62,18 @@ public final class CDCAckHolder {
     
     private String generateAckId() {
         return "ACK-" + UUID.randomUUID();
+    }
+    
+    /**
+     * Clean up.
+     *
+     * @param cdcImporter CDC importer
+     */
+    public void cleanUp(final CDCImporter cdcImporter) {
+        if (ackIdImporterMap.isEmpty()) {
+            return;
+        }
+        ackIdImporterMap.entrySet().removeIf(entry -> entry.getValue().containsKey(cdcImporter));
     }
     
     /**

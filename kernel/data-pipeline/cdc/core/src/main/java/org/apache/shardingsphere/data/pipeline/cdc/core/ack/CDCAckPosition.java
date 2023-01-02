@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
  * CDC ack position.
  */
 @Getter
+@AllArgsConstructor
 public final class CDCAckPosition {
     
     @Setter
@@ -37,11 +39,5 @@ public final class CDCAckPosition {
     
     public CDCAckPosition(final Record lastRecord, final int dataRecordCount) {
         this(lastRecord, dataRecordCount, System.currentTimeMillis());
-    }
-    
-    public CDCAckPosition(final Record lastRecord, final int dataRecordCount, final long createTimeMills) {
-        this.lastRecord = lastRecord;
-        this.dataRecordCount = dataRecordCount;
-        this.createTimeMills = createTimeMills;
     }
 }

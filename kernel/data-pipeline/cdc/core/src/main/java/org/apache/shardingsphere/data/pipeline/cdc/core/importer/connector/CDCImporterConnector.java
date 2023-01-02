@@ -31,8 +31,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
+import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
@@ -42,7 +43,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -207,11 +207,11 @@ public final class CDCImporterConnector implements ImporterConnector {
         
         @Override
         public void run() {
-            while (running && null != dataRecordComparator) {
-                final Map<CDCImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
+            while (running) {
+                Map<CDCImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
                 List<DataRecord> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {
-                    DataRecord minimumDataRecord = findMinimumDataRecordAndSavePosition(cdcAckPositionMap);
+                    DataRecord minimumDataRecord = CDCDataRecordUtil.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
                     if (null == minimumDataRecord) {
                         break;
                     }
@@ -223,47 +223,6 @@ public final class CDCImporterConnector implements ImporterConnector {
                     writeImmediately(dataRecords, cdcAckPositionMap);
                 }
             }
-        }
-        
-        private DataRecord findMinimumDataRecordAndSavePosition(final Map<CDCImporter, CDCAckPosition> cdcAckPositionMap) {
-            Map<CDCImporter, DataRecord> waitSortedMap = new HashMap<>();
-            for (Entry<CDCImporter, BlockingQueue<Record>> entry : incrementalRecordMap.entrySet()) {
-                Record peek = entry.getValue().peek();
-                if (null == peek) {
-                    continue;
-                }
-                if (peek instanceof DataRecord) {
-                    waitSortedMap.put(entry.getKey(), (DataRecord) peek);
-                }
-            }
-            if (waitSortedMap.isEmpty()) {
-                return null;
-            }
-            DataRecord minRecord = null;
-            CDCImporter belongImporter = null;
-            for (Entry<CDCImporter, DataRecord> entry : waitSortedMap.entrySet()) {
-                if (null == minRecord) {
-                    minRecord = entry.getValue();
-                    belongImporter = entry.getKey();
-                    continue;
-                }
-                if (dataRecordComparator.compare(minRecord, entry.getValue()) > 0) {
-                    minRecord = entry.getValue();
-                    belongImporter = entry.getKey();
-                }
-            }
-            if (null == minRecord) {
-                return null;
-            }
-            incrementalRecordMap.get(belongImporter).poll();
-            CDCAckPosition cdcAckPosition = cdcAckPositionMap.get(belongImporter);
-            if (null == cdcAckPosition) {
-                cdcAckPositionMap.put(belongImporter, new CDCAckPosition(minRecord, 1));
-            } else {
-                cdcAckPosition.setLastRecord(minRecord);
-                cdcAckPosition.setDataRecordCount(cdcAckPosition.getDataRecordCount());
-            }
-            return minRecord;
         }
     }
 }

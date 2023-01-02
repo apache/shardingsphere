@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
@@ -64,7 +65,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     public CDCImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel, final PipelineJobProgressListener jobProgressListener,
                        final ImporterType importerType) {
         this.importerConfig = importerConfig;
-        rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
+        rateLimitAlgorithm = null == importerConfig ? null : importerConfig.getRateLimitAlgorithm();
         this.channel = channel;
         this.importerConnector = (CDCImporterConnector) importerConnector;
         this.jobProgressListener = jobProgressListener;
@@ -117,5 +118,6 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     @Override
     protected void doStop() {
         importerConnector.clean();
+        CDCAckHolder.getInstance().cleanUp(this);
     }
 }
