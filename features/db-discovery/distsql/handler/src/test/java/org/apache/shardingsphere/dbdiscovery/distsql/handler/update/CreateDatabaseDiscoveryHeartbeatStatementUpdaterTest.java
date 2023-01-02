@@ -22,6 +22,8 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -32,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,34 +48,28 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateHeartbeatNames() {
-        DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
-        DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
+        DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", PropertiesBuilder.build(new Property("key", "value")));
+        DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat", PropertiesBuilder.build(new Property("key", "value")));
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithExistDiscoveryHeartbeatName() {
-        DatabaseDiscoveryHeartbeatSegment segment = new DatabaseDiscoveryHeartbeatSegment("heartbeat", createProperties("key", "value"));
+        DatabaseDiscoveryHeartbeatSegment segment = new DatabaseDiscoveryHeartbeatSegment("heartbeat", PropertiesBuilder.build(new Property("key", "value")));
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.singletonMap("heartbeat", null), Collections.emptyMap());
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryHeartbeatStatement(Collections.singleton(segment)), ruleConfig);
     }
     
     @Test
     public void assertUpdate() {
-        DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_1", createProperties("key_1", "value_1"));
-        DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_2", createProperties("key_2", "value_2"));
+        DatabaseDiscoveryHeartbeatSegment segment1 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_1", PropertiesBuilder.build(new Property("key_1", "value_1")));
+        DatabaseDiscoveryHeartbeatSegment segment2 = new DatabaseDiscoveryHeartbeatSegment("heartbeat_2", PropertiesBuilder.build(new Property("key_2", "value_2")));
         DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         DatabaseDiscoveryRuleConfiguration ruleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new CreateDatabaseDiscoveryHeartbeatStatement(Arrays.asList(segment1, segment2)));
         updater.updateCurrentRuleConfiguration(currentConfig, ruleConfig);
         assertThat(currentConfig.getDiscoveryHeartbeats().size(), is(2));
-        assertThat(currentConfig.getDiscoveryHeartbeats().get("heartbeat_1").getProps(), is(createProperties("key_1", "value_1")));
-        assertThat(currentConfig.getDiscoveryHeartbeats().get("heartbeat_2").getProps(), is(createProperties("key_2", "value_2")));
-    }
-    
-    private Properties createProperties(final String key, final String value) {
-        Properties result = new Properties();
-        result.put(key, value);
-        return result;
+        assertThat(currentConfig.getDiscoveryHeartbeats().get("heartbeat_1").getProps(), is(PropertiesBuilder.build(new Property("key_1", "value_1"))));
+        assertThat(currentConfig.getDiscoveryHeartbeats().get("heartbeat_2").getProps(), is(PropertiesBuilder.build(new Property("key_2", "value_2"))));
     }
 }

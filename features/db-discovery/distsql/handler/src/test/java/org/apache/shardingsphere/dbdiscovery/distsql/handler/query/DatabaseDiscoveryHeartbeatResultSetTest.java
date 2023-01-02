@@ -22,10 +22,12 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,7 +36,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,9 +66,7 @@ public final class DatabaseDiscoveryHeartbeatResultSetTest {
     private RuleConfiguration createRuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ms_group", Arrays.asList("ds_0", "ds_1"),
                 "ms-heartbeat", "test");
-        Properties discoveryTypeProps = new Properties();
-        discoveryTypeProps.put("type_key", "type_value");
-        DatabaseDiscoveryHeartBeatConfiguration shardingSphereAlgorithmConfig = new DatabaseDiscoveryHeartBeatConfiguration(discoveryTypeProps);
+        DatabaseDiscoveryHeartBeatConfiguration shardingSphereAlgorithmConfig = new DatabaseDiscoveryHeartBeatConfiguration(PropertiesBuilder.build(new Property("type_key", "type_value")));
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoverHeartbeat = Collections.singletonMap("test_name", shardingSphereAlgorithmConfig);
         return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoverHeartbeat, Collections.emptyMap());
     }
