@@ -15,36 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.metrics.result;
+package org.apache.shardingsphere.test.util;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Metrics meta data result.
+ * Properties builder.
  */
-@Getter
-@Setter
-public final class MetricsMetaDataResult implements JsonConfiguration {
-    
-    private String status;
-    
-    private Map<String, List<Metric>> data;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PropertiesBuilder {
     
     /**
-     * Metric.
+     * Build properties.
+     * 
+     * @param properties to be built properties
+     * @return built properties
      */
-    @Getter
-    @Setter
-    public static final class Metric {
+    public static Properties build(final Property... properties) {
+        Properties result = new Properties();
+        for (Property each : properties) {
+            result.setProperty(each.key, each.value);
+        }
+        return result;
+    }
+    
+    /**
+     * Property.
+     */
+    @RequiredArgsConstructor
+    public static class Property {
         
-        private String type;
+        private final String key;
         
-        private String help;
-        
-        private String unit;
+        private final String value;
     }
 }

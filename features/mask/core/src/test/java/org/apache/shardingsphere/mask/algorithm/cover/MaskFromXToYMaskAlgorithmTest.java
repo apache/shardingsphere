@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +33,7 @@ public final class MaskFromXToYMaskAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new MaskFromXToYMaskAlgorithm();
-        maskAlgorithm.init(createProperties("3", "5", "*"));
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
     @Test
@@ -52,15 +52,17 @@ public final class MaskFromXToYMaskAlgorithmTest {
     }
     
     @Test(expected = MaskAlgorithmInitializationException.class)
-    public void assertInitWhenConfigWrongProps() {
-        maskAlgorithm.init(createProperties("5", "", "+"));
+    public void assertInitWhenFromXIsEmpty() {
+        new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
-    private Properties createProperties(final String fromX, final String toY, final String replaceChar) {
-        Properties result = new Properties();
-        result.setProperty("from-x", fromX);
-        result.setProperty("to-y", toY);
-        result.setProperty("replace-char", replaceChar);
-        return result;
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenToYIsEmpty() {
+        new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*")));
+    }
+    
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenReplaceCharIsEmpty() {
+        new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "")));
     }
 }

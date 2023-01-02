@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,34 +33,31 @@ public final class KeepFirstNLastMMaskAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
-        maskAlgorithm.init(createProperties("2", "5", "*"));
-    }
-    
-    private Properties createProperties(final String firstN, final String lastM, final String replaceChar) {
-        Properties result = new Properties();
-        result.setProperty("first-n", firstN);
-        result.setProperty("last-m", lastM);
-        result.setProperty("replace-char", replaceChar);
-        return result;
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", "*")));
     }
     
     @Test
     public void assertMask() {
-        String actual = maskAlgorithm.mask("abc123456");
-        assertThat(actual, is("ab**23456"));
+        assertThat(maskAlgorithm.mask("abc123456"), is("ab**23456"));
     }
     
     @Test
     public void assertMaskWhenPlainValueLengthLessThenFirstNLastMSum() {
-        String actual = maskAlgorithm.mask("abc");
-        assertThat(actual, is("abc"));
+        assertThat(maskAlgorithm.mask("abc"), is("abc"));
     }
     
     @Test(expected = MaskAlgorithmInitializationException.class)
-    public void assertInitWhenConfigWrongProps() {
-        KeepFirstNLastMMaskAlgorithm maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
-        maskAlgorithm.init(createProperties("", "3", "+"));
-        maskAlgorithm.init(createProperties("2", "", "+"));
-        maskAlgorithm.init(createProperties("2", "5", ""));
+    public void assertInitWhenFirstNIsEmpty() {
+        new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*")));
+    }
+    
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenLastMIsEmpty() {
+        new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", ""), new Property("replace-char", "*")));
+    }
+    
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenReplaceCharIsEmpty() {
+        new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", "")));
     }
 }
