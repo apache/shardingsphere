@@ -26,12 +26,13 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithmsResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,15 +70,11 @@ public final class UnusedShardingAlgorithmsResultSetTest {
     }
     
     private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration() {
-        Properties props = new Properties();
-        props.put("algorithm-expression", "ds_${user_id % 2}");
-        return new AlgorithmConfiguration("INLINE", props);
+        return new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
     }
     
     private AlgorithmConfiguration createShardingHashModAlgorithmConfiguration() {
-        Properties props = new Properties();
-        props.put("sharding-count", 4);
-        return new AlgorithmConfiguration("hash_mod", props);
+        return new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4")));
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

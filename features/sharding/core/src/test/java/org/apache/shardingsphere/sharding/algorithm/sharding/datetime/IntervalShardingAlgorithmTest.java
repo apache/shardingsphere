@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -105,7 +107,14 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByQuarter() {
-        shardingAlgorithmByQuarter = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createQuarterProperties()), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "yyyy-MM-dd HH:mm:ss"),
+                new Property("datetime-lower", "2016-01-01 00:00:00"),
+                new Property("datetime-upper", "2021-12-31 00:00:00"),
+                new Property("sharding-suffix-pattern", "yyyyQQ"),
+                new Property("datetime-interval-amount", "3"),
+                new Property("datetime-interval-unit", "Months"));
+        shardingAlgorithmByQuarter = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 4; j++) {
                 availableTablesForQuarterDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -113,19 +122,15 @@ public final class IntervalShardingAlgorithmTest {
         }
     }
     
-    private Properties createQuarterProperties() {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss");
-        result.setProperty("datetime-lower", "2016-01-01 00:00:00");
-        result.setProperty("datetime-upper", "2021-12-31 00:00:00");
-        result.setProperty("sharding-suffix-pattern", "yyyyQQ");
-        result.setProperty("datetime-interval-amount", "3");
-        result.setProperty("datetime-interval-unit", "Months");
-        return result;
-    }
-    
     private void initShardStrategyByMonth() {
-        shardingAlgorithmByMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createMonthProperties()), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "yyyy-MM-dd HH:mm:ss"),
+                new Property("datetime-lower", "2016-01-01 00:00:00"),
+                new Property("datetime-upper", "2021-12-31 00:00:00"),
+                new Property("sharding-suffix-pattern", "yyyyMM"),
+                new Property("datetime-interval-amount", "1"),
+                new Property("datetime-interval-unit", "Months"));
+        shardingAlgorithmByMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForMonthDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -133,20 +138,15 @@ public final class IntervalShardingAlgorithmTest {
         }
     }
     
-    private Properties createMonthProperties() {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss");
-        result.setProperty("datetime-lower", "2016-01-01 00:00:00");
-        result.setProperty("datetime-upper", "2021-12-31 00:00:00");
-        result.setProperty("sharding-suffix-pattern", "yyyyMM");
-        result.setProperty("datetime-interval-amount", "1");
-        result.setProperty("datetime-interval-unit", "Months");
-        return result;
-    }
-    
     private void initShardingStrategyByDay() {
         int stepAmount = 2;
-        shardingAlgorithmByDay = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createDayProperties(stepAmount)), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "yyyy-MM-dd HH:mm:ss"),
+                new Property("datetime-lower", "2021-06-01 00:00:00"),
+                new Property("datetime-upper", "2021-07-31 00:00:00"),
+                new Property("sharding-suffix-pattern", "yyyyMMdd"),
+                new Property("datetime-interval-amount", Integer.toString(stepAmount)));
+        shardingAlgorithmByDay = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -154,20 +154,17 @@ public final class IntervalShardingAlgorithmTest {
         }
     }
     
-    private Properties createDayProperties(final int stepAmount) {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss");
-        result.setProperty("datetime-lower", "2021-06-01 00:00:00");
-        result.setProperty("datetime-upper", "2021-07-31 00:00:00");
-        result.setProperty("sharding-suffix-pattern", "yyyyMMdd");
-        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
-        return result;
-    }
-    
     private void initShardStrategyByDayWithMillisecond() {
         int stepAmount = 2;
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS"),
+                new Property("datetime-lower", "2021-06-01 00:00:00.000"),
+                new Property("datetime-upper", "2021-07-31 00:00:00.000"),
+                new Property("sharding-suffix-pattern", "yyyyMMdd"),
+                new Property("datetime-interval-amount", Integer.toString(stepAmount)),
+                new Property("datetime-interval-unit", "DAYS"));
         shardingAlgorithmByDayWithMillisecond = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("INTERVAL", createDayWithMillisecondProperties(stepAmount)), ShardingAlgorithm.class);
+                new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForDayWithMillisecondDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -175,20 +172,15 @@ public final class IntervalShardingAlgorithmTest {
         }
     }
     
-    private Properties createDayWithMillisecondProperties(final int stepAmount) {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss.SSS");
-        result.setProperty("datetime-lower", "2021-06-01 00:00:00.000");
-        result.setProperty("datetime-upper", "2021-07-31 00:00:00.000");
-        result.setProperty("sharding-suffix-pattern", "yyyyMMdd");
-        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
-        result.setProperty("datetime-interval-unit", "DAYS");
-        return result;
-    }
-    
     private void initShardingStrategyByJDBCDate() {
         int stepAmount = 2;
-        shardingAlgorithmByJDBCDate = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createJDBCDateProperties(stepAmount)), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "yyyy-MM-dd"),
+                new Property("datetime-lower", "2021-06-01"),
+                new Property("datetime-upper", "2021-07-31"),
+                new Property("sharding-suffix-pattern", "yyyyMMdd"),
+                new Property("datetime-interval-amount", Integer.toString(stepAmount)));
+        shardingAlgorithmByJDBCDate = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForJDBCDateDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -196,57 +188,46 @@ public final class IntervalShardingAlgorithmTest {
         }
     }
     
-    private Properties createJDBCDateProperties(final int stepAmount) {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "yyyy-MM-dd");
-        result.setProperty("datetime-lower", "2021-06-01");
-        result.setProperty("datetime-upper", "2021-07-31");
-        result.setProperty("sharding-suffix-pattern", "yyyyMMdd");
-        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
-        return result;
-    }
-    
     private void initShardingStrategyByJDBCTime() {
         int stepAmount = 2;
-        shardingAlgorithmByJDBCTime = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createJDBCTimeProperties(stepAmount)), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "HH:mm:ss.SSS"),
+                new Property("datetime-lower", "02:00:00.000"),
+                new Property("datetime-upper", "13:00:00.000"),
+                new Property("sharding-suffix-pattern", "HHmm"),
+                new Property("datetime-interval-amount", Integer.toString(stepAmount)),
+                new Property("datetime-interval-unit", "Hours"));
+        shardingAlgorithmByJDBCTime = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int i = 2; i < 13; i++) {
             availableTablesForJDBCTimeDataSources.add(String.format("t_order_%02d%02d", i, 0));
         }
     }
     
-    private Properties createJDBCTimeProperties(final int stepAmount) {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "HH:mm:ss.SSS");
-        result.setProperty("datetime-lower", "02:00:00.000");
-        result.setProperty("datetime-upper", "13:00:00.000");
-        result.setProperty("sharding-suffix-pattern", "HHmm");
-        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
-        result.setProperty("datetime-interval-unit", "Hours");
-        return result;
-    }
-    
     private void initShardingStrategyByYear() {
         int stepAmount = 2;
-        shardingAlgorithmByYear = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createYearProperties(stepAmount)), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "yyyy"),
+                new Property("datetime-lower", "2000"),
+                new Property("datetime-upper", "2022"),
+                new Property("sharding-suffix-pattern", "yyyy"),
+                new Property("datetime-interval-amount", Integer.toString(stepAmount)),
+                new Property("datetime-interval-unit", "Years"));
+        shardingAlgorithmByYear = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int i = 2000; i < 2023; i++) {
             availableTablesForYearDataSources.add(String.format("t_order_%04d", i));
         }
     }
     
-    private Properties createYearProperties(final int stepAmount) {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "yyyy");
-        result.setProperty("datetime-lower", "2000");
-        result.setProperty("datetime-upper", "2022");
-        result.setProperty("sharding-suffix-pattern", "yyyy");
-        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
-        result.setProperty("datetime-interval-unit", "Years");
-        return result;
-    }
-    
     private void initShardingStrategyByYearMonth() {
         int stepAmount = 2;
-        shardingAlgorithmByYearMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createYearMonthProperties(stepAmount)), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "yyyy-MM"),
+                new Property("datetime-lower", "2016-01"),
+                new Property("datetime-upper", "2021-12"),
+                new Property("sharding-suffix-pattern", "yyyyMM"),
+                new Property("datetime-interval-amount", Integer.toString(stepAmount)),
+                new Property("datetime-interval-unit", "Years"));
+        shardingAlgorithmByYearMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int i = 2016; i <= 2021; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForYearMonthDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -254,34 +235,19 @@ public final class IntervalShardingAlgorithmTest {
         }
     }
     
-    private Properties createYearMonthProperties(final int stepAmount) {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "yyyy-MM");
-        result.setProperty("datetime-lower", "2016-01");
-        result.setProperty("datetime-upper", "2021-12");
-        result.setProperty("sharding-suffix-pattern", "yyyyMM");
-        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
-        result.setProperty("datetime-interval-unit", "Years");
-        return result;
-    }
-    
     private void initShardingStrategyByMonthInJSR310() {
         int stepAmount = 2;
-        shardingAlgorithmByMonthInJSR310 = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", createMonthInJSR310Properties(stepAmount)), ShardingAlgorithm.class);
+        Properties props = PropertiesBuilder.build(
+                new Property("datetime-pattern", "MM"),
+                new Property("datetime-lower", "02"),
+                new Property("datetime-upper", "12"),
+                new Property("sharding-suffix-pattern", "MM"),
+                new Property("datetime-interval-amount", Integer.toString(stepAmount)),
+                new Property("datetime-interval-unit", "Months"));
+        shardingAlgorithmByMonthInJSR310 = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
         for (int i = 2; i < 13; i++) {
             availableTablesForMonthInJSR310DataSources.add(String.format("t_order_%02d", i));
         }
-    }
-    
-    private Properties createMonthInJSR310Properties(final int stepAmount) {
-        Properties result = new Properties();
-        result.setProperty("datetime-pattern", "MM");
-        result.setProperty("datetime-lower", "02");
-        result.setProperty("datetime-upper", "12");
-        result.setProperty("sharding-suffix-pattern", "MM");
-        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
-        result.setProperty("datetime-interval-unit", "Months");
-        return result;
     }
     
     @Test

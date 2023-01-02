@@ -59,6 +59,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -70,7 +72,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -225,14 +226,8 @@ public final class ShardingInsertStatementValidatorTest {
         when(databaseStrategyConfig.getShardingColumn()).thenReturn("id");
         when(databaseStrategyConfig.getShardingAlgorithmName()).thenReturn("database_inline");
         when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfig);
-        when(shardingRule.getShardingAlgorithms()).thenReturn(
-                Collections.singletonMap("database_inline", ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createProperties()), ShardingAlgorithm.class)));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("algorithm-expression", "ds_${id % 2}");
-        return result;
+        when(shardingRule.getShardingAlgorithms()).thenReturn(Collections.singletonMap("database_inline", ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}"))), ShardingAlgorithm.class)));
     }
     
     private RouteContext createSingleRouteContext() {
