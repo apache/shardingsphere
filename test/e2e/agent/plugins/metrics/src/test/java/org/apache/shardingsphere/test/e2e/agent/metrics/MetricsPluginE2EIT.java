@@ -21,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
-import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricResult;
+import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetadataResult;
+import org.apache.shardingsphere.test.e2e.agent.metrics.result.QueryResult;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,8 +31,9 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
@@ -40,17 +42,17 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     public static final String PROXY_COLLECTION = "proxy_connection_total";
     
-    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
+    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_bucket";
     
     public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
     
-    public static final String SQL_SELECT = "sql_select_total";
+    public static final String SQL_SELECT = "route_sql_select_total";
     
-    public static final String SQL_UPDATE = "sql_update_total";
+    public static final String SQL_UPDATE = "route_sql_update_total";
     
-    public static final String SQL_DELETE = "sql_delete_total";
+    public static final String SQL_DELETE = "route_sql_delete_total";
     
-    public static final String SQL_INSERT = "sql_insert_total";
+    public static final String SQL_INSERT = "route_sql_insert_total";
     
     public static final String ROUTE_DATASOURCE = "route_datasource_total";
     
@@ -68,21 +70,20 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
             Thread.sleep(Long.parseLong(props.getProperty("prometheus.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
-        String url = props.getProperty("prometheus.url");
+        String metaDataURL = props.getProperty("prometheus.metadata.url");
+        String queryURL = props.getProperty("prometheus.query.url");
         Collection<String> metricsNames = buildMetricsNames();
         for (String each : metricsNames) {
-            String metricURL = buildMetricURL(url, each);
+            String metricUrlWithParam = buildMetricURL(metaDataURL, each);
+            String queryUrlWithParam = buildMetricURL(queryURL, each);
+            
             try {
-                assertResult(OkHttpUtils.getInstance().get(metricURL, MetricResult.class), each);
+                assertMetadata(OkHttpUtils.getInstance().get(metricUrlWithParam, MetadataResult.class));
+                assertQuery(OkHttpUtils.getInstance().get(queryUrlWithParam, QueryResult.class));
             } catch (final IOException ex) {
                 log.info("http get prometheus is error :", ex);
             }
         }
-    }
-    
-    private void assertResult(final MetricResult metricResult, final String metricsName) {
-        assertThat(metricResult.getStatus(), is("success"));
-        assertNotNull(metricResult.getData());
     }
     
     private Collection<String> buildMetricsNames() {
@@ -104,5 +105,20 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     private String buildMetricURL(final String url, final String metricsName) {
         return String.join("", url, metricsName);
+    }
+    
+    private String buildMetricContentURL(final String url, final String metricsName) {
+        return String.join("", url, metricsName, "/content");
+    }
+    
+    private void assertMetadata(final MetadataResult metadataResult) {
+        assertThat(metadataResult.getStatus(), is("success"));
+        assertNotNull(metadataResult.getData());
+    }
+    
+    private static void assertQuery(final QueryResult queryResult) {
+        assertThat(queryResult.getStatus(), is("success"));
+        assertNotNull(queryResult.getData());
+        assertFalse(queryResult.getData().getResult().isEmpty());
     }
 }

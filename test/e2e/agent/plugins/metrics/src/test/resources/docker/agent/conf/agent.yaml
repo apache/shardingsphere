@@ -22,8 +22,8 @@ plugins:
         level: "INFO"
   metrics:
     Prometheus:
-      host:  "localhost"
-      port: 18090
+      host:  "0.0.0.0"
+      port: 19099
       props:
         jvm-information-collector-enabled: "true"
   tracing:

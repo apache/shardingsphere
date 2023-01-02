@@ -25,7 +25,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/plugins/metrics/target/plugins</directory>
+            <directory>${project.basedir}/../../../../../agent/plugins/metrics/type/target/plugins</directory>
             <outputDirectory>./agent/plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>
@@ -39,7 +39,14 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/plugins/metrics/target/lib</directory>
+            <directory>${project.basedir}/../../../../../agent/plugins/metrics/core/target/lib</directory>
+            <outputDirectory>./agent/lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../../../../../agent/plugins/core/target/lib</directory>
             <outputDirectory>./agent/lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
