@@ -54,7 +54,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ##### 使用规范
 
-SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`。 注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `WRITE_ROUTE_ONLY`。
+SQL Hint 功能的注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `WRITE_ROUTE_ONLY`。
 
 ##### 完整示例
 
@@ -95,8 +95,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ##### 使用规范
 
-SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`，目前只支持路由至一个数据源。
-注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `DATA_SOURCE_NAME`。
+SQL Hint 功能目前只支持路由至一个数据源。 注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `DATA_SOURCE_NAME`。
 如果使用 `MySQL` 客户端连接需要添加 `-c` 选项保留注释，客户端默认是 `--skip-comments` 过滤注释。
 
 ##### 完整示例
