@@ -34,6 +34,9 @@ public final class MetricsQueryResult {
     
     private QueryData data;
     
+    /**
+     * Query data.
+     */
     @Getter
     @Setter
     public static final class QueryData {
@@ -43,6 +46,9 @@ public final class MetricsQueryResult {
         private List<QueryDataResult> result;
     }
     
+    /**
+     * Query data result.
+     */
     @Getter
     @Setter
     public static final class QueryDataResult {
@@ -52,6 +58,9 @@ public final class MetricsQueryResult {
         private List<String> value;
     }
     
+    /**
+     * Query data result metric.
+     */
     public static final class QueryDataResultMetric {
     
         @SerializedName("__name__")

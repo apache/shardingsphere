@@ -35,6 +35,9 @@ public final class MetricsMetaDataResult {
     
     private Map<String, List<Metric>> data;
     
+    /**
+     * Metric.
+     */
     @Getter
     @Setter
     public static final class Metric {
