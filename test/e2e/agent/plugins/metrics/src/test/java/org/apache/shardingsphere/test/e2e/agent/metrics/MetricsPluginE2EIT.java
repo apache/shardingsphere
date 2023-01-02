@@ -74,8 +74,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         String queryURL = props.getProperty("prometheus.query.url");
         Collection<String> metricsNames = buildMetricsNames();
         for (String each : metricsNames) {
-            String metadataUrlWithParam = buildURLWithParameter(metaDataURL, each);
-            String queryUrlWithParam = buildURLWithParameter(queryURL, each);
+            String metadataUrlWithParam = buildUrlWithParameter(metaDataURL, each);
+            String queryUrlWithParam = buildUrlWithParameter(queryURL, each);
             try {
                 assertMetadata(OkHttpUtils.getInstance().get(metadataUrlWithParam, MetadataResult.class));
                 assertQuery(OkHttpUtils.getInstance().get(queryUrlWithParam, QueryResult.class));
@@ -102,7 +102,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         return result;
     }
     
-    private String buildURLWithParameter(final String url, final String metricsName) {
+    private String buildUrlWithParameter(final String url, final String metricsName) {
         return String.join("", url, metricsName);
     }
     
