@@ -52,15 +52,9 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
         return new ShardingSphereUser(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuth());
     }
     
-    /**
-     * Convert to YAML user configuration.
-     *
-     * @param yamlUser user YAML content
-     * @return YAML user configuration
-     */
     private Grantee convertYamlUserToGrantee(final String yamlUser) {
         if (!yamlUser.contains("@")) {
-            return new Grantee(yamlUser, null);
+            return new Grantee(yamlUser, "");
         }
         String username = yamlUser.substring(0, yamlUser.indexOf("@"));
         String hostname = yamlUser.substring(yamlUser.indexOf("@") + 1);
