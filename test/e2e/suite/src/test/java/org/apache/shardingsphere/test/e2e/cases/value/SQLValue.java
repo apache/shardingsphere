@@ -67,7 +67,7 @@ public final class SQLValue {
             case "double":
                 return Double.parseDouble(value);
             case "numeric":
-                return value.contains("/org/apache/shardingsphere/test/integration/cases/value/SQLValue.java") ? Double.parseDouble(value) : Long.parseLong(value);
+                return value.contains(".") ? Double.parseDouble(value) : Long.parseLong(value);
             case "decimal":
                 return new BigDecimal(value);
             case "boolean":

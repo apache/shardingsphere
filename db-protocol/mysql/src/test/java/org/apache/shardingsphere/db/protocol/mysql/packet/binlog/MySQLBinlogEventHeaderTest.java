@@ -42,7 +42,6 @@ public final class MySQLBinlogEventHeaderTest {
         when(payload.readInt1()).thenReturn(MySQLBinlogEventType.UNKNOWN_EVENT.getValue());
         when(payload.readInt2()).thenReturn(MySQLBinlogEventFlag.LOG_EVENT_BINLOG_IN_USE_F.getValue());
         MySQLBinlogEventHeader actual = new MySQLBinlogEventHeader(payload, 4);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getTimestamp(), is(1234567890));
         assertThat(actual.getEventType(), is(MySQLBinlogEventType.UNKNOWN_EVENT.getValue()));
         assertThat(actual.getServerId(), is(123456));

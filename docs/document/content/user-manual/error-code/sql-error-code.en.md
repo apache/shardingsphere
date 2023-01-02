@@ -79,6 +79,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 44000     | 16000       | SQL check failed, error message: %s |
+| 44000     | 16001       | Hint datasource: %s is not exist. |
 
 ### Cluster
 
@@ -221,6 +222,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type. |
 | 42000     | 20840       | Insert value of index \`%s\` can not support for shadow. |
+
+### Data Masking
+
+| SQL State | Vendor Code | Reason                                                       |
+| --------- |-------------|------------------------------------------------------------|
+| HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s |
 
 ## Other Exception
 

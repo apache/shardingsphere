@@ -35,6 +35,8 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipe
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -121,6 +123,11 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     @SneakyThrows(ConcurrentException.class)
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();
+    }
+    
+    @Override
+    public ImporterConnector getImporterConnector() {
+        return new DataSourceImporterConnector(dataSourceManager);
     }
     
     /**

@@ -9,6 +9,8 @@ The `COUNT SHARDING RULE` syntax is used to query the number of sharding rules f
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountShardingRule::=
   'COUNT' 'SHARDING' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountShardingRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -35,18 +42,18 @@ databaseName ::=
 - Query the number of sharding rules for specified database.
 
 ```sql
-COUNT SHARDING RULE FROM test1;
+COUNT SHARDING RULE FROM sharding_db;
 ```
 
 ```sql
-mysql> COUNT SHARDING RULE FROM test1;
-+--------------------------+----------+-------+
-| rule_name                | database | count |
-+--------------------------+----------+-------+
-| sharding_table           | test1    | 2     |
-| sharding_table_reference | test1    | 2     |
-| broadcast_table          | test1    | 0     |
-+--------------------------+----------+-------+
+mysql> COUNT SHARDING RULE FROM sharding_db;
++--------------------------+----------------+-------+
+| rule_name                | database       | count |
++--------------------------+----------------+-------+
+| sharding_table           | sharding_db    | 2     |
+| sharding_table_reference | sharding_db    | 2     |
+| broadcast_table          | sharding_db    | 0     |
++--------------------------+----------------+-------+
 3 rows in set (0.00 sec)
 ```
 
@@ -58,13 +65,13 @@ COUNT SHARDING RULE;
 
 ```sql
 mysql> COUNT SHARDING RULE;
-+--------------------------+----------+-------+
-| rule_name                | database | count |
-+--------------------------+----------+-------+
-| sharding_table           | test1    | 2     |
-| sharding_table_reference | test1    | 2     |
-| broadcast_table          | test1    | 0     |
-+--------------------------+----------+-------+
++--------------------------+----------------+-------+
+| rule_name                | database       | count |
++--------------------------+----------------+-------+
+| sharding_table           | sharding_db    | 2     |
+| sharding_table_reference | sharding_db    | 2     |
+| broadcast_table          | sharding_db    | 0     |
++--------------------------+----------------+-------+
 3 rows in set (0.00 sec)
 ```
 

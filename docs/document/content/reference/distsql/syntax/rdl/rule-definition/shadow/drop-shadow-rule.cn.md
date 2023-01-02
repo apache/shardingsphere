@@ -9,6 +9,8 @@ weight = 4
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropShadowRule ::=
   'DROP' 'SHADOW' 'TABLE' 'RULE' shadowRuleName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ shadowRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -29,7 +36,7 @@ databaseName ::=
 - 为指定数据库删除影子库压测规则
  
 ```sql
-DROP SHADOW RULE shadow_rule FROM test1;
+DROP SHADOW RULE shadow_rule FROM shadow_db;
 ```
 
 - 为当前数据库删除影子库压测规则

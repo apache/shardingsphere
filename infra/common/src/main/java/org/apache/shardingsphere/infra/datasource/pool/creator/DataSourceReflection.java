@@ -22,9 +22,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.type.DefaultDataSourcePoolFieldMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -159,19 +159,20 @@ public final class DataSourceReflection {
      */
     public void addDefaultDataSourceProperties() {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
-                DataSourcePoolMetaDataFactory.findInstance(dataSource.getClass().getName()).map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
-        String jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
-        Properties jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
-        if (null == jdbcUrl || null == jdbcConnectionProps) {
+                TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
+                        .map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
+        Optional<String> jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
+        Optional<Properties> jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
+        if (!jdbcUrl.isPresent() || !jdbcConnectionProps.isPresent()) {
             return;
         }
-        DataSourceMetaData dataSourceMetaData = DatabaseTypeEngine.getDatabaseType(jdbcUrl).getDataSourceMetaData(jdbcUrl, null);
+        DataSourceMetaData dataSourceMetaData = DatabaseTypeEngine.getDatabaseType(jdbcUrl.get()).getDataSourceMetaData(jdbcUrl.get(), null);
         Properties queryProps = dataSourceMetaData.getQueryProperties();
         for (Entry<Object, Object> entry : dataSourceMetaData.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps, queryProps)) {
-                jdbcConnectionProps.setProperty(defaultPropertyKey, defaultPropertyValue);
+            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps.get(), queryProps)) {
+                jdbcConnectionProps.get().setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
     }

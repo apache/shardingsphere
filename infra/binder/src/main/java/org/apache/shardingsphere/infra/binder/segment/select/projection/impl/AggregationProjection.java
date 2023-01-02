@@ -74,4 +74,13 @@ public class AggregationProjection implements Projection {
         boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
         return getAlias().orElseGet(() -> isPostgreSQLOpenGaussStatement ? type.name().toLowerCase() : getExpression());
     }
+    
+    @Override
+    public Projection cloneWithOwner(final String ownerName) {
+        // TODO replace column owner when AggregationProjection contains owner
+        AggregationProjection result = new AggregationProjection(type, innerExpression, alias, databaseType);
+        result.setIndex(index);
+        result.getDerivedAggregationProjections().addAll(derivedAggregationProjections);
+        return result;
+    }
 }

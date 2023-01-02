@@ -9,13 +9,20 @@ weight = 5
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowDistVariable ::=
-  'SHOW' ('VARIABLES'|'VARIABLE' 'NAME' '=' variableName)
+  'SHOW' ('VARIABLES' | 'VARIABLE' 'NAME' '=' variableName)
 
 variableName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 返回值说明
 
@@ -54,7 +61,6 @@ mysql> SHOW DIST VARIABLES;
 | proxy_frontend_executor_size          | 0              |
 | proxy_backend_executor_suitable       | OLAP           |
 | proxy_frontend_max_connections        | 0              |
-| proxy_backend_driver_type             | JDBC           |
 | proxy_mysql_default_version           | 5.7.22         |
 | proxy_default_port                    | 3307           |
 | proxy_netty_backlog                   | 1024           |
@@ -64,7 +70,7 @@ mysql> SHOW DIST VARIABLES;
 | cached_connections                    | 0              |
 | transaction_type                      | LOCAL          |
 +---------------------------------------+----------------+
-22 rows in set (0.01 sec)
+21 rows in set (0.01 sec)
 ```
 
 - 查询指定 `PROXY` 系统变量配置

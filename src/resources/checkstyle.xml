@@ -54,7 +54,7 @@
         <module name="ParameterName" />
         <module name="CatchParameterName" />
         <module name="AbbreviationAsWordInName">
-            <property name="allowedAbbreviationLength" value="6" />
+            <property name="allowedAbbreviationLength" value="8" />
         </module>
         
         <!-- Size Violations -->

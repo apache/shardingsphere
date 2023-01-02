@@ -9,13 +9,20 @@ weight = 4
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -26,7 +33,7 @@ databaseName ::=
 - 为指定逻辑库删除读写分离规则
  
 ```sql
-DROP READWRITE_SPLITTING RULE ms_group_1 FROM test1;
+DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
 ```
 
 - 为当前逻辑库删除读写分离规则

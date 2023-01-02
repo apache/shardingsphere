@@ -9,6 +9,8 @@ The `DROP SHADOW RULE` syntax is used to drop shadow rule for specified database
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropShadowRule ::=
   'DROP' 'SHADOW' 'TABLE' 'RULE' shadowRuleName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ shadowRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -29,7 +36,7 @@ databaseName ::=
 - Drop shadow rule for specified database
 
 ```sql
-DROP SHADOW RULE shadow_rule FROM test1;
+DROP SHADOW RULE shadow_rule FROM shadow_db;
 ```
 
 - Drop shadow rule for current database

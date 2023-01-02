@@ -20,13 +20,12 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -46,12 +45,11 @@ public final class SQLParserEngineAdviceTest {
     private static Method parserMethod;
     
     @BeforeClass
-    public static void setup() throws NoSuchMethodException, NoSuchFieldException {
+    public static void setup() throws ReflectiveOperationException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
         }
-        FieldReader fieldReader = new FieldReader(GlobalTracer.get(), GlobalTracer.class.getDeclaredField("tracer"));
-        tracer = (MockTracer) fieldReader.read();
+        tracer = (MockTracer) Plugins.getMemberAccessor().get(GlobalTracer.class.getDeclaredField("tracer"), GlobalTracer.get());
         parserMethod = ShardingSphereSQLParserEngine.class.getDeclaredMethod("parse", String.class, boolean.class);
     }
     
@@ -63,8 +61,8 @@ public final class SQLParserEngineAdviceTest {
     @Test
     public void assertMethod() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
-        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
+        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"});
+        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null);
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -74,9 +72,9 @@ public final class SQLParserEngineAdviceTest {
     @Test
     public void assertExceptionHandle() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
+        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"});
         ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException());
-        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
+        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null);
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

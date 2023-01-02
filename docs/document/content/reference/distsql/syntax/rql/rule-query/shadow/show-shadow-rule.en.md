@@ -9,9 +9,11 @@ The `SHOW SHADOW RULE` syntax is used to query shadow rules for specified databa
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowEncryptRule::=
-  'SHOW' 'SHADOW' ('RULES'|'RULE' shadowRuleName) ('FROM' databaseName)?
+  'SHOW' 'SHADOW' ('RULES' | 'RULE' shadowRuleName) ('FROM' databaseName)?
 
 shadowRuleName ::=
   identifier
@@ -19,6 +21,11 @@ shadowRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -41,11 +48,11 @@ databaseName ::=
 - Query specified shadow rule in specified database.
 
 ```sql
-SHOW SHADOW RULE shadow_rule FROM test1;
+SHOW SHADOW RULE shadow_rule FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW RULE shadow_rule FROM test1;
+mysql> SHOW SHADOW RULE shadow_rule FROM shadow_db;
 +-------------+-------------+-------------+----------------------+
 | rule_name   | source_name | shadow_name | shadow_table         |
 +-------------+-------------+-------------+----------------------+
@@ -73,11 +80,11 @@ mysql> SHOW SHADOW RULE shadow_rule;
 - Query shadow rules for specified database.
 
 ```sql
-SHOW SHADOW RULES FROM test1;
+SHOW SHADOW RULES FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW RULES FROM test1;
+mysql> SHOW SHADOW RULES FROM shadow_db;
 +-------------+-------------+-------------+----------------------+
 | rule_name   | source_name | shadow_name | shadow_table         |
 +-------------+-------------+-------------+----------------------+

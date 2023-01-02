@@ -9,13 +9,20 @@ weight = 6
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowShardingKeyGenerators::=
-  'SHOW' 'SHARDING' 'KEY' 'GENERATOR'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -34,11 +41,11 @@ databaseName ::=
 - 查询指定逻辑库的分布式主键生成器
 
 ```sql
-SHOW SHARDING KEY GENERATORS FROM test1;
+SHOW SHARDING KEY GENERATORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING KEY GENERATORS FROM test1;
+mysql> SHOW SHARDING KEY GENERATORS FROM sharding_db;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+

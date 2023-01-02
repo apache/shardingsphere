@@ -12,7 +12,7 @@ Il fournit :
 - Génération automatique du menu avec le contenu multi-langue
 - Modification de la langue dans le navigateur
 
-![I18n menu](/cont/i18n/images/i18n-menu.gif)
+![I18n menu](/en/cont/i18n/images/i18n-menu.gif)
 
 ## Configuration simple
 
@@ -75,4 +75,4 @@ Pour ce faire, ajouter le paramètre `disableLanguageSwitchingButton=true` dans 
   disableLanguageSwitchingButton = true
 ```
 
-![I18n menu](/cont/i18n/images/i18n-menu.gif)
+![I18n menu](/en/cont/i18n/images/i18n-menu.gif)

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
+import java.util.Optional;
+
 /**
  * Order by item segment.
  */
@@ -37,4 +39,29 @@ public abstract class OrderByItemSegment implements SQLSegment {
     private final OrderDirection orderDirection;
     
     private final NullsOrderType nullsOrderType;
+    
+    /**
+     * Get nulls order type.
+     *
+     * @return nulls order type
+     */
+    public Optional<NullsOrderType> getNullsOrderType() {
+        return Optional.ofNullable(nullsOrderType);
+    }
+    
+    /**
+     * Get nulls order type.
+     * 
+     * @param databaseType database type
+     * @return nulls order type
+     */
+    public NullsOrderType getNullsOrderType(final String databaseType) {
+        if (null != nullsOrderType) {
+            return nullsOrderType;
+        }
+        if ("PostgreSQL".equals(databaseType) || "openGauss".equals(databaseType) || "Oracle".equals(databaseType)) {
+            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
+        }
+        return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;
+    }
 }

@@ -9,13 +9,20 @@ The `UNREGISTER STORAGE UNIT` syntax is used to unregister storage unit from the
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 UnregisterStorageUnit ::=
-  'UNREGISTER' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
+  'UNREGISTER' 'STORAGE' 'UNIT' ('IF' 'EXISTS')? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
 
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -31,25 +38,25 @@ storageUnitName ::=
 - Drop a storage unit
 
 ```sql
-UNREGISTER STORAGE UNIT su_0;
+UNREGISTER STORAGE UNIT ds_0;
 ```
 
 - Drop multiple storage units
 
 ```sql
-UNREGISTER STORAGE UNIT su_1, su_2;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
 - Ignore single table rule remove storage unit
 
 ```sql
-UNREGISTER STORAGE UNIT su_1 IGNORE SINGLE TABLES;
+UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;
 ```
 
 - Drop the storage unit if it exists
 
 ```sql
-UNREGISTER STORAGE UNIT IF EXISTS su_2;
+UNREGISTER STORAGE UNIT IF EXISTS ds_0;
 ```
 
 ### Reserved word

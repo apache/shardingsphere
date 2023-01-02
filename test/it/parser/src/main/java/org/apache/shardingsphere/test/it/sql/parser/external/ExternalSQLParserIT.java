@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.test.it.sql.parser.external;
 
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
-import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreatorFactory;
+import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -45,7 +46,7 @@ public abstract class ExternalSQLParserIT {
         sqlCaseId = testParam.getSqlCaseId();
         sql = testParam.getSql();
         databaseType = testParam.getDatabaseType();
-        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(testParam.getReportType()).create(databaseType);
+        resultReporter = TypedSPIRegistry.getRegisteredService(SQLParseResultReporterCreator.class, testParam.getReportType()).create(databaseType);
     }
     
     @Test

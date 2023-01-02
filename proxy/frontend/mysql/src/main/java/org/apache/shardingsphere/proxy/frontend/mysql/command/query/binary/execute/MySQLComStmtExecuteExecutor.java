@@ -31,7 +31,8 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -66,8 +67,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Getter
     private ResponseType responseType;
     
-    private int currentSequenceId;
-    
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
@@ -79,7 +78,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
         connectionSession.setQueryContext(queryContext);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), queryContext, connectionSession, true);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
     }
@@ -96,9 +95,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
-        currentSequenceId = result.size();
-        return result;
+        return ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
     private Collection<DatabasePacket<?>> processUpdate(final UpdateResponseHeader updateResponseHeader) {
@@ -114,7 +111,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public MySQLPacket getQueryRowPacket() throws SQLException {
         QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
-        return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
+        return new MySQLBinaryResultSetRowPacket(createBinaryRow(queryResponseRow));
     }
     
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {

@@ -10,7 +10,9 @@ weight = 11
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowShardingTableRulesUsedAlgorithm::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'ALGORITHM' algorithmName ('FROM' databaseName)?
 
@@ -20,6 +22,12 @@ algorithmName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 
 ### Supplement
 
@@ -37,11 +45,11 @@ databaseName ::=
 - Query sharding table rules for the specified sharding algorithm in spicified logical database
 
 ```sql
-SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 +-------+--------------+
 | type  | name         |
 +-------+--------------+

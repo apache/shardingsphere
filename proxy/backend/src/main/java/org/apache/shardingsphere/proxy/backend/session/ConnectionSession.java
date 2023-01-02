@@ -22,18 +22,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExecutorConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendStatement;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -84,21 +79,9 @@ public final class ConnectionSession {
         this.protocolType = protocolType;
         transactionStatus = new TransactionStatus(initialTransactionType);
         this.attributeMap = attributeMap;
-        backendConnection = determineBackendConnection();
-        statementManager = determineStatementManager();
-        connectionContext = backendConnection instanceof CacheableExecutorConnectionManager
-                ? new ConnectionContext(((CacheableExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections)
-                : new ConnectionContext();
-    }
-    
-    private BackendConnection determineBackendConnection() {
-        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
-        return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendConnection(this) : new JDBCBackendConnection(this);
-    }
-    
-    private ExecutorStatementManager determineStatementManager() {
-        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
-        return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendStatement() : new JDBCBackendStatement();
+        backendConnection = new BackendConnection(this);
+        statementManager = new JDBCBackendStatement();
+        connectionContext = new ConnectionContext(((CacheableExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections);
     }
     
     /**

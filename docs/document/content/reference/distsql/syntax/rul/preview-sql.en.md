@@ -9,10 +9,17 @@ The `PREVIEW SQL` syntax is used to preview `SQL` execution plan.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 PreviewSql ::=
   'PREVIEW' sqlStatement  
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 

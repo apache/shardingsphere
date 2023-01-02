@@ -9,6 +9,8 @@ weight = 15
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowBroadcastTableRule ::=
   'SHOW' 'BROADCAST' 'TABLE' 'RULES' ('FROM' databaseName)? 
@@ -16,6 +18,11 @@ ShowBroadcastTableRule ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -23,20 +30,20 @@ databaseName ::=
 
 ### 返回值说明
 
-｜ 列              ｜ 说明      ｜
-｜-----------------｜-----------｜
-｜ broadcast_table ｜ 广播表名称 ｜
+| 列                | 说明      |
+|------------------|-----------|
+|  broadcast_table | 广播表名称 |
 
 ### 示例
 
 - 查询指定数据库中具有广播规则的表
 
 ```sql
-SHOW BROADCAST TABLE RULES FROM test1;
+SHOW BROADCAST TABLE RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW BROADCAST TABLE RULES FROM test1;
+mysql> SHOW BROADCAST TABLE RULES FROM sharding_db;
 +-----------------+
 | broadcast_table |
 +-----------------+

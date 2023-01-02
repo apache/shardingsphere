@@ -9,6 +9,8 @@ The `SHOW BROADCAST TABLE RULE` syntax is used to broadcast tables for specified
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowBroadcastTableRule ::=
   'SHOW' 'BROADCAST' 'TABLE' 'RULES' ('FROM' databaseName)? 
@@ -16,6 +18,11 @@ ShowBroadcastTableRule ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -32,11 +39,11 @@ databaseName ::=
 - Query broadcast tables for specified database.
 
 ```sql
-SHOW BROADCAST TABLE RULES FROM test1;
+SHOW BROADCAST TABLE RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW BROADCAST TABLE RULES FROM test1;
+mysql> SHOW BROADCAST TABLE RULES FROM sharding_db;
 +-----------------+
 | broadcast_table |
 +-----------------+

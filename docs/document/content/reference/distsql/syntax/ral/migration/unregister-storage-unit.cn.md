@@ -9,13 +9,20 @@ weight = 5
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 UnregisterMigrationSourceStorageUnit ::=
-  'UNREGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitName  ( ',' storageUnitName )* 
+  'UNREGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitName  (',' storageUnitName)* 
 
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -26,12 +33,12 @@ storageUnitName ::=
 - 移除数据迁移源存储单元
 
 ```sql
-UNREGISTER MIGRATION SOURCE STORAGE UNIT su_0;
+UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0;
 ```
 
 - 移除多个数据迁移源存储单元
 ```sql
-UNREGISTER MIGRATION SOURCE STORAGE UNIT su_0, su_1;
+UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0, ds_1;
 ```
 
 ### 保留字

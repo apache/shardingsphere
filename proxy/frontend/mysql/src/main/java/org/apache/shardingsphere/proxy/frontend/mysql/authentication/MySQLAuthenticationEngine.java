@@ -24,9 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
@@ -35,12 +33,14 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -56,8 +56,6 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
     private MySQLConnectionPhase connectionPhase = MySQLConnectionPhase.INITIAL_HANDSHAKE;
-    
-    private int sequenceId;
     
     private byte[] authResponse;
     
@@ -88,26 +86,25 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             context.close();
             return AuthenticationResultBuilder.continued();
         }
-        context.writeAndFlush(new MySQLOKPacket(++sequenceId, DEFAULT_STATUS_FLAG));
+        context.writeAndFlush(new MySQLOKPacket(DEFAULT_STATUS_FLAG));
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase());
     }
     
     private AuthenticationResult authPhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload) {
         MySQLHandshakeResponse41Packet packet = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         authResponse = packet.getAuthResponse();
-        sequenceId = packet.getSequenceId();
         MySQLCharacterSet characterSet = MySQLCharacterSet.findById(packet.getCharacterSet());
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
         context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().databaseExists(packet.getDatabase())) {
-            context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_BAD_DB_ERROR, packet.getDatabase()));
+            context.writeAndFlush(new MySQLErrPacket(MySQLVendorError.ER_BAD_DB_ERROR, packet.getDatabase()));
             context.close();
             return AuthenticationResultBuilder.continued();
         }
         MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(packet.getUsername(), getHostAddress(context));
         if (isClientPluginAuth(packet) && !authenticator.getAuthenticationMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
-            context.writeAndFlush(new MySQLAuthSwitchRequestPacket(++sequenceId, authenticator.getAuthenticationMethodName(), authenticationHandler.getAuthPluginData()));
+            context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authenticationHandler.getAuthPluginData()));
             return AuthenticationResultBuilder.continued(packet.getUsername(), getHostAddress(context), packet.getDatabase());
         }
         return AuthenticationResultBuilder.finished(packet.getUsername(), getHostAddress(context), packet.getDatabase());
@@ -119,14 +116,13 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
     private void authenticationMethodMismatch(final MySQLPacketPayload payload) {
         MySQLAuthSwitchResponsePacket packet = new MySQLAuthSwitchResponsePacket(payload);
-        sequenceId = packet.getSequenceId();
         authResponse = packet.getAuthPluginResponse();
     }
     
     private MySQLErrPacket createErrorPacket(final MySQLVendorError vendorError, final ChannelHandlerContext context) {
         return MySQLVendorError.ER_DBACCESS_DENIED_ERROR == vendorError
-                ? new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_DBACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase())
-                : new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_ACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), getErrorMessage());
+                ? new MySQLErrPacket(MySQLVendorError.ER_DBACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase())
+                : new MySQLErrPacket(MySQLVendorError.ER_ACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), getErrorMessage());
     }
     
     private String getErrorMessage() {

@@ -9,13 +9,20 @@ weight = 4
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowEncryptAlgorithm::=
   'SHOW' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -35,11 +42,11 @@ databaseName ::=
 - 查询指定逻辑库中的影子算法
 
 ```sql
-SHOW SHADOW ALGORITHMS FROM test1;
+SHOW SHADOW ALGORITHMS FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW ALGORITHMS FROM test1;
+mysql> SHOW SHADOW ALGORITHMS FROM shadow_db;
 +-------------------------+-------------+-----------------------------------------+------------+
 | shadow_algorithm_name   | type        | props                                   | is_default |
 +-------------------------+-------------+-----------------------------------------+------------+

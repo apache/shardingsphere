@@ -9,6 +9,8 @@ weight = 7
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 MigrateTableInto ::=
   'MIGRATE' 'TABLE' migrationSource '.' tableName 'INTO' (databaseName '.')? tableName
@@ -22,6 +24,11 @@ databaseName ::=
 tableName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -38,7 +45,7 @@ MIGRATE TABLE ds_0.t_order INTO t_order;
 - Migrate table from source to specified database
 
 ```sql
-UNREGISTER MIGRATION SOURCE STORAGE UNIT su_1, su_2;
+UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_1, ds_2;
 ```
 
 ### Reserved word

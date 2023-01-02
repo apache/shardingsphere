@@ -31,44 +31,46 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Hint data source name.
      */
-    DATASOURCE_NAME_KEY("DATA_SOURCE_NAME", "", String.class),
+    DATASOURCE_NAME_KEY("DATA_SOURCE_NAME", "dataSourceName", "", String.class),
     
     /**
      * Whether hint route write data source or not.
      */
-    WRITE_ROUTE_ONLY_KEY("WRITE_ROUTE_ONLY", String.valueOf(Boolean.FALSE), boolean.class),
+    WRITE_ROUTE_ONLY_KEY("WRITE_ROUTE_ONLY", "writeRouteOnly", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Whether to use traffic or not.
      */
-    USE_TRAFFIC_KEY("USE_TRAFFIC", String.valueOf(Boolean.FALSE), boolean.class),
+    USE_TRAFFIC_KEY("USE_TRAFFIC", "useTraffic", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Whether hint skip encrypt rewrite or not.
      */
-    SKIP_ENCRYPT_REWRITE_KEY("SKIP_ENCRYPT_REWRITE", String.valueOf(Boolean.FALSE), boolean.class),
+    SKIP_ENCRYPT_REWRITE_KEY("SKIP_ENCRYPT_REWRITE", "skipEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Hint disable audit names.
      */
-    DISABLE_AUDIT_NAMES_KEY("DISABLE_AUDIT_NAMES", "", String.class),
+    DISABLE_AUDIT_NAMES_KEY("DISABLE_AUDIT_NAMES", "disableAuditNames", "", String.class),
     
     /**
      * Hint sharding database value.
      */
-    SHARDING_DATABASE_VALUE_KEY("SHARDING_DATABASE_VALUE", "", Comparable.class),
+    SHARDING_DATABASE_VALUE_KEY("SHARDING_DATABASE_VALUE", "shardingDatabaseValue", "", Comparable.class),
     
     /**
      * Hint sharding table value.
      */
-    SHARDING_TABLE_VALUE_KEY("SHARDING_TABLE_VALUE", "", Comparable.class),
+    SHARDING_TABLE_VALUE_KEY("SHARDING_TABLE_VALUE", "shardingTableValue", "", Comparable.class),
     
     /**
      * Whether to use shadow or not.
      */
-    SHADOW_KEY("SHADOW", String.valueOf(Boolean.FALSE), boolean.class);
+    SHADOW_KEY("SHADOW", "shadow", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
+    
+    private final String alias;
     
     private final String defaultValue;
     

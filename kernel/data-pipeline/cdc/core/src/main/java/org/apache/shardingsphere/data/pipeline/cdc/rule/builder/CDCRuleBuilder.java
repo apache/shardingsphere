@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.CDCRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCOrder;
 import org.apache.shardingsphere.data.pipeline.cdc.rule.CDCRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 
@@ -33,8 +32,7 @@ import java.util.Map;
 public final class CDCRuleBuilder implements GlobalRuleBuilder<CDCRuleConfiguration> {
     
     @Override
-    public CDCRule build(final CDCRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext,
-                         final ConfigurationProperties props) {
+    public CDCRule build(final CDCRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return new CDCRule(ruleConfig.isEnabled(), ruleConfig.getPort());
     }
     

@@ -9,21 +9,26 @@ The `CREATE SHADOW RULE` syntax is used to create a shadow rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CreateShadowRule ::=
-  'CREATE' 'SHADOW' 'RULE' shadowDefinition ( ',' shadowDefinition )*
+  'CREATE' 'SHADOW' 'RULE' ifNotExists? shadowRuleDefinition (',' shadowRuleDefinition)*
 
-shadowDefinition ::=
-  ruleName '(' storageUnitMapping shadowTableRule ( ',' shadowTableRule )* ')'
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
+
+shadowRuleDefinition ::=
+  ruleName '(' storageUnitMapping shadowTableRule (',' shadowTableRule)* ')'
     
 storageUnitMapping ::=
-    'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
+  'SOURCE' '=' storageUnitName ',' 'SHADOW' '=' storageUnitName
 
 shadowTableRule ::=
-    tableName '(' shadowAlgorithm ')'
+  tableName '(' shadowAlgorithm ')'
     
 shadowAlgorithm ::=
-    'TYPE' '('  'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' ) ')'
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' propertiesDefinition ')'
 
 ruleName ::=
   identifier
@@ -39,7 +44,21 @@ algorithmName ::=
 
 shadowAlgorithmType ::=
   string
+
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
+
+key ::=
+  string
+
+value ::=
+  literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -50,7 +69,8 @@ shadowAlgorithmType ::=
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time;
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
   and `shadowAlgorithmType`;
-- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`.
+- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`;
+- `ifNotExists` caluse is used for avoid `Duplicate shadow rule` error.
 
 ### Example
 
@@ -58,8 +78,19 @@ shadowAlgorithmType ::=
 
 ```sql
 CREATE SHADOW RULE shadow_rule(
-  SOURCE=demo_su,
-  SHADOW=demo_su_shadow,
+  SOURCE=demo_ds,
+  SHADOW=demo_ds_shadow,
+  t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
+  t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))
+);
+```
+
+- Create a shadow rule with `ifNotExists` clause
+
+```sql
+CREATE SHADOW RULE IF NOT EXISTS shadow_rule(
+  SOURCE=demo_ds,
+  SHADOW=demo_ds_shadow,
   t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
   t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))
 );

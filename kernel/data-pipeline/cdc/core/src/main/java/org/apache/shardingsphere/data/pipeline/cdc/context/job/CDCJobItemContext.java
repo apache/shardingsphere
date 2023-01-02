@@ -36,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -64,6 +65,8 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     private final CDCTaskConfiguration taskConfig;
     
     private final PipelineDataSourceManager dataSourceManager;
+    
+    private final ImporterConnector importerConnector;
     
     private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
     
@@ -114,6 +117,11 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     @SneakyThrows(ConcurrentException.class)
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();
+    }
+    
+    @Override
+    public ImporterConnector getImporterConnector() {
+        return importerConnector;
     }
     
     @Override

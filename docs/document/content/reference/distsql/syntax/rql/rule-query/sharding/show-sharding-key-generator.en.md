@@ -9,13 +9,20 @@ weight = 6
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowShardingKeyGenerators::=
-  'SHOW' 'SHARDING' 'KEY' 'GENERATOR'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -34,11 +41,11 @@ databaseName ::=
 - Query the sharding key generators of the specified logical database
 
 ```sql
-SHOW SHARDING KEY GENERATORS FROM test1;
+SHOW SHARDING KEY GENERATORS FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING KEY GENERATORS FROM test1;
+mysql> SHOW SHARDING KEY GENERATORS FROM sharding_db;
 +-------------------------+-----------+-------+
 | name                    | type      | props |
 +-------------------------+-----------+-------+

@@ -42,7 +42,7 @@ import java.util.jar.JarFile;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseClassScanner {
     
-    private static final String TEST_CASE_PACKAGE_NAME = "org.apache.shardingsphere.integration.transaction.cases";
+    private static final String TEST_CASE_PACKAGE_NAME = "org.apache.shardingsphere.test.e2e.transaction.cases";
     
     private static final Collection<File> CLASS_FILES = new LinkedList<>();
     

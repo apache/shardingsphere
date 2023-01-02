@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
@@ -30,26 +29,24 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private JDBCExecutorCallbackAdvice advice;
-    
     @Before
     public void setup() {
         getExtraMap().put(ZipkinConstants.ROOT_SPAN, null);
-        advice = new JDBCExecutorCallbackAdvice();
     }
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
         Span span = COLLECTOR.pop();
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
@@ -64,9 +61,10 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
         Span span = COLLECTOR.pop();
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();

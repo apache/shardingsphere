@@ -55,7 +55,7 @@ public final class ShowComputeNodesHandlerTest extends ProxyContextRestorer {
         handler.execute();
         handler.next();
         List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(7));
+        assertThat(data.size(), is(8));
         assertThat(data.get(0), is("127.0.0.1@3308"));
         assertThat(data.get(1), is("127.0.0.1"));
         assertThat(data.get(2), is(3308));
@@ -63,6 +63,7 @@ public final class ShowComputeNodesHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(4), is("Standalone"));
         assertThat(data.get(5), is(0));
         assertThat(data.get(6), is(""));
+        assertThat(data.get(7), is("foo_version"));
     }
     
     @Test
@@ -75,7 +76,7 @@ public final class ShowComputeNodesHandlerTest extends ProxyContextRestorer {
         handler.execute();
         handler.next();
         List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(7));
+        assertThat(data.size(), is(8));
         assertThat(data.get(0), is("127.0.0.1@3309"));
         assertThat(data.get(1), is("127.0.0.1"));
         assertThat(data.get(2), is(3309));
@@ -83,11 +84,12 @@ public final class ShowComputeNodesHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(4), is("Cluster"));
         assertThat(data.get(5), is(1));
         assertThat(data.get(6), is(""));
+        assertThat(data.get(7), is("foo_version"));
     }
     
     private InstanceContext createStandaloneInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
-        when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308"));
+        when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308", "foo_version"));
         when(result.getInstance().getState()).thenReturn(new StateContext());
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties())));
         when(result.getInstance().getWorkerId()).thenReturn(0);
@@ -98,7 +100,7 @@ public final class ShowComputeNodesHandlerTest extends ProxyContextRestorer {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class, RETURNS_DEEP_STUBS);
-        when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309"));
+        when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309", "foo_version"));
         when(computeNodeInstance.getState()).thenReturn(new StateContext());
         when(computeNodeInstance.getWorkerId()).thenReturn(1);
         when(result.getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));

@@ -9,9 +9,11 @@ weight = 6
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 RefreshTableMetadata ::=
-  'REFRESH' 'TABLE' 'METADATA' ( (tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
+  'REFRESH' 'TABLE' 'METADATA' ((tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
 
 tableName ::=
   identifier
@@ -19,6 +21,11 @@ tableName ::=
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -31,7 +38,7 @@ storageUnitName ::=
 - 刷新指定存储单于中指定表的元数据
 
 ```sql
-REFRESH TABLE METADATA t_order FROM STORAGE UNIT su_1;
+REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1;
 ```
 
 - 刷新指定表的元数据

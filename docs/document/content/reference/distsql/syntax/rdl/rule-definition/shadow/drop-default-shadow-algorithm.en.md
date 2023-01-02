@@ -9,6 +9,8 @@ The `DROP DEFAULT SHADOW ALGORITHM` syntax is used to drop default shadow algori
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropDefaultShadowAlgorithm ::=
   'DROP' 'DEFAULT' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ DropDefaultShadowAlgorithm ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -26,7 +33,7 @@ databaseName ::=
 - Drop default shadow algorithm for specified database
 
 ```sql
-DROP DEFAULT SHADOW ALGORITHM FROM test1;
+DROP DEFAULT SHADOW ALGORITHM FROM shadow_db;
 ```
 
 - Drop default shadow algorithm for current database

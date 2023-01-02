@@ -61,7 +61,7 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return null == plainValue ? null : Base64.encodeBase64String(handle(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), key));
+        return null == plainValue ? null : Base64.encodeBase64String(handle(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8)));
     }
     
     @Override
@@ -69,11 +69,11 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = handle(Base64.decodeBase64(cipherValue), key);
+        byte[] result = handle(Base64.decodeBase64(cipherValue));
         return new String(result, StandardCharsets.UTF_8);
     }
     
-    private byte[] handle(final byte[] data, final byte[] key) {
+    private byte[] handle(final byte[] data) {
         return crypt(data);
     }
     

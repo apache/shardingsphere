@@ -9,9 +9,11 @@ weight = 2
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowEncryptRule::=
-  'SHOW' 'SHADOW' ('RULES'|'RULE' shadowRuleName) ('FROM' databaseName)?
+  'SHOW' 'SHADOW' ('RULES' | 'RULE' shadowRuleName) ('FROM' databaseName)?
 
 shadowRuleName ::=
   identifier
@@ -19,6 +21,11 @@ shadowRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -38,11 +45,11 @@ databaseName ::=
 - 查询指定逻辑库中的指定影子规则
 
 ```sql
-SHOW SHADOW RULE shadow_rule FROM test1;
+SHOW SHADOW RULE shadow_rule FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW RULE shadow_rule FROM test1;
+mysql> SHOW SHADOW RULE shadow_rule FROM shadow_db;
 +-------------+-------------+-------------+----------------------+
 | rule_name   | source_name | shadow_name | shadow_table         |
 +-------------+-------------+-------------+----------------------+
@@ -70,11 +77,11 @@ mysql> SHOW SHADOW RULE shadow_rule;
 - 查询指定逻辑库中的影子规则
 
 ```sql
-SHOW SHADOW RULES FROM test1;
+SHOW SHADOW RULES FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW RULES FROM test1;
+mysql> SHOW SHADOW RULES FROM shadow_db;
 +-------------+-------------+-------------+----------------------+
 | rule_name   | source_name | shadow_name | shadow_table         |
 +-------------+-------------+-------------+----------------------+

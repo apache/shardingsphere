@@ -22,8 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
@@ -77,9 +76,9 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(connectionSession.getBackendConnection()).thenReturn(mock(JDBCBackendConnection.class));
+        when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
         when(connectionSession.getBackendConnection().getConnectionSession()).thenReturn(connectionSession);
-        try (MockedConstruction<JDBCDatabaseCommunicationEngine> unused = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
+        try (MockedConstruction<DatabaseCommunicationEngine> unused = mockConstruction(DatabaseCommunicationEngine.class)) {
             DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(context, sql, Collections.emptyList()), connectionSession, false);
             assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
         }

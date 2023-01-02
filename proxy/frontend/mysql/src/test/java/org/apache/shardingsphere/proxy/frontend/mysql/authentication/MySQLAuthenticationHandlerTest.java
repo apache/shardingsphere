@@ -28,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPlu
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -42,8 +41,8 @@ import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticat
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,9 +75,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     @SneakyThrows(ReflectiveOperationException.class)
     private void initAuthPluginDataForAuthenticationHandler() {
         MySQLAuthPluginData authPluginData = new MySQLAuthPluginData(part1, part2);
-        Field field = MySQLAuthenticationHandler.class.getDeclaredField("authPluginData");
-        field.setAccessible(true);
-        field.set(authenticationHandler, authPluginData);
+        Plugins.getMemberAccessor().set(MySQLAuthenticationHandler.class.getDeclaredField("authPluginData"), authenticationHandler, authPluginData);
     }
     
     @Test
@@ -136,7 +133,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
     }
     
-    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
+    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user, final boolean isNeedSuper) throws ReflectiveOperationException {
         return new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user, isNeedSuper), new ConfigurationProperties(new Properties())));
     }
@@ -151,15 +148,13 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
         return result;
     }
     
-    private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws NoSuchFieldException, IllegalAccessException {
+    private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws ReflectiveOperationException {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         if (!isNeedSuper) {
-            Field authorityRegistryField = AuthorityRule.class.getDeclaredField("authorityRegistry");
             AuthorityRegistry authorityRegistry = mock(AuthorityRegistry.class);
             when(authorityRegistry.findPrivileges(user.getGrantee())).thenReturn(Optional.empty());
-            authorityRegistryField.setAccessible(true);
-            authorityRegistryField.set(rule, authorityRegistry);
+            Plugins.getMemberAccessor().set(AuthorityRule.class.getDeclaredField("authorityRegistry"), rule, authorityRegistry);
         }
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }

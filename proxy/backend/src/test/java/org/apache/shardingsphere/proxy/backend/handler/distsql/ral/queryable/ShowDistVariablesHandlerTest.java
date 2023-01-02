@@ -56,7 +56,7 @@ public final class ShowDistVariablesHandlerTest extends ProxyContextRestorer {
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         Properties props = new Properties();
-        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), "JDBC");
+        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), "OLAP");
         when(result.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
         return result;
     }

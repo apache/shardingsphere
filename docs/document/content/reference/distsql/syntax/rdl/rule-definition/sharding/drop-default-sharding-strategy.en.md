@@ -9,6 +9,8 @@ The `DROP DEFAULT SHARDING STRATEGY` syntax is used to drop default sharding str
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropDefaultShardingStrategy ::=
   'DROP' 'DEFAULT' 'SHARDING' ('TABLE' | 'DATABASE') 'STRATEGY' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ DropDefaultShardingStrategy ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -26,7 +33,7 @@ databaseName ::=
 - Drop default sharding table strategy for specified database.
 
 ```sql
-DROP DEFAULT SHARDING TABLE STRATEGY FROM test1;
+DROP DEFAULT SHARDING TABLE STRATEGY FROM sharding_db;
 ```
 
 - Drop default sharding database strategy for current database.

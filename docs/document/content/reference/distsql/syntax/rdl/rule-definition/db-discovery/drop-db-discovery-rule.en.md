@@ -9,9 +9,11 @@ The `DROP DB_DISCOVERY RULE` syntax is used to drop database discovery rule for 
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropDatabaseDiscoveryRule ::=
-  'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)* ('FROM' databaseName)?
 
 dbDiscoveryRuleName ::=
   identifier
@@ -19,6 +21,11 @@ dbDiscoveryRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -29,7 +36,7 @@ databaseName ::=
 - Drop mutiple database discovery rule for specified database
 
 ```sql
-DROP DB_DISCOVERY RULE group_0, group_1 FROM test1;
+DROP DB_DISCOVERY RULE group_0, group_1 FROM discovery_db;
 ```
 
 - Drop single database discovery rule for current database

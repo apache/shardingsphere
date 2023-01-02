@@ -10,7 +10,9 @@ weight = 12
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowShardingTableRulesUsedKeyGenerator::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'KEY' 'GENERATOR' keyGeneratorName ('FROM' databaseName)?
 
@@ -20,6 +22,11 @@ keyGeneratorName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -37,11 +44,11 @@ databaseName ::=
 - Query sharding table rules for the specified sharding key generator in spicified logical database
 
 ```sql
-SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM test1;
+SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM test1;
+mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator FROM sharding_db;
 +-------+--------------+
 | type  | name         |
 +-------+--------------+

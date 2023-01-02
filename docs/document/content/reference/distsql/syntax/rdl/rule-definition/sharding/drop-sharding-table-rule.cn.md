@@ -9,6 +9,8 @@ weight = 4
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropShardingTableRule ::=
   'DROP' 'SHARDING' 'TABLE' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
@@ -19,6 +21,11 @@ shardingRuleName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -29,7 +36,7 @@ databaseName ::=
 - 为指定逻辑库删除多个指定分片规则
  
 ```sql
-DROP SHARDING TABLE RULE t_order, t_order_item FROM test1;
+DROP SHARDING TABLE RULE t_order, t_order_item FROM sharding_db;
 ```
 
 - 为当前逻辑库删除单个指定分片规则

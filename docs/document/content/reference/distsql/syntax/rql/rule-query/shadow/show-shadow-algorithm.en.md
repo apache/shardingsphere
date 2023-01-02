@@ -9,13 +9,20 @@ The `SHOW SHADOW ALGORITHM` syntax is used to query shadow algorithms for specif
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowEncryptAlgorithm::=
   'SHOW' 'SHADOW' 'ALGORITHMS' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -38,11 +45,11 @@ databaseName ::=
 - Query shadow algorithms for specified database.
 
 ```sql
-SHOW SHADOW ALGORITHMS FROM test1;
+SHOW SHADOW ALGORITHMS FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW ALGORITHMS FROM test1;
+mysql> SHOW SHADOW ALGORITHMS FROM shadow_db;
 +-------------------------+-------------+-----------------------------------------+------------+
 | shadow_algorithm_name   | type        | props                                   | is_default |
 +-------------------------+-------------+-----------------------------------------+------------+

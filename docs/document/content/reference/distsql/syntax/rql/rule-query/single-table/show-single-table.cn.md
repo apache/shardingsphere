@@ -9,7 +9,9 @@ weight = 3
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowSingleTable::=
   'SHOW' 'SINGLE' ('TABLES' ('LIKE' likeLiteral)?|'TABLE' tableName) ('FROM' databaseName)?
 
@@ -19,6 +21,11 @@ tableName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -37,11 +44,11 @@ databaseName ::=
 - 查询指定逻辑库中的指定单表
 
 ```sql
-SHOW SINGLE TABLE t_user FROM test1;
+SHOW SINGLE TABLE t_user FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLE t_user FROM test1;
+mysql> SHOW SINGLE TABLE t_user FROM sharding_db;
 +------------+---------------+
 | table_name | resource_name |
 +------------+---------------+
@@ -69,11 +76,11 @@ mysql> SHOW SINGLE TABLE t_user;
 - 查询指定逻辑库中的单表
 
 ```sql
-SHOW SINGLE TABLES FROM test1;
+SHOW SINGLE TABLES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES FROM test1;
+mysql> SHOW SINGLE TABLES FROM sharding_db;
 +------------+---------------+
 | table_name | resource_name |
 +------------+---------------+
@@ -101,11 +108,11 @@ mysql> SHOW SINGLE TABLES;
 - 查询指定逻辑库中表名以 `order_5` 结尾的单表
 
 ```sql
-SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
+SHOW SINGLE TABLES LIKE '%order_5' FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM test1;
+mysql> SHOW SINGLE TABLES LIKE '%order_5' FROM sharding_db;
 +------------+-------------------+
 | table_name | storage_unit_name |
 +------------+-------------------+

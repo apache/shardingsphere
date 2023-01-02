@@ -9,12 +9,17 @@ weight = 2
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 RegisterStorageUnit ::=
-  'REGISTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
+  'REGISTER' 'STORAGE' 'UNIT' ifNotExists? storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  StorageUnitName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
+  storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 storageUnitName ::=
   identifier
@@ -37,18 +42,20 @@ user ::=
 password ::=
   string
 
-proerties ::=
-  PROPERTIES '(' property ( ',' property )* ')'
-
-property ::=
-  key '=' value
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 特别说明
 
@@ -57,15 +64,15 @@ value ::=
 - `storageUnitName` 区分大小写；
 - `storageUnitName` 在当前逻辑库中需要唯一；
 - `storageUnitName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
-- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致，`value` 支持 int 和 String 类型；
-- 当 `password` 包含特殊字符时，建议使用 string 形式；例如 `password@123`的 string 形式为 `"password@123"`。
+- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致；
+- `ifNotExists` 子句用于避免出现 `Duplicate storage unit` 的错误。
 
 ### 示例
 
 - 使用标准模式注册存储单元
 
 ```sql
-REGISTER STORAGE UNIT su_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_0",
@@ -77,7 +84,7 @@ REGISTER STORAGE UNIT su_0 (
 - 使用标准模式注册存储单元并设置连接池参数
 
 ```sql
-REGISTER STORAGE UNIT su_1 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_1",
@@ -90,11 +97,23 @@ REGISTER STORAGE UNIT su_1 (
 - 使用 URL 模式注册存储单元并设置连接池参数
 
 ```sql
-REGISTER STORAGE UNIT su_2 (
+REGISTER STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+);
+```
+
+- 使用 `ifNotExists` 子句注册存储单元
+
+```sql
+REGISTER STORAGE UNIT IF NOT EXISTS ds_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="db_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 

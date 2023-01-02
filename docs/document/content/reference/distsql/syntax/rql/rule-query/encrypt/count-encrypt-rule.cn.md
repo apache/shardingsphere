@@ -9,6 +9,8 @@ weight = 4
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 CountEncryptRule::=
   'COUNT' 'ENCRYPT' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountEncryptRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -35,16 +42,16 @@ databaseName ::=
 - 查询指定逻辑库中的加密规则数量
 
 ```sql
-COUNT ENCRYPT RULE FROM test1;
+COUNT ENCRYPT RULE FROM encrypt_db;
 ```
 
 ```sql
-mysql> COUNT ENCRYPT RULE FROM test1;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| encrypt   | test1    | 2     |
-+-----------+----------+-------+
+mysql> COUNT ENCRYPT RULE FROM encrypt_db;
++-----------+---------------+-------+
+| rule_name | database      | count |
++-----------+---------------+-------+
+| encrypt   | encrypt_db    | 2     |
++-----------+---------------+-------+
 1 row in set (0.01 sec)
 ```
 
@@ -56,11 +63,11 @@ COUNT ENCRYPT RULE;
 
 ```sql
 mysql> COUNT ENCRYPT RULE;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| encrypt   | test1    | 2     |
-+-----------+----------+-------+
++-----------+---------------+-------+
+| rule_name | database      | count |
++-----------+---------------+-------+
+| encrypt   | encrypt_db    | 2     |
++-----------+---------------+-------+
 1 row in set (0.01 sec)
 ```
 

@@ -9,6 +9,8 @@ The `COUNT SHADOW RULE` syntax is used to query the number of shadow rules for s
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountShadowRule::=
   'COUNT' 'SHADOW' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountShadowRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -35,16 +42,16 @@ databaseName ::=
 - Query the number of shadow rules for specified database.
 
 ```sql
-COUNT SHADOW RULE FROM test1;
+COUNT SHADOW RULE FROM shadow_db;
 ```
 
 ```sql
-mysql> COUNT SHADOW RULE FROM test1;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| shadow    | test1    | 1     |
-+-----------+----------+-------+
+mysql> COUNT SHADOW RULE FROM shadow_db;
++-----------+--------------+-------+
+| rule_name | database     | count |
++-----------+--------------+-------+
+| shadow    | shadow_db    | 1     |
++-----------+--------------+-------+
 1 row in set (0.00 sec)
 ```
 
@@ -56,11 +63,11 @@ COUNT SHADOW RULE;
 
 ```sql
 mysql> COUNT SHADOW RULE;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| shadow    | test1    | 1     |
-+-----------+----------+-------+
++-----------+--------------+-------+
+| rule_name | database     | count |
++-----------+--------------+-------+
+| shadow    | shadow_db    | 1     |
++-----------+--------------+-------+
 1 row in set (0.01 sec)
 ```
 

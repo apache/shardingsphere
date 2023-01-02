@@ -9,6 +9,8 @@ The `COUNT ENCRYPT RULE` syntax is used to query the number of encrypt rules for
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountEncryptRule::=
   'COUNT' 'ENCRYPT' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountEncryptRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -35,16 +42,16 @@ databaseName ::=
 - Query the number of encrypt rules for specified database.
 
 ```sql
-COUNT ENCRYPT RULE FROM test1;
+COUNT ENCRYPT RULE FROM encrypt_db;
 ```
 
 ```sql
-mysql> COUNT ENCRYPT RULE FROM test1;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| encrypt   | test1    | 2     |
-+-----------+----------+-------+
+mysql> COUNT ENCRYPT RULE FROM encrypt_db;
++-----------+---------------+-------+
+| rule_name | database      | count |
++-----------+---------------+-------+
+| encrypt   | encrypt_db    | 2     |
++-----------+---------------+-------+
 1 row in set (0.01 sec)
 ```
 
@@ -56,11 +63,11 @@ COUNT ENCRYPT RULE;
 
 ```sql
 mysql> COUNT ENCRYPT RULE;
-+-----------+----------+-------+
-| rule_name | database | count |
-+-----------+----------+-------+
-| encrypt   | test1    | 2     |
-+-----------+----------+-------+
++-----------+---------------+-------+
+| rule_name | database      | count |
++-----------+---------------+-------+
+| encrypt   | encrypt_db    | 2     |
++-----------+---------------+-------+
 1 row in set (0.01 sec)
 ```
 

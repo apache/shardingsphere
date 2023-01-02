@@ -6,7 +6,9 @@ weight = 3
 
 ## 注册中心数据结构
 
-在定义的命名空间下，`rules` 、`props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。`nodes` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
+在定义的命名空间下，`rules` 、`props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。
+`nodes` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
+`sys_data` 存储系统表和数据。
 
 ```
 namespace
@@ -54,6 +56,14 @@ namespace
    ├    ├──storage_nodes                       
    ├    ├     ├──${databaseName.groupName.ds} 
    ├    ├     ├──${databaseName.groupName.ds}
+   ├──sys_data
+   ├    ├──shardingsphere
+   ├    ├     ├──schemas
+   ├    ├     ├     ├──shardingsphere
+   ├    ├     ├     ├     ├──tables             # 系统表
+   ├    ├     ├     ├     ├     ├──sharding_table_statistics    # 分片统计表数据
+   ├    ├     ├     ├     ├     ├     ├──8a2dcb0d97c3d86ef77b3d4651a1d7d0  # md5
+   ├    ├     ├     ├     ├     ├──cluster_information    # 集群信息表
 ```
 
 ### /rules

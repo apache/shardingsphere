@@ -9,13 +9,20 @@ The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite splitting r
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -26,7 +33,7 @@ databaseName ::=
 - Drop readwrite splitting rule for specified database
 
 ```sql
-DROP READWRITE_SPLITTING RULE ms_group_1 FROM test1;
+DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
 ```
 
 - Drop readwrite splitting rule for current database

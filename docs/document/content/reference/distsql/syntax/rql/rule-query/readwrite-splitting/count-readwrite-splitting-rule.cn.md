@@ -9,6 +9,8 @@ weight = 3
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 CountReadwriteSplittingRule::=
   'COUNT' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,12 @@ CountReadwriteSplittingRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 
 ### 补充说明
 
@@ -35,16 +43,16 @@ databaseName ::=
 - 查询指定逻辑库中的读写分离规则数量
 
 ```sql
-COUNT READWRITE_SPLITTING RULE FROM test1;
+COUNT READWRITE_SPLITTING RULE FROM readwrite_splitting_db;
 ```
 
 ```sql
-mysql> COUNT READWRITE_SPLITTING RULE FROM test1;
-+---------------------+----------+-------+
-| rule_name           | database | count |
-+---------------------+----------+-------+
-| readwrite_splitting | test1    | 1     |
-+---------------------+----------+-------+
+mysql> COUNT READWRITE_SPLITTING RULE FROM readwrite_splitting_db;
++---------------------+---------------------------+-------+
+| rule_name           | database                  | count |
++---------------------+---------------------------+-------+
+| readwrite_splitting | readwrite_splitting_db    | 1     |
++---------------------+---------------------------+-------+
 1 row in set (0.02 sec)
 ```
 
@@ -56,11 +64,11 @@ COUNT READWRITE_SPLITTING RULE;
 
 ```sql
 mysql> COUNT READWRITE_SPLITTING RULE;
-+---------------------+----------+-------+
-| rule_name           | database | count |
-+---------------------+----------+-------+
-| readwrite_splitting | test1    | 1     |
-+---------------------+----------+-------+
++---------------------+---------------------------+-------+
+| rule_name           | database                  | count |
++---------------------+---------------------------+-------+
+| readwrite_splitting | readwrite_splitting_db    | 1     |
++---------------------+---------------------------+-------+
 1 row in set (0.00 sec)
 ```
 

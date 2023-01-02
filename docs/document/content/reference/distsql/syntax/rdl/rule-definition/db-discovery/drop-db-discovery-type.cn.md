@@ -9,9 +9,11 @@ weight = 6
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropDatabaseDiscoveryType ::=
-  'DROP' 'DB_DISCOVERY' 'TYPE'  dbDiscoveryTypeName (',' dbDiscoveryTypeName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'TYPE'  dbDiscoveryTypeName (',' dbDiscoveryTypeName)* ('FROM' databaseName)?
 
 dbDiscoveryTypeName ::=
   identifier
@@ -19,6 +21,11 @@ dbDiscoveryTypeName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -31,7 +38,7 @@ databaseName ::=
 - 为指定数据库删除多个数据库发现类型
  
 ```sql
-DROP DB_DISCOVERY TYPE group_0_mysql_mgr, group_1_mysql_mgr FROM test1;
+DROP DB_DISCOVERY TYPE group_0_mysql_mgr, group_1_mysql_mgr FROM discovery_db;
 ```
 
 - 为当前数据库删除单个数据库发现类型

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.logging;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
 import java.io.File;
@@ -45,7 +45,6 @@ public final class LoggerFactory {
      * @return logger
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("unchecked")
     public static Logger getLogger(final Class<?> clazz) {
         Class<?> factoryClazz = getClassLoader().loadClass("org.slf4j.LoggerFactory");
         Method method = factoryClazz.getMethod("getLogger", Class.class);
@@ -137,18 +136,16 @@ public final class LoggerFactory {
         }
         
         @SneakyThrows(ReflectiveOperationException.class)
-        @SuppressWarnings("unchecked")
         private void invokeMethod(final String methodName, final String msg) {
-            Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
-            Method method = logicLogger.getMethod(methodName, String.class);
+            Class<?> actualLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
+            Method method = actualLogger.getMethod(methodName, String.class);
             method.invoke(logger, msg);
         }
         
         @SneakyThrows(ReflectiveOperationException.class)
-        @SuppressWarnings("unchecked")
         private void invokeMethod(final String methodName, final String msg, final Object... arguments) {
-            Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
-            Method method = logicLogger.getMethod(methodName, String.class, Object[].class);
+            Class<?> actualLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
+            Method method = actualLogger.getMethod(methodName, String.class, Object[].class);
             method.invoke(logger, msg, arguments);
         }
     }

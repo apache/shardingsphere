@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTa
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.CountSingleTableRuleResultSet;
-import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -56,14 +56,14 @@ public final class CountSingleTableRuleResultSetTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        SingleTableRule singleTableRule = mockSingleTableRule();
-        when(ruleMetaData.findSingleRule(SingleTableRule.class)).thenReturn(Optional.of(singleTableRule));
+        SingleRule singleTableRule = mockSingleTableRule();
+        when(ruleMetaData.findSingleRule(SingleRule.class)).thenReturn(Optional.of(singleTableRule));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }
     
-    private SingleTableRule mockSingleTableRule() {
-        SingleTableRule result = mock(SingleTableRule.class);
+    private SingleRule mockSingleTableRule() {
+        SingleRule result = mock(SingleRule.class);
         when(result.getAllTables()).thenReturn(Arrays.asList("single_table_1", "single_table_2"));
         return result;
     }

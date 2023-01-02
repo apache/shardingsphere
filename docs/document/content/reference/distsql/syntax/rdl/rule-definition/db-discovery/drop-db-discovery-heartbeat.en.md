@@ -9,6 +9,8 @@ The `DROP DB_DISCOVERY HEARTBEAT` syntax is used to drop database discovery hear
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropDatabaseDiscoveryHeartbeat ::=
   'DROP' 'DB_DISCOVERY' 'HEARTBEAT'  dbDiscoveryHeartbeatName (',' dbDiscoveryHeartbeatName)*  ('FROM' databaseName)?
@@ -19,6 +21,11 @@ dbDiscoveryHeartbeatName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -29,7 +36,7 @@ databaseName ::=
 - Drop mutiple database discovery heartbeat for specified database
 
 ```sql
-DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM test1;
+DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM discovery_db;
 ```
 
 - Drop single database discovery heartbeat for current database

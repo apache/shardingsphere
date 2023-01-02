@@ -44,8 +44,8 @@ import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.LinkedHashMap;
@@ -73,14 +73,13 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     private final byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
     
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() {
         initAuthenticationHandlerForAuthenticationEngine();
     }
     
-    private void initAuthenticationHandlerForAuthenticationEngine() throws NoSuchFieldException, IllegalAccessException {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("authenticationHandler");
-        field.setAccessible(true);
-        field.set(authenticationEngine, authenticationHandler);
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void initAuthenticationHandlerForAuthenticationEngine() {
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("authenticationHandler"), authenticationEngine, authenticationHandler);
     }
     
     @Test
@@ -125,9 +124,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setAuthenticationResult() {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult");
-        field.setAccessible(true);
-        field.set(authenticationEngine, AuthenticationResultBuilder.continued("root", "", "sharding_db"));
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult"), authenticationEngine, AuthenticationResultBuilder.continued("root", "", "sharding_db"));
     }
     
     @Test
@@ -203,6 +200,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         doReturn(getRemoteAddress()).when(result).remoteAddress();
         when(result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(result.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(result.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
         return result;
     }
     
@@ -214,22 +212,16 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
-        field.setAccessible(true);
-        field.set(authenticationEngine, connectionPhase);
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), authenticationEngine, connectionPhase);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private MySQLConnectionPhase getConnectionPhase() {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
-        field.setAccessible(true);
-        return (MySQLConnectionPhase) field.get(authenticationEngine);
+        return (MySQLConnectionPhase) Plugins.getMemberAccessor().get(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), authenticationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getAuthResponse() {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("authResponse");
-        field.setAccessible(true);
-        return (byte[]) field.get(authenticationEngine);
+        return (byte[]) Plugins.getMemberAccessor().get(MySQLAuthenticationEngine.class.getDeclaredField("authResponse"), authenticationEngine);
     }
 }

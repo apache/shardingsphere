@@ -9,13 +9,21 @@ weight = 4
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 CountSingleTableRule::=
   'COUNT' 'SINGLE_TABLE' 'RULE' ('FROM' databaseName)?
   
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 
 ### 补充说明
 

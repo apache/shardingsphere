@@ -9,12 +9,14 @@ The `ALTER STORAGE UNIT` syntax is used to alter storage units for the currently
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
-AlterResource ::=
+AlterStorageUnit ::=
   'ALTER' 'STORAGE' 'UNIT' storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
-  storageUnitName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
+  storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
 
 storageUnitName ::=
   identifier
@@ -37,18 +39,20 @@ user ::=
 password ::=
   string
 
-proerties ::=
-  PROPERTIES '(' property ( ',' property )* ')'
-
-property ::=
-  key '=' value
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -61,16 +65,14 @@ value ::=
 - `storageUnitName` needs to be unique within the current database;
 - `storageUnitName` name only allows letters, numbers and `_`, and must start with a letter;
 - `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
-  parameter name, `value` supports int and String types;
-- When `password` contains special characters, it is recommended to use the string form; for example, the string form
-  of `password@123` is `"password@123"`.
+  parameter name.
 
 ### Example
 
 - Alter storage unit using standard mode
 
 ```sql
-ALTER STORAGE UNIT su_0 (
+ALTER STORAGE UNIT ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_0,
@@ -82,7 +84,7 @@ ALTER STORAGE UNIT su_0 (
 - Alter storage unit and set connection pool parameters using standard mode
 
 ```sql
-ALTER STORAGE UNIT su_1 (
+ALTER STORAGE UNIT ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_1,
@@ -95,7 +97,7 @@ ALTER STORAGE UNIT su_1 (
 - Alter storage unit and set connection pool parameters using URL patterns
 
 ```sql
-ALTER STORAGE UNIT su_2 (
+ALTER STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,

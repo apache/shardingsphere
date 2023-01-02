@@ -24,3 +24,12 @@ other = "Aller plus loin"
 
 [Expand-title]
 other = "Déroulez-moi..."
+
+[Byte-symbol]
+other = "o"
+
+[Kilobyte-symbol]
+other = "ko"
+
+[Megabyte-symbol]
+other = "Mo"

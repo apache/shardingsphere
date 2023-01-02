@@ -9,13 +9,20 @@ The `SHOW DB_DISCOVERY HEARTBEATS` syntax is used to query database discovery he
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'HEARTBEATS' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -36,11 +43,11 @@ databaseName ::=
 - Query database discovery heartbeats for specified database.
 
 ```sql
-SHOW DB_DISCOVERY HEARTBEATS FROM test1;
+SHOW DB_DISCOVERY HEARTBEATS FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY HEARTBEATS FROM test1;
+mysql> SHOW DB_DISCOVERY HEARTBEATS FROM discovery_db;
 +-------------------+---------------------------------+
 | name              | props                           |
 +-------------------+---------------------------------+

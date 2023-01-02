@@ -9,6 +9,8 @@ weight = 10
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ExportDatabaseConfiguration ::=
   'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath ('TO' databaseName)?
@@ -19,6 +21,11 @@ databaseName ::=
 filePath ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -31,13 +38,13 @@ filePath ::=
 - 将 `YAML` 中的配置导入到指定逻辑库中
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml" TO test1;
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml" TO sharding_db;
 ```
 
 - 将 `YAML` 中的配置导入到当前逻辑库中
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml";
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 ```
 
 ### 保留字

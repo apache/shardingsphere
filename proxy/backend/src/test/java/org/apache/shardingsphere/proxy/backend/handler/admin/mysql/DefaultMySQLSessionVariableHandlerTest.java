@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariablesLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariables;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -44,8 +46,10 @@ public final class DefaultMySQLSessionVariableHandlerTest {
     public void assertHandleRecord() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
-        try (MockedStatic<ReplayRequiredSessionVariablesLoader> mockedStatic = mockStatic(ReplayRequiredSessionVariablesLoader.class)) {
-            mockedStatic.when(() -> ReplayRequiredSessionVariablesLoader.getVariables("MySQL")).thenReturn(Collections.singleton("sql_mode"));
+        try (MockedStatic<TypedSPIRegistry> typedSPIRegistry = mockStatic(TypedSPIRegistry.class)) {
+            ReplayRequiredSessionVariables replayRequiredSessionVariables = mock(ReplayRequiredSessionVariables.class);
+            when(replayRequiredSessionVariables.getReplayRequiredVariables()).thenReturn(Collections.singleton("sql_mode"));
+            typedSPIRegistry.when(() -> TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "MySQL")).thenReturn(Optional.of(replayRequiredSessionVariables));
             new DefaultMySQLSessionVariableHandler().handle(connectionSession, "sql_mode", "''");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("sql_mode", "''");
         }

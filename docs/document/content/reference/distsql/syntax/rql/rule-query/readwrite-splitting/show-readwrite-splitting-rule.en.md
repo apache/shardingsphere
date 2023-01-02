@@ -9,13 +9,20 @@ The `SHOW READWRITE_SPLITTING RULES` syntax is used to query readwrite splitting
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowReadWriteSplittingRule::=
   'SHOW' 'READWRITE_SPLITTING' 'RULES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -39,11 +46,11 @@ databaseName ::=
 - Query readwrite splitting rules for specified database.
 
 ```sql
-SHOW READWRITE_SPLITTING RULES FROM sharding_db;
+SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
 ```
 
 ```sql
-mysql> SHOW READWRITE_SPLITTING RULES FROM sharding_db;
+mysql> SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
 +------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
 | name       | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+

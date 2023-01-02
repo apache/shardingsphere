@@ -9,6 +9,8 @@ The `SHOW RULES USED STORAGE UNIT` syntax is used to query the rules for using t
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowRulesUsedStorageUnit ::=
   'SHOW' 'RULES' 'USED' 'STORAGE' 'UNIT' storageUnitName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ storageUnitName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 
@@ -36,11 +43,11 @@ databaseName ::=
 - Query the rules for using the specified storage unit in specified database
 
 ```sql
-SHOW RULES USED STORAGE UNIT su_1 FROM test1;
+SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW RULES USED STORAGE UNIT su_1 FROM test1;
+mysql> SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 +---------------------+------------+
 | type                | name       |
 +---------------------+------------+
@@ -53,11 +60,11 @@ mysql> SHOW RULES USED STORAGE UNIT su_1 FROM test1;
 - Query the rules for using the specified storage unit in current database
 
 ```sql
-SHOW RULES USED STORAGE UNIT su_1;
+SHOW RULES USED STORAGE UNIT ds_1;
 ```
 
 ```sql
-mysql> SHOW RULES USED STORAGE UNIT su_1;
+mysql> SHOW RULES USED STORAGE UNIT ds_1;
 +---------------------+------------+
 | type                | name       |
 +---------------------+------------+

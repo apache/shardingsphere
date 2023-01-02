@@ -9,13 +9,20 @@ weight = 3
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'TYPES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -35,11 +42,11 @@ databaseName ::=
 - 查询指定逻辑库中的数据库发现类型
 
 ```sql
-SHOW DB_DISCOVERY TYPES FROM test1;
+SHOW DB_DISCOVERY TYPES FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY TYPES FROM test1;
+mysql> SHOW DB_DISCOVERY TYPES FROM discovery_db;
 +-------------------+-----------+---------------------------------------------------+
 | name              | type      | props                                             |
 +-------------------+-----------+---------------------------------------------------+

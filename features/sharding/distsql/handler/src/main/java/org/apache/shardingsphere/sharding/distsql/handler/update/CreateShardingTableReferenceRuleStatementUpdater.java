@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -42,11 +43,16 @@ import java.util.stream.Collectors;
  */
 public final class CreateShardingTableReferenceRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
+    private boolean ifNotExists;
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
+        ifNotExists = sqlStatement.isIfNotExists();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
-        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
+        if (!ifNotExists) {
+            checkDuplicatedRuleNames(databaseName, sqlStatement, currentRuleConfig);
+        }
         checkDuplicatedTablesInShardingTableReferenceRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeReferencedShardingTablesExisted(databaseName, sqlStatement, currentRuleConfig);
         checkShardingTableReferenceRulesValid(sqlStatement, currentRuleConfig);
@@ -56,8 +62,8 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
     }
     
-    private void checkDuplicateRuleNames(final String databaseName, final CreateShardingTableReferenceRuleStatement sqlStatement,
-                                         final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
+    private void checkDuplicatedRuleNames(final String databaseName, final CreateShardingTableReferenceRuleStatement sqlStatement,
+                                          final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
             Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
@@ -86,7 +92,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
     }
     
     private void checkShardingTableReferenceRulesValid(final CreateShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = buildToBeCreatedRuleConfiguration(sqlStatement).getBindingTableGroups();
+        Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement).getBindingTableGroups();
         Collection<String> names = bindingTableGroups.stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(ShardingTableRuleStatementChecker.isValidBindingTableGroups(bindingTableGroups, currentRuleConfig),
                 () -> new InvalidRuleConfigurationException("sharding table", names, Collections.singleton("invalid sharding table reference.")));
@@ -101,7 +107,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableReferenceRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final CreateShardingTableReferenceRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         sqlStatement.getRules().forEach(each -> result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration(each.getName(), each.getReference())));
         return result;
@@ -109,6 +115,14 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        if (ifNotExists) {
+            Collection<String> currentReferenceRules = new LinkedList<>();
+            currentRuleConfig.getBindingTableGroups().forEach(each -> currentReferenceRules.add(each.getName()));
+            toBeCreatedRuleConfig.getBindingTableGroups().removeIf(each -> currentReferenceRules.contains(each.getName()));
+            if (toBeCreatedRuleConfig.getBindingTableGroups().isEmpty()) {
+                return;
+            }
+        }
         if (null != currentRuleConfig) {
             currentRuleConfig.getBindingTableGroups().addAll(toBeCreatedRuleConfig.getBindingTableGroups());
         }

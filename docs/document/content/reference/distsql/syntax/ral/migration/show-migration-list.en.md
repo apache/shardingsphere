@@ -9,10 +9,17 @@ The `SHOW MIGRATION LIST` syntax is used to query migration job list.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowMigrationList ::=
   'SHOW' 'MIGRATION' 'LIST'
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Values Description
 

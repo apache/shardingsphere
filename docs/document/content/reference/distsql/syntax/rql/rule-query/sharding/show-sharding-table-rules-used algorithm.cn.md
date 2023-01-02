@@ -9,7 +9,9 @@ weight = 11
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowShardingTableRulesUsedAlgorithm::=
   'SHOW' 'SHARDING' 'TABLE' 'RULES' 'USED' 'ALGORITHM' algorithmName ('FROM' databaseName)?
 
@@ -19,6 +21,12 @@ algorithmName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
 
 ### 补充说明
 
@@ -36,11 +44,11 @@ databaseName ::=
 - 查询指定逻辑库中使用指定分片算法的分片规则
 
 ```sql
-SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM test1;
+mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline FROM sharding_db;
 +-------+--------------+
 | type  | name         |
 +-------+--------------+

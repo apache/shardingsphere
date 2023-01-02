@@ -9,13 +9,20 @@ weight = 4
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 UnregisterStorageUnit ::=
-  'UNREGISTER' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
+  'UNREGISTER' 'STORAGE' 'UNIT' ('IF' 'EXISTS')? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
 
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -28,25 +35,25 @@ storageUnitName ::=
 - 移除存储单元
 
 ```sql
-UNREGISTER STORAGE UNIT su_0;
+UNREGISTER STORAGE UNIT ds_0;
 ```
 
 - 移除多个存储单元
 
 ```sql
-UNREGISTER STORAGE UNIT su_1, su_2;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
 - 忽略单表移除存储单元
 
 ```sql
-UNREGISTER STORAGE UNIT su_3 IGNORE SINGLE TABLES;
+UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;
 ```
 
 - 如果存储单元存在则移除
 
 ```sql
-UNREGISTER STORAGE UNIT IF EXISTS su_4;
+UNREGISTER STORAGE UNIT IF EXISTS ds_0;
 ```
 
 ### 保留字

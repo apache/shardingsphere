@@ -9,13 +9,20 @@ weight = 5
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowDefaultShardingStrategy::=
   'SHOW' 'DEFAULT' 'SHARDING' 'STRATEGY' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -37,11 +44,11 @@ databaseName ::=
 - 查询指定逻辑库的默认分片策略
 
 ```sql
-SHOW DEFAULT SHARDING STRATEGY FROM test1;
+SHOW DEFAULT SHARDING STRATEGY FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW DEFAULT SHARDING STRATEGY FROM test1;
+mysql> SHOW DEFAULT SHARDING STRATEGY FROM sharding_db;
 +----------+----------+-----------------+-------------------------+-------------------------+-----------------------------------------------------+
 | name     | type     | sharding_column | sharding_algorithm_name | sharding_algorithm_type | sharding_algorithm_props                            |
 +----------+----------+-----------------+-------------------------+-------------------------+-----------------------------------------------------+

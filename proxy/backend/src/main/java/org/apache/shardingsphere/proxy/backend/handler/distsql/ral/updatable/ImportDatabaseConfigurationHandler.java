@@ -31,10 +31,13 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
-import org.apache.shardingsphere.distsql.handler.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
+import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
@@ -115,7 +118,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     }
     
     private void addDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().addDatabaseAndPersist(databaseName);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().createDatabase(databaseName);
     }
     
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
@@ -125,9 +128,9 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         validateHandler.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
-            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
     }
     
@@ -159,6 +162,10 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
                 ShadowRuleConfiguration shadowRuleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject((YamlShadowRuleConfiguration) each);
                 // TODO check
                 ruleConfigs.add(shadowRuleConfig);
+            } else if (each instanceof YamlMaskRuleConfiguration) {
+                MaskRuleConfiguration maskRuleConfig = new YamlMaskRuleConfigurationSwapper().swapToObject((YamlMaskRuleConfiguration) each);
+                // TODO check
+                ruleConfigs.add(maskRuleConfig);
             }
         }
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
@@ -167,6 +174,6 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     }
     
     private void dropDatabase(final String databaseName) {
-        ProxyContext.getInstance().getContextManager().dropDatabaseAndPersist(databaseName);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(databaseName);
     }
 }

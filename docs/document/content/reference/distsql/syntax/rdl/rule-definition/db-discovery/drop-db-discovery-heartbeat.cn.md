@@ -9,6 +9,8 @@ weight = 5
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropDatabaseDiscoveryHeartbeat ::=
   'DROP' 'DB_DISCOVERY' 'HEARTBEAT'  dbDiscoveryHeartbeatName (',' dbDiscoveryHeartbeatName)*  ('FROM' databaseName)?
@@ -19,6 +21,11 @@ dbDiscoveryHeartbeatName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -29,7 +36,7 @@ databaseName ::=
 - 为指定数据库删除多个数据库发现心跳
  
 ```sql
-DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM test1;
+DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM discovery_db;
 ```
 
 - 为当前数据库删除单个数据库发现心跳

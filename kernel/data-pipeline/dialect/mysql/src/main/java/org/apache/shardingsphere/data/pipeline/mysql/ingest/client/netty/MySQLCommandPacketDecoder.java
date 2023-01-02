@@ -64,7 +64,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeFieldPacket(final MySQLPacketPayload payload) {
-        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(1) & 0xff)) {
+        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(0) & 0xff)) {
             internalResultSet.getFieldDescriptors().add(new MySQLColumnDefinition41Packet(payload));
         } else {
             new MySQLEofPacket(payload);
@@ -73,7 +73,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeRowDataPacket(final MySQLPacketPayload payload, final List<Object> out) {
-        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(1) & 0xff)) {
+        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(0) & 0xff)) {
             internalResultSet.getFieldValues().add(new MySQLTextResultSetRowPacket(payload, internalResultSet.getHeader().getColumnCount()));
         } else {
             new MySQLEofPacket(payload);
@@ -84,7 +84,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeResponsePacket(final MySQLPacketPayload payload, final List<Object> out) {
-        switch (payload.getByteBuf().getByte(1) & 0xff) {
+        switch (payload.getByteBuf().getByte(0) & 0xff) {
             case MySQLErrPacket.HEADER:
                 out.add(new MySQLErrPacket(payload));
                 break;

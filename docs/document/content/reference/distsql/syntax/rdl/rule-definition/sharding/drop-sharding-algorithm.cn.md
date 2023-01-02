@@ -9,6 +9,8 @@ weight = 12
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropShardingAlgorithm ::=
   'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ shardingAlgorithmName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -29,7 +36,7 @@ databaseName ::=
 - 删除指定逻辑库的指定分片算法
 
 ```sql
-DROP SHARDING ALGORITHM t_order_hash_mod FROM test1;
+DROP SHARDING ALGORITHM t_order_hash_mod FROM sharding_db;
 ```
 
 - 删除当前逻辑库的指定分片算法

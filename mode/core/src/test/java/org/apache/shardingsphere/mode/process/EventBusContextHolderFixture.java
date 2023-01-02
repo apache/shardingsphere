@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.mode.process;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 public final class EventBusContextHolderFixture {
     
-    @Getter
     public static final EventBusContext EVENT_BUS_CONTEXT = new EventBusContext();
 }

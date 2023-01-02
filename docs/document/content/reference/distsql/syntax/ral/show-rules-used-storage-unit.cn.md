@@ -9,6 +9,8 @@ weight = 11
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowRulesUsedStorageUnit ::=
   'SHOW' 'RULES' 'USED' 'STORAGE' 'UNIT' storageUnitName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ storageUnitName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 返回值说明
 
@@ -36,11 +43,11 @@ databaseName ::=
 - 查询指定逻辑库中使用指定存储单元的规则
 
 ```sql
-SHOW RULES USED STORAGE UNIT su_1 FROM test1;
+SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW RULES USED STORAGE UNIT su_1 FROM test1;
+mysql> SHOW RULES USED STORAGE UNIT ds_1 FROM sharding_db;
 +---------------------+------------+
 | type                | name       |
 +---------------------+------------+
@@ -53,11 +60,11 @@ mysql> SHOW RULES USED STORAGE UNIT su_1 FROM test1;
 - 查询当前逻辑库中使用指定存储单元的规则
 
 ```sql
-SHOW RULES USED STORAGE UNIT su_1;
+SHOW RULES USED STORAGE UNIT ds_1;
 ```
 
 ```sql
-mysql> SHOW RULES USED STORAGE UNIT su_1;
+mysql> SHOW RULES USED STORAGE UNIT ds_1;
 +---------------------+------------+
 | type                | name       |
 +---------------------+------------+

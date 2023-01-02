@@ -9,13 +9,20 @@ The `SHOW DB_DISCOVERY TYPES` syntax is used to query database discovery types f
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowDatabaseDiscoveryType::=
   'SHOW' 'DB_DISCOVERY' 'TYPES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -37,11 +44,11 @@ databaseName ::=
 - Query database discovery types for specified database.
 
 ```sql
-SHOW DB_DISCOVERY TYPES FROM test1;
+SHOW DB_DISCOVERY TYPES FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY TYPES FROM test1;
+mysql> SHOW DB_DISCOVERY TYPES FROM discovery_db;
 +-------------------+-----------+---------------------------------------------------+
 | name              | type      | props                                             |
 +-------------------+-----------+---------------------------------------------------+

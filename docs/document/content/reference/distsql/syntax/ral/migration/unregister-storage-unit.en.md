@@ -9,13 +9,20 @@ The `UNREGISTER MIGRATION SOURCE STORAGE UNIT` syntax is used to unregister migr
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
-UnregisterStorageUnit ::=
-  'DROP' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* 
+UnregisterMigrationSourceStorageUnit ::=
+  'UNREGISTER' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNIT' storageUnitName  (',' storageUnitName)* 
 
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -27,13 +34,13 @@ storageUnitName ::=
 - Drop a migration source storage unit
 
 ```sql
-UNREGISTER MIGRATION SOURCE STORAGE UNIT su_0;
+UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0;
 ```
 
 - Drop multiple migration source storage units
 
 ```sql
-UNREGISTER MIGRATION SOURCE STORAGE UNIT su_1, su_2;
+UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_1, ds_2;
 ```
 
 ### Reserved word

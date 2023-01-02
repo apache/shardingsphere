@@ -9,16 +9,23 @@ The `SET DEFAULT SINGLE TABLE STORAGE UNIT` syntax is used to set default single
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 SetDefaultSingleTableStorageUnit ::=
   'SET' 'DEFAULT' 'SINGLE' 'TABLE' 'STORAGE' 'UNIT' singleTableDefinition
 
 singleTableDefinition ::=
-  '=' (storageUnitName ｜ 'RANDOM')
+  '=' (storageUnitName | 'RANDOM')
 
 storageUnitName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -30,7 +37,7 @@ storageUnitName ::=
 - Set a default single table storage unit
 
 ```sql
-SET DEFAULT SINGLE TABLE STORAGE UNIT = su_0;
+SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;
 ```
 
 - Set the default single table storage unit to random storage

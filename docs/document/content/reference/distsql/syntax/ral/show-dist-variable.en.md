@@ -9,13 +9,20 @@ The `SHOW DIST VARIABLE` syntax is used to query `PROXY` system variables config
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ShowDistVariable ::=
-  'SHOW' ('VARIABLES'|'VARIABLE' 'WHERE' 'NAME' '=' variableName)
+  'SHOW' ('VARIABLES' | 'VARIABLE' 'WHERE' 'NAME' '=' variableName)
 
 variableName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Return Value Description
 
@@ -54,7 +61,6 @@ mysql> SHOW DIST VARIABLES;
 | proxy_frontend_executor_size          | 0              |
 | proxy_backend_executor_suitable       | OLAP           |
 | proxy_frontend_max_connections        | 0              |
-| proxy_backend_driver_type             | JDBC           |
 | proxy_mysql_default_version           | 5.7.22         |
 | proxy_default_port                    | 3307           |
 | proxy_netty_backlog                   | 1024           |
@@ -64,7 +70,7 @@ mysql> SHOW DIST VARIABLES;
 | cached_connections                    | 0              |
 | transaction_type                      | LOCAL          |
 +---------------------------------------+----------------+
-22 rows in set (0.01 sec)
+21 rows in set (0.01 sec)
 ```
 - Query specified system variable configuration of `PROXY`
 

@@ -40,9 +40,8 @@ shardingsphere-example
   │   ├── example-raw-jdbc
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
-  ├── other-example
-  │   └── shardingsphere-parser-example
   ├── shardingsphere-example-generator
+  ├── shardingsphere-parser-example
   ├── shardingsphere-proxy-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
   │   ├── shardingsphere-proxy-distsql-example

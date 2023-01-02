@@ -9,6 +9,8 @@ The `COUNT READWRITE_SPLITTING RULE` syntax is used to query the number of readw
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountReadwriteSplittingRule::=
   'COUNT' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountReadwriteSplittingRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -35,16 +42,16 @@ databaseName ::=
 - Query the number of readwrite splitting rules for specified database.
 
 ```sql
-COUNT READWRITE_SPLITTING RULE FROM test1;
+COUNT READWRITE_SPLITTING RULE FROM readwrite_splitting_db;
 ```
 
 ```sql
-mysql> COUNT READWRITE_SPLITTING RULE FROM test1;
-+---------------------+----------+-------+
-| rule_name           | database | count |
-+---------------------+----------+-------+
-| readwrite_splitting | test1    | 1     |
-+---------------------+----------+-------+
+mysql> COUNT READWRITE_SPLITTING RULE FROM readwrite_splitting_db;
++---------------------+---------------------------+-------+
+| rule_name           | database                  | count |
++---------------------+---------------------------+-------+
+| readwrite_splitting | readwrite_splitting_db    | 1     |
++---------------------+---------------------------+-------+
 1 row in set (0.02 sec)
 ```
 
@@ -56,11 +63,11 @@ COUNT READWRITE_SPLITTING RULE;
 
 ```sql
 mysql> COUNT READWRITE_SPLITTING RULE;
-+---------------------+----------+-------+
-| rule_name           | database | count |
-+---------------------+----------+-------+
-| readwrite_splitting | test1    | 1     |
-+---------------------+----------+-------+
++---------------------+---------------------------+-------+
+| rule_name           | database                  | count |
++---------------------+---------------------------+-------+
+| readwrite_splitting | readwrite_splitting_db    | 1     |
++---------------------+---------------------------+-------+
 1 row in set (0.00 sec)
 ```
 

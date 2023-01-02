@@ -9,9 +9,11 @@ The `ALTER SHARDING TABLE REFERENCE RULE` syntax is used to alter sharding table
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterShardingTableReferenceRule ::=
-  'ALTER' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition )*
+  'ALTER' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  referenceRelationshipDefinition  (',' referenceRelationshipDefinition)*
 
 referenceRelationshipDefinition ::=
   ruleName '(' tableName (',' tableName)* ')'
@@ -19,6 +21,11 @@ referenceRelationshipDefinition ::=
 tableName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

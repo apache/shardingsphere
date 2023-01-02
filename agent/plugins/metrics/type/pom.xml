@@ -33,20 +33,6 @@
     </modules>
     
     <properties>
-        <metrics.target.directory>${project.basedir}/../../target/plugins</metrics.target.directory>
+        <target.directory>${project.basedir}/../target/plugins</target.directory>
     </properties>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <outputFile>${metrics.target.directory}/${project.build.finalName}.jar</outputFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

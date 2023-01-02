@@ -9,6 +9,8 @@ The `REFRESH TABLE METADATA FROM STORAGE UNIT` syntax is used to Refresh the tab
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 RefreshTableMetadataFromStorageUnit ::=
   'REFRESH' 'TABLE' 'METADATA' 'FROM' 'STORAGE' 'UNIT' storageUnitName 'SCHEMA' schemaName
@@ -19,6 +21,11 @@ storageUnitName ::=
 schemaName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -29,7 +36,7 @@ schemaName ::=
 - Refresh the tables’ metadata in a schema of a specified storage unit
 
 ```sql
-REFRESH TABLE METADATA FROM STORAGE UNIT su_1 SCHEMA db_schema;
+REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema;
 ```
 
 ### Reserved word

@@ -9,13 +9,20 @@ weight = 2
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowDatabaseDiscoveryRule::=
   'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -37,11 +44,11 @@ databaseName ::=
 - 查询指定逻辑库中的数据库发现规则
 
 ```sql
-SHOW DB_DISCOVERY RULES FROM test1;
+SHOW DB_DISCOVERY RULES FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY RULES FROM test1;
+mysql> SHOW DB_DISCOVERY RULES FROM discovery_db;
 +------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
 | group_name | data_source_names | primary_data_source_name | discovery_type                                                                                    | discovery_heartbeat                                             |
 +------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CountShardingRuleStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -61,8 +62,8 @@ public final class CountShardingRuleResultSet implements DatabaseDistSQLResultSe
     }
     
     private void addShardingData(final Map<String, LinkedList<Object>> rowMap, final ShardingRule rule, final String databaseName) {
-        addData(rowMap, SHARDING_TABLE, databaseName, () -> rule.getTables().size());
-        addData(rowMap, SHARDING_BINDING_TABLE, databaseName, () -> rule.getBindingTableRules().size());
+        addData(rowMap, SHARDING_TABLE, databaseName, () -> rule.getTableRules().size());
+        addData(rowMap, SHARDING_BINDING_TABLE, databaseName, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size());
         addData(rowMap, SHARDING_BROADCAST_TABLE, databaseName, () -> rule.getBroadcastTables().size());
     }
     

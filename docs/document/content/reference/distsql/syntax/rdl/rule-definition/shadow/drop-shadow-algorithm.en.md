@@ -9,9 +9,11 @@ The `DROP SHADOW ALGORITHM` syntax is used to drop shadow algorithm for specifie
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 DropShadowAlgorithm ::=
-  'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName(',' shadowAlgorithmName)* ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
 
 shadowAlgorithmName ::=
   identifier
@@ -19,6 +21,11 @@ shadowAlgorithmName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -29,7 +36,7 @@ databaseName ::=
 - Drop mutiple shadow algorithm for specified database
 
 ```sql
-DROP SHADOW ALGORITHM shadow_rule_t_order_simple_hint_0, shadow_rule_t_order_item_simple_hint_0 FROM test1;
+DROP SHADOW ALGORITHM shadow_rule_t_order_simple_hint_0, shadow_rule_t_order_item_simple_hint_0 FROM shadow_db;
 ```
 
 - Drop single shadow algorithm for current database

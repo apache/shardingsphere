@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.agent.core.plugin.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
@@ -43,8 +42,6 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
-    private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
-    
     private static final Map<String, Object> EXPECTED = new HashMap<>(2, 1);
     
     @BeforeClass
@@ -55,8 +52,9 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertMethod() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -66,9 +64,10 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertExceptionHandle() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{});
+        advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

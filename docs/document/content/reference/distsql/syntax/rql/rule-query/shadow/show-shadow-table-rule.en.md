@@ -9,13 +9,20 @@ The `SHOW SHADOW TABLE RULE` syntax is used to query shadow table rules for spec
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowEncryptRule::=
   'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -33,11 +40,11 @@ databaseName ::=
 - Query shadow table rules for specified database.
 
 ```sql
-SHOW SHADOW TABLE RULES FROM test1;
+SHOW SHADOW TABLE RULES FROM shadow_db;
 ```
 
 ```sql
-mysql> SHOW SHADOW TABLE RULES FROM test1;
+mysql> SHOW SHADOW TABLE RULES FROM shadow_db;
 +--------------+-------------------------------------------------------+
 | shadow_table | shadow_algorithm_name                                 |
 +--------------+-------------------------------------------------------+

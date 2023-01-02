@@ -9,6 +9,8 @@ The `EXPORT DATABASE CONFIGURATION` syntax is used to export storage units and r
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 ExportDatabaseConfiguration ::=
   'EXPORT' 'DATABASE' 'CONFIGURATION' ('FROM' databaseName)? ('TO' 'FILE' filePath)?
@@ -19,6 +21,11 @@ databaseName ::=
 filePath ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -30,23 +37,23 @@ filePath ::=
 - Export storage units and rule configurations from specified database to specified file path
 
 ```sql
-EXPORT DATABASE CONFIGURATION FROM test1 TO FILE "/xxx/config_test1.yaml";
+EXPORT DATABASE CONFIGURATION FROM sharding_db TO FILE "/xxx/config_sharding_db.yaml";
 ```
 
 - Export storage units and rule configurations from specified database to screen
 
 ```sql
-EXPORT DATABASE CONFIGURATION FROM test1;
+EXPORT DATABASE CONFIGURATION FROM sharding_db;
 ```
 
 ```sql
-mysql> EXPORT DATABASE CONFIGURATION FROM test1;
+mysql> EXPORT DATABASE CONFIGURATION FROM sharding_db;
 +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| databaseName: test1
+| databaseName: sharding_db
 dataSources:
-  su_1:
+  ds_1:
     password: 123456
     url: jdbc:mysql://127.0.0.1:3306/migration_ds_0
     username: root
@@ -56,7 +63,7 @@ dataSources:
     readOnly: false
     idleTimeoutMilliseconds: 60000
     maxPoolSize: 50
-  su_2:
+  ds_2:
     password: 123456
     url: jdbc:mysql://127.0.0.1:3306/db1
     username: root
@@ -75,7 +82,7 @@ rules:
 - Export storage units and rule configurations from current database to specified file path
 
 ```sql
-EXPORT DATABASE CONFIGURATION TO FILE "/xxx/config_test1.yaml";
+EXPORT DATABASE CONFIGURATION TO FILE "/xxx/config_sharding_db.yaml";
 ```
 
 - Export storage units and rule configurations from current database to screen
@@ -89,9 +96,9 @@ mysql> EXPORT DATABASE CONFIGURATION;
 +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| databaseName: test1
+| databaseName: sharding_db
 dataSources:
-  su_1:
+  ds_1:
     password: 123456
     url: jdbc:mysql://127.0.0.1:3306/migration_ds_0
     username: root
@@ -101,7 +108,7 @@ dataSources:
     readOnly: false
     idleTimeoutMilliseconds: 60000
     maxPoolSize: 50
-  su_2:
+  ds_2:
     password: 123456
     url: jdbc:mysql://127.0.0.1:3306/db1
     username: root

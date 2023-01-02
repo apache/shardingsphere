@@ -9,6 +9,8 @@ The `COUNT DB_DISCOVERY RULE` syntax is used to query the number of database dis
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CountDBDiscoveryRule::=
   'COUNT' 'DB_DISCOVERY' 'RULE' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ CountDBDiscoveryRule::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -35,16 +42,16 @@ databaseName ::=
 - Query the number of database discovery rules for specified database.
 
 ```sql
-COUNT DB_DISCOVERY RULE FROM test1;
+COUNT DB_DISCOVERY RULE FROM discovery_db;
 ```
 
 ```sql
-mysql> COUNT DB_DISCOVERY RULE FROM test1;
-+--------------+----------+-------+
-| rule_name    | database | count |
-+--------------+----------+-------+
-| db_discovery | test1    | 1     |
-+--------------+----------+-------+
+mysql> COUNT DB_DISCOVERY RULE FROM discovery_db;
++--------------+-----------------+-------+
+| rule_name    | database        | count |
++--------------+-----------------+-------+
+| db_discovery | discovery_db    | 1     |
++--------------+-----------------+-------+
 1 row in set (0.00 sec)
 ```
 
@@ -56,11 +63,11 @@ COUNT DB_DISCOVERY RULE;
 
 ```sql
 mysql> COUNT DB_DISCOVERY RULE;
-+--------------+----------+-------+
-| rule_name    | database | count |
-+--------------+----------+-------+
-| db_discovery | test1    | 1     |
-+--------------+----------+-------+
++--------------+-----------------+-------+
+| rule_name    | database        | count |
++--------------+-----------------+-------+
+| db_discovery | discovery_db    | 1     |
++--------------+-----------------+-------+
 1 row in set (0.00 sec)
 ```
 

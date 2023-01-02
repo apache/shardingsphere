@@ -110,6 +110,7 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
         result.setPrimaryKey(column.isPrimaryKey());
         result.setDataType(column.getDataType());
         result.setVisible(column.isVisible());
+        result.setUnsigned(column.isUnsigned());
         return result;
     }
 }

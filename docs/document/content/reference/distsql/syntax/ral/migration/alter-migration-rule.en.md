@@ -9,9 +9,11 @@ The `ALTER MIGRATION RULE` syntax is used to alter migration rule.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterMigrationRule ::=
-  'ALTER' 'MIGRATION' 'RULE' ( '(' (readConfiguration ',')?  (writeConfiguration  ',')? (dataChannel)? ')' )?
+  'ALTER' 'MIGRATION' 'RULE' ('(' (readConfiguration ',')?  (writeConfiguration  ',')? (dataChannel)? ')')?
 
 readConfiguration ::=
   'READ' '(' ('WORKER_THREAD' '=' workerThreadPoolSize ',')? ('BATCH_SIZE' '=' batchSize ',')? ('SHARDING_SIZE' '=' shardingSize ',')? (rateLimiter)? ')'
@@ -20,7 +22,7 @@ writeConfiguration ::=
   'WRITE' '(' ('WORKER_THREAD' '=' workerThreadPoolSize ',')? ('BATCH_SIZE' '=' batchSize ',')? ('SHARDING_SIZE' '=' shardingSize ',')? (rateLimiter)? ')'
 
 dataChannel ::=
-  'STREAM_CHANNEL' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' 'PROPERTIES' '(' propertyDefinition ')'
+  'STREAM_CHANNEL' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' propertiesDefinition ')' ')'
 
 workerThreadPoolSize ::=
   int
@@ -32,20 +34,25 @@ shardingSize ::=
   int
 
 rateLimiter ::=
-  'RATE_LIMITER' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' 'PROPERTIES' '(' propertyDefinition ')'
+  'RATE_LIMITER' '(' 'TYPE' '(' 'NAME' '=' algorithmName ',' propertiesDefinition ')' ')'
 
 algorithmName ::=
   string
 
-propertyDefinition ::=
-  ( key  '=' value ) ( ',' key  '=' value )* 
+propertiesDefinition ::=
+  'PROPERTIES' '(' key '=' value (',' key '=' value)* ')'
 
 key ::=
   string
 
 value ::=
-  string
+  literal
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

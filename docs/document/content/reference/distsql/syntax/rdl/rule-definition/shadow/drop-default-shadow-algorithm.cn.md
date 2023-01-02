@@ -9,6 +9,8 @@ weight = 7
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropDefaultShadowAlgorithm ::=
   'DROP' 'DEFAULT' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ DropDefaultShadowAlgorithm ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -26,7 +33,7 @@ databaseName ::=
 - 为指定数据库删除默认影子库压测算法
 
 ```sql
-DROP DEFAULT SHADOW ALGORITHM FROM test1;
+DROP DEFAULT SHADOW ALGORITHM FROM shadow_db;
 ```
 
 - 为当前数据库删除默认影子库压测算法

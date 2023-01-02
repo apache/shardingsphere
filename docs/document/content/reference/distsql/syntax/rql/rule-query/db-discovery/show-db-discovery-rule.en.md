@@ -9,13 +9,20 @@ The `SHOW DB_DISCOVERY RULES` syntax is used to query database discovery rules f
 
 ### Syntax
 
-```
+{{< tabs >}}
+{{% tab name="Grammar" %}}
+```sql
 ShowDatabaseDiscoveryRule::=
   'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 
@@ -38,11 +45,11 @@ databaseName ::=
 - Query database discovery rules for specified database.
 
 ```sql
-SHOW DB_DISCOVERY RULES FROM test1;
+SHOW DB_DISCOVERY RULES FROM discovery_db;
 ```
 
 ```sql
-mysql> SHOW DB_DISCOVERY RULES FROM test1;
+mysql> SHOW DB_DISCOVERY RULES FROM discovery_db;
 +------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
 | group_name | data_source_names | primary_data_source_name | discovery_type                                                                                    | discovery_heartbeat                                             |
 +------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+

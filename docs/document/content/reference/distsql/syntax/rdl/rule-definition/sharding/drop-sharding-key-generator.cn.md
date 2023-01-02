@@ -9,6 +9,8 @@ weight = 11
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropShardingKeyGenerator ::=
   'DROP' 'SHARDING' 'KEY' 'GENERATOR' keyGeneratorName ('FROM' databaseName)?
@@ -19,6 +21,11 @@ keyGeneratorName ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -29,7 +36,7 @@ databaseName ::=
 - 删除指定逻辑库的指定分片主键生成器
 
 ```sql
-DROP SHARDING KEY GENERATOR t_order_snowflake FROM test1;
+DROP SHARDING KEY GENERATOR t_order_snowflake FROM sharding_db;
 ```
 
 - 删除当前逻辑库的指定分片主键生成器

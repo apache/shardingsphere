@@ -9,17 +9,19 @@ The `ALTER SQL_PARSER RULE` syntax is used to alter sql parser rule configuratio
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 AlterSqlParserRule ::=
-  'ALTER' 'SQL_PARSER' 'RULE' 'SQL_COMMENT_PARSE_ENABLE' '=' sqlCommentParseEnable ',' 'PARSE_TREE_CACHE' parseTreeCacheDefination ',' 'SQL_STATEMENT_CACHE' sqlStatementCacheDefination
+  'ALTER' 'SQL_PARSER' 'RULE' 'SQL_COMMENT_PARSE_ENABLE' '=' sqlCommentParseEnable ',' 'PARSE_TREE_CACHE' parseTreeCacheDefinition ',' 'SQL_STATEMENT_CACHE' sqlStatementCacheDefinition
 
 sqlCommentParseEnable ::=
   boolean
 
-parseTreeCacheDefination ::=
+parseTreeCacheDefinition ::=
   '(' 'INITIAL_CAPACITY' '=' initialCapacity ',' 'MAXIMUM_SIZE' '=' maximumSize ',' 'CONCURRENCY_LEVEL' '=' concurrencyLevel ')'
 
-sqlStatementCacheDefination ::=
+sqlStatementCacheDefinition ::=
   '(' 'INITIAL_CAPACITY' '=' initialCapacity ',' 'MAXIMUM_SIZE' '=' maximumSize ',' 'CONCURRENCY_LEVEL' '=' concurrencyLevel ')'
 
 initialCapacity ::=
@@ -31,6 +33,11 @@ maximumSize ::=
 concurrencyLevel ::=
   int
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

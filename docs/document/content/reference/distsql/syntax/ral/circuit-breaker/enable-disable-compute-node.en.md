@@ -9,13 +9,20 @@ The `ENABLE/DISABLE COMPUTE NODE` syntax is used enable/disable a specified prox
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 EnableDisableComputeNode ::=
-  ( 'ENABLE' | 'DISABLE' ) 'COMPUTE' 'NODE' instanceId
+  ('ENABLE' | 'DISABLE') 'COMPUTE' 'NODE' instanceId
 
 instanceId ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

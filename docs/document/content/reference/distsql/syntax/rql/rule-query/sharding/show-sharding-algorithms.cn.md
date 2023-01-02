@@ -9,13 +9,20 @@ weight = 3
 
 ### 语法
 
-```
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
 ShowShardingAlgorithms::=
   'SHOW' 'SHARDING' 'ALGORITHMS' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -32,6 +39,23 @@ databaseName ::=
 ### 示例
 
 - 查询指定逻辑库的分片算法
+
+```sql
+SHOW SHARDING ALGORITHMS FROM sharding_db;
+```
+
+```sql
+mysql> SHOW SHARDING ALGORITHMS FROM sharding_db;
++-------------------------+--------+-----------------------------------------------------+
+| name                    | type   | props                                               |
++-------------------------+--------+-----------------------------------------------------+
+| t_order_inline          | INLINE | algorithm-expression=t_order_${order_id % 2}        |
+| t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
++-------------------------+--------+-----------------------------------------------------+
+2 row in set (0.01 sec)
+```
+
+- 查询当前逻辑库的分片算法
 
 ```sql
 SHOW SHARDING ALGORITHMS;

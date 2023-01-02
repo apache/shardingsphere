@@ -10,13 +10,20 @@ weight = 14
 
 ### 语法
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 ShowShardingBindingTableRules::=
-  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' 'RULES'('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' 'RULES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -34,11 +41,11 @@ databaseName ::=
 - 查询指定逻辑库中的分片表关联规则
 
 ```sql
-SHOW SHARDING TABLE REFERENCE RULES FROM test1;
+SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE REFERENCE RULES FROM test1;
+mysql> SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
 +-------+--------------------------+
 | name  | sharding_table_reference |
 +-------+--------------------------+

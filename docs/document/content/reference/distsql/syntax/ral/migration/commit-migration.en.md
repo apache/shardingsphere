@@ -9,6 +9,8 @@ The `COMMIT MIGRATION` syntax is used to commit migration process.
 
 ### Syntax
 
+{{< tabs >}}
+{{% tab name="Grammar" %}}
 ```sql
 CommitMigration ::=
   'COMMIT' 'MIGRATION'  migrationJobId 
@@ -16,6 +18,11 @@ CommitMigration ::=
 migrationJobId ::=
   string
 ```
+{{% /tab %}}
+{{% tab name="Railroad diagram" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### Supplement
 

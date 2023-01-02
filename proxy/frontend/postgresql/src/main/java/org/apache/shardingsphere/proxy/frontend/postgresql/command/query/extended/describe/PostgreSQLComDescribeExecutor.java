@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -196,9 +196,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                         .forEach(result::add);
             }
             if (each instanceof ColumnProjectionSegment) {
-                String columnName = ((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue();
-                ShardingSphereColumn column = columnsOfTable.getOrDefault(columnName, caseInsensitiveColumnsOfTable.get(columnName));
-                String alias = ((ColumnProjectionSegment) each).getAlias().orElseGet(column::getName);
+                ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
+                String columnName = segment.getColumn().getIdentifier().getValue();
+                ShardingSphereColumn column = columnsOfTable.getOrDefault(columnName, caseInsensitiveColumnsOfTable.getOrDefault(columnName, generateDefaultColumn(segment)));
+                String alias = segment.getAlias().orElseGet(column::getName);
                 result.add(new PostgreSQLColumnDescription(alias, 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""));
             }
             if (each instanceof ExpressionProjectionSegment) {
@@ -206,6 +207,10 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             }
         }
         return new PostgreSQLRowDescriptionPacket(result);
+    }
+    
+    private ShardingSphereColumn generateDefaultColumn(final ColumnProjectionSegment segment) {
+        return new ShardingSphereColumn(segment.getColumn().getIdentifier().getValue(), Types.VARCHAR, false, false, false, true, false);
     }
     
     private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
@@ -243,9 +248,6 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {
-        if (!(connectionSession.getBackendConnection() instanceof JDBCBackendConnection)) {
-            return;
-        }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext<?> sqlStatementContext =
@@ -255,7 +257,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
                 queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
-        JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
+        BackendConnection backendConnection = connectionSession.getBackendConnection();
         Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
         try (PreparedStatement actualPreparedStatement = connection.prepareStatement(executionUnitSample.getSqlUnit().getSql())) {
             populateParameterTypes(logicPreparedStatement, actualPreparedStatement);

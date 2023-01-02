@@ -9,6 +9,8 @@ weight = 7
 
 ### 语法定义
 
+{{< tabs >}}
+{{% tab name="语法" %}}
 ```sql
 DropDefaultShardingStrategy ::=
   'DROP' 'DEFAULT' 'SHARDING' ('TABLE' | 'DATABASE') 'STRATEGY' ('FROM' databaseName)?
@@ -16,6 +18,11 @@ DropDefaultShardingStrategy ::=
 databaseName ::=
   identifier
 ```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
 
 ### 补充说明
 
@@ -26,7 +33,7 @@ databaseName ::=
 - 为指定逻辑库删除默认表分片策略
  
 ```sql
-DROP DEFAULT SHARDING TABLE STRATEGY FROM test1;
+DROP DEFAULT SHARDING TABLE STRATEGY FROM sharding_db;
 ```
 
 - 为当前逻辑库删除默认库分片策略
