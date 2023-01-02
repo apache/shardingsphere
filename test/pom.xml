@@ -30,6 +30,8 @@
     
     <modules>
         <module>fixture</module>
+        <module>util</module>
+        
         <module>it</module>
         <module>e2e</module>
     </modules>
