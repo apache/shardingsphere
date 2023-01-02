@@ -51,7 +51,7 @@ tree
 ```yaml
 plugins:
 #  logging:
-#    BaseLogging:
+#    File:
 #      props:
 #        level: "INFO"
 #  metrics:

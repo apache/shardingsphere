@@ -52,7 +52,7 @@ No plugin is enabled by default.
 ```yaml
 plugins:
 #  logging:
-#    BaseLogging:
+#    File:
 #      props:
 #        level: "INFO"
 #  metrics:
