@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.base;
+package org.apache.shardingsphere.agent.plugin.logging.file;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 /**
- * Base logging plugin boot service.
+ * File logging plugin boot service.
  */
-public final class BaseLoggingPluginBootService implements PluginBootService {
+public final class FileLoggingPluginBootService implements PluginBootService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
@@ -35,6 +35,6 @@ public final class BaseLoggingPluginBootService implements PluginBootService {
     
     @Override
     public String getType() {
-        return "BaseLogging";
+        return "File";
     }
 }

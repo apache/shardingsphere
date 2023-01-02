@@ -4,7 +4,9 @@ weight = 5
 +++
 
 ## 源码编译
+
 从 Github 下载 Apache ShardingSphere 源码，对源码进行编译，操作命令如下。
+
 ```shell
 git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
@@ -13,9 +15,11 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 agent 包输出目录为 shardingsphere-agent/shardingsphere-agent-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
 
 ## agent 配置
+
 * 目录说明
 
 创建 agent 目录，解压 agent 二进制包到 agent 目录。
+
 ```shell
 mkdir agent
 tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz -C agent
@@ -29,7 +33,7 @@ tree
     │   ├── agent.yaml
     │   └── logback.xml
     ├── plugins
-    │   ├── shardingsphere-agent-logging-base-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-logging-file-${latest.release.version}.jar
     │   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
     │   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
     │   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
@@ -37,16 +41,17 @@ tree
     │   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
     └── shardingsphere-agent-${latest.release.version}.jar
 ```
+
 * 配置说明
 
 `META-INF/conf/agent.yaml` 用于管理 agent 配置。
-内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、BaseLogging 及 Prometheus。
+内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、Log 及 Prometheus。
 默认不开启任何插件。
 
 ```yaml
 plugins:
 #  logging:
-#    BaseLogging:
+#    File:
 #      props:
 #        level: "INFO"
 #  metrics:
@@ -79,6 +84,7 @@ plugins:
 #        otel-resource-attributes: "service.name=shardingsphere"
 #        otel-traces-exporter: "zipkin"
 ```
+
 * 参数说明；
 
 | 名称                                | 说明                  |取值范围    | 默认值                               |
@@ -102,6 +108,7 @@ plugins:
 * 编辑启动脚本
 
 配置 shardingsphere-agent-${latest.release.version}.jar 的绝对路径到 ShardingSphere-Proxy 的 start.sh 启动脚本中，请注意配置自己对应的绝对路径。
+
 ```shell
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
 -javaagent:/xxxxx/agent/shardingsphere-agent-${latest.release.version}.jar \
@@ -109,6 +116,7 @@ nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
 ```
 
 * 启动 ShardingSphere-Proxy
+
 ```shell
 bin/start.sh
 ```
@@ -140,31 +148,32 @@ services:
 ```
 
 ## Metrics
-| 指标名称                              | 类型         | 描述                                                     |
-|:----------------------------------|:-----------|:-------------------------------------------------------|
-| proxy_request_total               | COUNTER    | 请求总数                                                   |
-| proxy_connection_total            | GAUGE      | 当前连接总数                                                 |
-| proxy_execute_latency_millis      | HISTOGRAM  | 执行耗时毫秒                                                 |
-| proxy_execute_error_total         | COUNTER    | 执行异常总数                                                 |
-| route_sql_select_total            | COUNTER    | 路由执行 select SQL 语句总数                                   |
-| route_sql_insert_total            | COUNTER    | 路由执行 insert SQL 语句总数                                   |
-| route_sql_update_total            | COUNTER    | 路由执行 update SQL 语句总数                                   |
-| route_sql_delete_total            | COUNTER    | 路由执行 delete SQL 语句总数                                   |
-| route_datasource_total            | COUNTER    | 数据源路由总数                                                |
-| route_table_total                 | COUNTER    | 表路由数                                                   |
-| proxy_transaction_commit_total    | COUNTER    | 事务提交次数                                                 |
-| proxy_transaction_rollback_total  | COUNTER    | 事务回滚次数                                                 |
-| parse_sql_dml_insert_total        | COUNTER    | 解析 insert SQL 语句总数                                     |
-| parse_sql_dml_delete_total        | COUNTER    | 解析 delete SQL 语句总数                                     |
-| parse_sql_dml_update_total        | COUNTER    | 解析 update SQL 语句总数                                     |
-| parse_sql_dml_select_total        | COUNTER    | 解析 select SQL 语句总数                                     |
-| parse_sql_ddl_total               | COUNTER    | 解析 DDL SQL 语句总数                                        |
-| parse_sql_dcl_total               | COUNTER    | 解析 DCL SQL 语句总数                                        |
-| parse_sql_dal_total               | COUNTER    | 解析 DAL SQL 语句总数                                        |
-| parse_sql_tcl_total               | COUNTER    | 解析 TCL SQL 语句总数                                        |
-| parse_dist_sql_rql_total          | COUNTER    | 解析 RQL 类型 DistSQL 总数                                   |
-| parse_dist_sql_rdl_total          | COUNTER    | 解析 RDL 类型 DistSQL 总数                                   |
-| parse_dist_sql_ral_total          | COUNTER    | 解析 RAL 类型 DistSQL 总数                                   |
-| build_info                        | GAUGE      | 构建信息                                                   |
-| proxy_info                        | GAUGE      | proxy 信息， state:1 正常状态， state:2 熔断状态                   |
-| meta_data_info                    | GAUGE      | proxy 元数据信息， schema_count:逻辑库数量， database_count:数据源数量  |
+
+| 指标名称                           | 类型      | 描述                                                            |
+|:-------------------------------- |:--------- |:-------------------------------------------------------------- |
+| proxy_request_total              | COUNTER   | 请求总数                                                         |
+| proxy_connection_total           | GAUGE     | 当前连接总数                                                      |
+| proxy_execute_latency_millis     | HISTOGRAM | 执行耗时毫秒                                                      |
+| proxy_execute_error_total        | COUNTER   | 执行异常总数                                                      |
+| route_sql_select_total           | COUNTER   | 路由执行 select SQL 语句总数                                       |
+| route_sql_insert_total           | COUNTER   | 路由执行 insert SQL 语句总数                                       |
+| route_sql_update_total           | COUNTER   | 路由执行 update SQL 语句总数                                       |
+| route_sql_delete_total           | COUNTER   | 路由执行 delete SQL 语句总数                                       |
+| route_datasource_total           | COUNTER   | 数据源路由总数                                                     |
+| route_table_total                | COUNTER   | 表路由数                                                          |
+| proxy_transaction_commit_total   | COUNTER   | 事务提交次数                                                       |
+| proxy_transaction_rollback_total | COUNTER   | 事务回滚次数                                                       |
+| parse_sql_dml_insert_total       | COUNTER   | 解析 insert SQL 语句总数                                           |
+| parse_sql_dml_delete_total       | COUNTER   | 解析 delete SQL 语句总数                                           |
+| parse_sql_dml_update_total       | COUNTER   | 解析 update SQL 语句总数                                           |
+| parse_sql_dml_select_total       | COUNTER   | 解析 select SQL 语句总数                                           |
+| parse_sql_ddl_total              | COUNTER   | 解析 DDL SQL 语句总数                                              |
+| parse_sql_dcl_total              | COUNTER   | 解析 DCL SQL 语句总数                                              |
+| parse_sql_dal_total              | COUNTER   | 解析 DAL SQL 语句总数                                              |
+| parse_sql_tcl_total              | COUNTER   | 解析 TCL SQL 语句总数                                              |
+| parse_dist_sql_rql_total         | COUNTER   | 解析 RQL 类型 DistSQL 总数                                         |
+| parse_dist_sql_rdl_total         | COUNTER   | 解析 RDL 类型 DistSQL 总数                                         |
+| parse_dist_sql_ral_total         | COUNTER   | 解析 RAL 类型 DistSQL 总数                                         |
+| build_info                       | GAUGE     | 构建信息                                                          |
+| proxy_info                       | GAUGE     | proxy 信息， state:1 正常状态， state:2 熔断状态                     |
+| meta_data_info                   | GAUGE     | proxy 元数据信息， schema_count:逻辑库数量， database_count:数据源数量 |

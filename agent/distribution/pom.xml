@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-logging-base</artifactId>
+            <artifactId>shardingsphere-agent-logging-file</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

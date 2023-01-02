@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>base</module>
+        <module>file</module>
     </modules>
     
     <properties>
