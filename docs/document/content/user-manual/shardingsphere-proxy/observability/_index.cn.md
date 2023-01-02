@@ -39,7 +39,7 @@ tree
 ```
 * 配置说明
 
-`conf/agent.yaml` 用于管理 agent 配置。
+`META-INF/conf/agent.yaml` 用于管理 agent 配置。
 内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、BaseLogging 及 Prometheus。
 默认不开启任何插件。
 

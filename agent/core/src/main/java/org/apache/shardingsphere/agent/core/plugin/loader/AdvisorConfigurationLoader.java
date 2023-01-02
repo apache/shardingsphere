@@ -52,26 +52,34 @@ public final class AdvisorConfigurationLoader {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
         AgentClassLoader agentClassLoader = new AgentClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
         for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getAdvisorsResourceStream(agentClassLoader, each, isEnhancedForProxy);
+            InputStream advisorsResourceStream = getResourceStream(agentClassLoader, each, isEnhancedForProxy);
             if (null == advisorsResourceStream) {
                 LOGGER.info("No configuration of advisor for type `{}`.", each);
             } else {
-                mergeAdvisorConfigurations(result, YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
+                mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swapToObject(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
             }
         }
         return result;
     }
     
-    private static InputStream getAdvisorsResourceStream(final ClassLoader agentClassLoader, final String pluginType, final boolean isEnhancedForProxy) {
-        InputStream accurateResourceStream = getAdvisorsResourceStream(agentClassLoader, pluginType, (isEnhancedForProxy ? "proxy" : "jdbc") + "-advisors.yaml");
-        return null == accurateResourceStream ? getAdvisorsResourceStream(agentClassLoader, pluginType, "advisors.yaml") : accurateResourceStream;
+    private static InputStream getResourceStream(final ClassLoader agentClassLoader, final String pluginType, final boolean isEnhancedForProxy) {
+        InputStream accurateResourceStream = getResourceStream(agentClassLoader, getFileName(pluginType, isEnhancedForProxy));
+        return null == accurateResourceStream ? getResourceStream(agentClassLoader, getFileName(pluginType)) : accurateResourceStream;
     }
     
-    private static InputStream getAdvisorsResourceStream(final ClassLoader agentClassLoader, final String pluginType, final String fileName) {
-        return agentClassLoader.getResourceAsStream(String.join("/", pluginType.toLowerCase(), fileName));
+    private static InputStream getResourceStream(final ClassLoader agentClassLoader, final String fileName) {
+        return agentClassLoader.getResourceAsStream(String.join("/", "META-INF", "conf", fileName));
     }
     
-    private static void mergeAdvisorConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
+    private static String getFileName(final String pluginType, final boolean isEnhancedForProxy) {
+        return String.join("-", pluginType.toLowerCase(), isEnhancedForProxy ? "proxy" : "jdbc", "advisors.yaml");
+    }
+    
+    private static String getFileName(final String pluginType) {
+        return String.join("-", pluginType.toLowerCase(), "advisors.yaml");
+    }
+    
+    private static void mergeConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
         for (AdvisorConfiguration each : advisorConfigs) {
             advisorConfigMap.computeIfAbsent(each.getTargetClassName(), key -> new AdvisorConfiguration(each.getTargetClassName())).getAdvisors().addAll(each.getAdvisors());
         }
