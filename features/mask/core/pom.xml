@@ -43,7 +43,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-util</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         
         <dependency>
