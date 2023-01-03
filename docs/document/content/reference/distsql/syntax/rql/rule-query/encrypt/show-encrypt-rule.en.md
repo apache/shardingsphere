@@ -5,7 +5,7 @@ weight = 2
 
 ### Description
 
-The `SHOW ENCRYPT RULES` syntax is used to query encrypt rules for specified database.
+The `SHOW ENCRYPT RULES` syntax is used to query encryption rules for a specified database.
 
 ### Syntax
 
@@ -27,9 +27,9 @@ databaseName ::=
 {{% /tab %}}
 {{< /tabs >}}
 
-### Supplement
+### Note
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
+- When `databaseName` is not specified, then `DATABASE`is currently used as the default name. If `DATABASE` is not used, you will receive a `No database selected` prompt.
 
 ### Return value description
 
