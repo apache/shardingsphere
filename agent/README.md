@@ -55,7 +55,19 @@ java -javaagent:/xx/xx/shardingsphere-agent-{latest.release.version}.jar -jar pr
 `PluginBootService` is the plugin service definition interface, used to start the plugin service. Custom plugins need to implement this interface.
 
 ### Configure advisors.yaml
-`advisors.yaml` is used to define interception points. The file location is as follows.
+`advisors.yaml` is used to define interception points.
+```yaml
+advisors:
+  - target: org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory # class that need interception enhancements
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetaDataContextsFactoryAdvice # enhanced class
+    pointcuts: # intercept methods
+      - name: create # method name
+        type: method # intercept type. configuring "method" when intercepting the method, configuring "constructor" when intercepting the constructor
+        params: # method parameters, just satisfy the unique identification method
+          - index: 3 # parameter index
+            type: java.util.Map # parameter type
+```
+The file location is as follows.
 * Proxy: META-INF/conf/{plugin-type}-proxy-advisors.yaml
 * JDBC:  META-INF/conf/{plugin-type}-jdbc-advisors.yaml
 
