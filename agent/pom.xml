@@ -78,6 +78,7 @@
                                 <artifact>*:*</artifact>
                                 <excludes>
                                     <exclude>org/h2/util/data.zip</exclude>
+                                    <exclude>mozilla/public-suffix-list.txt</exclude>
                                 </excludes>
                             </filter>
                         </filters>
