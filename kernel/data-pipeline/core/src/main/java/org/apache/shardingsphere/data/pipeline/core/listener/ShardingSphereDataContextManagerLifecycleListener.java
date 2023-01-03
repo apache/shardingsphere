@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
@@ -33,6 +34,9 @@ public final class ShardingSphereDataContextManagerLifecycleListener implements 
             return;
         }
         if (!contextManager.getInstanceContext().isCluster()) {
+            return;
+        }
+        if (!InstanceType.PROXY.equals(contextManager.getInstanceContext().getInstance().getMetaData().getType())) {
             return;
         }
         ShardingSphereDataJobWorker.initialize(contextManager);
