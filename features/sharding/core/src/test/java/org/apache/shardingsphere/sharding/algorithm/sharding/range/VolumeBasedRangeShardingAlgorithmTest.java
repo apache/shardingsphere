@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,11 +50,7 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     }
     
     private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("range-lower", 10);
-        result.put("range-upper", 45);
-        result.put("sharding-volume", 10);
-        return result;
+        return PropertiesBuilder.build(new Property("range-lower", "10"), new Property("range-upper", "45"), new Property("sharding-volume", "10"));
     }
     
     @Test
@@ -130,15 +128,7 @@ public final class VolumeBasedRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         VolumeBasedRangeShardingAlgorithm shardingAlgorithm = new VolumeBasedRangeShardingAlgorithm();
-        shardingAlgorithm.init(createPropertiesForStringValue());
+        shardingAlgorithm.init(PropertiesBuilder.build(new Property("range-lower", "10"), new Property("range-upper", "45"), new Property("sharding-volume", "10")));
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
-    }
-    
-    private Properties createPropertiesForStringValue() {
-        Properties result = new Properties();
-        result.setProperty("range-lower", "10");
-        result.setProperty("range-upper", "45");
-        result.setProperty("sharding-volume", "10");
-        return result;
     }
 }
