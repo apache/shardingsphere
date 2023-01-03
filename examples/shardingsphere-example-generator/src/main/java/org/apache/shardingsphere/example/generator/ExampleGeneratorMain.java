@@ -46,6 +46,6 @@ public final class ExampleGeneratorMain {
     
     private static void printMessages() {
         log.info("Example codes are generated successful!");
-        log.info("Please find them in folder `target/generated-sources/shardingsphere-${product}-sample`.");
+        log.info("Please find them in folder `shardingsphere-${product}-sample`.");
     }
 }
