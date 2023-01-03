@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginsConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
 import java.util.LinkedHashMap;
@@ -40,7 +40,7 @@ public final class YamlPluginsConfigurationSwapper {
      * @param yamlConfig YAML agent configuration
      * @return plugin configurations
      */
-    public static Map<String, PluginConfiguration> swap(final YamlPluginsConfiguration yamlConfig) {
+    public static Map<String, PluginConfiguration> swap(final YamlAgentConfiguration yamlConfig) {
         Map<String, PluginConfiguration> result = new LinkedHashMap<>();
         YamlPluginCategoryConfiguration plugins = yamlConfig.getPlugins();
         if (null != plugins) {
