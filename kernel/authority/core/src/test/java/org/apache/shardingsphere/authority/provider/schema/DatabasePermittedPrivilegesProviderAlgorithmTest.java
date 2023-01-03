@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,18 +39,14 @@ public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
     
     @Test
     public void assertBuildAuthorityRegistry() {
+        Properties props = PropertiesBuilder.build(
+                new Property(DatabasePermittedPrivilegesProviderAlgorithm.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
         DatabasePermittedPrivilegesProviderAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("DATABASE_PERMITTED", createProperties()), AuthorityProviderAlgorithm.class);
+                new AlgorithmConfiguration("DATABASE_PERMITTED", props), AuthorityProviderAlgorithm.class);
         AuthorityRegistry actual = algorithm.buildAuthorityRegistry(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
         assertTrue(privileges.get().hasPrivileges("test"));
         assertTrue(privileges.get().hasPrivileges("db_dal_admin"));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(DatabasePermittedPrivilegesProviderAlgorithm.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*");
-        return result;
     }
 }
