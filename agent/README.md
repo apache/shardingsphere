@@ -79,5 +79,3 @@ metrics:
     name: proxy_request_total # metric name
     help: the shardingsphere proxy request total # metric help
 ```
-
-
