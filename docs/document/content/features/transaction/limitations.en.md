@@ -18,7 +18,8 @@ Apache ShardingSphere wants to give the user choice of distributed transaction t
 ### Unsupported
 
 * Recover committing and rolling back in other machines after the service is down;
-* MySQL,in the transaction block, the SQL execution is abnormal, and run `Commit`, and data remains consistent.
+* MySQL, in the transaction block, the SQL execution is abnormal, and run `Commit`, and data remains consistent;
+* After XA transactions are configured, the maximum length of the storage unit name can not exceed 45 characters.
 
 ## BASE Transaction
 
