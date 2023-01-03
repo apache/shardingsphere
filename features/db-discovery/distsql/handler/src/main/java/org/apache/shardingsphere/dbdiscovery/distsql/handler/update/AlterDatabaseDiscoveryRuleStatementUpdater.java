@@ -26,7 +26,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
@@ -56,7 +55,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredResources(databaseName, sqlStatement, database.getResourceMetaData());
-        checkDiscoverTypeAndHeartbeat(sqlStatement, currentRuleConfig);
+        checkDiscoverTypeAndHeartbeat(sqlStatement);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
@@ -85,13 +84,12 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         return result;
     }
     
-    private void checkDiscoverTypeAndHeartbeat(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    private void checkDiscoverTypeAndHeartbeat(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
         Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList()).stream()
                 .map(each -> ((DatabaseDiscoveryDefinitionSegment) each).getDiscoveryType().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
-        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new MissingRequiredAlgorithmException("database discovery", invalidInput));
     }
     
     @Override
