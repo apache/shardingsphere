@@ -94,10 +94,10 @@ Obtain the current date for routing definition
 
 ### Definition
 
-Sharding condition generator definition
+Sharding condition generator engine
 
 ### Implementation classes
 
-| *Configuration Type*           | *Description*                                                                                   | *Fully-qualified class name*                                                                                                                                                                                                                                                                                  |
-|--------------------------------|-------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DefaultShardingConditionEngine | Default implementation that generates the sharding conditions from the configured sharding rule | [`org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/route/engine/condition/engine/impl/DefaultShardingConditionEngine.java) |
+| *Configuration Type*           | *Description*                               | *Fully-qualified class name*                                                                                                                                                                                                                                                                                  |
+|--------------------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DefaultShardingConditionEngine | Default sharding condition generator engine | [`org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/route/engine/condition/engine/impl/DefaultShardingConditionEngine.java) |

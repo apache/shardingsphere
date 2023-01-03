@@ -70,7 +70,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static ShardingConditions getMergedShardingConditions(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
-        ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, rule);
+        ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(database, rule);
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
         ShardingConditions result = new ShardingConditions(shardingConditions, queryContext.getSqlStatementContext(), rule);
         if (result.isNeedMerge()) {

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 
-import java.util.List;
-
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -26,8 +24,10 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
+import java.util.List;
+
 /**
- * Default implementation of the sharding condition engine.
+ * Default sharding condition engine.
  */
 public final class DefaultShardingConditionEngine implements ShardingConditionEngine<SQLStatementContext<?>> {
     

@@ -94,10 +94,10 @@ chapter = true
 
 ### 定义
 
-Sharding condition generator definition
+分片条件生成引擎
 
 ### 已知实现
 
-| *配置标识*           | *详细说明*                                                                                   | *全限定类名*                                                                                                                                                                                                                                                                                 |
-|--------------------------------|-------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DefaultShardingConditionEngine | Default implementation that generates the sharding conditions from the configured sharding rule | [`org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/route/engine/condition/engine/impl/DefaultShardingConditionEngine.java) |
+| *配置标识*           | *详细说明*     | *全限定类名*                                                                                                                                                                                                                                                                                 |
+|--------------------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DefaultShardingConditionEngine | 默认分片条件生成引擎 | [`org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/route/engine/condition/engine/impl/DefaultShardingConditionEngine.java) |

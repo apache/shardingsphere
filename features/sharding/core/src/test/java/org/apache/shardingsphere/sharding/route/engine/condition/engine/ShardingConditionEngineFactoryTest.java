@@ -21,7 +21,6 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -78,8 +77,7 @@ public final class ShardingConditionEngineFactoryTest {
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.empty());
-        when(queryContext.getSqlStatementContext()).thenReturn((SQLStatementContext) insertStatementContext);
-        ShardingConditionEngine engine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, shardingRule);
+        ShardingConditionEngine engine = ShardingConditionEngineFactory.createShardingConditionEngine(database, shardingRule);
         assertThat(engine, instanceOf(DefaultShardingConditionEngine.class));
         List<ShardingCondition> shardingConditions = engine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
@@ -103,7 +101,7 @@ public final class ShardingConditionEngineFactoryTest {
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.findTableNamesByColumnSegment(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));
-        ShardingConditionEngine engine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, shardingRule);
+        ShardingConditionEngine engine = ShardingConditionEngineFactory.createShardingConditionEngine(database, shardingRule);
         assertThat(engine, instanceOf(DefaultShardingConditionEngine.class));
         List<ShardingCondition> shardingConditions = engine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
