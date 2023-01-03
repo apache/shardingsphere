@@ -13,12 +13,15 @@ The `REFRESH TABLE METADATA` syntax is used to refresh table metadata.
 {{% tab name="Grammar" %}}
 ```sql
 RefreshTableMetadata ::=
-  'REFRESH' 'TABLE' 'METADATA' ((tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
+  'REFRESH' 'TABLE' 'METADATA' (tableName | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?)?
 
 tableName ::=
   identifier
 
 storageUnitName ::=
+  identifier
+
+schemaName ::=
   identifier
 ```
 {{% /tab %}}
@@ -33,7 +36,22 @@ storageUnitName ::=
 
 - refresh table metadata need to use `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
 
+- If there are no tables in the schema, the schema will be deleted.
+
+
 ### Example
+
+- Refresh specified table's metadata in specified schema of a specified storage unit
+
+```sql
+REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+```
+
+- Refresh all tables' metadata in specified schema of a specified storage unit
+
+```sql
+REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+```
 
 - Refresh metadata for specified table in specified storage unit
 

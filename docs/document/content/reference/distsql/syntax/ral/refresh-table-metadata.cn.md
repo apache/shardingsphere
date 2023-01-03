@@ -13,12 +13,15 @@ weight = 6
 {{% tab name="语法" %}}
 ```sql
 RefreshTableMetadata ::=
-  'REFRESH' 'TABLE' 'METADATA' ((tableName)? | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName)?
+  'REFRESH' 'TABLE' 'METADATA' (tableName | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?)?
 
 tableName ::=
   identifier
 
 storageUnitName ::=
+  identifier
+
+schemaName ::=
   identifier
 ```
 {{% /tab %}}
@@ -29,13 +32,27 @@ storageUnitName ::=
 
 ### 补充说明
 
-- 未指定 `tableName` 和 `storageUnitName` 时，默认刷新所有表的元数据
+- 未指定 `tableName` 和 `storageUnitName` 时，默认刷新所有表的元数据；
 
-- 刷新元数据需要使用 `DATABASE` 如果未使用 `DATABASE` 则会提示 `No database selected`
+- 刷新元数据需要使用 `DATABASE` 如果未使用 `DATABASE` 则会提示 `No database selected`；
+
+- 如果 `SCHEMA` 中不存在表，则会删除该 `SCHEMA`。
 
 ### 示例
 
-- 刷新指定存储单于中指定表的元数据
+- 刷新指定存储单元中指定 `SCHEMA` 中指定表的元数据
+
+```sql
+REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+```
+
+- 刷新指定存储单元中指定 `SCHEMA` 中所有表的元数据
+
+```sql
+REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+```
+
+- 刷新指定存储单元中指定表的元数据
 
 ```sql
 REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1;
