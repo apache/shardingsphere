@@ -50,8 +50,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName,
-                logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next());
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, logicDataSourceNames);
         Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
         if (renameView.isPresent()) {
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
