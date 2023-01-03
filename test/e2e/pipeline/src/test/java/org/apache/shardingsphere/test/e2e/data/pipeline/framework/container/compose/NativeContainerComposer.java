@@ -63,8 +63,9 @@ public final class NativeContainerComposer extends BaseContainerComposer {
             case "MySQL":
                 String queryAllTables = String.format("select table_name from information_schema.tables where table_schema='%s' and table_type='BASE TABLE'", databaseName);
                 jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, databaseName);
-                try (Connection connection = DriverManager.getConnection(
-                        jdbcUrlAppender.appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString()))), username, password)) {
+                try (
+                        Connection connection = DriverManager.getConnection(
+                                jdbcUrlAppender.appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString()))), username, password)) {
                     try (ResultSet resultSet = connection.createStatement().executeQuery(queryAllTables)) {
                         List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
                         for (String each : actualTableNames) {
