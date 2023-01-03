@@ -84,7 +84,7 @@ public final class ColumnValueConvertUtilTest {
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(now);
         assertTrue(actualMessage instanceof com.google.protobuf.Timestamp);
         assertThat(((com.google.protobuf.Timestamp) actualMessage).getSeconds(), is(epochSecond));
-        actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(new Date());
+        actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(new Date(now.getTime()));
         assertTrue(actualMessage instanceof com.google.protobuf.Timestamp);
         assertThat(((com.google.protobuf.Timestamp) actualMessage).getSeconds(), is(epochSecond));
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(now.toInstant());
