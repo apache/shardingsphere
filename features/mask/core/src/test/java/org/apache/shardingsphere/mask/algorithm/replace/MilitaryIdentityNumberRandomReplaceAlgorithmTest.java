@@ -24,7 +24,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
@@ -34,21 +33,19 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
-        maskAlgorithm.init(createProperties("南字,成字"));
+        maskAlgorithm.init(createProperties());
     }
     
-    private Properties createProperties(final String typeCodes) {
+    private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty("type-codes", typeCodes);
+        result.setProperty("type-codes", "军,人,士,文,职");
         return result;
     }
     
     @Test
     public void assertMask() {
-        assertThat(maskAlgorithm.mask("南字第1234567号"), startsWith("南字"));
-        assertThat(maskAlgorithm.mask("南字第1234567号"), not("南字第1234567号"));
-        assertThat(maskAlgorithm.mask("成字第7654321号"), not("成字第7654321号"));
-        assertThat(maskAlgorithm.mask("广字第1234567号"), is("广字第1234567号"));
+        assertThat(maskAlgorithm.mask("军字第1234567号".charAt(0)), not('军'));
+        assertThat(maskAlgorithm.mask("军字第1234567号".substring(3, 10)), not("1234567"));
         assertThat(maskAlgorithm.mask(""), is(""));
     }
 }
