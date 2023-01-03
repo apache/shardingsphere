@@ -20,7 +20,7 @@
     } 
             
     private Collection<MaskTableRuleConfiguration> createMaskTableRuleConfiguration() {
-        Collection<MaskTableRuleConfiguration> result = new ArrayList<>();
+        Collection<MaskTableRuleConfiguration> result = new LinkedList<>();
         result.add(new MaskTableRuleConfiguration("t_order_item", Collections.singletonList(new MaskColumnRuleConfiguration("phone", "keep_first_n_last_m_mask"))));
         return result;
     }
