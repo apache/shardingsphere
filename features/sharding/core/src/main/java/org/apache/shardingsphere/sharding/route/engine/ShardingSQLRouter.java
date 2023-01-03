@@ -65,7 +65,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     private ShardingConditions createShardingConditions(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions;
         if (queryContext.getSqlStatementContext().getSqlStatement() instanceof DMLStatement || queryContext.getSqlStatementContext() instanceof CursorAvailable) {
-            ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(queryContext, database, rule);
+            ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(database, rule);
             shardingConditions = shardingConditionEngine.createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
         } else {
             shardingConditions = Collections.emptyList();

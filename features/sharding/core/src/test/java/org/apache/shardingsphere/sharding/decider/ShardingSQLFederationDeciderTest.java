@@ -76,9 +76,9 @@ public final class ShardingSQLFederationDeciderTest {
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         ShardingSQLFederationDecider federationDecider = new ShardingSQLFederationDecider();
         try (MockedStatic<ShardingConditionEngineFactory> shardingConditionEngineFactory = mockStatic(ShardingConditionEngineFactory.class)) {
-            ShardingConditionEngine shardingConditionEngine = mock(DefaultShardingConditionEngine.class);
+            ShardingConditionEngine<?> shardingConditionEngine = mock(DefaultShardingConditionEngine.class);
             when(shardingConditionEngine.createShardingConditions(any(), any())).thenReturn(createShardingConditions());
-            shardingConditionEngineFactory.when(() -> ShardingConditionEngineFactory.createShardingConditionEngine(any(QueryContext.class), any(), any())).thenReturn(shardingConditionEngine);
+            shardingConditionEngineFactory.when(() -> ShardingConditionEngineFactory.createShardingConditionEngine(any(), any())).thenReturn(shardingConditionEngine);
             federationDecider.decide(actual, queryContext, createDatabase(), createShardingRule(), new ConfigurationProperties(new Properties()));
         }
         assertThat(actual.getDataNodes().size(), is(4));
