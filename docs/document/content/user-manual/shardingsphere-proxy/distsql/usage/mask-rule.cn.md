@@ -44,7 +44,7 @@ CREATE TABLE `t_mask` (
 ```sql
 ALTER MASK RULE t_mask (
     COLUMNS(
-        (NAME=user_id,(TYPE(NAME='MD5'))
+        (NAME=user_id,TYPE(NAME='MD5'))
 ));
 ```
 
