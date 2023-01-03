@@ -48,9 +48,9 @@ value ::=
 {{% /tab %}}
 {{< /tabs >}}
 
-### Supplement
+### Note
 
-- `maskAlgorithmType` specifies the data masking algorithm type, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/);
+- `maskAlgorithmType` specifies the data masking algorithm type. For more details, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/);
 - Duplicate `ruleName` will not be created.
 
 ### Example
