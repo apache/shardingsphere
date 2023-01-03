@@ -13,7 +13,7 @@ Apache ShardingSphere 自动化 & 透明化了数据加密过程，让用户无�
 
 ### 整体架构
 
-![1](https://shardingsphere.apache.org/document/current/img/encrypt/1.png)
+![1](https://shardingsphere.apache.org/document/current/img/encrypt/1n_cn.png)
 
 加密模块将用户发起的 SQL 进行拦截，并通过 SQL 语法解析器进行解析、理解 SQL 行为，再依据用户传入的加密规则，找出需要加密的字段和所使用的加解密算法对目标字段进行加解密处理后，再与底层数据库进行交互。
 Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层数据库；并在用户查询时，将密文从数据库中取出进行解密后返回给终端用户。
