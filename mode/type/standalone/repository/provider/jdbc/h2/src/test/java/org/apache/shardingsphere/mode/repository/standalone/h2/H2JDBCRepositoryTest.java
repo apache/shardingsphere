@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,11 +36,11 @@ public final class H2JDBCRepositoryTest {
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
-        props.setProperty("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        props.setProperty("username", "sa");
-        props.setProperty("password", "");
-        props.setProperty("provider", "H2");
+        Properties props = PropertiesBuilder.build(
+                new Property("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
+                new Property("username", "sa"),
+                new Property("password", ""),
+                new Property("provider", "H2"));
         repository.init(props);
     }
     
