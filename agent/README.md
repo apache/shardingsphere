@@ -52,7 +52,8 @@ java -javaagent:/xx/xx/shardingsphere-agent-{latest.release.version}.jar -jar pr
 `PluginBootService` is the plugin service definition interface, used to start the plugin service. Custom plugins need to implement this interface.
 
 ### Configure advisors.yaml
-`advisors.yaml` is used to define interception points. The configuration format is as follows.
+`advisors.yaml` is used to define interception points. The format is as follows.
+
 ```yaml
 advisors:
   - target: org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory # class that need interception enhancements
@@ -69,6 +70,14 @@ The file location is as follows.
 * JDBC:  META-INF/conf/{plugin-type}-jdbc-advisors.yaml
 
 ### Configure more metrics collector into metrics.yaml
-`metrics.yaml` is the metrics definition file.
+`metrics.yaml` is the metrics definition file. The format is as follows.
+
+```yaml
+metrics:
+  - id: proxy_request_total # metric id
+    type: COUNTER # metric type, COUNTER、GAUGE、HISTOGRAM、SUMMARY
+    name: proxy_request_total # metric name
+    help: the shardingsphere proxy request total # metric help
+```
 
 
