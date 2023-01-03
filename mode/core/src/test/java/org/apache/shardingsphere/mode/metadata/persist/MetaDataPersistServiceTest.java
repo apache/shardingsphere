@@ -32,6 +32,8 @@ import org.apache.shardingsphere.mode.metadata.persist.service.config.global.Glo
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,9 +95,8 @@ public final class MetaDataPersistServiceTest {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
-        Properties props = createProperties();
-        metaDataPersistService.persistConfigurations(
-                Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
+        Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE.toString()));
+        metaDataPersistService.persistConfigurations(Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
         verify(dataSourceService).conditionalPersist("foo_db", createDataSourcePropertiesMap(dataSourceMap));
         verify(databaseRulePersistService).conditionalPersist("foo_db", ruleConfigs);
         verify(globalRuleService).conditionalPersist(globalRuleConfigs);
@@ -130,12 +131,6 @@ public final class MetaDataPersistServiceTest {
     
     private Collection<RuleConfiguration> createGlobalRuleConfigurations() {
         return Collections.emptyList();
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
-        return result;
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})

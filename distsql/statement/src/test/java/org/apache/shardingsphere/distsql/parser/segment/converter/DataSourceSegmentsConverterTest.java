@@ -22,6 +22,8 @@ import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedData
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -47,8 +49,7 @@ public final class DataSourceSegmentsConverterTest {
     
     private Collection<DataSourceSegment> createDataSourceSegments() {
         Collection<DataSourceSegment> result = new LinkedList<>();
-        Properties customPoolProps = new Properties();
-        customPoolProps.setProperty("maxPoolSize", "30");
+        Properties customPoolProps = PropertiesBuilder.build(new Property("maxPoolSize", "30"));
         result.add(new HostnameAndPortBasedDataSourceSegment("ds0", "127.0.0.1", "3306", "demo_ds_0", "root0", "root0", customPoolProps));
         result.add(new URLBasedDataSourceSegment("ds1", "jdbc:mysql://127.0.0.1:3306/demo_ds_1?useSSL=false", "root1", "root1", customPoolProps));
         return result;

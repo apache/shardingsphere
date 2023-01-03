@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.util.props;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -28,10 +30,7 @@ public final class PropertiesConverterTest {
     
     @Test
     public void assertConvert() {
-        Properties actual = new Properties();
-        actual.setProperty("foo", "foo_value");
-        actual.setProperty("bar", "bar_value");
-        assertThat(PropertiesConverter.convert(actual), is("bar=bar_value,foo=foo_value"));
+        assertThat(PropertiesConverter.convert(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))), is("bar=bar_value,foo=foo_value"));
     }
     
     @Test

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
 
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
@@ -37,13 +37,7 @@ public final class OpenTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        pluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()), true);
+        pluginBootService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer"))), true);
         assertTrue(GlobalTracer.isRegistered());
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer");
-        return result;
     }
 }

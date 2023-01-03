@@ -20,6 +20,8 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
 import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -40,16 +42,12 @@ public final class JaegerTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        pluginBootService.start(new PluginConfiguration("localhost", 5775, "", createProperties()), true);
+        Properties props = PropertiesBuilder.build(
+                new Property("JAEGER_SAMPLER_TYPE", "const"),
+                new Property("JAEGER_SAMPLER_PARAM", "1"),
+                new Property("JAEGER_REPORTER_LOG_SPANS", Boolean.TRUE.toString()),
+                new Property("JAEGER_REPORTER_FLUSH_INTERVAL", "1"));
+        pluginBootService.start(new PluginConfiguration("localhost", 5775, "", props), true);
         assertTrue(GlobalTracer.isRegistered());
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("JAEGER_SAMPLER_TYPE", "const");
-        result.setProperty("JAEGER_SAMPLER_PARAM", "1");
-        result.setProperty("JAEGER_REPORTER_LOG_SPANS", Boolean.TRUE.toString());
-        result.setProperty("JAEGER_REPORTER_FLUSH_INTERVAL", "1");
-        return result;
     }
 }

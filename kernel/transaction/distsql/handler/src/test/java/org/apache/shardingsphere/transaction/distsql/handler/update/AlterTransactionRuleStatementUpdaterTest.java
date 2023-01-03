@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSphereTransactionManagerFixture;
@@ -58,7 +60,8 @@ public final class AlterTransactionRuleStatementUpdaterTest {
                     () -> ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
             AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
             ShardingSphereMetaData metaData = createMetaData();
-            updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA", new TransactionProviderSegment("Atomikos", createProperties())));
+            updater.executeUpdate(metaData, new AlterTransactionRuleStatement("XA",
+                    new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")))));
             TransactionRule updatedRule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
             assertThat(updatedRule.getDefaultType(), is(TransactionType.XA));
             assertThat(updatedRule.getProviderType(), is("Atomikos"));
@@ -94,13 +97,6 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
-        return result;
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("host", "127.0.0.1");
-        result.setProperty("databaseName", "jbossts");
         return result;
     }
 }

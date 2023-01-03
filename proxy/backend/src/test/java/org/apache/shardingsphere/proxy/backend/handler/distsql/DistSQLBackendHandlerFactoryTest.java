@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -51,6 +51,8 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgor
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +61,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -146,9 +147,8 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     @Test
     public void assertExecuteAlterDefaultShadowAlgorithm() throws SQLException {
         mockShardingSphereRuleMetaData();
-        Properties props = new Properties();
-        props.setProperty("type", "value");
-        AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SIMPLE_HINT", props)));
+        AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(
+                new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SIMPLE_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         assertThat(RDLBackendHandlerFactory.newInstance(statement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
