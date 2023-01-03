@@ -31,13 +31,14 @@ import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.Stan
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 
@@ -57,13 +58,7 @@ public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer 
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        pluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()), true);
+        pluginBootService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
         new Socket().connect(new InetSocketAddress("localhost", 8090));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString());
-        return result;
     }
 }
