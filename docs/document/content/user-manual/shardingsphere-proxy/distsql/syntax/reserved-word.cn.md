@@ -1,6 +1,6 @@
 +++
 title = "保留字"
-weight = 5
+weight = 2
 +++
 
 ## RDL
