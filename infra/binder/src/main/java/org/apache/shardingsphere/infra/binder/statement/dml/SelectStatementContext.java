@@ -119,7 +119,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
-        Optional<SelectStatementContext> rownumSelectStatementContext = sqlStatement instanceof OracleSelectStatement ? resolveRownumSelectStatementContext(sqlStatement) : Optional.empty();
+        Optional<SelectStatementContext> rownumSelectStatementContext = sqlStatement instanceof OracleSelectStatement ? getRownumSelectStatementContext(sqlStatement) : Optional.empty();
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         if (rownumSelectStatementContext.isPresent()) {
             rownumSelectStatementContext.get().getGroupByContext().getItems().stream().filter(item -> !groupByContext.getItems().contains(item)).forEach(groupByContext.getItems()::add);
@@ -137,8 +137,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
     }
     
-    private Optional<SelectStatementContext> resolveRownumSelectStatementContext(final SelectStatement sqlStatement) {
-        rownumAndSelectStatementContextMap = resolveRownumAndContextMap();
+    private Optional<SelectStatementContext> getRownumSelectStatementContext(final SelectStatement sqlStatement) {
+        rownumAndSelectStatementContextMap = getRownumAndContextMap();
         Optional<SelectStatementContext> result = Optional.empty();
         if (sqlStatement.getWhere().isPresent()) {
             WhereSegment where = getSqlStatement().getWhere().get();
@@ -162,24 +162,24 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return result;
     }
     
-    private Map<String, SelectStatementContext> resolveRownumAndContextMap() {
+    private Map<String, SelectStatementContext> getRownumAndContextMap() {
         Map<SelectStatement, SelectStatementContext> subqueryStatementAndContextMap = new HashMap<>();
         for (SelectStatementContext subSelectContext : subqueryContexts.values()) {
             subqueryStatementAndContextMap.put(subSelectContext.getSqlStatement(), subSelectContext);
         }
         Map<String, SelectStatementContext> result = new HashMap<>();
-        for (ProjectionSegment proj : getSqlStatement().getProjections().getProjections()) {
-            boolean isRownumColumn = proj instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) proj).getColumn().getIdentifier().getValue().equalsIgnoreCase("ROWNUM");
+        for (ProjectionSegment each : getSqlStatement().getProjections().getProjections()) {
+            boolean isRownumColumn = each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue().equalsIgnoreCase("ROWNUM");
             Optional<SelectStatement> subquery = Optional.empty();
             if (getSqlStatement().getFrom() instanceof SubqueryTableSegment) {
                 subquery = Optional.of(((SubqueryTableSegment) getSqlStatement().getFrom()).getSubquery().getSelect());
             }
             if (isRownumColumn && subquery.isPresent()) {
-                ColumnProjectionSegment rowNumSegment = (ColumnProjectionSegment) proj;
+                ColumnProjectionSegment rowNumSegment = (ColumnProjectionSegment) each;
                 String rownumAlias = rowNumSegment.getAlias().isPresent() ? rowNumSegment.getAlias().get() : "ROWNUM";
                 result.put(rownumAlias, subqueryStatementAndContextMap.get(subquery.get()));
                 break;
-            } else if (proj instanceof ShorthandProjectionSegment && subquery.isPresent() && subqueryStatementAndContextMap.containsKey(subquery.get())) {
+            } else if (each instanceof ShorthandProjectionSegment && subquery.isPresent() && subqueryStatementAndContextMap.containsKey(subquery.get())) {
                 result.putAll(subqueryStatementAndContextMap.get(subquery.get()).rownumAndSelectStatementContextMap);
             }
         }
@@ -196,17 +196,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             return findRownumSelectStatementContext((BinaryOperationExpression) left);
         }
         return Optional.empty();
-    }
-    
-    private Optional<SelectStatementContext> findContextFromSubQueryContext(final Collection<SelectStatementContext> subQueryContexts, final OracleSelectStatement selectStatement) {
-        Optional<SelectStatementContext> result = Optional.empty();
-        for (SelectStatementContext subSelectContext : subQueryContexts) {
-            if (subSelectContext.getSqlStatement() == selectStatement) {
-                result = Optional.of(subSelectContext);
-                break;
-            }
-        }
-        return result;
     }
     
     private Map<String, ShardingSphereSchema> getSchemas(final ShardingSphereMetaData metaData, final String databaseName) {

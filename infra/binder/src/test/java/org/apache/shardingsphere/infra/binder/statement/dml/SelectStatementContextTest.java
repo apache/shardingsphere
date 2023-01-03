@@ -637,7 +637,7 @@ public final class SelectStatementContextTest {
     
     private SelectStatement createSubStatementOfAssertContainsOrderbyForOracleRownum() {
         // select t.*, rownum r from (select * from a order by a.name)t
-        final SelectStatement subStatement = new OracleSelectStatement();
+        final SelectStatement result = new OracleSelectStatement();
         ProjectionsSegment subProjections = new ProjectionsSegment(0, 0);
         ShorthandProjectionSegment subShorthandProjection = new ShorthandProjectionSegment(0, 0);
         subShorthandProjection.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t")));
@@ -645,28 +645,28 @@ public final class SelectStatementContextTest {
         ColumnProjectionSegment subRownumProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("rownum")));
         subRownumProjection.setAlias(new AliasSegment(0, 0, new IdentifierValue("r")));
         subProjections.getProjections().add(subRownumProjection);
-        subStatement.setProjections(subProjections);
+        result.setProjections(subProjections);
         SelectStatement subsubSelectStatement = createSubSubStatementOfAssertContainsOrderbyForOracleRownum();
         SubquerySegment subsubSeg = new SubquerySegment(39, 70, subsubSelectStatement);
         TableSegment subsubQuery = new SubqueryTableSegment(subsubSeg);
         subsubQuery.setAlias(new AliasSegment(0, 0, new IdentifierValue("t")));
-        subStatement.setFrom(subsubQuery);
-        return subStatement;
+        result.setFrom(subsubQuery);
+        return result;
     }
     
     private SelectStatement createSubSubStatementOfAssertContainsOrderbyForOracleRownum() {
         // select a.* from a order by a.name
-        SelectStatement subsubSelectStatement = new OracleSelectStatement();
+        SelectStatement result = new OracleSelectStatement();
         ProjectionsSegment subsubProjections = new ProjectionsSegment(0, 0);
         ShorthandProjectionSegment shorthandSegment = new ShorthandProjectionSegment(0, 0);
         shorthandSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         subsubProjections.getProjections().add(shorthandSegment);
-        subsubSelectStatement.setProjections(subsubProjections);
-        subsubSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(28, 29, new IdentifierValue("a"))));
+        result.setProjections(subsubProjections);
+        result.setFrom(new SimpleTableSegment(new TableNameSegment(28, 29, new IdentifierValue("a"))));
         LinkedList<OrderByItemSegment> orderByItems = new LinkedList<OrderByItemSegment>();
         orderByItems.add(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC, NullsOrderType.FIRST));
-        subsubSelectStatement.setOrderBy(new OrderBySegment(0, 0, orderByItems));
-        return subsubSelectStatement;
+        result.setOrderBy(new OrderBySegment(0, 0, orderByItems));
+        return result;
     }
     
     private Map<String, ShardingSphereSchema> mockSchemas() {

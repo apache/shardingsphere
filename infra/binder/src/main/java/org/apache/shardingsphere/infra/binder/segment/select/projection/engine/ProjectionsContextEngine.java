@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -114,7 +115,7 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameColumn(final Projection projection, final ColumnSegment columnSegment) {
-        Collection<Projection> columns = expandProjection(projection);
+        Collection<Projection> columns = getExpandedProjections(projection);
         if (columns.isEmpty()) {
             return false;
         }
@@ -133,7 +134,7 @@ public final class ProjectionsContextEngine {
      * @param projection the projection to expand
      * @return expanded projections
      */
-    public static Collection<Projection> expandProjection(final Projection projection) {
+    public static Collection<Projection> getExpandedProjections(final Projection projection) {
         Collection<Projection> result = new LinkedList<>();
         if (projection instanceof ShorthandProjection) {
             result.addAll(((ShorthandProjection) projection).getColumnProjections());
@@ -144,8 +145,8 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean isSameName(final Projection projection, final String text) {
-        String expression = projection.getExpression();
-        return SQLUtil.getExactlyValue(text).equalsIgnoreCase(expression.substring(expression.indexOf('.') + 1));
+        String name = projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : projection.getExpression();
+        return SQLUtil.getExactlyValue(text).equalsIgnoreCase(name);
     }
     
     private boolean isSameAlias(final Projection projection, final String text) {
