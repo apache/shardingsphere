@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        feature: [ sharding, readwrite-splitting, encrypt, shadow ]
+        feature: [ sharding, readwrite-splitting, encrypt, shadow, mask ]
         framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
         mode: [ standalone ]
         transaction: [ local ]

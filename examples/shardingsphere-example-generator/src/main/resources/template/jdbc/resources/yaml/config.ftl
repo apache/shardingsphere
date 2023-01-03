@@ -26,7 +26,7 @@ dataSources:
     username: ${username}
     password: ${(password)?string}
     maxPoolSize: 10
-<#if feature!="encrypt">
+<#if feature!="encrypt" && feature!="mask">
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver

@@ -14,10 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-org.apache.shardingsphere.example.generator.scenario.feature.type.ShardingExampleScenario
-org.apache.shardingsphere.example.generator.scenario.feature.type.ReadwriteSplittingExampleScenario
-org.apache.shardingsphere.example.generator.scenario.feature.type.EncryptExampleScenario
-org.apache.shardingsphere.example.generator.scenario.feature.type.ShadowExampleScenario
-org.apache.shardingsphere.example.generator.scenario.feature.type.DBDiscoveryExampleScenario
-org.apache.shardingsphere.example.generator.scenario.feature.type.MaskExampleScenario
+- !MASK
+  tables:
+    t_order_item:
+      columns:
+        phone:
+          maskAlgorithm: keep_first_n_last_m_mask
+    
+  maskAlgorithms:
+    keep_first_n_last_m_mask:
+      type: KEEP_FIRST_N_LAST_M
+      props:
+        first-n: 3
+        last-m: 4
+        replace-char: '*'
