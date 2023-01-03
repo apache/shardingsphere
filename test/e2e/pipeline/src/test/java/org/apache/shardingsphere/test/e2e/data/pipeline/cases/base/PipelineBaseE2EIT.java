@@ -38,6 +38,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerSto
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Rule;
 
 import javax.sql.DataSource;
@@ -57,7 +59,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -162,12 +163,9 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected String appendExtraParam(final String jdbcUrl) {
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            Properties addProps = new Properties();
-            addProps.setProperty("rewriteBatchedStatements", "true");
-            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, addProps);
-        }
-        return jdbcUrl;
+        return DatabaseTypeUtil.isMySQL(getDatabaseType())
+                ? new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())))
+                : jdbcUrl;
     }
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {

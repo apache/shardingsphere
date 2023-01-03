@@ -25,10 +25,11 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
@@ -46,9 +47,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     private final int executeCountLimit;
     
     static {
-        Properties props = new Properties();
-        props.setProperty("max-vibration-offset", "2");
-        KEY_GENERATE_ALGORITHM.init(props);
+        KEY_GENERATE_ALGORITHM.init(PropertiesBuilder.build(new Property("max-vibration-offset", "2")));
     }
     
     @Override
