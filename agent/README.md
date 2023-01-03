@@ -1,13 +1,13 @@
 
-##  Features Introduction
+## Features
 
 ShardingSphere-Agent module provides an observable framework for ShardingSphere, which is implemented based on Java Agent.
 
 ### Usage of logging
-The default logging plugin shows how to record additional logs in ShardingSphere.
+The logging plugin is used to record logs of ShardingSphere.
 
 ### Usage of metrics
-The metrics plugin is used to collect and display statistical indicators for the entire cluster. Supports Prometheus by default.
+The metrics plugin is used to collect and expose monitoring metrics, and supports Prometheus by default.
 
 ### Usage of tracing
 The tracing plugin is used to obtain the link trace information of SQL parsing and SQL execution. Supports for Jaeger, OpenTelemetry, OpenTracing and Zipkin.
@@ -25,14 +25,11 @@ Artifact:
 agent/distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz # Binary package of ShardingSphere-Agent
 ```
 
-
 ## Quick Start
-
 * `shardingsphere-agent-{latest.release.version}.jar` is the agent startup jar.
 * `conf/agent.yaml` is used to configure and enable plugins.
 
 ### Quick Start with Proxy
-
 Add the javaagent configuration in the Proxy startup script, as follows.
 
 ```shell
@@ -55,7 +52,7 @@ java -javaagent:/xx/xx/shardingsphere-agent-{latest.release.version}.jar -jar pr
 `PluginBootService` is the plugin service definition interface, used to start the plugin service. Custom plugins need to implement this interface.
 
 ### Configure advisors.yaml
-`advisors.yaml` is used to define interception points.
+`advisors.yaml` is used to define interception points. The configuration format is as follows.
 ```yaml
 advisors:
   - target: org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory # class that need interception enhancements
