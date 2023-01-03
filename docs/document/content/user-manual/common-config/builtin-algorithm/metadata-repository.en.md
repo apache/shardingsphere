@@ -5,7 +5,7 @@ weight = 1
 
 ## Background
 
-Apache ShardingSphere provides different metadata persistence methods for different running modes. Users can choose an appropriate way to store metadata while configuring the running mode.
+Apache ShardingSphere provides different metadata persistence methods for different running modes. Users can freely choose the most appropriate way to store metadata while configuring the running mode.
 
 ## Parameters
 
