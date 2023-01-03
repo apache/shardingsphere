@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -38,52 +40,36 @@ public final class ComplexInlineShardingAlgorithmTest {
     
     @Test
     public void assertDoSharding() {
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"));
+        ComplexInlineShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COMPLEX_INLINE", props), ShardingAlgorithm.class);
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
-        Map<String, Collection<Comparable<?>>> sharingValueMap = new HashMap<>(2, 1);
-        sharingValueMap.put("type", Collections.singletonList(2));
-        sharingValueMap.put("order_id", Collections.singletonList(2));
-        ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", sharingValueMap, Collections.emptyMap());
-        ComplexInlineShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("COMPLEX_INLINE", createDisallowRangeQueryProperties()), ShardingAlgorithm.class);
-        Collection<String> actual = algorithm.doSharding(availableTargetNames, shardingValue);
+        Collection<String> actual = algorithm.doSharding(availableTargetNames, createComplexKeysShardingValue(Collections.singletonList(2)));
         assertTrue(1 == actual.size() && actual.contains("t_order_0_0"));
     }
     
     @Test
     public void assertDoShardingWithMultiValue() {
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"));
+        ComplexInlineShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COMPLEX_INLINE", props), ShardingAlgorithm.class);
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
-        Map<String, Collection<Comparable<?>>> sharingValueMap = new HashMap<>(2, 1);
-        sharingValueMap.put("type", Arrays.asList(1, 2));
-        sharingValueMap.put("order_id", Arrays.asList(1, 2));
-        ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", sharingValueMap, Collections.emptyMap());
-        ComplexInlineShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("COMPLEX_INLINE", createDisallowRangeQueryProperties()), ShardingAlgorithm.class);
-        Collection<String> actual = algorithm.doSharding(availableTargetNames, shardingValue);
+        Collection<String> actual = algorithm.doSharding(availableTargetNames, createComplexKeysShardingValue(Arrays.asList(1, 2)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
-    private Properties createDisallowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
-        result.setProperty("sharding-columns", "type,order_id");
-        return result;
+    private ComplexKeysShardingValue<Comparable<?>> createComplexKeysShardingValue(final List<Comparable<?>> values) {
+        Map<String, Collection<Comparable<?>>> sharingValues = new HashMap<>(2, 1);
+        sharingValues.put("type", values);
+        sharingValues.put("order_id", values);
+        return new ComplexKeysShardingValue<>("t_order", sharingValues, Collections.emptyMap());
     }
     
     @Test
     public void assertDoShardingWithRangeValue() {
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"),
+                new Property("sharding-columns", "type,order_id"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString()));
+        ComplexInlineShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COMPLEX_INLINE", props), ShardingAlgorithm.class);
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
-        ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", Collections.emptyMap(), Collections.singletonMap("type", Range.all()));
-        ComplexInlineShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("COMPLEX_INLINE", createAllowRangeQueryProperties()), ShardingAlgorithm.class);
-        Collection<String> actual = algorithm.doSharding(availableTargetNames, shardingValue);
+        Collection<String> actual = algorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", Collections.emptyMap(), Collections.singletonMap("type", Range.all())));
         assertTrue(actual.containsAll(availableTargetNames));
-    }
-    
-    private Properties createAllowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_${type % 2}_${order_id % 2}");
-        result.setProperty("sharding-columns", "type,order_id");
-        result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        return result;
     }
 }

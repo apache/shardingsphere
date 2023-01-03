@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAlgorithmResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -94,15 +96,11 @@ public final class ShowShardingTableRulesUsedAlgorithmResultSetTest {
     }
     
     private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
-        Properties props = new Properties();
-        props.put("algorithm-expression", algorithmExpression);
-        return new AlgorithmConfiguration("INLINE", props);
+        return new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", algorithmExpression)));
     }
     
     private AlgorithmConfiguration createShardingAutoModAlgorithmConfiguration() {
-        Properties props = new Properties();
-        props.put("sharding-count", 4);
-        return new AlgorithmConfiguration("MOD", props);
+        return new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "4")));
     }
     
     private AlgorithmConfiguration createKeyGeneratorConfiguration() {

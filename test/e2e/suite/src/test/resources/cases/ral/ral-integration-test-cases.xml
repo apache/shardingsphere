@@ -133,5 +133,13 @@
             <destroy-sql sql="SET DIST VARIABLE sql_show = false;" />
         </assertion>
     </test-case>
+    
+    <test-case sql="SHOW COMPUTE NODE INFO">
+        <assertion expected-data-file="show_compute_node_info.xml" />
+    </test-case>
+    
+    <test-case sql="SHOW COMPUTE NODE MODE">
+        <assertion expected-data-file="show_compute_node_mode.xml" />
+    </test-case>
 </integration-test-cases>
 

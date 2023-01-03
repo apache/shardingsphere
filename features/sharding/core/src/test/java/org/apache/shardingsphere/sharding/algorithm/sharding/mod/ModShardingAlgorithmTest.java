@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -40,37 +42,35 @@ public final class ModShardingAlgorithmTest {
     
     @Test
     public void assertPreciseDoShardingWithIntShardingValue() {
-        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MOD", createProperties()), ShardingAlgorithm.class);
+        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "16"))), ShardingAlgorithm.class);
         assertThat(algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 17)), is("t_order_1"));
     }
     
     @Test
     public void assertPreciseDoShardingWithBigIntegerShardingValue() {
-        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MOD", createProperties()), ShardingAlgorithm.class);
+        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "16"))), ShardingAlgorithm.class);
         assertThat(algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_12"));
     }
     
     @Test
     public void assertRangeDoShardingWithAllTargets() {
-        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MOD", createProperties()), ShardingAlgorithm.class);
+        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "16"))), ShardingAlgorithm.class);
         Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(), new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
     
     @Test
     public void assertRangeDoShardingWithPartTargets() {
-        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MOD", createProperties()), ShardingAlgorithm.class);
+        ModShardingAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "16"))), ShardingAlgorithm.class);
         Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(),
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 2L)));
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("sharding-count", "16");
-        return result;
     }
     
     private Collection<String> createAvailableTargetNames() {
@@ -109,12 +109,8 @@ public final class ModShardingAlgorithmTest {
     }
     
     private Properties createZeroPaddingProperties() {
-        Properties result = new Properties();
-        result.setProperty("sharding-count", "16");
-        result.setProperty("zero-padding", Boolean.TRUE.toString());
-        result.setProperty("start-offset", "1");
-        result.setProperty("stop-offset", "1");
-        return result;
+        return PropertiesBuilder.build(
+                new Property("sharding-count", "16"), new Property("zero-padding", Boolean.TRUE.toString()), new Property("start-offset", "1"), new Property("stop-offset", "1"));
     }
     
     private Collection<String> createAvailableIncludeZeroTargetNames() {

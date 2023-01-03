@@ -26,8 +26,9 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -75,9 +76,9 @@ public final class ShardingSQLFederationDeciderTest {
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         ShardingSQLFederationDecider federationDecider = new ShardingSQLFederationDecider();
         try (MockedStatic<ShardingConditionEngineFactory> shardingConditionEngineFactory = mockStatic(ShardingConditionEngineFactory.class)) {
-            WhereClauseShardingConditionEngine shardingConditionEngine = mock(WhereClauseShardingConditionEngine.class);
+            ShardingConditionEngine<?> shardingConditionEngine = mock(DefaultShardingConditionEngine.class);
             when(shardingConditionEngine.createShardingConditions(any(), any())).thenReturn(createShardingConditions());
-            shardingConditionEngineFactory.when(() -> ShardingConditionEngineFactory.createShardingConditionEngine(any(QueryContext.class), any(), any())).thenReturn(shardingConditionEngine);
+            shardingConditionEngineFactory.when(() -> ShardingConditionEngineFactory.createShardingConditionEngine(any(), any())).thenReturn(shardingConditionEngine);
             federationDecider.decide(actual, queryContext, createDatabase(), createShardingRule(), new ConfigurationProperties(new Properties()));
         }
         assertThat(actual.getDataNodes().size(), is(4));

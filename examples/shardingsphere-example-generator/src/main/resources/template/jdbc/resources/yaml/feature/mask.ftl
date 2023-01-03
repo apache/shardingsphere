@@ -14,12 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-- !AUTHORITY
-  users:
-    - user: root@%
-      password: root
-    - user: sharding@
-      password: sharding
-  privilege:
-    type: ALL_PERMITTED
+- !MASK
+  tables:
+    t_order_item:
+      columns:
+        phone:
+          maskAlgorithm: keep_first_n_last_m_mask
+    
+  maskAlgorithms:
+    keep_first_n_last_m_mask:
+      type: KEEP_FIRST_N_LAST_M
+      props:
+        first-n: 3
+        last-m: 4
+        replace-char: '*'

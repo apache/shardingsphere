@@ -28,6 +28,8 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.cosid.algorithm.Arguments;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,14 +55,8 @@ public final class CosIdModShardingAlgorithmTest {
     static final ExactCollection<String> ALL_NODES = new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2", "t_mod_3");
     
     static CosIdModShardingAlgorithm<Long> createShardingAlgorithm() {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID_MOD", createProperties()), ShardingAlgorithm.class);
-    }
-    
-    private static Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        result.put("mod", DIVISOR);
-        return result;
+        Properties props = PropertiesBuilder.build(new Property(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX), new Property("mod", Integer.toString(DIVISOR)));
+        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID_MOD", props), ShardingAlgorithm.class);
     }
     
     @RunWith(Parameterized.class)

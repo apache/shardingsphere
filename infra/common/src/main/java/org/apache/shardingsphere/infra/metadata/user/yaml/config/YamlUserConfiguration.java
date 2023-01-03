@@ -28,14 +28,14 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlUserConfiguration implements YamlConfiguration {
     
-    private String username;
-    
-    private String hostname;
+    private String user;
     
     private String password;
     
+    private String auth;
+    
     @Override
     public String toString() {
-        return username + "@" + (null == hostname ? "%" : hostname) + ":" + password;
+        return user.contains("@") ? user + ":" + password : user + "@%:" + password;
     }
 }

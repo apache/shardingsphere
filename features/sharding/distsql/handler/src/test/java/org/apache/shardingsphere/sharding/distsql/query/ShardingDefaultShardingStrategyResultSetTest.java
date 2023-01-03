@@ -28,12 +28,13 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.distsql.handler.query.DefaultShardingStrategyResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -92,9 +93,7 @@ public final class ShardingDefaultShardingStrategyResultSetTest {
     
     private RuleConfiguration createRuleConfiguration1() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Properties props = new Properties();
-        props.put("algorithm-expression", "ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.setDefaultDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("use_id, order_id", "database_inline"));
         return result;
@@ -102,9 +101,7 @@ public final class ShardingDefaultShardingStrategyResultSetTest {
     
     private RuleConfiguration createRuleConfiguration2() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Properties props = new Properties();
-        props.put("algorithm-expression", "ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("use_id", "database_inline"));
         result.setDefaultDatabaseShardingStrategy(new HintShardingStrategyConfiguration("database_inline"));
         return result;

@@ -38,6 +38,7 @@ features:
   - encrypt
   - shadow
   - db-discovery
+  - mask
 
 # supported：jdbc,spring-boot-starter-jdbc,spring-boot-starter-jpa,spring-boot-starter-mybatis,spring-namespace-jdbc,spring-namespace-jpa,spring-namespace-mybatis
 frameworks:

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRep
 </#if>
 <#if feature?contains("sharding")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -47,7 +46,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 </#if>
 <#if feature?contains("shadow")>
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -60,6 +58,12 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+</#if>
+<#if feature?contains("mask")>
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
+import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;    
 </#if>
 <#if transaction!="local">
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -104,7 +108,7 @@ public final class Configuration {
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("ds_0", createDataSource("demo_ds_0"));
-    <#if feature!="encrypt">
+    <#if feature!="encrypt" && feature!="mask">
         result.put("ds_1", createDataSource("demo_ds_1"));
         <#if feature!="shadow">
         result.put("ds_2", createDataSource("demo_ds_2"));
@@ -142,6 +146,9 @@ public final class Configuration {
     </#if>
     <#if feature?contains("sharding")>
         result.add(createShardingRuleConfiguration());
+    </#if>
+    <#if feature?contains("mask")>
+        result.add(createMaskRuleConfiguration());
     </#if>
         return result; 
     }

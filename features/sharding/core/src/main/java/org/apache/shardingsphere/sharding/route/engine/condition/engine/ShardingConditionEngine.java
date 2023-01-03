@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.List;
 
 /**
  * Sharding condition engine.
  */
-public interface ShardingConditionEngine<T extends SQLStatementContext<?>> {
+public interface ShardingConditionEngine<T extends SQLStatementContext<?>> extends RequiredSPI {
+    
+    /**
+     * Initialize sharding condition engine.
+     *
+     * @param rule sharding rule
+     * @param database sharding database
+     */
+    void init(ShardingRule rule, ShardingSphereDatabase database);
     
     /**
      * Create sharding conditions.

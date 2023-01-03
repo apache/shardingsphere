@@ -15,31 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.yaml.config;
+package org.apache.shardingsphere.example.generator.scenario.feature.type;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Authority user configuration for YAML.
+ * Mask example scenario.
  */
-@Getter
-@Setter
-public final class YamlAuthorityUserConfiguration implements YamlConfiguration {
-    
-    private String user;
-    
-    private String password;
-    
-    private String auth;
-    
-    private Properties props;
+public final class MaskExampleScenario implements FeatureExampleScenario {
     
     @Override
-    public String toString() {
-        return !user.contains("@") ? user + "@%:" + password : user + ":" + password;
+    public Map<String, String> getJavaClassTemplateMap() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Map<String, String> getResourceTemplateMap() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getJavaClassPaths() {
+        return Collections.emptySet();
+    }
+    
+    @Override
+    public Collection<String> getResourcePaths() {
+        return Collections.emptySet();
+    }
+    
+    @Override
+    public String getType() {
+        return "mask";
     }
 }

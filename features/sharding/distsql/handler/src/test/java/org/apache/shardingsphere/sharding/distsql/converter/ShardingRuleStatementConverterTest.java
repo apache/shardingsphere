@@ -22,13 +22,15 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -76,32 +78,22 @@ public final class ShardingRuleStatementConverterTest {
     private Collection<AbstractTableRuleSegment> createTableRuleSegment1() {
         Collection<AbstractTableRuleSegment> result = new LinkedList<>();
         AutoTableRuleSegment autoTableRuleSegment1 = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id",
-                new AlgorithmSegment("MOD", newProperties("sharding_count", "2")), null, null);
-        AlgorithmSegment databaseAlgorithmSegment = getAutoCreativeAlgorithmSegment("inline", newProperties("algorithm-expression", "ds_${product_id% 2}"));
+                new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))), null, null);
+        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}")));
         AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"), "order_id",
-                new AlgorithmSegment("MOD", newProperties("sharding_count", "2")),
+                new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))),
                 new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"),
                 new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
                 new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment),
                 new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("order_id_algorithm", new Properties())),
-                new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("snowflake", newProperties("", ""))),
+                new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("snowflake", PropertiesBuilder.build(new Property("", "")))),
                 new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         result.add(autoTableRuleSegment1);
         result.add(autoTableRuleSegment2);
         result.add(tableRuleSegment);
-        return result;
-    }
-    
-    private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties props) {
-        return new AlgorithmSegment(name, props);
-    }
-    
-    private Properties newProperties(final String key, final String value) {
-        Properties result = new Properties();
-        result.put(key, value);
         return result;
     }
 }

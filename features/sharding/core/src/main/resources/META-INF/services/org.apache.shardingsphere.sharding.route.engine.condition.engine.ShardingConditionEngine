@@ -15,11 +15,4 @@
 # limitations under the License.
 #
 
-- !AUTHORITY
-  users:
-    - user: root@%
-      password: root
-    - user: sharding@
-      password: sharding
-  privilege:
-    type: ALL_PERMITTED
+org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine
