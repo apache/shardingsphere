@@ -1,6 +1,6 @@
 +++
 title = "Reserved word"
-weight = 2
+weight = 5
 +++
 
 ## RDL
