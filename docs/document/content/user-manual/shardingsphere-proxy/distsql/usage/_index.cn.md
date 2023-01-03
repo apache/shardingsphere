@@ -1,6 +1,6 @@
 +++
 title = "使用"
-weight = 2
+weight = 1
 chapter = true
 +++
 
