@@ -24,11 +24,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,13 +60,7 @@ public final class ShowComputeNodeModeHandlerTest extends ProxyContextRestorer {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getMetaData().getId()).thenReturn("127.0.0.1@3309");
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster",
-                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value1,value2"))));
-        return result;
-    }
-    
-    private Properties createProperties(final String key, final String value) {
-        Properties result = new Properties();
-        result.put(key, value);
+                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", PropertiesBuilder.build(new Property("key", "value1,value2")))));
         return result;
     }
 }
