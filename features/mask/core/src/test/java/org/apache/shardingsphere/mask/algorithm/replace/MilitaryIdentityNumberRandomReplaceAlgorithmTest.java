@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     
@@ -33,19 +34,13 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
-        maskAlgorithm.init(createProperties());
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("type-codes", "军,人,士,文,职");
-        return result;
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("type-codes", "军,人,士,文,职")));
     }
     
     @Test
     public void assertMask() {
-        assertThat(maskAlgorithm.mask("军字第1234567号".charAt(0)), not('军'));
-        assertThat(maskAlgorithm.mask("军字第1234567号".substring(3, 10)), not("1234567"));
+        assertThat(maskAlgorithm.mask("军字第1234567号"), not("军字第1234567号"));
         assertThat(maskAlgorithm.mask(""), is(""));
+        assertNull(maskAlgorithm.mask(null));
     }
 }
