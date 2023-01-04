@@ -29,18 +29,18 @@ import java.net.URLDecoder;
 
 import static org.junit.Assert.assertNotNull;
 
-public final class PluginConfigurationLoaderTest {
+public final class AgentConfigurationLoaderTest {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
     @Test
     public void assertLoad() throws IOException, ReflectiveOperationException {
         Plugins.getMemberAccessor().set(AgentPathBuilder.class.getDeclaredField("agentPath"), AgentPathBuilder.class, new File(getResourceUrl()));
-        assertNotNull(PluginConfigurationLoader.load());
+        assertNotNull(AgentConfigurationLoader.load());
     }
     
     private String getResourceUrl() throws UnsupportedEncodingException {
-        URL url = PluginConfigurationLoader.class.getClassLoader().getResource("");
+        URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
         return null == url ? DEFAULT_CONFIG_PATH : URLDecoder.decode(url.getFile(), "UTF8");
     }
 }
