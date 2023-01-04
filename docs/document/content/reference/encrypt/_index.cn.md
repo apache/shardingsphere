@@ -58,7 +58,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 下方图片展示了使用加密模块进行增删改查时，其中的处理流程和转换逻辑，如下图所示。
 
-![4](https://shardingsphere.apache.org/document/current/img/encrypt/4_cn_v2.png)
+![4](https://shardingsphere.apache.org/document/current/img/encrypt/4_cn_v3.png)
 
 ## 解决方案详解
 

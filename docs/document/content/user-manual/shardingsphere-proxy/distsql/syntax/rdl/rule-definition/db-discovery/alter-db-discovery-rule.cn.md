@@ -67,4 +67,4 @@ ALTER DB_DISCOVERY RULE db_discovery_group_0 (
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

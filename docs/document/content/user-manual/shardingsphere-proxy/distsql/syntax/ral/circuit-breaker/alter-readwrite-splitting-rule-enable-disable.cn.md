@@ -66,4 +66,4 @@ ALTER READWRITE_SPLITTING RULE ms_group_1 ENABLE read_ds_0;
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

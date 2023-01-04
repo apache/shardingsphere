@@ -117,7 +117,9 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     @Override
     protected void doStop() {
-        importerConnector.clean();
-        CDCAckHolder.getInstance().cleanUp(this);
+        if (ImporterType.INCREMENTAL == importerType) {
+            importerConnector.clean(this);
+            CDCAckHolder.getInstance().cleanUp(this);
+        }
     }
 }

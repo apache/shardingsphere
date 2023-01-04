@@ -38,4 +38,4 @@ DROP ENCRYPT RULE t_encrypt, t_encrypt_2;
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

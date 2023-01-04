@@ -79,4 +79,4 @@ mysql> SHOW SHARDING TABLE RULES USED AUDITOR sharding_key_required_auditor;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

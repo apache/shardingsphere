@@ -40,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
+public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     @Getter
     private final PipelineJobItemContext jobItemContext;
@@ -102,7 +102,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         jobAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
-    private synchronized void executeIncrementalTask() {
+    protected synchronized void executeIncrementalTask() {
         if (incrementalTasks.isEmpty()) {
             log.info("incrementalTasks empty, ignore");
             return;
@@ -122,16 +122,20 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         ExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
     }
     
+    protected void inventorySuccessCallback() {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+            log.info("onSuccess, all inventory tasks finished.");
+            executeIncrementalTask();
+        } else {
+            log.info("onSuccess, inventory tasks not finished");
+        }
+    }
+    
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {
-            if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-                log.info("onSuccess, all inventory tasks finished.");
-                executeIncrementalTask();
-            } else {
-                log.info("onSuccess, inventory tasks not finished");
-            }
+            inventorySuccessCallback();
         }
         
         @Override

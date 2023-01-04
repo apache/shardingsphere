@@ -65,7 +65,7 @@ public final class CDCImporterConnector implements ImporterConnector {
     private final Condition condition = lock.newCondition();
     
     @Setter
-    private volatile boolean running = true;
+    private volatile boolean incrementalTaskRunning = true;
     
     @Getter
     private final String database;
@@ -127,10 +127,10 @@ public final class CDCImporterConnector implements ImporterConnector {
     }
     
     private void writeImmediately(final List<? extends Record> recordList, final Map<CDCImporter, CDCAckPosition> importerDataRecordMap) {
-        while (!channel.isWritable() && channel.isActive() && running) {
+        while (!channel.isWritable() && channel.isActive()) {
             doAwait();
         }
-        if (!channel.isActive() || !running) {
+        if (!channel.isActive()) {
             return;
         }
         List<DataRecordResult.Record> records = new LinkedList<>();
@@ -189,10 +189,14 @@ public final class CDCImporterConnector implements ImporterConnector {
     
     /**
      * Clean CDC importer connector.
+     *
+     * @param cdcImporter CDC importer
      */
-    public void clean() {
-        running = false;
-        incrementalRecordMap.clear();
+    public void clean(final CDCImporter cdcImporter) {
+        incrementalRecordMap.remove(cdcImporter);
+        if (ImporterType.INCREMENTAL == cdcImporter.getImporterType()) {
+            incrementalTaskRunning = false;
+        }
     }
     
     @Override
@@ -207,7 +211,7 @@ public final class CDCImporterConnector implements ImporterConnector {
         
         @Override
         public void run() {
-            while (running) {
+            while (incrementalTaskRunning) {
                 Map<CDCImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
                 List<DataRecord> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {

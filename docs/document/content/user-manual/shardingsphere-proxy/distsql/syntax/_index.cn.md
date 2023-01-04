@@ -40,4 +40,4 @@ chapter = true
 ### 特别说明
 
 - 当指定用户自定义算法类型名称时必须使用 `""` 对算法类型名称进行标注，例如 `NAME="AlgorithmTypeName"` ；
-- 当指定 ShardingSphere [内置算法](/cn/user-manual/common-config/props/)类型名称时可以不使用 `""` 对算法类型名称进行标注,例如 `NAME=HASH_MODE` ；
+- 当指定 ShardingSphere [内置算法](/cn/user-manual/common-config/builtin-algorithm/)类型名称时可以不使用 `""` 对算法类型名称进行标注,例如 `NAME=HASH_MODE` ；

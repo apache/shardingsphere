@@ -78,5 +78,5 @@ mysql> SHOW SHARDING TABLE RULES USED AUDITOR sharding_key_required_auditor;
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
 

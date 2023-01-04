@@ -43,4 +43,4 @@ DROP TRAFFIC RULE sql_match_traffic, sql_hint_traffic;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

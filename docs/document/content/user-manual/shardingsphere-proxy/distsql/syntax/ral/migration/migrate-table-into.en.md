@@ -54,4 +54,4 @@ UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_1, ds_2;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
