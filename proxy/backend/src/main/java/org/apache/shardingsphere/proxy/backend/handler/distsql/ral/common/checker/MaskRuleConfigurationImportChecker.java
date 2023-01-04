@@ -51,7 +51,7 @@ public final class MaskRuleConfigurationImportChecker {
         }
         checkTables(currentRuleConfig, database.getName());
         checkMaskAlgorithms(currentRuleConfig);
-        checkMaskAlgorithmsExists(currentRuleConfig, database.getName());
+        checkMaskAlgorithmsExisted(currentRuleConfig, database.getName());
     }
     
     private void checkTables(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -67,7 +67,7 @@ public final class MaskRuleConfigurationImportChecker {
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Mask algorithms", notExistedAlgorithms));
     }
     
-    private void checkMaskAlgorithmsExists(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
+    private void checkMaskAlgorithmsExisted(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {
         Collection<MaskColumnRuleConfiguration> columns = new LinkedList<>();
         currentRuleConfig.getTables().forEach(each -> columns.addAll(each.getColumns()));
         Collection<String> notExistedAlgorithms = columns.stream().map(MaskColumnRuleConfiguration::getMaskAlgorithm).collect(Collectors.toList());
