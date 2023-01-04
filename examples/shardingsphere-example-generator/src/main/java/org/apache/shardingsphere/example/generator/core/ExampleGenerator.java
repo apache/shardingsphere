@@ -34,17 +34,17 @@ import java.util.Properties;
  */
 public interface ExampleGenerator extends TypedSPI {
     
-    String DEFAULT_BASE_PATH = "./examples/shardingsphere-example-generator/target/generated-sources/";
+    String DEFAULT_OUTPUT = "./examples/shardingsphere-example-generator/target/generated-sources/";
     
-    String OUTPUT_PATH = "shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
+    String PROJECT_PATH = "shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
     
     String RESOURCES_PATH = "src/main/resources";
     
-    default String buildOutputPath(YamlExampleConfiguration exampleConfiguration) {
-        if (Strings.isNullOrEmpty(exampleConfiguration.getBasePath())) {
-            return DEFAULT_BASE_PATH + OUTPUT_PATH;
+    default String buildOutputPath(YamlExampleConfiguration exampleConfig) {
+        if (Strings.isNullOrEmpty(exampleConfig.getOutput())) {
+            return DEFAULT_OUTPUT + PROJECT_PATH;
         }
-        return exampleConfiguration.getBasePath() + OUTPUT_PATH;
+        return exampleConfig.getOutput() + PROJECT_PATH;
     }
     
     default void generate(final Configuration templateConfig, final YamlExampleConfiguration exampleConfig) throws IOException, TemplateException {

@@ -75,8 +75,8 @@ public final class ExampleGeneratorFactory {
             props.setProperty(each, System.getProperty(each));
         }
         if (!props.isEmpty()) {
-            if (props.containsKey("basePath")) {
-                result.setBasePath(props.getProperty("basePath"));
+            if (props.containsKey("output")) {
+                result.setOutput(props.getProperty("output"));
             }
             if (props.containsKey("products")) {
                 result.setProducts(getSysEnvByKey(props, "products"));
