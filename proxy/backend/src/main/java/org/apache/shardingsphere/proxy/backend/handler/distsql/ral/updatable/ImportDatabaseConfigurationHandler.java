@@ -47,6 +47,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.EncryptRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShadowRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
@@ -80,6 +81,8 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
     private final DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigurationImportChecker = new DatabaseDiscoveryRuleConfigurationImportChecker();
+    
+    private final EncryptRuleConfigurationImportChecker encryptRuleConfigurationImportChecker = new EncryptRuleConfigurationImportChecker();
     
     private final ShadowRuleConfigurationImportChecker shadowRuleConfigurationImportChecker = new ShadowRuleConfigurationImportChecker();
     
@@ -159,7 +162,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
                 ruleConfigs.add(databaseDiscoveryRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfig = new YamlEncryptRuleConfigurationSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
-                // TODO check
+                encryptRuleConfigurationImportChecker.check(database, encryptRuleConfig);
                 ruleConfigs.add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {
                 ShadowRuleConfiguration shadowRuleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject((YamlShadowRuleConfiguration) each);
