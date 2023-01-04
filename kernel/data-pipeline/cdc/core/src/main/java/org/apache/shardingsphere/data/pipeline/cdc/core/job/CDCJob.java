@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfigurat
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
-import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCInventoryIncrementalTasksRunner;
+import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
@@ -71,7 +71,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
         InventoryIncrementalJobItemContext jobItemContext = (InventoryIncrementalJobItemContext) pipelineJobItemContext;
-        return new CDCInventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
+        return new CDCTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
     }
     
     @Override

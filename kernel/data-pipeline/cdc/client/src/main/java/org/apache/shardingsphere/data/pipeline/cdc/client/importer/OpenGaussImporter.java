@@ -35,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -65,7 +66,12 @@ public final class OpenGaussImporter implements Importer {
     
     @Override
     public void write(final Record record) throws SQLException, InvalidProtocolBufferException {
-        String sql = buildSQL(record);
+        Optional<String> sqlOptional = buildSQL(record);
+        if (!sqlOptional.isPresent()) {
+            log.error("build sql failed, record {}", record);
+            throw new RuntimeException("build sql failed");
+        }
+        String sql = sqlOptional.get();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             List<Any> afterValue = new ArrayList<>(record.getAfterMap().values());
             ProtocolStringList uniqueKeyNamesList = record.getTableMetaData().getUniqueKeyNamesList();
@@ -100,17 +106,17 @@ public final class OpenGaussImporter implements Importer {
         }
     }
     
-    private String buildSQL(final Record record) {
+    private Optional<String> buildSQL(final Record record) {
         switch (record.getDataChangeType()) {
             case INSERT:
-                return sqlBuilder.buildInsertSQL(record);
+                return Optional.ofNullable(sqlBuilder.buildInsertSQL(record));
             case UPDATE:
-                return sqlBuilder.buildUpdateSQL(record);
+                return Optional.ofNullable(sqlBuilder.buildUpdateSQL(record));
             case DELETE:
-                return sqlBuilder.buildDeleteSQL(record);
+                return Optional.ofNullable(sqlBuilder.buildDeleteSQL(record));
             default:
+                return Optional.empty();
         }
-        return null;
     }
     
     @Override

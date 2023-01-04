@@ -24,9 +24,12 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
 import java.util.Collection;
 
-public final class CDCInventoryIncrementalTasksRunner extends InventoryIncrementalTasksRunner {
+/**
+ * CDC tasks runner.
+ */
+public final class CDCTasksRunner extends InventoryIncrementalTasksRunner {
     
-    public CDCInventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks) {
+    public CDCTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks) {
         super(jobItemContext, inventoryTasks, incrementalTasks);
     }
     

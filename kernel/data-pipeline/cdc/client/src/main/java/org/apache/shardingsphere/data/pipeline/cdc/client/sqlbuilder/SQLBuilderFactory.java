@@ -33,7 +33,7 @@ public final class SQLBuilderFactory {
             case "openGauss":
                 return new OpenGaussSQLBuilder();
             default:
+                throw new UnsupportedOperationException(String.format("Not supported %s now", databaseType));
         }
-        throw new UnsupportedOperationException(String.format("Not supported %s now", databaseType));
     }
 }

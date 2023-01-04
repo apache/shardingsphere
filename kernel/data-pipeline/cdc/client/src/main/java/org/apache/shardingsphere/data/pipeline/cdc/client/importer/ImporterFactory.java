@@ -28,12 +28,13 @@ public final class ImporterFactory {
      * @param databaseType database type
      * @return importer
      */
+    // TODO use SPI
     public static Importer getImporter(final String databaseType) {
         switch (databaseType) {
             case "openGauss":
                 return new OpenGaussImporter();
             default:
+                return null;
         }
-        return null;
     }
 }
