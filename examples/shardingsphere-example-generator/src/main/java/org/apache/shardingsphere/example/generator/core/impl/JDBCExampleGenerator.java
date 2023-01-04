@@ -44,7 +44,6 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
         GenerateUtil.generateFile(templateConfig, getType(), dataModel, exampleScenarioFactory.getResourceTemplateMap(), relativePath + RESOURCES_PATH);
         String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, relativePath);
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", outputPath + "pom.xml");
-        printMessages(getType(), outputPath);
     }
     
     @Override
