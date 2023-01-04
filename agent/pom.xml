@@ -77,8 +77,6 @@
                             <filter>
                                 <artifact>*:*</artifact>
                                 <excludes>
-                                    <!-- TODO H2 data.zip file may exclude from the proxy dependency -->
-                                    <exclude>org/h2/util/data.zip</exclude>
                                     <exclude>mozilla/public-suffix-list.txt</exclude>
                                 </excludes>
                             </filter>
