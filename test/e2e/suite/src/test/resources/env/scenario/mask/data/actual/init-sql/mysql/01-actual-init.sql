@@ -21,5 +21,4 @@ SET character_set_server='utf8';
 DROP DATABASE IF EXISTS mask;
 CREATE DATABASE mask;
 
-CREATE TABLE mask.t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_like VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_like CHAR(11) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
-CREATE TABLE mask.t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code_cipher VARCHAR(50) NOT NULL, business_code_like VARCHAR(50) NOT NULL, business_code_plain VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_like CHAR(11) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE mask.t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NOT NULL, password VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
