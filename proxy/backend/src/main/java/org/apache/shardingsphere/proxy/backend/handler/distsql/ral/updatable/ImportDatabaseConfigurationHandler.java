@@ -163,7 +163,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
                 ruleConfigs.add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {
                 ShadowRuleConfiguration shadowRuleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject((YamlShadowRuleConfiguration) each);
-                // shadowRuleConfigurationImportChecker.check(database, shadowRuleConfig);
+                shadowRuleConfigurationImportChecker.check(database, shadowRuleConfig);
                 ruleConfigs.add(shadowRuleConfig);
             } else if (each instanceof YamlMaskRuleConfiguration) {
                 MaskRuleConfiguration maskRuleConfig = new YamlMaskRuleConfigurationSwapper().swapToObject((YamlMaskRuleConfiguration) each);

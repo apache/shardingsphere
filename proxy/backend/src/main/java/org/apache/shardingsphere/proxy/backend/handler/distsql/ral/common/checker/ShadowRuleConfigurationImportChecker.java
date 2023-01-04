@@ -67,6 +67,7 @@ public final class ShadowRuleConfigurationImportChecker {
             }
         });
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedResources(requiredShadowSources);
+        notExistedDataSources.addAll(database.getResourceMetaData().getNotExistedResources(requiredProductionDataSources));
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
         Collection<String> logicalDataSources = getLogicDataSources(database);
         Collection<String> notExistedLogicalDataSources = requiredProductionDataSources.stream().filter(each -> !logicalDataSources.contains(each)).collect(Collectors.toSet());
