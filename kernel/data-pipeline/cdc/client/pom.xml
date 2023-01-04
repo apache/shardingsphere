@@ -46,7 +46,6 @@
         <dependency>
             <groupId>org.opengauss</groupId>
             <artifactId>opengauss-jdbc</artifactId>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

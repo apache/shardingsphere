@@ -26,6 +26,9 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * Abstract SQL builder.
+ */
 public abstract class AbstractSQLBuilder implements SQLBuilder {
     
     protected static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
