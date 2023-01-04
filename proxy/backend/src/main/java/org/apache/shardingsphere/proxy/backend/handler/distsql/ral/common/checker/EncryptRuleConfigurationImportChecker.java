@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,7 @@ public final class EncryptRuleConfigurationImportChecker {
         }
         checkTables(currentRuleConfig, database.getName());
         checkEncryptors(currentRuleConfig);
+        checkTableEncryptorsExists(currentRuleConfig, database.getName());
     }
     
     private void checkTables(final EncryptRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -61,5 +65,16 @@ public final class EncryptRuleConfigurationImportChecker {
         Collection<String> notExistedAlgorithms = currentRuleConfig.getEncryptors().values().stream().map(AlgorithmConfiguration::getType)
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Encryptors", notExistedAlgorithms));
+    }
+    
+    private void checkTableEncryptorsExists(final EncryptRuleConfiguration configuration, final String databaseName) {
+        Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
+        configuration.getTables().forEach(each -> columns.addAll(each.getColumns()));
+        Collection<String> notExistedEncryptors = columns.stream().map(EncryptColumnRuleConfiguration::getEncryptorName).collect(Collectors.toList());
+        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName).collect(Collectors.toList()));
+        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName).collect(Collectors.toList()));
+        Collection<String> encryptors = configuration.getEncryptors().keySet();
+        notExistedEncryptors.removeIf(encryptors::contains);
+        ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedEncryptors));
     }
 }
