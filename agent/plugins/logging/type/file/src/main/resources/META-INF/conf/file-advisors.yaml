@@ -17,7 +17,7 @@
 
 advisors:
   - target: org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory
-    advice: org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice
+    advice: org.apache.shardingsphere.agent.plugin.logging.file.advice.MetaDataContextsFactoryAdvice
     pointcuts:
       - name: create
         type: method

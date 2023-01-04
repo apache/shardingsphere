@@ -22,6 +22,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -40,7 +42,7 @@ public final class DBCPDataSourcePoolCreatorTest {
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
-        assertThat(getConnectionProperties(actual), is(createJdbcUrlProperties()));
+        assertThat(getConnectionProperties(actual), is(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))));
     }
     
     private Map<String, Object> createDataSourceProperties() {
@@ -49,14 +51,7 @@ public final class DBCPDataSourcePoolCreatorTest {
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
-        result.put("connectionProperties", createJdbcUrlProperties());
-        return result;
-    }
-    
-    private Properties createJdbcUrlProperties() {
-        Properties result = new Properties();
-        result.put("foo", "foo_value");
-        result.put("bar", "bar_value");
+        result.put("connectionProperties", PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value")));
         return result;
     }
     

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Native composed container, you need start ShardingSphere-Proxy at firstly.
@@ -62,9 +63,9 @@ public final class NativeContainerComposer extends BaseContainerComposer {
             case "MySQL":
                 String queryAllTables = String.format("select table_name from information_schema.tables where table_schema='%s' and table_type='BASE TABLE'", databaseName);
                 jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, databaseName);
-                Properties props = new Properties();
-                props.setProperty("allowPublicKeyRetrieval", "true");
-                try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(jdbcUrl, props), username, password)) {
+                try (
+                        Connection connection = DriverManager.getConnection(
+                                jdbcUrlAppender.appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString()))), username, password)) {
                     try (ResultSet resultSet = connection.createStatement().executeQuery(queryAllTables)) {
                         List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
                         for (String each : actualTableNames) {

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mode.manager.standalone.workerid.generator;
 
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -39,15 +41,11 @@ public final class StandaloneWorkerIdGeneratorTest {
     
     @Test
     public void assertGenerateWithProperties() {
-        Properties props = new Properties();
-        props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1");
-        assertThat(new StandaloneWorkerIdGenerator().generate(props), is(1));
+        assertThat(new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1"))), is(1));
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertGenerateWithInvalidProperties() {
-        Properties props = new Properties();
-        props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1024");
-        new StandaloneWorkerIdGenerator().generate(props);
+        new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1024")));
     }
 }

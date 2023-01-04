@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.algorithm;
 
 import org.apache.shardingsphere.infra.algorithm.fixture.ShardingSphereAlgorithmFixture;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -31,9 +31,8 @@ public final class ShardingSphereAlgorithmFactoryTest {
     
     @Test
     public void assertCreateAlgorithm() {
-        Properties props = new Properties();
-        props.setProperty("key", "value");
-        ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("FIXTURE", props), ShardingSphereAlgorithm.class);
+        ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("FIXTURE", PropertiesBuilder.build(new Property("key", "value"))), ShardingSphereAlgorithm.class);
         assertThat(actual, instanceOf(ShardingSphereAlgorithmFixture.class));
         assertThat(((ShardingSphereAlgorithmFixture) actual).getTestValue(), is("value"));
     }

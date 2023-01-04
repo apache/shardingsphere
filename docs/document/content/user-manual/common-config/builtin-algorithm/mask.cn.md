@@ -23,7 +23,7 @@ weight = 9
 
 ### 遮盖脱敏算法
 
-#### KEEP_FIRST_N_LAST_M 脱敏算法
+#### 保留前 N 后 M 脱敏算法
 
 类型：KEEP_FIRST_N_LAST_M
 
@@ -35,7 +35,7 @@ weight = 9
 | last-m       | int    | 后 n 位 |
 | replace-char | String | 替换字符  |
 
-#### KEEP_FROM_X_TO_Y 脱敏算法
+#### 保留自 X 至 Y 脱敏算法
 
 类型：KEEP_FROM_X_TO_Y
 
@@ -47,7 +47,7 @@ weight = 9
 | to-y         | int    | 结束位置（从 0 开始）   |
 | replace-char | String | 替换字符           |
 
-#### MASK_FIRST_N_LAST_M 脱敏算法
+#### 遮盖前 N 后 M 脱敏算法
 
 类型：MASK_FIRST_N_LAST_M
 
@@ -59,7 +59,7 @@ weight = 9
 | last-m       | int    | 后 n 位 |
 | replace-char | String | 替换字符  |
 
-#### MASK_FROM_X_TO_Y 脱敏算法
+#### 遮盖自 X 至 Y 脱敏算法
 
 类型：MASK_FROM_X_TO_Y
 
@@ -71,7 +71,7 @@ weight = 9
 | to-y         | int    | 结束位置（从 0 开始）   |
 | replace-char | String | 替换字符           |
 
-#### MASK_BEFORE_SPECIAL_CHARS 脱敏算法
+#### 特殊字符前遮盖脱敏算法
 
 类型：MASK_BEFORE_SPECIAL_CHARS
 
@@ -82,7 +82,7 @@ weight = 9
 | special-chars       | String | 特殊字符（首次出现）   |
 | replace-char | String | 替换字符         |
 
-#### MASK_AFTER_SPECIAL_CHARS 脱敏算法
+#### 特殊字符后遮盖脱敏算法
 
 类型：MASK_AFTER_SPECIAL_CHARS
 
@@ -95,7 +95,7 @@ weight = 9
 
 ### 替换脱敏算法
 
-#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE 脱敏算法
+#### 身份证随机替换脱敏算法
 
 类型：PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
 
@@ -105,7 +105,17 @@ weight = 9
 |------------------------------|----------|----------------------|
 | alpha-two-country-area-code  | String   | 两位字母国家/地区编码（可选，默认：CN）|
 
-#### TELEPHONE_RANDOM_REPLACE 脱敏算法
+#### 军官证随机替换脱敏算法
+
+类型：MILITARY_IDENTITY_NUMBER_RANDOM_REPLACE
+
+可配置属性：
+
+| *名称*                        | *数据类型* | *说明*                 |
+|------------------------------|----------|----------------------|
+| type-codes  | String   | 军官证种类编码（以英文逗号分隔，例如：军,人,士,文,职） |
+
+#### 手机号随机替换脱敏算法
 
 类型：TELEPHONE_RANDOM_REPLACE
 

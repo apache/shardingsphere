@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -40,7 +42,7 @@ public final class TransactionRuleResultSetTest {
     @Test
     public void assertExecuteWithXA() {
         TransactionRuleResultSet resultSet = new TransactionRuleResultSet();
-        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("XA", "Atomikos", createProperties());
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("XA", "Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")));
         resultSet.init(ruleMetaData, mock(ShowTransactionRuleStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         Iterator<Object> rowData = actual.iterator();
@@ -72,12 +74,5 @@ public final class TransactionRuleResultSetTest {
     
     private TransactionRuleConfiguration createAuthorityRuleConfiguration(final String defaultType, final String providerType, final Properties props) {
         return new TransactionRuleConfiguration(defaultType, providerType, props);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("host", "127.0.0.1");
-        result.setProperty("databaseName", "jbossts");
-        return result;
     }
 }

@@ -38,6 +38,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -263,9 +265,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAlterProperties() {
-        Properties props = new Properties();
-        props.put("foo", "foo_value");
-        contextManager.alterProperties(props);
+        contextManager.alterProperties(PropertiesBuilder.build(new Property("foo", "foo_value")));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty("foo"), is("foo_value"));
     }
     

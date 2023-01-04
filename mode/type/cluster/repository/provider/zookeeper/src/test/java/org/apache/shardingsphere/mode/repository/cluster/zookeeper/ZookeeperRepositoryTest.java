@@ -41,6 +41,8 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.holder.Distributed
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
 import org.junit.Before;
@@ -249,37 +251,30 @@ public final class ZookeeperRepositoryTest {
     
     @Test
     public void assertBuildCuratorClientWithCustomConfig() {
-        Properties props = new Properties();
-        props.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
-        props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
-        props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
-        props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        Properties props = PropertiesBuilder.build(
+                new Property(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000"),
+                new Property(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1"),
+                new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000"),
+                new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000"));
+        REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props));
     }
     
     @Test
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
-        Properties props = new Properties();
-        props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
+                PropertiesBuilder.build(new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0"))));
     }
     
     @Test
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
-        Properties props = new Properties();
-        props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
+                PropertiesBuilder.build(new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0"))));
     }
     
     @Test
     public void assertBuildCuratorClientWithDigest() {
-        Properties props = new Properties();
-        props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
+                PropertiesBuilder.build(new Property(ZookeeperPropertyKey.DIGEST.getKey(), "any"))));
         verify(builder).aclProvider(any(ACLProvider.class));
     }
     

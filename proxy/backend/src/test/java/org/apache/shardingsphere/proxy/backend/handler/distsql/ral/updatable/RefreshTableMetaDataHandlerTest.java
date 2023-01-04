@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,15 +32,13 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,9 +57,9 @@ public final class RefreshTableMetaDataHandlerTest extends ProxyContextRestorer 
     @Before
     public void setup() {
         ProxyContext.init(contextManager);
-        ConfigurationProperties configurationProps = new ConfigurationProperties(createProperties());
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getProps()).thenReturn(configurationProps);
+        when(shardingSphereMetaData.getProps()).thenReturn(new ConfigurationProperties(
+                PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getDefaultValue()))));
         connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
     }
     
@@ -94,8 +92,7 @@ public final class RefreshTableMetaDataHandlerTest extends ProxyContextRestorer 
     public void assertMissingRequiredResources() throws SQLException {
         when(connectionSession.getDatabaseName()).thenReturn("sharding_db");
         when(shardingSphereMetaData.containsDatabase("sharding_db")).thenReturn(true);
-        Map<String, DataSource> dataSources = createDataSources();
-        when(contextManager.getDataSourceMap("sharding_db")).thenReturn(dataSources);
+        when(contextManager.getDataSourceMap("sharding_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
         RefreshTableMetaDataHandler backendHandler = new RefreshTableMetaDataHandler();
         backendHandler.init(new RefreshTableMetaDataStatement("t_order", "ds_1", null), connectionSession);
         backendHandler.execute();
@@ -105,23 +102,10 @@ public final class RefreshTableMetaDataHandlerTest extends ProxyContextRestorer 
     public void assertUpdate() throws SQLException {
         when(connectionSession.getDatabaseName()).thenReturn("sharding_db");
         when(shardingSphereMetaData.containsDatabase("sharding_db")).thenReturn(true);
-        Map<String, DataSource> dataSources = createDataSources();
-        when(contextManager.getDataSourceMap("sharding_db")).thenReturn(dataSources);
+        when(contextManager.getDataSourceMap("sharding_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
         RefreshTableMetaDataHandler backendHandler = new RefreshTableMetaDataHandler();
         backendHandler.init(new RefreshTableMetaDataStatement(), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-    }
-    
-    private Map<String, DataSource> createDataSources() {
-        Map<String, DataSource> result = new HashMap<>(1, 1);
-        result.put("ds_0", new MockedDataSource());
-        return result;
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getDefaultValue());
-        return result;
     }
 }
