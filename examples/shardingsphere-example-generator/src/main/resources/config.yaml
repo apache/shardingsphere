@@ -16,7 +16,7 @@
 #
 
 output:
-  - ./examples/shardingsphere-example-generator/target/generated-sources
+  - ./examples/shardingsphere-example-generator/target/generated-sources/
 
 # supported: JDBC, PROXY
 products:
