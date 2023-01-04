@@ -12,7 +12,7 @@ git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
 mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
-agent 包输出目录为 shardingsphere-agent/shardingsphere-agent-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
+agent 包输出目录为 agent/distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
 
 ## agent 配置
 
@@ -26,25 +26,26 @@ tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-b
 cd agent
 tree 
 .
-└── apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin
-    ├── LICENSE
-    ├── NOTICE
-    ├── conf
-    │   ├── agent.yaml
-    │   └── logback.xml
-    ├── plugins
-    │   ├── shardingsphere-agent-logging-file-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
-    │   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
-    └── shardingsphere-agent-${latest.release.version}.jar
+├── LICENSE
+├── NOTICE
+├── conf
+│   └── agent.yaml
+├── lib
+│   ├── shardingsphere-agent-metrics-core-${latest.release.version}.jar
+│   └── shardingsphere-agent-plugin-core-${latest.release.version}.jar
+├── plugins
+│   ├── shardingsphere-agent-logging-file-${latest.release.version}.jar
+│   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
+│   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
+└── shardingsphere-agent-${latest.release.version}.jar
 ```
 
 * 配置说明
 
-`META-INF/conf/agent.yaml` 用于管理 agent 配置。
+`conf/agent.yaml` 用于管理 agent 配置。
 内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、Log 及 Prometheus。
 默认不开启任何插件。
 

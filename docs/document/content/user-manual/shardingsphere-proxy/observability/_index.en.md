@@ -13,7 +13,7 @@ cd shardingsphere
 mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
 
-Output directory: shardingsphere-agent/shardingsphere-agent-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
+Artifact is agent/distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
 
 ## Agent configuration
 
@@ -27,25 +27,26 @@ tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-b
 cd agent
 tree 
 .
-└── apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin
-    ├── LICENSE
-    ├── NOTICE
-    ├── conf
-    │   ├── agent.yaml
-    │   └── logback.xml
-    ├── plugins
-    │   ├── shardingsphere-agent-logging-file-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
-    │   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
-    │   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
-    └── shardingsphere-agent-${latest.release.version}.jar
+├── LICENSE
+├── NOTICE
+├── conf
+│   └── agent.yaml
+├── lib
+│   ├── shardingsphere-agent-metrics-core-${latest.release.version}.jar
+│   └── shardingsphere-agent-plugin-core-${latest.release.version}.jar
+├── plugins
+│   ├── shardingsphere-agent-logging-file-${latest.release.version}.jar
+│   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
+│   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
+│   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
+└── shardingsphere-agent-${latest.release.version}.jar
 ```
 
 * Configuration file
 
-`META-INF/conf/agent.yaml` is used to manage agent configuration.
+`conf/agent.yaml` is used to manage agent configuration.
 Built-in plugins include Jaeger, OpenTracing, Zipkin, OpenTelemetry, Log and Prometheus.
 No plugin is enabled by default.
 
