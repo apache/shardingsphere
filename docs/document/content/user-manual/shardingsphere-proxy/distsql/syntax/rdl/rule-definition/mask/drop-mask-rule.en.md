@@ -38,4 +38,4 @@ DROP MASK RULE t_mask, t_mask_1;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

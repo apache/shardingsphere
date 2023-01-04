@@ -51,4 +51,4 @@ DROP SHARDING KEY GENERATOR t_order_snowflake;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

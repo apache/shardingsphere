@@ -80,4 +80,4 @@ mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

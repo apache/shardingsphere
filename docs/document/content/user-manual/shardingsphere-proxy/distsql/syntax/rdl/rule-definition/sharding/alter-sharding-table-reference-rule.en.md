@@ -54,5 +54,5 @@ ALTER SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_produ
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [CREATE SHARDING TABLE RULE](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-table-rule/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [CREATE SHARDING TABLE RULE](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/create-sharding-table-rule/)

@@ -51,4 +51,4 @@ DROP SHADOW ALGORITHM shadow_rule_t_order_simple_hint_0;
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

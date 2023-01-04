@@ -29,7 +29,7 @@ labelName ::=
 
 ### Supplement
 
-- needs to be obtained through [SHOW COMPUTE NODES](/en/reference/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) syntax query
+- needs to be obtained through [SHOW COMPUTE NODES](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) syntax query
 
 - `RELABEL` is used to relabel `PROXY` instance
 
@@ -53,5 +53,5 @@ RELABEL COMPUTE NODE "0699e636-ade9-4681-b37a-65240c584bb3" WITH label_2;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [SHOW COMPUTE NODES](/en/reference/distsql/syntax/ral/circuit-breaker/show-compute-nodes/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [SHOW COMPUTE NODES](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker/show-compute-nodes/)

@@ -53,4 +53,4 @@ IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_sharding_db.yaml";
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

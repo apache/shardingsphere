@@ -81,4 +81,4 @@ mysql> SHOW DEFAULT SHARDING STRATEGY;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

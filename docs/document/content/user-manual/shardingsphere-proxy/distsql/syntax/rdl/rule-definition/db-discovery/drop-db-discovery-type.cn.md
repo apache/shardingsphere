@@ -31,7 +31,7 @@ databaseName ::=
 
 - 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`
 
-- `dbDiscoveryTypeName` 需要通过 [SHOW DB_DISCOVERY TYPE](/cn/reference/distsql/syntax/rql/rule-query/db-discovery/show-db-discovery-type/) 语法查询获得
+- `dbDiscoveryTypeName` 需要通过 [SHOW DB_DISCOVERY TYPE](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rql/rule-query/db-discovery/show-db-discovery-type/) 语法查询获得
 
 ### 示例
 
@@ -53,4 +53,4 @@ DROP DB_DISCOVERY TYPE group_0_mysql_mgr, group_1_mysql_mgr;
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
