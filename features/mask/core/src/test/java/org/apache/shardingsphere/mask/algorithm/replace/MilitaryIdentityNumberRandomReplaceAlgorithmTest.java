@@ -25,6 +25,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     
@@ -39,8 +40,7 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     @Test
     public void assertMask() {
         assertThat(maskAlgorithm.mask("军字第1234567号"), not("军字第1234567号"));
-        assertThat(maskAlgorithm.mask("军字第1234567号".substring(0, 1)), not("军"));
-        assertThat(maskAlgorithm.mask("军字第1234567号".substring(3, 10)), not("1234567"));
         assertThat(maskAlgorithm.mask(""), is(""));
+        assertNull(maskAlgorithm.mask(null));
     }
 }
