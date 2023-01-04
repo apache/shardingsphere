@@ -83,6 +83,7 @@ message DataRecordResult {
       string database = 1;
       optional string schema = 2;
       string table_name = 3;
+      repeated string unique_key_names = 4;
     }
     TableMetaData table_meta_data = 3;
     int64 transaction_commit_millis = 4;

@@ -27,7 +27,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.TableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,13 +46,18 @@ public final class DataRecordResultConvertUtil {
      * @return record
      */
     public static Record convertDataRecordToRecord(final String database, final String schema, final DataRecord dataRecord) {
-        Map<String, Any> beforeMap = new HashMap<>();
-        Map<String, Any> afterMap = new HashMap<>();
+        Map<String, Any> beforeMap = new LinkedHashMap<>();
+        Map<String, Any> afterMap = new LinkedHashMap<>();
+        List<String> uniqueKeyNames = new LinkedList<>();
         for (Column column : dataRecord.getColumns()) {
             beforeMap.put(column.getName(), Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getOldValue())));
             afterMap.put(column.getName(), Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getValue())));
+            if (column.isUniqueKey()) {
+                uniqueKeyNames.add(column.getName());
+            }
         }
-        TableMetaData metaData = TableMetaData.newBuilder().setDatabase(database).setSchema(Strings.nullToEmpty(schema)).setTableName(dataRecord.getTableName()).build();
+        TableMetaData metaData = TableMetaData.newBuilder().setDatabase(database).setSchema(Strings.nullToEmpty(schema)).setTableName(dataRecord.getTableName())
+                .addAllUniqueKeyNames(uniqueKeyNames).build();
         DataChangeType dataChangeType = DataChangeType.UNKNOWN;
         if (IngestDataChangeType.INSERT.equals(dataRecord.getType())) {
             dataChangeType = DataChangeType.INSERT;

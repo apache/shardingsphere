@@ -56,6 +56,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
         ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).setIfAbsent(null);
+        ctx.fireChannelInactive();
     }
     
     @Override
