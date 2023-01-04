@@ -48,6 +48,7 @@ import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.EncryptRuleConfigurationImportChecker;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.MaskRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShadowRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
@@ -85,6 +86,8 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     private final EncryptRuleConfigurationImportChecker encryptRuleConfigurationImportChecker = new EncryptRuleConfigurationImportChecker();
     
     private final ShadowRuleConfigurationImportChecker shadowRuleConfigurationImportChecker = new ShadowRuleConfigurationImportChecker();
+    
+    private final MaskRuleConfigurationImportChecker maskRuleConfigurationImportChecker = new MaskRuleConfigurationImportChecker();
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
@@ -170,7 +173,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
                 ruleConfigs.add(shadowRuleConfig);
             } else if (each instanceof YamlMaskRuleConfiguration) {
                 MaskRuleConfiguration maskRuleConfig = new YamlMaskRuleConfigurationSwapper().swapToObject((YamlMaskRuleConfiguration) each);
-                // TODO check
+                maskRuleConfigurationImportChecker.check(database, maskRuleConfig);
                 ruleConfigs.add(maskRuleConfig);
             }
         }
