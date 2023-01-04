@@ -25,6 +25,13 @@
     
     <fileSets>
         <fileSet>
+            <directory>${project.basedir}/../../../../../agent/core/target</directory>
+            <outputDirectory>./agent</outputDirectory>
+            <includes>
+                <include>shardingsphere-agent.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/../../../../../agent/plugins/tracing/type/target/plugins</directory>
             <outputDirectory>./agent/plugins</outputDirectory>
             <includes>
@@ -32,10 +39,10 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/core/target</directory>
-            <outputDirectory>./agent</outputDirectory>
+            <directory>${project.basedir}/../../../../../agent/plugins/core/target/lib</directory>
+            <outputDirectory>./agent/lib</outputDirectory>
             <includes>
-                <include>shardingsphere-agent.jar</include>
+                <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
