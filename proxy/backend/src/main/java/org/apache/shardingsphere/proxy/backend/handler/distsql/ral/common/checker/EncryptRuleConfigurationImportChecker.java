@@ -46,8 +46,7 @@ public final class EncryptRuleConfigurationImportChecker {
         if (null == database || null == currentRuleConfig) {
             return;
         }
-        String databaseName = database.getName();
-        checkTables(currentRuleConfig, databaseName);
+        checkTables(currentRuleConfig, database.getName());
         checkEncryptors(currentRuleConfig);
     }
     
