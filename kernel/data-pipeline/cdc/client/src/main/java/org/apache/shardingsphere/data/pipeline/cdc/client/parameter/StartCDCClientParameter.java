@@ -31,6 +31,8 @@ import java.util.List;
 @Setter
 public final class StartCDCClientParameter {
     
+    private String databaseType;
+    
     private String address;
     
     private int port;
