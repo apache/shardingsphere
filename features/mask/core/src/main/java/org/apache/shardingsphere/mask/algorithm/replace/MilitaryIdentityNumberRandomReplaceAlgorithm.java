@@ -19,12 +19,11 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -36,10 +35,21 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithm implements MaskA
     
     private static final String TYPE_CODE = "type-codes";
     
-    private Collection<Character> typeCodes;
+    private List<Character> typeCodes;
     
     @Getter
     private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+        this.typeCodes = createTypeCodes(props);
+    }
+    
+    private List<Character> createTypeCodes(final Properties props) {
+        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, TYPE_CODE, getType());
+        return Splitter.on(",").trimResults().splitToList(props.getProperty(TYPE_CODE)).stream().map(each -> each.charAt(0)).collect(Collectors.toList());
+    }
     
     @Override
     public String mask(final Object plainValue) {
@@ -49,25 +59,13 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithm implements MaskA
         }
         Random random = new Random();
         char[] chars = result.toCharArray();
-        int randomIndex = random.nextInt(typeCodes.size());
-        chars[0] = Lists.newArrayList(typeCodes).get(randomIndex);
+        chars[0] = typeCodes.get(random.nextInt(typeCodes.size()));
         for (int i = 1; i < chars.length; i++) {
             if (Character.isDigit(chars[i])) {
                 chars[i] = Character.forDigit(random.nextInt(10), 10);
             }
         }
         return new String(chars);
-    }
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-        this.typeCodes = createTypeCodes(props);
-    }
-    
-    private Collection<Character> createTypeCodes(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, TYPE_CODE, getType());
-        return Splitter.on(",").trimResults().splitToList(props.getProperty(TYPE_CODE)).stream().map(each -> each.charAt(0)).collect(Collectors.toList());
     }
     
     @Override
