@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -56,27 +55,17 @@ public final class ShadowRuleConfigurationImportChecker {
     }
     
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> requiredShadowSources = new LinkedHashSet<>();
-        Collection<String> requiredProductionDataSources = new LinkedHashSet<>();
+        Collection<String> requiredResource = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
             if (null != each.getShadowDataSourceName()) {
-                requiredShadowSources.add(each.getShadowDataSourceName());
+                requiredResource.add(each.getShadowDataSourceName());
             }
             if (null != each.getProductionDataSourceName()) {
-                requiredProductionDataSources.add(each.getProductionDataSourceName());
+                requiredResource.add(each.getProductionDataSourceName());
             }
         });
-        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedResources(requiredShadowSources);
-        notExistedDataSources.addAll(database.getResourceMetaData().getNotExistedResources(requiredProductionDataSources));
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedResources(requiredResource);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
-        Collection<String> logicalDataSources = getLogicDataSources(database);
-        Collection<String> notExistedLogicalDataSources = requiredProductionDataSources.stream().filter(each -> !logicalDataSources.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistedLogicalDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedLogicalDataSources));
-    }
-    
-    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
-                .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private void checkTables(final ShadowRuleConfiguration currentRuleConfig, final String databaseName) {
