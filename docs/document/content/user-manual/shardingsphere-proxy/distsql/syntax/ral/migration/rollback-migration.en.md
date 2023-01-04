@@ -27,7 +27,7 @@ migrationJobId ::=
 
 ### Supplement
 
-- `migrationJobId` needs to be obtained through [SHOW MIGRATION LIST](/en/reference/distsql/syntax/ral/migration/show-migration-list/) syntax query
+- `migrationJobId` needs to be obtained through [SHOW MIGRATION LIST](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/show-migration-list/) syntax query
 
 - After the statement is executed, the target will be cleaned up
 
@@ -45,5 +45,5 @@ ROLLBACK MIGRATION 'j010180026753ef0e25d3932d94d1673ba551';
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [SHOW MIGRATION LIST](/en/reference/distsql/syntax/ral/migration/show-migration-list/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [SHOW MIGRATION LIST](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/show-migration-list/)

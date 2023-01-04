@@ -65,7 +65,7 @@ value ::=
 - Duplicate `ruleName` cannot be created;
 - `storageUnitMapping` specifies the mapping relationship between the `source` database and the shadow library. You need to
   use the storage unit managed by RDL, please refer
-  to [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/reference/distsql/syntax/rdl/storage-unit-definition/);
+  to [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/);
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time;
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
   and `shadowAlgorithmType`;
@@ -102,5 +102,5 @@ CREATE SHADOW RULE IF NOT EXISTS shadow_rule(
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/reference/distsql/syntax/rdl/storage-unit-definition/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)

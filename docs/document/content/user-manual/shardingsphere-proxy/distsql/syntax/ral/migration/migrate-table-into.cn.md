@@ -53,4 +53,4 @@ MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

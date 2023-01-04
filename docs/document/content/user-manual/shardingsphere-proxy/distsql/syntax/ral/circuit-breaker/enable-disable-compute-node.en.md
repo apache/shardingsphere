@@ -26,7 +26,7 @@ instanceId ::=
 
 ### Supplement
 
-- `instanceId` needs to be obtained through [SHOW COMPUTE NODES](/en/reference/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) syntax query
+- `instanceId` needs to be obtained through [SHOW COMPUTE NODES](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) syntax query
 
 - The currently in-use proxy instance cannot be disabled
 
@@ -49,5 +49,5 @@ ENABLE COMPUTE NODE '734bb086-b15d-4af0-be87-2372d8b6a0cd';
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [SHOW COMPUTE NODES](/en/reference/distsql/syntax/ral/circuit-breaker/show-compute-nodes/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [SHOW COMPUTE NODES](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker/show-compute-nodes/)

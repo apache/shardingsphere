@@ -155,5 +155,5 @@ AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [CREATE DEFAULT_SHARDING STRATEGY](/en/reference/distsql/syntax/rdl/rule-definition/create-default-sharding-strategy/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [CREATE DEFAULT_SHARDING STRATEGY](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/create-default-sharding-strategy/)

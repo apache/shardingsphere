@@ -51,4 +51,4 @@ DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat;
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

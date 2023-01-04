@@ -64,7 +64,7 @@ value ::=
 
 - 重复的 `ruleName` 无法被创建；
 - `storageUnitMapping` 指定源数据库和影子库的映射关系，需使用 `RDL` 管理的 `STORAGE UNIT`
-  ，请参考 [存储单元](https://shardingsphere.apache.org/document/current/cn/reference/distsql/syntax/rdl/storage-unit-definition/)；
+  ，请参考 [存储单元](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)；
 - `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`；
 - `algorithmName` 会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 自动生成；
 - `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
@@ -100,5 +100,5 @@ CREATE SHADOW RULE IF NOT EXISTS shadow_rule(
 
 ### 相关链接
 
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
-- [存储单元](https://shardingsphere.apache.org/document/current/cn/reference/distsql/syntax/rdl/storage-unit-definition/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [存储单元](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)

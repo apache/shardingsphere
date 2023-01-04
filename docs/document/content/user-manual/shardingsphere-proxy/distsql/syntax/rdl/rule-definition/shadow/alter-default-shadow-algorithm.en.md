@@ -54,4 +54,4 @@ ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="tru
 
 ### Related links
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
