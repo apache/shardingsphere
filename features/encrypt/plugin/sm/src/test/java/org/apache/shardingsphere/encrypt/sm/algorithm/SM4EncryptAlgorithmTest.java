@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.mock;
 
 public final class SM4EncryptAlgorithmTest {
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EncryptAlgorithmInitializationException.class)
     public void assertInitWithoutKey() {
         StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createECBProperties()), EncryptAlgorithm.class);
         algorithm.init(PropertiesBuilder.build(new Property("sm4-mode", "ECB"), new Property("sm4-padding", "PKCS5Padding")));
