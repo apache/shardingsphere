@@ -25,10 +25,10 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 
 /**
- * Advisors configuration loader.
+ * YAML advisors configuration loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AdvisorsConfigurationLoader {
+public final class YamlAdvisorsConfigurationLoader {
     
     /**
      * Load advisors configuration.
