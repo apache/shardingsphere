@@ -99,7 +99,6 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     
     @Override
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
-        if (null != currentRuleConfig) {
             if (ifNotExists) {
                 removeDuplicatedRules(currentRuleConfig, toBeCreatedRuleConfig);
             }
@@ -109,7 +108,6 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
             currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
             currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
-        }
     }
     
     private void removeDuplicatedRules(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {

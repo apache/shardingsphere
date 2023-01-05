@@ -63,7 +63,6 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        if (null != currentRuleConfig) {
             if (ifNotExists) {
                 Collection<String> currentBroadCastTables = currentRuleConfig.getBroadcastTables();
                 toBeCreatedRuleConfig.getBroadcastTables().removeIf(currentBroadCastTables::contains);
@@ -72,7 +71,6 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
                 return;
             }
             currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
-        }
     }
     
     @Override
