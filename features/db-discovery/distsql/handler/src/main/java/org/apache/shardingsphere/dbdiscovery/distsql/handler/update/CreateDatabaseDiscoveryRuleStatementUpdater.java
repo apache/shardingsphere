@@ -99,17 +99,15 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     
     @Override
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
-        if (null != currentRuleConfig) {
-            if (ifNotExists) {
-                removeDuplicatedRules(currentRuleConfig, toBeCreatedRuleConfig);
-            }
-            if (toBeCreatedRuleConfig.getDataSources().isEmpty()) {
-                return;
-            }
-            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
-            currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
-            currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
+        if (ifNotExists) {
+            removeDuplicatedRules(currentRuleConfig, toBeCreatedRuleConfig);
         }
+        if (toBeCreatedRuleConfig.getDataSources().isEmpty()) {
+            return;
+        }
+        currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
+        currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
+        currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
     }
     
     private void removeDuplicatedRules(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {

@@ -94,16 +94,14 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     
     @Override
     public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
-        if (null != currentRuleConfig) {
-            if (ifNotExists) {
-                removeDuplicatedRules(currentRuleConfig, toBeCreatedRuleConfig);
-            }
-            if (toBeCreatedRuleConfig.getTables().isEmpty()) {
-                return;
-            }
-            currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-            currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
+        if (ifNotExists) {
+            removeDuplicatedRules(currentRuleConfig, toBeCreatedRuleConfig);
         }
+        if (toBeCreatedRuleConfig.getTables().isEmpty()) {
+            return;
+        }
+        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
+        currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
     }
     
     private void removeDuplicatedRules(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
