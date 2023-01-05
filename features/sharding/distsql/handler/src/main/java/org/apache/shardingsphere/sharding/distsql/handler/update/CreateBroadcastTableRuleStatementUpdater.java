@@ -63,14 +63,14 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-            if (ifNotExists) {
-                Collection<String> currentBroadCastTables = currentRuleConfig.getBroadcastTables();
-                toBeCreatedRuleConfig.getBroadcastTables().removeIf(currentBroadCastTables::contains);
-            }
-            if (toBeCreatedRuleConfig.getBroadcastTables().isEmpty()) {
-                return;
-            }
-            currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
+        if (ifNotExists) {
+            Collection<String> currentBroadCastTables = currentRuleConfig.getBroadcastTables();
+            toBeCreatedRuleConfig.getBroadcastTables().removeIf(currentBroadCastTables::contains);
+        }
+        if (toBeCreatedRuleConfig.getBroadcastTables().isEmpty()) {
+            return;
+        }
+        currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
     }
     
     @Override

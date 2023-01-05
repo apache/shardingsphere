@@ -78,7 +78,7 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     
     @Override
     public void updateCurrentRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final MaskRuleConfiguration toBeCreatedRuleConfig) {
-            currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
-            currentRuleConfig.getMaskAlgorithms().putAll(toBeCreatedRuleConfig.getMaskAlgorithms());
+        currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
+        currentRuleConfig.getMaskAlgorithms().putAll(toBeCreatedRuleConfig.getMaskAlgorithms());
     }
 }
