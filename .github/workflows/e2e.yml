@@ -133,7 +133,7 @@ jobs:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
-        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
+        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow, mask ]
         exclude:
           - adapter: jdbc
             mode: Cluster
@@ -169,7 +169,7 @@ jobs:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
-        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
+        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt ]
         exclude:
           - adapter: jdbc
             mode: Cluster
