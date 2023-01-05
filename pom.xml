@@ -433,6 +433,12 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java-util</artifactId>
                 <version>${protobuf-java.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId> com.google.j2objc</groupId>
+                        <artifactId>j2objc-annotations</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             
             <dependency>
