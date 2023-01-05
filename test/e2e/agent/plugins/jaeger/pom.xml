@@ -138,7 +138,7 @@
                         <groupId>com.spotify</groupId>
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <configuration>
-                            <repository>apache/shardingsphere-proxy-agent-jaeger-test</repository>
+                            <repository>apache/shardingsphere-proxy-agent-tracing-jaeger-test</repository>
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>

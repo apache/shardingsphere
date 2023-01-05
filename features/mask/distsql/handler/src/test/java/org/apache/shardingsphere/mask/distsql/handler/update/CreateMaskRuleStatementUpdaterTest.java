@@ -72,6 +72,22 @@ public final class CreateMaskRuleStatementUpdaterTest {
         assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
     }
     
+    @Test
+    public void assertCreateMaskRuleWithIfNotExists() {
+        MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
+        CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
+        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        MaskRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        sqlStatement = createSQLStatement(true, "MASK_FROM_X_TO_Y");
+        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        assertThat(currentRuleConfig.getTables().size(), is(4));
+        assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_mask_1_user_id_md5"));
+        assertTrue(currentRuleConfig.getMaskAlgorithms().containsKey("t_order_1_order_id_md5"));
+    }
+    
     private CreateMaskRuleStatement createSQLStatement(final boolean ifNotExists, final String algorithmType) {
         MaskColumnSegment tMaskColumnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment(algorithmType, new Properties()));
         MaskColumnSegment tOrderColumnSegment = new MaskColumnSegment("order_id", new AlgorithmSegment(algorithmType, new Properties()));

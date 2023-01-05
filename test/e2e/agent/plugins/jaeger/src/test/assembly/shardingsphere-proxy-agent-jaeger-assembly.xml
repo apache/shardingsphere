@@ -25,17 +25,31 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/plugins/tracing/target/plugins</directory>
-            <outputDirectory>./agent/plugins</outputDirectory>
-            <includes>
-                <include>shardingsphere-agent-tracing-jaeger-*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>${project.basedir}/../../../../../agent/core/target</directory>
             <outputDirectory>./agent</outputDirectory>
             <includes>
                 <include>shardingsphere-agent.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../../../../../agent/plugins/tracing/type/target/plugins</directory>
+            <outputDirectory>./agent/plugins</outputDirectory>
+            <includes>
+                <include>shardingsphere-agent-tracing-jaeger-${project.version}.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../../../../../agent/plugins/core/target/lib</directory>
+            <outputDirectory>./agent/lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../../../../../agent/plugins/logging/type/target/plugins</directory>
+            <outputDirectory>./agent/lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>

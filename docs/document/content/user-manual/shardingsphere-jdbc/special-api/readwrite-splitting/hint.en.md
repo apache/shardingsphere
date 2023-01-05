@@ -95,7 +95,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ##### Terms of Use:
 
-Currently, the SQL Hint function only support routing to one data source.
+Currently, the SQL Hint function only supports routing to one data source.
 The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute name needs to be `DATA_SOURCE_NAME`.
 Client connections using `MySQL` need to add the `-c` option to preserve comments, because the client defaults to `--skip-comments` to filter comments.
 
