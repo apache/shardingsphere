@@ -28,6 +28,6 @@ public final class MaskAlgorithmInitializationException extends MaskSQLException
     private static final long serialVersionUID = -2004166948563207100L;
     
     public MaskAlgorithmInitializationException(final String maskType, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "Mask algorithm `%s` initialization failed, reason is: %s", maskType, reason);
+        super(XOpenSQLState.GENERAL_ERROR, 80, "Mask algorithm `%s` initialization failed, reason is: %s.", maskType, reason);
     }
 }

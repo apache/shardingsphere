@@ -25,7 +25,8 @@ import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardi
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.exception.algorithm.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmClassImplementationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedHintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedStandardShardingAlgorithmFixture;
@@ -43,9 +44,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ClassBasedShardingAlgorithmTest {
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = ShardingAlgorithmInitializationException.class)
     public void assertInitWithNullStrategy() {
-        Properties props = PropertiesBuilder.build(new Property("strategy", null));
+        Properties props = PropertiesBuilder.build();
         ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("CLASS_BASED", props), ShardingAlgorithm.class);
     }
     
@@ -55,7 +56,7 @@ public final class ClassBasedShardingAlgorithmTest {
         ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("CLASS_BASED", props), ShardingAlgorithm.class);
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = ShardingAlgorithmInitializationException.class)
     public void assertInitWithNullClass() {
         Properties props = PropertiesBuilder.build(new Property("strategy", "standard"));
         ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("CLASS_BASED", props), ShardingAlgorithm.class);

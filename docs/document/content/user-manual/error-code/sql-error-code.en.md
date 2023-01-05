@@ -174,6 +174,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`. |
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`. |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match. |
+| HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s. |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`. |
 | HY000     | 20099       | Sharding plugin error, reason is: %s |
 
@@ -207,14 +208,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data Encrypt
 
-| SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| 44000     | 20700       | Can not find logic encrypt column by \`%s\`. |
-| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`. |
+| SQL State | Vendor Code | Reason                                                                                             |
+| --------- | ----------- |----------------------------------------------------------------------------------------------------|
+| 44000     | 20700       | Can not find logic encrypt column by \`%s\`.                                                       |
+| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`.                                              |
 | 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`. |
-| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt. |
-| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule. |
-| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
+| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
+| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
+| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
 
 ### Shadow Database
 
@@ -225,9 +226,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data Masking
 
-| SQL State | Vendor Code | Reason                                                       |
-| --------- |-------------|------------------------------------------------------------|
-| HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s |
+| SQL State | Vendor Code | Reason                                                      |
+| --------- |-------------|-------------------------------------------------------------|
+| HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
 
 ## Other Exception
 

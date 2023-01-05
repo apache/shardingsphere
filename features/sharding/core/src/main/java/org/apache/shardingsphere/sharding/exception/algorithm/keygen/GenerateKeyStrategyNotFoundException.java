@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.algorithm;
+package org.apache.shardingsphere.sharding.exception.algorithm.keygen;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Mismatched inline sharding algorithm's expression and column exception.
+ * Generate key strategy not found exception.
  */
-public final class MismatchedInlineShardingAlgorithmExpressionAndColumnException extends ShardingSQLException {
+public final class GenerateKeyStrategyNotFoundException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 1306301016127278233L;
+    private static final long serialVersionUID = 7456922260524630374L;
     
-    public MismatchedInlineShardingAlgorithmExpressionAndColumnException(final String algorithmExpression, final String columnName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 82, "Inline sharding algorithms expression `%s` and sharding column `%s` do not match.", algorithmExpression, columnName);
+    public GenerateKeyStrategyNotFoundException(final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Can not find strategy for generate keys with table `%s`.", tableName);
     }
 }
