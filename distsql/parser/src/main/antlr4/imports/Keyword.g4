@@ -135,6 +135,10 @@ DATABASE
     : D A T A B A S E
     ;
 
+LOGICAL
+    : L O G I C A L
+    ;
+
 SINGLE
     : S I N G L E
     ;

@@ -16,6 +16,7 @@
 #
 
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.StorageUnitResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.LogicalTableResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableRuleResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedStorageUnitResultSet

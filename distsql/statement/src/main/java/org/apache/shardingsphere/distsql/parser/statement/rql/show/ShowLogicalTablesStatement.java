@@ -15,42 +15,16 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import BaseRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
-showStorageUnits
-    : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ_ usageCount)?
-    ;
-
-showRulesUsedStorageUnit
-    : SHOW RULES USED STORAGE UNIT storageUnitName (FROM databaseName)?
-    ;
-
-showLogicalTables
-    : SHOW LOGICAL TABLES showLike? (FROM databaseName)?
-    ;
-
-showDefaultSingleTableStorageUnit
-    : SHOW DEFAULT SINGLE TABLE STORAGE UNIT (FROM databaseName)?
-    ;
-
-showSingleTable
-    : SHOW SINGLE (TABLES showLike? | TABLE tableName) (FROM databaseName)?
-    ;
-
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
-    ;
-
-usageCount
-    : INT_
-    ;
-
-showLike
-    : LIKE likePattern
-    ;
-
-likePattern
-    : STRING_
-    ;
+/**
+ * Show logical tables statement.
+ */
+public final class ShowLogicalTablesStatement extends ShowTablesStatement {
+    
+    public ShowLogicalTablesStatement(final String likePattern, final DatabaseSegment database) {
+        super(likePattern, database);
+    }
+}
