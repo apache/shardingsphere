@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.audit;
+package org.apache.shardingsphere.sharding.exception.metadata;
 
-import lombok.Getter;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Sharding audit strategy configuration.
+ * Missing required sharding configuration exception.
  */
-
-@Getter
-public final class ShardingAuditStrategyConfiguration {
+public final class MissingRequiredShardingConfigurationException extends ShardingSQLException {
     
-    private final Collection<String> auditorNames;
+    private static final long serialVersionUID = -7307832800220432407L;
     
-    private final boolean allowHintDisable;
-    
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        this.auditorNames = auditorNames;
-        this.allowHintDisable = allowHintDisable;
+    public MissingRequiredShardingConfigurationException(final String configKey, final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` sharding configuration does not exist in database `%s`.", configKey, databaseName);
     }
 }

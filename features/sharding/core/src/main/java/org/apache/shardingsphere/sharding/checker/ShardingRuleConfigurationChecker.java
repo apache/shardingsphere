@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -30,7 +30,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.exception.metadata.LogicTableNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingAlgorithmException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -71,31 +72,32 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
     }
     
     private void checkLogicTable(final String databaseName, final String logicTable) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(logicTable), () -> new LogicTableNotFoundException(databaseName, logicTable));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(logicTable), () -> new MissingRequiredShardingConfigurationException("logicTable", databaseName));
     }
     
     private void checkKeyGenerateStrategy(final String databaseName, final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Collection<String> keyGenerators) {
         if (null == keyGenerateStrategy) {
             return;
         }
-        Preconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()),
-                "Can not find keyGenerator `%s` in database `%s`.", keyGenerateStrategy.getKeyGeneratorName(), databaseName);
+        ShardingSpherePreconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()),
+                () -> new MissingRequiredShardingAlgorithmException(keyGenerateStrategy.getKeyGeneratorName(), databaseName));
     }
     
     private void checkAuditStrategy(final String databaseName, final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> auditors) {
         if (null == auditStrategy) {
             return;
         }
-        Preconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
-                "Can not find all auditors `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
+        ShardingSpherePreconditions.checkNotNull(auditStrategy.getAuditorNames(), () -> new MissingRequiredShardingConfigurationException("auditorNames", databaseName));
+        ShardingSpherePreconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
+                () -> new MissingRequiredShardingAlgorithmException(Joiner.on(",").join(auditStrategy.getAuditorNames()), databaseName));
     }
     
     private void checkShardingStrategy(final String databaseName, final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms) {
         if (null == shardingStrategy || shardingStrategy instanceof NoneShardingStrategyConfiguration) {
             return;
         }
-        Preconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
-                "Can not find shardingAlgorithm `%s` in database `%s`.", shardingStrategy.getShardingAlgorithmName(), databaseName);
+        ShardingSpherePreconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
+                () -> new MissingRequiredShardingAlgorithmException(shardingStrategy.getShardingAlgorithmName(), databaseName));
     }
     
     @Override
