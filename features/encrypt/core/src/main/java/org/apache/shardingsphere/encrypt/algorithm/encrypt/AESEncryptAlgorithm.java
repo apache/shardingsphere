@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -54,7 +55,7 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     }
     
     private byte[] createSecretKey(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(AES_KEY), "%s can not be null.", AES_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(AES_KEY), () -> new EncryptAlgorithmInitializationException("AES", String.format("%s can not be null.", AES_KEY)));
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     
