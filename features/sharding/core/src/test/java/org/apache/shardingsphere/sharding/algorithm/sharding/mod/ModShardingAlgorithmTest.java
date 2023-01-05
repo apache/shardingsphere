@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -92,7 +93,7 @@ public final class ModShardingAlgorithmTest {
         assertThat(actual.size(), is(16));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingAlgorithmInitializationException.class)
     public void assertRangeDoShardingWithWrongArgumentForStartOffset() {
         Properties props = createZeroPaddingProperties();
         props.setProperty("start-offset", "-1");
@@ -100,7 +101,7 @@ public final class ModShardingAlgorithmTest {
         assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingAlgorithmInitializationException.class)
     public void assertRangeDoShardingWithWrongArgumentForStopOffset() {
         Properties props = createZeroPaddingProperties();
         props.setProperty("stop-offset", "-1");

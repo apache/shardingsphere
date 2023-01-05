@@ -143,9 +143,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 数据分片
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| 44000     | 20000       | Can not find table rule with logic tables \`%s\`. |
+| SQL State | Vendor Code | 错误信息                                                                                                                       |
+| --------- |-------------|----------------------------------------------------------------------------------------------------------------------------|
+| 44000     | 20000       | Can not find table rule with logic tables \`%s\`.                                                                          |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
 | 42S02     | 20002       | Can not find data source in sharding rule, invalid actual data node \`%s\`. |
 | 44000     | 20003       | Data nodes must be configured for sharding table \`%s\`. |
@@ -174,6 +174,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`. |
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`. |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match. |
+| HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s. |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`. |
 | HY000     | 20099       | Sharding plugin error, reason is: %s |
 
@@ -207,14 +208,14 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 数据加密
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| 44000     | 20700       | Can not find logic encrypt column by \`%s\`. |
-| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`. |
+| SQL State | Vendor Code | 错误信息                                                                                               |
+| --------- | ----------- |----------------------------------------------------------------------------------------------------|
+| 44000     | 20700       | Can not find logic encrypt column by \`%s\`.                                                       |
+| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`.                                              |
 | 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`. |
-| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt. |
-| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule. |
-| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
+| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
+| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
+| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
 
 ### 影子库
 
@@ -225,9 +226,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 数据脱敏
 
-| SQL State | Vendor Code | 错误信息                                                       |
-| --------- |-------------|------------------------------------------------------------|
-| HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s |
+| SQL State | Vendor Code | 错误信息                                                        |
+| --------- |-------------|-------------------------------------------------------------|
+| HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
 
 ## 其他异常
 

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.exception.algorithm;
+package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
 
-import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Encrypt algorithm initialization exception.
+ * Sharding algorithm class implementation exception.
  */
-public final class EncryptAlgorithmInitializationException extends EncryptSQLException {
+public final class ShardingAlgorithmClassImplementationException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -2004166948563207100L;
+    private static final long serialVersionUID = 3053033454701332815L;
     
-    public EncryptAlgorithmInitializationException(final String encryptorType, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "Encrypt algorithm `%s` initialization failed, reason is: %s.", encryptorType, reason);
+    public ShardingAlgorithmClassImplementationException(final String shardingAlgorithmClassName, final Class<?> superShardingAlgorithmClass) {
+        super(XOpenSQLState.GENERAL_ERROR, 80, "Sharding algorithm class `%s` should be implement `%s`.", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
     }
 }
