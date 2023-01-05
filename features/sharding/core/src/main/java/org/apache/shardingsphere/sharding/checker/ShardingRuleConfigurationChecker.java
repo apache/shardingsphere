@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.sharding.checker;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.exception.metadata.LogicTableNotFoundException;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -53,16 +56,22 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
     private void checkTableConfiguration(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
                                          final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
         for (ShardingTableRuleConfiguration each : tables) {
+            checkLogicTable(databaseName, each.getLogicTable());
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getDatabaseShardingStrategy(), shardingAlgorithms);
             checkShardingStrategy(databaseName, each.getTableShardingStrategy(), shardingAlgorithms);
         }
         for (ShardingAutoTableRuleConfiguration each : autoTables) {
+            checkLogicTable(databaseName, each.getLogicTable());
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getShardingStrategy(), shardingAlgorithms);
         }
+    }
+    
+    private void checkLogicTable(final String databaseName, final String logicTable) {
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(logicTable), () -> new LogicTableNotFoundException(databaseName, logicTable));
     }
     
     private void checkKeyGenerateStrategy(final String databaseName, final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Collection<String> keyGenerators) {
