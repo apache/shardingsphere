@@ -41,6 +41,9 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
     }
     
     private void checkToBeDroppedMaskTableNames(final String databaseName, final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
+        if (sqlStatement.isIfExists()) {
+            return;
+        }
         ShardingSpherePreconditions.checkState(isExistRuleConfig(currentRuleConfig), () -> new MissingRequiredRuleException("Mask", databaseName));
         Collection<String> currentMaskTableNames = currentRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentMaskTableNames.contains(each)).collect(Collectors.toList());
