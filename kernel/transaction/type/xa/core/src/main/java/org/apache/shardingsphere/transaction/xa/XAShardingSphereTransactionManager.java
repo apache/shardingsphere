@@ -37,16 +37,21 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * ShardingSphere Transaction manager for XA.
  */
 public final class XAShardingSphereTransactionManager implements ShardingSphereTransactionManager {
+    
+    private static final Set<String> ALL_XA_PROVIDERS = new HashSet<>(Arrays.asList("Atomikos", "Bitronix", "Narayana"));
     
     private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
     
@@ -54,6 +59,9 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
+        if (!ALL_XA_PROVIDERS.contains(providerType)) {
+            return;
+        }
         xaTransactionManagerProvider = null == providerType
                 ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
                 : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, providerType, new Properties());
