@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.agent.core.config.loader;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlPluginsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Agent configuration loader.
@@ -48,16 +49,15 @@ public final class AgentConfigurationLoader {
      */
     public static Map<String, PluginConfiguration> load() throws IOException {
         File configFile = new File(AgentPathBuilder.getAgentPath(), CONFIG_PATH);
-        return YamlPluginsConfigurationSwapper.swap(load(configFile));
+        return load(configFile).map(YamlPluginsConfigurationSwapper::swap).orElse(Collections.emptyMap());
     }
     
-    private static YamlAgentConfiguration load(final File yamlFile) throws IOException {
+    private static Optional<YamlAgentConfiguration> load(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
             YamlAgentConfiguration result = new Yaml().loadAs(inputStreamReader, YamlAgentConfiguration.class);
-            Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid.", yamlFile.getName());
-            return result;
+            return null == result ? Optional.empty() : Optional.of(result);
         }
     }
 }
