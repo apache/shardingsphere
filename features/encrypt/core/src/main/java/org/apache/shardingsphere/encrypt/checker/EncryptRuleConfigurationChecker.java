@@ -17,14 +17,20 @@
 
 package org.apache.shardingsphere.encrypt.checker;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptAssistedQueryColumnNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptAssistedQueryEncryptorNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptCipherColumnNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryColumnNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryEncryptorNotFoundException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -51,36 +57,33 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
     }
     
     private void checkCipherColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getCipherColumn()),
-                "Cipher column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getEncryptorName()),
-                "Encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(encryptors.contains(column.getEncryptorName()),
-                "Can not find encryptor `%s` in database `%s`.", column.getEncryptorName(), databaseName);
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(column.getCipherColumn()), () -> new EncryptCipherColumnNotFoundException(column.getLogicColumn(), databaseName));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(column.getEncryptorName()),
+                () -> new EncryptEncryptorNotFoundException(String.format("Encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName)));
+        ShardingSpherePreconditions.checkState(encryptors.contains(column.getEncryptorName()),
+                () -> new EncryptEncryptorNotFoundException(String.format("Can not find encryptor `%s` in database `%s`.", column.getEncryptorName(), databaseName)));
     }
     
     private void checkAssistColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
         if (Strings.isNullOrEmpty(column.getAssistedQueryColumn()) && Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName())) {
             return;
         }
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getAssistedQueryColumn()),
-                "Assisted query column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName()),
-                "Assisted query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(encryptors.contains(column.getAssistedQueryEncryptorName()),
-                "Can not find assisted query encryptor `%s` in database `%s`.", column.getAssistedQueryEncryptorName(), databaseName);
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(column.getAssistedQueryColumn()), () -> new EncryptAssistedQueryColumnNotFoundException(column.getLogicColumn(), databaseName));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName()), () -> new EncryptAssistedQueryEncryptorNotFoundException(
+                String.format("Assisted query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName)));
+        ShardingSpherePreconditions.checkState(encryptors.contains(column.getAssistedQueryEncryptorName()), () -> new EncryptAssistedQueryEncryptorNotFoundException(
+                String.format("Can not find assisted query encryptor `%s` in database `%s`.", column.getAssistedQueryEncryptorName(), databaseName)));
     }
     
     private void checkLikeColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
         if (Strings.isNullOrEmpty(column.getLikeQueryColumn()) && Strings.isNullOrEmpty(column.getLikeQueryEncryptorName())) {
             return;
         }
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getLikeQueryColumn()),
-                "Like query column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getLikeQueryEncryptorName()),
-                "Like query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(encryptors.contains(column.getLikeQueryEncryptorName()),
-                "Can not find like query encryptor `%s` in database `%s`.", column.getLikeQueryEncryptorName(), databaseName);
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(column.getLikeQueryColumn()), () -> new EncryptLikeQueryColumnNotFoundException(column.getLogicColumn(), databaseName));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(column.getLikeQueryEncryptorName()),
+                () -> new EncryptLikeQueryEncryptorNotFoundException(String.format("Like query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName)));
+        ShardingSpherePreconditions.checkState(encryptors.contains(column.getLikeQueryEncryptorName()),
+                () -> new EncryptLikeQueryEncryptorNotFoundException(String.format("Can not find like query encryptor `%s` in database `%s`.", column.getLikeQueryEncryptorName(), databaseName)));
     }
     
     @Override
