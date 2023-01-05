@@ -416,6 +416,7 @@ public final class ContextManager implements AutoCloseable {
     /**
      * Create new ShardingSphere database.
      *
+     * @param databasesName database name
      * @param schemas schemas
      * @return ShardingSphere schemas
      */
