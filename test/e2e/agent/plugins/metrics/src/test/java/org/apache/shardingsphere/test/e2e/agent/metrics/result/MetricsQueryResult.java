@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.agent.metrics.result;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
 
 import java.util.List;
 

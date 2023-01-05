@@ -216,3 +216,4 @@ jobs:
         run: |
           ./mvnw -B clean install -f test/e2e/agent/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
           ./mvnw -B clean install -f test/e2e/agent/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
+          ./mvnw -B clean install -f test/e2e/agent/plugins/zipkin/pom.xml -Dspotless.apply.skip=true -Pit.env.zipkin
