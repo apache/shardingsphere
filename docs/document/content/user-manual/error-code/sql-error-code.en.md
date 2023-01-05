@@ -144,7 +144,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 ### Data Sharding
 
 | SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
+| --------- |-------------| ------ |
 | 44000     | 20000       | Can not find table rule with logic tables \`%s\`. |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
 | 42S02     | 20002       | Can not find data source in sharding rule, invalid actual data node \`%s\`. |
@@ -176,6 +176,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match. |
 | HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s. |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`. |
+| HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s. |
 | HY000     | 20099       | Sharding plugin error, reason is: %s |
 
 ### Readwrite Splitting
