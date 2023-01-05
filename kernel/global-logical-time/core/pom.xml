@@ -21,23 +21,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-global-logical-time</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-kernel</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-global-logcial-time-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>parser</module>
-        <module>single</module>
-        <module>authority</module>
-        <module>transaction</module>
-        <module>schedule</module>
-        <module>data-pipeline</module>
-        <module>sql-federation</module>
-        <module>sql-translator</module>
-        <module>traffic</module>
-        <module>global-logical-time</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-global-logical-time-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>redis</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>

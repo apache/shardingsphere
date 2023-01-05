@@ -100,6 +100,9 @@ public final class ProxyConfigurationLoader {
         if (null != serverConfiguration.getCdc()) {
             serverConfiguration.getRules().add(serverConfiguration.getCdc());
         }
+        if (null != serverConfiguration.getGlobalLogicalTime()) {
+            serverConfiguration.getRules().add(serverConfiguration.getGlobalLogicalTime());
+        }
         return serverConfiguration;
     }
     

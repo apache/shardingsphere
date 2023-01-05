@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.transaction;
+package org.apache.shardingsphere.globallogicaltime.config;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 /**
- * Transaction connection context.
+ * global logical time rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class TransactionConnectionContext implements AutoCloseable {
+public class GlobalLogicalTimeRuleConfiguration implements GlobalRuleConfiguration {
     
-    private volatile boolean inTransaction;
+    private final boolean globalLogicalTimeEnabled;
     
-    private volatile long globalCSN;
-    
-    private volatile String readWriteSplitReplicaRoute;
-    
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
-        globalCSN = 0;
-    }
+    private final RedisConnectionOptionConfiguration redisOption;
 }

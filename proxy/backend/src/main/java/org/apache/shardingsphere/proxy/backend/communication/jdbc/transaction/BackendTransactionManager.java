@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
+import org.apache.shardingsphere.globallogicaltime.redis.executor.DefaultGlobalLogicalTimeExecutor;
+import org.apache.shardingsphere.globallogicaltime.rule.GlobalLogicalTimeRule;
+import org.apache.shardingsphere.globallogicaltime.spi.GlobalLogicalTimeExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -44,6 +47,8 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final ShardingSphereTransactionManager shardingSphereTransactionManager;
     
+    private final GlobalLogicalTimeExecutor globalLogicalTimeExecutor;
+    
     public BackendTransactionManager(final BackendConnection backendConnection) {
         connection = backendConnection;
         transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
@@ -51,6 +56,9 @@ public final class BackendTransactionManager implements TransactionManager {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
+        GlobalLogicalTimeRule globalLogicalTimeRule =
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(GlobalLogicalTimeRule.class);
+        globalLogicalTimeExecutor = null == globalLogicalTimeRule ? new DefaultGlobalLogicalTimeExecutor() : globalLogicalTimeRule.getGlobalLogicalTimeEngine().getGlobalLogicalTimeExecutor();
     }
     
     @Override
@@ -66,10 +74,15 @@ public final class BackendTransactionManager implements TransactionManager {
         } else {
             shardingSphereTransactionManager.begin();
         }
+        globalLogicalTimeExecutor.getGlobalCSNWhenBeginTransaction(connection.getConnectionSession().getConnectionContext().getTransactionConnectionContext());
     }
     
     @Override
     public void commit() throws SQLException {
+        String csnLockId = "";
+        if (connection.getCachedConnections() != null) {
+            csnLockId = globalLogicalTimeExecutor.beforeCommit(connection.getCachedConnections().values());
+        }
         if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             try {
                 if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {
@@ -82,6 +95,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 connection.getConnectionSession().getConnectionContext().clearTransactionConnectionContext();
                 connection.getConnectionSession().getConnectionContext().clearCursorConnectionContext();
+                globalLogicalTimeExecutor.afterCommit(csnLockId);
             }
         }
     }

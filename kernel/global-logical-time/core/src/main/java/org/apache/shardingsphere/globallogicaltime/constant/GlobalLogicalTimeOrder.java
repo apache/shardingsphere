@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.transaction;
+package org.apache.shardingsphere.globallogicaltime.constant;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Transaction connection context.
+ * global logical time order.
  */
-@Getter
-@Setter
-public final class TransactionConnectionContext implements AutoCloseable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class GlobalLogicalTimeOrder {
     
-    private volatile boolean inTransaction;
-    
-    private volatile long globalCSN;
-    
-    private volatile String readWriteSplitReplicaRoute;
-    
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
-        globalCSN = 0;
-    }
+    /**
+     * Transaction order.
+     */
+    public static final int ORDER = 605;
 }

@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.transaction;
+package org.apache.shardingsphere.globallogicaltime.redis.executor;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.Test;
 
-/**
- * Transaction connection context.
- */
-@Getter
-@Setter
-public final class TransactionConnectionContext implements AutoCloseable {
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static org.junit.Assert.assertNull;
+
+public final class DefaultGlobalLogicalTimeExecutorTest {
     
-    private volatile boolean inTransaction;
-    
-    private volatile long globalCSN;
-    
-    private volatile String readWriteSplitReplicaRoute;
-    
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
-        globalCSN = 0;
+    @Test
+    public void assertBeforeCommit() throws SQLException {
+        Collection<Connection> connectionList = new ArrayList<>();
+        assertNull(new DefaultGlobalLogicalTimeExecutor().beforeCommit(connectionList));
     }
 }

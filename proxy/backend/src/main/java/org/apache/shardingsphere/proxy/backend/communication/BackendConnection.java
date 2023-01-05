@@ -22,6 +22,9 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.globallogicaltime.redis.executor.DefaultGlobalLogicalTimeExecutor;
+import org.apache.shardingsphere.globallogicaltime.rule.GlobalLogicalTimeRule;
+import org.apache.shardingsphere.globallogicaltime.spi.GlobalLogicalTimeExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionPostProcessor;
@@ -86,6 +89,16 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
             }
         } else {
             result = createNewConnections(dataSourceName, connectionSize, connectionMode);
+            if (connectionSession.getTransactionStatus().isInTransaction()) {
+                for (Connection each : result) {
+                    GlobalLogicalTimeRule globalLogicalTimeRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts()
+                            .getMetaData().getGlobalRuleMetaData().getSingleRule(GlobalLogicalTimeRule.class);
+                    GlobalLogicalTimeExecutor globalLogicalTimeExecutor = null == globalLogicalTimeRule
+                            ? new DefaultGlobalLogicalTimeExecutor()
+                            : globalLogicalTimeRule.getGlobalLogicalTimeEngine().getGlobalLogicalTimeExecutor();
+                    globalLogicalTimeExecutor.sendGlobalCSNAfterStartTransaction(each, connectionSession.getConnectionContext().getTransactionConnectionContext());
+                }
+            }
             synchronized (cachedConnections) {
                 cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, result);
             }

@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.transaction;
+package org.apache.shardingsphere.globallogicaltime.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Transaction connection context.
+ * redis connection option configuration for YAML.
  */
 @Getter
 @Setter
-public final class TransactionConnectionContext implements AutoCloseable {
+public class YamlRedisConnectionOptionConfiguration implements YamlConfiguration {
     
-    private volatile boolean inTransaction;
+    private String host;
     
-    private volatile long globalCSN;
+    private String port;
     
-    private volatile String readWriteSplitReplicaRoute;
+    private String password;
     
-    @Override
-    public void close() {
-        inTransaction = false;
-        readWriteSplitReplicaRoute = null;
-        globalCSN = 0;
-    }
+    private int timeoutInterval;
+    
+    private int maxIdle;
+    
+    private int maxTotal;
+    
+    private int lockExpirationTime;
 }
