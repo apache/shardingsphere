@@ -19,14 +19,16 @@ package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlPluginConfiguration;
-import org.apache.shardingsphere.agent.core.config.yaml.entity.YamlAgentConfiguration;
-import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * YAML plugins configuration swapper.
@@ -41,27 +43,24 @@ public final class YamlPluginsConfigurationSwapper {
      * @return plugin configurations
      */
     public static Map<String, PluginConfiguration> swap(final YamlAgentConfiguration yamlConfig) {
-        Map<String, PluginConfiguration> result = new LinkedHashMap<>();
         YamlPluginCategoryConfiguration plugins = yamlConfig.getPlugins();
-        if (null != plugins) {
-            result.putAll(transformPluginConfigurationMap(plugins.getLogging()));
-            result.putAll(transformPluginConfigurationMap(plugins.getMetrics()));
-            result.putAll(transformPluginConfigurationMap(plugins.getTracing()));
+        if (null == plugins) {
+            return Collections.emptyMap();
         }
-        return result;
-    }
-    
-    private static Map<String, PluginConfiguration> transformPluginConfigurationMap(final Map<String, YamlPluginConfiguration> yamlConfigurationMap) {
         Map<String, PluginConfiguration> result = new LinkedHashMap<>();
-        if (null != yamlConfigurationMap) {
-            for (Entry<String, YamlPluginConfiguration> entry : yamlConfigurationMap.entrySet()) {
-                result.put(entry.getKey(), transform(entry.getValue()));
-            }
-        }
+        result.putAll(swap(plugins.getLogging()));
+        result.putAll(swap(plugins.getMetrics()));
+        result.putAll(swap(plugins.getTracing()));
         return result;
     }
     
-    private static PluginConfiguration transform(final YamlPluginConfiguration yamlConfig) {
+    private static Map<String, PluginConfiguration> swap(final Map<String, YamlPluginConfiguration> yamlConfigs) {
+        return null == yamlConfigs
+                ? Collections.emptyMap()
+                : yamlConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swap(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
+    }
+    
+    private static PluginConfiguration swap(final YamlPluginConfiguration yamlConfig) {
         return new PluginConfiguration(yamlConfig.getHost(), yamlConfig.getPort(), yamlConfig.getPassword(), yamlConfig.getProps());
     }
 }
