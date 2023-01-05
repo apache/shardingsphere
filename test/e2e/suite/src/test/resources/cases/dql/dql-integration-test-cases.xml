@@ -1267,7 +1267,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" 
+    <test-case sql="SELECT country_id, COUNT(1) FROM t_merchant WHERE business_code LIKE '_1000018' GROUP BY country_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in select group by statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select group by statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -1291,4 +1291,19 @@
         <assertion parameters="foo:String" expected-data-source-name="expected_dataset" />
     </test-case>
     
+    <test-case sql="SELECT * FROM t_user" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT u1.* FROM t_user u1 INNER JOIN t_user u2 ON u1.user_id = u2.user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM (SELECT * FROM t_user) temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM (SELECT u1.* FROM t_user u1 INNER JOIN t_user u2 ON u1.user_id = u2.user_id) temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
 </integration-test-cases>
