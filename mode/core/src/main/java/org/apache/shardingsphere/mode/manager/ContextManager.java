@@ -253,24 +253,8 @@ public final class ContextManager implements AutoCloseable {
     public synchronized void alterSchemaMetaData(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Map<String, ShardingSphereSchema> toBeAlterSchemas = SchemaManager.getToBeDeletedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
         Map<String, ShardingSphereSchema> toBeAddedSchemas = SchemaManager.getToBeAddedTablesBySchemas(reloadDatabase.getSchemas(), currentDatabase.getSchemas());
-        alterSchemaMetaDataToDeletedTables(reloadDatabase, toBeAlterSchemas);
         toBeAddedSchemas.forEach((key, value) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persist(databaseName, key, value));
         toBeAlterSchemas.forEach((key, value) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().delete(databaseName, key, value));
-    }
-    
-    private void alterSchemaMetaDataToDeletedTables(final ShardingSphereDatabase reloadDatabase, final Map<String, ShardingSphereSchema> toBeAlteredSchemas) {
-        if (toBeAlteredSchemas.isEmpty()) {
-            return;
-        }
-        for (Entry<String, ShardingSphereSchema> entry : toBeAlteredSchemas.entrySet()) {
-            removeTable(reloadDatabase.getSchema(entry.getKey()), entry.getValue());
-        }
-    }
-    
-    private void removeTable(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema toBeAlteredSchema) {
-        for (Entry<String, ShardingSphereTable> entry : toBeAlteredSchema.getTables().entrySet()) {
-            reloadSchema.removeTable(entry.getKey());
-        }
     }
     
     /**
