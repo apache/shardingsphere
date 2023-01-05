@@ -56,6 +56,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDefaultSingleTableStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSingleTableContext;
@@ -101,6 +102,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultS
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDefaultSingleTableStorageUnitStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
@@ -240,13 +242,19 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitShowLogicalTables(final ShowLogicalTablesContext ctx) {
+        return new ShowLogicalTablesStatement(null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+    }
+    
+    @Override
     public ASTNode visitShowDefaultSingleTableStorageUnit(final ShowDefaultSingleTableStorageUnitContext ctx) {
         return new ShowDefaultSingleTableStorageUnitStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
     public ASTNode visitShowSingleTable(final ShowSingleTableContext ctx) {
-        return new ShowSingleTableStatement(null == ctx.TABLE() ? null : getIdentifierValue(ctx.tableName()), null == ctx.likeLiteral() ? null : getIdentifierValue(ctx.likeLiteral()),
+        return new ShowSingleTableStatement(null == ctx.TABLE() ? null : getIdentifierValue(ctx.tableName()), null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()),
                 null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     

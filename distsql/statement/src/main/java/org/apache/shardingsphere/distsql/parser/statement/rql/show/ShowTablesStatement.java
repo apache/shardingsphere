@@ -17,28 +17,39 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.util.Optional;
 
 /**
- * Show single table statement.
+ * Show tables statement.
  */
-public final class ShowSingleTableStatement extends ShowTablesStatement {
+@RequiredArgsConstructor
+public abstract class ShowTablesStatement extends RQLStatement implements FromDatabaseAvailable {
     
-    private final String tableName;
+    private final String likePattern;
     
-    public ShowSingleTableStatement(final String tableName, final String likePattern, final DatabaseSegment database) {
-        super(likePattern, database);
-        this.tableName = tableName;
+    private final DatabaseSegment database;
+    
+    /**
+     * Get like pattern.
+     *
+     * @return like pattern
+     */
+    public Optional<String> getLikePattern() {
+        return Optional.ofNullable(likePattern);
     }
     
     /**
-     * Get table name.
+     * Get database.
      *
-     * @return table name
+     * @return database
      */
-    public Optional<String> getTableName() {
-        return Optional.ofNullable(tableName);
+    @Override
+    public final Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
     }
 }
