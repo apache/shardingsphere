@@ -51,7 +51,7 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
         try {
-            // TODO this needs to refactor, replace with Polling not Sleeping.
+            // TODO this needs to refactor, replace Sleeping with Polling not.
             Thread.sleep(Long.parseLong(props.getProperty("zipkin.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
