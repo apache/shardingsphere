@@ -45,7 +45,7 @@ public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
-        ReadwriteSplittingRuleConfiguration currentRuleConfig = getNotExistedResourcesRuleConfig();
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
         readwriteRuleConfigurationImportChecker.check(database, currentRuleConfig);
     }
     
@@ -65,7 +65,7 @@ public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
         return database;
     }
     
-    private ReadwriteSplittingRuleConfiguration getNotExistedResourcesRuleConfig() {
+    private ReadwriteSplittingRuleConfiguration getRuleConfigWithNotExistedDataSources() {
         StaticReadwriteSplittingStrategyConfiguration staticStrategy = new StaticReadwriteSplittingStrategyConfiguration("write_ds", Collections.emptyList());
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("data_source", staticStrategy,
                 mock(DynamicReadwriteSplittingStrategyConfiguration.class), "load_balancer");
