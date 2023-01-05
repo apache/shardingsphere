@@ -13,7 +13,10 @@ The `CREATE MASK RULE` 语法用于创建数据脱敏规则.
 {{% tab name="语法" %}}
 ```sql
 CreateEncryptRule ::=
-  'CREATE' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
+  'CREATE' 'MASK' 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 maskRuleDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)* ')' ')'
@@ -51,7 +54,8 @@ value ::=
 ### 补充说明
 
 - `maskAlgorithmType` 指定数据脱敏算法类型，请参考 [数据脱敏算法](/cn/user-manual/common-config/builtin-algorithm/mask/)；
-- 重复的 `ruleName` 将无法被创建。
+- 重复的 `ruleName` 将无法被创建；
+- `ifNotExists` 子句用于避免出现 `Duplicate mask rule` 错误。
 
 ### 示例
 
@@ -59,6 +63,16 @@ value ::=
 
 ```sql
 CREATE MASK RULE t_mask (
+COLUMNS(
+(NAME=phone_number,TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES("from-x"=1, "to-y"=2, "replace-char"="*"))),
+(NAME=address,TYPE(NAME='MD5'))
+));
+```
+
+#### 使用 `ifNotExists` 子句创建数据脱敏规则
+
+```sql
+CREATE MASK RULE IF NOT EXISTS t_mask (
 COLUMNS(
 (NAME=phone_number,TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES("from-x"=1, "to-y"=2, "replace-char"="*"))),
 (NAME=address,TYPE(NAME='MD5'))
