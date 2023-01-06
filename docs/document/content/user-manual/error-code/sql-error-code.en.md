@@ -62,10 +62,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 25000     | 14000       | Switch transaction type failed, please terminate the current transaction. |
+| 25000     | 14001       | Can not find transaction manager of \`%s\`.                                         |
+| 25000     | 14002       | Transaction timeout should more than 0s.                                         |
 | 25000     | 14100       | JDBC does not support operations across multiple logical databases in transaction. |
 | 25000     | 14200       | Can not start new XA transaction in a active transaction. |
 | 25000     | 14201       | Failed to create \`%s\` XA data source. |
 | 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45. |
+| 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.     |
+| 25000     | 14302       | Please config application id within seata.conf file.     |
 
 ### Lock
 
