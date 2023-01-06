@@ -154,6 +154,34 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>com.dkanejs.maven.plugins</groupId>
+                        <artifactId>docker-compose-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>agent-jaeger-up</id>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>agent-jaeger-down</id>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>

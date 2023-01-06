@@ -61,7 +61,7 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     }
     
     private void assertSpans() throws IOException {
-        final String spansURL = url + "spans?serviceName=" + serviceName;
+        String spansURL = url + "spans?serviceName=" + serviceName;
         List<?> spans = OkHttpUtils.getInstance().get(spansURL, List.class);
         assertThat(spans.size(), is(3));
         assertTrue(spans.contains("/shardingsphere/executesql/"));

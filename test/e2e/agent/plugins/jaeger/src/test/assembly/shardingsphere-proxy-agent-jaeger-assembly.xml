@@ -36,6 +36,7 @@
             <outputDirectory>./agent/plugins</outputDirectory>
             <includes>
                 <include>shardingsphere-agent-tracing-jaeger-${project.version}.jar</include>
+                <include>shardingsphere-agent-tracing-zipkin-${project.version}.jar</include>
             </includes>
         </fileSet>
         <fileSet>
