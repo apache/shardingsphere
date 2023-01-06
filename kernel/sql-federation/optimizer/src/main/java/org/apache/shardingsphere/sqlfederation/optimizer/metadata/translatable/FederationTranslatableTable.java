@@ -35,6 +35,7 @@ import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
@@ -43,6 +44,8 @@ import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.Fede
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtil;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Federation translatable table.
@@ -57,11 +60,6 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     private final FederationStatistic statistic;
     
     private final DatabaseType protocolType;
-    
-    @Override
-    public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return SQLFederationDataTypeUtil.createRelDataType(table, protocolType, typeFactory);
-    }
     
     /**
      * Execute filter and project when query the federation translatable table.
@@ -107,6 +105,24 @@ public final class FederationTranslatableTable extends AbstractTable implements 
      */
     public Enumerable<Object[]> project(final DataContext root, final int[] projects) {
         return executor.execute(table, new TranslatableScanNodeExecutorContext(root, null, projects));
+    }
+    
+    /**
+     * Get column type from table by column identity.
+     *
+     * @param index column identity
+     * @return column data type
+     */
+    public int getColumnType(final int index) {
+        List columnNames = table.getVisibleColumns();
+        Map<String, ShardingSphereColumn> columnMap = table.getColumns();
+        ShardingSphereColumn column = columnMap.get(columnNames.get(index));
+        return column.getDataType();
+    }
+    
+    @Override
+    public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
+        return SQLFederationDataTypeUtil.createRelDataType(table, protocolType, typeFactory);
     }
     
     @Override

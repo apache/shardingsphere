@@ -50,8 +50,10 @@ import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRex
 import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.TypeContext;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNode> {
@@ -59,6 +61,10 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     private RexBuilder rexBuilder;
     
     private JavaTypeFactory typeFactory;
+    
+    private Map<String, Object> parameters;
+    
+    private Map<Integer, Integer> columnMap;
     
     @Override
     public RexNode visitExpression(final ExpressionContext ctx) {
@@ -138,9 +144,44 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     
     @Override
     public RexNode visitInputRef(final InputRefContext ctx) {
+        // 处理inputRef位于cast的场景：CAST($1,INTEGER)。
         Integer index = Integer.valueOf(ctx.INTEGER_().getText());
-        RelDataType nonNullableInt = typeFactory.createSqlType(SqlTypeName.INTEGER);
-        return rexBuilder.makeInputRef(nonNullableInt, index);
+        if ((ctx.getParent() instanceof CastContext) && "VARCHAR".equals(ctx.getParent().getStop().getText())) {
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(String.class), index);
+        } else if ((ctx.getParent() instanceof CastContext) && "INTEGER".equals(ctx.getParent().getStop().getText())) {
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
+        } else if ((ctx.getParent() instanceof CastContext) && "BIGINT".equals(ctx.getParent().getStop().getText())) {
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(Long.class), index);
+        }
+        // 处理inputRef的普通场景：$0。
+        if (null != columnMap.get(index)) {
+            Class dataType = getClass(columnMap.get(index));
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(dataType), index);
+        }
+        // 需要处理关联查询的场景：$cor0.merchant_id。
+        return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
+    }
+    
+    private Class getClass(final int dataType) {
+        // Reference to java.sql.Types
+        switch (dataType) {
+            case -5:
+                return Long.class;
+            case 4:
+                return Integer.class;
+            case 6:
+                return Float.class;
+            case 8:
+                return Double.class;
+            case 1:
+                return String.class;
+            case 12:
+                return String.class;
+            case 91:
+                return Date.class;
+            default:
+                return String.class;
+        }
     }
     
     @Override
@@ -166,10 +207,20 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
             RelDataType nonNullableInt = typeFactory.createSqlType(SqlTypeName.INTEGER);
             return rexBuilder.makeLiteral(number, nonNullableInt, false);
         }
-        if (null != ctx.STRING_()) {
-            RelDataType varchar = typeFactory.createSqlType(SqlTypeName.VARCHAR);
-            return rexBuilder.makeLiteral(ctx.STRING_().getText(), varchar, false);
+        if (null != ctx.PLACEHOLDER_()) {
+            if (parameters.get(ctx.PLACEHOLDER_().getText()).getClass().equals(Integer.class)) {
+                return rexBuilder.makeLiteral(parameters.get(ctx.PLACEHOLDER_().getText()), typeFactory.createSqlType(SqlTypeName.INTEGER), false);
+            } else if (parameters.get(ctx.PLACEHOLDER_().getText()).getClass().equals(Long.class)) {
+                return rexBuilder.makeLiteral(parameters.get(ctx.PLACEHOLDER_().getText()), typeFactory.createSqlType(SqlTypeName.BIGINT), false);
+            } else if (parameters.get(ctx.PLACEHOLDER_().getText()).getClass().equals(Float.class)) {
+                return rexBuilder.makeLiteral(parameters.get(ctx.PLACEHOLDER_().getText()), typeFactory.createSqlType(SqlTypeName.FLOAT), false);
+            }
         }
+        if (null != ctx.STRING_()) {
+            String literalValue = ctx.STRING_().getText().replace("\"", "").replace("'", "");
+            return rexBuilder.makeLiteral(literalValue, typeFactory.createSqlType(SqlTypeName.VARCHAR), false);
+        }
+        
         throw new OptimizationSQLRexNodeException(ctx.getText());
     }
     

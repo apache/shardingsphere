@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.executor;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -72,6 +74,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.SQLDialectFactory;
+import org.apache.shardingsphere.sqlfederation.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
@@ -87,6 +90,7 @@ import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -94,9 +98,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -319,7 +327,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
         if (null != scanContext.getFilterValues()) {
-            builder.filter(createFilters(scanContext.getFilterValues()));
+            builder.filter(createFilters(scanContext.getFilterValues(), (SQLFederationDataContext) scanContext.getRoot()));
         }
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, table.getColumnNames()));
@@ -327,16 +335,37 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         return builder.build();
     }
     
-    private Collection<RexNode> createFilters(final String[] filterValues) {
+    private Collection<RexNode> createFilters(final String[] filterValues, final SQLFederationDataContext context) {
         Collection<RexNode> result = new LinkedList<>();
         JavaTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
         RexBuilder rexBuilder = new RexBuilder(typeFactory);
         for (String each : filterValues) {
             if (!Strings.isNullOrEmpty(each)) {
-                result.add(StringToRexNodeUtil.buildRexNode(each, rexBuilder));
+                Map<Integer, Integer> columnMap = extractColumnMap(each);
+                String filterValue = extractFilterValue(each);
+                result.add(StringToRexNodeUtil.buildRexNode(filterValue, rexBuilder, context.getParameters(), columnMap));
             }
         }
         return result;
+    }
+    
+    private Map<Integer, Integer> extractColumnMap(final String filterExpression) {
+        String columnInformationPattern = "\\{.*}";
+        Matcher matcher = Pattern.compile(columnInformationPattern).matcher(filterExpression);
+        Map<Integer, Integer> result = new HashMap<>();
+        if (!matcher.find()) {
+            return result;
+        }
+        String columnInformation = matcher.group();
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<Integer, Integer>>() {
+        }.getType();
+        result = gson.fromJson(columnInformation, type);
+        return result;
+    }
+    
+    private String extractFilterValue(final String filterExpression) {
+        return filterExpression.replaceAll("\\{.*}", "");
     }
     
     private Collection<RexNode> createProjections(final int[] projects, final RelBuilder relBuilder, final List<String> columnNames) {
