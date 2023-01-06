@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableShardingValueException;
+import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
@@ -110,7 +110,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem each : orderByItems) {
             Object value = queryResult.getValue(each.getIndex(), Object.class);
-            ShardingSpherePreconditions.checkState(null == value || value instanceof Comparable, () -> new NotImplementComparableShardingValueException("Order by"));
+            ShardingSpherePreconditions.checkState(null == value || value instanceof Comparable, () -> new NotImplementComparableValueException("Order by"));
             result.add((Comparable<?>) value);
         }
         return result;

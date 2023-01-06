@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Not implement comparable sharding value exception.
+ * Not implement comparable value exception.
  */
-public final class NotImplementComparableShardingValueException extends ShardingSQLException {
+public final class NotImplementComparableValueException extends ShardingSQLException {
     
     private static final long serialVersionUID = 1442602803378775261L;
     
-    public NotImplementComparableShardingValueException(final String segmentType) {
+    public NotImplementComparableValueException(final String segmentType) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 24, "%s value must implements Comparable.", segmentType);
     }
 }

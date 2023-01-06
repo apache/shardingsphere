@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableShardingValueException;
+import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
@@ -115,7 +115,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
         Object result = getCurrentQueryResult().getValue(aggregationProjection.getIndex(), Object.class);
-        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableShardingValueException("Aggregation"));
+        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation"));
         return (Comparable<?>) result;
     }
     

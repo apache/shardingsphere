@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableShardingValueException;
+import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -106,7 +106,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private Comparable<?> getAggregationValue(final QueryResult queryResult, final AggregationProjection aggregationProjection) throws SQLException {
         Object result = queryResult.getValue(aggregationProjection.getIndex(), Object.class);
-        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableShardingValueException("Aggregation"));
+        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation"));
         return (Comparable<?>) result;
     }
     

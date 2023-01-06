@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableShardingValueException;
+import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -142,7 +142,7 @@ public final class InsertClauseShardingConditionEngine {
         Object result = expressionSegment instanceof ParameterMarkerExpressionSegment
                 ? params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
                 : ((LiteralExpressionSegment) expressionSegment).getLiterals();
-        ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableShardingValueException("Sharding"));
+        ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding"));
         return (Comparable) result;
     }
     
