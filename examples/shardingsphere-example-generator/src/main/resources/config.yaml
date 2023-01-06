@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+output:
+  - ./examples/shardingsphere-example-generator/target/generated-sources/
+
 # supported: JDBC, PROXY
 products:
   - jdbc
