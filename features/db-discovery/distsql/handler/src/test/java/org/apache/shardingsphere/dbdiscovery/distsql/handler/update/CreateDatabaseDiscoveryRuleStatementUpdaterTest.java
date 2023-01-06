@@ -78,7 +78,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertCheckSQLStatementWithoutExistedResources() {
-        when(resourceMetaData.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
+        when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("ds_read_0"));
         Properties props = new Properties();
         DatabaseDiscoveryDefinitionSegment segment =
                 new DatabaseDiscoveryDefinitionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), new AlgorithmSegment("MySQL.MGR", props), props);

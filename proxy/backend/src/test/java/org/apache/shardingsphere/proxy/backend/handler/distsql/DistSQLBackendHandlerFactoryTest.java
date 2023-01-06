@@ -100,7 +100,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getResourceMetaData().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         return result;
     }
