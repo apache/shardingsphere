@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.sharding.exception.data;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Missing required sharding algorithm exception.
+ * Sharding value offset exception.
  */
-public final class MissingRequiredShardingAlgorithmException extends ShardingSQLException {
+public final class ShardingValueOffsetException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -1844741171173351747L;
+    private static final long serialVersionUID = 734610922729978886L;
     
-    public MissingRequiredShardingAlgorithmException(final String algorithmName, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "`%s` sharding algorithm does not exist in database `%s`.", algorithmName, databaseName);
+    public ShardingValueOffsetException(final Comparable<?> shardingValue, final int startOffset, final int stopOffset) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 23, "Sharding value %s subtract stop offset %d can not be less than start offset %d.", shardingValue, startOffset, stopOffset);
     }
 }

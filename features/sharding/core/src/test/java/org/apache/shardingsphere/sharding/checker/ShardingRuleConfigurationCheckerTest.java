@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingAlgorithmException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredConfigurationException;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -50,7 +50,7 @@ public final class ShardingRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings("unchecked")
-    @Test(expected = MissingRequiredShardingAlgorithmException.class)
+    @Test(expected = MissingRequiredConfigurationException.class)
     public void assertCheckTableConfigurationFailed() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));

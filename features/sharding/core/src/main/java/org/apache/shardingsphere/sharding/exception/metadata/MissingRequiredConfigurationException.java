@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
+package org.apache.shardingsphere.sharding.exception.metadata;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Hint sharding strategy configuration.
+ * Missing required configuration exception.
  */
-@Getter
-public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class MissingRequiredConfigurationException extends ShardingSQLException {
     
-    private final String shardingAlgorithmName;
+    private static final long serialVersionUID = -7307832800220432407L;
     
-    public HintShardingStrategyConfiguration(final String shardingAlgorithmName) {
-        this.shardingAlgorithmName = shardingAlgorithmName;
-    }
-    
-    @Override
-    public String getType() {
-        return "HINT";
+    public MissingRequiredConfigurationException(final String configKey, final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` configuration does not exist in database `%s`.", configKey, databaseName);
     }
 }

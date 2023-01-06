@@ -143,7 +143,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 数据分片
 
-| SQL State | Vendor Code | 错误信息                                                                                                                         |
+| SQL State | Vendor Code | 错误信息                                                                                                                      |
 | --------- |-------------|------------------------------------------------------------------------------------------------------------------------------|
 | 44000     | 20000       | Can not find table rule with logic tables \`%s\`.                                                                            |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
@@ -155,11 +155,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S01     | 20007       | Index \`%s\` already exists.                                                                                                 |
 | 42S02     | 20008       | Index \`%s\` does not exist.                                                                                                 |
 | 42S01     | 20009       | View name has to bind to %s tables.                                                                                          |
-| 44000     | 20010       | \`%s\` sharding algorithm does not exist in database \`%s\`.                                                                 |
-| 44000     | 20011       | \`%s\` sharding configuration does not exist in database \`%s\`.                                                             |
+| 44000     | 20010       | \`%s\` algorithm does not exist in database \`%s\`.                                                                          |
+| 44000     | 20011       | \`%s\` configuration does not exist in database \`%s\`.                                                                      |
 | 44000     | 20020       | Sharding value can't be null in insert statement.                                                                            |
 | HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                             |
 | HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                              |
+| 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                              |
 | 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\`.                                                                 |
 | 44000     | 20041       | Can not update sharding value for table \`%s\`.                                                                              |
 | 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement.                                                              |
@@ -177,8 +178,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`.                                                           |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match.                                        |
 | HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s.                                                              |
+| 44000     | 20084       | Complex inline algorithm need %d sharing columns, but only found %d.                                                         |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                   |
 | HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                          |
+| HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                    |
 | HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                         |
 
 ### 读写分离

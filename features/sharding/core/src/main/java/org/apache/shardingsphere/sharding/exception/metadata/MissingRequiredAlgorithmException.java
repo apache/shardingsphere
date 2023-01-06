@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Missing required sharding configuration exception.
+ * Missing required algorithm exception.
  */
-public final class MissingRequiredShardingConfigurationException extends ShardingSQLException {
+public final class MissingRequiredAlgorithmException extends ShardingSQLException {
     
-    private static final long serialVersionUID = -7307832800220432407L;
+    private static final long serialVersionUID = -1844741171173351747L;
     
-    public MissingRequiredShardingConfigurationException(final String configKey, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` sharding configuration does not exist in database `%s`.", configKey, databaseName);
+    public MissingRequiredAlgorithmException(final String algorithmName, final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "`%s` algorithm does not exist in database `%s`.", algorithmName, databaseName);
     }
 }

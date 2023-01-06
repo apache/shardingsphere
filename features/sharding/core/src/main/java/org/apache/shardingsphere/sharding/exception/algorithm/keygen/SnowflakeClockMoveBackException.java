@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
+package org.apache.shardingsphere.sharding.exception.algorithm.keygen;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Hint sharding strategy configuration.
+ * Snowflake clock move back exception.
  */
-@Getter
-public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class SnowflakeClockMoveBackException extends ShardingSQLException {
     
-    private final String shardingAlgorithmName;
+    private static final long serialVersionUID = -2435731376659956566L;
     
-    public HintShardingStrategyConfiguration(final String shardingAlgorithmName) {
-        this.shardingAlgorithmName = shardingAlgorithmName;
-    }
-    
-    @Override
-    public String getType() {
-        return "HINT";
+    public SnowflakeClockMoveBackException(final long lastMilliseconds, final long currentMilliseconds) {
+        super(XOpenSQLState.GENERAL_ERROR, 92, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.", lastMilliseconds, currentMilliseconds);
     }
 }

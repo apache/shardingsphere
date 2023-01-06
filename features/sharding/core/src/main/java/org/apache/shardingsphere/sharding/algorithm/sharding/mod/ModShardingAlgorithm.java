@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.data.ShardingValueOffsetException;
 
 import java.math.BigInteger;
 import java.util.Collection;
@@ -136,7 +136,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private BigInteger cutShardingValue(final Comparable<?> shardingValue) {
-        Preconditions.checkArgument(shardingValue.toString().length() - stopOffset > startOffset, "Sharding value subtract stop offset can not be less than start offset.");
+        ShardingSpherePreconditions.checkState(shardingValue.toString().length() - stopOffset > startOffset, () -> new ShardingValueOffsetException(shardingValue, startOffset, stopOffset));
         return 0 == startOffset && 0 == stopOffset ? getBigInteger(shardingValue) : new BigInteger(shardingValue.toString().substring(startOffset, shardingValue.toString().length() - stopOffset));
     }
     
