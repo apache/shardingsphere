@@ -157,6 +157,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S01     | 20009       | View name has to bind to %s tables.                                                                                          |
 | 44000     | 20010       | \`%s\` algorithm does not exist in database \`%s\`.                                                                          |
 | 44000     | 20011       | \`%s\` configuration does not exist in database \`%s\`.                                                                      |
+| 44000     | 20012       | Invalid binding table configuration in ShardingRuleConfiguration.                                                            |
 | 44000     | 20020       | Sharding value can't be null in insert statement.                                                                            |
 | HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                             |
 | HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                              |
