@@ -299,6 +299,10 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
         }
+        if (null != ctx.TYPE_CAST_()) {
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)),
+                    new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText()), ctx.TYPE_CAST_().getText(), ctx.getText());
+        }
         if (null != ctx.BETWEEN()) {
             return createBetweenSegment(ctx);
         }
