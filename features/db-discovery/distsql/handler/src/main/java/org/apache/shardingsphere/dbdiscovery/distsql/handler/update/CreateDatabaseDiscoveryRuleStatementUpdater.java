@@ -50,7 +50,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkDuplicatedRuleNames(databaseName, sqlStatement, currentRuleConfig);
-        checkResources(databaseName, sqlStatement, database.getResourceMetaData());
+        checkDataSources(databaseName, sqlStatement, database.getResourceMetaData());
         checkDiscoverTypeAndHeartbeat(sqlStatement);
     }
     
@@ -98,11 +98,11 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
         return sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
     }
     
-    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
-        Collection<String> resources = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
-        Collection<String> notExistedResources = resourceMetaData.getNotExistedResources(resources);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
+    private void checkDataSources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
+        Collection<String> dataSources = new LinkedHashSet<>();
+        sqlStatement.getRules().forEach(each -> dataSources.addAll(each.getDataSources()));
+        Collection<String> notExistedDataSources = resourceMetaData.getNotExistedDataSources(dataSources);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     
     private void checkDiscoverTypeAndHeartbeat(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {

@@ -119,8 +119,8 @@ public final class ShardingTableRuleStatementChecker {
     public static boolean isValidBindingTableGroups(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
         toBeCheckedRuleConfig.setBindingTableGroups(bindingTableGroups);
-        Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);
-        dataSourceNames.addAll(getRequiredResource(currentRuleConfig));
+        Collection<String> dataSourceNames = getRequiredDataSource(toBeCheckedRuleConfig);
+        dataSourceNames.addAll(getRequiredDataSource(currentRuleConfig));
         return check(toBeCheckedRuleConfig, dataSourceNames);
     }
     
@@ -128,7 +128,7 @@ public final class ShardingTableRuleStatementChecker {
                               final boolean isCreated) {
         String databaseName = database.getName();
         checkTables(databaseName, rules, currentRuleConfig, isCreated, ifNotExists);
-        checkResources(databaseName, rules, database);
+        checkDataSources(databaseName, rules, database);
         checkKeyGenerators(rules, currentRuleConfig);
         checkAuditors(rules);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
@@ -157,20 +157,20 @@ public final class ShardingTableRuleStatementChecker {
                 defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, checkedConfig.getDefaultShardingColumn()));
     }
     
-    private static void checkResources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereDatabase database) {
-        Collection<String> requiredResource = getRequiredResources(rules);
-        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedResources(requiredResource);
-        Collection<String> logicResources = getLogicResources(database);
-        notExistedResources.removeIf(logicResources::contains);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
+    private static void checkDataSources(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingSphereDatabase database) {
+        Collection<String> requiredDataSource = getRequiredDataSources(rules);
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSource);
+        Collection<String> logicDataSources = getLogicDataSources(database);
+        notExistedDataSources.removeIf(logicDataSources::contains);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     
-    private static Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+    private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
-    private static Collection<String> getRequiredResources(final Collection<AbstractTableRuleSegment> rules) {
+    private static Collection<String> getRequiredDataSources(final Collection<AbstractTableRuleSegment> rules) {
         return rules.stream().map(AbstractTableRuleSegment::getDataSourceNodes).flatMap(Collection::stream)
                 .map(ShardingTableRuleStatementChecker::parseDateSource).map(ShardingTableRuleStatementChecker::getDataSourceNames).flatMap(Collection::stream).collect(Collectors.toList());
     }
@@ -362,8 +362,8 @@ public final class ShardingTableRuleStatementChecker {
         ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
         removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
-        Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);
-        dataSourceNames.addAll(getRequiredResource(toBeAlteredRuleConfig));
+        Collection<String> dataSourceNames = getRequiredDataSource(toBeCheckedRuleConfig);
+        dataSourceNames.addAll(getRequiredDataSource(toBeAlteredRuleConfig));
         ShardingSpherePreconditions.checkState(check(toBeCheckedRuleConfig, dataSourceNames),
                 () -> new InvalidRuleConfigurationException("sharding table", toBeAlteredLogicTableNames, Collections.singleton("invalid binding table configuration.")));
     }
@@ -384,7 +384,7 @@ public final class ShardingTableRuleStatementChecker {
         return result;
     }
     
-    private static Collection<String> getRequiredResource(final ShardingRuleConfiguration config) {
+    private static Collection<String> getRequiredDataSource(final ShardingRuleConfiguration config) {
         Collection<String> result = new LinkedHashSet<>();
         result.addAll(config.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
                 .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
