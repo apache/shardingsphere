@@ -23,13 +23,13 @@ import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 import java.util.Collection;
 
 /**
- * Mismatched sharding datasource route info exception.
+ * Mismatched sharding data source route info exception.
  */
-public final class MismatchedShardingDatasourceRouteInfoException extends ShardingSQLException {
+public final class MismatchedShardingDataSourceRouteInfoException extends ShardingSQLException {
     
     private static final long serialVersionUID = -345707079477626285L;
     
-    public MismatchedShardingDatasourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames) {
+    public MismatchedShardingDataSourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 86, "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`.",
                 routeDataSourceNames, actualDataSourceNames);
     }

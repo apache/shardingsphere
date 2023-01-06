@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedShardingDatasourceRouteInfoException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedShardingDataSourceRouteInfoException;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.NoShardingDatabaseRouteInfoException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -262,7 +262,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         Collection<String> result = databaseShardingStrategy.doSharding(tableRule.getActualDataSourceNames(), databaseShardingValues, tableRule.getDataSourceDataNode(), props);
         ShardingSpherePreconditions.checkState(!result.isEmpty(), NoShardingDatabaseRouteInfoException::new);
         ShardingSpherePreconditions.checkState(tableRule.getActualDataSourceNames().containsAll(result),
-                () -> new MismatchedShardingDatasourceRouteInfoException(result, tableRule.getActualDataSourceNames()));
+                () -> new MismatchedShardingDataSourceRouteInfoException(result, tableRule.getActualDataSourceNames()));
         return result;
     }
     
