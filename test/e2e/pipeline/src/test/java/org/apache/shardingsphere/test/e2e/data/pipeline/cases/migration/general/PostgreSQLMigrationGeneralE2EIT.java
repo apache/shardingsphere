@@ -47,11 +47,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParam;
+    private final PipelineTestParameter testParameter;
     
-    public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
-        this.testParam = testParam;
+    public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParameter) {
+        super(testParameter);
+        this.testParameter = testParameter;
     }
     
     @Override
@@ -86,7 +86,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParameter.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
@@ -99,6 +99,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
         assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, PipelineBaseE2EIT.SCHEMA_NAME);
+        log.info("{} e2e IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
     }
     
     private void checkOrderMigration() throws SQLException, InterruptedException {

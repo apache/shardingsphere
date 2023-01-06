@@ -48,12 +48,12 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParam;
+    private final PipelineTestParameter testParameter;
     
-    public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
-        this.testParam = testParam;
-        log.info("testParameter:{}", testParam);
+    public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParameter) {
+        super(testParameter);
+        this.testParameter = testParameter;
+        log.info("testParameter:{}", testParameter);
     }
     
     @Parameters(name = "{0}")
@@ -84,7 +84,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), 3000);
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParameter.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
@@ -104,6 +104,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
         assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, "");
+        log.info("{} e2e IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
     }
     
     private void assertMigrationSuccessById(final String jobId, final String algorithmType) throws SQLException, InterruptedException {
