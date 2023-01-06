@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.plugin.yaml.plugin.loader;
 
-import org.apache.shardingsphere.agent.core.plugin.yaml.path.AgentPathBuilder;
 import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +32,8 @@ public final class PluginConfigurationLoaderTest {
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
     @Test
-    public void assertLoad() throws IOException, ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(AgentPathBuilder.class.getDeclaredField("agentPath"), AgentPathBuilder.class, new File(getResourceUrl()));
-        assertNotNull(PluginConfigurationLoader.load());
+    public void assertLoad() throws IOException {
+        assertNotNull(PluginConfigurationLoader.load(new File(getResourceUrl())));
     }
     
     private String getResourceUrl() throws UnsupportedEncodingException {

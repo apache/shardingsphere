@@ -15,41 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.yaml.path;
+package org.apache.shardingsphere.agent.core.path;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Agent path builder.
+ * Agent path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentPathBuilder {
+public final class AgentPath {
     
-    @Getter
-    private static File agentPath;
-    
-    @Getter
-    private static Collection<File> pluginClassPaths;
-    
-    static {
-        agentPath = buildAgentPath();
-        pluginClassPaths = buildAgentPluginClassPaths();
-    }
-    
-    private static File buildAgentPath() {
-        String classResourcePath = String.join("", AgentPathBuilder.class.getName().replaceAll("\\.", "/"), ".class");
-        URL resource = Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(classResourcePath), "Can not locate agent jar file");
+    /**
+     * Get agent root path.
+     * 
+     * @return agent root path
+     */
+    public static File getRootPath() {
+        String classResourcePath = String.join("", AgentPath.class.getName().replaceAll("\\.", "/"), ".class");
+        URL resource = Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(classResourcePath), "Can not locate agent jar file.");
         String url = resource.toString();
         int existFileInJarIndex = url.indexOf('!');
         boolean isInJar = existFileInJarIndex > -1;
@@ -60,10 +51,10 @@ public final class AgentPathBuilder {
         String realUrl = url.substring(url.indexOf("file:"), fileInJarIndex);
         try {
             File agentJarFile = new File(new URL(realUrl).toURI());
-            Preconditions.checkState(agentJarFile.exists(), "Can not locate agent jar file by URL `%s`", url);
+            Preconditions.checkState(agentJarFile.exists(), "Can not locate agent jar file by URL `%s`.", url);
             return agentJarFile.getParentFile();
         } catch (final MalformedURLException | URISyntaxException ex) {
-            throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`", url));
+            throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`.", url));
         }
     }
     
@@ -71,9 +62,5 @@ public final class AgentPathBuilder {
         int prefixLength = "file:".length();
         String classLocation = url.substring(prefixLength, url.length() - classResourcePath.length());
         return new File(classLocation);
-    }
-    
-    private static Collection<File> buildAgentPluginClassPaths() {
-        return Arrays.asList(new File(String.join("/", agentPath.getPath(), "lib")), new File(String.join("/", agentPath.getPath(), "plugins")));
     }
 }

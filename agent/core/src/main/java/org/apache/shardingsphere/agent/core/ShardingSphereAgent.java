@@ -23,6 +23,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.core.path.AgentPath;
 import org.apache.shardingsphere.agent.core.plugin.yaml.plugin.loader.PluginConfigurationLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.Collection;
@@ -52,9 +54,10 @@ public final class ShardingSphereAgent {
      * @throws IOException IO exception
      */
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
-        Map<String, PluginConfiguration> pluginConfigs = PluginConfigurationLoader.load();
+        File rootPath = AgentPath.getRootPath();
+        Map<String, PluginConfiguration> pluginConfigs = PluginConfigurationLoader.load(rootPath);
+        Collection<PluginJar> pluginJars = AgentPluginLoader.load(rootPath);
         boolean isEnhancedForProxy = isEnhancedForProxy();
-        Collection<PluginJar> pluginJars = AgentPluginLoader.load();
         Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(pluginJars, pluginConfigs.keySet(), isEnhancedForProxy);
         setUpAgentBuilder(instrumentation, pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy);
     }

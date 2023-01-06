@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.plugin.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.yaml.plugin.swapper.YamlPluginsConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.plugin.yaml.path.AgentPathBuilder;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -44,15 +43,16 @@ public final class PluginConfigurationLoader {
     /**
      * Load plugin configurations.
      *
+     * @param agentRootPath agent root path
      * @return plugin configurations
      * @throws IOException IO exception
      */
-    public static Map<String, PluginConfiguration> load() throws IOException {
-        File configFile = new File(AgentPathBuilder.getAgentPath(), CONFIG_PATH);
-        return load(configFile).map(YamlPluginsConfigurationSwapper::swap).orElse(Collections.emptyMap());
+    public static Map<String, PluginConfiguration> load(final File agentRootPath) throws IOException {
+        File configFile = new File(agentRootPath, CONFIG_PATH);
+        return loadYAML(configFile).map(YamlPluginsConfigurationSwapper::swap).orElse(Collections.emptyMap());
     }
     
-    private static Optional<YamlAgentConfiguration> load(final File yamlFile) throws IOException {
+    private static Optional<YamlAgentConfiguration> loadYAML(final File yamlFile) throws IOException {
         try (
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {

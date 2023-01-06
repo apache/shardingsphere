@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
-import org.apache.shardingsphere.agent.core.plugin.yaml.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
 import java.io.File;
@@ -44,15 +43,14 @@ public final class AgentPluginLoader {
     /**
      * Load plugin jars.
      * 
+     * @param agentRootPath agent root path
      * @return plugin jars
      * @throws IOException IO exception
      */
-    public static Collection<PluginJar> load() throws IOException {
+    public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        AgentPathBuilder.getPluginClassPaths().forEach(each -> jarFiles.addAll(collectJarFiles(each)));
-        if (jarFiles.isEmpty()) {
-            return Collections.emptyList();
-        }
+        jarFiles.addAll(collectJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib"))));
+        jarFiles.addAll(collectJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins"))));
         Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new PluginJar(new JarFile(each, true), each));
