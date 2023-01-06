@@ -190,6 +190,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20085       | No sharding database route info.                                                                                                 |
 | 44000     | 20086       | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
 | 44000     | 20087       | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                |
+| 44000     | 20088       | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                       |
 | HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                              |
 | HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                        |
