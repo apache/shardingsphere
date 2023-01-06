@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import me.ahoo.cosid.sharding.ModCycle;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -50,7 +51,7 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     }
     
     private String getRequiredValue(final Properties props, final String key) {
-        Preconditions.checkArgument(props.containsKey(key), "%s can not be null.", key);
+        ShardingSpherePreconditions.checkState(props.containsKey(key), () -> new ShardingPluginException("%s can not be null.", key));
         return props.getProperty(key);
     }
     
