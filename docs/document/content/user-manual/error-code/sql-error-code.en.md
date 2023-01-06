@@ -179,6 +179,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s.                                                              |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                   |
 | HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                          |
+| HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                    |
 | HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                         |
 
 ### Readwrite Splitting

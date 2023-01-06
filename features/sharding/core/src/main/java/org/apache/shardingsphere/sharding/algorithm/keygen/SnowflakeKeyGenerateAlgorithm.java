@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -25,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.algorithm.keygen.KeyGenerateAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.keygen.SnowflakeClockMoveBackException;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Calendar;
@@ -142,8 +142,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds,
-                "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
+        ShardingSpherePreconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, () -> new SnowflakeClockMoveBackException(lastMilliseconds, currentMilliseconds));
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
     }

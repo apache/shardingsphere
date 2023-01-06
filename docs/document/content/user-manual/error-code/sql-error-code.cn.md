@@ -179,6 +179,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s.                                                              |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                   |
 | HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                          |
+| HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                    |
 | HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                         |
 
 ### 读写分离
