@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm;
@@ -74,7 +75,7 @@ public final class DatabaseDiscoveryEngine {
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
             eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
-        String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
+        String result = newPrimaryDataSourceName.orElse("");
         postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap, disabledDataSourceNames);
         return result;
     }
@@ -100,6 +101,10 @@ public final class DatabaseDiscoveryEngine {
                 StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(loadReplicaStatus(entry.getValue()));
                 if (StorageNodeStatus.isEnable(storageNodeDataSource.getStatus())) {
                     enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
+                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                    continue;
+                }
+                if (Strings.isNullOrEmpty(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas"))) {
                     eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
                     continue;
                 }
