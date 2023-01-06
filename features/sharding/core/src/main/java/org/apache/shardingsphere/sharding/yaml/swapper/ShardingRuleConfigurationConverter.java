@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.util.Collection;
@@ -50,7 +51,7 @@ public final class ShardingRuleConfigurationConverter {
      */
     public static YamlShardingRuleConfiguration findYamlShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Optional<YamlRuleConfiguration> ruleConfig = yamlRuleConfigs.stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule.");
+        ShardingSpherePreconditions.checkState(ruleConfig.isPresent(), ShardingRuleNotFoundException::new);
         return (YamlShardingRuleConfiguration) ruleConfig.get();
     }
 }

@@ -147,48 +147,54 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 数据分片
 
-| SQL State | Vendor Code | 错误信息                                                                                                                         |
-| --------- |-------------|------------------------------------------------------------------------------------------------------------------------------|
-| 44000     | 20000       | Can not find table rule with logic tables \`%s\`.                                                                            |
-| 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
-| 42S02     | 20002       | Can not find data source in sharding rule, invalid actual data node \`%s\`.                                                  |
-| 44000     | 20003       | Data nodes must be configured for sharding table \`%s\`.                                                                     |
-| 44000     | 20004       | Actual table \`%s.%s\` is not in table rule configuration.                                                                   |
-| 44000     | 20005       | Can not find binding actual table, data source is \`%s\`, logic table is \`%s\`, other actual table is \`%s\`.               |
-| 44000     | 20006       | Actual tables \`%s\` are in use.                                                                                             |
-| 42S01     | 20007       | Index \`%s\` already exists.                                                                                                 |
-| 42S02     | 20008       | Index \`%s\` does not exist.                                                                                                 |
-| 42S01     | 20009       | View name has to bind to %s tables.                                                                                          |
-| 44000     | 20010       | \`%s\` algorithm does not exist in database \`%s\`.                                                                          |
-| 44000     | 20011       | \`%s\` configuration does not exist in database \`%s\`.                                                                      |
-| 44000     | 20012       | Invalid binding table configuration in ShardingRuleConfiguration.                                                            |
-| 44000     | 20020       | Sharding value can't be null in insert statement.                                                                            |
-| HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                             |
-| HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                              |
-| 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                              |
-| 44000     | 20024       | %s value must implements Comparable.                                                                                         |
-| 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\`.                                                                 |
-| 44000     | 20041       | Can not update sharding value for table \`%s\`.                                                                              |
-| 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement.                                                              |
-| 44000     | 20043       | PREPARE statement can not support sharding tables route to same data sources.                                                |
-| 44000     | 20044       | The table inserted and the table selected must be the same or bind tables.                                                   |
-| 0A000     | 20045       | Can not support DML operation with multiple tables \`%s\`.                                                                   |
-| 42000     | 20046       | %s ... LIMIT can not support route to multiple data nodes.                                                                   |
-| 44000     | 20047       | Can not find actual data source intersection for logic tables \`%s\`.                                                        |
-| 42000     | 20048       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                               |
-| 0A000     | 20049       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\`.                                          |
-| HY000     | 20060       | \`%s %s\` can not route correctly for %s \`%s\`.                                                                             |
-| 42S02     | 20061       | Can not get route result, please check your sharding rule configuration.                                                     |
-| 34000     | 20062       | Can not get cursor name from fetch statement.                                                                                |
-| HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`.                                                                  |
-| HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`.                                                           |
-| 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match.                                        |
-| HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s.                                                              |
-| 44000     | 20084       | Complex inline algorithm need %d sharing columns, but only found %d.                                                         |
-| 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                   |
-| HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                          |
-| HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                    |
-| HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                         |
+| SQL State | Vendor Code | 错误信息                                                                                                                             |
+| --------- |-------------|----------------------------------------------------------------------------------------------------------------------------------|
+| 44000     | 20000       | Can not find table rule with logic tables \`%s\`.                                                                                |
+| 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s     |
+| 42S02     | 20002       | Can not find data source in sharding rule, invalid actual data node \`%s\`.                                                      |
+| 44000     | 20003       | Data nodes must be configured for sharding table \`%s\`.                                                                         |
+| 44000     | 20004       | Actual table \`%s.%s\` is not in table rule configuration.                                                                       |
+| 44000     | 20005       | Can not find binding actual table, data source is \`%s\`, logic table is \`%s\`, other actual table is \`%s\`.                   |
+| 44000     | 20006       | Actual tables \`%s\` are in use.                                                                                                 |
+| 42S01     | 20007       | Index \`%s\` already exists.                                                                                                     |
+| 42S02     | 20008       | Index \`%s\` does not exist.                                                                                                     |
+| 42S01     | 20009       | View name has to bind to %s tables.                                                                                              |
+| 44000     | 20010       | \`%s\` algorithm does not exist in database \`%s\`.                                                                              |
+| 44000     | 20011       | \`%s\` configuration does not exist in database \`%s\`.                                                                          |
+| 44000     | 20012       | Invalid binding table configuration in ShardingRuleConfiguration.                                                                |
+| 44000     | 20013       | Can not find sharding rule.                                                                                                      |
+| 44000     | 20014       | Only allowed 0 or 1 sharding strategy configuration.                                                                             |
+| 44000     | 20020       | Sharding value can't be null in insert statement.                                                                                |
+| HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                                 |
+| HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                                  |
+| 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                  |
+| 44000     | 20024       | %s value must implements Comparable.                                                                                             |
+| 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\`.                                                                     |
+| 44000     | 20041       | Can not update sharding value for table \`%s\`.                                                                                  |
+| 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement.                                                                  |
+| 44000     | 20043       | PREPARE statement can not support sharding tables route to same data sources.                                                    |
+| 44000     | 20044       | The table inserted and the table selected must be the same or bind tables.                                                       |
+| 0A000     | 20045       | Can not support DML operation with multiple tables \`%s\`.                                                                       |
+| 42000     | 20046       | %s ... LIMIT can not support route to multiple data nodes.                                                                       |
+| 44000     | 20047       | Can not find actual data source intersection for logic tables \`%s\`.                                                            |
+| 42000     | 20048       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                   |
+| 0A000     | 20049       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\`.                                              |
+| HY000     | 20060       | \`%s %s\` can not route correctly for %s \`%s\`.                                                                                 |
+| 42S02     | 20061       | Can not get route result, please check your sharding rule configuration.                                                         |
+| 34000     | 20062       | Can not get cursor name from fetch statement.                                                                                    |
+| HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`.                                                                      |
+| HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`.                                                               |
+| 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match.                                            |
+| HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s.                                                                  |
+| 44000     | 20084       | Complex inline algorithm need %d sharing columns, but only found %d.                                                             |
+| 44000     | 20085       | No sharding database route info.                                                                                                 |
+| 44000     | 20086       | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
+| 44000     | 20087       | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                |
+| 44000     | 20088       | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
+| 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                       |
+| HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                              |
+| HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                        |
+| HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                             |
 
 ### 读写分离
 

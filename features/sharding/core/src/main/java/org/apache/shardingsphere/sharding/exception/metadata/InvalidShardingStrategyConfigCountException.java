@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Sharding rule not found exception.
+ * Invalid sharding strategy config count exception.
  */
-public final class ShardingRuleNotFoundException extends ShardingSQLException {
+public final class InvalidShardingStrategyConfigCountException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 2221013821545620446L;
+    private static final long serialVersionUID = 9006408233608414517L;
     
-    public ShardingRuleNotFoundException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 13, "Can not find sharding rule.");
+    public InvalidShardingStrategyConfigCountException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 12, "Only allowed 0 or 1 sharding strategy configuration.");
     }
 }

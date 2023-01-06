@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.sharding.exception.algorithm.sharding;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
+import java.util.Collection;
+
 /**
- * Sharding rule not found exception.
+ * Mismatched sharding data source route info exception.
  */
-public final class ShardingRuleNotFoundException extends ShardingSQLException {
+public final class MismatchedShardingDataSourceRouteInfoException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 2221013821545620446L;
+    private static final long serialVersionUID = -345707079477626285L;
     
-    public ShardingRuleNotFoundException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 13, "Can not find sharding rule.");
+    public MismatchedShardingDataSourceRouteInfoException(final Collection<String> routeDataSourceNames, final Collection<String> actualDataSourceNames) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 86, "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`.",
+                routeDataSourceNames, actualDataSourceNames);
     }
 }

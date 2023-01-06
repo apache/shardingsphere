@@ -27,6 +27,10 @@ public final class MissingRequiredConfigurationException extends ShardingSQLExce
     
     private static final long serialVersionUID = -7307832800220432407L;
     
+    public MissingRequiredConfigurationException(final String configKey) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` configuration does not exist.", configKey);
+    }
+    
     public MissingRequiredConfigurationException(final String configKey, final String databaseName) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` configuration does not exist in database `%s`.", configKey, databaseName);
     }
