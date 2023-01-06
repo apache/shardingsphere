@@ -41,26 +41,16 @@ public final class AgentPath {
     public static File getRootPath() {
         String classResourcePath = String.join("", AgentPath.class.getName().replaceAll("\\.", "/"), ".class");
         URL resource = Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(classResourcePath), "Can not locate agent jar file.");
-        String url = resource.toString();
-        int existFileInJarIndex = url.indexOf('!');
-        boolean isInJar = existFileInJarIndex > -1;
-        return isInJar ? getFileInJar(url, existFileInJarIndex) : getFileInResource(url, classResourcePath);
+        return getJarFile(resource.toString()).getParentFile();
     }
     
-    private static File getFileInJar(final String url, final int fileInJarIndex) {
-        String realUrl = url.substring(url.indexOf("file:"), fileInJarIndex);
+    private static File getJarFile(final String url) {
         try {
-            File agentJarFile = new File(new URL(realUrl).toURI());
-            Preconditions.checkState(agentJarFile.exists(), "Can not locate agent jar file by URL `%s`.", url);
-            return agentJarFile.getParentFile();
+            File result = new File(new URL(url.substring(url.indexOf("file:"), url.indexOf('!'))).toURI());
+            Preconditions.checkState(result.exists(), "Can not locate agent jar file by URL `%s`.", url);
+            return result;
         } catch (final MalformedURLException | URISyntaxException ex) {
             throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`.", url));
         }
-    }
-    
-    private static File getFileInResource(final String url, final String classResourcePath) {
-        int prefixLength = "file:".length();
-        String classLocation = url.substring(prefixLength, url.length() - classResourcePath.length());
-        return new File(classLocation);
     }
 }
