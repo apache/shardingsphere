@@ -80,4 +80,3 @@ public final class JaegerTraceResult implements JsonConfiguration {
         private String warnings;
     }
 }
-
