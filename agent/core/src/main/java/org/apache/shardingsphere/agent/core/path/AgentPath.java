@@ -46,9 +46,9 @@ public final class AgentPath {
     
     private static File getFileInJar(final String url) {
         try {
-            File agentJarFile = new File(new URL(url.substring(url.indexOf("file:"), url.indexOf('!'))).toURI());
-            Preconditions.checkState(agentJarFile.exists(), "Can not locate agent jar file by URL `%s`.", url);
-            return agentJarFile.getParentFile();
+            File jarFile = new File(new URL(url.substring(url.indexOf("file:"), url.indexOf('!'))).toURI());
+            Preconditions.checkState(jarFile.exists(), "Can not locate agent jar file by URL `%s`.", url);
+            return jarFile.getParentFile();
         } catch (final MalformedURLException | URISyntaxException ex) {
             throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`.", url));
         }
