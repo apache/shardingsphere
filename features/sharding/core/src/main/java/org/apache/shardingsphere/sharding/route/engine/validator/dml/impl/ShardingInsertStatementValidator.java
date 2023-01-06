@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -26,8 +25,11 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.DuplicateInsertDataRecordException;
 import org.apache.shardingsphere.sharding.exception.syntax.InsertSelectTableViolationException;
 import org.apache.shardingsphere.sharding.exception.syntax.MissingGenerateKeyColumnWithInsertSelectException;
+import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -88,11 +90,11 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         Optional<SubquerySegment> insertSelect = sqlStatementContext.getSqlStatement().getInsertSelect();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (insertSelect.isPresent() && shardingConditions.isNeedMerge()) {
             boolean singleRoutingOrSameShardingCondition = routeContext.isSingleRouting() || shardingConditions.isSameShardingCondition();
-            Preconditions.checkState(singleRoutingOrSameShardingCondition, "Subquery sharding conditions must be same with primary query.");
+            ShardingSpherePreconditions.checkState(singleRoutingOrSameShardingCondition, () -> new UnsupportedShardingOperationException("INSERT ... SELECT ...", tableName));
         }
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<AssignmentSegment> assignments = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatementContext.getSqlStatement())
                 .map(OnDuplicateKeyColumnsSegment::getColumns).orElse(Collections.emptyList());
         Optional<ShardingConditions> onDuplicateKeyShardingConditions = createShardingConditions(sqlStatementContext, shardingRule, assignments, params);
@@ -102,8 +104,8 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
             throw new UnsupportedUpdatingShardingValueException(tableName);
         }
         if (!routeContext.isSingleRouting() && !shardingRule.isBroadcastTable(tableName)) {
-            boolean isSingleDataNode = routeContext.getOriginalDataNodes().stream().allMatch(dataNodes -> dataNodes.size() == 1);
-            Preconditions.checkState(isSingleDataNode, "Insert statement does not support sharding table routing to multiple data nodes.");
+            boolean isSingleDataNode = routeContext.getOriginalDataNodes().stream().allMatch(dataNodes -> 1 == dataNodes.size());
+            ShardingSpherePreconditions.checkState(isSingleDataNode, () -> new DuplicateInsertDataRecordException(shardingConditions, tableName));
         }
     }
 }
