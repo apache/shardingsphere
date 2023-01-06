@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 
 import java.util.Properties;
 
@@ -38,7 +39,7 @@ public final class ColumnValueMatchedShadowAlgorithm extends AbstractColumnMatch
     
     private String getShadowValue(final Properties props) {
         String result = props.getProperty(VALUE_PROPS_KEY);
-        Preconditions.checkNotNull(result, "Column value match shadow algorithm value cannot be null.");
+        ShardingSpherePreconditions.checkNotNull(result, () -> new ShadowAlgorithmInitializationException(getType(), "Column value match shadow algorithm value cannot be null."));
         return result;
     }
     

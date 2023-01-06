@@ -237,10 +237,16 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Shadow Database
 
-| SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type. |
-| 42000     | 20840       | Insert value of index \`%s\` can not support for shadow. |
+| SQL State | Vendor Code | Reason                                                                                            |
+| --------- |-------------|---------------------------------------------------------------------------------------------------|
+| 44000     | 20800       | \`%s\` algorithm does not exist in database \`%s\`.                                               |
+| 44000     | 20801       | \`%s\` configuration does not exist in database \`%s\`.                                           |
+| 44000     | 20802       | No available shadow data sources mappings in shadow table \`%s\`.                                 |
+| 44000     | 20803       | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |
+| HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
+| 42000     | 20840       | Insert value of index \`%s\` can not support for shadow.                                          |
+| 42000     | 20880       | Shadow algorithm \`%s\` initialization failed, reason is: %s.                                     |
+| 42000     | 20881       | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
 
 ### Data Masking
 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredConfigurationException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
@@ -59,7 +59,7 @@ public final class YamlShardingTableRuleConfigurationSwapper implements YamlConf
     
     @Override
     public ShardingTableRuleConfiguration swapToObject(final YamlTableRuleConfiguration yamlConfig) {
-        ShardingSpherePreconditions.checkNotNull(yamlConfig.getLogicTable(), () -> new MissingRequiredConfigurationException("Sharding Logic table"));
+        ShardingSpherePreconditions.checkNotNull(yamlConfig.getLogicTable(), () -> new MissingRequiredShardingConfigurationException("Sharding Logic table"));
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(yamlConfig.getLogicTable(), yamlConfig.getActualDataNodes());
         if (null != yamlConfig.getDatabaseStrategy()) {
             result.setDatabaseShardingStrategy(shardingStrategySwapper.swapToObject(yamlConfig.getDatabaseStrategy()));

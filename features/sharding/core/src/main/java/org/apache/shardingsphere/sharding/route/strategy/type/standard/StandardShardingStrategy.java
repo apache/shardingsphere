@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingRouteAlgorithmException;
-import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredConfigurationException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -47,8 +47,8 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     private final StandardShardingAlgorithm<?> shardingAlgorithm;
     
     public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
-        ShardingSpherePreconditions.checkNotNull(shardingColumn, () -> new MissingRequiredConfigurationException("Standard sharding column"));
-        ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredConfigurationException("Standard sharding algorithm"));
+        ShardingSpherePreconditions.checkNotNull(shardingColumn, () -> new MissingRequiredShardingConfigurationException("Standard sharding column"));
+        ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredShardingConfigurationException("Standard sharding algorithm"));
         Collection<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         shardingColumns.add(shardingColumn);
         this.shardingColumns = Collections.unmodifiableCollection(shardingColumns);

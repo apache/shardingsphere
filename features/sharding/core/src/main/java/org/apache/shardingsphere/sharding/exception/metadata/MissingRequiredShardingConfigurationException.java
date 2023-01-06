@@ -21,17 +21,17 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Missing required configuration exception.
+ * Missing required sharding configuration exception.
  */
-public final class MissingRequiredConfigurationException extends ShardingSQLException {
+public final class MissingRequiredShardingConfigurationException extends ShardingSQLException {
     
     private static final long serialVersionUID = -7307832800220432407L;
     
-    public MissingRequiredConfigurationException(final String configKey) {
+    public MissingRequiredShardingConfigurationException(final String configKey) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` configuration does not exist.", configKey);
     }
     
-    public MissingRequiredConfigurationException(final String configKey, final String databaseName) {
+    public MissingRequiredShardingConfigurationException(final String configKey, final String databaseName) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 11, "`%s` configuration does not exist in database `%s`.", configKey, databaseName);
     }
 }
