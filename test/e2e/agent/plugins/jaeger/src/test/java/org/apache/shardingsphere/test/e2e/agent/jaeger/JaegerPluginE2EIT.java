@@ -57,8 +57,6 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
     
     private void assertTraces() throws IOException {
         String traceURL = url + "traces?service=" + serviceName;
-        // TODO check why the first time access jaeger API will got none data.
-        OkHttpUtils.getInstance().get(url + "services");
         JaegerTraceResult jaegerTraceResult = OkHttpUtils.getInstance().get(traceURL, JaegerTraceResult.class);
         assertFalse(jaegerTraceResult.getData().isEmpty());
         String traceId = jaegerTraceResult.getData().get(new Random().nextInt(jaegerTraceResult.getData().size())).getTraceID();
