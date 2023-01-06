@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 /**
- * Pipeline changed job configuration processor.
+ * Pipeline job configuration changed processor.
  */
-public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
+public interface PipelineJobConfigurationChangedProcessor extends TypedSPI {
     
     /**
      * Process changed job configuration.

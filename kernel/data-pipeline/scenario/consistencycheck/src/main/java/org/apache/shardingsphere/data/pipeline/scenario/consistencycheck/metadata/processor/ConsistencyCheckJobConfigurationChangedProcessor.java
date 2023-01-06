@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.prepare.MigrationJobPreparer;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineJobConfigurationChangedProcessor;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
@@ -37,10 +35,10 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Migration job configuration changed processor.
+ * Consistency check job configuration changed processor.
  */
 @Slf4j
-public final class MigrationChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
+public final class ConsistencyCheckJobConfigurationChangedProcessor implements PipelineJobConfigurationChangedProcessor {
     
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
@@ -68,7 +66,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 }
                 break;
             case DELETED:
-                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
                 PipelineJobCenter.stop(jobId);
                 break;
             default:
@@ -77,7 +74,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
     }
     
     private void execute(final JobConfiguration jobConfig) {
-        MigrationJob job = new MigrationJob();
+        ConsistencyCheckJob job = new ConsistencyCheckJob();
         PipelineJobCenter.addJob(jobConfig.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
@@ -86,6 +83,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
     
     @Override
     public String getType() {
-        return new MigrationJobType().getTypeName();
+        return new ConsistencyCheckJobType().getTypeName();
     }
 }

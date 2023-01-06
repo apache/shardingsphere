@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineJobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -53,7 +53,7 @@ public final class ChangedJobConfigurationDispatcher implements PipelineMetaData
             return;
         }
         log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfig.isDisabled());
-        TypedSPIRegistry.findRegisteredService(PipelineChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getTypeName())
+        TypedSPIRegistry.findRegisteredService(PipelineJobConfigurationChangedProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getTypeName())
                 .ifPresent(optional -> optional.process(event.getType(), jobConfig));
     }
 }
