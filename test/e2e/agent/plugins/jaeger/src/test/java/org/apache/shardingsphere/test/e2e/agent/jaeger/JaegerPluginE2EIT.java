@@ -32,13 +32,15 @@ import static org.junit.Assert.assertFalse;
 
 public final class JaegerPluginE2EIT extends BasePluginE2EIT {
     
+    private Properties props;
+    
     private String url;
     
     private String serviceName;
     
     @Before
     public void before() {
-        Properties props = E2ETestEnvironment.getInstance().getProps();
+        props = E2ETestEnvironment.getInstance().getProps();
         url = props.getProperty("jaeger.url");
         serviceName = props.getProperty("jaeger.servername");
     }
@@ -46,11 +48,15 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
     @Test
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
+        try {
+            Thread.sleep(Long.parseLong(props.getProperty("jaeger.waitMs", "60000")));
+        } catch (final InterruptedException ignore) {
+        }
         assertTraces();
     }
     
     private void assertTraces() throws IOException {
-        final String traceURL = url + "traces?service=" + serviceName;
+        String traceURL = url + "traces?service=" + serviceName;
         JaegerTraceResult jaegerTraceResult = OkHttpUtils.getInstance().get(traceURL, JaegerTraceResult.class);
         assertFalse(jaegerTraceResult.getData().isEmpty());
         String traceId = jaegerTraceResult.getData().get(new Random().nextInt(jaegerTraceResult.getData().size())).getTraceID();

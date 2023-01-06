@@ -29,6 +29,13 @@ services:
     environment:
       - LANG=C.UTF-8
 
+  zipkin:
+    image: "openzipkin/zipkin:latest"
+    container_name: agent-tracing-zipkin
+    restart: always
+    ports:
+      - "19411:9411"
+
   jaeger:
     image: "jaegertracing/all-in-one:1.41"
     container_name: agent-tracing-jaeger
@@ -45,6 +52,7 @@ services:
     links:
       - "mysql:mysql.agent.tracing.jaeger.host"
       - "jaeger:jaeger.agent.tracing.jaeger.host"
+      - "zipkin:zipkin.agent.tracing.jaeger.host"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy-agent-tracing-jaeger/conf
       - ./agent/conf:/opt/shardingsphere-proxy-agent-tracing-jaeger/agent/conf
@@ -52,7 +60,7 @@ services:
       - mysql
       - jaeger
     environment:
-      - WAIT_HOSTS=mysql:3306, jaeger:16686
+      - WAIT_HOSTS=mysql:3306, jaeger:16686, zipkin:9411
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=5
       - WAIT_HOST_CONNECT_TIMEOUT=30

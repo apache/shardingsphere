@@ -37,6 +37,8 @@ plugins:
         jaeger-reporter-log-spans: "true"
         jaeger-reporter-flush-interval: "1"
     Zipkin:
+      host: "zipkin.agent.tracing.zipkin.host"
+      port: 9411
       props:
         service-name: "shardingsphere"
         url-version: "/api/v2/spans"
