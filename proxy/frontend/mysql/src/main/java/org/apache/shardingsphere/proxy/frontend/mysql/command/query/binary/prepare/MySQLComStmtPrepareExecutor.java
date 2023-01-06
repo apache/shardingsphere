@@ -125,10 +125,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet) {
         Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        String databaseName = selectStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getDefaultDatabaseName);
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName()
-                .map(database::getSchema).orElseGet(() -> database.getSchema(DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName())));
+        ShardingSphereSchema schema = getSchema(selectStatementContext);
         Map<String, String> columnToTableMap = selectStatementContext.getTablesContext()
                 .findTableNamesByColumnProjection(projections.stream().filter(each -> each instanceof ColumnProjection).map(each -> (ColumnProjection) each).collect(Collectors.toList()), schema);
         Collection<DatabasePacket<?>> result = new ArrayList<>(projections.size());
@@ -146,6 +143,13 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             }
         }
         return result;
+    }
+    
+    private ShardingSphereSchema getSchema(final SelectStatementContext selectStatementContext) {
+        String databaseName = selectStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getDefaultDatabaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        return selectStatementContext.getTablesContext().getSchemaName().map(database::getSchema)
+                .orElseGet(() -> database.getSchema(DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName())));
     }
     
     private int calculateColumnDefinitionFlag(final ShardingSphereColumn column) {
