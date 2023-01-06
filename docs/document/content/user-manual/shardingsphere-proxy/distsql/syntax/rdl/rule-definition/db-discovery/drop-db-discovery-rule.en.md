@@ -13,7 +13,10 @@ The `DROP DB_DISCOVERY RULE` syntax is used to drop database discovery rule for 
 {{% tab name="Grammar" %}}
 ```sql
 DropDatabaseDiscoveryRule ::=
-  'DROP' 'DB_DISCOVERY' 'RULE'  dbDiscoveryRuleName (',' dbDiscoveryRuleName)* ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'RULE' ifExists? dbDiscoveryRuleName (',' dbDiscoveryRuleName)* ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 dbDiscoveryRuleName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### Supplement
 
-- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted.
+- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted;
+- `ifExists` clause is used for avoid `Database discovery rule not exists` error.
 
 ### Example
 
@@ -43,6 +47,12 @@ DROP DB_DISCOVERY RULE group_0, group_1 FROM discovery_db;
 
 ```sql
 DROP DB_DISCOVERY RULE group_0;
+```
+
+- Drop database discovery rule with `ifExists` clause
+
+```sql
+DROP DB_DISCOVERY RULE IF EXISTS group_0;
 ```
 
 ### Reserved word

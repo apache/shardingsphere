@@ -13,7 +13,10 @@ weight = 5
 {{% tab name="语法" %}}
 ```sql
 DropDatabaseDiscoveryHeartbeat ::=
-  'DROP' 'DB_DISCOVERY' 'HEARTBEAT'  dbDiscoveryHeartbeatName (',' dbDiscoveryHeartbeatName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'HEARTBEAT' ifExists? dbDiscoveryHeartbeatName (',' dbDiscoveryHeartbeatName)*  ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 dbDiscoveryHeartbeatName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `Database discovery heartbeat not exists` 错误。
 
 ### 示例
 
@@ -43,6 +47,12 @@ DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM discovery_
 
 ```sql
 DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat;
+```
+
+- 使用 `ifExists` 子句删除数据库发现心跳
+
+```sql
+DROP DB_DISCOVERY HEARTBEAT IF EXISTS group_0_heartbeat;
 ```
 
 ### 保留字

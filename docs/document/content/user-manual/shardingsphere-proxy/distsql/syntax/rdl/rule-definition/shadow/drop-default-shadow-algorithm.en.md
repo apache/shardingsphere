@@ -13,7 +13,10 @@ The `DROP DEFAULT SHADOW ALGORITHM` syntax is used to drop default shadow algori
 {{% tab name="Grammar" %}}
 ```sql
 DropDefaultShadowAlgorithm ::=
-  'DROP' 'DEFAULT' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
+  'DROP' 'DEFAULT' 'SHADOW' 'ALGORITHM' ifExists? ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 databaseName ::=
   identifier
@@ -26,7 +29,8 @@ databaseName ::=
 
 ### Supplement
 
-- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted.
+- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted;
+- `ifExists` clause used for avoid `Default shadow algorithm not exists` error.
 
 ### Example
 
@@ -40,6 +44,12 @@ DROP DEFAULT SHADOW ALGORITHM FROM shadow_db;
 
 ```sql
 DROP DEFAULT SHADOW ALGORITHM;
+```
+
+- Drop default shadow algorithm with `ifExists` clause
+
+```sql
+DROP DEFAULT SHADOW ALGORITHM IF EXISTS;
 ```
 
 ### Reserved word

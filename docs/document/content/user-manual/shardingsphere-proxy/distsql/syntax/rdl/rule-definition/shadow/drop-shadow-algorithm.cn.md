@@ -13,7 +13,10 @@ weight = 8
 {{% tab name="语法" %}}
 ```sql
 DropShadowAlgorithm ::=
-  'DROP' 'SHADOW' 'ALGORITHM' shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'ALGORITHM' ifExists? shadowAlgorithmName (',' shadowAlgorithmName)* ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 shadowAlgorithmName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `shadow algorithm not exists` 错误。
 
 ### 示例
 
@@ -43,6 +47,12 @@ DROP SHADOW ALGORITHM shadow_rule_t_order_simple_hint_0, shadow_rule_t_order_ite
 
 ```sql
 DROP SHADOW ALGORITHM shadow_rule_t_order_simple_hint_0;
+```
+
+- 使用 `ifExists` 子句删除影子库压测算法
+
+```sql
+DROP SHADOW ALGORITHM IF EXISTS shadow_rule_t_order_simple_hint_0;
 ```
 
 ### 保留字

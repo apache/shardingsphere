@@ -13,9 +13,12 @@ weight = 15
 {{% tab name="语法" %}}
 ```sql
 DropShardingTableReferenceRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
+  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE' ifExists? shardingReferenceRuleName (',' shardingReferenceRuleName)*
 
-ruleName ::=
+ifExists ::=
+  'IF' 'EXISTS'
+
+shardingReferenceRuleName ::=
   identifier
 ```
 {{% /tab %}}
@@ -23,6 +26,10 @@ ruleName ::=
 <iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
 {{% /tab %}}
 {{< /tabs >}}
+
+### 补充说明
+
+- `ifExists` 子句用于避免 `Sharding reference rule not exists` 错误。
 
 ### 示例
 
@@ -36,6 +43,12 @@ DROP SHARDING TABLE REFERENCE RULE ref_0;
 
 ```sql
 DROP SHARDING TABLE REFERENCE RULE ref_0, ref_1;
+```
+
+- 使用 `ifExists` 子句删除关联规则
+
+```sql
+DROP SHARDING TABLE REFERENCE RULE IF EXISTS ref_0;
 ```
 
 ### 保留字

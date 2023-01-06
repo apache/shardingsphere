@@ -13,7 +13,10 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 DropShadowRule ::=
-  'DROP' 'SHADOW' 'TABLE' 'RULE' shadowRuleName ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'TABLE' 'RULE' ifExists? shadowRuleName ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 shadowRuleName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `Shadow rule not exists` 错误。
 
 ### 示例
 
@@ -43,6 +47,12 @@ DROP SHADOW RULE shadow_rule FROM shadow_db;
 
 ```sql
 DROP SHADOW RULE shadow_rule;
+```
+
+- 使用 `ifExists` 子句删除影子库压测规则
+
+```sql
+DROP SHADOW RULE IF EXISTS shadow_rule;
 ```
 
 ### 保留字

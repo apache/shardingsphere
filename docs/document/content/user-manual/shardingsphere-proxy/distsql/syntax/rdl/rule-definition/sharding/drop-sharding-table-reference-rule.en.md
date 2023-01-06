@@ -13,9 +13,12 @@ The `DROP SHARDING TABLE REFERENCE RULE` syntax is used to drop specified shardi
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingTableReferenceRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE'  ruleName (',' ruleName)*
+  'DROP' 'SHARDING' 'TABLE' 'REFERENCE' 'RULE' ifExists? shardingReferenceRuleName (',' shardingReferenceRuleName)*
 
-ruleName ::=
+ifExists ::=
+  'IF' 'EXISTS'
+
+shardingReferenceRuleName ::=
   identifier
 ```
 {{% /tab %}}
@@ -24,6 +27,9 @@ ruleName ::=
 {{% /tab %}}
 {{< /tabs >}}
 
+### Supplement
+
+- `ifExists` clause is used for avoid `Sharding reference rule not exists` error.
 ### Example
 
 - Drop a specified sharding table reference rule
@@ -36,6 +42,12 @@ DROP SHARDING TABLE REFERENCE RULE ref_0;
 
 ```sql
 DROP SHARDING TABLE REFERENCE RULE ref_0, ref_1;
+```
+
+- Drop sharding table reference rule with `ifExists` clause
+
+```sql
+DROP SHARDING TABLE REFERENCE RULE IF EXISTS ref_0;
 ```
 
 ### Reserved word

@@ -13,9 +13,12 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 DropEncryptRule ::=
-  'DROP' 'ENCRYPT' 'RULE' tableName (',' tableName)*
-    
-tableName ::=
+  'DROP' 'ENCRYPT' 'RULE' ifExists? encryptRuleName (',' encryptRuleName)*
+
+ifExists ::=
+  'IF' 'EXISTS'
+
+encryptRuleName ::=
   identifier
 ```
 {{% /tab %}}
@@ -24,12 +27,22 @@ tableName ::=
 {{% /tab %}}
 {{< /tabs >}}
 
+### 补充说明
+
+- `ifExists` 子句用于避免 `Encrypt rule not exists` 错误。
+
 ### 示例
 
 - 删除加密规则
 
 ```sql
 DROP ENCRYPT RULE t_encrypt, t_encrypt_2;
+```
+
+- 使用 `ifExists` 删除加密规则
+
+```sql
+DROP ENCRYPT RULE IF EXISTS t_encrypt, t_encrypt_2;
 ```
 
 ### 保留字

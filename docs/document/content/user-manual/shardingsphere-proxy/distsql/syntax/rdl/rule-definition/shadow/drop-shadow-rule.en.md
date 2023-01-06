@@ -13,7 +13,10 @@ The `DROP SHADOW RULE` syntax is used to drop shadow rule for specified database
 {{% tab name="Grammar" %}}
 ```sql
 DropShadowRule ::=
-  'DROP' 'SHADOW' 'TABLE' 'RULE' shadowRuleName ('FROM' databaseName)?
+  'DROP' 'SHADOW' 'TABLE' 'RULE' ifExists? shadowRuleName ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 shadowRuleName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### Supplement
 
-- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted.
+- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted;
+- `ifExists` clause is used for avoid `Shadow rule not exists` error.
 
 ### Example
 
@@ -43,6 +47,12 @@ DROP SHADOW RULE shadow_rule FROM shadow_db;
 
 ```sql
 DROP SHADOW RULE shadow_rule;
+```
+
+- Drop shadow rule with `ifExists` clause
+
+```sql
+DROP SHADOW RULE IF EXISTS shadow_rule;
 ```
 
 ### Reserved word

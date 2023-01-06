@@ -13,7 +13,10 @@ weight = 12
 {{% tab name="语法" %}}
 ```sql
 DropShardingAlgorithm ::=
-  'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ifExists? ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 shardingAlgorithmName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `Sharding algorithm not exists` 错误。
 
 ### 示例
 
@@ -43,6 +47,12 @@ DROP SHARDING ALGORITHM t_order_hash_mod FROM sharding_db;
 
 ```sql
 DROP SHARDING ALGORITHM t_order_hash_mod;
+```
+
+- 使用 `ifExists` 子句删除分片算法
+
+```sql
+DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod;
 ```
 
 ### 保留字

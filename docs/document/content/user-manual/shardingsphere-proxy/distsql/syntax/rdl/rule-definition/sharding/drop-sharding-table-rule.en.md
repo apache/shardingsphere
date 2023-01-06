@@ -13,7 +13,10 @@ The `DROP SHARDING TABLE RULE` syntax is used to drop sharding table rule for sp
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingTableRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'TABLE' 'RULE' ifExists? shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 shardingRuleName ::=
   identifier
@@ -29,20 +32,27 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
+- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
+- `ifExists` clause is used to avoid `Sharding rule not exists` error.
 
 ### Example
 
-- Drop mutiple sharding table rules for specified database.
+- Drop mutiple sharding table rules for specified database
 
 ```sql
 DROP SHARDING TABLE RULE t_order, t_order_item FROM sharding_db;
 ```
 
-- Drop a sharding table rule for current database.
+- Drop a sharding table rule for current database
 
 ```sql
 DROP SHARDING TABLE RULE t_order;
+```
+
+- Drop sharding table rule with `ifExists` clause
+
+```sql
+DROP SHARDING TABLE RULE IF EXISTS t_order;
 ```
 
 ### Reserved word
