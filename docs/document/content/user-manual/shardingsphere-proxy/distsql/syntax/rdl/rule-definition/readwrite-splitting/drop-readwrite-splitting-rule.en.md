@@ -13,7 +13,13 @@ The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite splitting r
 {{% tab name="Grammar" %}}
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? readwriteSplittingRuleName (',' readwriteSplittingRuleName)* ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
+
+readwriteSplittingRuleName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -26,7 +32,8 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
+- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
+- `ifExists` clause is used for avoid `Readwrite splitting rule not exists` error.
 
 ### Example
 
@@ -40,6 +47,12 @@ DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
 
 ```sql
 DROP READWRITE_SPLITTING RULE ms_group_1;
+```
+
+- Drop readwrite splitting rule with `ifExists` clause
+
+```sql
+DROP READWRITE_SPLITTING RULE IF EXISTS ms_group_1;
 ```
 
 ### Reserved word

@@ -13,9 +13,12 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 DropEncryptRule ::=
-  'DROP' 'MASK' 'RULE' ruleName (',' ruleName)*
-    
-ruleName ::=
+  'DROP' 'MASK' 'RULE' ifExists? maskRuleName (',' maskRuleName)*
+
+ifExists ::=
+  'IF' 'EXISTS'
+
+maskRuleName ::=
   identifier
 ```
 {{% /tab %}}
@@ -24,12 +27,22 @@ ruleName ::=
 {{% /tab %}}
 {{< /tabs >}}
 
+### 补充说明
+
+- `ifExists` 子句用于避免 `Mask rule not exists` 错误。
+
 ### 示例
 
 - 删除数据脱敏规则
 
 ```sql
 DROP MASK RULE t_mask, t_mask_1;
+```
+
+- 使用 `ifExists` 子句删除数据脱敏规则
+
+```sql
+DROP MASK RULE IF EXISTS t_mask, t_mask_1;
 ```
 
 ### 保留字

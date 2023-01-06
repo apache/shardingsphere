@@ -13,7 +13,10 @@ weight = 11
 {{% tab name="语法" %}}
 ```sql
 DropShardingKeyGenerator ::=
-  'DROP' 'SHARDING' 'KEY' 'GENERATOR' keyGeneratorName ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'KEY' 'GENERATOR' ifExists? keyGeneratorName (keyGeneratorName)* ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 keyGeneratorName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `Sharding key generator not exists` 错误。
 
 ### 示例
 
@@ -43,6 +47,12 @@ DROP SHARDING KEY GENERATOR t_order_snowflake FROM sharding_db;
 
 ```sql
 DROP SHARDING KEY GENERATOR t_order_snowflake;
+```
+
+- 使用 `ifExists` 子句删除分片主键生成器
+
+```sql
+DROP SHARDING KEY GENERATOR IF EXISTS t_order_snowflake;
 ```
 
 ### 保留字

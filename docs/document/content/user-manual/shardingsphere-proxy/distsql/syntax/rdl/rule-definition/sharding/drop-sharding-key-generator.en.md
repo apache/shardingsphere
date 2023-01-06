@@ -13,11 +13,14 @@ The `DROP SHARDING KEY GENERATOR` syntax is used to drop sharding key generator 
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingKeyGenerator ::=
-  'DROP' 'SHARDING' 'KEY' 'GENERATOR' keyGeneratorName ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'KEY' 'GENERATOR' ifExists? keyGeneratorName (keyGeneratorName)* ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 keyGeneratorName ::=
   identifier
-  
+
 databaseName ::=
   identifier
 ```
@@ -29,20 +32,27 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
+- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
+- `ifExists` clause is used for avoid `Sharding key generator not exists` error.
 
 ### Example
 
-- Drop sharding key generator for specified database.
+- Drop sharding key generator for specified database
 
 ```sql
 DROP SHARDING KEY GENERATOR t_order_snowflake FROM sharding_db;
 ```
 
-- Drop sharding key generator for current database.
+- Drop sharding key generator for current database
 
 ```sql
 DROP SHARDING KEY GENERATOR t_order_snowflake;
+```
+
+- Drop sharding key generator with `ifExists` clause
+
+```sql
+DROP SHARDING KEY GENERATOR IF EXISTS t_order_snowflake;
 ```
 
 ### Reserved word
