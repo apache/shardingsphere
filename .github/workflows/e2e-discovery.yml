@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       mysql_version: 5.7
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       matrix:
         mode: [ Cluster ]
