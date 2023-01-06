@@ -14,7 +14,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 42000     | 10000       | Resource does not exist. |
+| 42000     | 10000       | There is no storage unit in database \`%s\`. |
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`. |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`. |
@@ -99,8 +99,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | 44000     | 18002       | Altered process configuration does not exist. |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`. |
-| 42S01     | 18030       | Duplicate resource names \`%s\`. |
-| 42S02     | 18031       | Resource names \`%s\` do not exist. |
+| 42S01     | 18030       | Duplicate storage unit names \`%s\`. |
+| 42S02     | 18031       | Storage units names \`%s\` do not exist. |
 | 0A000     | 18032       | Unsupported data type \`%s\` of unique key for pipeline job. |
 | HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`. |
 | 08000     | 18051       | Data check table \`%s\` failed. |
@@ -127,11 +127,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 44000     | 19000       | Can not process invalid resources, error message is: %s |
-| 44000     | 19001       | Resources \`%s\` do not exist in database \`%s\`. |
-| 44000     | 19002       | There is no resource in the database \`%s\`. |
-| 44000     | 19003       | Resource \`%s\` is still used by \`%s\`. |
-| 44000     | 19004       | Duplicate resource names \`%s\`. |
+| 44000     | 19000       | Can not process invalid storage units, error message is: %s |
+| 44000     | 19001       | Storage units \`%s\` do not exist in database \`%s\`. |
+| 44000     | 19002       | There is no storage unit in the database \`%s\`. |
+| 44000     | 19003       | Storage units \`%s\` is still used by \`%s\`. |
+| 44000     | 19004       | Duplicate storage unit names \`%s\`. |
 | 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s |
 | 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`. |
 | 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used. |
