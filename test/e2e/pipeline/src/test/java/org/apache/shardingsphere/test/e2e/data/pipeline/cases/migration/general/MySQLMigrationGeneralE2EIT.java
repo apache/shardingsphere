@@ -104,7 +104,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
         assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, "");
-        log.info("{} e2e IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
     }
     
     private void assertMigrationSuccessById(final String jobId, final String algorithmType) throws SQLException, InterruptedException {

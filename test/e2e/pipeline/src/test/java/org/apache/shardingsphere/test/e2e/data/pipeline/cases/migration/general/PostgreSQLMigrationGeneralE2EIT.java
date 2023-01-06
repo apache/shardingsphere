@@ -99,7 +99,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
         assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, PipelineBaseE2EIT.SCHEMA_NAME);
-        log.info("{} e2e IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
     }
     
     private void checkOrderMigration() throws SQLException, InterruptedException {

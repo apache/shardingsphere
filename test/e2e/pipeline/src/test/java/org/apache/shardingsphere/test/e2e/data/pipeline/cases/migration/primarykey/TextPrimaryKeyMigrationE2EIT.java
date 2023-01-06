@@ -100,7 +100,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             List<String> lastJobIds = listJobId();
             assertThat(lastJobIds.size(), is(0));
         }
-        log.info("{} e2e IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
     }
     
     private void batchInsertOrder() throws SQLException {

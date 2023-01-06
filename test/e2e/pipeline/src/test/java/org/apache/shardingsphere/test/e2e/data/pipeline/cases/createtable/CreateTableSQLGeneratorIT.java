@@ -131,7 +131,7 @@ public final class CreateTableSQLGeneratorIT {
                 assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
-        log.info("{} e2e IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
     }
     
     private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
