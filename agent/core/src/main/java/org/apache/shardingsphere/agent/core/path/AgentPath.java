@@ -41,14 +41,14 @@ public final class AgentPath {
     public static File getRootPath() {
         String classResourcePath = String.join("", AgentPath.class.getName().replaceAll("\\.", "/"), ".class");
         URL resource = Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(classResourcePath), "Can not locate agent jar file.");
-        return getJarParentPath(resource.toString());
+        return getJarFile(resource.toString()).getParentFile();
     }
     
-    private static File getJarParentPath(final String url) {
+    private static File getJarFile(final String url) {
         try {
-            File jarFile = new File(new URL(url.substring(url.indexOf("file:"), url.indexOf('!'))).toURI());
-            Preconditions.checkState(jarFile.exists(), "Can not locate agent jar file by URL `%s`.", url);
-            return jarFile.getParentFile();
+            File result = new File(new URL(url.substring(url.indexOf("file:"), url.indexOf('!'))).toURI());
+            Preconditions.checkState(result.exists(), "Can not locate agent jar file by URL `%s`.", url);
+            return result;
         } catch (final MalformedURLException | URISyntaxException ex) {
             throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`.", url));
         }
