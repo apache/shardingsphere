@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredConfigurationException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import javax.sql.DataSource;
@@ -38,7 +38,7 @@ public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRu
     @Override
     public ShardingRule build(final ShardingRuleConfiguration config, final String databaseName,
                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        ShardingSpherePreconditions.checkState(null != dataSources && !dataSources.isEmpty(), () -> new MissingRequiredConfigurationException("Data source", databaseName));
+        ShardingSpherePreconditions.checkState(null != dataSources && !dataSources.isEmpty(), () -> new MissingRequiredShardingConfigurationException("Data source", databaseName));
         return new ShardingRule(config, dataSources.keySet(), instanceContext);
     }
     

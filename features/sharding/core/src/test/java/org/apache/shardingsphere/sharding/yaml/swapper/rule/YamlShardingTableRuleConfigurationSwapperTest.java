@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredConfigurationException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
@@ -60,7 +60,7 @@ public final class YamlShardingTableRuleConfigurationSwapperTest {
         return result;
     }
     
-    @Test(expected = MissingRequiredConfigurationException.class)
+    @Test(expected = MissingRequiredShardingConfigurationException.class)
     public void assertSwapToObjectWithoutLogicTable() {
         new YamlShardingTableRuleConfigurationSwapper().swapToObject(new YamlTableRuleConfiguration());
     }

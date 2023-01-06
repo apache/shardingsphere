@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
-import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredConfigurationException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
@@ -42,7 +42,7 @@ public final class HintShardingStrategy implements ShardingStrategy {
     private final HintShardingAlgorithm<?> shardingAlgorithm;
     
     public HintShardingStrategy(final HintShardingAlgorithm<?> shardingAlgorithm) {
-        ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredConfigurationException("Hint sharding algorithm"));
+        ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredShardingConfigurationException("Hint sharding algorithm"));
         shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingAlgorithm = shardingAlgorithm;
     }

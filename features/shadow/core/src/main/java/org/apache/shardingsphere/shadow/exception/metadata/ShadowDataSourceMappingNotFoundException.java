@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.metadata;
+package org.apache.shardingsphere.shadow.exception.metadata;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
 
 /**
- * Missing required algorithm exception.
+ * Shadow data source mapping not found exception.
  */
-public final class MissingRequiredAlgorithmException extends ShardingSQLException {
+public final class ShadowDataSourceMappingNotFoundException extends ShadowSQLException {
     
-    private static final long serialVersionUID = -1844741171173351747L;
+    private static final long serialVersionUID = 4141501883104032467L;
     
-    public MissingRequiredAlgorithmException(final String algorithmName, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "`%s` algorithm does not exist in database `%s`.", algorithmName, databaseName);
+    public ShadowDataSourceMappingNotFoundException(final String tableName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "No available shadow data sources mappings in shadow table `%s`.", tableName);
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
-import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredConfigurationException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -47,8 +47,8 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     private final ComplexKeysShardingAlgorithm<?> shardingAlgorithm;
     
     public ComplexShardingStrategy(final String shardingColumns, final ComplexKeysShardingAlgorithm<?> shardingAlgorithm) {
-        ShardingSpherePreconditions.checkNotNull(shardingColumns, () -> new MissingRequiredConfigurationException("Complex sharding columns"));
-        ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredConfigurationException("Complex sharding algorithm"));
+        ShardingSpherePreconditions.checkNotNull(shardingColumns, () -> new MissingRequiredShardingConfigurationException("Complex sharding columns"));
+        ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredShardingConfigurationException("Complex sharding algorithm"));
         this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingColumns.addAll(Splitter.on(",").trimResults().splitToList(shardingColumns));
         this.shardingAlgorithm = shardingAlgorithm;
