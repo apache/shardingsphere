@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
@@ -120,8 +121,12 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
         try (
                 Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
+            String delayMillisecondsThreshold = getProps().getProperty("delay-milliseconds-threshold");
+            if (Strings.isNullOrEmpty(delayMillisecondsThreshold)) {
+                return new ReplicaDataSourceStatus(true, 0L);
+            }
             long replicationDelayMilliseconds = queryReplicationDelayMilliseconds(statement);
-            boolean isDelay = replicationDelayMilliseconds >= Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"));
+            boolean isDelay = replicationDelayMilliseconds >= Long.parseLong(delayMillisecondsThreshold);
             return new ReplicaDataSourceStatus(!isDelay, replicationDelayMilliseconds);
         }
     }
