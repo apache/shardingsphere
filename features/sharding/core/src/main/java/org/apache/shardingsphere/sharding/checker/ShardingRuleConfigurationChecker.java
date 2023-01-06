@@ -87,7 +87,6 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
         if (null == auditStrategy) {
             return;
         }
-        ShardingSpherePreconditions.checkNotNull(auditStrategy.getAuditorNames(), () -> new MissingRequiredShardingConfigurationException("auditorNames", databaseName));
         ShardingSpherePreconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
                 () -> new MissingRequiredShardingAlgorithmException(Joiner.on(",").join(auditStrategy.getAuditorNames()), databaseName));
     }
