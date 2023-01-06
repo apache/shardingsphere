@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.audit;
+package org.apache.shardingsphere.sharding.exception.algorithm.keygen;
 
-import lombok.Getter;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Sharding audit strategy configuration.
+ * Key generate algorithm initialization exception.
  */
-
-@Getter
-public final class ShardingAuditStrategyConfiguration {
+public final class KeyGenerateAlgorithmInitializationException extends ShardingSQLException {
     
-    private final Collection<String> auditorNames;
+    private static final long serialVersionUID = -9046956561006694072L;
     
-    private final boolean allowHintDisable;
-    
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        this.auditorNames = auditorNames;
-        this.allowHintDisable = allowHintDisable;
+    public KeyGenerateAlgorithmInitializationException(final String keyGenerateType, final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 91, "Key generate algorithm `%s` initialization failed, reason is: %s.", keyGenerateType, reason);
     }
 }
