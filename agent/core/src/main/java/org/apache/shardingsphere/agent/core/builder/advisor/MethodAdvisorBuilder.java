@@ -27,10 +27,11 @@ import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -58,9 +59,13 @@ public final class MethodAdvisorBuilder {
      */
     public Builder<?> build(final Builder<?> builder) {
         Builder<?> result = builder;
-        for (MethodAdvisor each : getMatchedMethodAdvisors()) {
+        for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
+            Optional<AdviceExecutor> adviceExecutor = findMatchedAdviceExecutor(each);
+            if (!adviceExecutor.isPresent()) {
+                continue;
+            }
             try {
-                result = each.getAdviceExecutor().decorateBuilder(result, each.getPointcut());
+                result = adviceExecutor.get().decorateBuilder(result, each);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -70,21 +75,17 @@ public final class MethodAdvisorBuilder {
         return result;
     }
     
-    private Collection<MethodAdvisor> getMatchedMethodAdvisors() {
-        return typePointcut.getDeclaredMethods().stream().map(this::findMatchedMethodAdvisor).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
-    }
-    
-    private Optional<MethodAdvisor> findMatchedMethodAdvisor(final InDefinedShape methodDescription) {
+    private Optional<AdviceExecutor> findMatchedAdviceExecutor(final InDefinedShape methodDescription) {
         Collection<AgentAdvice> advices = advisorConfig.getAdvisors().stream()
                 .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
         if (isConstructor(methodDescription)) {
-            return Optional.of(new MethodAdvisor(methodDescription, new ConstructorAdviceExecutor(advices.stream().map(each -> (ConstructorAdvice) each).collect(Collectors.toList()))));
+            return Optional.of(new ConstructorAdviceExecutor(advices.stream().map(each -> (ConstructorAdvice) each).collect(Collectors.toList())));
         }
         if (isStaticMethod(methodDescription)) {
-            return Optional.of(new MethodAdvisor(methodDescription, new StaticMethodAdviceExecutor(advices.stream().map(each -> (StaticMethodAdvice) each).collect(Collectors.toList()))));
+            return Optional.of(new StaticMethodAdviceExecutor(advices.stream().map(each -> (StaticMethodAdvice) each).collect(Collectors.toList())));
         }
         if (isMethod(methodDescription)) {
-            return Optional.of(new MethodAdvisor(methodDescription, new InstanceMethodAdviceExecutor(advices.stream().map(each -> (InstanceMethodAdvice) each).collect(Collectors.toList()))));
+            return Optional.of(new InstanceMethodAdviceExecutor(advices.stream().map(each -> (InstanceMethodAdvice) each).collect(Collectors.toList())));
         }
         return Optional.empty();
     }
