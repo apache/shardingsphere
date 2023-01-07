@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
-import io.opentracing.util.GlobalTracer;
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
-public final class OpenTracingPluginBootServiceTest {
+public final class OpenTelemetryTracingPluginLifecycleServiceTest {
     
-    private final OpenTracingPluginBootService pluginBootService = new OpenTracingPluginBootService();
-    
-    @After
-    public void close() {
-        pluginBootService.close();
-    }
+    private final OpenTelemetryTracingPluginLifecycleService pluginLifecycleService = new OpenTelemetryTracingPluginLifecycleService();
     
     @Test
     public void assertStart() {
-        pluginBootService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer"))), true);
-        assertTrue(GlobalTracer.isRegistered());
+        pluginLifecycleService.start(new PluginConfiguration(null, 0, null,
+                PropertiesBuilder.build(new Property("otel.resource.attributes", "service.name=shardingsphere-agent"), new Property("otel.traces.exporter", "zipkin"))), true);
+        assertNotNull(GlobalOpenTelemetry.getTracerProvider());
+        assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
+    }
+    
+    @After
+    public void close() {
+        pluginLifecycleService.close();
+        GlobalOpenTelemetry.resetForTest();
     }
 }

@@ -30,13 +30,13 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
-public final class JaegerTracingPluginBootServiceTest {
+public final class JaegerTracingPluginLifecycleServiceTest {
     
-    private final JaegerTracingPluginBootService pluginBootService = new JaegerTracingPluginBootService();
+    private final JaegerTracingPluginLifecycleService pluginLifecycleService = new JaegerTracingPluginLifecycleService();
     
     @After
     public void close() throws ReflectiveOperationException {
-        pluginBootService.close();
+        pluginLifecycleService.close();
         Plugins.getMemberAccessor().set(GlobalTracer.class.getDeclaredField("tracer"), GlobalTracer.class, NoopTracerFactory.create());
     }
     
@@ -47,7 +47,7 @@ public final class JaegerTracingPluginBootServiceTest {
                 new Property("JAEGER_SAMPLER_PARAM", "1"),
                 new Property("JAEGER_REPORTER_LOG_SPANS", Boolean.TRUE.toString()),
                 new Property("JAEGER_REPORTER_FLUSH_INTERVAL", "1"));
-        pluginBootService.start(new PluginConfiguration("localhost", 5775, "", props), true);
+        pluginLifecycleService.start(new PluginConfiguration("localhost", 5775, "", props), true);
         assertTrue(GlobalTracer.isRegistered());
     }
 }

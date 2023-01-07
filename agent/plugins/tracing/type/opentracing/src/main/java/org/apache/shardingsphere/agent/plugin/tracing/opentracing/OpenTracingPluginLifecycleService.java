@@ -21,12 +21,12 @@ import com.google.common.base.Preconditions;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 /**
- * Open tracing plugin boot service.
+ * Open tracing plugin lifecycle service.
  */
-public final class OpenTracingPluginBootService implements PluginBootService {
+public final class OpenTracingPluginLifecycleService implements PluginLifecycleService {
     
     private static final String KEY_OPENTRACING_TRACER_CLASS_NAME = "opentracing-tracer-class-name";
     

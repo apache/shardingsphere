@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -61,7 +61,7 @@ public final class PluginLifecycleServiceManager {
         try {
             Thread.currentThread().setContextClassLoader(agentClassLoader);
             for (Entry<String, PluginConfiguration> entry : pluginConfigs.entrySet()) {
-                AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices()
+                AgentServiceLoader.getServiceLoader(PluginLifecycleService.class).getServices()
                         .stream().filter(each -> each.getType().equalsIgnoreCase(entry.getKey())).findFirst().ifPresent(optional -> start(entry.getValue(), optional, isEnhancedForProxy));
             }
         } finally {
@@ -69,10 +69,10 @@ public final class PluginLifecycleServiceManager {
         }
     }
     
-    private static void start(final PluginConfiguration pluginConfig, final PluginBootService pluginBootService, final boolean isEnhancedForProxy) {
+    private static void start(final PluginConfiguration pluginConfig, final PluginLifecycleService pluginLifecycleService, final boolean isEnhancedForProxy) {
         try {
-            LOGGER.info("Start plugin: {}", pluginBootService.getType());
-            pluginBootService.start(pluginConfig, isEnhancedForProxy);
+            LOGGER.info("Start plugin: {}", pluginLifecycleService.getType());
+            pluginLifecycleService.start(pluginConfig, isEnhancedForProxy);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -81,7 +81,7 @@ public final class PluginLifecycleServiceManager {
     }
     
     private static void close(final Collection<PluginJar> pluginJars) {
-        AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices().forEach(each -> {
+        AgentServiceLoader.getServiceLoader(PluginLifecycleService.class).getServices().forEach(each -> {
             try {
                 each.close();
                 // CHECKSTYLE:OFF

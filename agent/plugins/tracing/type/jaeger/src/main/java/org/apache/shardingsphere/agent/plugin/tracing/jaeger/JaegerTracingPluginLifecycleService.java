@@ -21,14 +21,14 @@ import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 import java.util.Optional;
 
 /**
- * Jaeger tracing plugin boot service.
+ * Jaeger tracing plugin lifecycle service.
  */
-public final class JaegerTracingPluginBootService implements PluginBootService {
+public final class JaegerTracingPluginLifecycleService implements PluginLifecycleService {
     
     private static final String DEFAULT_SERVICE_NAME = "shardingsphere";
     
