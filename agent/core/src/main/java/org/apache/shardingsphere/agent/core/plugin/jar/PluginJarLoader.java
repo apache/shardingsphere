@@ -24,9 +24,7 @@ import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -48,8 +46,8 @@ public final class PluginJarLoader {
      */
     public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib"))));
-        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins"))));
+        getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib")), jarFiles);
+        getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins")), jarFiles);
         Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new PluginJar(new JarFile(each, true), each));
@@ -58,8 +56,17 @@ public final class PluginJarLoader {
         return result;
     }
     
-    private static List<File> getJarFiles(final File path) {
-        File[] jarFiles = path.listFiles(each -> each.getName().endsWith(".jar"));
-        return (null == jarFiles || jarFiles.length == 0) ? Collections.emptyList() : Arrays.asList(jarFiles);
+    private static void getJarFiles(final File path, final List<File> jarFiles) {
+        File[] files = path.listFiles();
+        if (null != files && files.length > 0) {
+            for (final File each : files) {
+                if (each.isFile() && each.getName().endsWith(".jar")) {
+                    jarFiles.add(each);
+                }
+                if (each.isDirectory()) {
+                    getJarFiles(each, jarFiles);
+                }
+            }
+        }
     }
 }
