@@ -39,13 +39,13 @@ public final class PluginBootServiceManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(PluginBootServiceManager.class);
     
     /**
-     * Start all services.
+     * Start all plugins.
      *
      * @param pluginConfigs plugin configuration map
      * @param agentClassLoader agent class loader
      * @param isEnhancedForProxy is enhanced for proxy
      */
-    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigs, final ClassLoader agentClassLoader, final boolean isEnhancedForProxy) {
+    public static void startAll(final Map<String, PluginConfiguration> pluginConfigs, final ClassLoader agentClassLoader, final boolean isEnhancedForProxy) {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(agentClassLoader);
@@ -70,11 +70,11 @@ public final class PluginBootServiceManager {
     }
     
     /**
-     * Close all services.
+     * Close all plugins.
      * 
      * @param pluginJars plugin jars
      */
-    public static void closeAllServices(final Collection<PluginJar> pluginJars) {
+    public static void closeAll(final Collection<PluginJar> pluginJars) {
         AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices().forEach(each -> {
             try {
                 each.close();
