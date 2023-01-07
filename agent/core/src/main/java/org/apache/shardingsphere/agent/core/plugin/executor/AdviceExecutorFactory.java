@@ -22,7 +22,6 @@ import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
-import org.apache.shardingsphere.agent.core.builder.advisor.AdviceFactory;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
