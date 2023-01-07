@@ -42,13 +42,13 @@ import java.net.Socket;
 
 import static org.mockito.Mockito.mock;
 
-public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer {
+public final class PrometheusPluginLifecycleServiceTest extends ProxyContextRestorer {
     
-    private final PrometheusPluginBootService pluginBootService = new PrometheusPluginBootService();
+    private final PrometheusPluginLifecycleService pluginLifecycleService = new PrometheusPluginLifecycleService();
     
     @After
     public void close() {
-        pluginBootService.close();
+        pluginLifecycleService.close();
     }
     
     @Test
@@ -58,7 +58,7 @@ public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer 
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        pluginBootService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
+        pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
         new Socket().connect(new InetSocketAddress("localhost", 8090));
     }
 }

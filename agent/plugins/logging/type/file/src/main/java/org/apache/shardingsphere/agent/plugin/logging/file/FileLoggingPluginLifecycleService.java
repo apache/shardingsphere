@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi;
+package org.apache.shardingsphere.agent.plugin.logging.file;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 /**
- * Plugin boot service that the lifecycle is from the agent start to shutdown.
+ * File logging plugin lifecycle service.
  */
-public interface PluginBootService extends AutoCloseable {
+public final class FileLoggingPluginLifecycleService implements PluginLifecycleService {
     
-    /**
-     * Start plugin boot service.
-     *
-     * @param pluginConfig plugin configuration
-     * @param isEnhancedForProxy is enhanced for proxy
-     */
-    void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
+    @Override
+    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
+    }
     
-    /**
-     * Get plugin type.
-     *
-     * @return plugin type
-     */
-    String getType();
+    @Override
+    public void close() {
+    }
+    
+    @Override
+    public String getType() {
+        return "File";
+    }
 }

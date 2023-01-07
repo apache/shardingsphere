@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing;
 
-import brave.Tracing;
+import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.util.Properties;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.assertNotNull;
-
-public final class ZipkinTracingPluginBootServiceTest {
+public final class OpenTracingPluginLifecycleServiceTest {
     
-    private final ZipkinTracingPluginBootService pluginBootService = new ZipkinTracingPluginBootService();
+    private final OpenTracingPluginLifecycleService pluginLifecycleService = new OpenTracingPluginLifecycleService();
     
     @After
     public void close() {
-        pluginBootService.close();
+        pluginLifecycleService.close();
     }
     
     @Test
-    public void assertStart() throws ReflectiveOperationException {
-        pluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()), true);
-        Tracing tracing = (Tracing) Plugins.getMemberAccessor().get(ZipkinTracingPluginBootService.class.getDeclaredField("tracing"), pluginBootService);
-        assertNotNull(tracing.tracer());
+    public void assertStart() {
+        pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer"))), true);
+        assertTrue(GlobalTracer.isRegistered());
     }
 }

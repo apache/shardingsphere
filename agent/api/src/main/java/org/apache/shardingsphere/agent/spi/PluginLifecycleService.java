@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.builder;
+package org.apache.shardingsphere.agent.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
 /**
- * Method advisor.
+ * Plugin lifecycle service.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MethodAdvisor {
+public interface PluginLifecycleService extends AutoCloseable {
     
-    private final MethodDescription pointcut;
+    /**
+     * Start plugin.
+     *
+     * @param pluginConfig plugin configuration
+     * @param isEnhancedForProxy is enhanced for proxy
+     */
+    void start(PluginConfiguration pluginConfig, boolean isEnhancedForProxy);
     
-    private final AdviceExecutor adviceExecutor;
+    /**
+     * Get plugin type.
+     *
+     * @return plugin type
+     */
+    String getType();
 }

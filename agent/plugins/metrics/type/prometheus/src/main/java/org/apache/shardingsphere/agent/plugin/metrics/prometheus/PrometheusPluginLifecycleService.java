@@ -29,16 +29,16 @@ import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.MetaD
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.ProxyInfoCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
 /**
- * Prometheus plugin boot service.
+ * Prometheus plugin lifecycle service.
  */
 @Slf4j
-public final class PrometheusPluginBootService implements PluginBootService {
+public final class PrometheusPluginLifecycleService implements PluginLifecycleService {
     
     private static final String KEY_JVM_INFORMATION_COLLECTOR_ENABLED = "jvm-information-collector-enabled";
     

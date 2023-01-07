@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.builder;
+package org.apache.shardingsphere.agent.core.builder.advisor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

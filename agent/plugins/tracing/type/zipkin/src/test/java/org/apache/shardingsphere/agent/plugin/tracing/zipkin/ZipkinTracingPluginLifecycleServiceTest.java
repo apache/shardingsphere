@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.logging.file;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
 
+import brave.Tracing;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.junit.After;
+import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-/**
- * File logging plugin boot service.
- */
-public final class FileLoggingPluginBootService implements PluginBootService {
+import java.util.Properties;
+
+import static org.junit.Assert.assertNotNull;
+
+public final class ZipkinTracingPluginLifecycleServiceTest {
     
-    @Override
-    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
-    }
+    private final ZipkinTracingPluginLifecycleService pluginLifecycleService = new ZipkinTracingPluginLifecycleService();
     
-    @Override
+    @After
     public void close() {
+        pluginLifecycleService.close();
     }
     
-    @Override
-    public String getType() {
-        return "File";
+    @Test
+    public void assertStart() throws ReflectiveOperationException {
+        pluginLifecycleService.start(new PluginConfiguration("localhost", 9441, "", new Properties()), true);
+        Tracing tracing = (Tracing) Plugins.getMemberAccessor().get(ZipkinTracingPluginLifecycleService.class.getDeclaredField("tracing"), pluginLifecycleService);
+        assertNotNull(tracing.tracer());
     }
 }

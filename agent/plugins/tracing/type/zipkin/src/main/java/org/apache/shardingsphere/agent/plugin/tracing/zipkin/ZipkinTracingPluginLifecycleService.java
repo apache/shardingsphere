@@ -23,7 +23,7 @@ import brave.sampler.RateLimitingSampler;
 import brave.sampler.Sampler;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
@@ -31,9 +31,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Zipkin tracing plugin boot service.
+ * Zipkin tracing plugin lifecycle service.
  */
-public final class ZipkinTracingPluginBootService implements PluginBootService {
+public final class ZipkinTracingPluginLifecycleService implements PluginLifecycleService {
     
     private static final String DEFAULT_SERVICE_NAME = "shardingsphere";
     

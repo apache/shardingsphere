@@ -20,9 +20,12 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
-public class OpenTelemetryTracingPluginBootService implements PluginBootService {
+/**
+ * Open telemetry tracing plugin lifecycle service.
+ */
+public class OpenTelemetryTracingPluginLifecycleService implements PluginLifecycleService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
