@@ -29,8 +29,8 @@ import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.loader.AdvisorConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
-import org.apache.shardingsphere.agent.core.transformer.AgentJunction;
-import org.apache.shardingsphere.agent.core.transformer.AgentTransformer;
+import org.apache.shardingsphere.agent.core.builder.AgentJunction;
+import org.apache.shardingsphere.agent.core.builder.AgentTransformer;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 

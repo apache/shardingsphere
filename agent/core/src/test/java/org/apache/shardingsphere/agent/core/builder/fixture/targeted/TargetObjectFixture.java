@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer.fixture.targeted;
+package org.apache.shardingsphere.agent.core.builder.fixture.targeted;
 
 import java.util.List;
 
