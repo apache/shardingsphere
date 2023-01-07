@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.builder.advisor;
+package org.apache.shardingsphere.agent.core.builder;
 
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
