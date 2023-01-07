@@ -54,6 +54,6 @@ public final class AgentBuilderFactory {
                 .type(new AgentJunction(advisorConfigs))
                 .transform(new AgentTransformer(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .with(new LoggingListener());
+                .with(new AgentLoggingListener());
     }
 }
