@@ -17,39 +17,33 @@
 
 package org.apache.shardingsphere.agent.core.builder.advisor;
 
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
-import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.executor.type.InstanceMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutorFactory;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Method advisor builder.
  */
-@RequiredArgsConstructor
 public final class MethodAdvisorBuilder {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilder.class);
     
-    private final AdviceFactory adviceFactory;
-    
-    private final AdvisorConfiguration advisorConfig;
-    
     private final TypeDescription typePointcut;
+    
+    private final AdviceExecutorFactory adviceExecutorFactory;
+    
+    public MethodAdvisorBuilder(final TypeDescription typePointcut, final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
+        this.typePointcut = typePointcut;
+        adviceExecutorFactory = new AdviceExecutorFactory(classLoaderContext, advisorConfig);
+    }
     
     /**
      * Build method advisor builder.
@@ -60,7 +54,7 @@ public final class MethodAdvisorBuilder {
     public Builder<?> build(final Builder<?> builder) {
         Builder<?> result = builder;
         for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
-            Optional<AdviceExecutor> adviceExecutor = findMatchedAdviceExecutor(each);
+            Optional<AdviceExecutor> adviceExecutor = adviceExecutorFactory.findMatchedAdviceExecutor(each);
             if (!adviceExecutor.isPresent()) {
                 continue;
             }
@@ -73,32 +67,5 @@ public final class MethodAdvisorBuilder {
             }
         }
         return result;
-    }
-    
-    private Optional<AdviceExecutor> findMatchedAdviceExecutor(final InDefinedShape methodDescription) {
-        Collection<AgentAdvice> advices = advisorConfig.getAdvisors().stream()
-                .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
-        if (isConstructor(methodDescription)) {
-            return Optional.of(new ConstructorAdviceExecutor(advices.stream().map(each -> (ConstructorAdvice) each).collect(Collectors.toList())));
-        }
-        if (isStaticMethod(methodDescription)) {
-            return Optional.of(new StaticMethodAdviceExecutor(advices.stream().map(each -> (StaticMethodAdvice) each).collect(Collectors.toList())));
-        }
-        if (isMethod(methodDescription)) {
-            return Optional.of(new InstanceMethodAdviceExecutor(advices.stream().map(each -> (InstanceMethodAdvice) each).collect(Collectors.toList())));
-        }
-        return Optional.empty();
-    }
-    
-    private boolean isConstructor(final InDefinedShape methodDescription) {
-        return methodDescription.isConstructor();
-    }
-    
-    private boolean isStaticMethod(final InDefinedShape methodDescription) {
-        return methodDescription.isStatic() && isMethod(methodDescription);
-    }
-    
-    private boolean isMethod(final InDefinedShape methodDescription) {
-        return !(methodDescription.isAbstract() || methodDescription.isSynthetic());
     }
 }
