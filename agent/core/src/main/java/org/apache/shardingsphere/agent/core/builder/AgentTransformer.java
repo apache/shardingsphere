@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.transformer;
+package org.apache.shardingsphere.agent.core.builder;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
@@ -28,8 +28,6 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
-import org.apache.shardingsphere.agent.core.transformer.builder.MethodAdvisorBuilder;
-import org.apache.shardingsphere.agent.core.transformer.builder.advise.AdviceFactory;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
