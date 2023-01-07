@@ -24,7 +24,6 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 
@@ -44,7 +43,7 @@ public final class AgentBuilderFactory {
      * @param pluginJars plugin jars
      * @param advisorConfigs advisor configurations
      * @param isEnhancedForProxy is enhanced for proxy
-     * @return agent builder
+     * @return created gent builder
      */
     public static AgentBuilder create(final Map<String, PluginConfiguration> pluginConfigs,
                                       final Collection<PluginJar> pluginJars, final Map<String, AdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {

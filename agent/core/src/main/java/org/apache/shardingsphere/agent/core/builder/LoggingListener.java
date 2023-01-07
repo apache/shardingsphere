@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.logging;
+package org.apache.shardingsphere.agent.core.builder;
 
 import net.bytebuddy.agent.builder.AgentBuilder.Listener;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.log.LoggerFactory;
+import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 
 /**
- * Logging listener for ByteBuddy lifecycle.
+ * Logging listener.
  */
 @SuppressWarnings("NullableProblems")
 public final class LoggingListener implements Listener {
