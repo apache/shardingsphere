@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.core.plugin;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
-import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.log.LoggerFactory;
+import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
 import org.apache.shardingsphere.agent.spi.PluginBootService;
 

@@ -25,7 +25,6 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.advisor.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.logging.LoggingListener;
 import org.apache.shardingsphere.agent.core.builder.fixture.advice.BarAdvice;
 import org.apache.shardingsphere.agent.core.builder.fixture.advice.FooAdvice;
 import org.apache.shardingsphere.agent.core.builder.fixture.targeted.TargetObjectFixture;

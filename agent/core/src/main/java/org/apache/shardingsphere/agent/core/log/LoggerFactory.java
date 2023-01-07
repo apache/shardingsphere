@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.logging;
+package org.apache.shardingsphere.agent.core.log;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
