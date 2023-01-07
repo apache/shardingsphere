@@ -62,20 +62,17 @@ public final class PluginJarLoader {
         return result;
     }
     
-    @SneakyThrows(IOException.class)
-    private static void getJarFiles(final File file, final List<File> jarFiles) {
-        Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
-            
-            @Override
-            public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
-                if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
-                    jarFiles.add(path.toFile());
+    private static void getJarFiles(final File path, final List<File> jarFiles) {
+        File[] files = path.listFiles();
+        if (null != files && files.length > 0) {
+            for (final File each : files) {
+                if (each.isFile() && each.getName().endsWith(".jar")) {
+                    jarFiles.add(each);
                 }
-                if (path.toFile().isDirectory()) {
-                    getJarFiles(path.toFile(), jarFiles);
+                if (each.isDirectory()) {
+                    getJarFiles(each, jarFiles);
                 }
-                return FileVisitResult.CONTINUE;
             }
-        });
+        }
     }
 }
