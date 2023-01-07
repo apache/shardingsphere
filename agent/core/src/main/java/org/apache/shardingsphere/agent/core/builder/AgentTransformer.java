@@ -24,18 +24,17 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
+import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.builder.advisor.AdviceFactory;
 import org.apache.shardingsphere.agent.core.builder.advisor.MethodAdvisorBuilder;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
-import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.api.PluginConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Agent transformer.
@@ -44,8 +43,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class AgentTransformer implements Transformer {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
-    
-    private static final AtomicBoolean STARTED_FLAG = new AtomicBoolean(false);
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
