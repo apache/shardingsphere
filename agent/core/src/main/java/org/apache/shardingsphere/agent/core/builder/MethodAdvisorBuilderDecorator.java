@@ -30,28 +30,28 @@ import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutorFactor
 import java.util.Optional;
 
 /**
- * Method advisor builder.
+ * Method advisor builder decorator.
  */
-public final class MethodAdvisorBuilder {
+public final class MethodAdvisorBuilderDecorator {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilderDecorator.class);
     
     private final TypeDescription typePointcut;
     
     private final AdviceExecutorFactory adviceExecutorFactory;
     
-    public MethodAdvisorBuilder(final TypeDescription typePointcut, final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
+    public MethodAdvisorBuilderDecorator(final TypeDescription typePointcut, final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
         this.typePointcut = typePointcut;
         adviceExecutorFactory = new AdviceExecutorFactory(classLoaderContext, advisorConfig);
     }
     
     /**
-     * Build method advisor builder.
+     * Decorate agent builder with method advisor.
      * 
-     * @param builder original builder
-     * @return built builder
+     * @param builder to be decorated agent builder
+     * @return decorated agent builder
      */
-    public Builder<?> build(final Builder<?> builder) {
+    public Builder<?> decorate(final Builder<?> builder) {
         Builder<?> result = builder;
         for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
             Optional<AdviceExecutor> adviceExecutor = adviceExecutorFactory.findMatchedAdviceExecutor(each);

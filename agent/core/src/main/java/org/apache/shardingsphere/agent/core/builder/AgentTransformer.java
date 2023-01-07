@@ -60,6 +60,6 @@ public final class AgentTransformer implements Transformer {
         PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getAgentClassLoader(), isEnhancedForProxy);
         Builder<?> targetAdviceObjectBuilder = builder.defineField(EXTRA_DATA,
                 Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        return new MethodAdvisorBuilder(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())).build(targetAdviceObjectBuilder);
+        return new MethodAdvisorBuilderDecorator(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())).decorate(targetAdviceObjectBuilder);
     }
 }
