@@ -19,10 +19,11 @@ package org.apache.shardingsphere.agent.core.plugin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.spi.PluginBootServiceRegistry;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -49,19 +50,22 @@ public final class PluginBootServiceManager {
         try {
             Thread.currentThread().setContextClassLoader(agentClassLoader);
             for (Entry<String, PluginConfiguration> entry : pluginConfigs.entrySet()) {
-                PluginBootServiceRegistry.getRegisteredService(entry.getKey()).ifPresent(optional -> {
-                    try {
-                        LOGGER.info("Start plugin: {}", optional.getType());
-                        optional.start(entry.getValue(), isEnhancedForProxy);
-                        // CHECKSTYLE:OFF
-                    } catch (final Throwable ex) {
-                        // CHECKSTYLE:ON
-                        LOGGER.error("Failed to start service.", ex);
-                    }
-                });
+                AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices()
+                        .stream().filter(each -> each.getType().equalsIgnoreCase(entry.getKey())).findFirst().ifPresent(optional -> startService(entry.getValue(), optional, isEnhancedForProxy));
             }
         } finally {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+    }
+    
+    private static void startService(final PluginConfiguration pluginConfig, final PluginBootService pluginBootService, final boolean isEnhancedForProxy) {
+        try {
+            LOGGER.info("Start plugin: {}", pluginBootService.getType());
+            pluginBootService.start(pluginConfig, isEnhancedForProxy);
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ex) {
+            // CHECKSTYLE:ON
+            LOGGER.error("Failed to start service.", ex);
         }
     }
     
@@ -71,7 +75,7 @@ public final class PluginBootServiceManager {
      * @param pluginJars plugin jars
      */
     public static void closeAllServices(final Collection<PluginJar> pluginJars) {
-        PluginBootServiceRegistry.getAllRegisteredServices().forEach(each -> {
+        AgentServiceLoader.getServiceLoader(PluginBootService.class).getServices().forEach(each -> {
             try {
                 each.close();
                 // CHECKSTYLE:OFF
