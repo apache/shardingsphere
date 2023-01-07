@@ -54,7 +54,7 @@ public final class AgentTransformerTest {
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.builder.fixture"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .with(new LoggingListener())
+                .with(new AgentLoggingListener())
                 .type(new AgentJunction(advisorConfigs))
                 .transform(new AgentTransformer(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true))
                 .asTerminalTransformation()

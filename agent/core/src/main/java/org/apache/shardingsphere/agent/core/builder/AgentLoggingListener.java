@@ -25,12 +25,12 @@ import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 
 /**
- * Logging listener.
+ * Agent logging listener.
  */
 @SuppressWarnings("NullableProblems")
-public final class LoggingListener implements Listener {
+public final class AgentLoggingListener implements Listener {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentLoggingListener.class);
     
     @Override
     public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
