@@ -198,6 +198,9 @@ jobs:
   mysql-proxy-agent:
     name: Agent with MySQL
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        plugin: [ metrics, opentelemetry, zipkin ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -214,6 +217,5 @@ jobs:
         run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Integration Test
         run: |
-          ./mvnw -B clean install -f test/e2e/agent/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
-          ./mvnw -B clean install -f test/e2e/agent/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
-          ./mvnw -B clean install -f test/e2e/agent/plugins/zipkin/pom.xml -Dspotless.apply.skip=true -Pit.env.zipkin
+          ./mvnw -B clean install -f test/e2e/agent/plugins/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Pit.env.${{ matrix.plugin }}
+
