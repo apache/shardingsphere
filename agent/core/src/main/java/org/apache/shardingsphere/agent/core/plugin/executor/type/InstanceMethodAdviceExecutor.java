@@ -50,20 +50,20 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     private final Collection<InstanceMethodAdvice> advices;
     
     /**
-     * Intercept instance method.
+     * Advice instance method.
      *
      * @param target target object
-     * @param method intercepted method
+     * @param method advised method
      * @param args all arguments of method
      * @param callable origin method invocation
      * @return return value of target invocation
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
+    public Object advice(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         if (adviceEnabled) {
-            interceptBefore(target, method, args);
+            adviceBefore(target, method, args);
         }
         Object result = null;
         try {
@@ -72,18 +72,18 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             if (adviceEnabled) {
-                interceptThrow(target, method, args, ex);
+                adviceThrow(target, method, args, ex);
             }
             throw ex;
         } finally {
             if (adviceEnabled) {
-                interceptAfter(target, method, args, result);
+                adviceAfter(target, method, args, result);
             }
         }
         return result;
     }
     
-    private void interceptBefore(final TargetAdviceObject target, final Method method, final Object[] args) {
+    private void adviceBefore(final TargetAdviceObject target, final Method method, final Object[] args) {
         try {
             for (InstanceMethodAdvice each : advices) {
                 each.beforeMethod(target, method, args);
@@ -95,7 +95,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
         }
     }
     
-    private void interceptThrow(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable ex) {
+    private void adviceThrow(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable ex) {
         try {
             for (InstanceMethodAdvice each : advices) {
                 each.onThrowing(target, method, args, ex);
@@ -107,7 +107,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
         }
     }
     
-    private void interceptAfter(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    private void adviceAfter(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         try {
             for (InstanceMethodAdvice each : advices) {
                 each.afterMethod(target, method, args, result);
@@ -120,7 +120,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     }
     
     @Override
-    public Builder<?> decorateBuilder(final Builder<?> builder, final MethodDescription pointcut) {
+    public Builder<?> intercept(final Builder<?> builder, final MethodDescription pointcut) {
         return builder.method(ElementMatchers.is(pointcut)).intercept(MethodDelegation.withDefaultConfiguration().to(this));
     }
 }

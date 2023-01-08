@@ -46,13 +46,13 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
     private final Collection<ConstructorAdvice> advices;
     
     /**
-     * Intercept constructor.
+     * Advice constructor.
      *
      * @param target target object
      * @param args all constructor arguments
      */
     @RuntimeType
-    public void intercept(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
+    public void advice(@This final TargetAdviceObject target, @AllArguments final Object[] args) {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
@@ -68,7 +68,7 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
     }
     
     @Override
-    public Builder<?> decorateBuilder(final Builder<?> builder, final MethodDescription pointcut) {
+    public Builder<?> intercept(final Builder<?> builder, final MethodDescription pointcut) {
         return builder.constructor(ElementMatchers.is(pointcut)).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(this)));
     }
 }

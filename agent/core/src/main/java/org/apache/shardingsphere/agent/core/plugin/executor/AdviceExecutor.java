@@ -26,11 +26,11 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 public interface AdviceExecutor {
     
     /**
-     * Decorate advice builder.
+     * Intercept agent builder.
      *
-     * @param builder original builder
+     * @param builder to be intercepted builder
      * @param pointcut method pointcut
-     * @return decorated builder
+     * @return intercepted builder
      */
-    Builder<?> decorateBuilder(Builder<?> builder, MethodDescription pointcut);
+    Builder<?> intercept(Builder<?> builder, MethodDescription pointcut);
 }

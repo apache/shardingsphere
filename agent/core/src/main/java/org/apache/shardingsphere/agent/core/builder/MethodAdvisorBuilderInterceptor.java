@@ -30,28 +30,28 @@ import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutorFactor
 import java.util.Optional;
 
 /**
- * Method advisor builder decorator.
+ * Method advisor builder interceptor.
  */
-public final class MethodAdvisorBuilderDecorator {
+public final class MethodAdvisorBuilderInterceptor {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilderDecorator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilderInterceptor.class);
     
     private final TypeDescription typePointcut;
     
     private final AdviceExecutorFactory adviceExecutorFactory;
     
-    public MethodAdvisorBuilderDecorator(final TypeDescription typePointcut, final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
+    public MethodAdvisorBuilderInterceptor(final TypeDescription typePointcut, final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
         this.typePointcut = typePointcut;
         adviceExecutorFactory = new AdviceExecutorFactory(classLoaderContext, advisorConfig);
     }
     
     /**
-     * Decorate agent builder with method advisor.
+     * Intercept agent builder with method advisor.
      * 
-     * @param builder to be decorated agent builder
-     * @return decorated agent builder
+     * @param builder to be intercepted agent builder
+     * @return intercepted agent builder
      */
-    public Builder<?> decorate(final Builder<?> builder) {
+    public Builder<?> intercept(final Builder<?> builder) {
         Builder<?> result = builder;
         for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
             Optional<AdviceExecutor> adviceExecutor = adviceExecutorFactory.findMatchedAdviceExecutor(each);
@@ -59,7 +59,7 @@ public final class MethodAdvisorBuilderDecorator {
                 continue;
             }
             try {
-                result = adviceExecutor.get().decorateBuilder(result, each);
+                result = adviceExecutor.get().intercept(result, each);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON

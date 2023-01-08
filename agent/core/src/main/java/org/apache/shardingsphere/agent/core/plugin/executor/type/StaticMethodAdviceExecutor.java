@@ -48,20 +48,20 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     private final Collection<StaticMethodAdvice> executors;
     
     /**
-     * Intercept static method.
+     * Advice static method.
      *
      * @param klass target class
-     * @param method intercepted method
+     * @param method advised method
      * @param args all arguments of method
      * @param callable origin method invocation
      * @return return value of target invocation
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
+    public Object advice(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         if (adviceEnabled) {
-            interceptBefore(klass, method, args);
+            adviceBefore(klass, method, args);
         }
         Object result = null;
         try {
@@ -70,18 +70,18 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             if (adviceEnabled) {
-                interceptThrow(klass, method, args, ex);
+                adviceThrow(klass, method, args, ex);
             }
             throw ex;
         } finally {
             if (adviceEnabled) {
-                interceptAfter(klass, method, args, result);
+                adviceAfter(klass, method, args, result);
             }
         }
         return result;
     }
     
-    private void interceptBefore(final Class<?> klass, final Method method, final Object[] args) {
+    private void adviceBefore(final Class<?> klass, final Method method, final Object[] args) {
         try {
             for (StaticMethodAdvice each : executors) {
                 each.beforeMethod(klass, method, args);
@@ -93,7 +93,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         }
     }
     
-    private void interceptThrow(final Class<?> klass, final Method method, final Object[] args, final Throwable ex) {
+    private void adviceThrow(final Class<?> klass, final Method method, final Object[] args, final Throwable ex) {
         try {
             for (StaticMethodAdvice each : executors) {
                 each.onThrowing(klass, method, args, ex);
@@ -105,7 +105,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
         }
     }
     
-    private void interceptAfter(final Class<?> klass, final Method method, final Object[] args, final Object result) {
+    private void adviceAfter(final Class<?> klass, final Method method, final Object[] args, final Object result) {
         try {
             for (StaticMethodAdvice each : executors) {
                 each.afterMethod(klass, method, args, result);
@@ -118,7 +118,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     }
     
     @Override
-    public Builder<?> decorateBuilder(final Builder<?> builder, final MethodDescription pointcut) {
+    public Builder<?> intercept(final Builder<?> builder, final MethodDescription pointcut) {
         return builder.method(ElementMatchers.is(pointcut)).intercept(MethodDelegation.withDefaultConfiguration().to(this));
     }
 }
