@@ -43,14 +43,14 @@ public final class AgentBuilderFactory {
      * @param pluginJars plugin jars
      * @param advisorConfigs advisor configurations
      * @param isEnhancedForProxy is enhanced for proxy
-     * @return created gent builder
+     * @return created agent builder
      */
     public static AgentBuilder create(final Map<String, PluginConfiguration> pluginConfigs,
                                       final Collection<PluginJar> pluginJars, final Map<String, AdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {
         return new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
-                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."))
+                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.plugin."))
                 .type(new AgentJunction(advisorConfigs))
                 .transform(new AgentTransformer(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
