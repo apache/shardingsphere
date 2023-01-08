@@ -17,20 +17,28 @@
 
 package org.apache.shardingsphere.agent.core.builder.interceptor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.bytebuddy.dynamic.DynamicType.Builder;
-import net.bytebuddy.implementation.FieldAccessor;
-import net.bytebuddy.jar.asm.Opcodes;
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 
 /**
- * Target advice object builder interceptor.
+ * Agent builder intercept chain engine.
  */
-public final class TargetAdviceObjectBuilderInterceptor implements AgentBuilderInterceptor {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AgentBuilderInterceptChainEngine {
     
-    private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
-    
-    @Override
-    public Builder<?> intercept(final Builder<?> builder) {
-        return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
+    /**
+     * Intercept agent builder.
+     * 
+     * @param builder origin agent builder
+     * @param interceptors agent builder interceptors
+     * @return intercepted agent builder
+     */
+    public static Builder<?> intercept(final Builder<?> builder, final AgentBuilderInterceptor... interceptors) {
+        Builder<?> result = builder;
+        for (AgentBuilderInterceptor each : interceptors) {
+            result = each.intercept(result);
+        }
+        return result;
     }
 }
