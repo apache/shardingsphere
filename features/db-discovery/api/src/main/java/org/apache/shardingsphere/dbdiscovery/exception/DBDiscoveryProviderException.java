@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr;
+package org.apache.shardingsphere.dbdiscovery.exception;
 
-import org.apache.shardingsphere.dbdiscovery.exception.DBDiscoveryProviderException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 
 /**
- * Invalid MGR plugin exception.
+ * Database discovery provider exception.
  */
-public final class InvalidMGRPluginException extends DBDiscoveryProviderException {
+public abstract class DBDiscoveryProviderException extends FeatureSQLException {
     
-    private static final long serialVersionUID = 1703082683321097037L;
+    private static final long serialVersionUID = 2693931450412858590L;
     
-    public InvalidMGRPluginException(final String databaseName) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "MGR plugin is not active in database `%s`.", databaseName);
+    private static final int FEATURE_CODE = 3;
+    
+    public DBDiscoveryProviderException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
     }
 }

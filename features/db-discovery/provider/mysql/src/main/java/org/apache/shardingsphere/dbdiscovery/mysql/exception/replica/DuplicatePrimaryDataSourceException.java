@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr;
+package org.apache.shardingsphere.dbdiscovery.mysql.exception.replica;
 
 import org.apache.shardingsphere.dbdiscovery.exception.DBDiscoveryProviderException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid MGR plugin exception.
+ * Duplicate primary data source exception.
  */
-public final class InvalidMGRPluginException extends DBDiscoveryProviderException {
+public final class DuplicatePrimaryDataSourceException extends DBDiscoveryProviderException {
     
-    private static final long serialVersionUID = 1703082683321097037L;
+    private static final long serialVersionUID = -7715117257616134436L;
     
-    public InvalidMGRPluginException(final String databaseName) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "MGR plugin is not active in database `%s`.", databaseName);
+    public DuplicatePrimaryDataSourceException(final String databaseName) {
+        super(XOpenSQLState.DUPLICATE, 90, "Duplicate primary data source in database `%s`..", databaseName);
     }
 }

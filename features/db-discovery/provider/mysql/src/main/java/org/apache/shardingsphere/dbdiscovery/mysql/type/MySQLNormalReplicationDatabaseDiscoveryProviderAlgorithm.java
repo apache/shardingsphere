@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.DuplicatePrimaryDataSourceException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
@@ -71,7 +72,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
                 primaryCount++;
             }
         }
-        Preconditions.checkState(1 == primaryCount, "Check Environment are failed in database `%s`.", databaseName);
+        ShardingSpherePreconditions.checkState(1 == primaryCount, () -> new DuplicatePrimaryDataSourceException(databaseName));
     }
     
     private CompletableFuture<Boolean> supplyAsyncCheckEnvironment(final DataSource dataSource, final ExecutorService executorService) {

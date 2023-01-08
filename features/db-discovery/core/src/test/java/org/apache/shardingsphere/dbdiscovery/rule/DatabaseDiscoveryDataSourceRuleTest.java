@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.rule;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.junit.Test;
 
@@ -41,13 +42,13 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
                 new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
     public void assertNewHADataSourceRuleWithNullDataSourceName() {
         new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "ha_heartbeat", "discoveryTypeName"),
                 new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
     public void assertNewHADataSourceRuleWithEmptyDataSourceName() {
         new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"),
                 new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());

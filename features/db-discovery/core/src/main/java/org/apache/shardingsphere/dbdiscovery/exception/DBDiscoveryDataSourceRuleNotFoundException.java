@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr;
+package org.apache.shardingsphere.dbdiscovery.exception;
 
-import org.apache.shardingsphere.dbdiscovery.exception.DBDiscoveryProviderException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid MGR plugin exception.
+ * Database discovery data source rule not found exception.
  */
-public final class InvalidMGRPluginException extends DBDiscoveryProviderException {
+public final class DBDiscoveryDataSourceRuleNotFoundException extends DBDiscoverySQLException {
     
-    private static final long serialVersionUID = 1703082683321097037L;
+    private static final long serialVersionUID = -851752979377324961L;
     
-    public InvalidMGRPluginException(final String databaseName) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "MGR plugin is not active in database `%s`.", databaseName);
+    public DBDiscoveryDataSourceRuleNotFoundException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Can not found database discovery data source rule in database `%s`", databaseName);
     }
 }
