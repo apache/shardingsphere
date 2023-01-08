@@ -196,7 +196,7 @@ jobs:
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   mysql-proxy-agent:
-    name: Agent Metrics & OpenTelemetry
+    name: Agent with MySQL
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
