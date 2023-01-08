@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.builder.fixture.advice;
+package org.apache.shardingsphere.fixture.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
@@ -26,46 +26,46 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
-public final class FooAdvice implements ConstructorAdvice, InstanceMethodAdvice, StaticMethodAdvice {
+public final class BarAdvice implements ConstructorAdvice, InstanceMethodAdvice, StaticMethodAdvice {
     
     @Override
     public void onConstructor(final TargetAdviceObject target, final Object[] args) {
-        ((List<String>) args[0]).add("foo constructor");
+        ((List<String>) args[0]).add("bar constructor");
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         List<String> queue = (List<String>) args[0];
-        queue.add("foo before instance method");
+        queue.add("bar before instance method");
     }
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
         List<String> queue = (List<String>) args[0];
-        queue.add("foo before static method");
+        queue.add("bar before static method");
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         List<String> queue = (List<String>) args[0];
-        queue.add("foo after instance method");
+        queue.add("bar after instance method");
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
         List<String> queue = (List<String>) args[0];
-        queue.add("foo after static method");
+        queue.add("bar after static method");
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
         List<String> queue = (List<String>) args[0];
-        queue.add("foo throw instance method exception");
+        queue.add("bar throw instance method exception");
     }
     
     @Override
     public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
         List<String> queue = (List<String>) args[0];
-        queue.add("foo throw static method exception");
+        queue.add("bar throw static method exception");
     }
 }
