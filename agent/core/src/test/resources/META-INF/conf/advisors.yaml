@@ -16,8 +16,8 @@
 #
 
 advisors:
-  - target: org.apache.shardingsphere.agent.core.plugin.yaml.advisor.fixture.YamlTargetObjectFixture
-    advice: org.apache.shardingsphere.agent.core.plugin.yaml.advisor.fixture.YamlAdviceFixture
+  - target: org.apache.shardingsphere.agent.core.advisor.yaml.fixture.YamlTargetObjectFixture
+    advice: org.apache.shardingsphere.agent.core.advisor.yaml.fixture.YamlAdviceFixture
     pointcuts:
       - type: constructor
       - type: constructor

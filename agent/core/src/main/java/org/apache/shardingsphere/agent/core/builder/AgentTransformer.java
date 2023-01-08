@@ -29,7 +29,7 @@ import org.apache.shardingsphere.agent.core.builder.interceptor.impl.TargetAdvic
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
