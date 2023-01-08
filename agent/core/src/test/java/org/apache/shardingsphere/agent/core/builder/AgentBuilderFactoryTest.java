@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.agent.core.builder;
 
-import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
-import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.builder.fixture.advice.BarAdvice;
 import org.apache.shardingsphere.agent.core.builder.fixture.advice.FooAdvice;
 import org.apache.shardingsphere.agent.core.builder.fixture.targeted.TargetObjectFixture;
+import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.advisor.MethodAdvisorConfiguration;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,24 +39,18 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class AgentTransformerTest {
+public final class AgentBuilderFactoryTest {
     
-    private static ResettableClassFileTransformer byteBuddyAgent;
+    private static ResettableClassFileTransformer agent;
     
     @BeforeClass
     public static void setup() {
         ByteBuddyAgent.install();
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
-        byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
-                .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
-                        .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.builder.fixture"))))
-                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .with(new AgentLoggingListener())
-                .type(new AgentJunction(advisorConfigs))
-                .transform(new AgentTransformer(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true))
-                .asTerminalTransformation()
-                .installOnByteBuddyAgent();
+        AgentBuilder agentBuilder = AgentBuilderFactory.create(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true);
+        agent = agentBuilder.installOnByteBuddyAgent();
+        
     }
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
@@ -78,7 +70,7 @@ public final class AgentTransformerTest {
     
     @AfterClass
     public static void destroy() {
-        byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+        agent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
     
     @Test
