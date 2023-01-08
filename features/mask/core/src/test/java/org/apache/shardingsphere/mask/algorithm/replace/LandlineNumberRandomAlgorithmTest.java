@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class LandlineNumberRandomAlgorithmTest {
+public final class LandlineNumberRandomAlgorithmTest {
     
     private LandlineNumberRandomAlgorithm maskAlgorithm;
     
