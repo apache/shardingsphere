@@ -40,6 +40,17 @@ public final class LandlineNumberRandomAlgorithm implements MaskAlgorithm<Object
     private Properties props;
     
     @Override
+    public void init(final Properties props) {
+        this.props = props;
+        this.landLineNumbers = createLandLineNumbers(props);
+    }
+    
+    private List<String> createLandLineNumbers(final Properties props) {
+        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, LANDLINE_NUMBERS, getType());
+        return Splitter.on(",").trimResults().splitToList(props.getProperty(LANDLINE_NUMBERS));
+    }
+    
+    @Override
     public String mask(final Object plainValue) {
         String result = null == plainValue ? null : String.valueOf(plainValue);
         if (Strings.isNullOrEmpty(result)) {
@@ -56,17 +67,6 @@ public final class LandlineNumberRandomAlgorithm implements MaskAlgorithm<Object
             result.append(Character.forDigit(random.nextInt(10), 10));
         }
         return result.toString();
-    }
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-        this.landLineNumbers = createLandLineNumbers(props);
-    }
-    
-    private List<String> createLandLineNumbers(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, LANDLINE_NUMBERS, getType());
-        return Splitter.on(",").trimResults().splitToList(props.getProperty(LANDLINE_NUMBERS));
     }
     
     @Override
