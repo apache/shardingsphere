@@ -23,8 +23,9 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.builder.interceptor.MethodAdvisorBuilderInterceptor;
-import org.apache.shardingsphere.agent.core.builder.interceptor.TargetAdviceObjectBuilderInterceptor;
+import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptChainEngine;
+import org.apache.shardingsphere.agent.core.builder.interceptor.impl.MethodAdvisorBuilderInterceptor;
+import org.apache.shardingsphere.agent.core.builder.interceptor.impl.TargetAdviceObjectBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
@@ -55,7 +56,7 @@ public final class AgentTransformer implements Transformer {
         }
         ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
         PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getAgentClassLoader(), isEnhancedForProxy);
-        Builder<?> targetAdviceObjectBuilder = new TargetAdviceObjectBuilderInterceptor().intercept(builder);
-        return new MethodAdvisorBuilderInterceptor(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())).intercept(targetAdviceObjectBuilder);
+        return AgentBuilderInterceptChainEngine.intercept(builder,
+                new TargetAdviceObjectBuilderInterceptor(), new MethodAdvisorBuilderInterceptor(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())));
     }
 }

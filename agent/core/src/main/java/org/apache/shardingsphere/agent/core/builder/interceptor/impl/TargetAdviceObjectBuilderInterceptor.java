@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.builder.interceptor;
+package org.apache.shardingsphere.agent.core.builder.interceptor.impl;
 
 import net.bytebuddy.dynamic.DynamicType.Builder;
+import net.bytebuddy.implementation.FieldAccessor;
+import net.bytebuddy.jar.asm.Opcodes;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptor;
 
 /**
- * Agent builder interceptor.
+ * Target advice object builder interceptor.
  */
-public interface AgentBuilderInterceptor {
+public final class TargetAdviceObjectBuilderInterceptor implements AgentBuilderInterceptor {
     
-    /**
-     * Intercept agent builder.
-     * 
-     * @param builder to be intercepted agent builder
-     * @return intercepted agent builder
-     */
-    Builder<?> intercept(Builder<?> builder);
+    private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
+    
+    @Override
+    public Builder<?> intercept(final Builder<?> builder) {
+        return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
+    }
 }
