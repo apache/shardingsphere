@@ -50,7 +50,6 @@ public final class AgentBuilderFactoryTest {
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
         AgentBuilder agentBuilder = AgentBuilderFactory.create(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true);
         agent = agentBuilder.installOnByteBuddyAgent();
-        
     }
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
