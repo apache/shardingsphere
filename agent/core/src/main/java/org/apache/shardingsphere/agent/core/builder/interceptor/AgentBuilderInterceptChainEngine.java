@@ -34,7 +34,7 @@ public final class AgentBuilderInterceptChainEngine {
      * @param interceptors agent builder interceptors
      * @return intercepted agent builder
      */
-    public static Builder<?> intercept(Builder<?> builder, AgentBuilderInterceptor... interceptors) {
+    public static Builder<?> intercept(final Builder<?> builder, final AgentBuilderInterceptor... interceptors) {
         Builder<?> result = builder;
         for (AgentBuilderInterceptor each : interceptors) {
             result = each.intercept(result);
