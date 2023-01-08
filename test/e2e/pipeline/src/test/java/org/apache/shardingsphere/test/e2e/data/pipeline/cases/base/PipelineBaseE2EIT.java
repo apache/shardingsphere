@@ -109,7 +109,6 @@ public abstract class PipelineBaseE2EIT {
     private Thread increaseTaskThread;
     
     public PipelineBaseE2EIT(final PipelineTestParameter testParam) {
-        log.info("test E2EIT class : {}, parameterized:{}", this.getClass().getName(), testParam);
         databaseType = testParam.getDatabaseType();
         containerComposer = ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER
                 ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage())
