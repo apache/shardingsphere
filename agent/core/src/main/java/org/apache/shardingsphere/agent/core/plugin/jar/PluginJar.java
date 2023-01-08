@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.plugin.jar;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

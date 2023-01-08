@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
-import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

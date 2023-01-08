@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.loader;
+package org.apache.shardingsphere.agent.core.plugin.jar;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
-import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +32,12 @@ import java.util.List;
 import java.util.jar.JarFile;
 
 /**
- * Agent plugin loader.
+ * Plugin jar loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentPluginLoader {
+public final class PluginJarLoader {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PluginJarLoader.class);
     
     /**
      * Load plugin jars.
@@ -49,8 +48,8 @@ public final class AgentPluginLoader {
      */
     public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        jarFiles.addAll(collectJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib"))));
-        jarFiles.addAll(collectJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins"))));
+        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib"))));
+        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins"))));
         Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new PluginJar(new JarFile(each, true), each));
@@ -59,7 +58,7 @@ public final class AgentPluginLoader {
         return result;
     }
     
-    private static List<File> collectJarFiles(final File path) {
+    private static List<File> getJarFiles(final File path) {
         File[] jarFiles = path.listFiles(each -> each.getName().endsWith(".jar"));
         return (null == jarFiles || jarFiles.length == 0) ? Collections.emptyList() : Arrays.asList(jarFiles);
     }
