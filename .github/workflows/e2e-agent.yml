@@ -21,12 +21,12 @@ on:
   push:
     branches: [ master, dev ]
     paths:
-      - '.github/workflows/e2e.yml'
+      - '.github/workflows/e2e-agent.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - 'distribution/proxy/**'
       - 'test/pom.xml'
-      - 'test/e2e/**'
+      - 'test/e2e/agent/**'
       - '!examples/**'
       - '!distribution/**'
       - '!distribution/proxy/src/main/release-docs/**'
@@ -36,13 +36,13 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - '.github/workflows/e2e.yml'
+      - '.github/workflows/e2e-agent.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - 'distribution/proxy/**'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/e2e/**'
+      - 'test/e2e/agent/**'
       - '!examples/**'
       - '!distribution/**'
       - '!distribution/proxy/src/main/release-docs/**'
