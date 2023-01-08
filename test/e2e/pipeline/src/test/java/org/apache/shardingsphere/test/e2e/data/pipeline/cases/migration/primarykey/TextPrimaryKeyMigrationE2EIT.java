@@ -21,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,8 +48,11 @@ import static org.hamcrest.Matchers.is;
 @Slf4j
 public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
+    private final PipelineTestParameter testParam;
+    
     public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
+        this.testParam = testParam;
     }
     
     @Override
@@ -81,6 +84,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
+        log.info("assertTextPrimaryMigrationSuccess testParam:{}", testParam);
         createSourceOrderTable();
         batchInsertOrder();
         addMigrationProcessConfig();
@@ -97,6 +101,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             List<String> lastJobIds = listJobId();
             assertThat(lastJobIds.size(), is(0));
         }
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
     private void batchInsertOrder() throws SQLException {
