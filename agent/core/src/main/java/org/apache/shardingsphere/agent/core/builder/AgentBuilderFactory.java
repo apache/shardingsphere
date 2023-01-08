@@ -50,7 +50,7 @@ public final class AgentBuilderFactory {
         return new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
-                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.plugin."))
+                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."))
                 .type(new AgentJunction(advisorConfigs))
                 .transform(new AgentTransformer(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
