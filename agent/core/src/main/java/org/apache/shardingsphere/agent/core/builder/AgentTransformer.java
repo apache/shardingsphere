@@ -21,11 +21,10 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
-import net.bytebuddy.implementation.FieldAccessor;
-import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.core.builder.interceptor.MethodAdvisorBuilderInterceptor;
+import org.apache.shardingsphere.agent.core.builder.interceptor.TargetAdviceObjectBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
@@ -39,8 +38,6 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class AgentTransformer implements Transformer {
-    
-    private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
@@ -58,8 +55,7 @@ public final class AgentTransformer implements Transformer {
         }
         ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
         PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getAgentClassLoader(), isEnhancedForProxy);
-        Builder<?> targetAdviceObjectBuilder = builder.defineField(EXTRA_DATA,
-                Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
+        Builder<?> targetAdviceObjectBuilder = new TargetAdviceObjectBuilderInterceptor().intercept(builder);
         return new MethodAdvisorBuilderInterceptor(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())).intercept(targetAdviceObjectBuilder);
     }
 }

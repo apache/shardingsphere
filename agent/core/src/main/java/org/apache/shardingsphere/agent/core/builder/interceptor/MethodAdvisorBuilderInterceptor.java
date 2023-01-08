@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.builder;
+package org.apache.shardingsphere.agent.core.builder.interceptor;
 
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * Method advisor builder interceptor.
  */
-public final class MethodAdvisorBuilderInterceptor {
+public final class MethodAdvisorBuilderInterceptor implements AgentBuilderInterceptor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilderInterceptor.class);
     
@@ -45,12 +45,7 @@ public final class MethodAdvisorBuilderInterceptor {
         adviceExecutorFactory = new AdviceExecutorFactory(classLoaderContext, advisorConfig);
     }
     
-    /**
-     * Intercept agent builder with method advisor.
-     * 
-     * @param builder to be intercepted agent builder
-     * @return intercepted agent builder
-     */
+    @Override
     public Builder<?> intercept(final Builder<?> builder) {
         Builder<?> result = builder;
         for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
