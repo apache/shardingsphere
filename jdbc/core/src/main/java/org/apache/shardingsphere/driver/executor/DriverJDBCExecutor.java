@@ -27,18 +27,16 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Driver JDBC executor.
@@ -47,23 +45,21 @@ public final class DriverJDBCExecutor {
     
     private final String databaseName;
     
-    private final MetadataContexts metadataContexts;
-    
-    private final ContextManager contextManager;
+    private final MetaDataContexts metaDataContexts;
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final MetaDataRefreshEngine metadataRefreshEngine;
+    private final MetaDataRefreshEngine metaDataRefreshEngine;
     
     private final EventBusContext eventBusContext;
     
     public DriverJDBCExecutor(final String databaseName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
-        this.contextManager = contextManager;
         this.jdbcExecutor = jdbcExecutor;
-        metadataContexts = contextManager.getMetadataContexts();
+        metaDataContexts = contextManager.getMetaDataContexts();
         eventBusContext = contextManager.getInstanceContext().getEventBusContext();
-        metadataRefreshEngine = new MetaDataRefreshEngine(metadataContexts.getMetadata().getDatabase(databaseName), metadataContexts.getMetadata().getProps());
+        metaDataRefreshEngine = new MetaDataRefreshEngine(contextManager.getInstanceContext().getModeContextManager(),
+                metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
     }
     
     /**
@@ -103,7 +99,7 @@ public final class DriverJDBCExecutor {
             ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
             SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            int result = isNeedAccumulate(metadataContexts.getMetadata().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
             ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
@@ -154,14 +150,7 @@ public final class DriverJDBCExecutor {
     private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
-        refreshMetadata(sqlStatementContext, routeUnits);
+        metaDataRefreshEngine.refresh(sqlStatementContext, routeUnits);
         return results;
-    }
-    
-    private void refreshMetadata(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(sqlStatementContext, routeUnits);
-        if (contextManager.getInstanceContext().isCluster() && event.isPresent()) {
-            eventBusContext.post(event.get());
-        }
     }
 }

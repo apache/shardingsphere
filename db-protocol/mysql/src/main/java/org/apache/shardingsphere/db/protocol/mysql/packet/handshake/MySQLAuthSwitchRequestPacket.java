@@ -39,16 +39,12 @@ public final class MySQLAuthSwitchRequestPacket implements MySQLPacket {
     public static final int HEADER = 0xfe;
     
     @Getter
-    private final int sequenceId;
-    
-    @Getter
     private final String authPluginName;
     
     @Getter
     private final MySQLAuthPluginData authPluginData;
     
     public MySQLAuthSwitchRequestPacket(final MySQLPacketPayload payload) {
-        sequenceId = payload.readInt1();
         Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL auth switch request packet must be `0xfe`.");
         authPluginName = payload.readStringNul();
         String strAuthPluginData = payload.readStringNul();

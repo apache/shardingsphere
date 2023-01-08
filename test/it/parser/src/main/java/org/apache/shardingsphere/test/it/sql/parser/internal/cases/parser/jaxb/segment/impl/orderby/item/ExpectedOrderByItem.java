@@ -34,5 +34,5 @@ public abstract class ExpectedOrderByItem extends AbstractExpectedDelimiterSQLSe
     private String orderDirection = "ASC";
     
     @XmlAttribute(name = "nulls-order-type")
-    private String nullsOrderType = "FIRST";
+    private String nullsOrderType;
 }

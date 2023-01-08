@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -44,6 +45,8 @@ import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -54,7 +57,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -125,12 +127,8 @@ public final class ShardingRouteCacheableCheckerTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getBroadcastTables().add("t_broadcast_table");
         ruleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
-        Properties modShardingAlgorithmProps = new Properties();
-        modShardingAlgorithmProps.setProperty("sharding-count", "2");
-        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", modShardingAlgorithmProps));
-        Properties inlineShardingAlgorithmProps = new Properties();
-        inlineShardingAlgorithmProps.setProperty("algorithm-expression", "ds_${id % 2}");
-        ruleConfig.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", inlineShardingAlgorithmProps));
+        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        ruleConfig.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}"))));
         ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("warehouse_id", "mod"));
         ShardingTableRuleConfiguration warehouse = new ShardingTableRuleConfiguration("t_warehouse", "ds_${0..1}.t_warehouse");
         warehouse.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("id", "mod"));
@@ -143,7 +141,7 @@ public final class ShardingRouteCacheableCheckerTest {
         ShardingTableRuleConfiguration nonCacheableTableSharding = new ShardingTableRuleConfiguration("t_non_cacheable_table_sharding", "ds_0.t_non_cacheable_table_sharding_${0..1}");
         nonCacheableTableSharding.setTableShardingStrategy(new StandardShardingStrategyConfiguration("id", "inline"));
         ruleConfig.getTables().add(nonCacheableTableSharding);
-        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"), new InstanceContext(mock(ComputeNodeInstance.class), props -> 0, null, null, null));
+        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"), new InstanceContext(mock(ComputeNodeInstance.class), props -> 0, null, null, null, null));
     }
     
     private ShardingCacheRule prepareShardingCacheRule(final ShardingRule shardingRule) {
@@ -167,8 +165,9 @@ public final class ShardingRouteCacheableCheckerTest {
                 new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
                 new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereDatabase(DATABASE_NAME, DatabaseTypeFactory.getInstance("PostgreSQL"), new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()),
-                new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, shardingCacheRule)), Collections.singletonMap(SCHEMA_NAME, schema));
+        return new ShardingSphereDatabase(DATABASE_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"),
+                new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, shardingCacheRule)),
+                Collections.singletonMap(SCHEMA_NAME, schema));
     }
     
     private QueryContext prepareQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {

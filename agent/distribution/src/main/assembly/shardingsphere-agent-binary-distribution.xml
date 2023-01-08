@@ -32,15 +32,6 @@
             <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources</directory>
-            <includes>
-                <include>logback.xml</include>
-            </includes>
-            <outputDirectory>conf</outputDirectory>
-            <fileMode>0644</fileMode>
-        </fileSet>
-
-        <fileSet>
             <directory>../../</directory>
             <includes>
                 <include>LICENSE</include>
@@ -49,22 +40,36 @@
         </fileSet>
         
         <fileSet>
-            <directory>../plugins/logging/target/plugins</directory>
-            <outputDirectory>./plugins</outputDirectory>
+            <directory>../plugins/core/target/lib</directory>
+            <outputDirectory>./lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../plugins/metrics/core/target/lib</directory>
+            <outputDirectory>./lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         
         <fileSet>
-            <directory>../plugins/tracing/target/plugins</directory>
+            <directory>../plugins/logging/type/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../plugins/metrics/target/plugins</directory>
+            <directory>../plugins/tracing/type/target/plugins</directory>
+            <outputDirectory>./plugins</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../plugins/metrics/type/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>
@@ -76,13 +81,13 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>*:shardingsphere-agent-bootstrap</include>
+                <include>*:shardingsphere-agent-core</include>
             </includes>
             <binaries>
                 <unpack>false</unpack>
                 <outputDirectory>./</outputDirectory>
                 <includeDependencies>false</includeDependencies>
-                <outputFileNameMapping>shardingsphere-agent.jar</outputFileNameMapping>
+                <outputFileNameMapping>shardingsphere-agent-${project.version}.jar</outputFileNameMapping>
             </binaries>
         </moduleSet>
     </moduleSets>

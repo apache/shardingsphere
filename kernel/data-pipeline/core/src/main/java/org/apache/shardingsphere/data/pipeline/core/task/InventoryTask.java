@@ -22,12 +22,10 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
@@ -35,13 +33,16 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskPr
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
+import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -67,7 +68,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     private volatile IngestPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
-                         final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
+                         final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
                          final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
                          final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine inventoryImporterExecuteEngine,
                          final PipelineJobProgressListener jobProgressListener) {
@@ -76,7 +77,8 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
         channel = createChannel(pipelineChannelCreator);
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = ImporterCreatorFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType()).createImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+        importer = TypedSPIRegistry.getRegisteredService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
+                ImporterType.INVENTORY);
         position = inventoryDumperConfig.getPosition();
     }
     
@@ -119,22 +121,11 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator) {
         return pipelineChannelCreator.createPipelineChannel(1, records -> {
-            Record lastNormalRecord = getLastNormalRecord(records);
+            Record lastNormalRecord = RecordUtil.getLastNormalRecord(records);
             if (null != lastNormalRecord) {
                 position = lastNormalRecord.getPosition();
             }
         });
-    }
-    
-    private Record getLastNormalRecord(final List<Record> records) {
-        for (int index = records.size() - 1; index >= 0; index--) {
-            Record record = records.get(index);
-            if (record.getPosition() instanceof PlaceholderPosition) {
-                continue;
-            }
-            return record;
-        }
-        return null;
     }
     
     @Override

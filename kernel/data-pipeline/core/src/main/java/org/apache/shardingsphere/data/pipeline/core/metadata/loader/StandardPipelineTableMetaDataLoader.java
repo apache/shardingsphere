@@ -25,7 +25,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -43,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Standard pipeline table metadata loader.
+ * Standard pipeline table meta data loader.
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -63,25 +64,21 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         try {
             loadTableMetaData(schemaName, tableName);
         } catch (final SQLException ex) {
-            throw new RuntimeException(String.format("Load metadata for schema '%s' and table '%s' failed", schemaName, tableName), ex);
+            throw new RuntimeException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
         result = tableMetaDataMap.get(new TableName(tableName));
         if (null == result) {
-            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
+            log.warn("getTableMetaData, can not load meta data for table '{}'", tableName);
         }
         return result;
     }
     
     private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            String schemaNameFinal = isSchemaAvailable() ? schemaName : null;
-            Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, schemaNameFinal, tableNamePattern);
+            Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(
+                    connection, TypedSPIRegistry.getRegisteredService(DatabaseType.class, dataSource.getDatabaseType().getType()).isSchemaAvailable() ? schemaName : null, tableNamePattern);
             this.tableMetaDataMap.putAll(tableMetaDataMap);
         }
-    }
-    
-    private boolean isSchemaAvailable() {
-        return DatabaseTypeFactory.getInstance(dataSource.getDatabaseType().getType()).isSchemaAvailable();
     }
     
     private Map<TableName, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {

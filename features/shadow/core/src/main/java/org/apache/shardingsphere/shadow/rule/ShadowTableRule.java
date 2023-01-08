@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.shadow.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.exception.metadata.InvalidShadowAlgorithmOperationException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
@@ -72,7 +73,7 @@ public final class ShadowTableRule {
     private void initShadowAlgorithmNames(final ShadowOperationType operationType, final String algorithmName, final String shadowColumnName,
                                           final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames) {
         Collection<ShadowAlgorithmNameRule> shadowAlgorithmNameRules = columnShadowAlgorithmNames.get(operationType);
-        Preconditions.checkState(null == shadowAlgorithmNameRules, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`.", operationType.name(), tableName);
+        ShardingSpherePreconditions.checkState(null == shadowAlgorithmNameRules, () -> new InvalidShadowAlgorithmOperationException(operationType.name(), tableName));
         columnShadowAlgorithmNames.put(operationType, Collections.singletonList(new ShadowAlgorithmNameRule(shadowColumnName, algorithmName)));
     }
 }

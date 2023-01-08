@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -30,8 +32,8 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -42,9 +44,8 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("group-name", "foo_group");
-        DatabaseDiscoveryProviderAlgorithm actual = DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new AlgorithmConfiguration("MySQL.MGR", props));
+        DatabaseDiscoveryProviderAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("MySQL.MGR", PropertiesBuilder.build(new Property("group-name", "foo_group"))), DatabaseDiscoveryProviderAlgorithm.class);
         actual.checkEnvironment("foo_db", Collections.singletonList(mockEnvironmentAvailableDataSource()));
     }
     
@@ -63,7 +64,8 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        DatabaseDiscoveryProviderAlgorithm actual = DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new AlgorithmConfiguration("MySQL.MGR", new Properties()));
+        DatabaseDiscoveryProviderAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("MySQL.MGR", new Properties()), DatabaseDiscoveryProviderAlgorithm.class);
         assertTrue(actual.isPrimaryInstance(mockPrimaryDataSource()));
     }
     

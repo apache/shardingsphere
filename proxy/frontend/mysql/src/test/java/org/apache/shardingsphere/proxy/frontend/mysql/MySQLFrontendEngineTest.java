@@ -34,14 +34,13 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
@@ -51,9 +50,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -61,12 +60,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -98,14 +99,19 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(context.channel()).thenReturn(channel);
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
         when(channel.attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetConnectionIdGenerator() {
-        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
-        field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), 0);
+        Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         mysqlFrontendEngine = new MySQLFrontendEngine();
+    }
+    
+    @Test
+    public void assertInitChannel() {
+        mysqlFrontendEngine.initChannel(channel);
+        verify(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).set(any(AtomicInteger.class));
     }
     
     @Test
@@ -161,20 +167,18 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
-        Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
-        field.setAccessible(true);
-        field.set(mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
+        Plugins.getMemberAccessor().set(MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase"), mysqlFrontendEngine.getAuthenticationEngine(), connectionPhase);
     }
     
     private void initProxyContext(final ShardingSphereUser user) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetadataContexts metadataContexts = getMetadataContexts(user);
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+        MetaDataContexts metaDataContexts = getMetaDataContexts(user);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
     
-    private MetadataContexts getMetadataContexts(final ShardingSphereUser user) {
-        return new MetadataContexts(mock(MetadataPersistService.class),
+    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
+        return new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
     }
     
@@ -190,7 +194,7 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
 }

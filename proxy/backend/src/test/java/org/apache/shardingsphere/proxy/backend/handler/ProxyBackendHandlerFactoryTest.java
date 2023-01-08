@@ -20,16 +20,16 @@ package org.apache.shardingsphere.proxy.backend.handler;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminUpdateBackendHandler;
@@ -71,13 +71,13 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     
-    private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
+    private final DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @Mock
-    private JDBCBackendConnection backendConnection;
+    private BackendConnection backendConnection;
     
     @Before
     public void setUp() {
@@ -85,15 +85,15 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        MetadataContexts metadataContexts = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
-        mockGlobalRuleMetaData(metadataContexts);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereDatabase database = mockDatabase();
-        when(metadataContexts.getMetadata().getDatabase("db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
-        when(metadataContexts.getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         CacheOption cacheOption = new CacheOption(1024, 1024);
-        when(metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
         ProxyContext.init(contextManager);
     }
     
@@ -104,12 +104,12 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         return result;
     }
     
-    private void mockGlobalRuleMetaData(final MetadataContexts metadataContexts) {
+    private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
-        when(metadataContexts.getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     
     @Test

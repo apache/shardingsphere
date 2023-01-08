@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 <#if mode?exists>
     <#include "./mode/${mode}.ftl" />
 </#if>
@@ -26,7 +27,7 @@ dataSources:
     username: ${username}
     password: ${(password)?string}
     maxPoolSize: 10
-<#if feature!="encrypt">
+<#if feature!="encrypt" && feature!="mask">
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver

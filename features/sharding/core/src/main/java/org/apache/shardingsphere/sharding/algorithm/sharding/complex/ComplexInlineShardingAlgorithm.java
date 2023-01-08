@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
 
-import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import lombok.Getter;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,7 +68,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        Preconditions.checkNotNull(algorithmExpression, "Inline sharding algorithm expression can not be null.");
+        ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
         return InlineExpressionParser.handlePlaceHolder(algorithmExpression.trim());
     }
     
@@ -88,8 +89,8 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
             return availableTargetNames;
         }
         Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = shardingValue.getColumnNameAndShardingValuesMap();
-        Preconditions.checkArgument(shardingColumns.isEmpty() || shardingColumns.size() == columnNameAndShardingValuesMap.size(),
-                "Complex inline need %s sharing columns, but only found %s", shardingColumns.size(), columnNameAndShardingValuesMap.size());
+        ShardingSpherePreconditions.checkState(shardingColumns.isEmpty() || shardingColumns.size() == columnNameAndShardingValuesMap.size(),
+                () -> new MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException(shardingColumns.size(), columnNameAndShardingValuesMap.size()));
         Collection<Map<String, Comparable<?>>> combine = combine(columnNameAndShardingValuesMap);
         return combine.stream().map(this::doSharding).collect(Collectors.toList());
     }

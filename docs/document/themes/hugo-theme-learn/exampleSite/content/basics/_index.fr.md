@@ -9,4 +9,4 @@ chapter: true
 
 # Démarrage
 
-Découvrez comment utiliser ce thème Hugo et apprenez en les concepts
+Découvrez comment utiliser ce thème Hugo et apprenez-en les concepts

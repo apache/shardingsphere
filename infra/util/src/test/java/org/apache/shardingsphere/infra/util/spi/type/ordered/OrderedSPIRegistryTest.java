@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.ordered;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixture;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedInterfaceFixtureImpl;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixture;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixture;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedInterfaceFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.ref.SoftReference;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,15 +37,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class OrderedSPIRegistryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(OrderedSPIFixture.class);
-    }
-    
     @After
-    public void cleanCache() throws NoSuchFieldException, IllegalAccessException {
-        Field field = OrderedServicesCache.class.getDeclaredField("cache");
-        field.setAccessible(true);
-        field.set(null, new SoftReference<>(new ConcurrentHashMap<>()));
+    public void cleanCache() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class, new SoftReference<>(new ConcurrentHashMap<>()));
     }
     
     @SuppressWarnings("rawtypes")

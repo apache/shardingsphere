@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederation
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -228,8 +228,8 @@ public final class StatementAdapterTest {
     private ShardingSphereStatement mockShardingSphereStatement(final Statement... statements) {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(connection.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(connection.getContextManager().getMetadataContexts().getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getDatabaseName()).thenReturn("db");
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()));
         when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build()));
@@ -243,13 +243,13 @@ public final class StatementAdapterTest {
         DataNodeContainedRule rule = mock(DataNodeContainedRule.class);
         when(rule.isNeedAccumulate(any())).thenReturn(true);
         when(connection.getContextManager()
-                .getMetadataContexts().getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
+                .getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
         TrafficRule trafficRule = new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build());
         SQLFederationRule sqlFederationRule = new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(connection.getDatabaseName()).thenReturn("db");
-        when(connection.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(connection.getContextManager().getMetadataContexts().getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(trafficRule);
         when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
@@ -261,8 +261,6 @@ public final class StatementAdapterTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setExecutionContext(final ShardingSphereStatement statement, final ExecutionContext executionContext) {
-        Field field = statement.getClass().getDeclaredField("executionContext");
-        field.setAccessible(true);
-        field.set(statement, executionContext);
+        Plugins.getMemberAccessor().set(statement.getClass().getDeclaredField("executionContext"), statement, executionContext);
     }
 }

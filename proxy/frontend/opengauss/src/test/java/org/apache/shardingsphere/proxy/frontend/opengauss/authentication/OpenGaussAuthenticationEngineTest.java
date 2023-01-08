@@ -35,13 +35,12 @@ import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidP
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
@@ -52,9 +51,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -116,10 +115,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setAlreadyReceivedStartupMessage(final OpenGaussAuthenticationEngine target) {
-        Field field = OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
-        field.setAccessible(true);
-        field.set(target, true);
-        field.setAccessible(false);
+        Plugins.getMemberAccessor().set(OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived"), target, true);
     }
     
     @Test
@@ -133,9 +129,9 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
     }
     
     private void assertLogin(final String inputPassword) {
-        MetadataContexts metadataContexts = getMetadataContexts(new ShardingSphereUser(username, password, ""));
+        MetaDataContexts metaDataContexts = getMetaDataContexts(new ShardingSphereUser(username, password, ""));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetadataContexts()).thenReturn(metadataContexts);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -167,36 +163,30 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         return new UnpooledHeapByteBuf(UnpooledByteBufAllocator.DEFAULT, initialCapacity, maxCapacity);
     }
     
-    private MetadataContexts getMetadataContexts(final ShardingSphereUser user) {
-        return new MetadataContexts(mock(MetadataPersistService.class),
+    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
+        return new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(new LinkedHashMap<>(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(InstanceContext.class), mock(ConfigurationProperties.class));
+        AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getRandom64Code(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("random64Code");
-        field.setAccessible(true);
-        return (byte[]) field.get(packet);
+        return (byte[]) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("random64Code"), packet);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getToken(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("token");
-        field.setAccessible(true);
-        return (byte[]) field.get(packet);
+        return (byte[]) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("token"), packet);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private int getServerIteration(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        Field field = OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration");
-        field.setAccessible(true);
-        return (int) field.get(packet);
+        return (int) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration"), packet);
     }
     
     private String encodeDigest(final String password, final String random64code, final String token, final int serverIteration) {

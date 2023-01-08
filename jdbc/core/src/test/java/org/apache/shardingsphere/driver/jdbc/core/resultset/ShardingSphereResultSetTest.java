@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +42,6 @@ import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -55,8 +54,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -95,9 +94,9 @@ public final class ShardingSphereResultSetTest {
     
     private ShardingSphereStatement getShardingSphereStatement() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        MetadataContexts metadataContexts = mock(MetadataContexts.class, RETURNS_DEEP_STUBS);
-        when(metadataContexts.getMetadata().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(connection.getContextManager().getMetadataContexts()).thenReturn(metadataContexts);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         ShardingSphereStatement result = mock(ShardingSphereStatement.class);
         when(result.getConnection()).thenReturn(connection);
         return result;
@@ -207,7 +206,12 @@ public final class ShardingSphereResultSetTest {
     @Test
     public void assertGetStringWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
+        LocalDateTime tempTime = LocalDateTime.of(2022, 12, 14, 0, 0);
+        when(mergeResultSet.getValue(2, String.class)).thenReturn(tempTime);
+        when(mergeResultSet.getValue(3, String.class)).thenReturn(Timestamp.valueOf(tempTime));
         assertThat(shardingSphereResultSet.getString(1), is("value"));
+        assertThat(shardingSphereResultSet.getString(2), is("2022-12-14T00:00"));
+        assertThat(shardingSphereResultSet.getString(3), is("2022-12-14 00:00:00.0"));
     }
     
     @Test
@@ -616,11 +620,11 @@ public final class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getObject(1, Clob.class), is(result));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetObjectWithRef() throws SQLException {
         Ref result = mock(Ref.class);
         when(mergeResultSet.getValue(1, Ref.class)).thenReturn(result);
-        shardingSphereResultSet.getObject(1, Ref.class);
+        assertThat(shardingSphereResultSet.getObject(1, Ref.class), is(result));
     }
     
     @Test

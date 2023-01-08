@@ -22,7 +22,9 @@ import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,5 +38,15 @@ public final class JobDataNodeLineTest {
                 new JobDataNodeEntry("t_order_item", Arrays.asList(new DataNode("ds_0.t_order_item_0"), new DataNode("ds_0.t_order_item_1"))))).marshal();
         String expected = "t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1";
         assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertUnmarshal() {
+        String expected = "t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1";
+        JobDataNodeLine actual = JobDataNodeLine.unmarshal(expected);
+        assertThat(actual.getEntries().size(), is(2));
+        List<JobDataNodeEntry> entries = new ArrayList<>(actual.getEntries());
+        assertThat(entries.get(0).getLogicTableName(), is("t_order"));
+        assertThat(entries.get(1).getLogicTableName(), is("t_order_item"));
     }
 }

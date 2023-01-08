@@ -47,3 +47,12 @@ algorithmConfigs.put("shadowAlgorithmName", new AlgorithmConfiguration("xxx", ne
 Map<String, AlgorithmConfiguration> algorithmConfigs = new HashMap<>(1, 1);
 algorithmConfigs.put("discoveryTypeName", new AlgorithmConfiguration("xxx", new Properties()));
 ```
+
+## 脱敏算法
+
+```java
+// maskAlgorithmName 由用户指定，需要和脱敏规则中的 maskAlgorithm 属性一致
+// type 和 props，请参考脱敏内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/mask/
+Map<String, AlgorithmConfiguration> algorithmConfigs = new LinkedHashMap<>(1, 1);
+algorithmConfigs.put("maskAlgorithmName", new AlgorithmConfiguration("xxx", new Properties()));
+```

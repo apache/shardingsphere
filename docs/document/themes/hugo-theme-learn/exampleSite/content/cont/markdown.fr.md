@@ -34,7 +34,7 @@ Grav ships with built-in support for [Markdown](http://daringfireball.net/projec
 Without further delay, let us go over the main elements of Markdown and what the resulting HTML looks like:
 
 {{% notice info %}}
-<i class="fa fa-bookmark"></i> Bookmark this page for easy future reference!
+<i class="fas fa-bookmark"></i> Bookmark this page for easy future reference!
 {{% /notice %}}
 
 ## Headings
@@ -175,6 +175,7 @@ HTML:
 ```
 
 ## Blockquotes
+
 For quoting blocks of content from another source within your document.
 
 Add `>` before any text you want to quote.
@@ -198,26 +199,26 @@ and this HTML:
 Blockquotes can also be nested:
 
 ```markdown
-> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
-Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
->> Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
-odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue. Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+>
+> > Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+>
+> Mauris sit amet ligula egestas, feugiat metus tincidunt, luctus libero. Donec congue finibus tempor. Vestibulum aliquet sollicitudin erat, ut aliquet purus posuere luctus.
 ```
 
 Renders to:
 
-> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
-Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
->> Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
-odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
-
+> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue. Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+>
+> > Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+>
+> Mauris sit amet ligula egestas, feugiat metus tincidunt, luctus libero. Donec congue finibus tempor. Vestibulum aliquet sollicitudin erat, ut aliquet purus posuere luctus.
 
 ## Notices
 
 {{% notice note %}}
 The old mechanism for notices overriding the block quote syntax (`>>>`) has been deprecated.  Notices are now handled via a dedicated plugin called [Markdown Notices](https://github.com/getgrav/grav-plugin-markdown-notices)
 {{% /notice %}}
-
 
 ## Lists
 
@@ -598,15 +599,15 @@ Content for chapter one.
 Images have a similar syntax to links but include a preceding exclamation point.
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png)
+![Minion](https://octodex.github.com/images/minion.png)
 ```
-![Minion](http://octodex.github.com/images/minion.png)
+![Minion](https://octodex.github.com/images/minion.png)
 
 or
 ```markdown
-![Alt text](http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+![Alt text](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
 ```
-![Alt text](http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+![Alt text](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
 
 Like links, Images also have a footnote style syntax
 
@@ -619,47 +620,47 @@ Like links, Images also have a footnote style syntax
 
 With a reference later in the document defining the URL location:
 
-[id]: http://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+[id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
 
-    [id]: http://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+    [id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
 
 ### Resizing image
 
 Add HTTP parameters `width` and/or `height` to the link image to resize the image. Values are CSS values (default is `auto`).
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png?width=20pc)
+![Minion](https://octodex.github.com/images/minion.png?width=20pc)
 ```
 
-![Minion](http://octodex.github.com/images/minion.png?width=20pc)
+![Minion](https://octodex.github.com/images/minion.png?width=20pc)
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png?height=50px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px)
 ```
 
-![Minion](http://octodex.github.com/images/minion.png?height=50px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px)
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png?height=50px&width=300px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px&width=300px)
 ```
 
-![Minion](http://octodex.github.com/images/minion.png?height=50px&width=300px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px&width=300px)
 
 ### Add CSS classes
 
 Add a HTTP `classes` parameter to the link image to add CSS classes. `shadow`and `border` are available but you could define other ones.
 
 ```markdown
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?classes=shadow)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?classes=shadow)
 ```
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=shadow)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=shadow)
 
 ```markdown
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?classes=border)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?classes=border)
 ```
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border)
 
 ```markdown
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?classes=border,shadow)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?classes=border,shadow)
 ```
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border,shadow)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border,shadow)

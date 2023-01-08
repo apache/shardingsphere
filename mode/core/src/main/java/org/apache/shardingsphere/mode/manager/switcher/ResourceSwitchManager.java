@@ -37,7 +37,7 @@ public final class ResourceSwitchManager {
     /**
      * Create switching resource.
      * 
-     * @param resourceMetaData resource Metadata
+     * @param resourceMetaData resource meta data
      * @param toBeChangedDataSourceProps to be changed data source properties map
      * @return created switching resource
      */
@@ -48,7 +48,7 @@ public final class ResourceSwitchManager {
     /**
      * Create switching resource by drop resource.
      *
-     * @param resourceMetaData resource Metadata
+     * @param resourceMetaData resource meta data
      * @param toBeDeletedDataSourceProps to be deleted data source properties map
      * @return created switching resource
      */
@@ -59,7 +59,7 @@ public final class ResourceSwitchManager {
     /**
      * Create switching resource by alter data source props.
      *
-     * @param resourceMetaData resource Metadata
+     * @param resourceMetaData resource meta data
      * @param toBeChangedDataSourceProps to be changed data source properties map
      * @return created switching resource
      */

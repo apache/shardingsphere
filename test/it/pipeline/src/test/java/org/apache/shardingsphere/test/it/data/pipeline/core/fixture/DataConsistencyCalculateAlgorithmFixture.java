@@ -21,14 +21,16 @@ import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+@AlgorithmDescription("Fixture description.")
 @Getter
 public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
     
@@ -55,12 +57,7 @@ public final class DataConsistencyCalculateAlgorithmFixture implements DataConsi
     
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
-        return DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
-    }
-    
-    @Override
-    public String getDescription() {
-        return "Fixture";
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().map(DatabaseType::getType).collect(Collectors.toList());
     }
     
     @Override

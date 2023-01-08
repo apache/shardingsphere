@@ -55,7 +55,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether validate table meta data consistency when application startup or updated.
      */
-    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    CHECK_TABLE_META_DATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * SQL federation type.
@@ -98,11 +98,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Less than or equal to 0 means no limitation.
      */
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
-    
-    /**
-     * Proxy backend driver type.
-     */
-    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class, true),
     
     /**
      * Proxy MySQL default version.

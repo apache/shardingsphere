@@ -32,17 +32,17 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -63,7 +63,7 @@ public final class ShardingSphereConnectionTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(result.getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class));
         return result;
@@ -165,11 +165,9 @@ public final class ShardingSphereConnectionTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private ConnectionManager mockConnectionManager(final ConnectionTransaction connectionTransaction) {
-        Field field = connection.getClass().getDeclaredField("connectionManager");
-        field.setAccessible(true);
         ConnectionManager result = mock(ConnectionManager.class);
         when(result.getConnectionTransaction()).thenReturn(connectionTransaction);
-        field.set(connection, result);
+        Plugins.getMemberAccessor().set(connection.getClass().getDeclaredField("connectionManager"), connection, result);
         return result;
     }
     

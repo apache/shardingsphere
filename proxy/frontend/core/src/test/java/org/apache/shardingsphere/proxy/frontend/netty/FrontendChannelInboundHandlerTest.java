@@ -38,9 +38,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -79,7 +78,7 @@ public final class FrontendChannelInboundHandlerTest {
             ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
             mocked.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
             ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-            when(mockedProxyContext.getContextManager().getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+            when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
             when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class));
             frontendChannelInboundHandler = new FrontendChannelInboundHandler(frontendEngine, channel);
         }
@@ -89,9 +88,7 @@ public final class FrontendChannelInboundHandlerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private ConnectionSession getConnectionSession() {
-        Field connectionSessionField = FrontendChannelInboundHandler.class.getDeclaredField("connectionSession");
-        connectionSessionField.setAccessible(true);
-        return (ConnectionSession) connectionSessionField.get(frontendChannelInboundHandler);
+        return (ConnectionSession) Plugins.getMemberAccessor().get(FrontendChannelInboundHandler.class.getDeclaredField("connectionSession"), frontendChannelInboundHandler);
     }
     
     @Test

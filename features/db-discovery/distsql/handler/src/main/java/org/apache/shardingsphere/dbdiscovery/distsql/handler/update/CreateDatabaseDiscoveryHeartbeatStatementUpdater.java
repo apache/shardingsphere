@@ -21,8 +21,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseDiscoveryRuleStatementConverter;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryHeartbeatStatement;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -35,15 +35,14 @@ public final class CreateDatabaseDiscoveryHeartbeatStatementUpdater implements R
     private static final String RULE_TYPE = "database discovery";
     
     @Override
-    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement) {
+    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig,
+                                                                                final CreateDatabaseDiscoveryHeartbeatStatement sqlStatement) {
         return DatabaseDiscoveryRuleStatementConverter.convertDiscoveryHeartbeat(sqlStatement.getHeartbeats());
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
-        if (null != currentRuleConfig) {
-            currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
-        }
+        currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
     }
     
     @Override

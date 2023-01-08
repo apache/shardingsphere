@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.SQLException;
 
@@ -48,7 +50,9 @@ public final class QueryHeaderBuilderEngine {
     public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = queryResultMetaData.getColumnName(columnIndex);
         String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
-        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        QueryHeaderBuilder queryHeaderBuilder = TypedSPIRegistry.findRegisteredService(QueryHeaderBuilder.class, databaseType.getType())
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(QueryHeaderBuilder.class));
+        return queryHeaderBuilder.build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     /**
@@ -65,7 +69,9 @@ public final class QueryHeaderBuilderEngine {
                              final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
         String columnName = getColumnName(projectionsContext, queryResultMetaData, columnIndex);
         String columnLabel = getColumnLabel(projectionsContext, queryResultMetaData, columnIndex);
-        return QueryHeaderBuilderFactory.getInstance(databaseType).build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        QueryHeaderBuilder queryHeaderBuilder = TypedSPIRegistry.findRegisteredService(QueryHeaderBuilder.class, databaseType.getType())
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(QueryHeaderBuilder.class));
+        return queryHeaderBuilder.build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     private String getColumnLabel(final ProjectionsContext projectionsContext, final QueryResultMetaData queryResultMetaData, final int columnIndex) throws SQLException {

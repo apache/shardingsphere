@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -46,41 +47,41 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
             return;
         }
         String databaseName = database.getName();
-        checkResources(databaseName, database, currentRuleConfig);
+        checkDataSources(databaseName, database, currentRuleConfig);
         checkLoadBalancers(currentRuleConfig);
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        Collection<String> requireResources = new LinkedHashSet<>();
-        Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
+    private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        Collection<String> requiredDataSources = new LinkedHashSet<>();
+        Collection<String> requiredLogicalDataSources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
             if (null != each.getDynamicStrategy()) {
-                requireDiscoverableResources.add(each.getDynamicStrategy().getAutoAwareDataSourceName());
+                requiredLogicalDataSources.add(each.getDynamicStrategy().getAutoAwareDataSourceName());
             }
             if (null != each.getStaticStrategy()) {
                 if (null != each.getStaticStrategy().getWriteDataSourceName()) {
-                    requireResources.add(each.getStaticStrategy().getWriteDataSourceName());
+                    requiredDataSources.add(each.getStaticStrategy().getWriteDataSourceName());
                 }
                 if (!each.getStaticStrategy().getReadDataSourceNames().isEmpty()) {
-                    requireResources.addAll(each.getStaticStrategy().getReadDataSourceNames());
+                    requiredDataSources.addAll(each.getStaticStrategy().getReadDataSourceNames());
                 }
             }
         });
-        Collection<String> notExistResources = database.getResourceMetaData().getNotExistedResources(requireResources);
-        ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
-        Collection<String> logicResources = getLogicResources(database);
-        Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistLogicResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistLogicResources));
+        Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
+        Collection<String> logicalDataSources = getLogicDataSources(database);
+        Collection<String> notExistedLogicalDataSources = requiredLogicalDataSources.stream().filter(each -> !logicalDataSources.contains(each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(notExistedLogicalDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedLogicalDataSources));
     }
     
-    private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
+    private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
                 .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !ReadQueryLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReadQueryLoadBalanceAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }

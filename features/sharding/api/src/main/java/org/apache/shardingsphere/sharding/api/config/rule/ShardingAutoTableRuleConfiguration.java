@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sharding.api.config.rule;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -43,7 +41,6 @@ public final class ShardingAutoTableRuleConfiguration {
     private ShardingAuditStrategyConfiguration auditStrategy;
     
     public ShardingAutoTableRuleConfiguration(final String logicTable, final String actualDataSources) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
         this.logicTable = logicTable;
         this.actualDataSources = actualDataSources;
     }

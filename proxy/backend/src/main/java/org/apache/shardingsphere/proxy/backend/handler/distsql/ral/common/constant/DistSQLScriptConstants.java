@@ -109,6 +109,8 @@ public final class DistSQLScriptConstants {
     
     public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, %s)";
     
+    public static final String AUDIT_STRATEGY = "AUDIT_STRATEGY(%s, ALLOW_HINT_DISABLE=%s)";
+    
     public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING TABLE REFERENCE RULE";
     
     public static final String BINDING_TABLES = " %s (%s)";
@@ -191,4 +193,16 @@ public final class DistSQLScriptConstants {
             + ")";
     
     public static final String SHADOW_TABLE = "%s(%s)";
+    
+    public static final String CREATE_MASK = "CREATE MASK RULE";
+    
+    public static final String MASK = " %s ("
+            + System.lineSeparator()
+            + "COLUMNS("
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + "),";
+    
+    public static final String MASK_COLUMN = "(NAME=%s, %s)";
 }

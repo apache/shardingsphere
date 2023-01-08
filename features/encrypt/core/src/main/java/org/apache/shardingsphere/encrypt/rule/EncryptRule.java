@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
-import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptAssistedQueryEncryptorNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotFoundException;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryEncryptorNotFoundException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +63,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, EncryptAlgorithmFactory.newInstance(value)));
+        ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
         queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
     }
@@ -143,7 +146,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<StandardEncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find StandardEncryptAlgorithm by %s.%s.", logicTable, logicColumn);
+        ShardingSpherePreconditions.checkState(encryptor.isPresent(),
+                () -> new EncryptEncryptorNotFoundException(String.format("Can not find StandardEncryptAlgorithm by %s.%s.", logicTable, logicColumn)));
         return getEncryptValues(encryptor.get(), originalValues, encryptContext);
     }
     
@@ -235,7 +239,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<StandardEncryptAlgorithm> encryptor = findAssistedQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find assist encryptor by %s.%s.", logicTable, logicColumn);
+        ShardingSpherePreconditions.checkState(encryptor.isPresent(),
+                () -> new EncryptAssistedQueryEncryptorNotFoundException(String.format("Can not find assist encryptor by %s.%s.", logicTable, logicColumn)));
         return getEncryptAssistedQueryValues(encryptor.get(), originalValues, encryptContext);
     }
     
@@ -260,7 +265,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public List<Object> getEncryptLikeQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<LikeEncryptAlgorithm> encryptor = findLikeQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find like encryptor by %s.%s.", logicTable, logicColumn);
+        ShardingSpherePreconditions.checkState(encryptor.isPresent(),
+                () -> new EncryptLikeQueryEncryptorNotFoundException(String.format("Can not find like encryptor by %s.%s.", logicTable, logicColumn)));
         return getEncryptLikeQueryValues(encryptor.get(), originalValues, encryptContext);
     }
     

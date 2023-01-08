@@ -108,6 +108,14 @@ header .select-style select{
     color:#6B6D7A;
 }
 
+#sidebar ul.topics li.parent ul, #sidebar ul.topics > li.active ul{
+    display: none;
+}
+
+#sidebar ul.topics li.parent>ul, #sidebar ul.topics > li.active>ul{
+    display: block;
+}
+
 #sidebar a{
     color:#000;
 }
@@ -322,6 +330,31 @@ a:hover{
 h1, h2, h3, h4, h5, h6{font-weight: bold;font-family:'roboto,sans-serif' ;}
 h1{
     text-align: left;
+    font-size: 2.0rem;
+}
+  
+h2 {
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+h5 {
+    font-size: 1rem;
+}
+
+h6 {
+    font-size: 0.5rem;
+}
+
+#chapter p{
+    font-size:inherit;
 }
 
 h2{

@@ -20,9 +20,8 @@ package org.apache.shardingsphere.infra.datasource.props;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -41,25 +40,23 @@ public final class DataSourcePropertiesValidator {
      * Validate data source properties map.
      * 
      * @param dataSourcePropertiesMap data source properties map
-     * @throws InvalidResourcesException invalid resources exception
+     * @return error messages
      */
-    public void validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap) throws InvalidResourcesException {
-        Collection<String> errorMessages = new LinkedList<>();
+    public Collection<String> validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
+        Collection<String> result = new LinkedList<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());
                 validateConnection(entry.getKey(), entry.getValue());
             } catch (final InvalidDataSourcePropertiesException ex) {
-                errorMessages.add(ex.getMessage());
+                result.add(ex.getMessage());
             }
         }
-        if (!errorMessages.isEmpty()) {
-            throw new InvalidResourcesException(errorMessages);
-        }
+        return result;
     }
     
     private void validateProperties(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
-        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
         if (!poolMetaData.isPresent()) {
             return;
         }

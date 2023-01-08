@@ -56,6 +56,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDefaultSingleTableStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSingleTableContext;
@@ -82,7 +83,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComp
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
@@ -90,8 +91,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardD
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetadataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
@@ -101,6 +102,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultS
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDefaultSingleTableStorageUnitStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
@@ -120,7 +122,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitRegisterStorageUnit(final RegisterStorageUnitContext ctx) {
-        return new RegisterStorageUnitStatement(ctx.storageUnitDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
+        return new RegisterStorageUnitStatement(null != ctx.ifNotExists(), ctx.storageUnitDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -131,7 +133,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
         Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
-        return new ShowTableMetadataStatement(tableNames, null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowTableMetaDataStatement(tableNames, null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
@@ -139,15 +141,9 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         String user = getIdentifierValue(ctx.user());
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
         Properties props = getProperties(ctx.propertiesDefinition());
-        DataSourceSegment result = null;
-        if (null != ctx.urlSource()) {
-            result = new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
-        }
-        if (null != ctx.simpleSource()) {
-            result = new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(),
-                    getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
-        }
-        return result;
+        return null != ctx.urlSource() ? new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props)
+                : new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()),
+                        ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
     }
     
     private String getPassword(final PasswordContext ctx) {
@@ -246,13 +242,20 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitShowLogicalTables(final ShowLogicalTablesContext ctx) {
+        return new ShowLogicalTablesStatement(null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+    }
+    
+    @Override
     public ASTNode visitShowDefaultSingleTableStorageUnit(final ShowDefaultSingleTableStorageUnitContext ctx) {
         return new ShowDefaultSingleTableStorageUnitStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
     public ASTNode visitShowSingleTable(final ShowSingleTableContext ctx) {
-        return new ShowSingleTableStatement(null == ctx.TABLE() ? null : getIdentifierValue(ctx.tableName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowSingleTableStatement(null == ctx.TABLE() ? null : getIdentifierValue(ctx.tableName()), null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
@@ -272,13 +275,13 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitRefreshDatabaseMetadata(final RefreshDatabaseMetadataContext ctx) {
-        return new RefreshDatabaseMetadataStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()));
+        return new RefreshDatabaseMetaDataStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()));
     }
     
     @Override
     public ASTNode visitRefreshTableMetadata(final RefreshTableMetadataContext ctx) {
         if (null == ctx.refreshScope()) {
-            return new RefreshTableMetadataStatement();
+            return new RefreshTableMetaDataStatement();
         }
         String storageUnitName = null;
         String schemaName = null;
@@ -288,7 +291,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
             storageUnitName = getIdentifierValue(fromSegment.storageUnitName());
             schemaName = null == fromSegment.schemaName() ? null : getIdentifierValue(fromSegment.schemaName());
         }
-        return new RefreshTableMetadataStatement(tableName, storageUnitName, schemaName);
+        return new RefreshTableMetaDataStatement(tableName, storageUnitName, schemaName);
     }
     
     @Override
@@ -364,10 +367,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     private AlgorithmSegment getAlgorithmSegment(final RateLimiterContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return (AlgorithmSegment) visit(ctx);
+        return null == ctx ? null : (AlgorithmSegment) visit(ctx);
     }
     
     @Override
@@ -387,24 +387,15 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     private Integer getWorkerThread(final WorkerThreadContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return Integer.parseInt(ctx.intValue().getText());
+        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
     }
     
     private Integer getBatchSize(final BatchSizeContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return Integer.parseInt(ctx.intValue().getText());
+        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
     }
     
     private Integer getShardingSize(final ShardingSizeContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        return Integer.parseInt(ctx.intValue().getText());
+        return null == ctx ? null : Integer.parseInt(ctx.intValue().getText());
     }
     
     @Override

@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.infra.context.refresher;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Meta data refresher.
@@ -39,14 +38,14 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
     /**
      * Refresh schema.
      *
+     * @param modeContextManager mode context manager
      * @param database database
      * @param logicDataSourceNames route data source names
      * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @param props configuration properties
-     * @return meta data refreshed event
      * @throws SQLException SQL exception
      */
-    Optional<MetaDataRefreshedEvent> refresh(ShardingSphereDatabase database, Collection<String> logicDataSourceNames,
-                                             String schemaName, T sqlStatement, ConfigurationProperties props) throws SQLException;
+    void refresh(ModeContextManager modeContextManager, ShardingSphereDatabase database, Collection<String> logicDataSourceNames, String schemaName,
+                 T sqlStatement, ConfigurationProperties props) throws SQLException;
 }

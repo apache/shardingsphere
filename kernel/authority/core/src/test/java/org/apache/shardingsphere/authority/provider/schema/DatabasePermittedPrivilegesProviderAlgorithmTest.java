@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.authority.provider.schema;
 
-import org.apache.shardingsphere.authority.factory.AuthorityProviderAlgorithmFactory;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,22 +39,14 @@ public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
     
     @Test
     public void assertBuildAuthorityRegistry() {
-        DatabasePermittedPrivilegesProviderAlgorithm algorithm = createAuthorityProviderAlgorithm();
+        Properties props = PropertiesBuilder.build(
+                new Property(DatabasePermittedPrivilegesProviderAlgorithm.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
+        DatabasePermittedPrivilegesProviderAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("DATABASE_PERMITTED", props), AuthorityProviderAlgorithm.class);
         AuthorityRegistry actual = algorithm.buildAuthorityRegistry(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
         assertTrue(privileges.get().hasPrivileges("test"));
         assertTrue(privileges.get().hasPrivileges("db_dal_admin"));
-    }
-    
-    private DatabasePermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
-        return (DatabasePermittedPrivilegesProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("DATABASE_PERMITTED", createProperties()));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(DatabasePermittedPrivilegesProviderAlgorithm.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*");
-        return result;
     }
 }

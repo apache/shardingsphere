@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.checker.ReadwriteSplittingRuleStatementChecker;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Create readwrite-splitting rule statement updater.
@@ -31,20 +37,32 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig);
+        ReadwriteSplittingRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), currentRuleConfig, sqlStatement.isIfNotExists());
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
+    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig,
+                                                                                 final CreateReadwriteSplittingRuleStatement sqlStatement) {
+        Collection<ReadwriteSplittingRuleSegment> segments = sqlStatement.getRules();
+        if (sqlStatement.isIfNotExists()) {
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(currentRuleConfig, sqlStatement.getRules());
+            segments.removeIf(each -> duplicatedRuleNames.contains(each.getName()));
+        }
+        return ReadwriteSplittingRuleStatementConverter.convert(segments);
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig) {
+        currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
+        currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.getLoadBalancers());
+    }
+    
+    private Collection<String> getDuplicatedRuleNames(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final Collection<ReadwriteSplittingRuleSegment> segments) {
+        Collection<String> currentRuleNames = new LinkedList<>();
         if (null != currentRuleConfig) {
-            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
-            currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.getLoadBalancers());
+            currentRuleNames.addAll(currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList()));
         }
+        return segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
     }
     
     @Override

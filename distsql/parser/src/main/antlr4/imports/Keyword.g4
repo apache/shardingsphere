@@ -135,6 +135,10 @@ DATABASE
     : D A T A B A S E
     ;
 
+LOGICAL
+    : L O G I C A L
+    ;
+
 SINGLE
     : S I N G L E
     ;
@@ -353,4 +357,12 @@ GOVERNANCE
 
 CENTER
     : C E N T E R
+    ;
+
+LIKE
+    : L I K E
+    ;
+
+NOT
+    : N O T
     ;

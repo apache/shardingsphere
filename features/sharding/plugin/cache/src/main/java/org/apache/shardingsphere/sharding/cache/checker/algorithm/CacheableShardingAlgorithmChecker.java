@@ -33,7 +33,6 @@ public final class CacheableShardingAlgorithmChecker {
     
     static {
         Collection<Class<? extends ShardingAlgorithm>> result = new HashSet<>();
-        ShardingSphereServiceLoader.register(CacheableShardingAlgorithmClassProvider.class);
         for (CacheableShardingAlgorithmClassProvider each : ShardingSphereServiceLoader.getServiceInstances(CacheableShardingAlgorithmClassProvider.class)) {
             result.addAll(each.getCacheableShardingAlgorithmClasses());
         }

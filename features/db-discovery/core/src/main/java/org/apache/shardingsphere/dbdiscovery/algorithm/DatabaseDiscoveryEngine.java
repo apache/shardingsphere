@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm;
@@ -74,7 +75,7 @@ public final class DatabaseDiscoveryEngine {
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
             eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
-        String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
+        String result = newPrimaryDataSourceName.orElse("");
         postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap, disabledDataSourceNames);
         return result;
     }
@@ -103,6 +104,10 @@ public final class DatabaseDiscoveryEngine {
                     eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
                     continue;
                 }
+                if (Strings.isNullOrEmpty(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas"))) {
+                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                    continue;
+                }
                 if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
                         || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
                     enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
@@ -119,7 +124,7 @@ public final class DatabaseDiscoveryEngine {
     private ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
         try {
             return databaseDiscoveryProviderAlgorithm.loadReplicaStatus(replicaDataSource);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("Load data source replica status error: ", ex);
             return new ReplicaDataSourceStatus(false, 0L);
         }

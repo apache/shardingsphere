@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -40,9 +39,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -83,7 +82,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private final SQLStatement sqlStatementSample;
     
-    private final MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
+    private final MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
     
     private final Map<String, List<ExecutionUnit>> dataSourcesToExecutionUnits = new HashMap<>();
     
@@ -109,9 +108,9 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     }
     
     private ShardingSphereSQLParserEngine getSQLParserEngine() {
-        MetadataContexts metadataContexts = ProxyContext.getInstance().getContextManager().getMetadataContexts();
-        SQLParserRule sqlParserRule = metadataContexts.getMetadata().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(DatabaseTypeFactory.getInstance("MySQL").getType());
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        return sqlParserRule.getSQLParserEngine(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getType());
     }
     
     private List<String> extractMultiStatements(final Pattern pattern, final String sql) {
@@ -121,25 +120,25 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metadataContexts.getMetadata(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
+                metaDataContexts.getMetaData(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
         SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(),
-                metadataContexts.getMetadata().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
-                connectionSession.getDatabaseName(), metadataContexts.getMetadata().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(queryContext, metadataContexts.getMetadata().getDatabase(connectionSession.getDatabaseName()),
-                metadataContexts.getMetadata().getGlobalRuleMetaData(), metadataContexts.getMetadata().getProps(), connectionSession.getConnectionContext());
+                metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
+                connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
+        return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
+                metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connectionSession.getConnectionContext());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        Collection<ShardingSphereRule> rules = metadataContexts.getMetadata().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, metadataContexts.getMetadata().getProps()
-                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), (JDBCBackendConnection) connectionSession.getBackendConnection(),
+        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, metaDataContexts.getMetaData().getProps()
+                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connectionSession.getBackendConnection(),
                 (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules,
-                metadataContexts.getMetadata().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), samplingExecutionUnit());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {
@@ -166,7 +165,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private UpdateResponseHeader executeBatchedStatements(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        Map<String, DatabaseType> storageTypes = metadataContexts.getMetadata().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes();
+        Map<String, DatabaseType> storageTypes = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes();
         JDBCExecutorCallback<int[]> callback = new BatchedJDBCExecutorCallback(storageTypes, sqlStatementSample, isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int updated = 0;
@@ -182,7 +181,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private static class BatchedJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
         BatchedJDBCExecutorCallback(final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(DatabaseTypeFactory.getInstance("MySQL"), storageTypes, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
+            super(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"),
+                    storageTypes, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override

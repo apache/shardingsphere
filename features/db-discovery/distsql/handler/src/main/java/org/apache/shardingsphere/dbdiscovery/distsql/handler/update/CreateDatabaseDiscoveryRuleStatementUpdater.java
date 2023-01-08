@@ -23,15 +23,15 @@ import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseD
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,59 +46,71 @@ import java.util.stream.Collectors;
  */
 public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
-    private static final String RULE_TYPE = "Database discovery";
-    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
-        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
-        checkResources(databaseName, sqlStatement, database.getResourceMetaData());
-        checkDiscoverTypeAndHeartbeat(databaseName, sqlStatement, currentRuleConfig);
-    }
-    
-    private void checkDuplicateRuleNames(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig) {
-            return;
-        }
-        Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
-        Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
-        duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
-        ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new DuplicateRuleException(RULE_TYPE.toLowerCase(), databaseName, duplicateRuleNames));
-    }
-    
-    private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().collect(Collectors.toMap(AbstractDatabaseDiscoverySegment::getName, each -> 1, Integer::sum))
-                .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-    }
-    
-    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
-        Collection<String> resources = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
-        Collection<String> notExistResources = resourceMetaData.getNotExistedResources(resources);
-        ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
-    }
-    
-    private void checkDiscoverTypeAndHeartbeat(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
-        Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList()).stream()
-                .map(each -> ((DatabaseDiscoveryDefinitionSegment) each).getDiscoveryType().getName()).distinct()
-                .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(RULE_TYPE.toLowerCase(), invalidInput));
-        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new MissingRequiredAlgorithmException(RULE_TYPE, databaseName, invalidInput));
+        checkDuplicatedRuleNames(databaseName, sqlStatement, currentRuleConfig);
+        checkDataSources(databaseName, sqlStatement, database.getResourceMetaData());
+        checkDiscoverTypeAndHeartbeat(sqlStatement);
     }
     
     @Override
-    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        return DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
+    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<AbstractDatabaseDiscoverySegment> segments = sqlStatement.getRules();
+        if (sqlStatement.isIfNotExists()) {
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+            segments.removeIf(each -> duplicatedRuleNames.contains(each.getName()));
+        }
+        return DatabaseDiscoveryRuleStatementConverter.convert(segments);
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
-        if (null != currentRuleConfig) {
-            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
-            currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
-            currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
+        currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
+        currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
+        currentRuleConfig.getDiscoveryHeartbeats().putAll(toBeCreatedRuleConfig.getDiscoveryHeartbeats());
+    }
+    
+    private void checkDuplicatedRuleNames(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        checkDuplicatedRuleNamesWithSelf(databaseName, sqlStatement);
+        if (!sqlStatement.isIfNotExists()) {
+            checkDuplicatedRuleNamesWithRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
         }
+    }
+    
+    private void checkDuplicatedRuleNamesWithSelf(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().collect(Collectors.toMap(AbstractDatabaseDiscoverySegment::getName, each -> 1, Integer::sum))
+                .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("database discovery", databaseName, duplicatedRuleNames));
+    }
+    
+    private void checkDuplicatedRuleNamesWithRuleConfiguration(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement,
+                                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("database discovery", databaseName, duplicatedRuleNames));
+    }
+    
+    private Collection<String> getDuplicatedRuleNames(final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        Collection<String> currentRuleNames = new LinkedHashSet<>();
+        if (null != currentRuleConfig) {
+            currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet());
+        }
+        return sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
+    }
+    
+    private void checkDataSources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
+        Collection<String> dataSources = new LinkedHashSet<>();
+        sqlStatement.getRules().forEach(each -> dataSources.addAll(each.getDataSources()));
+        Collection<String> notExistedDataSources = resourceMetaData.getNotExistedDataSources(dataSources);
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
+    }
+    
+    private void checkDiscoverTypeAndHeartbeat(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+        Map<String, List<AbstractDatabaseDiscoverySegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
+        Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList()).stream()
+                .map(each -> ((DatabaseDiscoveryDefinitionSegment) each).getDiscoveryType().getName()).distinct()
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
     }
     
     @Override

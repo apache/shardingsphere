@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
-import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
@@ -28,7 +27,8 @@ import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -58,7 +58,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     private String getAlgorithmExpression(final Properties props) {
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        Preconditions.checkState(null != expression && !expression.isEmpty(), "Inline sharding algorithm expression cannot be null or empty.");
+        ShardingSpherePreconditions.checkState(null != expression && !expression.isEmpty(),
+                () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty."));
         return InlineExpressionParser.handlePlaceHolder(expression.trim());
     }
     

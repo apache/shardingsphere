@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 
@@ -27,9 +26,13 @@ import java.util.Collection;
 /**
  * Create shadow rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateShadowRuleStatement extends CreateRuleStatement {
     
     private final Collection<ShadowRuleSegment> rules;
+    
+    public CreateShadowRuleStatement(final boolean ifNotExists, final Collection<ShadowRuleSegment> rules) {
+        super(ifNotExists);
+        this.rules = rules;
+    }
 }

@@ -18,18 +18,20 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,13 +45,8 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        shardingAlgorithm = (BoundaryBasedRangeShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("BOUNDARY_RANGE", createProperties()));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("sharding-ranges", "1,5,10");
-        return result;
+        shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("BOUNDARY_RANGE", PropertiesBuilder.build(new Property("sharding-ranges", "1,5,10"))), ShardingAlgorithm.class);
     }
     
     @Test

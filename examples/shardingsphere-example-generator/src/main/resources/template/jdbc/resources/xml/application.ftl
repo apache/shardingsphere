@@ -39,7 +39,7 @@
     </bean>
 <#if framework=="spring-namespace-jpa">
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSource" />
+        <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:database="MYSQL" />
         </property>
@@ -57,12 +57,12 @@
 </#if>
 <#if framework=="spring-namespace-mybatis">
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource" />
+        <property name="dataSource" ref="shardingDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="shardingDataSource"/>
         <property name="mapperLocations" value="classpath*:mappers/*.xml"/>
     </bean>
     

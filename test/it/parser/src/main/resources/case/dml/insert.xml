@@ -41,6 +41,45 @@
             </value>
         </values>
     </insert>
+    
+    <insert sql-case-id="insert_with_historical_type_cast_syntax" parameters="1, 1, 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="56" stop-index="56" />
+                    <literal-expression value="1" start-index="56" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <binary-operation-expression start-index="59" stop-index="65">
+                        <left>
+                            <parameter-marker-expression parameter-index="2" start-index="59" stop-index="59" />
+                        </left>
+                        <right>
+                            <common-expression text="int4" start-index="62" stop-index="65" />
+                        </right>
+                        <operator>::</operator>
+                    </binary-operation-expression>
+                </assignment-value>
+                <assignment-value>
+                    <binary-operation-expression start-index="68" stop-index="74">
+                        <left>
+                            <parameter-marker-expression parameter-index="3" start-index="68" stop-index="68" />
+                        </left>
+                        <right>
+                            <common-expression text="text" start-index="71" stop-index="74" />
+                        </right>
+                        <operator>::</operator>
+                    </binary-operation-expression>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 
     <insert sql-case-id="insert_with_now_function" parameters="1, 1, 'init'">
         <table name="t_order_item" start-index="12" stop-index="23" />

@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
-import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
-import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
+import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
+import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
+import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -114,7 +115,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
         Object result = getCurrentQueryResult().getValue(aggregationProjection.getIndex(), Object.class);
-        Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
+        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation"));
         return (Comparable<?>) result;
     }
     

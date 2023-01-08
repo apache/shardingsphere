@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
+import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -90,7 +91,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = matchInstanceOnlinePath(event.getKey());
         if (matcher.find()) {
-            InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), event.getValue());
+            ComputeNodeData computeNodeData = YamlEngine.unmarshal(event.getValue(), ComputeNodeData.class);
+            InstanceMetaData instanceMetaData = InstanceMetaDataFactory.create(matcher.group(2),
+                    InstanceType.valueOf(matcher.group(1).toUpperCase()), computeNodeData.getAttribute(), computeNodeData.getVersion());
             if (Type.ADDED == event.getType()) {
                 return Optional.of(new InstanceOnlineEvent(instanceMetaData));
             }

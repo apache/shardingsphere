@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -31,6 +30,8 @@ import org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowRuleSt
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,25 +84,23 @@ public final class AlterShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), currentConfig);
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteWithRuleNameNotInMetaData() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }
     
-    @Test(expected = MissingRequiredResourcesException.class)
+    @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertExecuteWithNotExistResource() {
         List<String> dataSources = Arrays.asList("ds", "ds0");
-        when(resourceMetaData.getNotExistedResources(any())).thenReturn(dataSources);
+        when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds3", null, null));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = AlgorithmInUsedException.class)
     public void assertExecuteDuplicateAlgorithm() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
-        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value"))));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
@@ -109,9 +108,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     
     @Test(expected = AlgorithmInUsedException.class)
     public void assertExecuteDuplicateAlgorithmWithoutConfiguration() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
-        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value"))));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
@@ -119,10 +116,9 @@ public final class AlterShadowRuleStatementUpdaterTest {
     
     @Test
     public void assertExecuteSuccess() {
-        Properties prop = new Properties();
-        prop.setProperty("type", "value");
-        ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("SIMPLE_HINT", prop));
-        ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("SIMPLE_HINT", prop));
+        Properties props = PropertiesBuilder.build(new Property("type", "value"));
+        ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("SIMPLE_HINT", props));
+        ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("SIMPLE_HINT", props));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment2))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);

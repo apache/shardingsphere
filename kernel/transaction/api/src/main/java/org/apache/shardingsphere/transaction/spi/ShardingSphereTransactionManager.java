@@ -86,4 +86,14 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
      * Rollback transaction.
      */
     void rollback();
+    
+    /**
+     * Judge whether contains the provider type.
+     *
+     * @param providerType transaction manager provider type 
+     * @return contains provider type or not
+     */
+    default boolean containsProviderType(String providerType) {
+        return true;
+    }
 }

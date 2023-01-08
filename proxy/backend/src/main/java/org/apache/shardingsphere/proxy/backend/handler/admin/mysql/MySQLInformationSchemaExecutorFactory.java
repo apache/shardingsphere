@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -50,7 +50,7 @@ public final class MySQLInformationSchemaExecutorFactory {
             return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql));
         }
         if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
-            return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
+            return Optional.of(new DefaultDatabaseMetaDataExecutor(sql));
         }
         return Optional.empty();
     }

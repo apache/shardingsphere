@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
@@ -55,22 +54,18 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     private Enum<?> getEnumType(final String name) {
         try {
             return ConfigurationPropertyKey.valueOf(name.toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             return VariableEnum.getValueOf(name);
         }
     }
     
     private void handleConfigurationProperty(final ConfigurationPropertyKey propertyKey, final String value) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetadataContexts metadataContexts = contextManager.getMetadataContexts();
+        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Properties props = new Properties();
-        props.putAll(metadataContexts.getMetadata().getProps().getProps());
+        props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
-        contextManager.alterProperties(props);
-        MetadataPersistService persistService = metadataContexts.getPersistService();
-        if (null != persistService.getPropsService()) {
-            persistService.getPropsService().persist(props);
-        }
+        contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
     }
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {

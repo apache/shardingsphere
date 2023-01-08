@@ -33,11 +33,10 @@ public final class JobTypeFactory {
     private static final Map<String, JobType> CODE_JOB_TYPE_MAP = new ConcurrentHashMap<>();
     
     static {
-        ShardingSphereServiceLoader.register(JobType.class);
         for (JobType each : ShardingSphereServiceLoader.getServiceInstances(JobType.class)) {
             String typeCode = each.getTypeCode();
             JobType replaced = CODE_JOB_TYPE_MAP.put(typeCode, each);
-            if (replaced != null) {
+            if (null != replaced) {
                 log.error("Type code already exists, typeCode={}, replaced={}, current={}", typeCode, replaced, each, new Exception());
             }
         }

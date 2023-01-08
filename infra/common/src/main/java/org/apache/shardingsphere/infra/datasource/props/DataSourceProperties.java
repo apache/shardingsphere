@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.datasource.props;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionPropertySynonyms;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public final class DataSourceProperties {
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
-        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceClassName);
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceClassName);
         Map<String, String> propertySynonyms = poolMetaData.isPresent() ? poolMetaData.get().getPropertySynonyms() : Collections.emptyMap();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);

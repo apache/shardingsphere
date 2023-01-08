@@ -25,15 +25,14 @@ Some of the key benefits are:
 John Gruber, the author of Markdown, puts it like this:
 
 > The overriding design goal for Markdown’s formatting syntax is to make it as readable as possible. The idea is that a Markdown-formatted document should be publishable as-is, as plain text, without looking like it’s been marked up with tags or formatting instructions. While Markdown’s syntax has been influenced by several existing text-to-HTML filters, the single biggest source of inspiration for Markdown’s syntax is the format of plain text email.
-> -- <cite>John Gruber</cite>
-
+> -- John Gruber
 
 Grav ships with built-in support for [Markdown](http://daringfireball.net/projects/markdown/) and [Markdown Extra](https://michelf.ca/projects/php-markdown/extra/). You must enable **Markdown Extra** in your `system.yaml` configuration file
 
 Without further delay, let us go over the main elements of Markdown and what the resulting HTML looks like:
 
 {{% notice info %}}
-<i class="fa fa-bookmark"></i> Bookmark this page for easy future reference!
+<i class="fas fa-bookmark"></i> Bookmark this page for easy future reference!
 {{% /notice %}}
 
 ## Headings
@@ -50,12 +49,18 @@ Headings from `h1` through `h6` are constructed with a `#` for each level:
 ```
 
 Renders to:
-
+<!-- markdownlint-disable MD025 -->
 # h1 Heading
+<!-- markdownlint-enable MD025 -->
+
 ## h2 Heading
+
 ### h3 Heading
+
 #### h4 Heading
+
 ##### h5 Heading
+
 ###### h6 Heading
 
 HTML:
@@ -78,12 +83,12 @@ Comments should be HTML compatible
 This is a comment
 -->
 ```
+
 Comment below should **NOT** be seen:
 
 <!--
 This is a comment
 -->
-
 
 ## Horizontal Rules
 
@@ -97,11 +102,6 @@ renders to:
 
 ___
 
----
-
-***
-
-
 ## Body Copy
 
 Body copy written as normal, plain text will be wrapped with `<p></p>` tags in the rendered HTML.
@@ -111,6 +111,7 @@ So this body copy:
 ```markdown
 Lorem ipsum dolor sit amet, graecis denique ei vel, at duo primis mandamus. Et legere ocurreret pri, animal tacimates complectitur ad cum. Cu eum inermis inimicus efficiendi. Labore officiis his ex, soluta officiis concludaturque ei qui, vide sensibus vim ad.
 ```
+
 renders to this HTML:
 
 ```html
@@ -120,6 +121,7 @@ renders to this HTML:
 ## Emphasis
 
 ### Bold
+
 For emphasizing a snippet of text with a heavier font-weight.
 
 The following snippet of text is **rendered as bold text**.
@@ -127,9 +129,12 @@ The following snippet of text is **rendered as bold text**.
 ```markdown
 **rendered as bold text**
 ```
+
 renders to:
 
+<!-- markdownlint-disable MD036 -->
 **rendered as bold text**
+<!-- markdownlint-enable MD036 -->
 
 and this HTML
 
@@ -138,6 +143,7 @@ and this HTML
 ```
 
 ### Italics
+
 For emphasizing a snippet of text with italics.
 
 The following snippet of text is _rendered as italicized text_.
@@ -148,7 +154,9 @@ _rendered as italicized text_
 
 renders to:
 
+<!-- markdownlint-disable MD036 -->
 _rendered as italicized text_
+<!-- markdownlint-enable MD036 -->
 
 and this HTML:
 
@@ -156,13 +164,14 @@ and this HTML:
 <em>rendered as italicized text</em>
 ```
 
+### Strikethrough
 
-### strikethrough
 In GFM (GitHub flavored Markdown) you can do strikethroughs.
 
 ```markdown
 ~~Strike through this text.~~
 ```
+
 Which renders to:
 
 ~~Strike through this text.~~
@@ -174,6 +183,7 @@ HTML:
 ```
 
 ## Blockquotes
+
 For quoting blocks of content from another source within your document.
 
 Add `>` before any text you want to quote.
@@ -197,19 +207,20 @@ and this HTML:
 Blockquotes can also be nested:
 
 ```markdown
-> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
-Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
->> Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
-odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue. Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+>
+> > Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+>
+> Mauris sit amet ligula egestas, feugiat metus tincidunt, luctus libero. Donec congue finibus tempor. Vestibulum aliquet sollicitudin erat, ut aliquet purus posuere luctus.
 ```
 
 Renders to:
 
-> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue.
-Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
->> Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor
-odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
-
+> Donec massa lacus, ultricies a ullamcorper in, fermentum sed augue. Nunc augue augue, aliquam non hendrerit ac, commodo vel nisi.
+>
+> > Sed adipiscing elit vitae augue consectetur a gravida nunc vehicula. Donec auctor odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac eu diam.
+>
+> Mauris sit amet ligula egestas, feugiat metus tincidunt, luctus libero. Donec congue finibus tempor. Vestibulum aliquet sollicitudin erat, ut aliquet purus posuere luctus.
 
 ## Notices
 
@@ -217,10 +228,10 @@ odio non est accumsan facilisis. Aliquam id turpis in dolor tincidunt mollis ac 
 The old mechanism for notices overriding the block quote syntax (`>>>`) has been deprecated.  Notices are now handled via a dedicated plugin called [Markdown Notices](https://github.com/getgrav/grav-plugin-markdown-notices)
 {{% /notice %}}
 
-
 ## Lists
 
 ### Unordered
+
 A list of items in which the order of the items does not explicitly matter.
 
 You may use any of the following symbols to denote bullets for each list item:
@@ -247,8 +258,10 @@ For example
 + Aenean sit amet erat nunc
 + Eget porttitor lorem
 ```
+
 Renders to:
 
+<!-- markdownlint-disable MD004 -->
 + Lorem ipsum dolor sit amet
 + Consectetur adipiscing elit
 + Integer molestie lorem at massa
@@ -261,6 +274,7 @@ Renders to:
 + Faucibus porta lacus fringilla vel
 + Aenean sit amet erat nunc
 + Eget porttitor lorem
+<!-- markdownlint-enable MD004 -->
 
 And this HTML
 
@@ -290,14 +304,15 @@ A list of items in which the order of items does explicitly matter.
 
 ```markdown
 1. Lorem ipsum dolor sit amet
-2. Consectetur adipiscing elit
-3. Integer molestie lorem at massa
-4. Facilisis in pretium nisl aliquet
-5. Nulla volutpat aliquam velit
-6. Faucibus porta lacus fringilla vel
-7. Aenean sit amet erat nunc
-8. Eget porttitor lorem
+4. Consectetur adipiscing elit
+2. Integer molestie lorem at massa
+8. Facilisis in pretium nisl aliquet
+4. Nulla volutpat aliquam velit
+99. Faucibus porta lacus fringilla vel
+21. Aenean sit amet erat nunc
+6. Eget porttitor lorem
 ```
+
 Renders to:
 
 1. Lorem ipsum dolor sit amet
@@ -351,6 +366,7 @@ Renders to:
 ## Code
 
 ### Inline code
+
 Wrap inline snippets of code with `` ` ``.
 
 ```markdown
@@ -359,31 +375,33 @@ In this example, `<section></section>` should be wrapped as **code**.
 
 Renders to:
 
-In this example, `<section></section>` should be wrapped with **code**.
+In this example, `<section></section>` should be wrapped as **code**.
 
 HTML:
 
 ```html
-<p>In this example, <code>&lt;section&gt;&lt;/section&gt;</code> should be wrapped with <strong>code</strong>.</p>
+<p>In this example, <code>&lt;section&gt;&lt;/section&gt;</code> should be wrapped as <strong>code</strong>.</p>
 ```
 
 ### Indented code
 
-Or indent several lines of code by at least four spaces, as in:
+Or indent several lines of code by at least two spaces, as in:
 
-<pre>
-  // Some comments
-  line 1 of code
-  line 2 of code
-  line 3 of code
-</pre>
-
-Renders to:
-
+```markdown
     // Some comments
     line 1 of code
     line 2 of code
     line 3 of code
+```
+
+Renders to:
+
+<!-- markdownlint-disable MD046 -->
+    // Some comments
+    line 1 of code
+    line 2 of code
+    line 3 of code
+<!-- markdownlint-enable MD046 -->
 
 HTML:
 
@@ -398,19 +416,11 @@ HTML:
 </pre>
 ```
 
-
 ### Block code "fences"
 
 Use "fences"  ```` ``` ```` to block in multiple lines of code.
 
-<pre>
-``` markup
-Sample text here...
-```
-</pre>
-
-
-```
+```markdown
 Sample text here...
 ```
 
@@ -424,30 +434,34 @@ HTML:
 
 ### Syntax highlighting
 
-GFM, or "GitHub Flavored Markdown" also supports syntax highlighting. To activate it, simply add the file extension of the language you want to use directly after the first code "fence", ` ```js `, and syntax highlighting will automatically be applied in the rendered HTML. For example, to apply syntax highlighting to JavaScript code:
+GFM, or "GitHub Flavored Markdown" also supports syntax highlighting. To activate it, simply add the file extension of the language you want to use directly after the first code "fence", ` ```js `, and syntax highlighting will automatically be applied in the rendered HTML.
 
-<pre>
-```js
-grunt.initConfig({
-  assemble: {
-    options: {
-      assets: 'docs/assets',
-      data: 'src/data/*.{json,yml}',
-      helpers: 'src/custom-helpers.js',
-      partials: ['src/partials/**/*.{hbs,md}']
-    },
-    pages: {
-      options: {
-        layout: 'default.hbs'
-      },
-      files: {
-        './': ['src/templates/pages/index.hbs']
+See [Code Highlighting]({{< ref "syntaxhighlight.md" >}}) for additional documentation.
+
+For example, to apply syntax highlighting to JavaScript code:
+
+```plaintext
+    ```js
+    grunt.initConfig({
+      assemble: {
+        options: {
+          assets: 'docs/assets',
+          data: 'src/data/*.{json,yml}',
+          helpers: 'src/custom-helpers.js',
+          partials: ['src/partials/**/*.{hbs,md}']
+        },
+        pages: {
+          options: {
+            layout: 'default.hbs'
+          },
+          files: {
+            './': ['src/templates/pages/index.hbs']
+          }
+        }
       }
-    }
-  }
-};
+    };
+    ```
 ```
-</pre>
 
 Renders to:
 
@@ -473,8 +487,8 @@ grunt.initConfig({
 ```
 
 ## Tables
-Tables are created by adding pipes as dividers between each cell, and by adding a line of dashes (also separated by bars) beneath the header. Note that the pipes do not need to be vertically aligned.
 
+Tables are created by adding pipes as dividers between each cell, and by adding a line of dashes (also separated by bars) beneath the header. Note that the pipes do not need to be vertically aligned.
 
 ```markdown
 | Option | Description |
@@ -551,8 +565,7 @@ HTML:
 <a href="http://assemble.io">Assemble</a>
 ```
 
-
-### Add a title
+### Add a tooltip
 
 ```markdown
 [Upstage](https://github.com/upstage/ "Visit Upstage!")
@@ -578,6 +591,7 @@ Named anchors enable you to jump to the specified anchor point on the same page.
   * [Chapter 2](#chapter-2)
   * [Chapter 3](#chapter-3)
 ```
+
 will jump to these sections:
 
 ```markdown
@@ -596,15 +610,18 @@ Content for chapter one.
 Images have a similar syntax to links but include a preceding exclamation point.
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png)
+![Minion](https://octodex.github.com/images/minion.png)
 ```
-![Minion](http://octodex.github.com/images/minion.png)
+
+![Minion](https://octodex.github.com/images/minion.png)
 
 or
+
 ```markdown
-![Alt text](http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+![Alt text](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
 ```
-![Alt text](http://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+
+![Alt text](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
 
 Like links, Images also have a footnote style syntax
 
@@ -613,51 +630,63 @@ Like links, Images also have a footnote style syntax
 ```markdown
 ![Alt text][id]
 ```
+
 ![Alt text][id]
 
 With a reference later in the document defining the URL location:
 
-[id]: http://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+[id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
 
-    [id]: http://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+    [id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
 
 ### Resizing image
 
 Add HTTP parameters `width` and/or `height` to the link image to resize the image. Values are CSS values (default is `auto`).
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png?width=20pc)
+![Minion](https://octodex.github.com/images/minion.png?width=20pc)
 ```
 
-![Minion](http://octodex.github.com/images/minion.png?width=20pc)
+![Minion](https://octodex.github.com/images/minion.png?width=20pc)
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png?height=50px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px)
 ```
 
-![Minion](http://octodex.github.com/images/minion.png?height=50px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px)
 
 ```markdown
-![Minion](http://octodex.github.com/images/minion.png?height=50px&width=300px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px&width=300px)
 ```
 
-![Minion](http://octodex.github.com/images/minion.png?height=50px&width=300px)
+![Minion](https://octodex.github.com/images/minion.png?height=50px&width=300px)
 
 ### Add CSS classes
 
 Add a HTTP `classes` parameter to the link image to add CSS classes. `shadow`and `border` are available but you could define other ones.
 
 ```markdown
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?classes=shadow)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?classes=shadow)
 ```
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=shadow)
+
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=shadow)
 
 ```markdown
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?classes=border)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?classes=border)
 ```
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border)
+
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border)
 
 ```markdown
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?classes=border,shadow)
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?classes=border,shadow)
 ```
-![stormtroopocat](http://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border,shadow)
+
+![stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg?width=40pc&classes=border,shadow)
+
+### Lightbox
+
+Add a HTTP `featherlight` parameter to the link image to disable lightbox. By default lightbox is enabled using the featherlight.js plugin. You can disable this by defining `featherlight` to `false`.
+
+```markdown
+![Minion](https://octodex.github.com/images/minion.png?featherlight=false)
+```

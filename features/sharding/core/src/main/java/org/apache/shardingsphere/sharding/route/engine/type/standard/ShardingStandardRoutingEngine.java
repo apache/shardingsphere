@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -27,8 +26,11 @@ import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedShardingDataSourceRouteInfoException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.NoShardingDatabaseRouteInfoException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -258,9 +260,9 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
             return tableRule.getActualDataSourceNames();
         }
         Collection<String> result = databaseShardingStrategy.doSharding(tableRule.getActualDataSourceNames(), databaseShardingValues, tableRule.getDataSourceDataNode(), props);
-        Preconditions.checkState(!result.isEmpty(), "No database route info");
-        Preconditions.checkState(tableRule.getActualDataSourceNames().containsAll(result),
-                "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`", result, tableRule.getActualDataSourceNames());
+        ShardingSpherePreconditions.checkState(!result.isEmpty(), NoShardingDatabaseRouteInfoException::new);
+        ShardingSpherePreconditions.checkState(tableRule.getActualDataSourceNames().containsAll(result),
+                () -> new MismatchedShardingDataSourceRouteInfoException(result, tableRule.getActualDataSourceNames()));
         return result;
     }
     

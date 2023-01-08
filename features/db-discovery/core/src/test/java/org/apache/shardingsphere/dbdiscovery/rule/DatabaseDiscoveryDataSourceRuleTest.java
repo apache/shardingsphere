@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.dbdiscovery.rule;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,13 +42,13 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
                 new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
     public void assertNewHADataSourceRuleWithNullDataSourceName() {
         new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "ha_heartbeat", "discoveryTypeName"),
                 new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
     public void assertNewHADataSourceRuleWithEmptyDataSourceName() {
         new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"),
                 new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
@@ -62,12 +61,7 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     
     @Test
     public void assertGetDataSourceMapper() {
-        assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(), is(getExpectedDataSourceMapper()));
-    }
-    
-    private Map<String, Collection<String>> getExpectedDataSourceMapper() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>(2, 1);
-        result.put("test_pr", Arrays.asList("ds_0", "ds_1"));
-        return result;
+        databaseDiscoveryDataSourceRule.changePrimaryDataSourceName("ds_1");
+        assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("test_pr", new HashSet<>(Arrays.asList("ds_1", "ds_0")))));
     }
 }

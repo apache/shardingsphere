@@ -26,11 +26,18 @@
     <name>${r'${project.artifactId}'}</name>
     
     <dependencies>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc-core</artifactId>
-        <version>${r'${project.version}'}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    <#if mode=="cluster-zookeeper">
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+    </#if>
     <#if transaction?contains("xa")>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -114,28 +121,22 @@
             <version>5.2.15.RELEASE</version>
         </dependency>
     </#if>
-    <#if framework?contains("spring-boot-starter")>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>2.2.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>2.2.0.RELEASE</version>
-        </dependency>
-    </#if>
     <#if framework=="spring-boot-starter-jdbc">
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
             <version>2.2.0.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>2.2.0.RELEASE</version>
+            <artifactId>snakeyaml</artifactId>
+            <groupId>org.yaml</groupId>
+            <version>1.33</version>
         </dependency>
     <#elseif framework=="spring-boot-starter-mybatis">
         <dependency>
@@ -152,7 +153,12 @@
     <#elseif framework=="spring-namespace-jdbc">
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <artifactId>spring-context-support</artifactId>
+            <version>5.2.15.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
             <version>5.2.15.RELEASE</version>
         </dependency>
     <#elseif framework=="spring-namespace-mybatis">
@@ -175,6 +181,17 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
             <version>5.2.15.RELEASE</version>
+        </dependency>
+    <#elseif framework?contains("spring-boot-starter")>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>2.2.0.RELEASE</version>
         </dependency>
     </#if>
         

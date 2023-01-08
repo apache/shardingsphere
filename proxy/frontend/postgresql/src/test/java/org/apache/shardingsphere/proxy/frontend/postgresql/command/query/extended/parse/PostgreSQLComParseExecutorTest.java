@@ -44,9 +44,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,11 +87,11 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(parsePacket.getSql()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(mockedContextManager.getMetadataContexts().getMetadata().getDatabase("db").getResourceMetaData().getStorageTypes())
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(mockedContextManager.getMetadataContexts().getMetadata().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(mockedContextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
@@ -111,11 +111,11 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(parsePacket.getSql()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
-        when(mockedContextManager.getMetadataContexts().getMetadata().getDatabase("db").getResourceMetaData().getStorageTypes())
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(mockedContextManager.getMetadataContexts().getMetadata().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(mockedContextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         when(connectionSession.getDatabaseName()).thenReturn("db");
@@ -130,11 +130,9 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
     }
     
-    @SneakyThrows({NoSuchFieldException.class, SecurityException.class, IllegalArgumentException.class, IllegalAccessException.class})
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionSession() {
-        Field field = PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession");
-        field.setAccessible(true);
-        field.set(executor, connectionSession);
+        Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
     }
     
     @Test
@@ -144,11 +142,11 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(parsePacket.getSql()).thenReturn(sql);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(mockedContextManager.getMetadataContexts().getMetadata().getDatabase("db").getResourceMetaData().getStorageTypes())
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(mockedContextManager.getMetadataContexts().getMetadata().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(mockedContextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));

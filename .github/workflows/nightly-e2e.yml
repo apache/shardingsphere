@@ -49,8 +49,6 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build IT image
         run: ./mvnw -B clean install -am -pl test/e2e/suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify Suite CI Run
@@ -193,8 +191,6 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Integration Test

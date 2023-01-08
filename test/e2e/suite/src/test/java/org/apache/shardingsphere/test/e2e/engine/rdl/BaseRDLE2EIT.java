@@ -51,7 +51,6 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
-        sleep();
     }
     
     @After
@@ -71,6 +70,7 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
+                sleep();
             }
         }
     }
@@ -82,6 +82,7 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
+                sleep();
             }
         }
     }

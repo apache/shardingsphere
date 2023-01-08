@@ -68,6 +68,16 @@ public final class OrderedServicesCache {
         cache.put(new Key(spiClass, types), services);
     }
     
+    /**
+     * Clear cache.
+     */
+    public static void clearCache() {
+        Map<Key, Map<?, ?>> cache = OrderedServicesCache.cache.get();
+        if (null != cache) {
+            cache.clear();
+        }
+    }
+    
     @RequiredArgsConstructor
     @EqualsAndHashCode
     private static final class Key {

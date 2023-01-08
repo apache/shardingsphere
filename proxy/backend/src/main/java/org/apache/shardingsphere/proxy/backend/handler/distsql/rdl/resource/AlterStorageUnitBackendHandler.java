@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.converter.ResourceSegmentsConverter;
+import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
-import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -57,24 +57,24 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
     
     private final DatabaseType databaseType;
     
-    private final DataSourcePropertiesValidator validator;
+    private final DataSourcePropertiesValidateHandler validateHandler;
     
     public AlterStorageUnitBackendHandler(final AlterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
-        validator = new DataSourcePropertiesValidator();
+        validateHandler = new DataSourcePropertiesValidateHandler();
     }
     
     @Override
     public ResponseHeader execute(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
-        Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
-        validator.validate(dataSourcePropsMap);
+        Map<String, DataSourceProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+        validateHandler.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Alter storage unit failed", ex);
-            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
+            throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -93,7 +93,7 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
     
     private void checkDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
         Collection<String> duplicatedStorageUnitNames = getDuplicatedStorageUnitNames(storageUnitNames);
-        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateResourceException(duplicatedStorageUnitNames));
+        ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateStorageUnitException(duplicatedStorageUnitNames));
     }
     
     private Collection<String> getDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
@@ -103,7 +103,7 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
     private void checkStorageUnitNameExisted(final String databaseName, final Collection<String> storageUnitNames) {
         Map<String, DataSource> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
         Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedStorageUnitNames));
+        ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnitNames));
     }
     
     private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
@@ -111,7 +111,7 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
         Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), storageUnits.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
-                () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalidStorageUnitNames))));
+                () -> new InvalidStorageUnitsException(Collections.singleton(String.format("Cannot alter the database of %s", invalidStorageUnitNames))));
     }
     
     private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {

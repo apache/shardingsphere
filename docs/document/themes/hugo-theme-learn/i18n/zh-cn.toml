@@ -1,0 +1,35 @@
+[Search-placeholder]
+other = "搜索..."
+
+[Clear-History]
+other = "清理历史记录"
+
+[Attachments-label]
+other = "附件"
+
+[title-404]
+other = "错误"
+
+[message-404]
+other = "哎哟。 看起来这个页面不存在 ¯\\_(ツ)_/¯。"
+
+[Go-to-homepage]
+other = "转到主页"
+
+[Edit-this-page]
+other = "编辑当前页"
+
+[Shortcuts-Title]
+other = "更多"
+
+[Expand-title]
+other = "展开"
+
+[Byte-symbol]
+other = "B"
+
+[Kilobyte-symbol]
+other = "KB"
+
+[Megabyte-symbol]
+other = "MB"

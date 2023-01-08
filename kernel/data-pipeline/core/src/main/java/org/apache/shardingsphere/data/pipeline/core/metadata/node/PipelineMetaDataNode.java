@@ -37,7 +37,7 @@ public final class PipelineMetaDataNode {
     public static final Pattern BARRIER_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/barrier/(enable|disable)/\\d+");
     
     /**
-     * Get metadata data sources path.
+     * Get meta data data sources path.
      *
      * @param jobType job type
      * @return data sources path
@@ -53,7 +53,7 @@ public final class PipelineMetaDataNode {
     }
     
     /**
-     * Get metadata process configuration path.
+     * Get meta data process configuration path.
      *
      * @param jobType job type
      * @return data sources path

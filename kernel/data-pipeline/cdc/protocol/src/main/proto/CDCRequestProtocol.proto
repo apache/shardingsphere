@@ -29,10 +29,9 @@ message CDCRequest {
     LOGIN = 1;
     CREATE_SUBSCRIPTION = 2;
     START_SUBSCRIPTION = 3;
-    STOP_SUBSCRIPTION = 4;
-    DROP_SUBSCRIPTION = 5;
-    FETCH_RECORDS = 6;
-    FETCH_RECORDS_ACK = 7;
+    ACK = 4;
+    STOP_SUBSCRIPTION = 5;
+    DROP_SUBSCRIPTION = 6;
   }
   Type type = 3;
   oneof request {
@@ -67,30 +66,32 @@ message CreateSubscriptionRequest {
     string schema = 1;
     string name = 2;
   }
-  repeated TableName tableNames = 2;
-  string subscriptionName = 3;
-  SubscriptionMode subscriptionMode = 4;
-
+  repeated TableName table_names = 2;
+  string subscription_name = 3;
   enum SubscriptionMode {
     UNKNOWN = 0;
     INCREMENTAL = 1;
     FULL = 2;
   }
+  SubscriptionMode subscription_mode = 4;
+  bool incremental_global_orderly = 5;
 }
 
 message StartSubscriptionRequest {
-  string subscriptionName = 1;
+  string database = 1;
+  string subscription_name = 2;
 }
 
 message StopSubscriptionRequest {
-  string subscriptionName = 1;
+  string database = 1;
+  string subscription_name = 2;
 }
 
 message DropSubscriptionRequest {
-  string subscriptionName = 1;
+  string database = 1;
+  string subscription_name = 2;
 }
 
 message AckRequest {
-  string subscriptionName = 1;
-  string lastReceivedPosition = 2;
+  string ack_id = 3;
 }

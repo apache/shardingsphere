@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationHandler;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -51,44 +51,31 @@ public final class OpenGaussAuthenticationAlgorithm {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] generateKFromPBKDF2(final String password, final String saltString, final int serverIteration) {
-        Method generateKFromPBKDF2Method = OpenGaussAuthenticationHandler.class.getDeclaredMethod("generateKFromPBKDF2", String.class, String.class, int.class);
-        generateKFromPBKDF2Method.setAccessible(true);
-        return (byte[]) generateKFromPBKDF2Method.invoke(null, password, saltString, serverIteration);
+        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("generateKFromPBKDF2", String.class, String.class, int.class),
+                OpenGaussAuthenticationHandler.class, password, saltString, serverIteration);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] getKeyFromHmac(final byte[] key, final byte[] data) {
-        Method getKeyFromHmacMethod = OpenGaussAuthenticationHandler.class.getDeclaredMethod("getKeyFromHmac", byte[].class, byte[].class);
-        getKeyFromHmacMethod.setAccessible(true);
-        return (byte[]) getKeyFromHmacMethod.invoke(null, key, data);
+        return (byte[]) Plugins.getMemberAccessor().invoke(
+                OpenGaussAuthenticationHandler.class.getDeclaredMethod("getKeyFromHmac", byte[].class, byte[].class), OpenGaussAuthenticationHandler.class, key, data);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] sha256(final byte[] str) {
-        Method sha256Method = OpenGaussAuthenticationHandler.class.getDeclaredMethod("sha256", byte[].class);
-        sha256Method.setAccessible(true);
-        return (byte[]) sha256Method.invoke(null, str);
+        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("sha256", byte[].class), OpenGaussAuthenticationHandler.class, new Object[]{str});
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] hexStringToBytes(final String rawHexString) {
-        Method hexStringToBytesMethod = OpenGaussAuthenticationHandler.class.getDeclaredMethod("hexStringToBytes", String.class);
-        hexStringToBytesMethod.setAccessible(true);
-        return (byte[]) hexStringToBytesMethod.invoke(null, rawHexString);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static byte[] calculateH2(final String password, final String random64code, final String token, final int serverIteration) {
-        Method calculateH2Method = OpenGaussAuthenticationHandler.class.getDeclaredMethod("calculateH2", String.class, String.class, String.class, int.class);
-        calculateH2Method.setAccessible(true);
-        return (byte[]) calculateH2Method.invoke(null, password, random64code, token, serverIteration);
+        return (byte[]) Plugins.getMemberAccessor().invoke(
+                OpenGaussAuthenticationHandler.class.getDeclaredMethod("hexStringToBytes", String.class), OpenGaussAuthenticationHandler.class, rawHexString);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] xor(final byte[] value1, final byte[] value2) {
-        Method xorMethod = OpenGaussAuthenticationHandler.class.getDeclaredMethod("xor", byte[].class, byte[].class);
-        xorMethod.setAccessible(true);
-        return (byte[]) xorMethod.invoke(null, value1, value2);
+        return (byte[]) Plugins.getMemberAccessor().invoke(
+                OpenGaussAuthenticationHandler.class.getDeclaredMethod("xor", byte[].class, byte[].class), OpenGaussAuthenticationHandler.class, value1, value2);
     }
     
     private static void bytesToHex(final byte[] bytes, final byte[] hex, final int offset, final int length) {

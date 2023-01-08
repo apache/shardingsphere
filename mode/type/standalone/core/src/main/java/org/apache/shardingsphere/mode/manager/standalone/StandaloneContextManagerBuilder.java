@@ -17,20 +17,22 @@
 
 package org.apache.shardingsphere.mode.manager.standalone;
 
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.standalone.subscriber.ProcessStandaloneSubscriber;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.MetadataContextsFactory;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
-import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryFactory;
 
 import java.sql.SQLException;
 
@@ -41,16 +43,21 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
-        StandalonePersistRepository repository = StandalonePersistRepositoryFactory.getInstance(param.getModeConfiguration().getRepository());
-        MetadataPersistService persistService = new MetadataPersistService(repository);
+        PersistRepositoryConfiguration repositoryConfig = param.getModeConfiguration().getRepository();
+        StandalonePersistRepository repository = null == repositoryConfig
+                ? RequiredSPIRegistry.getRegisteredService(StandalonePersistRepository.class)
+                : TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
+        MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, param);
         InstanceContext instanceContext = buildInstanceContext(param);
         new ProcessStandaloneSubscriber(instanceContext.getEventBusContext());
-        MetadataContexts metadataContexts = MetadataContextsFactory.create(persistService, param, instanceContext);
-        return new ContextManager(metadataContexts, instanceContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
+        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
+        setContextManagerAware(result);
+        return result;
     }
     
-    private void persistConfigurations(final MetadataPersistService persistService, final ContextManagerBuilderParameter param) {
+    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param) {
         if (!param.isEmpty()) {
             persistService.persistConfigurations(param.getDatabaseConfigs(), param.getGlobalRuleConfigs(), param.getProps());
         }
@@ -58,7 +65,11 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {
         return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new GlobalLockContext(null), new EventBusContext());
+                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new StandaloneModeContextManager(), new GlobalLockContext(null), new EventBusContext());
+    }
+    
+    private void setContextManagerAware(final ContextManager contextManager) {
+        ((StandaloneModeContextManager) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
     }
     
     @Override

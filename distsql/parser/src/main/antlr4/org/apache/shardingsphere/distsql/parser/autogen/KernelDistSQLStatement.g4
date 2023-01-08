@@ -41,6 +41,7 @@ execute
     | prepareDistSQL
     | applyDistSQL
     | discardDistSQL
+    | showLogicalTables
     | showSingleTable
     | showDefaultSingleTableStorageUnit
     | setDefaultSingleTableStorageUnit

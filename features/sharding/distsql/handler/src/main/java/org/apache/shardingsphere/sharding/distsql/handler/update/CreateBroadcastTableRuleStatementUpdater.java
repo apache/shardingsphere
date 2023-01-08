@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -34,10 +34,15 @@ import java.util.LinkedList;
  */
 public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateBroadcastTableRuleStatement, ShardingRuleConfiguration> {
     
+    private boolean ifNotExists;
+    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        checkDuplicate(sqlStatement, currentRuleConfig);
+        ifNotExists = sqlStatement.isIfNotExists();
+        if (!ifNotExists) {
+            checkDuplicate(sqlStatement, currentRuleConfig);
+        }
     }
     
     private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {
@@ -50,7 +55,7 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateBroadcastTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final CreateBroadcastTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setBroadcastTables(sqlStatement.getTables());
         return result;
@@ -58,9 +63,14 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        if (null != currentRuleConfig) {
-            currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
+        if (ifNotExists) {
+            Collection<String> currentBroadCastTables = currentRuleConfig.getBroadcastTables();
+            toBeCreatedRuleConfig.getBroadcastTables().removeIf(currentBroadCastTables::contains);
         }
+        if (toBeCreatedRuleConfig.getBroadcastTables().isEmpty()) {
+            return;
+        }
+        currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
     }
     
     @Override

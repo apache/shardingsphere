@@ -32,9 +32,8 @@ public final class YamlUserSwapperTest {
     public void assertSwapToYamlConfiguration() {
         YamlUserConfiguration actual = new YamlUserSwapper().swapToYamlConfiguration(new ShardingSphereUser("foo_user", "foo_pwd", "127.0.0.1"));
         assertNotNull(actual);
-        assertThat(actual.getUsername(), is("foo_user"));
+        assertThat(actual.getUser(), is("foo_user@127.0.0.1"));
         assertThat(actual.getPassword(), is("foo_pwd"));
-        assertThat(actual.getHostname(), is("127.0.0.1"));
     }
     
     @Test
@@ -45,14 +44,32 @@ public final class YamlUserSwapperTest {
     @Test
     public void assertSwapToObject() {
         YamlUserConfiguration user = new YamlUserConfiguration();
-        user.setUsername("foo_user");
+        user.setUser("foo_user@127.0.0.1");
         user.setPassword("foo_pwd");
-        user.setHostname("127.0.0.1");
         ShardingSphereUser actual = new YamlUserSwapper().swapToObject(user);
         assertNotNull(actual);
         assertThat(actual.getGrantee().getUsername(), is("foo_user"));
-        assertThat(actual.getPassword(), is("foo_pwd"));
         assertThat(actual.getGrantee().getHostname(), is("127.0.0.1"));
+        assertThat(actual.getPassword(), is("foo_pwd"));
+    }
+    
+    @Test
+    public void assertSwapToObjectWithUserEndWithAt() {
+        YamlUserConfiguration user = new YamlUserConfiguration();
+        user.setUser("foo_user@");
+        user.setPassword("foo_pwd");
+        ShardingSphereUser actual = new YamlUserSwapper().swapToObject(user);
+        assertNotNull(actual);
+        assertThat(actual.getGrantee().getUsername(), is("foo_user"));
+        assertThat(actual.getGrantee().getHostname(), is("%"));
+        assertThat(actual.getPassword(), is("foo_pwd"));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertSwapToObjectWithEmptyUsername() {
+        YamlUserConfiguration user = new YamlUserConfiguration();
+        user.setUser("@127.0.0.1");
+        new YamlUserSwapper().swapToObject(user);
     }
     
     @Test

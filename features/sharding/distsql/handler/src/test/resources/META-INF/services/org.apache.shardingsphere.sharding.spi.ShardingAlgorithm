@@ -17,3 +17,6 @@
 
 org.apache.shardingsphere.sharding.distsql.fixture.sharding.FooDistSQLShardingAlgorithmFixture
 org.apache.shardingsphere.sharding.distsql.fixture.sharding.BarDistSQLShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.distsql.fixture.sharding.CoreHintShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.distsql.fixture.sharding.CoreAutoShardingAlgorithmFixture
+org.apache.shardingsphere.sharding.distsql.fixture.sharding.CoreStandardShardingAlgorithmFixture

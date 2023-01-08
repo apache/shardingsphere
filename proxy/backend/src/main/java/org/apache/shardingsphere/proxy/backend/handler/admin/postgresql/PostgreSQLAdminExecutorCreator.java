@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor.SelectDatabaseExecutor;
@@ -86,7 +86,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
             }
             for (String each : selectedTableNames) {
                 if (each.startsWith(PG_PREFIX)) {
-                    return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
+                    return Optional.of(new DefaultDatabaseMetaDataExecutor(sql));
                 }
             }
         }

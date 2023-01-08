@@ -23,8 +23,8 @@ on:
     paths:
       - '.github/workflows/e2e-discovery.yml'
       - 'infra/common/src/main/**'
-      - 'features/db-discovery/src/main/**'
-      - 'features/readwrite-splitting/src/main/**'
+      - 'features/db-discovery/**/src/main/**'
+      - 'features/readwrite-splitting/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'
       - '!test/**'
@@ -38,8 +38,8 @@ on:
     paths:
       - '.github/workflows/e2e-discovery.yml'
       - 'infra/common/src/main/**'
-      - 'features/db-discovery/src/main/**'
-      - 'features/readwrite-splitting/src/main/**'
+      - 'features/db-discovery/**/src/main/**'
+      - 'features/readwrite-splitting/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'
       - '!test/**'
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       mysql_version: 5.7
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       matrix:
         mode: [ Cluster ]

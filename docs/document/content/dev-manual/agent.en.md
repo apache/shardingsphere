@@ -5,44 +5,23 @@ weight = 14
 chapter = true
 +++
 
-## PluginBootService
+## PluginLifecycleService
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.agent.spi.boot.PluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/api/src/main/java/org/apache/shardingsphere/agent/spi/boot/PluginBootService.java)
+[`org.apache.shardingsphere.agent.spi.PluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/api/src/main/java/org/apache/shardingsphere/agent/spi/PluginLifecycleService.java)
 
 ### Definition
 
-Plugin startup service definition
+Plug lifecycle management interface
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*                             | *Fully-qualified class name* |
-| -------------------- | ----------------------------------------- | ---------------------------- |
-| Prometheus           | Prometheus plugin startup class           | [`org.apache.shardingsphere.agent.metrics.prometheus.service.PrometheusPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/metrics/prometheus/src/main/java/org/apache/shardingsphere/agent/metrics/prometheus/service/PrometheusPluginBootService.java) |
-| Logging              | Logging plugin startup class              | [`org.apache.shardingsphere.agent.plugin.logging.base.service.BaseLoggingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/logging/base/src/main/java/org/apache/shardingsphere/agent/plugin/logging/base/service/BaseLoggingPluginBootService.java) |
-| Jaeger               | Jaeger plugin startup class               | [`org.apache.shardingsphere.agent.plugin.tracing.jaeger.service.JaegerTracingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/jaeger/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/jaeger/service/JaegerTracingPluginBootService.java) |
-| OpenTelemetry        | OpenTelemetryTracing plugin startup class | [`org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.service.OpenTelemetryTracingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentelemetry/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentelemetry/service/OpenTelemetryTracingPluginBootService.java) |
-| OpenTracing          | OpenTracing plugin startup class          | [`org.apache.shardingsphere.agent.plugin.tracing.opentracing.service.OpenTracingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentracing/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentracing/service/OpenTracingPluginBootService.java) |
-| Zipkin               | Zipkin plugin startup class               | [`org.apache.shardingsphere.agent.plugin.tracing.zipkin.service.ZipkinTracingPluginBootService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/zipkin/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/zipkin/service/ZipkinTracingPluginBootService.java) |
-
-## PluginDefinitionService
-
-### Fully-qualified class name
-
-[`org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/api/src/main/java/org/apache/shardingsphere/agent/spi/definition/PluginDefinitionService.java)
-
-### Definition
-
-Agent plugin definition
-
-### Implementation classes
-
-| *Configuration Type* | *Description*                          | *Fully-qualified class name* |
-| -------------------- |--------------------------------------- | ---------------------------- |
-| Prometheus           | Prometheus plugin definition           | [`org.apache.shardingsphere.agent.metrics.prometheus.definition.PrometheusPluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/metrics/prometheus/src/main/java/org/apache/shardingsphere/agent/metrics/prometheus/definition/PrometheusPluginDefinitionService.java) |
-| Logging              | Logging plugin definition              | [`org.apache.shardingsphere.agent.plugin.logging.base.definition.BaseLoggingPluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/logging/base/src/main/java/org/apache/shardingsphere/agent/plugin/logging/base/definition/BaseLoggingPluginDefinitionService.java) |
-| Jaeger               | Jaeger plugin definition               | [`org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition.JaegerPluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/jaeger/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/jaeger/definition/JaegerPluginDefinitionService.java) |
-| OpenTelemetry        | OpenTelemetryTracing plugin definition | [`org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.definition.OpenTelemetryTracingPluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentelemetry/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentelemetry/definition/OpenTelemetryTracingPluginDefinitionService.java) |
-| OpenTracing          | OpenTracing plugin definition          | [`org.apache.shardingsphere.agent.plugin.tracing.opentracing.definition.OpenTracingPluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/opentracing/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentracing/definition/OpenTracingPluginDefinitionService.java) |
-| Zipkin               | Zipkin plugin definition               | [`org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition.ZipkinPluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/zipkin/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/zipkin/definition/ZipkinPluginDefinitionService.java) |
+| *Configuration Type* | *Description*                                        | *Fully-qualified class name* |
+| -------------------- | ---------------------------------------------------- | ---------------------------- |
+| Prometheus           | Prometheus plug lifecycle management class           | [`org.apache.shardingsphere.agent.plugin.metrics.prometheus.PrometheusPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/metrics/type/prometheus/src/main/java/org/apache/shardingsphere/agent/plugin/metrics/prometheus/PrometheusPluginLifecycleService.java) |
+| File                 | Logging plug lifecycle management class              | [`org.apache.shardingsphere.agent.plugin.logging.file.FileLoggingPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/logging/type/file/src/main/java/org/apache/shardingsphere/agent/plugin/logging/file/FileLoggingPluginLifecycleService.java) |
+| Jaeger               | Jaeger plug lifecycle management class               | [`org.apache.shardingsphere.agent.plugin.tracing.jaeger.JaegerTracingPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/type/jaeger/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/jaeger/JaegerTracingPluginLifecycleService.java) |
+| OpenTelemetry        | OpenTelemetryTracing plug lifecycle management class | [`org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.OpenTelemetryTracingPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/type/opentelemetry/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentelemetry/OpenTelemetryTracingPluginLifecycleService.java) |
+| OpenTracing          | OpenTracing plug lifecycle management class          | [`org.apache.shardingsphere.agent.plugin.tracing.opentracing.OpenTracingPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/type/opentracing/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/opentracing/OpenTracingPluginLifecycleService.java) |
+| Zipkin               | Zipkin plug lifecycle management class               | [`org.apache.shardingsphere.agent.plugin.tracing.zipkin.ZipkinTracingPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/type/zipkin/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/zipkin/ZipkinTracingPluginLifecycleService.java) |

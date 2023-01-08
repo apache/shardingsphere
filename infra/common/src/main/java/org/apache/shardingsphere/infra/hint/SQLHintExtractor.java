@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * SQL hint extractor.
@@ -45,6 +46,16 @@ public final class SQLHintExtractor {
         this.hintValueContext = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
                 ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText())
                 : hintValueContext;
+    }
+    
+    /**
+     * Find hint data source name.
+     *
+     * @return data source name
+     */
+    public Optional<String> findHintDataSourceName() {
+        String result = hintValueContext.getDataSourceName();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
     /**

@@ -56,10 +56,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        feature: [ sharding, readwrite-splitting, encrypt, shadow ]
+        feature: [ sharding, readwrite-splitting, encrypt, shadow, mask ]
         framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
-        mode: [ standalone ]
-        transaction: [ local, xa-atomikos, xa-bitronix, xa-narayana ]
+        mode: [ standalone, cluster-zookeeper ]
+        transaction: [ local ]
         product: [ jdbc ]
         exclude: 
           - feature: shadow
@@ -74,6 +74,11 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      zookeeper:
+        image: zookeeper:3.6.3
+        ports:
+          - 2181:2181
+        options: --health-cmd="echo ruok | nc localhost 2181" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -86,8 +91,6 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Prepare environments
         run: sh .github/workflows/resources/sql/nightly-generator-init.sh
       - name: Build with Maven

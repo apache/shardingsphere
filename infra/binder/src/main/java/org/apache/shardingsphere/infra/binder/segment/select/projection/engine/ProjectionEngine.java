@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
@@ -181,7 +183,23 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getActualProjections(projections);
+        String subqueryTableAlias = table.getAlias().orElse(null);
+        return getSubqueryTableActualProjections(projections, subqueryTableAlias);
+    }
+    
+    private Collection<Projection> getSubqueryTableActualProjections(final Collection<Projection> projections, final String subqueryTableAlias) {
+        if (Strings.isNullOrEmpty(subqueryTableAlias)) {
+            return getActualProjections(projections);
+        }
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection) {
+                result.addAll(getSubqueryTableActualProjections(((ShorthandProjection) each).getActualColumns().values(), subqueryTableAlias));
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each.cloneWithOwner(subqueryTableAlias));
+            }
+        }
+        return result;
     }
     
     private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final String owner, final ProjectionSegment projectionSegment) {
@@ -218,12 +236,10 @@ public final class ProjectionEngine {
     private Collection<Projection> getActualProjections(final Collection<Projection> projections) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
-            if (each instanceof ColumnProjection) {
-                result.add(each);
-            } else if (each instanceof ExpressionProjection) {
-                result.add(each);
-            } else if (each instanceof ShorthandProjection) {
+            if (each instanceof ShorthandProjection) {
                 result.addAll(((ShorthandProjection) each).getActualColumns().values());
+            } else if (!(each instanceof DerivedProjection)) {
+                result.add(each);
             }
         }
         return result;

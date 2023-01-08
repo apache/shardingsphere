@@ -21,16 +21,16 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
@@ -84,7 +84,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     }
     
     private void checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
-        Optional<ReadwriteSplittingRule> rule = contextManager.getMetadataContexts().getMetadata().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        Optional<ReadwriteSplittingRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
         ShardingSpherePreconditions.checkState(rule.isPresent(), () -> new UnsupportedSQLOperationException("The current database has no read_write splitting rules"));
     }
     
@@ -122,7 +122,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     }
     
     private Map<String, String> getDisabledResources(final ContextManager contextManager, final String databaseName) {
-        MetadataPersistService persistService = contextManager.getMetadataContexts().getPersistService();
+        MetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         return getDisabledStorageNodes(databaseName, persistService).stream()
                 .collect(Collectors.toMap(QualifiedDatabase::getDataSourceName, QualifiedDatabase::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
     }
@@ -134,8 +134,8 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) {
         Collection<String> notExistedResources = contextManager
-                .getMetadataContexts().getMetadata().getDatabase(databaseName).getResourceMetaData().getNotExistedResources(Collections.singleton(toBeDisabledResource));
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, Collections.singleton(toBeDisabledResource)));
+                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getNotExistedDataSources(Collections.singleton(toBeDisabledResource));
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
     private void checkIsNotDisabled(final Collection<String> disabledResources, final String toBeEnabledResource) {
@@ -184,7 +184,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
         });
     }
     
-    private Collection<QualifiedDatabase> getDisabledStorageNodes(final String databaseName, final MetadataPersistService persistService) {
+    private Collection<QualifiedDatabase> getDisabledStorageNodes(final String databaseName, final MetaDataPersistService persistService) {
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLED.name().equalsIgnoreCase(each.getValue().getStatus()))
                 .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> databaseName.equalsIgnoreCase(each.getDatabaseName())).collect(Collectors.toList());
@@ -192,7 +192,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String databaseName) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        contextManager.getMetadataContexts().getMetadata().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)
+        contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)
                 .filter(each -> new RuleExportEngine(each)
                         .containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
                 .map(each -> new RuleExportEngine(each).export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))

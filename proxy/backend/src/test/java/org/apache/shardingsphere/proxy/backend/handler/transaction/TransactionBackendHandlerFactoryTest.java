@@ -25,11 +25,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -41,8 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.MockedStatic;
-
-import java.lang.reflect.Field;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -61,15 +59,16 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     public void setTransactionContexts() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(contextManager.getMetadataContexts().getMetadata().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class));
         ProxyContext.init(contextManager);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
@@ -84,7 +83,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     @Test
     public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
-        JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
@@ -96,6 +95,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
@@ -111,16 +111,12 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private <S, T> void assertFieldOfInstance(final S classInstance, final String fieldName, final Matcher<T> matcher) {
-        Field field = classInstance.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        T value = (T) field.get(classInstance);
+        T value = (T) Plugins.getMemberAccessor().get(classInstance.getClass().getDeclaredField(fieldName), classInstance);
         assertThat(value, matcher);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private JDBCBackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
-        Field field = transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager");
-        field.setAccessible(true);
-        return (JDBCBackendTransactionManager) field.get(transactionBackendHandler);
+    private BackendTransactionManager getBackendTransactionManager(final TransactionBackendHandler transactionBackendHandler) {
+        return (BackendTransactionManager) Plugins.getMemberAccessor().get(transactionBackendHandler.getClass().getDeclaredField("backendTransactionManager"), transactionBackendHandler);
     }
 }

@@ -49,7 +49,7 @@ public final class PipelineTableMetaDataUtil {
     }
     
     private static PipelineColumnMetaData mustGetAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
-        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "can not get table metadata"));
+        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data"));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (1 == primaryKeys.size()) {
             return tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));

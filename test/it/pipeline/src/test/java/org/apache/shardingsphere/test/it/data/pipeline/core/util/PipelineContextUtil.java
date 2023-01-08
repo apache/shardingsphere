@@ -28,9 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
@@ -43,14 +42,15 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetadataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetadataPersistService;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -74,7 +74,9 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG);
+                ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, PERSIST_REPOSITORY_CONFIG.getType(), PERSIST_REPOSITORY_CONFIG.getProps());
+                result.init(PERSIST_REPOSITORY_CONFIG);
+                return result;
             }
         };
     }
@@ -106,16 +108,14 @@ public final class PipelineContextUtil {
                 ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = getContextManager(dataSource);
-        MetadataPersistService persistService = new MetadataPersistService(getClusterPersistRepository());
-        MetadataContexts metadataContexts = renewMetaDataContexts(contextManager.getMetadataContexts(), persistService);
-        PipelineContext.initContextManager(new ContextManager(metadataContexts, contextManager.getInstanceContext()));
+        MetaDataPersistService persistService = new MetaDataPersistService(getClusterPersistRepository());
+        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
+        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
-        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
-        field.setAccessible(true);
-        return (ContextManager) field.get(dataSource);
+        return (ContextManager) Plugins.getMemberAccessor().get(ShardingSphereDataSource.class.getDeclaredField("contextManager"), dataSource);
     }
     
     @SneakyThrows(ConcurrentException.class)
@@ -123,12 +123,12 @@ public final class PipelineContextUtil {
         return PERSIST_REPOSITORY_LAZY_INITIALIZER.get();
     }
     
-    private static MetadataContexts renewMetaDataContexts(final MetadataContexts old, final MetadataPersistService persistService) {
+    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
                 new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
-        old.getMetadata().getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).putAll(tables);
-        return new MetadataContexts(persistService, old.getMetadata());
+        old.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).putAll(tables);
+        return new MetaDataContexts(persistService, old.getMetaData());
     }
     
     /**
@@ -159,7 +159,7 @@ public final class PipelineContextUtil {
         PipelineProcessConfiguration processConfig = mockPipelineProcessConfiguration();
         MigrationProcessContext processContext = new MigrationProcessContext(jobConfig.getJobId(), processConfig);
         int jobShardingItem = 0;
-        MigrationTaskConfiguration taskConfig = new MigrationJobAPIImpl().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
+        MigrationTaskConfiguration taskConfig = new MigrationJobAPI().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
         return new MigrationJobItemContext(jobConfig, jobShardingItem, null, processContext, taskConfig, new DefaultPipelineDataSourceManager());
     }
     

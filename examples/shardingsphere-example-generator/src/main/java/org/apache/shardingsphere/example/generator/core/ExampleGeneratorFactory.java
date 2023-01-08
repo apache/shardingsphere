@@ -23,7 +23,6 @@ import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
@@ -43,10 +42,6 @@ public final class ExampleGeneratorFactory {
     private static final String CONFIG_FILE = "/config.yaml";
     
     private final Configuration templateConfig;
-    
-    static {
-        ShardingSphereServiceLoader.register(ExampleGenerator.class);
-    }
     
     public ExampleGeneratorFactory() throws IOException {
         templateConfig = createTemplateConfiguration();
@@ -80,6 +75,9 @@ public final class ExampleGeneratorFactory {
             props.setProperty(each, System.getProperty(each));
         }
         if (!props.isEmpty()) {
+            if (props.containsKey("output")) {
+                result.setOutput(props.getProperty("output"));
+            }
             if (props.containsKey("products")) {
                 result.setProducts(getSysEnvByKey(props, "products"));
             }

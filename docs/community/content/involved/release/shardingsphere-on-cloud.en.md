@@ -18,7 +18,7 @@ and shall be classified according to the following labels:
 
 ### 2. Confirm issue list
 
-Open [Github Issues](https://github.com/apache/shardingsphere-on-cloud/issues)，filter the issue whose milestone is `${RELEASE.VERSION}` and status is open:
+Open [Github Issues](https://github.com/apache/shardingsphere-on-cloud/issues), filter the issue whose milestone is `${RELEASE.VERSION}` and status is open:
 
 1. Close the completed issue;
 1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version;
@@ -151,7 +151,7 @@ Each server will automatically synchronize with one another, so it would be okay
 
 ### 1. Create Release Branch
 
-Suppose `ShardingSphere on Cloud` source codes downloaded from github is under `~/shardingsphere-on-cloud/` and the version to be released is `${RELEASE.VERSION}`。
+Suppose `ShardingSphere on Cloud` source codes downloaded from GitHub is under `~/shardingsphere-on-cloud/` and the version to be released is `${RELEASE.VERSION}`.
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
@@ -168,7 +168,6 @@ Update the version in `Chart.yaml` file in release branch:
 
 ```
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
-~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts/Chart.yaml
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
 ```
 
@@ -191,9 +190,6 @@ Before packaging charts, you need to download dependent packages through `helm d
 cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts
-helm dependency build
-
 cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/charts/governance
 helm dependency build
 
@@ -202,10 +198,10 @@ helm dependency build
 
 cd ~/shardingsphere-on-cloud/charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-charts
-helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-cluster-charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
-### 5. 上传 charts，生成 index
+### 5. Upload charts and generate index
+
 1. Upload the tgz file generated in the previous step to the Assets of release
 2. generate index.yaml
 ```shell
@@ -267,7 +263,6 @@ helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
 Decompress:
 
 - `apache-shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
-- `apache-shardingsphere-operator-cluster-charts-${RELEASE.VERSION}.tgz`
 - `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
 
 To check the following items:
@@ -282,6 +277,7 @@ To check the following items:
   *   All software licenses mentioned in `LICENSE`
   *   All the third party dependency licenses are under `licenses` folder
   *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
+
 ### 3. Check products
 
 add repo
@@ -297,7 +293,6 @@ If three products can be queried, the release is successful, and `helm repo add`
 ```shell
 NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
 apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
-apache/apache-shardingsphere-operator-cluster-...	${RELEASE.VERSION}        	xxx      	A Helm chart for ShardingSphere-Operator-Cluster
 apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
 ```
 
@@ -344,7 +339,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/involved/release/shardingsphere/
+https://shardingsphere.apache.org/community/en/involved/release/shardingsphere-on-cloud/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}
@@ -365,13 +360,9 @@ Checklist for reference:
 
 [ ] Checksums and PGP signatures are valid.
 
-[ ] Source code distributions have correct names matching the current release.
-
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere on Cloud repo.
 
 [ ] All files have license headers if necessary.
-
-[ ] No compiled archives bundled in source archive.
 ```
 
 2. Announce the vote result:
@@ -429,7 +420,7 @@ Website: https://shardingsphere.apache.org/
 ShardingSphere on Cloud Resources:
 - Issue: https://github.com/apache/shardingsphere-on-cloud/issues/
 - Mailing list: dev@shardingsphere.apache.org
-- Documents: https://shardingsphere.apache.org/document/current/
+- Documents: https://shardingsphere.apache.org/oncloud/current/en/overview/
 
 
 

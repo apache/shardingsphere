@@ -17,26 +17,23 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.typed;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.TypedSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.impl.TypedSPIFixtureImpl;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedSPIRegistryTest {
-    
-    static {
-        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
-    }
     
     @Test
     public void assertFindRegisteredServiceWithoutProperties() {
@@ -55,16 +52,12 @@ public final class TypedSPIRegistryTest {
     
     @Test
     public void assertGetRegisteredServiceWithProperties() {
-        Properties props = new Properties();
-        props.put("key", 1);
-        TypedSPIFixtureImpl actual = (TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", props);
-        assertThat(actual.getValue(), is("1"));
+        assertThat(((TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
     }
     
     @Test
     public void assertGetRegisteredServiceWithNullProperties() {
-        TypedSPIFixtureImpl actual = (TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", null);
-        assertNull(actual.getValue());
+        assertNull(((TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", null)).getValue());
     }
     
     @Test
