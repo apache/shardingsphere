@@ -24,7 +24,7 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 
 import java.util.Collection;

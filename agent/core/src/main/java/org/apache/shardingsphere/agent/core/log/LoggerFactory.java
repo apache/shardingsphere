@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.core.log;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
-import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.io.File;
 import java.io.IOException;
