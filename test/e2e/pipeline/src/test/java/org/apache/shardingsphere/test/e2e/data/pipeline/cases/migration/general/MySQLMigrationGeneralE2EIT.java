@@ -53,7 +53,6 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         this.testParam = testParam;
-        log.info("testParam:{}", testParam);
     }
     
     @Parameters(name = "{0}")
@@ -76,6 +75,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
+        log.info("assertMigrationSuccess testParam:{}", testParam);
         addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();

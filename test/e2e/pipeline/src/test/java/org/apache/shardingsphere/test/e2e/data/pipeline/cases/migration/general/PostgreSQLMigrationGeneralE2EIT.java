@@ -52,7 +52,6 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         this.testParam = testParam;
-        log.info("testParam:{}", testParam);
     }
     
     @Override
@@ -77,6 +76,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
+        log.info("assertMigrationSuccess testParam:{}", testParam);
         addMigrationProcessConfig();
         createSourceSchema(PipelineBaseE2EIT.SCHEMA_NAME);
         createSourceOrderTable();

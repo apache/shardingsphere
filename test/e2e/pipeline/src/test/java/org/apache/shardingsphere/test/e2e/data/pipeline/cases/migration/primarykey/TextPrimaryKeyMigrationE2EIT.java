@@ -84,6 +84,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
+        log.info("assertTextPrimaryMigrationSuccess testParam:{}", testParam);
         createSourceOrderTable();
         batchInsertOrder();
         addMigrationProcessConfig();
