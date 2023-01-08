@@ -206,10 +206,15 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
+| 44000     | 20300       | No available database discovery rule configuration in database \`%s\`. |
+| 44000     | 20301       | Group name is required. |
+| 44000     | 20302       | Data source names are required. |
+| 44000     | 20303       | Can not found database discovery data source rule in database \`%s\`. |
 | HY000     | 20380       | MGR plugin is not active in database \`%s\`. |
 | 44000     | 20381       | MGR is not in single primary mode in database \`%s\`. |
 | 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`. |
 | 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\`. |
+| 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`. |
 
 ### SQL Dialect Translator
 

@@ -28,6 +28,6 @@ public final class DuplicatePrimaryDataSourceException extends DBDiscoveryProvid
     private static final long serialVersionUID = -7715117257616134436L;
     
     public DuplicatePrimaryDataSourceException(final String databaseName) {
-        super(XOpenSQLState.DUPLICATE, 90, "Duplicate primary data source in database `%s`..", databaseName);
+        super(XOpenSQLState.DUPLICATE, 90, "Duplicate primary data source in database `%s`.", databaseName);
     }
 }
