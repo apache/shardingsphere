@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 
 import java.util.Map;
 

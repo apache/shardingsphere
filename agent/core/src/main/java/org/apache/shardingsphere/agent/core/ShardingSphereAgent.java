@@ -23,10 +23,10 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.builder.AgentBuilderFactory;
 import org.apache.shardingsphere.agent.core.path.AgentPath;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.loader.AdvisorConfigurationLoader;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.loader.AdvisorConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
-import org.apache.shardingsphere.agent.core.plugin.yaml.plugin.loader.PluginConfigurationLoader;
+import org.apache.shardingsphere.agent.core.plugin.yaml.loader.PluginConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
