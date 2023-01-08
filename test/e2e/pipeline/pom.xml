@@ -117,6 +117,8 @@
                 <configuration>
                     <parallel>methods</parallel>
                     <threadCount>1</threadCount>
+                    <!-- TODO if use junit parameterized test, the option does not ensure that the first time an error occurs it will stop-->
+                    <skipAfterFailureCount>1</skipAfterFailureCount>
                 </configuration>
                 <executions>
                     <execution>

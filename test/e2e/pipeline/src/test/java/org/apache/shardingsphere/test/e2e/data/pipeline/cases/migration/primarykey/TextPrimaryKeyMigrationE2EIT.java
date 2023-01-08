@@ -48,11 +48,11 @@ import static org.hamcrest.Matchers.is;
 @Slf4j
 public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParameter;
+    private final PipelineTestParameter testParam;
     
-    public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParameter) {
-        super(testParameter);
-        this.testParameter = testParameter;
+    public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
+        super(testParam);
+        this.testParam = testParam;
     }
     
     @Override
@@ -100,7 +100,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             List<String> lastJobIds = listJobId();
             assertThat(lastJobIds.size(), is(0));
         }
-        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParameter.getDatabaseType(), testParameter.getStorageContainerImage());
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
     private void batchInsertOrder() throws SQLException {
