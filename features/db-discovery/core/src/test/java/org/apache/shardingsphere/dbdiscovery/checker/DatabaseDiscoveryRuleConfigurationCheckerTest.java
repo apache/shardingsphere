@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.checker;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDBDiscoveryConfigurationException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = MissingRequiredDBDiscoveryConfigurationException.class)
     public void assertInvalidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getInvalidConfiguration();
         RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());

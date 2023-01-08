@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.exception;
+package org.apache.shardingsphere.dbdiscovery.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Database discovery SQL exception.
+ * Missing required database discovery configuration exception.
  */
-public abstract class DBDiscoverySQLException extends FeatureSQLException {
+public final class MissingRequiredDBDiscoveryConfigurationException extends DBDiscoverySQLException {
     
-    private static final long serialVersionUID = 2693931450412858590L;
+    private static final long serialVersionUID = -7743963772524386090L;
     
-    private static final int FEATURE_CODE = 3;
-    
-    public DBDiscoverySQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
+    public MissingRequiredDBDiscoveryConfigurationException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "No available database discovery rule configuration in database `%s.", databaseName);
     }
 }

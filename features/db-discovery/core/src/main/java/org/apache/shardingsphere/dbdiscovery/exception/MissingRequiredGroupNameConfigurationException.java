@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr;
+package org.apache.shardingsphere.dbdiscovery.exception;
 
-import org.apache.shardingsphere.dbdiscovery.exception.DBDiscoveryProviderException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Invalid MGR plugin exception.
+ * Missing required group name configuration exception.
  */
-public final class InvalidMGRPluginException extends DBDiscoveryProviderException {
+public final class MissingRequiredGroupNameConfigurationException extends DBDiscoverySQLException {
     
-    private static final long serialVersionUID = 1703082683321097037L;
+    private static final long serialVersionUID = -3591914080387845399L;
     
-    public InvalidMGRPluginException(final String databaseName) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "MGR plugin is not active in database `%s`.", databaseName);
+    public MissingRequiredGroupNameConfigurationException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Group name is required");
     }
 }
