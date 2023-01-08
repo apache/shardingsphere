@@ -27,6 +27,6 @@ public final class MissingRequiredGroupNameConfigurationException extends DBDisc
     private static final long serialVersionUID = -3591914080387845399L;
     
     public MissingRequiredGroupNameConfigurationException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Group name is required");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Group name is required.");
     }
 }

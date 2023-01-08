@@ -27,6 +27,6 @@ public final class MissingRequiredDBDiscoveryConfigurationException extends DBDi
     private static final long serialVersionUID = -7743963772524386090L;
     
     public MissingRequiredDBDiscoveryConfigurationException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "No available database discovery rule configuration in database `%s.", databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "No available database discovery rule configuration in database `%s`.", databaseName);
     }
 }
