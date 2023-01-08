@@ -43,15 +43,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class AgentTransformerTest {
     
-    private static ResettableClassFileTransformer byteBuddyAgent;
+    private static ResettableClassFileTransformer agent;
     
     @BeforeClass
     public static void setup() {
         ByteBuddyAgent.install();
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
-        byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
-                .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
+        agent = new AgentBuilder.Default()
+                .with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .ignore(ElementMatchers.isSynthetic())
+                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.builder.fixture"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new AgentLoggingListener())
@@ -78,7 +80,7 @@ public final class AgentTransformerTest {
     
     @AfterClass
     public static void destroy() {
-        byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+        agent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
     
     @Test
