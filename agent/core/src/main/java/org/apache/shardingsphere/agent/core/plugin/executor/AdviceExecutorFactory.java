@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.builder.advisor;
+package org.apache.shardingsphere.agent.core.plugin.executor;
 
-import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType.Builder;
 import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.plugin.executor.type.StaticMethodAdviceExecutor;
@@ -38,44 +33,26 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Method advisor builder.
+ * Advice executor factory.
  */
-@RequiredArgsConstructor
-public final class MethodAdvisorBuilder {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodAdvisorBuilder.class);
+public final class AdviceExecutorFactory {
     
     private final AdviceFactory adviceFactory;
     
     private final AdvisorConfiguration advisorConfig;
     
-    private final TypeDescription typePointcut;
-    
-    /**
-     * Build method advisor builder.
-     * 
-     * @param builder original builder
-     * @return built builder
-     */
-    public Builder<?> build(final Builder<?> builder) {
-        Builder<?> result = builder;
-        for (InDefinedShape each : typePointcut.getDeclaredMethods()) {
-            Optional<AdviceExecutor> adviceExecutor = findMatchedAdviceExecutor(each);
-            if (!adviceExecutor.isPresent()) {
-                continue;
-            }
-            try {
-                result = adviceExecutor.get().decorateBuilder(result, each);
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to load advice class: {}.", typePointcut.getTypeName(), ex);
-            }
-        }
-        return result;
+    public AdviceExecutorFactory(final ClassLoaderContext classLoaderContext, final AdvisorConfiguration advisorConfig) {
+        adviceFactory = new AdviceFactory(classLoaderContext);
+        this.advisorConfig = advisorConfig;
     }
     
-    private Optional<AdviceExecutor> findMatchedAdviceExecutor(final InDefinedShape methodDescription) {
+    /**
+     * Find matched advice executor.
+     * 
+     * @param methodDescription method description
+     * @return found advice executor
+     */
+    public Optional<AdviceExecutor> findMatchedAdviceExecutor(final InDefinedShape methodDescription) {
         Collection<AgentAdvice> advices = advisorConfig.getAdvisors().stream()
                 .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
         if (isConstructor(methodDescription)) {

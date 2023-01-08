@@ -26,8 +26,6 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.core.builder.advisor.AdviceFactory;
-import org.apache.shardingsphere.agent.core.builder.advisor.MethodAdvisorBuilder;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
@@ -62,6 +60,6 @@ public final class AgentTransformer implements Transformer {
         PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getAgentClassLoader(), isEnhancedForProxy);
         Builder<?> targetAdviceObjectBuilder = builder.defineField(EXTRA_DATA,
                 Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(TargetAdviceObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
-        return new MethodAdvisorBuilder(new AdviceFactory(classLoaderContext), advisorConfigs.get(typeDescription.getTypeName()), typeDescription).build(targetAdviceObjectBuilder);
+        return new MethodAdvisorBuilderDecorator(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())).decorate(targetAdviceObjectBuilder);
     }
 }
