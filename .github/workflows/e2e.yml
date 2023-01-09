@@ -98,7 +98,7 @@ jobs:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules, passthrough ]
-        additional-options: ''
+        additional-options: [ '' ]
         include:
           - adapter: proxy
             database: MySQL
