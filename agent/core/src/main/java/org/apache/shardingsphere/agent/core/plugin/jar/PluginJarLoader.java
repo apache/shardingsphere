@@ -64,9 +64,8 @@ public final class PluginJarLoader {
     
     @SneakyThrows(IOException.class)
     private static void getJarFiles(final File file, final List<File> jarFiles) {
-    
         Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
-        
+            
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
                 if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
