@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor.yaml.swapper;
+package org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,8 +23,8 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlPointcutConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlPointcutParameterConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutParameterConfiguration;
 
 import java.util.Optional;
 

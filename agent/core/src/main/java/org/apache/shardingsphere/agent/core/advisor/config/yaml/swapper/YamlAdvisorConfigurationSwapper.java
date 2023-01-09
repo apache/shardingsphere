@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor.yaml.swapper;
+package org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationRegistryFactory;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutConfiguration;
 
 /**
  * YAML advisor configuration swapper.

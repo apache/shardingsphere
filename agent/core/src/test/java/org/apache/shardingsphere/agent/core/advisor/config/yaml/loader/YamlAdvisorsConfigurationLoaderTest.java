@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor.yaml.loader;
+package org.apache.shardingsphere.agent.core.advisor.config.yaml.loader;
 
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlAdvisorsConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlPointcutConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlPointcutParameterConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.fixture.YamlAdviceFixture;
-import org.apache.shardingsphere.agent.core.advisor.yaml.fixture.YamlTargetObjectFixture;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorsConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutParameterConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdviceFixture;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
 import org.junit.Test;
 
 import java.util.ArrayList;
