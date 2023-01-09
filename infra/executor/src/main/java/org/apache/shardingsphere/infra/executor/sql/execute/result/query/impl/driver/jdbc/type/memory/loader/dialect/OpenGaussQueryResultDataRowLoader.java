@@ -25,7 +25,7 @@ import java.sql.SQLException;
 /**
  * OpenGauss query result data row loader.
  */
-public final class OpenGuassQueryResultDataRowLoader extends AbstractQueryResultDataRowLoader {
+public final class OpenGaussQueryResultDataRowLoader extends AbstractQueryResultDataRowLoader {
     
     @Override
     protected Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
