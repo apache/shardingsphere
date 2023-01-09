@@ -27,15 +27,15 @@ public final class MetricsPool {
     
     private static final ConcurrentHashMap<String, MetricsWrapper> METRICS_POOL = new ConcurrentHashMap<>();
     
-    private static MetricsWrapperFactory wrapperFactory;
+    private static MetricsWrapperFactory metricsWrapperFactory;
     
     /**
      * Set metrics wrapper factory.
      *
-     * @param factory metrics wrapper factory
+     * @param metricsWrapperFactory metrics wrapper factory
      */
-    public static void setMetricsFactory(final MetricsWrapperFactory factory) {
-        wrapperFactory = factory;
+    public static void setMetricsFactory(final MetricsWrapperFactory metricsWrapperFactory) {
+        MetricsPool.metricsWrapperFactory = metricsWrapperFactory;
     }
     
     /**
@@ -44,8 +44,7 @@ public final class MetricsPool {
      * @param id metrics wrapper ID
      */
     public static void create(final String id) {
-        Optional<MetricsWrapper> wrapper = wrapperFactory.create(id);
-        wrapper.ifPresent(optional -> METRICS_POOL.put(id, optional));
+        metricsWrapperFactory.create(id).ifPresent(optional -> METRICS_POOL.putIfAbsent(id, optional));
     }
     
     /**

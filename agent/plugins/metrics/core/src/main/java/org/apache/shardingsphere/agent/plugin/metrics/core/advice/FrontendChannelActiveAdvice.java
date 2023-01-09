@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
-import org.junit.After;
-import org.junit.BeforeClass;
 
-public abstract class MetricsAdviceBaseTest {
+import java.lang.reflect.Method;
+
+/**
+ * Frontend channel active advice.
+ */
+public final class FrontendChannelActiveAdvice implements InstanceMethodAdvice {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    static {
+        MetricsPool.create(MetricIds.PROXY_COLLECTION);
     }
     
-    @After
-    public void reset() {
-        MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+    @Override
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+        MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
     }
 }
