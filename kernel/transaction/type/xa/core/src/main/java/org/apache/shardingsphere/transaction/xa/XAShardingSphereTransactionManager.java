@@ -19,7 +19,9 @@ package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
@@ -37,29 +39,33 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere Transaction manager for XA.
  */
 public final class XAShardingSphereTransactionManager implements ShardingSphereTransactionManager {
     
-    private static final Set<String> ALL_XA_PROVIDERS = new HashSet<>(Arrays.asList("Atomikos", "Bitronix", "Narayana"));
+    private static final Collection<String> XA_PROVIDERS;
     
     private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
     
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
+    static {
+        XA_PROVIDERS = ShardingSphereServiceLoader.getServiceInstances(XATransactionManagerProvider.class)
+                .stream().map(TypedSPI::getType).collect(Collectors.toSet());
+    }
+    
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
-        if (!ALL_XA_PROVIDERS.contains(providerType)) {
+        if (!XA_PROVIDERS.contains(providerType)) {
             return;
         }
         xaTransactionManagerProvider = null == providerType
