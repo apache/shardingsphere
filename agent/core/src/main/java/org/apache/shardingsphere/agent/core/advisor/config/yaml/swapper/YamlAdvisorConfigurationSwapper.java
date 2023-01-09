@@ -34,14 +34,14 @@ public final class YamlAdvisorConfigurationSwapper {
     /**
      * Swap from YAML advisor configuration to advisors configuration.
      * 
-     * @param yamlAdvisorConfig YAML advisor configuration
+     * @param yamlConfig YAML advisor configuration
      * @param type type
      * @return advisor configuration
      */
-    public static AdvisorConfiguration swapToObject(final YamlAdvisorConfiguration yamlAdvisorConfig, final String type) {
-        AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(yamlAdvisorConfig.getTarget());
-        for (YamlPointcutConfiguration each : yamlAdvisorConfig.getPointcuts()) {
-            YamlPointcutConfigurationSwapper.swapToObject(each).ifPresent(elementMatcher -> result.getAdvisors().add(new MethodAdvisorConfiguration(elementMatcher, yamlAdvisorConfig.getAdvice())));
+    public static AdvisorConfiguration swap(final YamlAdvisorConfiguration yamlConfig, final String type) {
+        AdvisorConfiguration result = AdvisorConfigurationRegistryFactory.getRegistry(type).getAdvisorConfiguration(yamlConfig.getTarget());
+        for (YamlPointcutConfiguration each : yamlConfig.getPointcuts()) {
+            YamlPointcutConfigurationSwapper.swap(each).ifPresent(elementMatcher -> result.getAdvisors().add(new MethodAdvisorConfiguration(elementMatcher, yamlConfig.getAdvice())));
         }
         return result;
     }
