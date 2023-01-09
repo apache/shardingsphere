@@ -19,11 +19,17 @@ package org.apache.shardingsphere.agent.core.plugin.jar;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,17 +62,21 @@ public final class PluginJarLoader {
         return result;
     }
     
-    private static void getJarFiles(final File path, final List<File> jarFiles) {
-        File[] files = path.listFiles();
-        if (null != files && files.length > 0) {
-            for (final File each : files) {
-                if (each.isFile() && each.getName().endsWith(".jar")) {
-                    jarFiles.add(each);
+    @SneakyThrows(IOException.class)
+    private static void getJarFiles(final File file, final List<File> jarFiles) {
+    
+        Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
+        
+            @Override
+            public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
+                if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
+                    jarFiles.add(path.toFile());
                 }
-                if (each.isDirectory()) {
-                    getJarFiles(each, jarFiles);
+                if (path.toFile().isDirectory()) {
+                    getJarFiles(path.toFile(), jarFiles);
                 }
+                return FileVisitResult.CONTINUE;
             }
-        }
+        });
     }
 }
