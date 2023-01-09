@@ -26,16 +26,16 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Request count advice for ShardingSphere-Proxy.
+ * Total requests count advice for ShardingSphere-Proxy.
  */
-public final class RequestCountAdvice implements InstanceMethodAdvice {
+public final class TotalRequestsCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.PROXY_REQUEST_COUNT);
+        MetricsPool.create(MetricIds.TOTAL_PROXY_REQUESTS);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(MetricIds.PROXY_REQUEST_COUNT).ifPresent(MetricsWrapper::inc);
+        MetricsPool.get(MetricIds.TOTAL_PROXY_REQUESTS).ifPresent(MetricsWrapper::inc);
     }
 }

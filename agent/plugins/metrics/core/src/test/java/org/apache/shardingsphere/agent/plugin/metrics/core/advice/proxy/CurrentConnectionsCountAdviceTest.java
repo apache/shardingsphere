@@ -30,16 +30,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class RequestCountAdviceTest extends MetricsAdviceBaseTest {
+public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTest {
     
-    private final RequestCountAdvice advice = new RequestCountAdvice();
+    private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
     
     @Test
     public void assertBeforeMethod() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUEST_COUNT).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST_COUNT).get()).getFixtureValue(), is(1d));
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
+        advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
+        assertTrue(MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).get()).getFixtureValue(), is(1d));
+    }
+    
+    private Method mockMethod(final String methodName) {
+        Method result = mock(Method.class);
+        when(result.getName()).thenReturn(methodName);
+        return result;
     }
 }
