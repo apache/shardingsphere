@@ -36,14 +36,13 @@ public final class YamlAdvisorsConfigurationSwapper {
      * Swap from YAML advisors configuration to advisor configurations.
      * 
      * @param yamlAdvisorsConfig YAML advisors configuration
-     * @param type plugin type
      * @return advisor configurations
      */
-    public static Collection<AdvisorConfiguration> swap(final YamlAdvisorsConfiguration yamlAdvisorsConfig, final String type) {
+    public static Collection<AdvisorConfiguration> swap(final YamlAdvisorsConfiguration yamlAdvisorsConfig) {
         Collection<AdvisorConfiguration> result = new LinkedList<>();
         for (YamlAdvisorConfiguration each : yamlAdvisorsConfig.getAdvisors()) {
             if (null != each.getTarget()) {
-                result.add(YamlAdvisorConfigurationSwapper.swap(each, type));
+                result.add(YamlAdvisorConfigurationSwapper.swap(each));
             }
         }
         return result;
