@@ -39,7 +39,7 @@ public final class YamlAdvisorConfigurationSwapper {
     public static AdvisorConfiguration swap(final YamlAdvisorConfiguration yamlConfig) {
         AdvisorConfiguration result = new AdvisorConfiguration(yamlConfig.getTarget());
         for (YamlPointcutConfiguration each : yamlConfig.getPointcuts()) {
-            YamlPointcutConfigurationSwapper.swap(each).ifPresent(elementMatcher -> result.getAdvisors().add(new MethodAdvisorConfiguration(elementMatcher, yamlConfig.getAdvice())));
+            YamlPointcutConfigurationSwapper.swap(each).ifPresent(optional -> result.getAdvisors().add(new MethodAdvisorConfiguration(optional, yamlConfig.getAdvice())));
         }
         return result;
     }
