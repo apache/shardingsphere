@@ -24,12 +24,18 @@ advisors:
       - name: processException
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.ChannelHandlerAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.FrontendChannelActiveAdvice
     pointcuts:
       - name: channelActive
         type: method
+  - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.FrontendChannelReadAdvice
+    pointcuts:
       - name: channelRead
         type: method
+  - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.FrontendChannelInactiveAdvice
+    pointcuts:
       - name: channelInactive
         type: method
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine

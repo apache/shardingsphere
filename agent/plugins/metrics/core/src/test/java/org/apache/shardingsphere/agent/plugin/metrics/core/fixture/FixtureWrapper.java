@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 @Getter
 public final class FixtureWrapper implements MetricsWrapper {
     
-    private Double fixtureValue = 0.0d;
+    private Double fixtureValue = 0d;
     
     @Override
     public void inc(final double value) {
@@ -55,6 +55,13 @@ public final class FixtureWrapper implements MetricsWrapper {
     
     @Override
     public void delegate(final Object object) {
-        fixtureValue = -1.0;
+        fixtureValue = -1d;
+    }
+    
+    /**
+     * Reset.
+     */
+    public void reset() {
+        fixtureValue = 0d;
     }
 }

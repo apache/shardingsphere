@@ -26,35 +26,16 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Channel handler advice.
+ * Frontend channel read advice.
  */
-public final class ChannelHandlerAdvice implements InstanceMethodAdvice {
-    
-    public static final String CHANNEL_READ = "channelRead";
-    
-    public static final String CHANNEL_ACTIVE = "channelActive";
-    
-    public static final String CHANNEL_INACTIVE = "channelInactive";
+public final class FrontendChannelReadAdvice implements InstanceMethodAdvice {
     
     static {
         MetricsPool.create(MetricIds.PROXY_REQUEST);
-        MetricsPool.create(MetricIds.PROXY_COLLECTION);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        switch (method.getName()) {
-            case CHANNEL_READ:
-                MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
-                break;
-            case CHANNEL_ACTIVE:
-                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
-                break;
-            case CHANNEL_INACTIVE:
-                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::dec);
-                break;
-            default:
-                break;
-        }
+        MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
     }
 }
