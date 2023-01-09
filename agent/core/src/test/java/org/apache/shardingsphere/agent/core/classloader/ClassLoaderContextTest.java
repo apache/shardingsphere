@@ -17,33 +17,22 @@
 
 package org.apache.shardingsphere.agent.core.classloader;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
 
-/**
- * Class loader context.
- */
-@RequiredArgsConstructor
-public final class ClassLoaderContext {
-    
-    private static final Map<ClassLoader, AgentClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
-    
-    @Getter
-    private final ClassLoader appClassLoader;
-    
-    private final Collection<PluginJar> pluginJars;
-    
-    /**
-     * Get agent class loader.
-     *
-     * @return agent class loader
-     */
-    public AgentClassLoader getAgentClassLoader() {
-        return appClassLoader != null ? AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentClassLoader(key, pluginJars)) : null;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class ClassLoaderContextTest {
+
+    @Test
+    public void assertNullAppClassLoaderIsReturnedForEmptyPluginJars() {
+        assertThat(new ClassLoaderContext(String.class.getClassLoader(), Collections.emptyList()).getAppClassLoader(), nullValue());
+    }
+
+    @Test
+    public void assertNullAgentClassLoaderIsReturnedForEmptyPluginJars() {
+        assertThat(new ClassLoaderContext(String.class.getClassLoader(), Collections.emptyList()).getAgentClassLoader(), nullValue());
     }
 }
