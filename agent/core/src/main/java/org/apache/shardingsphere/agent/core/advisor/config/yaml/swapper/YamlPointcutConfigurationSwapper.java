@@ -35,24 +35,24 @@ import java.util.Optional;
 public final class YamlPointcutConfigurationSwapper {
     
     /**
-     * Swap from YAML pointcut configuration to advisors configuration.
+     * Swap from YAML pointcut configuration to method pointcut.
      * 
-     * @param yamlPointcutConfig YAML pointcut configuration
-     * @return pointcut
+     * @param yamlConfig YAML pointcut configuration
+     * @return method pointcut
      */
-    public static Optional<ElementMatcher<? super MethodDescription>> swapToObject(final YamlPointcutConfiguration yamlPointcutConfig) {
-        if ("constructor".equals(yamlPointcutConfig.getType())) {
-            return Optional.of(appendParameters(yamlPointcutConfig, ElementMatchers.isConstructor()));
+    public static Optional<ElementMatcher<? super MethodDescription>> swap(final YamlPointcutConfiguration yamlConfig) {
+        if ("constructor".equals(yamlConfig.getType())) {
+            return Optional.of(appendParameters(yamlConfig, ElementMatchers.isConstructor()));
         }
-        if ("method".equals(yamlPointcutConfig.getType())) {
-            return Optional.of(appendParameters(yamlPointcutConfig, ElementMatchers.named(yamlPointcutConfig.getName())));
+        if ("method".equals(yamlConfig.getType())) {
+            return Optional.of(appendParameters(yamlConfig, ElementMatchers.named(yamlConfig.getName())));
         }
         return Optional.empty();
     }
     
-    private static ElementMatcher<? super MethodDescription> appendParameters(final YamlPointcutConfiguration yamlPointcutConfig, final Junction<? super MethodDescription> pointcut) {
+    private static ElementMatcher<? super MethodDescription> appendParameters(final YamlPointcutConfiguration yamlConfig, final Junction<? super MethodDescription> pointcut) {
         Junction<? super MethodDescription> result = pointcut;
-        for (YamlPointcutParameterConfiguration each : yamlPointcutConfig.getParams()) {
+        for (YamlPointcutParameterConfiguration each : yamlConfig.getParams()) {
             result = result.and(ElementMatchers.takesArgument(each.getIndex(), ElementMatchers.named(each.getType())));
         }
         return result;
