@@ -79,20 +79,20 @@ public final class ShardingRuleStatementConverterTest {
         Collection<AbstractTableRuleSegment> result = new LinkedList<>();
         AutoTableRuleSegment autoTableRuleSegment1 = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))), null, null);
-        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}")));
+        result.add(autoTableRuleSegment1);
         AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))),
                 new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"),
                 new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
+        result.add(autoTableRuleSegment2);
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
-                new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment),
-                new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("order_id_algorithm", new Properties())),
                 new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("snowflake", PropertiesBuilder.build(new Property("", "")))),
                 new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
-        result.add(autoTableRuleSegment1);
-        result.add(autoTableRuleSegment2);
+        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}")));
+        tableRuleSegment.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("order_id_algorithm", new Properties())));
         result.add(tableRuleSegment);
         return result;
     }

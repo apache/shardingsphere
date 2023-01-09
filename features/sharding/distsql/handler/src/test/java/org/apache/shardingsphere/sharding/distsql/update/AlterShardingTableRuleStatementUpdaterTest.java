@@ -162,11 +162,12 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     }
     
     private TableRuleSegment createCompleteTableRule(final String logicTableName) {
-        ShardingStrategySegment tableStrategy = new ShardingStrategySegment("standard", "product_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties()));
-        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
-        ShardingStrategySegment databaseStrategy = new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment);
         KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        return new TableRuleSegment(logicTableName, Collections.singletonList("ds_${0..1}.t_order${0..1}"), databaseStrategy, tableStrategy, keyGenerator, null);
+        TableRuleSegment result = new TableRuleSegment(logicTableName, Collections.singletonList("ds_${0..1}.t_order${0..1}"), keyGenerator, null);
+        result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties())));
+        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
+        return result;
     }
     
     private ShardingRuleConfiguration createCurrentShardingRuleConfiguration() {
