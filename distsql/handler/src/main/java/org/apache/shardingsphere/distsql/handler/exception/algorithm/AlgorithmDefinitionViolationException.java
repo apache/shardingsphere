@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.distsql.handler.exception.algorithm;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
- * Algorithm in used exception.
+ * Algorithm definition violation exception.
  */
-public final class AlgorithmInUsedException extends AlgorithmDefinitionViolationException {
+public abstract class AlgorithmDefinitionViolationException extends DistSQLException {
     
-    private static final long serialVersionUID = -8735125626190637177L;
+    private static final long serialVersionUID = -727466071244178933L;
     
-    public AlgorithmInUsedException(final String type, final String databaseName, final Collection<String> algorithmNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 152, "%s algorithms `%s` in database `%s` are still in used.", type, algorithmNames, databaseName);
+    public AlgorithmDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, errorCode, reason, messageArgs);
     }
 }

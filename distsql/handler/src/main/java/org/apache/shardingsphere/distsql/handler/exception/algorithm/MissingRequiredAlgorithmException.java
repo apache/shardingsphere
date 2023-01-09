@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.handler.exception.algorithm;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,9 +24,9 @@ import java.util.Collection;
 /**
  * Missing required algorithm exception.
  */
-public final class MissingRequiredAlgorithmException extends RuleDefinitionViolationException {
+public final class MissingRequiredAlgorithmException extends AlgorithmDefinitionViolationException {
     
-    private static final long serialVersionUID = -1952698375135777585L;
+    private static final long serialVersionUID = 4591071898233749618L;
     
     public MissingRequiredAlgorithmException() {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, "Algorithm does not exist.");

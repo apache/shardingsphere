@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.handler.exception.algorithm;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,9 +24,9 @@ import java.util.Collection;
 /**
  * Duplicate algorithm exception.
  */
-public final class DuplicateAlgorithmException extends RuleDefinitionViolationException {
+public final class DuplicateAlgorithmException extends AlgorithmDefinitionViolationException {
     
-    private static final long serialVersionUID = 4382238091103015055L;
+    private static final long serialVersionUID = 3503761639898230997L;
     
     public DuplicateAlgorithmException(final String type, final String databaseName, final Collection<String> auditorNames) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 153, "Duplicate %s algorithms `%s` in database `%s`.", type, auditorNames, databaseName);
