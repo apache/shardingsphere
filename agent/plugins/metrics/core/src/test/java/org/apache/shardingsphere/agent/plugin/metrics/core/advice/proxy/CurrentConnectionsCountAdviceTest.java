@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
+import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.junit.Test;
@@ -30,9 +32,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ProxyConnectionCountAdviceTest extends MetricsAdviceBaseTest {
+public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTest {
     
-    private final ProxyConnectionCountAdvice advice = new ProxyConnectionCountAdvice();
+    private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
     
     @Test
     public void assertBeforeMethod() {
@@ -40,8 +42,8 @@ public final class ProxyConnectionCountAdviceTest extends MetricsAdviceBaseTest 
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_COLLECTION).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get()).getFixtureValue(), is(1d));
+        assertTrue(MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).get()).getFixtureValue(), is(1d));
     }
     
     private Method mockMethod(final String methodName) {

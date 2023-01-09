@@ -24,14 +24,14 @@ advisors:
       - name: processException
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.ProxyConnectionCountAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.CurrentConnectionsCountAdvice
     pointcuts:
       - name: channelActive
         type: method
       - name: channelInactive
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.ProxyRequestCountAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.TotalRequestsCountAdvice
     pointcuts:
       - name: channelRead
         type: method

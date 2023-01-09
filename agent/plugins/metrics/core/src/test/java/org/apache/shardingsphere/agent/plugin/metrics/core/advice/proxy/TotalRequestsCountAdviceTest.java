@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
+import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.junit.Test;
@@ -29,15 +31,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ProxyRequestCountAdviceTest extends MetricsAdviceBaseTest {
+public final class TotalRequestsCountAdviceTest extends MetricsAdviceBaseTest {
     
-    private final ProxyRequestCountAdvice advice = new ProxyRequestCountAdvice();
+    private final TotalRequestsCountAdvice advice = new TotalRequestsCountAdvice();
     
     @Test
     public void assertBeforeMethod() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUEST).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST).get()).getFixtureValue(), is(1d));
+        assertTrue(MetricsPool.get(MetricIds.TOTAL_PROXY_REQUESTS).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.TOTAL_PROXY_REQUESTS).get()).getFixtureValue(), is(1d));
     }
 }
