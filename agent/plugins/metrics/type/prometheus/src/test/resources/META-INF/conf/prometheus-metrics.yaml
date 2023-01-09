@@ -22,12 +22,12 @@ metrics:
     help: the total requests of ShardingSphere-Proxy
   - id: b
     type: GAUGE
-    name: proxy_connection_total
-    help: the shardingsphere proxy connection total
+    name: current_proxy_connections
+    help: the current connections of ShardingSphere-Proxy
   - id: c
     type: HISTOGRAM
     name: proxy_execute_latency_millis
-    help: the shardingsphere proxy executor latency millis
+    help: the executor latency millis of ShardingSphere-Proxy
     labels:
       - name
     props:
