@@ -26,16 +26,25 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Frontend channel read advice.
+ * Proxy connection count advice.
  */
-public final class FrontendChannelReadAdvice implements InstanceMethodAdvice {
+public final class ProxyConnectionCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.PROXY_REQUEST);
+        MetricsPool.create(MetricIds.PROXY_COLLECTION);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
+        switch (method.getName()) {
+            case "channelActive":
+                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::inc);
+                break;
+            case "channelInactive":
+                MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(MetricsWrapper::dec);
+                break;
+            default:
+                break;
+        }
     }
 }

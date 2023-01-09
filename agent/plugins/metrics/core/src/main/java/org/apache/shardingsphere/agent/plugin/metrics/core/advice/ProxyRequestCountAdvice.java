@@ -17,26 +17,25 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
-import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
-public final class FrontendChannelActiveAdviceTest extends MetricsAdviceBaseTest {
+/**
+ * Proxy request count advice.
+ */
+public final class ProxyRequestCountAdvice implements InstanceMethodAdvice {
     
-    private final FrontendChannelActiveAdvice advice = new FrontendChannelActiveAdvice();
+    static {
+        MetricsPool.create(MetricIds.PROXY_REQUEST);
+    }
     
-    @Test
-    public void assertBeforeMethod() {
-        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_COLLECTION).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get()).getFixtureValue(), is(1d));
+    @Override
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+        MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
     }
 }
