@@ -29,6 +29,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +45,7 @@ public final class MySQLComStmtResetExecutorTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
-        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class));
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", mock(SQLStatementContext.class), Collections.emptyList());
         preparedStatement.getLongData().put(0, new byte[0]);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);
