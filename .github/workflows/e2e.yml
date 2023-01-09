@@ -103,7 +103,7 @@ jobs:
           - adapter: proxy
             database: MySQL
             scenario: passthrough
-            additional-options: '-Dmysql.version=8.0.30'
+            additional-options: '-Dmysql-connector-java.version=8.0.30'
         exclude:
           - adapter: jdbc
             scenario: passthrough
