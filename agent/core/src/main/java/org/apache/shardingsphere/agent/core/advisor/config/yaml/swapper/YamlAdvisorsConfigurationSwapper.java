@@ -43,7 +43,7 @@ public final class YamlAdvisorsConfigurationSwapper {
         Collection<AdvisorConfiguration> result = new LinkedList<>();
         for (YamlAdvisorConfiguration each : yamlAdvisorsConfig.getAdvisors()) {
             if (null != each.getTarget()) {
-                result.add(YamlAdvisorConfigurationSwapper.swapToObject(each, type));
+                result.add(YamlAdvisorConfigurationSwapper.swap(each, type));
             }
         }
         return result;
