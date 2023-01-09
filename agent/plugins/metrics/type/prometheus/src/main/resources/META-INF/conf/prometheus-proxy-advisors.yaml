@@ -29,7 +29,7 @@ advisors:
       - name: channelActive
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.FrontendChannelReadAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.ProxyRequestCountAdvice
     pointcuts:
       - name: channelRead
         type: method

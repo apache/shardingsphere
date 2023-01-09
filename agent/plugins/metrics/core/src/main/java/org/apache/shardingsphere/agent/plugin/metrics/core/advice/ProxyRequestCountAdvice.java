@@ -26,9 +26,9 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Frontend channel read advice.
+ * Proxy request count advice.
  */
-public final class FrontendChannelReadAdvice implements InstanceMethodAdvice {
+public final class ProxyRequestCountAdvice implements InstanceMethodAdvice {
     
     static {
         MetricsPool.create(MetricIds.PROXY_REQUEST);

@@ -29,9 +29,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class FrontendChannelReadAdviceTest extends MetricsAdviceBaseTest {
+public final class ProxyRequestCountAdviceTest extends MetricsAdviceBaseTest {
     
-    private final FrontendChannelReadAdvice advice = new FrontendChannelReadAdvice();
+    private final ProxyRequestCountAdvice advice = new ProxyRequestCountAdvice();
     
     @Test
     public void assertBeforeMethod() {
