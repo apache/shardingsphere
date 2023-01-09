@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -99,8 +100,8 @@ public final class DatabaseTypeEngine {
      * @return database type
      */
     public static DatabaseType getDatabaseType(final String url) {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)
-                .stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQL92"));
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each))
+                .max(Comparator.comparing(each -> getMatchedUrlPrefixLength(each, url))).orElseGet(() -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQL92"));
     }
     
     /**
@@ -128,6 +129,10 @@ public final class DatabaseTypeEngine {
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
         return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
+    }
+    
+    private static Integer getMatchedUrlPrefixLength(final DatabaseType databaseType, final String url) {
+        return databaseType.getJdbcUrlPrefixes().stream().filter(url::startsWith).findFirst().map(String::length).orElse(0);
     }
     
     /**
