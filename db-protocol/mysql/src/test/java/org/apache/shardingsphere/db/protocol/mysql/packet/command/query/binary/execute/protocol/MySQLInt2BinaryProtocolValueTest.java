@@ -37,8 +37,9 @@ public final class MySQLInt2BinaryProtocolValueTest {
     
     @Test
     public void assertRead() {
-        when(payload.getByteBuf()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 0}));
-        assertThat(new MySQLInt2BinaryProtocolValue().read(payload, false), is(1));
+        when(payload.getByteBuf()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 0, 1, 0}));
+        assertThat(new MySQLInt2BinaryProtocolValue().read(payload, false), is((short) 1));
+        assertThat(new MySQLInt2BinaryProtocolValue().read(payload, true), is(1));
     }
     
     @Test

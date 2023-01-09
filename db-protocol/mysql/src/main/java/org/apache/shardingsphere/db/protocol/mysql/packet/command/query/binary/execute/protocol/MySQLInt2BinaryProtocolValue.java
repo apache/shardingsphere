@@ -24,9 +24,13 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 public final class MySQLInt2BinaryProtocolValue implements MySQLBinaryProtocolValue {
     
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public Object read(final MySQLPacketPayload payload, final boolean unsigned) {
-        return unsigned ? payload.getByteBuf().readUnsignedShortLE() : payload.getByteBuf().readShortLE();
+        if (unsigned) {
+            return payload.getByteBuf().readUnsignedShortLE();
+        }
+        return payload.getByteBuf().readShortLE();
     }
     
     @Override

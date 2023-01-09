@@ -26,9 +26,13 @@ import java.math.BigDecimal;
  */
 public final class MySQLInt4BinaryProtocolValue implements MySQLBinaryProtocolValue {
     
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public Object read(final MySQLPacketPayload payload, final boolean unsigned) {
-        return unsigned ? payload.getByteBuf().readUnsignedIntLE() : payload.getByteBuf().readIntLE();
+        if (unsigned) {
+            return payload.getByteBuf().readUnsignedIntLE();
+        }
+        return payload.getByteBuf().readIntLE();
     }
     
     @Override
