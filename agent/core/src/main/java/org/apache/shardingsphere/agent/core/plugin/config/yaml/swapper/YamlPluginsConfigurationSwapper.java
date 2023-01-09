@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.yaml.swapper;
+package org.apache.shardingsphere.agent.core.plugin.config.yaml.swapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlAgentConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPluginCategoryConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.yaml.entity.YamlPluginConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginCategoryConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginConfiguration;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.yaml.entity;
+package org.apache.shardingsphere.agent.core.plugin.config.yaml.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * YAML agent configuration.
+ * YAML plugin category configuration.
  */
 @Getter
 @Setter
-public final class YamlAgentConfiguration {
+public final class YamlPluginCategoryConfiguration {
     
-    private YamlPluginCategoryConfiguration plugins;
+    private Map<String, YamlPluginConfiguration> logging = new LinkedHashMap<>();
+    
+    private Map<String, YamlPluginConfiguration> metrics = new LinkedHashMap<>();
+    
+    private Map<String, YamlPluginConfiguration> tracing = new LinkedHashMap<>();
 }
