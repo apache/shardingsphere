@@ -76,16 +76,15 @@ public final class ShardingRuleStatementConverterTest {
     }
     
     private Collection<AbstractTableRuleSegment> createTableRuleSegment1() {
-        Collection<AbstractTableRuleSegment> result = new LinkedList<>();
-        AutoTableRuleSegment autoTableRuleSegment1 = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id",
-                new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))), null, null);
-        result.add(autoTableRuleSegment1);
-        AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"), "order_id",
-                new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))),
-                new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"),
-                new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
-                        new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
-        result.add(autoTableRuleSegment2);
+        AutoTableRuleSegment autoTableRuleSegment1 = new AutoTableRuleSegment("t_order", Arrays.asList("ds0", "ds1"));
+        autoTableRuleSegment1.setShardingColumn("order_id");
+        autoTableRuleSegment1.setShardingAlgorithmSegment(new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))));
+        AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"));
+        autoTableRuleSegment2.setShardingColumn("order_id");
+        autoTableRuleSegment2.setShardingAlgorithmSegment(new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))));
+        autoTableRuleSegment2.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"));
+        autoTableRuleSegment2.setAuditStrategySegment(new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
+                new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
                 new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("snowflake", PropertiesBuilder.build(new Property("", "")))),
                 new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
@@ -93,6 +92,9 @@ public final class ShardingRuleStatementConverterTest {
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}")));
         tableRuleSegment.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment));
         tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("order_id_algorithm", new Properties())));
+        Collection<AbstractTableRuleSegment> result = new LinkedList<>();
+        result.add(autoTableRuleSegment1);
+        result.add(autoTableRuleSegment2);
         result.add(tableRuleSegment);
         return result;
     }
