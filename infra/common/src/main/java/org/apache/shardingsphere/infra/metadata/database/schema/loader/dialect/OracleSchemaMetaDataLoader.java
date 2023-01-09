@@ -126,7 +126,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
     }
-
+    
     private String getOriginalDataType(final String dataType) {
         int index = dataType.indexOf("(");
         if (index > 0) {
