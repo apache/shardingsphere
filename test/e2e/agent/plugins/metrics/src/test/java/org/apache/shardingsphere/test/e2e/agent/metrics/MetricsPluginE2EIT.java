@@ -42,7 +42,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     public static final String CURRENT_PROXY_CONNECTIONS = "current_proxy_connections";
     
-    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_bucket";
+    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
     
     public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
     
