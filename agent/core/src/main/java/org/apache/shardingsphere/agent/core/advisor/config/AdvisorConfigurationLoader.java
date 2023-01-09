@@ -79,8 +79,8 @@ public final class AdvisorConfigurationLoader {
         return String.join("-", pluginType.toLowerCase(), "advisors.yaml");
     }
     
-    private static void mergeConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> advisorConfigs) {
-        for (AdvisorConfiguration each : advisorConfigs) {
+    private static void mergeConfigurations(final Map<String, AdvisorConfiguration> advisorConfigMap, final Collection<AdvisorConfiguration> toBeMergedAdvisorConfigs) {
+        for (AdvisorConfiguration each : toBeMergedAdvisorConfigs) {
             advisorConfigMap.computeIfAbsent(each.getTargetClassName(), key -> new AdvisorConfiguration(each.getTargetClassName())).getAdvisors().addAll(each.getAdvisors());
         }
     }
