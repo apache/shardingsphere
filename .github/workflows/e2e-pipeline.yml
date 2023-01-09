@@ -99,9 +99,9 @@ jobs:
         run: ./mvnw -B clean install -am -pl test/e2e/pipeline -Pit.env.docker -DskipTests
       - name: Run Pipeline MySQL E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mysql.version=${{ env.mysql_version }}
-      - name: Run Pipeline PostgreSQL Integration Test
+      - name: Run Pipeline PostgreSQL E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.postgresql.version=${{ env.postgresql_version }}
-      - name: Run Pipeline openGauss Integration Test
+      - name: Run Pipeline openGauss E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.opengauss.version=${{ env.opengauss_version }}
 
   pipeline-daily-it-test:
@@ -130,9 +130,9 @@ jobs:
           java-version: 8
       - name: Build Pipeline IT image
         run: ./mvnw -B clean install -am -pl test/e2e/pipeline -Pit.env.docker -DskipTests
-      - name: Run Pipeline Daily MySQL Integration Test
+      - name: Run Pipeline Daily MySQL E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mysql.version=${{ env.mysql_version }}
-      - name: Run Pipeline Daily PostgreSQL Integration Test
+      - name: Run Pipeline Daily PostgreSQL E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.postgresql.version=${{ env.postgresql_version }}
-      - name: Run Pipeline Daily openGauss Integration Test
+      - name: Run Pipeline Daily openGauss E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.opengauss.version=${{ env.opengauss_version }}
