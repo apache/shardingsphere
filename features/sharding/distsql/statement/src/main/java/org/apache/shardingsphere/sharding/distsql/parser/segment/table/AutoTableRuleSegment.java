@@ -20,8 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.parser.segment.table;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 
 import java.util.Collection;
 
@@ -38,13 +36,5 @@ public final class AutoTableRuleSegment extends AbstractTableRuleSegment {
     
     public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources) {
         super(logicTable, dataSources);
-    }
-    
-    public AutoTableRuleSegment(final String logicTable, final Collection<String> dataSources, final String shardingColumn,
-                                final AlgorithmSegment shardingAlgorithm, final KeyGenerateStrategySegment keyGenerateStrategySegment,
-                                final AuditStrategySegment auditStrategySegment) {
-        super(logicTable, dataSources, keyGenerateStrategySegment, auditStrategySegment);
-        this.shardingColumn = shardingColumn;
-        this.shardingAlgorithmSegment = shardingAlgorithm;
     }
 }

@@ -69,7 +69,7 @@ public final class OracleSchemaMetaDataLoaderTest {
     
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION6 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN  FROM ALL_TAB_COLS"
             + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
-
+    
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION7 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
             + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
@@ -186,7 +186,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false)));
     }
-
+    
     @Test
     public void assertLoadCondition7() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -233,7 +233,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI", "BINARY_CI");
         return result;
     }
-
+    
     private ResultSet mockTableMetaDataResultSetWithNullValue() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
@@ -245,7 +245,7 @@ public final class OracleSchemaMetaDataLoaderTest {
         when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI", null);
         return result;
     }
-
+    
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
