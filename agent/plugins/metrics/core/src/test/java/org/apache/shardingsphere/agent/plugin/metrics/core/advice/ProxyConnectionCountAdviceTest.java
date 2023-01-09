@@ -28,15 +28,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class FrontendChannelActiveAdviceTest extends MetricsAdviceBaseTest {
+public final class ProxyConnectionCountAdviceTest extends MetricsAdviceBaseTest {
     
-    private final FrontendChannelActiveAdvice advice = new FrontendChannelActiveAdvice();
+    private final ProxyConnectionCountAdvice advice = new ProxyConnectionCountAdvice();
     
     @Test
     public void assertBeforeMethod() {
-        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{});
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
+        advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
         assertTrue(MetricsPool.get(MetricIds.PROXY_COLLECTION).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get()).getFixtureValue(), is(1d));
+    }
+    
+    private Method mockMethod(final String methodName) {
+        Method result = mock(Method.class);
+        when(result.getName()).thenReturn(methodName);
+        return result;
     }
 }
