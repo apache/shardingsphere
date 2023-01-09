@@ -245,7 +245,7 @@ public final class ShardingRuleStatementCheckerTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckAutoTableRuleWithStandardShardingAlgoithm() {
+    public void assertCheckAutoTableRuleWithStandardShardingAlgorithm() {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}"))));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
@@ -253,7 +253,7 @@ public final class ShardingRuleStatementCheckerTest {
     }
     
     @Test
-    public void assertCheckAutoTableRuleWithAutoShardingAlgoithm() {
+    public void assertCheckAutoTableRuleWithAutoShardingAlgorithm() {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "4"))));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
