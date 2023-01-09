@@ -85,5 +85,5 @@ jobs:
           java-version: 8
       - name: Build Discovery IT image
         run: ./mvnw -B clean install -am -pl test/e2e/discovery -Pit.env.docker -DskipTests
-      - name: Run MySQL Discovery Integration Test
+      - name: Run MySQL Discovery E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=mysql:5.7

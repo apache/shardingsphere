@@ -86,9 +86,9 @@ jobs:
           java-version: 8
       - name: Build Transaction IT image
         run: ./mvnw -B clean install -am -pl test/e2e/transaction -Pit.env.docker -DskipTests
-      - name: Run MySQL Transaction Integration Test
+      - name: Run MySQL Transaction E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
-      - name: Run PostgreSQL Transaction Integration Test
+      - name: Run PostgreSQL Transaction E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
-      - name: Run OpenGauss Transaction Integration Test
+      - name: Run OpenGauss Transaction E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
