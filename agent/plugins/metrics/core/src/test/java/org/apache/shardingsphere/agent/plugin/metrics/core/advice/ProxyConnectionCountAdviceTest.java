@@ -21,46 +21,32 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class ChannelHandlerAdviceTest extends MetricsAdviceBaseTest {
+public final class ProxyConnectionCountAdviceTest extends MetricsAdviceBaseTest {
     
-    private final ChannelHandlerAdvice channelHandlerAdvice = new ChannelHandlerAdvice();
-    
-    @Mock
-    private Method channelRead;
-    
-    @Mock
-    private Method channelActive;
-    
-    @Mock
-    private Method channelInactive;
+    private final ProxyConnectionCountAdvice advice = new ProxyConnectionCountAdvice();
     
     @Test
-    public void assertMethod() {
-        when(channelRead.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_READ);
-        when(channelActive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_ACTIVE);
-        when(channelInactive.getName()).thenReturn(ChannelHandlerAdvice.CHANNEL_INACTIVE);
+    public void assertBeforeMethod() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        channelHandlerAdvice.beforeMethod(targetObject, channelRead, new Object[]{});
-        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{});
-        channelHandlerAdvice.beforeMethod(targetObject, channelActive, new Object[]{});
-        channelHandlerAdvice.beforeMethod(targetObject, channelInactive, new Object[]{});
-        FixtureWrapper requestWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUEST).get();
-        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUEST).isPresent());
-        assertThat(requestWrapper.getFixtureValue(), is(1.0));
-        FixtureWrapper connectionWrapper = (FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get();
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
+        advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
         assertTrue(MetricsPool.get(MetricIds.PROXY_COLLECTION).isPresent());
-        assertThat(connectionWrapper.getFixtureValue(), is(1.0));
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COLLECTION).get()).getFixtureValue(), is(1d));
+    }
+    
+    private Method mockMethod(final String methodName) {
+        Method result = mock(Method.class);
+        when(result.getName()).thenReturn(methodName);
+        return result;
     }
 }
