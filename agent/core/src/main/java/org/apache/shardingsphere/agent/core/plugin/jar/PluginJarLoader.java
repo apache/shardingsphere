@@ -19,14 +19,18 @@ package org.apache.shardingsphere.agent.core.plugin.jar;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -48,8 +52,8 @@ public final class PluginJarLoader {
      */
     public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib"))));
-        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins"))));
+        getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib")), jarFiles);
+        getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins")), jarFiles);
         Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new PluginJar(new JarFile(each, true), each));
@@ -58,8 +62,21 @@ public final class PluginJarLoader {
         return result;
     }
     
-    private static List<File> getJarFiles(final File path) {
-        File[] jarFiles = path.listFiles(each -> each.getName().endsWith(".jar"));
-        return (null == jarFiles || jarFiles.length == 0) ? Collections.emptyList() : Arrays.asList(jarFiles);
+    @SneakyThrows(IOException.class)
+    private static void getJarFiles(final File file, final List<File> jarFiles) {
+    
+        Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
+        
+            @Override
+            public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
+                if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
+                    jarFiles.add(path.toFile());
+                }
+                if (path.toFile().isDirectory()) {
+                    getJarFiles(path.toFile(), jarFiles);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 }
