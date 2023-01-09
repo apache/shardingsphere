@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor.yaml.fixture;
+package org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor.yaml.swapper;
+package org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlAdvisorsConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.yaml.fixture.YamlAdviceFixture;
-import org.apache.shardingsphere.agent.core.advisor.yaml.fixture.YamlTargetObjectFixture;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorsConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdviceFixture;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

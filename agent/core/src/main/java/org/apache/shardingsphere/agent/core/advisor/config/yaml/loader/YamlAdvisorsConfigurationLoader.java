@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor.yaml.loader;
+package org.apache.shardingsphere.agent.core.advisor.config.yaml.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.advisor.yaml.entity.YamlAdvisorsConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorsConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;

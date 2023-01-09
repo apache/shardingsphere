@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.core.builder.AgentBuilderFactory;
 import org.apache.shardingsphere.agent.core.path.AgentPath;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.AdvisorConfigurationLoader;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 import org.apache.shardingsphere.agent.core.plugin.config.PluginConfigurationLoader;
 
