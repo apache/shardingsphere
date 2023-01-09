@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.AdvisorConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
-import org.apache.shardingsphere.agent.core.plugin.PluginConfigurationLoader;
+import org.apache.shardingsphere.agent.core.plugin.config.PluginConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;

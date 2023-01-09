@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.plugin.config;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.junit.Test;
