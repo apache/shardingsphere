@@ -33,12 +33,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -47,6 +47,8 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
@@ -77,11 +79,11 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
-        int statementId = MySQLStatementIDGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
+        int statementId = MySQLStatementIDGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext));
-        return createPackets(statementId, sqlStatementContext);
+        return createPackets(sqlStatementContext, statementId);
     }
     
     private void failedIfContainsMultiStatements() {
@@ -93,7 +95,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
     }
     
-    private Collection<DatabasePacket<?>> createPackets(final int statementId, final SQLStatementContext<?> sqlStatementContext) {
+    private Collection<DatabasePacket<?>> createPackets(final SQLStatementContext<?> sqlStatementContext, final int statementId) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         List<Projection> projections = getProjections(sqlStatementContext);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
@@ -101,7 +103,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession);
         if (parameterCount > 0) {
-            result.addAll(createParameterColumnDefinition41Packets(parameterCount, characterSet));
+            result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet));
             result.add(new MySQLEofPacket(statusFlags));
         }
         if (!projections.isEmpty()) {
@@ -115,10 +117,16 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections() : Collections.emptyList();
     }
     
-    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount, final int characterSet) {
-        Collection<DatabasePacket<?>> result = new ArrayList<>(parameterCount);
-        for (int i = 0; i < parameterCount; i++) {
-            result.add(new MySQLColumnDefinition41Packet(characterSet, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
+    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final SQLStatementContext<?> sqlStatementContext, final int characterSet) {
+        Map<ParameterMarkerSegment, ShardingSphereColumn> columnsOfParameterMarkers =
+                MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
+        Collection<ParameterMarkerSegment> parameterMarkerSegments = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getParameterMarkerSegments();
+        Collection<DatabasePacket<?>> result = new ArrayList<>(parameterMarkerSegments.size());
+        for (ParameterMarkerSegment each : parameterMarkerSegments) {
+            ShardingSphereColumn column = columnsOfParameterMarkers.get(each);
+            MySQLColumnDefinition41Packet packet = null != column ? createMySQLColumnDefinition41PacketFromColumn(column, characterSet)
+                    : new MySQLColumnDefinition41Packet(characterSet, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false);
+            result.add(packet);
         }
         return result;
     }
@@ -133,10 +141,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             // TODO Calculate column definition flag for other projection types
             if (each instanceof ColumnProjection) {
                 result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable).map(table -> table.getColumns().get(((ColumnProjection) each).getName()))
-                        .map(column -> {
-                            MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
-                            return new MySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), "", "", "", "", "", 0, columnType, 0, false);
-                        })
+                        .map(column -> createMySQLColumnDefinition41PacketFromColumn(column, characterSet))
                         .orElseGet(() -> new MySQLColumnDefinition41Packet(characterSet, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false)));
             } else {
                 result.add(new MySQLColumnDefinition41Packet(characterSet, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
@@ -145,11 +150,16 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
-    private ShardingSphereSchema getSchema(final SelectStatementContext selectStatementContext) {
-        String databaseName = selectStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getDefaultDatabaseName);
+    private ShardingSphereSchema getSchema(final SQLStatementContext<?> sqlStatementContext) {
+        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getDefaultDatabaseName);
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        return selectStatementContext.getTablesContext().getSchemaName().map(database::getSchema)
-                .orElseGet(() -> database.getSchema(DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName())));
+        return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema)
+                .orElseGet(() -> database.getSchema(DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName())));
+    }
+    
+    private MySQLColumnDefinition41Packet createMySQLColumnDefinition41PacketFromColumn(final ShardingSphereColumn column, final int characterSet) {
+        MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
+        return new MySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), "", "", "", "", "", 0, columnType, 0, false);
     }
     
     private int calculateColumnDefinitionFlag(final ShardingSphereColumn column) {
