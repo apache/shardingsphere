@@ -89,8 +89,8 @@ The file location is as follows:
 
 ```yaml
 metrics:
-  - id: proxy_request_total # metric id
+  - id: xxx_id # metric id
     type: COUNTER # metric type, COUNTER、GAUGE、HISTOGRAM、SUMMARY
-    name: proxy_request_total # metric name
-    help: the shardingsphere proxy request total # metric help
+    name: xxx_name # metric name
+    help: xxx help # metric help
 ```

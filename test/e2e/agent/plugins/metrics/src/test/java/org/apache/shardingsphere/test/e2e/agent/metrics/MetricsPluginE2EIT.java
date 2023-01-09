@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    public static final String PROXY_REQUEST = "proxy_request_total";
+    public static final String TOTAL_PROXY_REQUESTS = "total_proxy_requests";
     
     public static final String PROXY_COLLECTION = "proxy_connection_total";
     
@@ -87,7 +87,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     private Collection<String> buildMetricsNames() {
         Collection<String> result = new LinkedHashSet<>();
-        result.add(PROXY_REQUEST);
+        result.add(TOTAL_PROXY_REQUESTS);
         result.add(PROXY_COLLECTION);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
         result.add(SQL_SELECT);
