@@ -56,7 +56,7 @@ public final class ShadowRuleConfigurationImportChecker {
     
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
-        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedResources(requiredResource);
+        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
         Collection<String> logicResources = getLogicDataSources(database);
         notExistedResources.removeIf(logicResources::contains);
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));

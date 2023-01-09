@@ -13,7 +13,10 @@ The `DROP SHARDING ALGORITHM` syntax is used to drop sharding algorithm for spec
 {{% tab name="Grammar" %}}
 ```sql
 DropShardingAlgorithm ::=
-  'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'ALGORITHM' shardingAlgorithmName ifExists? ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 shardingAlgorithmName ::=
   identifier
@@ -29,20 +32,27 @@ databaseName ::=
 
 ### Supplement
 
-- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
+- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
+- `ifExists` clause used for avoid `Sharding algorithm not exists` error.
 
 ### Example
 
-- Drop sharding algorithm for specified database.
+- Drop sharding algorithm for specified database
 
 ```sql
 DROP SHARDING ALGORITHM t_order_hash_mod FROM sharding_db;
 ```
 
-- Drop sharding algorithm for current database.
+- Drop sharding algorithm for current database
 
 ```sql
 DROP SHARDING ALGORITHM t_order_hash_mod;
+```
+
+- Drop sharding algorithm with `ifExists` clause
+
+```sql
+DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod;
 ```
 
 ### Reserved word

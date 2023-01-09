@@ -13,7 +13,10 @@ The `UNREGISTER STORAGE UNIT` syntax is used to unregister storage unit from the
 {{% tab name="Grammar" %}}
 ```sql
 UnregisterStorageUnit ::=
-  'UNREGISTER' 'STORAGE' 'UNIT' ('IF' 'EXISTS')? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
+  'UNREGISTER' 'STORAGE' 'UNIT' ifExists? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 storageUnitName ::=
   identifier
@@ -31,7 +34,8 @@ storageUnitName ::=
 - Unable to unregister storage unit already used by rules. `Storage unit are still in used.` will be prompted when removing
   storage units used by rules;
 - The storage unit need to be removed only contains `SINGLE TABLE RULE`, and when the user confirms that this restriction
-  can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the storage unit.
+  can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the storage unit;
+- `ifExists` clause is used for avoid `Storage unit not exists` error.
 
 ### Example
 
@@ -53,7 +57,7 @@ UNREGISTER STORAGE UNIT ds_0, ds_1;
 UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;
 ```
 
-- Drop the storage unit if it exists
+- Drop the storage unit with `ifExists` clause
 
 ```sql
 UNREGISTER STORAGE UNIT IF EXISTS ds_0;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.classloader;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.util.Collection;
 import java.util.Map;

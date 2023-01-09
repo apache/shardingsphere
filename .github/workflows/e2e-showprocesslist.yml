@@ -83,5 +83,5 @@ jobs:
           java-version: 8
       - name: Build ShowProcesslist IT image
         run: ./mvnw -B clean install -am -pl test/e2e/showprocesslist -Pit.env.docker -DskipTests
-      - name: Run MySQL ShowProcesslist Integration Test
+      - name: Run MySQL ShowProcesslist E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/showprocesslist/pom.xml -Dit.env.type=docker -Dit.scenarios=cluster_jdbc_proxy -Dit.run.modes=${{ matrix.mode }}

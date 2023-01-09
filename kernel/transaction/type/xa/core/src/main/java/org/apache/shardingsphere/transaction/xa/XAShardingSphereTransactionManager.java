@@ -19,12 +19,13 @@ package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -119,9 +120,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     @Override
     @SneakyThrows({SystemException.class, NotSupportedException.class})
     public void begin(final int timeout) {
-        if (timeout < 0) {
-            throw new NotSupportedException("timeout should more than 0s");
-        }
+        ShardingSpherePreconditions.checkState(timeout >= 0, TransactionTimeoutException::new);
         TransactionManager transactionManager = xaTransactionManagerProvider.getTransactionManager();
         transactionManager.setTransactionTimeout(timeout);
         transactionManager.begin();

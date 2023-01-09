@@ -1960,7 +1960,15 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <common-expression text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="35" stop-index="60" />
+                                                <binary-operation-expression start-index="35" stop-index="60">
+                                                    <left>
+                                                        <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}" start-index="35" stop-index="53" />
+                                                    </left>
+                                                    <operator>::</operator>
+                                                    <right>
+                                                        <common-expression text="jsonb" start-index="56" stop-index="60" />
+                                                    </right>
+                                                </binary-operation-expression>
                                                 <parameter-marker-expression parameter-index="0" start-index="35" stop-index="42" />
                                             </right>
                                         </binary-operation-expression>
@@ -2039,11 +2047,27 @@
                                             <right>
                                                 <list-expression start-index="36" stop-index="55" literal-stop-index="91">
                                                     <items>
-                                                        <common-expression text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="37" stop-index="62" />
+                                                        <binary-operation-expression start-index="37" stop-index="62">
+                                                            <left>
+                                                                <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}" start-index="37" stop-index="55" />
+                                                            </left>
+                                                            <operator>::</operator>
+                                                            <right>
+                                                                <common-expression text="jsonb" start-index="58" stop-index="62" />
+                                                            </right>
+                                                        </binary-operation-expression>
                                                         <parameter-marker-expression parameter-index="0" start-index="37" stop-index="44" />
                                                     </items>
                                                     <items>
-                                                        <common-expression text="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="65" stop-index="90" />
+                                                        <binary-operation-expression start-index="65" stop-index="90">
+                                                            <left>
+                                                                <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}" start-index="65" stop-index="83" />
+                                                            </left>
+                                                            <operator>::</operator>
+                                                            <right>
+                                                                <common-expression text="jsonb" start-index="86" stop-index="90" />
+                                                            </right>
+                                                        </binary-operation-expression>
                                                         <parameter-marker-expression parameter-index="1" start-index="47" stop-index="54" />
                                                     </items>
                                                 </list-expression>
@@ -2132,7 +2156,15 @@
                                         </binary-operation-expression>
                                     </between-expr>
                                     <and-expr>
-                                        <common-expression text="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="72" stop-index="97" />
+                                        <binary-operation-expression start-index="72" stop-index="97">
+                                            <left>
+                                                <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}" start-index="72" stop-index="90" />
+                                            </left>
+                                            <operator>::</operator>
+                                            <right>
+                                                <common-expression text="jsonb" start-index="93" stop-index="97" />
+                                            </right>
+                                        </binary-operation-expression>
                                         <parameter-marker-expression parameter-index="1" start-index="54" stop-index="61" />
                                     </and-expr>
                                 </between-expression>

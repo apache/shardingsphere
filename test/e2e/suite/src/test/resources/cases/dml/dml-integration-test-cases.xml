@@ -310,12 +310,9 @@
         <assertion parameters="3:int, -1:long, -1:int, -1:int, -1:smallint, -1:tinyint" expected-data-file="insert_negative_values_into_single_table_integer.xml" />
     </test-case>
     
-    <!--    TODO Fixme https://github.com/apache/shardingsphere/issues/22407 -->
-    <!--    <test-case sql="INSERT INTO t_data_type_floating_point (id, col_float, col_double) VALUES (?, ?::REAL, ?::DOUBLE PRECISION)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">-->
-    <!--        <assertion parameters="1:int, Infinity:String, Infinity:String" expected-data-file="insert_positive_infinity_floating_point_values.xml"/>-->
-    <!--        <assertion parameters="2:int, -Infinity:String, -Infinity:String" expected-data-file="insert_negative_infinity_floating_point_values.xml"/>-->
-    <!--    </test-case>-->
-    <test-case sql="INSERT INTO t_data_type_floating_point (id, col_float, col_double) VALUES (?, ?, ?)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+    <test-case sql="INSERT INTO t_data_type_floating_point (id, col_float, col_double) VALUES (?, ?::REAL, ?::DOUBLE PRECISION)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="1:int, Infinity:String, Infinity:String" expected-data-file="insert_positive_infinity_floating_point_values.xml"/>
+        <assertion parameters="2:int, -Infinity:String, -Infinity:String" expected-data-file="insert_negative_infinity_floating_point_values.xml"/>
         <assertion parameters="3:int, 3.4028235E38:float, 1.7976931348623157E308:double" expected-data-file="insert_max_floating_point_values.xml" />
         <assertion parameters="4:int, 1.4E-45:float, 4.9E-324:double" expected-data-file="insert_min_floating_point_values.xml" />
     </test-case>

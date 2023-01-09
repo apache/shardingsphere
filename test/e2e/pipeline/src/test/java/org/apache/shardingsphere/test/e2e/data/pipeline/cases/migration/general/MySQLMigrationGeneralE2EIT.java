@@ -53,7 +53,6 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         this.testParam = testParam;
-        log.info("testParameter:{}", testParam);
     }
     
     @Parameters(name = "{0}")
@@ -76,6 +75,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
+        log.info("assertMigrationSuccess testParam:{}", testParam);
         addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();
@@ -104,6 +104,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
         assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, "");
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
     private void assertMigrationSuccessById(final String jobId, final String algorithmType) throws SQLException, InterruptedException {

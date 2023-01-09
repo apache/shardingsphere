@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 <#if mode=="standalone">
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
+<#else>
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 </#if>
 <#if feature?contains("sharding")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;

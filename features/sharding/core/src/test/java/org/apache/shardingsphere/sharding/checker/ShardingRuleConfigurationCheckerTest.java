@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -49,7 +50,7 @@ public final class ShardingRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings("unchecked")
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = MissingRequiredShardingConfigurationException.class)
     public void assertCheckTableConfigurationFailed() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
@@ -89,6 +90,7 @@ public final class ShardingRuleConfigurationCheckerTest {
                                                                                         final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig,
                                                                                         final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         ShardingAutoTableRuleConfiguration result = mock(ShardingAutoTableRuleConfiguration.class);
+        when(result.getLogicTable()).thenReturn("foo_tbl");
         when(result.getShardingStrategy()).thenReturn(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
         when(result.getAuditStrategy()).thenReturn(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);
         when(result.getKeyGenerateStrategy()).thenReturn(null == keyGenerateStrategyConfig ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfig);

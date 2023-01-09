@@ -13,7 +13,10 @@ The `DROP BROADCAST TABLE RULE` syntax is used to drop broadcast table rule for 
 {{% tab name="Grammar" %}}
 ```sql
 DropBroadcastTableRule ::=
-  'DROP' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
+  'DROP' 'BROADCAST' 'TABLE' 'RULE' ifExists? tableName (',' tableName)* 
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 tableName ::=
   identifier
@@ -26,7 +29,8 @@ tableName ::=
 
 ### Supplement
 
-- `tableName` can use the table of existing broadcast rules
+- `tableName` can use the table of existing broadcast rules;
+- `ifExists` clause is used for avoid `Broadcast rule not exists` error.
 
 ### Example
 
@@ -34,6 +38,12 @@ tableName ::=
 
 ```sql
 DROP BROADCAST TABLE RULE t_province, t_city;
+```
+
+- Drop broadcast table rule with `ifExists` clause
+
+```
+DROP BROADCAST TABLE RULE IF EXISTS t_province, t_city;
 ```
 
 ### Reserved word

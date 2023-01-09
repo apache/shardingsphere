@@ -13,7 +13,10 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 DropShardingTableRule ::=
-  'DROP' 'SHARDING' 'TABLE' 'RULE'  shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+  'DROP' 'SHARDING' 'TABLE' 'RULE' ifExists? shardingRuleName (',' shardingRuleName)*  ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 shardingRuleName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `Sharding rule not exists` 错误。
 
 ### 示例
 
@@ -43,6 +47,12 @@ DROP SHARDING TABLE RULE t_order, t_order_item FROM sharding_db;
 
 ```sql
 DROP SHARDING TABLE RULE t_order;
+```
+
+- 使用 `ifExists` 子句删除分片规则
+
+```sql
+DROP SHARDING TABLE RULE IF EXISTS t_order;
 ```
 
 ### 保留字

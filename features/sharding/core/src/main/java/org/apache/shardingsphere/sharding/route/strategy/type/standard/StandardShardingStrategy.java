@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.strategy.type.standard;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingRouteAlgorithmException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -46,8 +47,8 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     private final StandardShardingAlgorithm<?> shardingAlgorithm;
     
     public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
-        Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
-        Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm cannot be null.");
+        ShardingSpherePreconditions.checkNotNull(shardingColumn, () -> new MissingRequiredShardingConfigurationException("Standard sharding column"));
+        ShardingSpherePreconditions.checkNotNull(shardingAlgorithm, () -> new MissingRequiredShardingConfigurationException("Standard sharding algorithm"));
         Collection<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         shardingColumns.add(shardingColumn);
         this.shardingColumns = Collections.unmodifiableCollection(shardingColumns);

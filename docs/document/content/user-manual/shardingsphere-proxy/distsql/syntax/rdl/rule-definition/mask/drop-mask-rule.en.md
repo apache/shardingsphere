@@ -13,9 +13,12 @@ The `DROP MASK RULE` syntax is used to drop existing mask rule.
 {{% tab name="Grammar" %}}
 ```sql
 DropEncryptRule ::=
-  'DROP' 'MASK' 'RULE' ruleName (',' ruleName)*
-    
-ruleName ::=
+  'DROP' 'MASK' 'RULE' ifExists? maskRuleName (',' maskRuleName)*
+
+ifExists ::=
+  'IF' 'EXISTS'
+
+maskRuleName ::=
   identifier
 ```
 {{% /tab %}}
@@ -24,12 +27,22 @@ ruleName ::=
 {{% /tab %}}
 {{< /tabs >}}
 
+### Supplement
+
+- `ifExists` clause used for avoid `Mask rule not exists` error.
+
 ### Example
 
 - Drop mask rule
 
 ```sql
 DROP MASK RULE t_mask, t_mask_1;
+```
+
+- Drop mask rule with `ifExists` clause
+
+```sql
+DROP MASK RULE IF EXISTS t_mask, t_mask_1;
 ```
 
 ### Reserved words

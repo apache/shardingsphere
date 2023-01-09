@@ -54,7 +54,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(databaseName, sqlStatement, database.getResourceMetaData());
+        checkToBeAlteredDataSources(databaseName, sqlStatement, database.getResourceMetaData());
         checkDiscoverTypeAndHeartbeat(sqlStatement);
     }
     
@@ -73,12 +73,12 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         return sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
-        Collection<String> notExistedResources = resourceMetaData.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
+    private void checkToBeAlteredDataSources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
+        Collection<String> notExistedDataSources = resourceMetaData.getNotExistedDataSources(getToBeAlteredDataSourceNames(sqlStatement));
+        ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
     }
     
-    private Collection<String> getToBeAlteredResourceNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+    private Collection<String> getToBeAlteredDataSourceNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
         return result;

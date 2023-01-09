@@ -21,7 +21,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredGroupNameConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -63,7 +66,9 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private void checkConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getGroupName()), "Group name is required.");
-        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Data source names are required.");
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getGroupName()), MissingRequiredGroupNameConfigurationException::new);
+        ShardingSpherePreconditions.checkState(null != config.getDataSourceNames()
+                && !config.getDataSourceNames().isEmpty(), MissingRequiredDataSourceNamesConfigurationException::new);
     }
     
     /**

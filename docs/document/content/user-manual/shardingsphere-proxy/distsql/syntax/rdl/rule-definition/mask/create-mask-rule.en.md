@@ -13,7 +13,10 @@ The `CREATE MASK RULE` syntax is used to create a mask rule.
 {{% tab name="Grammar" %}}
 ```sql
 CreateEncryptRule ::=
-  'CREATE' 'MASK' 'RULE' maskRuleDefinition (',' maskRuleDefinition)*
+  'CREATE' 'MASK' 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
+
+ifNotExists ::=
+  'IF' 'NOT' 'EXISTS'
 
 maskRuleDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)* ')' ')'
@@ -51,7 +54,8 @@ value ::=
 ### Note
 
 - `maskAlgorithmType` specifies the data masking algorithm type. For more details, please refer to [Data Masking Algorithm](/en/user-manual/common-config/builtin-algorithm/mask/);
-- Duplicate `ruleName` will not be created.
+- Duplicate `ruleName` will not be created;
+- `ifNotExists` clause is used for avoid `Duplicate mask rule` error.
 
 ### Example
 
@@ -59,6 +63,16 @@ value ::=
 
 ```sql
 CREATE MASK RULE t_mask (
+COLUMNS(
+(NAME=phone_number,TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES("from-x"=1, "to-y"=2, "replace-char"="*"))),
+(NAME=address,TYPE(NAME='MD5'))
+));
+```
+
+#### Create mask rule with `ifNotExists` clause
+
+```sql
+CREATE MASK RULE IF NOT EXISTS t_mask (
 COLUMNS(
 (NAME=phone_number,TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES("from-x"=1, "to-y"=2, "replace-char"="*"))),
 (NAME=address,TYPE(NAME='MD5'))

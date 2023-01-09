@@ -118,7 +118,7 @@ public final class ShardingSphereResourceMetaData {
      * @param resourceNames resource names to be judged
      * @return not existed resource names
      */
-    public Collection<String> getNotExistedResources(final Collection<String> resourceNames) {
+    public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
         return resourceNames.stream().filter(each -> !dataSources.containsKey(each)).collect(Collectors.toSet());
     }
     

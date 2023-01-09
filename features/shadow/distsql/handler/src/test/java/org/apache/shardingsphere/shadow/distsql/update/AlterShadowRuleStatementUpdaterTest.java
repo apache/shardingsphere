@@ -93,7 +93,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertExecuteWithNotExistResource() {
         List<String> dataSources = Arrays.asList("ds", "ds0");
-        when(resourceMetaData.getNotExistedResources(any())).thenReturn(dataSources);
+        when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds3", null, null));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }

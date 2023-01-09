@@ -58,7 +58,7 @@ jobs:
       matrix:
         feature: [ sharding, readwrite-splitting, encrypt, shadow, mask ]
         framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
-        mode: [ standalone ]
+        mode: [ standalone, cluster-zookeeper ]
         transaction: [ local ]
         product: [ jdbc ]
         exclude: 
@@ -74,6 +74,11 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      zookeeper:
+        image: zookeeper:3.6.3
+        ports:
+          - 2181:2181
+        options: --health-cmd="echo ruok | nc localhost 2181" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3

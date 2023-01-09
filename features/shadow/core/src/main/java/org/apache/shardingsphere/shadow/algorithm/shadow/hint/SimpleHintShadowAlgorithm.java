@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
+import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
     }
     
     private void checkPropsSize(final Properties props) {
-        Preconditions.checkState(!props.isEmpty(), "Simple hint shadow algorithm props cannot be empty.");
+        ShardingSpherePreconditions.checkState(!props.isEmpty(), () -> new ShadowAlgorithmInitializationException(getType(), "Simple hint shadow algorithm props cannot be empty."));
     }
     
     @Override

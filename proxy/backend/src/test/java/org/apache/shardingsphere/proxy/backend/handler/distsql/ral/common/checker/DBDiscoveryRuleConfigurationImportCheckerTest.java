@@ -68,7 +68,7 @@ public final class DBDiscoveryRuleConfigurationImportCheckerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
-        when(database.getResourceMetaData().getNotExistedResources(any())).thenReturn(dataSources);
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return database;
     }
@@ -85,7 +85,7 @@ public final class DBDiscoveryRuleConfigurationImportCheckerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return database;
     }

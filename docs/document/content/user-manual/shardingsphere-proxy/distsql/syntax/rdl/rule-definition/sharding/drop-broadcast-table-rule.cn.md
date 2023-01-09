@@ -13,7 +13,10 @@ weight = 17
 {{% tab name="语法" %}}
 ```sql
 DropBroadcastTableRule ::=
-  'DROP' 'BROADCAST' 'TABLE' 'RULE'  tableName (',' tableName)* 
+  'DROP' 'BROADCAST' 'TABLE' 'RULE' ifExists? tableName (',' tableName)* 
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 tableName ::=
   identifier
@@ -26,7 +29,8 @@ tableName ::=
 
 ### 补充说明
 
-- `tableName` 可使用已经存在的广播规则的表。
+- `tableName` 可使用已经存在的广播规则的表；
+- `ifExists` 子句用于避免 `Broadcast rule not exists` 错误。
 
 ### 示例
 
@@ -34,6 +38,12 @@ tableName ::=
  
 ```sql
 DROP BROADCAST TABLE RULE t_province, t_city;
+```
+
+- 使用 `ifExists` 子句为广播表删除广播规则
+
+```sql
+DROP BROADCAST TABLE RULE IF EXISTS t_province, t_city;
 ```
 
 ### 保留字

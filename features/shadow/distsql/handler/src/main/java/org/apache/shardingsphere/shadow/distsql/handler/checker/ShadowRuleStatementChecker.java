@@ -54,7 +54,7 @@ public class ShadowRuleStatementChecker {
      * @param database database
      */
     public static void checkStorageUnitsExist(final Collection<String> requiredStorageUnits, final ShardingSphereDatabase database) {
-        Collection<String> notExistedStorageUnits = database.getResourceMetaData().getNotExistedResources(requiredStorageUnits);
+        Collection<String> notExistedStorageUnits = database.getResourceMetaData().getNotExistedDataSources(requiredStorageUnits);
         ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnits));
     }
     

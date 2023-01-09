@@ -134,7 +134,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) {
         Collection<String> notExistedResources = contextManager
-                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getNotExistedResources(Collections.singleton(toBeDisabledResource));
+                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getNotExistedDataSources(Collections.singleton(toBeDisabledResource));
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     

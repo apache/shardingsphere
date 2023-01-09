@@ -13,7 +13,10 @@ weight = 7
 {{% tab name="语法" %}}
 ```sql
 DropDefaultShardingStrategy ::=
-  'DROP' 'DEFAULT' 'SHARDING' ('TABLE' | 'DATABASE') 'STRATEGY' ('FROM' databaseName)?
+  'DROP' 'DEFAULT' 'SHARDING' ('TABLE' | 'DATABASE') 'STRATEGY' ifExists? ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 databaseName ::=
   identifier
@@ -26,7 +29,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `Default sharding strategy not exists` 错误。
 
 ### 示例
 
@@ -40,6 +44,18 @@ DROP DEFAULT SHARDING TABLE STRATEGY FROM sharding_db;
 
 ```sql
 DROP DEFAULT SHARDING DATABASE STRATEGY;
+```
+
+- 使用 `ifExists` 子句删除默认表分片策略
+
+```sql
+DROP DEFAULT SHARDING TABLE STRATEGY IF EXISTS;
+```
+
+- 使用 `ifExists` 子句删除默认库分片策略
+
+```sql
+DROP DEFAULT SHARDING DATABASE STRATEGY IF EXISTS;
 ```
 
 ### 保留字

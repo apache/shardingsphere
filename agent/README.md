@@ -57,9 +57,9 @@ java -javaagent:/xx/xx/shardingsphere-agent-{latest.release.version}.jar -jar pr
 * `lib` contains dependencies common to plugins.
 * `plugins` contains all plugins.
 
-### Extend via SPI PluginBootService
+### Extend via SPI PluginLifecycleService
 
-`PluginBootService` is the plugin service definition interface, used to start the plugin service.
+`PluginLifecycleService` is the plugin service definition interface, used to start the plugin service.
 Custom plugins need to implement this interface.
 
 ### Configure advisors.yaml

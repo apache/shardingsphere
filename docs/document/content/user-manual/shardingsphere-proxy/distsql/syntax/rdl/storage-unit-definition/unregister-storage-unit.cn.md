@@ -13,7 +13,10 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 UnregisterStorageUnit ::=
-  'UNREGISTER' 'STORAGE' 'UNIT' ('IF' 'EXISTS')? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
+  'UNREGISTER' 'STORAGE' 'UNIT' ifExists? storageUnitName (',' storageUnitName)* ('IGNORE' 'SINGLE' 'TABLES')?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 storageUnitName ::=
   identifier
@@ -28,7 +31,8 @@ storageUnitName ::=
 
 - `UNREGISTER STORAGE UNIT` 只会移除 Proxy 中的存储单元，不会删除与存储单元对应的真实数据源；
 - 无法移除已经被规则使用的存储单元。移除被规则使用的存储单元时会提示 `Storage unit are still in used`；
-- 将要移除的存储单元中仅包含 `SINGLE TABLE RULE`，且用户确认可以忽略该限制时，可添加 `IGNORE SINGLE TABLES` 关键字移除存储单元。
+- 将要移除的存储单元中仅包含 `SINGLE TABLE RULE`，且用户确认可以忽略该限制时，可添加 `IGNORE SINGLE TABLES` 关键字移除存储单元；
+- `ifExists` 子句用于避免 `Storage unit not exists` 错误。
 
 ### 示例
 
@@ -50,7 +54,7 @@ UNREGISTER STORAGE UNIT ds_0, ds_1;
 UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;
 ```
 
-- 如果存储单元存在则移除
+- 使用 `ifExists` 子句移除存储单元
 
 ```sql
 UNREGISTER STORAGE UNIT IF EXISTS ds_0;

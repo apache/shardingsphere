@@ -51,7 +51,7 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
         try {
-            // TODO this needs to refactor, replace Sleeping with Polling not.
+            // TODO this needs to refactor, replace sleep with polling.
             Thread.sleep(Long.parseLong(props.getProperty("zipkin.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
@@ -61,7 +61,7 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     }
     
     private void assertSpans() throws IOException {
-        final String spansURL = url + "spans?serviceName=" + serviceName;
+        String spansURL = url + "spans?serviceName=" + serviceName;
         List<?> spans = OkHttpUtils.getInstance().get(spansURL, List.class);
         assertThat(spans.size(), is(3));
         assertTrue(spans.contains("/shardingsphere/executesql/"));

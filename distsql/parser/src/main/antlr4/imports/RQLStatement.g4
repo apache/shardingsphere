@@ -23,16 +23,20 @@ showStorageUnits
     : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ_ usageCount)?
     ;
 
+showRulesUsedStorageUnit
+    : SHOW RULES USED STORAGE UNIT storageUnitName (FROM databaseName)?
+    ;
+
+showLogicalTables
+    : SHOW LOGICAL TABLES showLike? (FROM databaseName)?
+    ;
+
 showDefaultSingleTableStorageUnit
     : SHOW DEFAULT SINGLE TABLE STORAGE UNIT (FROM databaseName)?
     ;
 
 showSingleTable
-    : SHOW SINGLE (TABLES (LIKE likeLiteral)? | TABLE tableName) (FROM databaseName)?
-    ;
-
-showRulesUsedStorageUnit
-    : SHOW RULES USED STORAGE UNIT storageUnitName (FROM databaseName)?
+    : SHOW SINGLE (TABLES showLike? | TABLE tableName) (FROM databaseName)?
     ;
 
 countSingleTableRule
@@ -43,6 +47,10 @@ usageCount
     : INT_
     ;
 
-likeLiteral
+showLike
+    : LIKE likePattern
+    ;
+
+likePattern
     : STRING_
     ;

@@ -13,7 +13,10 @@ The `DROP DB_DISCOVERY HEARTBEAT` syntax is used to drop database discovery hear
 {{% tab name="Grammar" %}}
 ```sql
 DropDatabaseDiscoveryHeartbeat ::=
-  'DROP' 'DB_DISCOVERY' 'HEARTBEAT'  dbDiscoveryHeartbeatName (',' dbDiscoveryHeartbeatName)*  ('FROM' databaseName)?
+  'DROP' 'DB_DISCOVERY' 'HEARTBEAT' ifExists? dbDiscoveryHeartbeatName (',' dbDiscoveryHeartbeatName)*  ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
 
 dbDiscoveryHeartbeatName ::=
   identifier
@@ -29,7 +32,8 @@ databaseName ::=
 
 ### Supplement
 
-- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted.
+- When databaseName is not specified, the default is the currently used DATABASE. If DATABASE is not used, No database selected will be prompted;
+- `ifExists` clause is used for avoid `Database discovery heartbeat not exists` error.
 
 ### Example
 
@@ -43,6 +47,12 @@ DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat, group_1_heartbeat FROM discovery_
 
 ```sql
 DROP DB_DISCOVERY HEARTBEAT group_0_heartbeat;
+```
+
+- Drop database discovery heartbeat with `ifExists` clause
+
+```sql
+DROP DB_DISCOVERY HEARTBEAT IF EXISTS group_0_heartbeat;
 ```
 
 ### Reserved word

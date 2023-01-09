@@ -56,21 +56,21 @@
         
         <fileSet>
             <directory>../plugins/logging/type/target/plugins</directory>
-            <outputDirectory>./plugins</outputDirectory>
+            <outputDirectory>./plugins/logging</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../plugins/tracing/type/target/plugins</directory>
-            <outputDirectory>./plugins</outputDirectory>
+            <outputDirectory>./plugins/tracing</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../plugins/metrics/type/target/plugins</directory>
-            <outputDirectory>./plugins</outputDirectory>
+            <outputDirectory>./plugins/metrics</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>

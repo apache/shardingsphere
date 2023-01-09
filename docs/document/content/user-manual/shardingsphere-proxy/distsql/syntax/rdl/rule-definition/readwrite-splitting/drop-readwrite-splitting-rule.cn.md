@@ -13,7 +13,13 @@ weight = 4
 {{% tab name="语法" %}}
 ```sql
 DropReadwriteSplittingRule ::=
-  'DROP' 'READWRITE_SPLITTING' 'RULE' ('FROM' databaseName)?
+  'DROP' 'READWRITE_SPLITTING' 'RULE' ifExists? readwriteSplittingRuleName (',' readwriteSplittingRuleName)* ('FROM' databaseName)?
+
+ifExists ::=
+  'IF' 'EXISTS'
+
+readwriteSplittingRuleName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -26,7 +32,8 @@ databaseName ::=
 
 ### 补充说明
 
-- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
+- `ifExists` 子句用于避免 `Readwrite splitting rule not exists` 错误。
 
 ### 示例
 
@@ -40,6 +47,12 @@ DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
 
 ```sql
 DROP READWRITE_SPLITTING RULE ms_group_1;
+```
+
+- 使用 `ifExists` 子句删除读写分离规则
+
+```sql
+DROP READWRITE_SPLITTING RULE IF EXISTS ms_group_1;
 ```
 
 ### 保留字
