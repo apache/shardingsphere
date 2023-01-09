@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
@@ -26,16 +26,25 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Proxy request count advice.
+ * Current connection count advice for ShardingSphere-Proxy.
  */
-public final class ProxyRequestCountAdvice implements InstanceMethodAdvice {
+public final class CurrentConnectionCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.PROXY_REQUEST);
+        MetricsPool.create(MetricIds.PROXY_CURRENT_CONNECTION_COUNT);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(MetricsWrapper::inc);
+        switch (method.getName()) {
+            case "channelActive":
+                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTION_COUNT).ifPresent(MetricsWrapper::inc);
+                break;
+            case "channelInactive":
+                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTION_COUNT).ifPresent(MetricsWrapper::dec);
+                break;
+            default:
+                break;
+        }
     }
 }

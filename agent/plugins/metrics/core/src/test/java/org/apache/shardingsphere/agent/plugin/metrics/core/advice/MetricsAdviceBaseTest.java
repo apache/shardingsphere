@@ -33,7 +33,7 @@ public abstract class MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        MetricsPool.get(MetricIds.PROXY_COLLECTION).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_REQUEST).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTION_COUNT).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_REQUEST_COUNT).ifPresent(optional -> ((FixtureWrapper) optional).reset());
     }
 }
