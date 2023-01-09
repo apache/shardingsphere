@@ -48,8 +48,7 @@ public final class PluginConfigurationLoader {
      * @throws IOException IO exception
      */
     public static Map<String, PluginConfiguration> load(final File agentRootPath) throws IOException {
-        File configFile = new File(agentRootPath, CONFIG_PATH);
-        return loadYAML(configFile).map(YamlPluginsConfigurationSwapper::swap).orElse(Collections.emptyMap());
+        return loadYAML(new File(agentRootPath, CONFIG_PATH)).map(YamlPluginsConfigurationSwapper::swap).orElse(Collections.emptyMap());
     }
     
     private static Optional<YamlAgentConfiguration> loadYAML(final File yamlFile) throws IOException {

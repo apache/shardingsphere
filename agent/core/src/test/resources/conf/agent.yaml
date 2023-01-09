@@ -17,37 +17,20 @@
 
 plugins:
   logging:
-    File:
+    LogFixture:
       props:
-        level: "INFO"
+        logging_key: "logging_value"
   metrics:
-    Prometheus:
-      host:  "localhost"
-      port: 9090
+    MetricsFixture:
+      host:  "metrics.host"
+      port: 1
+      password: "metrics.pwd"
       props:
-        jvm-information-collector-enabled: "true"
+        metrics_key: "metrics_value"
   tracing:
-#    Jaeger:
-#      host: "localhost"
-#      port: 5775
-#      props:
-#        service-name: "shardingsphere"
-#        jaeger-sampler-type: "const"
-#        jaeger-sampler-param: "1"
-#        jaeger-reporter-log-spans: "true"
-#        jaeger-reporter-flush-interval: "1"
-    Zipkin:
-      host: "localhost"
-      port: 9411
+    TracingFixture:
+      host:  "tracing.host"
+      password: "tracing.pwd"
+      port: 2
       props:
-        service-name: "shardingsphere"
-        url-version: "/api/v2/spans"
-        sampler-type: "const"
-        sampler-param: "1"
-#    OpenTracing:
-#      props:
-#        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-    OpenTelemetry:
-      props:
-        otel-resource-attributes: "service.name=shardingsphere"
-        otel-traces-exporter: "zipkin"
+        tracing_key: "tracing_value"
