@@ -57,7 +57,7 @@ public final class MySQLComStmtExecutePacketTest {
         assertThat(parameterTypes.size(), is(1));
         assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.MYSQL_TYPE_LONG));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0)), is(Collections.<Object>singletonList(1L)));
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0)), is(Collections.<Object>singletonList(1)));
     }
     
     @Test
