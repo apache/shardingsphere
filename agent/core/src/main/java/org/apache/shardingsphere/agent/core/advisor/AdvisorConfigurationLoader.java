@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.advisor.loader;
+package org.apache.shardingsphere.agent.core.advisor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
