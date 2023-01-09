@@ -21,11 +21,11 @@ import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.builder.fixture.advice.BarAdvice;
-import org.apache.shardingsphere.agent.core.builder.fixture.advice.FooAdvice;
-import org.apache.shardingsphere.agent.core.builder.fixture.targeted.TargetObjectFixture;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.advisor.MethodAdvisorConfiguration;
+import org.apache.shardingsphere.fixture.advice.BarAdvice;
+import org.apache.shardingsphere.fixture.advice.FooAdvice;
+import org.apache.shardingsphere.fixture.targeted.TargetObjectFixture;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,11 +50,10 @@ public final class AgentBuilderFactoryTest {
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
         AgentBuilder agentBuilder = AgentBuilderFactory.create(Collections.emptyMap(), Collections.emptyList(), advisorConfigs, true);
         agent = agentBuilder.installOnByteBuddyAgent();
-        
     }
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
-        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.agent.core.builder.fixture.targeted.TargetObjectFixture");
+        AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.fixture.targeted.TargetObjectFixture");
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooAdvice.class.getName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), BarAdvice.class.getName()));
         result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), FooAdvice.class.getName()));

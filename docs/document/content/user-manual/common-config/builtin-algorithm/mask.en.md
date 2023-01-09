@@ -125,6 +125,16 @@ Attributes:
 |-----------------|--------|---------------------------------------|
 | network-numbers | String | Network numbers (separate with comma) |
 
+#### Landline Number Random Replace Data Masking Algorithm
+
+Type: LANDLINE_NUMBER_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*          | *DataType* | *Description*                         |
+|-----------------|--------|---------------------------------------|
+| landline-numbers | String | Landline numbers (separate with comma) |
+
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.
 2. Use relevant algorithm types in maskAlgorithms.

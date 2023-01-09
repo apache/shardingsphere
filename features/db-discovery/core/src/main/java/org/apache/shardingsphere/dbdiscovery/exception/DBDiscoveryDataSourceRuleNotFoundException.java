@@ -27,6 +27,6 @@ public final class DBDiscoveryDataSourceRuleNotFoundException extends DBDiscover
     private static final long serialVersionUID = -851752979377324961L;
     
     public DBDiscoveryDataSourceRuleNotFoundException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Can not found database discovery data source rule in database `%s`", databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Can not found database discovery data source rule in database `%s`.", databaseName);
     }
 }

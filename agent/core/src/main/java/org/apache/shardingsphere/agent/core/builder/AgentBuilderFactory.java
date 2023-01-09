@@ -24,8 +24,8 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.PluginJar;
-import org.apache.shardingsphere.agent.core.plugin.advisor.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -50,7 +50,7 @@ public final class AgentBuilderFactory {
         return new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
-                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.plugin."))
+                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."))
                 .type(new AgentJunction(advisorConfigs))
                 .transform(new AgentTransformer(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
