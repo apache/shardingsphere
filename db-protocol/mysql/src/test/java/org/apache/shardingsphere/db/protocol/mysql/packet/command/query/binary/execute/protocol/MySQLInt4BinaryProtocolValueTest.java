@@ -37,7 +37,7 @@ public final class MySQLInt4BinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(payload.readInt4()).thenReturn(1);
-        assertThat(new MySQLInt4BinaryProtocolValue().read(payload), is(1));
+        assertThat(new MySQLInt4BinaryProtocolValue().read(payload, false), is(1));
     }
     
     @Test

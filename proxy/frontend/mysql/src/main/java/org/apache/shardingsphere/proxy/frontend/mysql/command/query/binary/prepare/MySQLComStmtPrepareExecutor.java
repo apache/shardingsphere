@@ -58,6 +58,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -82,8 +83,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         int statementId = MySQLStatementIDGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext));
-        return createPackets(sqlStatementContext, statementId);
+        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext, new CopyOnWriteArrayList<>());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
+        return createPackets(sqlStatementContext, statementId, serverPreparedStatement);
     }
     
     private void failedIfContainsMultiStatements() {
@@ -95,7 +97,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
     }
     
-    private Collection<DatabasePacket<?>> createPackets(final SQLStatementContext<?> sqlStatementContext, final int statementId) {
+    private Collection<DatabasePacket<?>> createPackets(final SQLStatementContext<?> sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         List<Projection> projections = getProjections(sqlStatementContext);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
@@ -103,7 +105,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession);
         if (parameterCount > 0) {
-            result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet));
+            result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));
             result.add(new MySQLEofPacket(statusFlags));
         }
         if (!projections.isEmpty()) {
@@ -117,16 +119,22 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections() : Collections.emptyList();
     }
     
-    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final SQLStatementContext<?> sqlStatementContext, final int characterSet) {
+    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final SQLStatementContext<?> sqlStatementContext, final int characterSet,
+                                                                                   final MySQLServerPreparedStatement serverPreparedStatement) {
         Map<ParameterMarkerSegment, ShardingSphereColumn> columnsOfParameterMarkers =
                 MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
         Collection<ParameterMarkerSegment> parameterMarkerSegments = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getParameterMarkerSegments();
         Collection<DatabasePacket<?>> result = new ArrayList<>(parameterMarkerSegments.size());
         for (ParameterMarkerSegment each : parameterMarkerSegments) {
             ShardingSphereColumn column = columnsOfParameterMarkers.get(each);
-            MySQLColumnDefinition41Packet packet = null != column ? createMySQLColumnDefinition41PacketFromColumn(column, characterSet)
-                    : new MySQLColumnDefinition41Packet(characterSet, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false);
-            result.add(packet);
+            if (null != column) {
+                int columnDefinitionFlag = calculateColumnDefinitionFlag(column);
+                result.add(createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())));
+                serverPreparedStatement.getParameterColumnDefinitionFlags().add(columnDefinitionFlag);
+            } else {
+                result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
+                serverPreparedStatement.getParameterColumnDefinitionFlags().add(0);
+            }
         }
         return result;
     }
@@ -141,10 +149,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             // TODO Calculate column definition flag for other projection types
             if (each instanceof ColumnProjection) {
                 result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable).map(table -> table.getColumns().get(((ColumnProjection) each).getName()))
-                        .map(column -> createMySQLColumnDefinition41PacketFromColumn(column, characterSet))
-                        .orElseGet(() -> new MySQLColumnDefinition41Packet(characterSet, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false)));
+                        .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
+                        .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING)));
             } else {
-                result.add(new MySQLColumnDefinition41Packet(characterSet, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
+                result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING));
             }
         }
         return result;
@@ -157,15 +165,14 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
                 .orElseGet(() -> database.getSchema(DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName())));
     }
     
-    private MySQLColumnDefinition41Packet createMySQLColumnDefinition41PacketFromColumn(final ShardingSphereColumn column, final int characterSet) {
-        MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
-        return new MySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), "", "", "", "", "", 0, columnType, 0, false);
-    }
-    
     private int calculateColumnDefinitionFlag(final ShardingSphereColumn column) {
         int result = 0;
         result |= column.isPrimaryKey() ? MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() : 0;
         result |= column.isUnsigned() ? MySQLColumnDefinitionFlag.UNSIGNED.getValue() : 0;
         return result;
+    }
+    
+    private MySQLColumnDefinition41Packet createMySQLColumnDefinition41Packet(final int characterSet, final int columnDefinitionFlag, final MySQLBinaryColumnType columnType) {
+        return new MySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, "", "", "", "", "", 0, columnType, 0, false);
     }
 }

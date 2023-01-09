@@ -27,8 +27,8 @@ import java.math.BigDecimal;
 public final class MySQLInt4BinaryProtocolValue implements MySQLBinaryProtocolValue {
     
     @Override
-    public Object read(final MySQLPacketPayload payload) {
-        return payload.readInt4();
+    public Object read(final MySQLPacketPayload payload, final boolean unsigned) {
+        return unsigned ? payload.getByteBuf().readUnsignedIntLE() : payload.getByteBuf().readIntLE();
     }
     
     @Override

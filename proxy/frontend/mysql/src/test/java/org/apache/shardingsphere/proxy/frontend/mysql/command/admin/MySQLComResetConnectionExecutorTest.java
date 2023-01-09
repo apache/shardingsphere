@@ -31,6 +31,7 @@ import org.mockito.MockedConstruction;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,7 +52,7 @@ public final class MySQLComResetConnectionExecutorTest {
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         int statementId = 1;
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement("", null));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement("", null, Collections.emptyList()));
         Collection<DatabasePacket<?>> actual;
         try (MockedConstruction<BackendTransactionManager> ignored = mockConstruction(BackendTransactionManager.class)) {
             actual = new MySQLComResetConnectionExecutor(connectionSession).execute();
