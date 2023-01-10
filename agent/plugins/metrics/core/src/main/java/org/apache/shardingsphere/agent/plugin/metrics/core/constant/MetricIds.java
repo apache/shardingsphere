@@ -26,7 +26,7 @@ public final class MetricIds {
     
     public static final String CURRENT_PROXY_CONNECTIONS = "current_proxy_connections";
     
-    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_total";
+    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
     
     public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
     

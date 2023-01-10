@@ -24,9 +24,9 @@ metrics:
     type: GAUGE
     name: current_proxy_connections
     help: the current connections of ShardingSphere-Proxy
-  - id: proxy_execute_latency_millis_total
+  - id: proxy_execute_latency_millis
     type: HISTOGRAM
-    name: proxy_execute_latency_millis_total
+    name: proxy_execute_latency_millis
     help: the executor latency millis of ShardingSphere-Proxy
     props:
       buckets:
