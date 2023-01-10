@@ -154,10 +154,10 @@ services:
 ## Metrics
 
 | name                             | type      | description                                                                                               |
-|:---------------------------------|:--------- |:--------------------------------------------------------------------------------------------------------- |
+| :------------------------------- |:--------- |:--------------------------------------------------------------------------------------------------------- |
 | proxy_request_total              | COUNTER   | total requests of ShardingSphere-Proxy                                                                    |
-| proxy_connection_total           | GAUGE     | proxy connection total                                                                                    |
-| proxy_execute_latency_millis     | HISTOGRAM | proxy executor latency millis                                                                             |
+| current_proxy_connections        | GAUGE     | the current connections of ShardingSphere-Proxy                                                           |
+| proxy_execute_latency_millis     | HISTOGRAM | the executor latency millis of ShardingSphere-Proxy                                                       |
 | proxy_execute_error_total        | COUNTER   | proxy executor error total                                                                                |
 | route_sql_select_total           | COUNTER   | proxy executor route select sql total                                                                     |
 | route_sql_insert_total           | COUNTER   | proxy executor route insert sql total                                                                     |

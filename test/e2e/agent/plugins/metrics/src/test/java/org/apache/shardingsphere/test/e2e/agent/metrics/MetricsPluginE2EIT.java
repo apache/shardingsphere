@@ -40,7 +40,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     public static final String TOTAL_PROXY_REQUESTS = "proxy_request_total";
     
-    public static final String PROXY_COLLECTION = "proxy_connection_total";
+    public static final String CURRENT_PROXY_CONNECTIONS = "current_proxy_connections";
     
     public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_bucket";
     
@@ -77,8 +77,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
             String metaDataURLWithParam = buildURLWithParameter(metaDataURL, each);
             String queryURLWithParam = buildURLWithParameter(queryURL, each);
             try {
-                assertMetadata(OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class));
-                assertQuery(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
+                assertMetadata(each, OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class));
+                assertQuery(each, OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
             } catch (final IOException ex) {
                 log.info("Access prometheus HTTP RESTful API error: ", ex);
             }
@@ -88,7 +88,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     private Collection<String> buildMetricsNames() {
         Collection<String> result = new LinkedHashSet<>();
         result.add(TOTAL_PROXY_REQUESTS);
-        result.add(PROXY_COLLECTION);
+        result.add(CURRENT_PROXY_CONNECTIONS);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
         result.add(SQL_SELECT);
         result.add(SQL_UPDATE);
@@ -107,14 +107,14 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     }
     
     // TODO remove if metadata result is not detailed.
-    private void assertMetadata(final MetricsMetaDataResult metricsMetaDataResult) {
-        assertThat(metricsMetaDataResult.getStatus(), is("success"));
-        assertNotNull(metricsMetaDataResult.getData());
+    private void assertMetadata(final String metricName, final MetricsMetaDataResult metricsMetaDataResult) {
+        assertThat(String.format("Metric name `%s` is not success.", metricName), metricsMetaDataResult.getStatus(), is("success"));
+        assertNotNull(String.format("Metric name `%s` is null.", metricName), metricsMetaDataResult.getData());
     }
     
     // TODO add more detailed assert
-    private static void assertQuery(final MetricsQueryResult metricsQueryResult) {
-        assertThat(metricsQueryResult.getStatus(), is("success"));
-        assertFalse(metricsQueryResult.getData().getResult().isEmpty());
+    private static void assertQuery(final String metricName, final MetricsQueryResult metricsQueryResult) {
+        assertThat(String.format("Metric name `%s` is not success.", metricName), metricsQueryResult.getStatus(), is("success"));
+        assertFalse(String.format("Metric name `%s` is empty.", metricName), metricsQueryResult.getData().getResult().isEmpty());
     }
 }
