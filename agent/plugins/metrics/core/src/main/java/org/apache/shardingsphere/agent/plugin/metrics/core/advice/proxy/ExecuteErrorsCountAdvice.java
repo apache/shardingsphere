@@ -26,25 +26,16 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Current connections count advice for ShardingSphere-Proxy.
+ * Execute errors count advice for ShardingSphere-Proxy.
  */
-public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice {
+public final class ExecuteErrorsCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.PROXY_CURRENT_CONNECTIONS);
+        MetricsPool.create(MetricIds.PROXY_EXECUTE_ERRORS);
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        switch (method.getName()) {
-            case "channelActive":
-                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(MetricsWrapper::inc);
-                break;
-            case "channelInactive":
-                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(MetricsWrapper::dec);
-                break;
-            default:
-                break;
-        }
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+        MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).ifPresent(MetricsWrapper::inc);
     }
 }

@@ -24,11 +24,11 @@ public final class MetricIds {
     
     public static final String PROXY_REQUESTS = "proxy_requests_total";
     
-    public static final String CURRENT_PROXY_CONNECTIONS = "current_proxy_connections";
+    public static final String PROXY_CURRENT_CONNECTIONS = "current_proxy_connections";
     
     public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
     
-    public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
+    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
     
     public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
     

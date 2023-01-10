@@ -159,7 +159,7 @@ services:
 | proxy_requests_total             | COUNTER   | ShardingSphere-Proxy 的接受请求总合                               |
 | current_proxy_connections        | GAUGE     | ShardingSphere-Proxy 的当前连接数                                 |
 | proxy_execute_latency_millis     | HISTOGRAM | ShardingSphere-Proxy 的执行耗时毫秒                               |
-| proxy_execute_error_total        | COUNTER   | ShardingSphere-Proxy 的执行异常总数                               |
+| proxy_execute_errors_total       | COUNTER   | ShardingSphere-Proxy 的执行异常总数                               |
 | route_sql_select_total           | COUNTER   | 路由执行 select SQL 语句总数                                       |
 | route_sql_insert_total           | COUNTER   | 路由执行 insert SQL 语句总数                                       |
 | route_sql_update_total           | COUNTER   | 路由执行 update SQL 语句总数                                       |

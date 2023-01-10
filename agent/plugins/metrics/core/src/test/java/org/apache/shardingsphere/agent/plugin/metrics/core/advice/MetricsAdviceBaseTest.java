@@ -33,7 +33,9 @@ public abstract class MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
         MetricsPool.get(MetricIds.PROXY_REQUESTS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
     }
 }

@@ -19,25 +19,25 @@ metrics:
   - id: proxy_requests_total
     type: COUNTER
     name: proxy_requests_total
-    help: the total requests of ShardingSphere-Proxy
+    help: total requests of ShardingSphere-Proxy
   - id: current_proxy_connections
     type: GAUGE
     name: current_proxy_connections
-    help: the current connections of ShardingSphere-Proxy
+    help: current connections of ShardingSphere-Proxy
   - id: proxy_execute_latency_millis
     type: HISTOGRAM
     name: proxy_execute_latency_millis
-    help: the executor latency millis of ShardingSphere-Proxy
+    help: execute latency millis of ShardingSphere-Proxy
     props:
       buckets:
         type: exp
         start: 1
         factor: 2
         count: 13
-  - id: proxy_execute_error_total
+  - id: proxy_execute_errors_total
     type: COUNTER
-    name: proxy_execute_error_total
-    help: the shardingsphere proxy executor error
+    name: proxy_execute_errors_total
+    help: total execute errors of ShardingSphere-Proxy 
   - id: route_sql_select_total
     name: route_sql_select_total
     type: COUNTER

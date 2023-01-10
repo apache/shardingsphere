@@ -38,13 +38,13 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    public static final String TOTAL_PROXY_REQUESTS = "proxy_requests_total";
+    public static final String PROXY_REQUESTS = "proxy_requests_total";
     
-    public static final String CURRENT_PROXY_CONNECTIONS = "current_proxy_connections";
+    public static final String PROXY_CURRENT_CONNECTIONS = "current_proxy_connections";
     
     public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_bucket";
     
-    public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
+    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
     
     public static final String SQL_SELECT = "route_sql_select_total";
     
@@ -87,8 +87,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     private Collection<String> buildMetricsNames() {
         Collection<String> result = new LinkedHashSet<>();
-        result.add(TOTAL_PROXY_REQUESTS);
-        result.add(CURRENT_PROXY_CONNECTIONS);
+        result.add(PROXY_REQUESTS);
+        result.add(PROXY_CURRENT_CONNECTIONS);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
         result.add(SQL_SELECT);
         result.add(SQL_UPDATE);
@@ -98,7 +98,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         result.add(ROUTE_TABLE);
         result.add(TRANSACTION_COMMIT);
         result.add(TRANSACTION_ROLLBACK);
-        result.add(PROXY_EXECUTE_ERROR);
+        result.add(PROXY_EXECUTE_ERRORS);
         return result;
     }
     

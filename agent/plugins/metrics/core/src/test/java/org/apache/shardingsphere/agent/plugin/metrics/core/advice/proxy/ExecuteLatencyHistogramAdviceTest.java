@@ -26,20 +26,21 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class TotalRequestsCountAdviceTest extends MetricsAdviceBaseTest {
-    
-    private final TotalRequestsCountAdvice advice = new TotalRequestsCountAdvice();
+public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
-    public void assertBeforeMethod() {
+    public void assertExecuteLatencyHistogram() throws InterruptedException {
+        ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUESTS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUESTS).get()).getFixtureValue(), is(1d));
+        Thread.sleep(500L);
+        advice.afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
+        assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).get()).getFixtureValue(), greaterThan(500D));
     }
 }
