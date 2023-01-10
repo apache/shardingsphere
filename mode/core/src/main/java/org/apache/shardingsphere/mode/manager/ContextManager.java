@@ -236,8 +236,7 @@ public final class ContextManager implements AutoCloseable {
             MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, null, ruleConfigs);
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
             metaDataContexts = reloadMetaDataContexts;
-            metaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchema(databaseName,
-                    metaDataContexts.getMetaData().getDatabase(databaseName).getSchemas()));
+            metaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.getMetaData().getDatabase(databaseName)));
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
         }
@@ -394,22 +393,6 @@ public final class ContextManager implements AutoCloseable {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(database.getSchemas().size(), 1);
         database.getSchemas().forEach((key, value) -> result.put(key, new ShardingSphereSchema(value.getTables(),
                 metaDataContexts.getPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), key))));
-        return result;
-    }
-    
-    /**
-     * Create new ShardingSphere database.
-     *
-     * @param databasesName database name
-     * @param schemas schemas
-     * @return ShardingSphere schemas
-     */
-    public synchronized Map<String, ShardingSphereSchema> newShardingSphereSchema(final String databasesName, final Map<String, ShardingSphereSchema> schemas) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemas.size(), 1);
-        for (Entry<String, ShardingSphereSchema> entry : schemas.entrySet()) {
-            result.put(entry.getKey(), new ShardingSphereSchema(entry.getValue().getTables(),
-                    metaDataContexts.getPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(databasesName, entry.getKey())));
-        }
         return result;
     }
     

@@ -1380,6 +1380,10 @@ AUTHORIZATION
 VERBOSE
     : V E R B O S E
     ;
+    
+PERFORMANCE
+    : P E R F O R M A N C E
+    ;
 
 PARAM
     : P A R A M

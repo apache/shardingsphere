@@ -39,7 +39,7 @@ props:
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   proxy-hint-enabled: false
-  sql-show: true
+  sql-show: false
   check-table-metadata-enabled: false
   proxy-backend-query-fetch-size: -1
   proxy-backend-executor-suitable: OLAP

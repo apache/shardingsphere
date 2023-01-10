@@ -18,7 +18,7 @@
 metrics:
   - id: a
     type: COUNTER
-    name: total_proxy_requests
+    name: proxy_request_total
     help: the total requests of ShardingSphere-Proxy
   - id: b
     type: GAUGE
