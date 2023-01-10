@@ -67,7 +67,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
-        if (!XA_PROVIDERS.contains(providerType)) {
+        if (null != providerType && !XA_PROVIDERS.contains(providerType)) {
             return;
         }
         xaTransactionManagerProvider = null == providerType
