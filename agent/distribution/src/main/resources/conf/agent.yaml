@@ -29,11 +29,13 @@ plugins:
 #  tracing:
 #    Jaeger:
 #      host: "localhost"
-#      port: 5775
+#      port: 6831
 #      props:
 #        service-name: "shardingsphere"
 #        jaeger-sampler-type: "const"
 #        jaeger-sampler-param: "1"
+#        jaeger-reporter-flush-interval: "1000"
+#        jaeger-reporter-max-queue-size: "100"
 #    Zipkin:
 #      host: "localhost"
 #      port: 9411

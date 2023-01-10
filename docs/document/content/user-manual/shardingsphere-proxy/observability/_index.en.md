@@ -65,11 +65,13 @@ plugins:
 #  tracing:
 #    Jaeger:
 #      host: "localhost"
-#      port: 5775
+#      port: 6831
 #      props:
 #        service-name: "shardingsphere"
 #        jaeger-sampler-type: "const"
 #        jaeger-sampler-param: "1"
+#        jaeger-reporter-flush-interval: "1000"
+#        jaeger-reporter-max-queue-size: "100"
 #    Zipkin:
 #      host: "localhost"
 #      port: 9411
@@ -89,19 +91,21 @@ plugins:
 
 * Parameter description:
 
-| Name                              | Description                         |  Value range    |  Default value     |
-|:----------------------------------|:------------------------------------|:--------- | :-------- |
-| jvm-information-collector-enabled | Start JVM collector                 |  true, false  |  true  |
-| service-name                      | Tracking service name               | Custom | shardingsphere-agent |
-| jaeger-sampler-type               | Jaeger sample rate type             | const, probabilistic, ratelimiting, remote | const |
-| jaeger-sampler-param              | Jaeger sample rate parameter        |const:0, 1, probabilistic:0.0 - 1.0, ratelimiting: > 0, Customize the number of acquisitions per second, remote：need to customize the remote service addres,JAEGER_SAMPLER_MANAGER_HOST_PORT | 1 (const type) |
-| url-version                       | Zipkin url address                  | Custom | /api/v2/spans                    |
-| sampler-type                      | Zipkin sample rate type             | const, counting, ratelimiting, boundary | const |
-| sampler-param                     | Zipkin sampling rate parameter      |const:0, 1, counting:0.01 - 1.0, ratelimiting: > 0, boundary:0.0001 - 1.0 | 1 (const type) |
-| otel-resource-attributes          | opentelemetry properties            | String key value pair (, split) | service.name=shardingsphere-agent |
-| otel-traces-exporter              | Tracing expoter                     | zipkin, jaeger | zipkin |
-| otel-traces-sampler               | Opentelemetry sample rate type      | always_on, always_off, traceidratio | always_on |
-| otel-traces-sampler-arg           | Opentelemetry sample rate parameter | traceidratio：0.0 - 1.0 | 1.0 |
+| Name                              | Description                                                           | Value range                                                                                                                                                                                  | Default value                     |
+|:----------------------------------|:----------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
+| jvm-information-collector-enabled | Start JVM collector                                                   | true, false                                                                                                                                                                                  | true                              |
+| service-name                      | Tracking service name                                                 | Custom                                                                                                                                                                                       | shardingsphere-agent              |
+| jaeger-sampler-type               | Jaeger sample rate type                                               | const, probabilistic, ratelimiting, remote                                                                                                                                                   | const                             |
+| jaeger-sampler-param              | Jaeger sample rate parameter                                          | const:0, 1, probabilistic:0.0 - 1.0, ratelimiting: > 0, Customize the number of acquisitions per second, remote：need to customize the remote service addres,JAEGER_SAMPLER_MANAGER_HOST_PORT| 1 (const type)                    |
+| jaeger-reporter-flush-interval    | Jaeger the flush interval when reporting spans remotely (millisecond) | Custom                                                                                                                                                                                       | 1000                              |
+| jaeger-reporter-max-queue-size    | Jaeger the maximum queue size for use when reporting spans remotely   | Custom                                                                                                                                                                                       | 100                               |
+| url-version                       | Zipkin url address                                                    | Custom                                                                                                                                                                                       | /api/v2/spans                     |
+| sampler-type                      | Zipkin sample rate type                                               | const, counting, ratelimiting, boundary                                                                                                                                                      | const                             |
+| sampler-param                     | Zipkin sampling rate parameter                                        | const:0, 1, counting:0.01 - 1.0, ratelimiting: > 0, boundary:0.0001 - 1.0                                                                                                                    | 1 (const type)                    |
+| otel-resource-attributes          | opentelemetry properties                                              | String key value pair (, split)                                                                                                                                                              | service.name=shardingsphere-agent |
+| otel-traces-exporter              | Tracing expoter                                                       | zipkin, jaeger                                                                                                                                                                               | zipkin                            |
+| otel-traces-sampler               | Opentelemetry sample rate type                                        | always_on, always_off, traceidratio                                                                                                                                                          | always_on                         |
+| otel-traces-sampler-arg           | Opentelemetry sample rate parameter                                   | traceidratio：0.0 - 1.0                                                                                                                                                                       | 1.0                               |
 
 ## Usage in ShardingSphere-Proxy
 

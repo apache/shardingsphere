@@ -698,6 +698,9 @@
                                 </excludes>
                             </filter>
                         </filters>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                        </transformers>
                     </configuration>
                 </plugin>
                 <plugin>
