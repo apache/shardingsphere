@@ -57,5 +57,7 @@ public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
         assertTrue(executeQueryWithLog(connection2, "select * from account").next());
         executeWithLog(connection2, "commit;");
+        connection1.close();
+        connection2.close();
     }
 }
