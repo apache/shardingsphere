@@ -64,9 +64,9 @@ public final class MaskRuleAssert {
             assertFalse(assertContext.getText("Actual mask column should exist."), actual.isEmpty());
             assertThat(assertContext.getText(String.format("Actual mask column size should be %s, but it was %s.", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
-            for (MaskColumnSegment maskColumnSegment : actual) {
+            for (MaskColumnSegment each : actual) {
                 ExpectedMaskColumn expectedMaskColumn = expected.get(count);
-                MaskColumnAssert.assertIs(assertContext, maskColumnSegment, expectedMaskColumn);
+                MaskColumnAssert.assertIs(assertContext, each, expectedMaskColumn);
                 count++;
             }
         }

@@ -61,13 +61,13 @@ public final class CreateMaskRuleStatementAssert {
             assertNull(assertContext.getText("Actual mask rule should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual mask rule should exist."), actual);
-            assertThat(assertContext.getText(String.format("Actual mask rule size should be %s , but it was %s",
+            assertThat(assertContext.getText(String.format("Actual mask rule size should be %s, but it was %s",
                     expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
-            for (MaskRuleSegment maskRuleSegment : actual) {
+            for (MaskRuleSegment each : actual) {
                 ExpectedMaskRule expectedMaskRule = expected.get(count);
-                assertThat(assertContext.getText("mask rule assertion error: "), maskRuleSegment.getTableName(), is(expectedMaskRule.getName()));
-                MaskRuleAssert.assertIs(assertContext, maskRuleSegment, expectedMaskRule);
+                assertThat(assertContext.getText("mask rule assertion error: "), each.getTableName(), is(expectedMaskRule.getName()));
+                MaskRuleAssert.assertIs(assertContext, each, expectedMaskRule);
                 count++;
             }
         }
