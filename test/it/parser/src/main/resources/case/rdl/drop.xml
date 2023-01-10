@@ -161,4 +161,14 @@
     <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" if-exists="true">
         <name>t_order_hash_mod</name>
     </drop-sharding-algorithm>
+    
+    <drop-mask-rule sql-case-id="drop-mask-rule" if-exists="false">
+        <rule>t_mask</rule>
+        <rule>t_order</rule>
+    </drop-mask-rule>
+    
+    <drop-mask-rule sql-case-id="drop-mask-rule-if-exists" if-exists="true">
+        <rule>t_mask</rule>
+        <rule>t_order</rule>
+    </drop-mask-rule>
 </sql-parser-test-cases>
