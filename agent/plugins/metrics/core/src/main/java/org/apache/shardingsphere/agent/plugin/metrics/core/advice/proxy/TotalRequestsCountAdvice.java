@@ -31,11 +31,11 @@ import java.lang.reflect.Method;
 public final class TotalRequestsCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.TOTAL_PROXY_REQUESTS);
+        MetricsPool.create(MetricIds.PROXY_REQUESTS);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(MetricIds.TOTAL_PROXY_REQUESTS).ifPresent(MetricsWrapper::inc);
+        MetricsPool.get(MetricIds.PROXY_REQUESTS).ifPresent(MetricsWrapper::inc);
     }
 }

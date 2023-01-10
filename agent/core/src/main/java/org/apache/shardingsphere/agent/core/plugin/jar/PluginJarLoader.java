@@ -52,8 +52,8 @@ public final class PluginJarLoader {
      */
     public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib")), jarFiles);
-        getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins")), jarFiles);
+        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib"))));
+        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins"))));
         Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new PluginJar(new JarFile(each, true), each));
@@ -63,19 +63,18 @@ public final class PluginJarLoader {
     }
     
     @SneakyThrows(IOException.class)
-    private static void getJarFiles(final File file, final List<File> jarFiles) {
+    private static Collection<File> getJarFiles(final File file) {
+        Collection<File> result = new LinkedList<>();
         Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
                 if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
-                    jarFiles.add(path.toFile());
-                }
-                if (path.toFile().isDirectory()) {
-                    getJarFiles(path.toFile(), jarFiles);
+                    result.add(path.toFile());
                 }
                 return FileVisitResult.CONTINUE;
             }
         });
+        return result;
     }
 }
