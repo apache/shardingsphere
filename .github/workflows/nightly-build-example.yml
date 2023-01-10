@@ -59,13 +59,17 @@ jobs:
         feature: [ sharding, readwrite-splitting, encrypt, shadow, mask ]
         framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
         mode: [ standalone, cluster-zookeeper ]
-        transaction: [ local, xa-atomikos ]
+        transaction: [ local, xa-atomikos, xa-narayana, base-seata ]
         product: [ jdbc ]
         exclude: 
           - feature: shadow
             framework: spring-boot-starter-jpa
           - feature: shadow
             framework: spring-namespace-jpa
+          - transaction: xa-atomikos
+            mode: cluster-zookeeper
+          - transaction: xa-narayana
+            mode: cluster-zookeeper
     services:
       mysql:
         image: mysql:8.0.22
