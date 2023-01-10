@@ -109,7 +109,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_96" value="select '[138,0.58,-369,1.25e+6]'::jsonb -&gt;&gt; 192.168.100.128/25;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_97" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::json  -&gt;&gt; 2021-05-31 12:59:08;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_98" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::json -&gt;&gt; 192.168.100.128/25;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_99" value="select '52093.89'::money::numeric::float8;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_100" value="select 'fat:ab &amp; cat'::tsquery;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_101" value="select 'super:*'::tsquery;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_102" value="select 'fat &amp; rat'::tsquery;" db-types="openGauss" />
@@ -136,7 +135,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_128" value="select row_to_json(row(inet('10.183.187.233'))) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_129" value="select row_to_json(row(B'101')) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_130" value="select row_to_json(row('The Fat Rats'::tsvector)) from sys_dummy;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_131" value="select row_to_json(row('52093.89'::money::numeric::float8)) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_132" value="select array_prepend(@,array[1,2]) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_133" value="select array_cat(array[[1,2,3],[2,5]], @) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_134" value="select array_append(array[1,2],@) as result;" db-types="openGauss" />
@@ -527,36 +525,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_527" value="select coalesce(,1,null,2);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_528" value="select coalesce();" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_529" value="select localtimestamp('skdfhhgh跳或者购买功能') from sys_dummy;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_531" value="select '0.0999'::money &lt;= '0.1000'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_532" value="select '52093.89'::money &lt;= '52093.891'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_533" value="select '52093.891'::money &lt;= '52093.897'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_534" value="select '0.001'::money &lt;= '0.0'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_535" value="select '0.099'::money &lt;= '0.1'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_536" value="select '0.0999'::money != '0.1000'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_537" value="select '52093.89'::money != '52093.891'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_538" value="select '52093.891'::money != '52093.897'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_539" value="select '0.001'::money != '0.0'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_540" value="select '0.099'::money != '0.1'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_542" value="select '521'::money != '520'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_543" value="select '520'::money != '521'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_546" value="select '0.0999'::money = '0.1000'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_547" value="select '52093.89'::money = '52093.891'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_548" value="select '52093.891'::money = '52093.897'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_549" value="select '0.001'::money = '0.0'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_550" value="select '0.099'::money = '0.1'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_551" value="select '521'::money = '520'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_552" value="select '520'::money = '521'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_557" value="select '521'::money &gt;= '520'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_558" value="select '520'::money &gt;= '521'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_559" value="select '521'::money &lt;= '520'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_560" value="select '520'::money &lt;= '521'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_562" value="select '521'::money &lt;&gt; '520'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_563" value="select '520'::money &lt;&gt; '521'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_564" value="select '0.0999'::money &lt;&gt; '0.1000'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_565" value="select '52093.89'::money &lt;&gt; '52093.891'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_566" value="select '52093.891'::money &lt;&gt; '52093.897'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_567" value="select '0.001'::money &lt;&gt; '0.0'::money;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_568" value="select '0.099'::money &lt;&gt; '0.1'::money;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_570" value="select sign(~);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_571" value="select tan(11 11) from tan_T1;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_572" value="select tan(,) from tan_T1;" db-types="openGauss" />
