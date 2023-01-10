@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    public static final String TOTAL_PROXY_REQUESTS = "proxy_request_total";
+    public static final String TOTAL_PROXY_REQUESTS = "proxy_requests_total";
     
     public static final String CURRENT_PROXY_CONNECTIONS = "current_proxy_connections";
     
