@@ -19,7 +19,7 @@
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Order;
-<#if transaction?contains("xa")>
+<#if transaction!="local">
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 </#if>
