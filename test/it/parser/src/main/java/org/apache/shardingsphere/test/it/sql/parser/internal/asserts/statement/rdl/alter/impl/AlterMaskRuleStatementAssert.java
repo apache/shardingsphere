@@ -35,17 +35,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Create mask rule statement assert.
+ * Alter mask rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterMaskRuleStatementAssert {
     
     /**
-     * Assert create mask rule statement is correct with expected parser result.
+     * Assert alter mask rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create mask rule statement
-     * @param expected expected create mask rule statement test case
+     * @param actual actual alter mask rule statement
+     * @param expected expected alter mask rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterMaskRuleStatement actual, final AlterMaskRuleStatementTestCase expected) {
         if (null == expected) {
