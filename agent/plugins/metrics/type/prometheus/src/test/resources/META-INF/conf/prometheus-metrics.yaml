@@ -26,7 +26,7 @@ metrics:
     help: the current connections of ShardingSphere-Proxy
   - id: c
     type: HISTOGRAM
-    name: proxy_execute_latency_millis
+    name: proxy_execute_latency_millis_total
     help: the executor latency millis of ShardingSphere-Proxy
     labels:
       - name
