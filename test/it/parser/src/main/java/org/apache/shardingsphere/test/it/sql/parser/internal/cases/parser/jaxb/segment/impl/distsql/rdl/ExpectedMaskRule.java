@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected encrypt rule.
+ * Expected mask rule.
  */
 @Getter
 @Setter

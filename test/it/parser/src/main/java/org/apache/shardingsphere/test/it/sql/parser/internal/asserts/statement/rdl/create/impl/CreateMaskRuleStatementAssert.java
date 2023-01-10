@@ -35,13 +35,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Create encrypt rule statement assert.
+ * Create mask rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateMaskRuleStatementAssert {
     
     /**
-     * Assert create encrypt rule statement is correct with expected parser result.
+     * Assert create mask rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual create mask rule statement

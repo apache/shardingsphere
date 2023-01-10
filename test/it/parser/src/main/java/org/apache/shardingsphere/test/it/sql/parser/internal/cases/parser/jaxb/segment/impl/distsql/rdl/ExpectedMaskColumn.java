@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected encrypt column.
+ * Expected mask column.
  */
 @Getter
 @Setter
