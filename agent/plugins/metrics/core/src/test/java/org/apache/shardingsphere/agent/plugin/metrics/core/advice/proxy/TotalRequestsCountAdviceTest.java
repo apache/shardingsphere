@@ -39,7 +39,7 @@ public final class TotalRequestsCountAdviceTest extends MetricsAdviceBaseTest {
     public void assertBeforeMethod() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.TOTAL_PROXY_REQUESTS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.TOTAL_PROXY_REQUESTS).get()).getFixtureValue(), is(1d));
+        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUESTS).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUESTS).get()).getFixtureValue(), is(1d));
     }
 }
