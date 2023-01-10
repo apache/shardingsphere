@@ -23,7 +23,7 @@ import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplitting
 /**
  * Missing required read database weight exception.
  */
-public final class MissingRequiredReadDatabaseWeightException extends ReadwriteSplittingSQLException  {
+public final class MissingRequiredReadDatabaseWeightException extends ReadwriteSplittingSQLException {
     
     private static final long serialVersionUID = 8006957930250488016L;
     
