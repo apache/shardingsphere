@@ -70,6 +70,10 @@ jobs:
             mode: cluster-zookeeper
           - transaction: xa-narayana
             mode: cluster-zookeeper
+          - feature: sharding
+            framework: spring-boot-starter-mybatis
+            mode: standalone
+            transaction: xa-atomikos
     services:
       mysql:
         image: mysql:8.0.22
