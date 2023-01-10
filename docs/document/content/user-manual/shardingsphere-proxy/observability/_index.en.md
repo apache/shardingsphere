@@ -160,9 +160,9 @@ services:
 | name                             | type      | description                                                                                               |
 | :------------------------------- | :-------- | :-------------------------------------------------------------------------------------------------------- |
 | proxy_requests_total             | COUNTER   | total requests of ShardingSphere-Proxy                                                                    |
-| current_proxy_connections        | GAUGE     | the current connections of ShardingSphere-Proxy                                                           |
-| proxy_execute_latency_millis     | HISTOGRAM | the executor latency millis of ShardingSphere-Proxy                                                       |
-| proxy_execute_error_total        | COUNTER   | proxy executor error total                                                                                |
+| current_proxy_connections        | GAUGE     | current connections of ShardingSphere-Proxy                                                               |
+| proxy_execute_latency_millis     | HISTOGRAM | execute latency millis of ShardingSphere-Proxy                                                            |
+| proxy_execute_errors_total       | COUNTER   | total executor errors of ShardingSphere-Proxy                                                             |
 | route_sql_select_total           | COUNTER   | proxy executor route select sql total                                                                     |
 | route_sql_insert_total           | COUNTER   | proxy executor route insert sql total                                                                     |
 | route_sql_update_total           | COUNTER   | proxy executor route update sql total                                                                     |

@@ -17,10 +17,13 @@
 
 advisors:
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.CommandExecutorTaskAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.ExecuteLatencyHistogramAdvice
     pointcuts:
       - name: run
         type: method
+  - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.ExecuteErrorsCountAdvice
+    pointcuts:
       - name: processException
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
@@ -31,7 +34,7 @@ advisors:
       - name: channelInactive
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.TotalRequestsCountAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.RequestsCountAdvice
     pointcuts:
       - name: channelRead
         type: method
