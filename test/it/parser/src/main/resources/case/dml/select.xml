@@ -4841,4 +4841,20 @@
             <simple-table name="t_order" start-index="38" stop-index="44" />
         </from>
     </select>
+    
+    <select sql-case-id="select_literal_type_cast_money" >
+        <projections start-index="7" stop-index="18">
+            <expression-projection text="'$99'::money" start-index="7" stop-index="18">
+                <binary-operation-expression start-index="7" stop-index="18">
+                    <left>
+                        <literal-expression value="$99" start-index="7" stop-index="11" />
+                    </left>
+                    <operator>::</operator>
+                    <right>
+                        <common-expression text="money" start-index="14" stop-index="18" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

@@ -519,10 +519,6 @@ BIGSERIAL
     : B I G S E R I A L
     ;
 
-MONEY
-    : M O N E Y
-    ;
-
 VARCHAR
     : V A R C H A R
     ;
