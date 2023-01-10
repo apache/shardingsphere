@@ -23,9 +23,9 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
+import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -123,6 +123,8 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
             if (!NOT_VERIFY_FLAG.equals(expected)) {
                 assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
             }
+        } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
+            assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }

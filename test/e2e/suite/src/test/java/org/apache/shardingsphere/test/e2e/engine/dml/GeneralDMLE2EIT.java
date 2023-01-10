@@ -50,12 +50,6 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
-        switch (getScenario()) {
-            case "replica_query":
-            case "encrypt":
-                return;
-            default:
-        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
@@ -80,12 +74,6 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        switch (getScenario()) {
-            case "replica_query":
-            case "encrypt":
-                return;
-            default:
-        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);

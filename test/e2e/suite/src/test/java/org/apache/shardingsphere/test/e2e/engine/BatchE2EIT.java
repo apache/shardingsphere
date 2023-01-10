@@ -25,9 +25,9 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.junit.After;
 import org.junit.Before;
@@ -157,6 +157,8 @@ public abstract class BatchE2EIT extends BaseE2EIT {
                     if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                     }
+                } else if (Types.CHAR == actualResultSet.getMetaData().getColumnType(index) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
+                    assertThat(String.valueOf(actualResultSet.getObject(index)).trim(), is(each));
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                 }
