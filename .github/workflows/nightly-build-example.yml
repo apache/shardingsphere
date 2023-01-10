@@ -74,6 +74,10 @@ jobs:
             framework: spring-boot-starter-mybatis
             mode: standalone
             transaction: xa-atomikos
+          - feature: sharding
+            framework: spring-boot-starter-mybatis
+            mode: standalone
+            transaction: xa-narayana
     services:
       mysql:
         image: mysql:8.0.22
