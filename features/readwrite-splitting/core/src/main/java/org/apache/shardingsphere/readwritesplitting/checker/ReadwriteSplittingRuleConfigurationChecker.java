@@ -33,12 +33,8 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameExistedException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredDataSourceNameException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredAutoAwareDataSourceNameException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadDataSourceNamesException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.*;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import javax.sql.DataSource;
@@ -128,12 +124,13 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
                 continue;
             }
             ReadQueryLoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
-            Preconditions.checkNotNull(loadBalancer, "Not found load balance type in database `%s`", databaseName);
+            ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new LoadBalancerAlgorithmNotFoundException(databaseName));
             if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm || loadBalancer instanceof TransactionWeightReadQueryLoadBalanceAlgorithm) {
-                Preconditions.checkState(!loadBalancer.getProps().isEmpty(), "Readwrite-splitting data source weight config are required in database `%s`", databaseName);
+                ShardingSpherePreconditions.checkState(!loadBalancer.getProps().isEmpty(), () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(),
+                        String.format("Read data source weight config are required in database `%s`", databaseName)));
                 Collection<String> dataSourceNames = getDataSourceNames(each, rules);
-                loadBalancer.getProps().stringPropertyNames().forEach(dataSourceName -> Preconditions.checkState(dataSourceNames.contains(dataSourceName),
-                        "Load Balancer datasource name config does not match datasource in database `%s`", databaseName));
+                loadBalancer.getProps().stringPropertyNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),
+                        () -> new InvalidWeightLoadBalancerConfigurationException(databaseName)));
             }
         }
     }
