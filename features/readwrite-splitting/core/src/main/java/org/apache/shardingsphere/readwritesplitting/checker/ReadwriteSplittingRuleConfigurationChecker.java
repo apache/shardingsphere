@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChec
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.TransactionWeightReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm;
@@ -32,6 +33,10 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.exception.DuplicateDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredReadDataSourceNamesException;
+import org.apache.shardingsphere.readwritesplitting.exception.MissingRequiredWriteDataSourceNameException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import javax.sql.DataSource;
@@ -62,7 +67,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         Collection<String> addedWriteDataSourceNames = new HashSet<>();
         Collection<String> addedReadDataSourceNames = new HashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(each.getName()), "Readwrite-splitting data source name is required.");
+            ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(each.getName()), () -> new MissingRequiredDataSourceNameException(databaseName));
             Preconditions.checkState(null != each.getStaticStrategy() || null != each.getDynamicStrategy(), "No available readwrite-splitting rule configuration in database `%s`.", databaseName);
             Optional.ofNullable(each.getStaticStrategy()).ifPresent(optional -> checkStaticStrategy(databaseName, dataSourceMap, addedWriteDataSourceNames, addedReadDataSourceNames, optional, rules));
             Optional.ofNullable(each.getDynamicStrategy()).ifPresent(optional -> checkDynamicStrategy(rules, optional));
@@ -71,8 +76,8 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private void checkStaticStrategy(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
                                      final Collection<String> readDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig, final Collection<ShardingSphereRule> rules) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(strategyConfig.getWriteDataSourceName()), "Write data source name is required.");
-        Preconditions.checkArgument(!strategyConfig.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(strategyConfig.getWriteDataSourceName()), () -> new MissingRequiredWriteDataSourceNameException(databaseName));
+        ShardingSpherePreconditions.checkState(!strategyConfig.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadDataSourceNamesException(databaseName));
         checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, strategyConfig, rules);
         for (String each : readDataSourceNames) {
             checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each);
@@ -84,6 +89,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         for (String each : new InlineExpressionParser(strategyConfig.getWriteDataSourceName()).splitAndEvaluate()) {
             Preconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, rules), "Write data source name `%s` not in database `%s`.", each, databaseName);
             Preconditions.checkState(addedWriteDataSourceNames.add(each), "Can not config duplicate write data source `%s` in database `%s`.", each, databaseName);
+            ShardingSpherePreconditions.checkState(addedWriteDataSourceNames.add(each), () -> new DuplicateDataSourceException(each, databaseName));
         }
     }
     
