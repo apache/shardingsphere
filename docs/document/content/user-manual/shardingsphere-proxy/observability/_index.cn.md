@@ -64,11 +64,13 @@ plugins:
 #  tracing:
 #    Jaeger:
 #      host: "localhost"
-#      port: 5775
+#      port: 6831
 #      props:
 #        service-name: "shardingsphere"
 #        jaeger-sampler-type: "const"
 #        jaeger-sampler-param: "1"
+#        jaeger-reporter-flush-interval: "1000"
+#        jaeger-reporter-max-queue-size: "100"
 #    Zipkin:
 #      host: "localhost"
 #      port: 9411
@@ -88,19 +90,21 @@ plugins:
 
 * 参数说明；
 
-| 名称                                | 说明                  |取值范围    | 默认值                               |
-|:----------------------------------|:--------------------|:--------- |:----------------------------------|
-| jvm-information-collector-enabled | 是否开启 JVM 采集器        |true、false| true                              |
-| service-name                      | 链路跟踪的服务名称           | 自定义 | shardingsphere                    |
-| jaeger-sampler-type               | Jaeger 采样率类型        | const、probabilistic、ratelimiting、remote | const                             |
-| jaeger-sampler-param              | Jaeger 采样率参数        |const：0、1，probabilistic：0.0 - 1.0，ratelimiting：> 0，自定义每秒采集数量，remote：需要自定义配置远程采样率管理服务地址，JAEGER_SAMPLER_MANAGER_HOST_PORT | 1（const 类型）                       |
-| url-version                       | Zipkin url 地址       | 自定义 | /api/v2/spans                    |
-| sampler-type                      | Zipkin 采样率类型        |const、counting、ratelimiting、boundary | const                             |
-| sampler-param                     | Zipkin 采样率参数        |const： 0、1，counting：0.01 - 1.0，ratelimiting：> 0，自定义每秒采集数量，boundary: 0.0001 - 1.0 | 1（const 类型）                       |
-| otel-resource-attributes          | opentelemetry 资源属性  | 字符串键值对（,分割） | service.name=shardingsphere-agent |
-| otel-traces-exporter              | Tracing expoter     | zipkin、jaeger | zipkin                            |
-| otel-traces-sampler               | opentelemetry 采样率类型 | always_on、always_off、traceidratio | always_on                         |
-| otel-traces-sampler-arg           | opentelemetry 采样率参数 | traceidratio：0.0 - 1.0 | 1.0                               |
+| 名称                                | 说明                        | 取值范围                                                                                                                    | 默认值                               |
+|:----------------------------------|:--------------------------|:------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
+| jvm-information-collector-enabled | 是否开启 JVM 采集器             | true、false                                                                                                              | true                              |
+| service-name                      | 链路跟踪的服务名称               | 自定义                                                                                                                     | shardingsphere                    |
+| jaeger-sampler-type               | Jaeger 采样率类型              | const、probabilistic、ratelimiting、remote                                                                                 | const                             |
+| jaeger-sampler-param              | Jaeger 采样率参数              | const：0、1，probabilistic：0.0 - 1.0，ratelimiting：> 0，自定义每秒采集数量，remote：需要自定义配置远程采样率管理服务地址，JAEGER_SAMPLER_MANAGER_HOST_PORT | 1（const 类型）                       |
+| jaeger-reporter-flush-interval    | Jaeger 上报数据刷新间隔(毫秒)     | 自定义                                                                                                                     | 1000                              |
+| jaeger-reporter-max-queue-size    | Jaeger 上报 span 时最大队列大小   | 自定义                                                                                 | 100                               |
+| url-version                       | Zipkin url 地址                 | 自定义                                                                                                                     | /api/v2/spans                     |
+| sampler-type                      | Zipkin 采样率类型                | const、counting、ratelimiting、boundary                                                                                    | const                             |
+| sampler-param                     | Zipkin 采样率参数                | const： 0、1，counting：0.01 - 1.0，ratelimiting：> 0，自定义每秒采集数量，boundary: 0.0001 - 1.0                                        | 1（const 类型）                       |
+| otel-resource-attributes          | opentelemetry 资源属性          | 字符串键值对（,分割）                                                                                                             | service.name=shardingsphere-agent |
+| otel-traces-exporter              | Tracing expoter                 | zipkin、jaeger                                                                                                           | zipkin                            |
+| otel-traces-sampler               | opentelemetry 采样率类型         | always_on、always_off、traceidratio                                                                                       | always_on                         |
+| otel-traces-sampler-arg           | opentelemetry 采样率参数         | traceidratio：0.0 - 1.0                                                                                                  | 1.0                               |
 
 ## ShardingSphere-Proxy 中使用
 
