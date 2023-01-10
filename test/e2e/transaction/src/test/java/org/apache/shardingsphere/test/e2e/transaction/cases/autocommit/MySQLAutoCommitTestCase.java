@@ -55,7 +55,7 @@ public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
         executeWithLog(connection2, "set session transaction isolation level read committed;");
         connection1.setAutoCommit(false);
         connection2.setAutoCommit(false);
-        executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(2, 100, 2);");
+        executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
         assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
         connection1.commit();
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
