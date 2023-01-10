@@ -154,8 +154,8 @@ services:
 ## Metrics
 
 | name                             | type      | description                                                                                               |
-|:-------------------------------- |:--------- |:--------------------------------------------------------------------------------------------------------- |
-| total_proxy_requests             | COUNTER   | total requests of ShardingSphere-Proxy                                                                    |
+|:---------------------------------|:--------- |:--------------------------------------------------------------------------------------------------------- |
+| proxy_request_total              | COUNTER   | total requests of ShardingSphere-Proxy                                                                    |
 | proxy_connection_total           | GAUGE     | proxy connection total                                                                                    |
 | proxy_execute_latency_millis     | HISTOGRAM | proxy executor latency millis                                                                             |
 | proxy_execute_error_total        | COUNTER   | proxy executor error total                                                                                |
