@@ -22,7 +22,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.constant;
  */
 public final class MetricIds {
     
-    public static final String PROXY_REQUESTS = "proxy_request_total";
+    public static final String PROXY_REQUESTS = "proxy_requests_total";
     
     public static final String CURRENT_PROXY_CONNECTIONS = "current_proxy_connections";
     

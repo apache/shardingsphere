@@ -155,8 +155,8 @@ services:
 ## Metrics
 
 | 指标名称                           | 类型      | 描述                                                            |
-| :------------------------------- |:--------- |:-------------------------------------------------------------- |
-| proxy_request_total              | COUNTER   | ShardingSphere-Proxy 的接受请求总合                               |
+| :------------------------------- | :-------- | :------------------------------------------------------------- |
+| proxy_requests_total             | COUNTER   | ShardingSphere-Proxy 的接受请求总合                               |
 | current_proxy_connections        | GAUGE     | ShardingSphere-Proxy 的当前连接数                                 |
 | proxy_execute_latency_millis     | HISTOGRAM | ShardingSphere-Proxy 的执行耗时毫秒                               |
 | proxy_execute_error_total        | COUNTER   | ShardingSphere-Proxy 的执行异常总数                               |
