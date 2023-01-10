@@ -387,6 +387,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.dbdiscovery.ShowDatabaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.encrypt.CountEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.encrypt.ShowEncryptRulesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.mask.CountMaskRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.mask.ShowMaskRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.readwritesplitting.CountReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.readwritesplitting.ShowReadwriteSplittingRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.shadow.CountShadowRuleStatementTestCase;
@@ -1253,6 +1255,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "show-default-sharding-strategy")
     private final List<ShowDefaultShardingStrategyStatementTestCase> showDefaultShardingStrategyTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-mask-rules")
+    private final List<ShowMaskRulesStatementTestCase> showMaskRulesStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "delimiter")
     private final List<DelimiterStatementTestCase> delimiterTestCases = new LinkedList<>();
     
@@ -1603,6 +1608,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "count-shadow-rule")
     private final List<CountShadowRuleStatementTestCase> countShadowRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-mask-rule")
+    private final List<CountMaskRuleStatementTestCase> countMaskRuleStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-collation")
     private final List<CreateCollationStatementTestCase> createCollationStatementTestCases = new LinkedList<>();
