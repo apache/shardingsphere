@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception;
+package org.apache.shardingsphere.readwritesplitting.exception.checker;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
  * Missing required data source name exception.
  */
-public final class MissingRequiredDataSourceNameException extends ReadwriteSplittingSQLException  {
+public final class MissingRequiredDataSourceNameException extends ReadwriteSplittingSQLException {
     
     private static final long serialVersionUID = 8006957930250488016L;
     

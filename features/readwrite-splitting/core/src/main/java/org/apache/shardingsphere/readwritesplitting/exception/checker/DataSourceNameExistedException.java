@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception;
+package org.apache.shardingsphere.readwritesplitting.exception.checker;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Missing required read data source names exception.
+ * Data source name existed exception.
  */
-public final class MissingRequiredReadDataSourceNamesException extends ReadwriteSplittingSQLException {
+public final class DataSourceNameExistedException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = 3795576963060485964L;
+    private static final long serialVersionUID = 1284608200400804784L;
     
-    public MissingRequiredReadDataSourceNamesException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 92, "Read data source names is required in database `%s`.", databaseName);
+    public DataSourceNameExistedException(final String reason) {
+        super(XOpenSQLState.NOT_FOUND, 94, reason);
     }
 }

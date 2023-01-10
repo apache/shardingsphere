@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.exception;
+package org.apache.shardingsphere.readwritesplitting.exception.checker;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.readwritesplitting.exception.ReadwriteSplittingSQLException;
 
 /**
- * Missing required write data source name exception.
+ * Missing required auto aware data source name exception.
  */
-public final class MissingRequiredWriteDataSourceNameException extends ReadwriteSplittingSQLException {
+public final class MissingRequiredAutoAwareDataSourceNameException extends ReadwriteSplittingSQLException {
     
-    private static final long serialVersionUID = -3310589272704868388L;
+    private static final long serialVersionUID = -7921103941300062641L;
     
-    public MissingRequiredWriteDataSourceNameException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 91, "Write data source name is required in database `%s`.", databaseName);
+    public MissingRequiredAutoAwareDataSourceNameException(final String databaseName) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 95, "Auto aware data source name is required in database `%s`.", databaseName);
     }
 }
