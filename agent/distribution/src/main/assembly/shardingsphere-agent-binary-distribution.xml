@@ -94,11 +94,9 @@
     
     <dependencySets>
         <dependencySet>
-            <useProjectArtifact>true</useProjectArtifact>
-            <unpack>false</unpack>
             <outputDirectory>./lib</outputDirectory>
             <includes>
-                <include>org.slf4j:*</include>
+                <include>org.slf4j:slf4j-api</include>
                 <include>ch.qos.logback:*</include>
             </includes>
         </dependencySet>
