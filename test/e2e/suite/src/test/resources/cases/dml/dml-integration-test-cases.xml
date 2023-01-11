@@ -76,18 +76,16 @@
         <assertion parameters="999:int, 10:int, insertALL:String" expected-data-file="batch_insert_all_into_order_table.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_order_item values(?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
-        <assertion sharding-rule-type="dbtbl_with_readwrite_splitting" parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
-        <!-- TODO add gen column on create table -->
-        <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
+    <test-case sql="INSERT INTO t_order_item VALUES (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item(order_id, user_id, product_id, quantity, creation_date) values (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
-        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+    <test-case sql="INSERT INTO t_order_item (order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_order_item SET order_id = ?, user_id = ?, product_id = 1, quantity = 1, creation_date='2017-08-08'" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
-        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
+        <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />
     </test-case>
     
     <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08'), (?, ?, ?, 2, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
@@ -106,11 +104,9 @@
         <assertion parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-data-file="batch_insert_with_generate_key_column.xml" />
     </test-case>
     
-    <!--<test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08'), (?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">-->
-        <!--<assertion sharding-rule-type="dbtbl_with_readwrite_splitting" parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />-->
-        <!--&lt;!&ndash; TODO add gen column on create table &ndash;&gt;-->
-        <!--&lt;!&ndash;<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />&ndash;&gt;-->
-    <!--</test-case>-->
+    <test-case sql="INSERT INTO t_order_item (order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, 1, 1, '2017-08-08'), (?, ?, 2, 2, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+        <assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" expected-generated-key-data-file="batch_insert_without_generate_key_column_generated_key_data.xml" />
+    </test-case>
     
     <test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />

@@ -46,6 +46,8 @@ public abstract class SingleE2EIT extends BaseE2EIT {
     
     private final DataSet dataSet;
     
+    private final DataSet generatedKeyDataSet;
+    
     public SingleE2EIT(final AssertionTestParameter testParam) {
         super(testParam);
         sqlExecuteType = testParam.getSqlExecuteType();
@@ -53,6 +55,9 @@ public abstract class SingleE2EIT extends BaseE2EIT {
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
                 ? null
                 : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), getMode(), assertion.getExpectedDataFile());
+        generatedKeyDataSet = null == assertion || null == assertion.getExpectedGeneratedKeyDataFile()
+                ? null
+                : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), getMode(), assertion.getExpectedGeneratedKeyDataFile());
     }
     
     protected final String getSQL() throws ParseException {

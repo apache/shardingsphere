@@ -47,6 +47,9 @@ public final class IntegrationTestCaseAssertion {
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
     
+    @XmlAttribute(name = "expected-generated-key-data-file")
+    private String expectedGeneratedKeyDataFile;
+    
     @XmlAttribute
     private String parameters;
     
