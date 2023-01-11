@@ -49,6 +49,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class BaseDMLE2EIT extends SingleE2EIT {
     
+    private static final String DATA_COLUMN_DELIMITER = ", ";
+    
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     public BaseDMLE2EIT(final AssertionTestParameter testParam) {
@@ -109,7 +111,7 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
         int rowCount = 0;
         while (actual.next()) {
             int columnIndex = 1;
-            for (String each : expected.get(rowCount).splitValues(",")) {
+            for (String each : expected.get(rowCount).splitValues(DATA_COLUMN_DELIMITER)) {
                 assertValue(actual, columnIndex, each);
                 columnIndex++;
             }

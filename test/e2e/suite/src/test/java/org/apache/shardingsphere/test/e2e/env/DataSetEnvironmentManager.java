@@ -56,6 +56,8 @@ public final class DataSetEnvironmentManager {
     // TODO ExecutorEngine.execute and callback
     private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = ExecutorEngine.createExecutorEngineWithCPU().getExecutorServiceManager();
     
+    private static final String DATA_COLUMN_DELIMITER = ", ";
+    
     private final DataSet dataSet;
     
     private final Map<String, DataSource> dataSourceMap;
@@ -82,7 +84,7 @@ public final class DataSetEnvironmentManager {
             DataSetMetaData dataSetMetaData = dataSet.findMetaData(dataNode);
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
-                sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(",")));
+                sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(DATA_COLUMN_DELIMITER)));
             }
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
