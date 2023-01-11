@@ -1306,4 +1306,60 @@
     <test-case sql="SELECT * FROM (SELECT u1.* FROM t_user u1 INNER JOIN t_user u2 ON u1.user_id = u2.user_id) temp ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM t_data_type_money" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT val = ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: equal operator">
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$123.01:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT val != ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: not equal operator">
+        <assertion parameters="$124.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT val &lt;= ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: less than or equal operator">
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$122.99:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT val &gt;= ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: greater than or equal operator">
+        <assertion parameters="$123.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$123.01:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT val &lt; ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: less than operator">
+        <assertion parameters="$122.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$124.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT val &gt; ?::money FROM t_data_type_money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: greater than operator">
+        <assertion parameters="$122.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$124.00:String, 1001:int" expected-data-source-name="expected_dataset" />
+    </test-case>
+    
+    <!-- TODO Fix https://github.com/apache/shardingsphere/issues/23499 -->
+    <!-- <test-case sql="SELECT ?::money" db-types="PostgreSQL,openGauss" scenario-types="passthrough"-->
+    <!--            scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: type cast to money">-->
+    <!--     <assertion parameters="-92233720368547758.08:String" expected-data-source-name="expected_dataset" />-->
+    <!--     <assertion parameters="92233720368547758.07:String" expected-data-source-name="expected_dataset" />-->
+    <!-- </test-case>-->
+    
+    <test-case sql="SELECT ?::money::varchar" db-types="PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for PostgreSQL/openGauss money type: type cast money to varchar">
+        <assertion parameters="-92233720368547758.08:String" expected-data-source-name="expected_dataset" />
+        <assertion parameters="-$92233720368547758.08:String" expected-data-source-name="expected_dataset" />
+        <assertion parameters="92233720368547758.07:String" expected-data-source-name="expected_dataset" />
+        <assertion parameters="$92233720368547758.07:String" expected-data-source-name="expected_dataset" />
+    </test-case>
 </integration-test-cases>
