@@ -83,11 +83,8 @@ import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.Filtera
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.StringToRexNodeUtil;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.row.EmptyRowScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
-import org.apache.shardingsphere.sqlfederation.row.MemoryScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.row.SQLFederationScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.lang.reflect.Type;
@@ -115,6 +112,8 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
+    private static final String COLUMN_INFORMATION_PATTERN = "\\{.*}";
+    
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
     private final JDBCExecutor jdbcExecutor;
@@ -130,8 +129,6 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     private final ShardingSphereData data;
     
     private final EventBusContext eventBusContext;
-    
-    private static final String COLUMN_INFORMATION_PATTERN = "\\{.*}";
     
     @Override
     public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {

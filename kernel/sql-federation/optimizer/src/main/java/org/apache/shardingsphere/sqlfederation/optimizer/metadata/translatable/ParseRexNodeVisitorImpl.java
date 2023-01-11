@@ -160,7 +160,7 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     }
     
     /**
-     * Switch sql type to java type, reference to java.sql.Types
+     * Switch sql type to java type, reference to java.sql.Types.
      *
      * @param dataType sql type
      * @return java type
