@@ -95,9 +95,9 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         List<List<String>> inlineReadDatasourceNames = config.getStaticStrategy().getReadDataSourceNames().stream()
                 .map(each -> new InlineExpressionParser(each).splitAndEvaluate()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inlineWriteDatasourceNames.size() == inlineReadwriteDataSourceNames.size(),
-                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression write data source names size error"));
+                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression write data source names size error."));
         inlineReadDatasourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineReadwriteDataSourceNames.size(),
-                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression read data source names size error")));
+                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression read data source names size error.")));
         for (int i = 0; i < inlineReadwriteDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration staticConfig = createStaticDataSourceRuleConfiguration(
                     config, i, inlineReadwriteDataSourceNames, inlineWriteDatasourceNames, inlineReadDatasourceNames);
@@ -121,7 +121,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         List<String> inlineReadwriteDataSourceNames = new InlineExpressionParser(config.getName()).splitAndEvaluate();
         List<String> inlineAutoAwareDataSourceNames = new InlineExpressionParser(config.getDynamicStrategy().getAutoAwareDataSourceName()).splitAndEvaluate();
         ShardingSpherePreconditions.checkState(inlineAutoAwareDataSourceNames.size() == inlineReadwriteDataSourceNames.size(),
-                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression auto aware data source names size error"));
+                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression auto aware data source names size error."));
         for (int i = 0; i < inlineReadwriteDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration dynamicConfig = createDynamicDataSourceRuleConfiguration(config, i, inlineReadwriteDataSourceNames, inlineAutoAwareDataSourceNames);
             result.put(inlineReadwriteDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(dynamicConfig, loadBalanceAlgorithm, builtRules));
