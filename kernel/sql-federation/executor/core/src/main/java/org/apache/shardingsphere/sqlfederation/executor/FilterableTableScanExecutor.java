@@ -26,6 +26,26 @@ import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.linq4j.Grouping;
+import org.apache.calcite.linq4j.JoinType;
+import org.apache.calcite.linq4j.Lookup;
+import org.apache.calcite.linq4j.Queryable;
+import org.apache.calcite.linq4j.function.BigDecimalFunction1;
+import org.apache.calcite.linq4j.function.DoubleFunction1;
+import org.apache.calcite.linq4j.function.EqualityComparer;
+import org.apache.calcite.linq4j.function.FloatFunction1;
+import org.apache.calcite.linq4j.function.Function0;
+import org.apache.calcite.linq4j.function.Function1;
+import org.apache.calcite.linq4j.function.Function2;
+import org.apache.calcite.linq4j.function.IntegerFunction1;
+import org.apache.calcite.linq4j.function.LongFunction1;
+import org.apache.calcite.linq4j.function.NullableBigDecimalFunction1;
+import org.apache.calcite.linq4j.function.NullableDoubleFunction1;
+import org.apache.calcite.linq4j.function.NullableFloatFunction1;
+import org.apache.calcite.linq4j.function.NullableIntegerFunction1;
+import org.apache.calcite.linq4j.function.NullableLongFunction1;
+import org.apache.calcite.linq4j.function.Predicate1;
+import org.apache.calcite.linq4j.function.Predicate2;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelNode;
@@ -80,7 +100,10 @@ import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.PolyNull;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -88,8 +111,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -119,7 +145,17 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     @Override
     public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
-        return null;
+        return createEmptyScalarEnumerable();
+    }
+    
+    private AbstractEnumerable<Object> createEmptyScalarEnumerable() {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new EmptyRowEnumerator();
+            }
+        };
     }
     
     @Override

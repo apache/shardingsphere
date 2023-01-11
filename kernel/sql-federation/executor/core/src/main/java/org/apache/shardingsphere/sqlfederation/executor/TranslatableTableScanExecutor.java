@@ -131,6 +131,8 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private final EventBusContext eventBusContext;
     
+    private static final String COLUMN_INFORMATION_PATTERN = "\\{.*}";
+    
     @Override
     public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName().toLowerCase();
@@ -157,7 +159,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new EmptyRowScalarEnumerator();
+                return new EmptyRowEnumerator();
             }
         };
     }
@@ -173,7 +175,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryScalarEnumerator(tableData.getRows());
+                return new MemoryEnumerator(tableData.getRows());
             }
         };
     }
@@ -204,7 +206,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new SQLFederationScalarEnumerator(rows, statements);
+                return new SQLFederationRowEnumerator(rows, statements);
             }
         };
     }
@@ -350,8 +352,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     private Map<Integer, Integer> extractColumnMap(final String filterExpression) {
-        String columnInformationPattern = "\\{.*}";
-        Matcher matcher = Pattern.compile(columnInformationPattern).matcher(filterExpression);
+        Matcher matcher = Pattern.compile(COLUMN_INFORMATION_PATTERN).matcher(filterExpression);
         Map<Integer, Integer> result = new HashMap<>();
         if (!matcher.find()) {
             return result;

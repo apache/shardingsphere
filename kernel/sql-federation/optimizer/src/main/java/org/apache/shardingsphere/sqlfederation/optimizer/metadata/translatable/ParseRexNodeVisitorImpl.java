@@ -144,7 +144,6 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     
     @Override
     public RexNode visitInputRef(final InputRefContext ctx) {
-        // 处理inputRef位于cast的场景：CAST($1,INTEGER)。
         Integer index = Integer.valueOf(ctx.INTEGER_().getText());
         if ((ctx.getParent() instanceof CastContext) && "VARCHAR".equals(ctx.getParent().getStop().getText())) {
             return rexBuilder.makeInputRef(typeFactory.createJavaType(String.class), index);
@@ -153,17 +152,20 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
         } else if ((ctx.getParent() instanceof CastContext) && "BIGINT".equals(ctx.getParent().getStop().getText())) {
             return rexBuilder.makeInputRef(typeFactory.createJavaType(Long.class), index);
         }
-        // 处理inputRef的普通场景：$0。
         if (null != columnMap.get(index)) {
             Class dataType = getClass(columnMap.get(index));
             return rexBuilder.makeInputRef(typeFactory.createJavaType(dataType), index);
         }
-        // 需要处理关联查询的场景：$cor0.merchant_id。
         return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
     }
     
+    /**
+     * Switch sql type to java type, reference to java.sql.Types
+     *
+     * @param dataType sql type
+     * @return java type
+     */
     private Class getClass(final int dataType) {
-        // Reference to java.sql.Types
         switch (dataType) {
             case -5:
                 return Long.class;
