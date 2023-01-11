@@ -43,7 +43,7 @@ public final class SQLValue {
     }
     
     private Object getValue(final String value, final String type) throws ParseException {
-        if (type.startsWith("enum#")) {
+        if (type.startsWith("enum#") || type.startsWith("cast#")) {
             return value;
         }
         if ("null".equalsIgnoreCase(value)) {
