@@ -22,32 +22,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.constant;
  */
 public final class MetricIds {
     
-    public static final String PROXY_REQUESTS = "proxy_requests_total";
-    
-    public static final String PROXY_CURRENT_CONNECTIONS = "current_proxy_connections";
-    
-    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
-    
-    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
-    
-    public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
-    
-    public static final String ROUTE_SQL_UPDATE = "route_sql_update_total";
-    
-    public static final String ROUTE_SQL_DELETE = "route_sql_delete_total";
-    
-    public static final String ROUTE_SQL_INSERT = "route_sql_insert_total";
-    
-    public static final String ROUTE_DATASOURCE = "route_datasource_total";
-    
-    public static final String ROUTE_TABLE = "route_table_total";
-    
-    public static final String TRANSACTION_COMMIT = "proxy_transaction_commit_total";
-    
-    public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
-    
-    public static final String PROXY_INFO = "proxy_info";
-    
     public static final String BUILD_INFO = "build_info";
     
     public static final String METADATA_INFO = "meta_data_info";
@@ -73,4 +47,30 @@ public final class MetricIds {
     public static final String PARSE_DIST_SQL_RDL = "parse_dist_sql_rdl_total";
     
     public static final String PARSE_DIST_SQL_RAL = "parse_dist_sql_ral_total";
+    
+    public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
+    
+    public static final String ROUTE_SQL_UPDATE = "route_sql_update_total";
+    
+    public static final String ROUTE_SQL_DELETE = "route_sql_delete_total";
+    
+    public static final String ROUTE_SQL_INSERT = "route_sql_insert_total";
+    
+    public static final String ROUTE_DATASOURCE = "route_datasource_total";
+    
+    public static final String ROUTE_TABLE = "route_table_total";
+    
+    public static final String PROXY_INFO = "proxy_info";
+    
+    public static final String PROXY_REQUESTS = "proxy_requests_total";
+    
+    public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
+    
+    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
+    
+    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
+    
+    public static final String PROXY_COMMIT_TRANSACTIONS = "proxy_commit_transactions_total";
+    
+    public static final String PROXY_ROLLBACK_TRANSACTIONS = "proxy_rollback_transactions_total";
 }

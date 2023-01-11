@@ -38,17 +38,20 @@ advisors:
     pointcuts:
       - name: channelRead
         type: method
+  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.CommitTransactionsCountAdvice
+    pointcuts:
+      - name: commit
+        type: method
+  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.RollbackTransactionsCountAdvice
+    pointcuts:
+      - name: rollback
+        type: method
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.SQLRouteEngineAdvice
     pointcuts:
       - name: route
-        type: method
-  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.TransactionAdvice
-    pointcuts:
-      - name: commit
-        type: method
-      - name: rollback
         type: method
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.SQLParserEngineAdvice

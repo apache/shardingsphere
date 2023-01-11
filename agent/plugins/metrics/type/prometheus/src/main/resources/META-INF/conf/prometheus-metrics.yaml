@@ -19,15 +19,15 @@ metrics:
   - id: proxy_requests_total
     type: COUNTER
     name: proxy_requests_total
-    help: total requests of ShardingSphere-Proxy
-  - id: current_proxy_connections
+    help: Total requests of ShardingSphere-Proxy
+  - id: proxy_current_connections
     type: GAUGE
-    name: current_proxy_connections
-    help: current connections of ShardingSphere-Proxy
+    name: proxy_current_connections
+    help: Current connections of ShardingSphere-Proxy
   - id: proxy_execute_latency_millis
     type: HISTOGRAM
     name: proxy_execute_latency_millis
-    help: execute latency millis of ShardingSphere-Proxy
+    help: Execute latency millis of ShardingSphere-Proxy
     props:
       buckets:
         type: exp
@@ -37,7 +37,7 @@ metrics:
   - id: proxy_execute_errors_total
     type: COUNTER
     name: proxy_execute_errors_total
-    help: total execute errors of ShardingSphere-Proxy 
+    help: Total execute errors of ShardingSphere-Proxy 
   - id: route_sql_select_total
     name: route_sql_select_total
     type: COUNTER
@@ -66,14 +66,14 @@ metrics:
     labels:
       - name
     help: the shardingsphere proxy table routed number
-  - id: proxy_transaction_commit_total
-    name: proxy_transaction_commit_total
+  - id: proxy_commit_transactions_total
+    name: proxy_commit_transactions_total
     type: COUNTER
-    help: the shardingsphere proxy transaction commit count total
-  - id: proxy_transaction_rollback_total
-    name: proxy_transaction_rollback_total
+    help: Total commit transactions of ShardingSphere-Proxy
+  - id: proxy_rollback_transactions_total
+    name: proxy_rollback_transactions_total
     type: COUNTER
-    help: the shardingsphere proxy transaction rollback count total
+    help: Total rollback transactions of ShardingSphere-Proxy
   - id: proxy_info
     name: proxy_info
     type: GaugeMetricFamily
