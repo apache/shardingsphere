@@ -27,7 +27,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -41,6 +41,6 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
         Thread.sleep(500L);
         advice.afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
         assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).get()).getFixtureValue(), greaterThan(500D));
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).get()).getFixtureValue(), greaterThanOrEqualTo(500D));
     }
 }
