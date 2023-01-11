@@ -26,13 +26,13 @@ public final class MetricIds {
     
     public static final String METADATA_INFO = "meta_data_info";
     
-    public static final String PARSE_SQL_SELECT = "parse_sql_dml_select_total";
+    public static final String PARSE_SQL_INSERT = "parse_sql_dml_insert_total";
     
     public static final String PARSE_SQL_UPDATE = "parse_sql_dml_update_total";
     
     public static final String PARSE_SQL_DELETE = "parse_sql_dml_delete_total";
     
-    public static final String PARSE_SQL_INSERT = "parse_sql_dml_insert_total";
+    public static final String PARSE_SQL_SELECT = "parse_sql_dml_select_total";
     
     public static final String PARSE_SQL_DDL = "parse_sql_ddl_total";
     
@@ -62,15 +62,15 @@ public final class MetricIds {
     
     public static final String PROXY_INFO = "proxy_info";
     
-    public static final String PROXY_REQUESTS = "proxy_requests_total";
-    
     public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
     
-    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
-    
-    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
+    public static final String PROXY_REQUESTS = "proxy_requests_total";
     
     public static final String PROXY_COMMIT_TRANSACTIONS = "proxy_commit_transactions_total";
     
     public static final String PROXY_ROLLBACK_TRANSACTIONS = "proxy_rollback_transactions_total";
+    
+    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
+    
+    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
 }
