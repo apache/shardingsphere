@@ -27,7 +27,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -84,23 +83,11 @@ public final class ExecuteEngineTest {
     }
     
     @Test
-    public void assertTriggerAllFailure() throws InterruptedException {
-        CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(false));
-        CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(false));
-        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback(2);
-        ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
-        executeCallback.latch.await();
-        assertThat(executeCallback.successCount.get(), is(0));
-        assertThat(executeCallback.failureCount.get(), is(2));
-    }
-    
-    @Test
     public void assertTriggerAllSuccess() throws InterruptedException {
         CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(true));
-        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback(1);
+        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();
         ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
-        executeCallback.latch.await();
         assertThat(executeCallback.successCount.get(), is(1));
         assertThat(executeCallback.failureCount.get(), is(0));
     }
@@ -109,9 +96,13 @@ public final class ExecuteEngineTest {
     public void assertTriggerPartSuccessFailure() throws InterruptedException {
         CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(false));
-        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback(1);
-        ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
-        executeCallback.latch.await();
+        FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();
+        try {
+            ExecuteEngine.trigger(Arrays.asList(future1, future2), executeCallback);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ignored) {
+            // CHECKSTYLE:ON
+        }
         assertThat(executeCallback.successCount.get(), is(0));
         assertThat(executeCallback.failureCount.get(), is(1));
     }
@@ -131,26 +122,18 @@ public final class ExecuteEngineTest {
     
     private static final class FixtureExecuteCallback implements ExecuteCallback {
         
-        private final CountDownLatch latch;
-        
         private final AtomicInteger successCount = new AtomicInteger(0);
         
         private final AtomicInteger failureCount = new AtomicInteger(0);
         
-        FixtureExecuteCallback(final int latchCount) {
-            this.latch = new CountDownLatch(latchCount);
-        }
-        
         @Override
         public void onSuccess() {
             successCount.addAndGet(1);
-            latch.countDown();
         }
         
         @Override
         public void onFailure(final Throwable throwable) {
             failureCount.addAndGet(1);
-            latch.countDown();
         }
     }
 }

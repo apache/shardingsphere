@@ -23,10 +23,12 @@ import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
 import java.util.Collection;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Executor engine.
@@ -88,17 +90,33 @@ public final class ExecuteEngine {
      * @param executeCallback execute callback on all the futures
      */
     public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
-        int futureCount = futures.size();
-        AtomicInteger successCount = new AtomicInteger(0);
-        // TODO call onFailure once
+        BlockingQueue<CompletableFuture<?>> futureQueue = new LinkedBlockingQueue<>();
         for (CompletableFuture<?> each : futures) {
             each.whenComplete((unused, throwable) -> {
-                if (null != throwable) {
-                    executeCallback.onFailure(throwable);
-                } else if (successCount.addAndGet(1) == futureCount) {
-                    executeCallback.onSuccess();
+                try {
+                    futureQueue.put(each);
+                } catch (final InterruptedException ex) {
+                    throw new RuntimeException(ex);
                 }
             });
         }
+        for (int i = 1, count = futures.size(); i <= count; i++) {
+            CompletableFuture<?> future;
+            try {
+                future = futureQueue.take();
+            } catch (final InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
+                future.get();
+            } catch (final InterruptedException ex) {
+                throw new RuntimeException(ex);
+            } catch (final ExecutionException ex) {
+                Throwable cause = ex.getCause();
+                executeCallback.onFailure(null != cause ? cause : ex);
+                throw new RuntimeException(ex);
+            }
+        }
+        executeCallback.onSuccess();
     }
 }
