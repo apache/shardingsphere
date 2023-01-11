@@ -28,6 +28,6 @@ public final class EncryptLikeQueryEncryptorNotFoundException extends EncryptSQL
     private static final long serialVersionUID = 1620586484949188815L;
     
     public EncryptLikeQueryEncryptorNotFoundException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, reason);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 8, "Encrypt like query encryptor not found, reason is: %s.", reason);
     }
 }
