@@ -61,6 +61,6 @@ public abstract class SingleE2EIT extends BaseE2EIT {
     
     private String getLiteralSQL(final String sql) throws ParseException {
         List<Object> params = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
-        return params.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), params.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
+        return params.isEmpty() ? sql : String.format(sql.replace("%", "ÿ").replace("?", "%s"), params.toArray()).replace("ÿ", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
 }
