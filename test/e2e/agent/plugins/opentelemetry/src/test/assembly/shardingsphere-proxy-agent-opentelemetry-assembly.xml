@@ -40,7 +40,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/../../../../../agent/plugins/core/target/lib</directory>
-            <outputDirectory>./agent/lib</outputDirectory>
+            <outputDirectory>./agent/plugins/lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
@@ -60,6 +60,13 @@
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
             <fileMode>0644</fileMode>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>./agent/lib</outputDirectory>
+            <includes>
+                <include>org.slf4j:slf4j-api</include>
+                <include>ch.qos.logback:*</include>
+            </includes>
         </dependencySet>
     </dependencySets>
 </assembly>
