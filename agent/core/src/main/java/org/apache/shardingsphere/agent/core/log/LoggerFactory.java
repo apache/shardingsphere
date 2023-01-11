@@ -72,8 +72,8 @@ public final class LoggerFactory {
             for (File each : jarFiles) {
                 pluginJars.add(new PluginJar(new JarFile(each, true), each));
             }
-            File resourceRootPath = new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
-            classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader().getParent(), pluginJars, Collections.singleton(resourceRootPath));
+            File resourcePath = new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
+            classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader().getParent(), pluginJars, Collections.singleton(resourcePath));
         } else {
             classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
         }
