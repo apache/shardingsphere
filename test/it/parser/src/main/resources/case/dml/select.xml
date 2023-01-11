@@ -4857,4 +4857,20 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_positional_parameter_type_cast_money" parameters="123.00" >
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="$1::money" start-index="7" stop-index="15">
+                <binary-operation-expression start-index="7" stop-index="15">
+                    <left>
+                        <parameter-marker-expression parameter-index="1" start-index="7" stop-index="8" />
+                    </left>
+                    <operator>::</operator>
+                    <right>
+                        <common-expression text="money" start-index="11" stop-index="15" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
