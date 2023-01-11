@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,9 +46,16 @@ public final class AgentClassLoader extends ClassLoader {
     
     private final Collection<PluginJar> pluginJars;
     
+    private final Collection<File> resourceRootPaths;
+    
     public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars) {
+        this(appClassLoader, pluginJars, Collections.emptyList());
+    }
+    
+    public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars, final Collection<File> resourceFiles) {
         super(appClassLoader);
         this.pluginJars = pluginJars;
+        this.resourceRootPaths = resourceFiles;
     }
     
     @Override
@@ -104,12 +113,16 @@ public final class AgentClassLoader extends ClassLoader {
         for (PluginJar each : pluginJars) {
             findResource(name, each).ifPresent(result::add);
         }
+        if (result.isEmpty()) {
+            result.addAll(findResourcesFromResourceRootPaths(name));
+        }
         return Collections.enumeration(result);
     }
     
     @Override
     protected URL findResource(final String name) {
-        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get).orElse(null);
+        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get)
+                .orElseGet(() -> findResourcesFromResourceRootPaths(name).stream().findFirst().orElse(null));
     }
     
     private Optional<URL> findResource(final String name, final PluginJar pluginJar) {
@@ -122,5 +135,20 @@ public final class AgentClassLoader extends ClassLoader {
         } catch (final MalformedURLException ignored) {
             return Optional.empty();
         }
+    }
+    
+    @SneakyThrows(MalformedURLException.class)
+    private Collection<URL> findResourcesFromResourceRootPaths(final String name) {
+        Collection<URL> result = new LinkedList<>();
+        for (File rootPath : resourceRootPaths) {
+            if (!rootPath.exists() || !rootPath.isDirectory()) {
+                continue;
+            }
+            File resourceFile = new File(String.join(File.separator, rootPath.getPath(), name));
+            if (resourceFile.exists() && resourceFile.isFile()) {
+                result.add(resourceFile.toURI().toURL());
+            }
+        }
+        return result;
     }
 }
