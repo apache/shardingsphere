@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
@@ -26,26 +26,16 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import java.lang.reflect.Method;
 
 /**
- * Transaction advice.
+ * Commit transactions count advice for ShardingSphere-Proxy.
  */
-public final class TransactionAdvice implements InstanceMethodAdvice {
-    
-    public static final String COMMIT = "commit";
-    
-    public static final String ROLLBACK = "rollback";
+public final class CommitTransactionsCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.TRANSACTION_COMMIT);
-        MetricsPool.create(MetricIds.TRANSACTION_ROLLBACK);
+        MetricsPool.create(MetricIds.PROXY_COMMIT_TRANSACTIONS);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        String methodName = method.getName();
-        if (COMMIT.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_COMMIT).ifPresent(MetricsWrapper::inc);
-        } else if (ROLLBACK.equals(methodName)) {
-            MetricsPool.get(MetricIds.TRANSACTION_ROLLBACK).ifPresent(MetricsWrapper::inc);
-        }
+        MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS).ifPresent(MetricsWrapper::inc);
     }
 }

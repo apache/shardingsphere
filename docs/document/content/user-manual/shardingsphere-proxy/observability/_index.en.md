@@ -157,31 +157,31 @@ services:
 
 ## Metrics
 
-| name                             | type      | description                                                                                               |
-| :------------------------------- | :-------- | :-------------------------------------------------------------------------------------------------------- |
-| proxy_requests_total             | COUNTER   | total requests of ShardingSphere-Proxy                                                                    |
-| current_proxy_connections        | GAUGE     | current connections of ShardingSphere-Proxy                                                               |
-| proxy_execute_latency_millis     | HISTOGRAM | execute latency millis of ShardingSphere-Proxy                                                            |
-| proxy_execute_errors_total       | COUNTER   | total executor errors of ShardingSphere-Proxy                                                             |
-| route_sql_select_total           | COUNTER   | proxy executor route select sql total                                                                     |
-| route_sql_insert_total           | COUNTER   | proxy executor route insert sql total                                                                     |
-| route_sql_update_total           | COUNTER   | proxy executor route update sql total                                                                     |
-| route_sql_delete_total           | COUNTER   | proxy executor route delete sql total                                                                     |
-| route_datasource_total           | COUNTER   | number of datasource routed                                                                               |
-| route_table_total                | COUNTER   | number of table routed                                                                                    |
-| proxy_transaction_commit_total   | COUNTER   | transaction commit count total                                                                            |
-| proxy_transaction_rollback_total | COUNTER   | transaction rollback count total                                                                          |
-| parse_sql_dml_insert_total       | COUNTER   | proxy executor parse insert sql total                                                                     |
-| parse_sql_dml_delete_total       | COUNTER   | proxy executor parse delete sql total                                                                     |
-| parse_sql_dml_update_total       | COUNTER   | proxy executor parse update sql total                                                                     |
-| parse_sql_dml_select_total       | COUNTER   | proxy executor parse select sql total                                                                     |
-| parse_sql_ddl_total              | COUNTER   | proxy executor parse ddl sql total                                                                        |
-| parse_sql_dcl_total              | COUNTER   | proxy executor parse dcl sql total                                                                        |
-| parse_sql_dal_total              | COUNTER   | proxy executor parse dal sql total                                                                        |
-| parse_sql_tcl_total              | COUNTER   | proxy executor parse tcl sql total                                                                        |
-| parse_dist_sql_rql_total         | COUNTER   | proxy executor parse rql sql total                                                                        |
-| parse_dist_sql_rdl_total         | COUNTER   | proxy executor parse rdl sql total                                                                        |
-| parse_dist_sql_ral_total         | COUNTER   | proxy executor parse ral sql total                                                                        |
-| build_info                       | GAUGE     | build information                                                                                         |
-| proxy_info                       | GAUGE     | proxy information， state:1 OK， state:2 CIRCUIT BREAK                                                     |
-| meta_data_info                   | GAUGE     | meta data information， schema_count:logic number of databases， database_count:actual number of databases |
+| name                              | type      | description                                                                                               |
+| :-------------------------------- | :-------- | :-------------------------------------------------------------------------------------------------------- |
+| proxy_requests_total              | COUNTER   | Total requests of ShardingSphere-Proxy                                                                    |
+| proxy_current_connections         | GAUGE     | Current connections of ShardingSphere-Proxy                                                               |
+| proxy_execute_latency_millis      | HISTOGRAM | Execute latency millis of ShardingSphere-Proxy                                                            |
+| proxy_execute_errors_total        | COUNTER   | Total executor errors of ShardingSphere-Proxy                                                             |
+| route_sql_select_total            | COUNTER   | Proxy executor route select sql total                                                                     |
+| route_sql_insert_total            | COUNTER   | Proxy executor route insert sql total                                                                     |
+| route_sql_update_total            | COUNTER   | Proxy executor route update sql total                                                                     |
+| route_sql_delete_total            | COUNTER   | Proxy executor route delete sql total                                                                     |
+| route_datasource_total            | COUNTER   | Number of datasource routed                                                                               |
+| route_table_total                 | COUNTER   | Number of table routed                                                                                    |
+| proxy_commit_transactions_total   | COUNTER   | Total commit transactions of ShardingSphere-Proxy                                                         |
+| proxy_rollback_transactions_total | COUNTER   | Total rollback transactions of ShardingSphere-Proxy                                                       |
+| parse_sql_dml_insert_total        | COUNTER   | Proxy executor parse insert sql total                                                                     |
+| parse_sql_dml_delete_total        | COUNTER   | Proxy executor parse delete sql total                                                                     |
+| parse_sql_dml_update_total        | COUNTER   | Proxy executor parse update sql total                                                                     |
+| parse_sql_dml_select_total        | COUNTER   | Proxy executor parse select sql total                                                                     |
+| parse_sql_ddl_total               | COUNTER   | Proxy executor parse ddl sql total                                                                        |
+| parse_sql_dcl_total               | COUNTER   | Proxy executor parse dcl sql total                                                                        |
+| parse_sql_dal_total               | COUNTER   | Proxy executor parse dal sql total                                                                        |
+| parse_sql_tcl_total               | COUNTER   | Proxy executor parse tcl sql total                                                                        |
+| parse_dist_sql_rql_total          | COUNTER   | Proxy executor parse rql sql total                                                                        |
+| parse_dist_sql_rdl_total          | COUNTER   | Proxy executor parse rdl sql total                                                                        |
+| parse_dist_sql_ral_total          | COUNTER   | Proxy executor parse ral sql total                                                                        |
+| build_info                        | GAUGE     | Build information                                                                                         |
+| proxy_info                        | GAUGE     | Proxy information， state:1 OK， state:2 CIRCUIT BREAK                                                     |
+| meta_data_info                    | GAUGE     | Meta data information， schema_count:logic number of databases， database_count:actual number of databases |

@@ -40,7 +40,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     public static final String PROXY_REQUESTS = "proxy_requests_total";
     
-    public static final String PROXY_CURRENT_CONNECTIONS = "current_proxy_connections";
+    public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
     
     public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_bucket";
     
@@ -58,9 +58,9 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     public static final String ROUTE_TABLE = "route_table_total";
     
-    public static final String TRANSACTION_COMMIT = "proxy_transaction_commit_total";
+    public static final String PROXY_COMMIT_TRANSACTIONS = "proxy_commit_transactions_total";
     
-    public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
+    public static final String PROXY_ROLLBACK_TRANSACTIONS = "proxy_rollback_transactions_total";
     
     @Test
     public void assertProxyWithAgent() throws IOException {
@@ -96,8 +96,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         result.add(SQL_INSERT);
         result.add(ROUTE_DATASOURCE);
         result.add(ROUTE_TABLE);
-        result.add(TRANSACTION_COMMIT);
-        result.add(TRANSACTION_ROLLBACK);
+        result.add(PROXY_COMMIT_TRANSACTIONS);
+        result.add(PROXY_ROLLBACK_TRANSACTIONS);
         result.add(PROXY_EXECUTE_ERRORS);
         return result;
     }
