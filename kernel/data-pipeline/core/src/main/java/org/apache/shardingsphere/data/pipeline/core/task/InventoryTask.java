@@ -98,7 +98,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
             
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("dumper onFailure, taskId={}", taskId);
+                log.error("dumper onFailure, taskId={}", taskId, throwable);
                 stop();
                 close();
             }
