@@ -103,10 +103,6 @@
                                     <shadedPattern>${shade.package}.okio</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.apache.thrift</pattern>
                                     <shadedPattern>${shade.package}.org.apache.thrift</shadedPattern>
                                 </relocation>
