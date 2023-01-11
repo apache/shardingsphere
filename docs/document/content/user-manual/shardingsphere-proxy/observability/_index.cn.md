@@ -154,31 +154,31 @@ services:
 
 ## Metrics
 
-| 指标名称                            | 类型      | 描述                                                            |
-| :-------------------------------- | :-------- | :------------------------------------------------------------- |
-| proxy_requests_total              | COUNTER   | ShardingSphere-Proxy 的接受请求总合                               |
-| proxy_current_connections         | GAUGE     | ShardingSphere-Proxy 的当前连接数                                 |
-| proxy_execute_latency_millis      | HISTOGRAM | ShardingSphere-Proxy 的执行耗时毫秒                               |
-| proxy_execute_errors_total        | COUNTER   | ShardingSphere-Proxy 的执行异常总数                               |
-| route_sql_select_total            | COUNTER   | 路由执行 select SQL 语句总数                                       |
-| route_sql_insert_total            | COUNTER   | 路由执行 insert SQL 语句总数                                       |
-| route_sql_update_total            | COUNTER   | 路由执行 update SQL 语句总数                                       |
-| route_sql_delete_total            | COUNTER   | 路由执行 delete SQL 语句总数                                       |
-| route_datasource_total            | COUNTER   | 数据源路由总数                                                     |
-| route_table_total                 | COUNTER   | 表路由数                                                          |
-| proxy_commit_transactions_total   | COUNTER   | ShardingSphere-Proxy 的事务提交次数                                |
-| proxy_rollback_transactions_total | COUNTER   | ShardingSphere-Proxy 的事务回滚次数                                |
-| parse_sql_dml_insert_total        | COUNTER   | 解析 insert SQL 语句总数                                           |
-| parse_sql_dml_delete_total        | COUNTER   | 解析 delete SQL 语句总数                                           |
-| parse_sql_dml_update_total        | COUNTER   | 解析 update SQL 语句总数                                           |
-| parse_sql_dml_select_total        | COUNTER   | 解析 select SQL 语句总数                                           |
-| parse_sql_ddl_total               | COUNTER   | 解析 DDL SQL 语句总数                                              |
-| parse_sql_dcl_total               | COUNTER   | 解析 DCL SQL 语句总数                                              |
-| parse_sql_dal_total               | COUNTER   | 解析 DAL SQL 语句总数                                              |
-| parse_sql_tcl_total               | COUNTER   | 解析 TCL SQL 语句总数                                              |
-| parse_dist_sql_rql_total          | COUNTER   | 解析 RQL 类型 DistSQL 总数                                         |
-| parse_dist_sql_rdl_total          | COUNTER   | 解析 RDL 类型 DistSQL 总数                                         |
-| parse_dist_sql_ral_total          | COUNTER   | 解析 RAL 类型 DistSQL 总数                                         |
-| build_info                        | GAUGE     | 构建信息                                                          |
-| proxy_info                        | GAUGE     | proxy 信息， state:1 正常状态， state:2 熔断状态                     |
-| meta_data_info                    | GAUGE     | proxy 元数据信息， schema_count:逻辑库数量， database_count:数据源数量 |
+| 指标名称                            | 指标类型   | 指标描述                                                      |
+| :-------------------------------- | :-------- | :---------------------------------------------------------- |
+| build_info                        | GAUGE     | 构建信息                                                     |
+| meta_data_info                    | GAUGE     | 元数据信息， schema_count：逻辑库数量， database_count：数据源数量 |
+| parse_sql_dml_insert_total        | COUNTER   | INSERT 的解析总数                                             |
+| parse_sql_dml_update_total        | COUNTER   | UPDATE 的解析总数                                             |
+| parse_sql_dml_delete_total        | COUNTER   | DELETE 的解析总数                                             |
+| parse_sql_dml_select_total        | COUNTER   | SELECT 的解析总数                                             |
+| parse_sql_ddl_total               | COUNTER   | DDL 的解析总数                                                |
+| parse_sql_dcl_total               | COUNTER   | DCL 的解析总数                                                |
+| parse_sql_dal_total               | COUNTER   | DAL 的解析总数                                                |
+| parse_sql_tcl_total               | COUNTER   | TCL 的解析总数                                                |
+| parse_dist_sql_rql_total          | COUNTER   | RQL 的解析总数                                                |
+| parse_dist_sql_rdl_total          | COUNTER   | RDL 的解析总数                                                |
+| parse_dist_sql_ral_total          | COUNTER   | RAL 的解析总数                                                |
+| route_sql_insert_total            | COUNTER   | INSERT 的路由总数                                             |
+| route_sql_update_total            | COUNTER   | UPDATE 的路由总数                                             |
+| route_sql_delete_total            | COUNTER   | DELETE 的路由总数                                             |
+| route_sql_select_total            | COUNTER   | SELECT 的路由总数                                             |
+| route_datasource_total            | COUNTER   | 数据源路由总数                                                 |
+| route_table_total                 | COUNTER   | 表路由总数                                                    |
+| proxy_info                        | GAUGE     | ShardingSphere-Proxy 状态信息。1 表示正常状态；2 表示熔断状态      |
+| proxy_current_connections         | GAUGE     | ShardingSphere-Proxy 的当前连接数                              |
+| proxy_requests_total              | COUNTER   | ShardingSphere-Proxy 的接受请求总数                            |
+| proxy_commit_transactions_total   | COUNTER   | ShardingSphere-Proxy 的事务提交总数                            |
+| proxy_rollback_transactions_total | COUNTER   | ShardingSphere-Proxy 的事务回滚总数                            |
+| proxy_execute_latency_millis      | HISTOGRAM | ShardingSphere-Proxy 的执行耗时毫秒直方图                       |
+| proxy_execute_errors_total        | COUNTER   | ShardingSphere-Proxy 的执行异常总数                            |
