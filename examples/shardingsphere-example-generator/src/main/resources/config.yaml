@@ -34,7 +34,7 @@ transactions:
   - xa-bitronix
   - base-seata
 
-# supported: sharding,readwrite-splitting,encrypt,shadow,db-discovery
+# supported: sharding,readwrite-splitting,encrypt,shadow,db-discovery,mask
 features: 
   - sharding
   - readwrite-splitting

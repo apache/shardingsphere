@@ -17,34 +17,29 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
+import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-/**
- * Current connections count advice for ShardingSphere-Proxy.
- */
-public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+public final class RequestsCountAdviceTest extends MetricsAdviceBaseTest {
     
-    static {
-        MetricsPool.create(MetricIds.PROXY_CURRENT_CONNECTIONS);
-    }
+    private final RequestsCountAdvice advice = new RequestsCountAdvice();
     
-    @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        switch (method.getName()) {
-            case "channelActive":
-                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(MetricsWrapper::inc);
-                break;
-            case "channelInactive":
-                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(MetricsWrapper::dec);
-                break;
-            default:
-                break;
-        }
+    @Test
+    public void assertCountRequests() {
+        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
+        advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
+        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUESTS).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUESTS).get()).getFixtureValue(), is(1d));
     }
 }

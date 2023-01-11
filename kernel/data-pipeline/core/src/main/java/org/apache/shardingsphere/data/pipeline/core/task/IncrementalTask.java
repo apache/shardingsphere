@@ -126,7 +126,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("incremental dumper onFailure, taskId={}", taskId);
+                log.error("incremental dumper onFailure, taskId={}", taskId, throwable);
                 stop();
                 close();
             }

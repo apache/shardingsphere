@@ -21,7 +21,8 @@ import Keyword, OpenGaussKeyword, Symbol, Literals;
 
 parameterMarker
     : QUESTION_ literalsType?
-    | DOLLAR_ numberLiterals
+    // TODO Only digits allowed after $, not a number
+    | DOLLAR_ NUMBER_
     ;
 
 reservedKeyword

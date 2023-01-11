@@ -15,48 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
-import org.apache.shardingsphere.agent.plugin.core.util.TimeRecorder;
 
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice.
+ * Requests count advice for ShardingSphere-Proxy.
  */
-public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
-    
-    public static final String COMMAND_EXECUTOR_RUN = "run";
-    
-    public static final String COMMAND_EXECUTOR_EXCEPTION = "processException";
+public final class RequestsCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.PROXY_EXECUTE_ERROR);
-        MetricsPool.create(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS);
+        MetricsPool.create(MetricIds.PROXY_REQUESTS);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
-            TimeRecorder.INSTANCE.record();
-        }
-    }
-    
-    @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        if (COMMAND_EXECUTOR_RUN.equals(method.getName())) {
-            try {
-                MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> optional.observe(TimeRecorder.INSTANCE.getElapsedTime()));
-            } finally {
-                TimeRecorder.INSTANCE.clean();
-            }
-        } else if (COMMAND_EXECUTOR_EXCEPTION.equals(method.getName())) {
-            MetricsPool.get(MetricIds.PROXY_EXECUTE_ERROR).ifPresent(MetricsWrapper::inc);
-        }
+        MetricsPool.get(MetricIds.PROXY_REQUESTS).ifPresent(MetricsWrapper::inc);
     }
 }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransaction
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * MySQL auto commit transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, transactionTypes = TransactionType.LOCAL)
 public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
     
     public MySQLAutoCommitTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
@@ -47,16 +48,19 @@ public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
     }
     
     private void assertAutoCommit() throws SQLException {
+        // TODO Currently XA transaction does not support two transactions in the same thread at the same time
         Connection connection1 = getDataSource().getConnection();
         Connection connection2 = getDataSource().getConnection();
         executeWithLog(connection1, "set session transaction isolation level read committed;");
         executeWithLog(connection2, "set session transaction isolation level read committed;");
-        executeWithLog(connection1, "set autocommit=0;");
-        executeWithLog(connection2, "begin;");
-        executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1)");
+        connection1.setAutoCommit(false);
+        connection2.setAutoCommit(false);
+        executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
         assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
-        executeWithLog(connection1, "commit;");
+        connection1.commit();
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
-        assertTrue(executeQueryWithLog(connection2, "select * from account").next());
+        assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
+        connection1.close();
+        connection2.close();
     }
 }
