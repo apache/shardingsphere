@@ -33,6 +33,5 @@
         <module>statement</module>
         <module>engine</module>
         <module>dialect</module>
-        <module>rr</module>
     </modules>
 </project>
