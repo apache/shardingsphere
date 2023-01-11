@@ -217,7 +217,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null == ctx.DOLLAR_()) {
             return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
         }
-        int paramIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
+        int paramIndex = new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue();
         if (paramIndex > currentParameterIndex) {
             currentParameterIndex = paramIndex;
         }
@@ -226,7 +226,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
-        return new NumberLiteralValue(ctx.getText());
+        return new NumberLiteralValue(ctx.NUMBER_().getText());
     }
     
     @Override
