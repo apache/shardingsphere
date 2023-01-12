@@ -25,7 +25,7 @@ import java.util.Random;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class PluginContextTest {
+public final class PluginContextTest {
 
     private static final String PLUGIN_ENABLED_KEY = "AGENT_PLUGINS_ENABLED";
 
