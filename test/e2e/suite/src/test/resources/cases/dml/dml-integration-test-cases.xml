@@ -318,4 +318,9 @@
         <assertion parameters="92233720368547758.07:String, $92233720368547758.07:String, 92233720368547758.07:String" expected-data-file="insert_max_money_values.xml"/>
         <assertion parameters="9223372036854775.807:String, 9223372036854775.804:String, -9223372036854775.807:String" expected-data-file="insert_rounding_money_values.xml"/>
     </test-case>
+    
+    <test-case sql="UPDATE t_data_type_money SET val = val + ?::money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="12345.6789:String, 1001:int" expected-data-file="update_money_add_value.xml"/>
+        <assertion parameters="-12345.6789:String, 1001:int" expected-data-file="update_money_subtract_value.xml"/>
+    </test-case>
 </integration-test-cases>
