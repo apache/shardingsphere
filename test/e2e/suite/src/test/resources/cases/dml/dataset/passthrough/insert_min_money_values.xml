@@ -24,4 +24,5 @@
     <row data-node="passthrough.t_data_type_money" values="2, -$92,233,720,368,547,758.08" />
     <row data-node="passthrough.t_data_type_money" values="3, -$92,233,720,368,547,758.08" />
     <row data-node="passthrough.t_data_type_money" values="1001, $123.00" />
+    <row data-node="passthrough.t_data_type_money" values="1002, $456.00" />
 </dataset>

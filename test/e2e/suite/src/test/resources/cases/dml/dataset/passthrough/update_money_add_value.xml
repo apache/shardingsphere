@@ -21,4 +21,5 @@
         <column name="val" type="varchar" />
     </metadata>
     <row data-node="passthrough.t_data_type_money" values="1001, $12,468.68" />
+    <row data-node="passthrough.t_data_type_money" values="1002, $456.00" />
 </dataset>

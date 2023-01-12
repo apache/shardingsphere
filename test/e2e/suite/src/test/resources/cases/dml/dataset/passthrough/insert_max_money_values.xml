@@ -20,8 +20,9 @@
         <column name="id" type="numeric" />
         <column name="val" type="varchar" />
     </metadata>
-    <row data-node="passthrough.t_data_type_money" values="1, $92,233,720,368,547,758.07" />
-    <row data-node="passthrough.t_data_type_money" values="2, $92,233,720,368,547,758.07" />
-    <row data-node="passthrough.t_data_type_money" values="3, $92,233,720,368,547,758.07" />
+    <row data-node="passthrough.t_data_type_money" values="4, $92,233,720,368,547,758.07" />
+    <row data-node="passthrough.t_data_type_money" values="5, $92,233,720,368,547,758.07" />
+    <row data-node="passthrough.t_data_type_money" values="6, $92,233,720,368,547,758.07" />
     <row data-node="passthrough.t_data_type_money" values="1001, $123.00" />
+    <row data-node="passthrough.t_data_type_money" values="1002, $456.00" />
 </dataset>

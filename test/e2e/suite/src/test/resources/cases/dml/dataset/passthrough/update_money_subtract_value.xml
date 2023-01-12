@@ -20,5 +20,6 @@
         <column name="id" type="numeric" />
         <column name="val" type="varchar" />
     </metadata>
-    <row data-node="passthrough.t_data_type_money" values="1001, -$12,222.68" />
+    <row data-node="passthrough.t_data_type_money" values="1001, $123.00" />
+    <row data-node="passthrough.t_data_type_money" values="1002, -$11,889.68" />
 </dataset>
