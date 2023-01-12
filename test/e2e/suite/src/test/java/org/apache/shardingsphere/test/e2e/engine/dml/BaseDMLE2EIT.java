@@ -127,8 +127,14 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
+        } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
+            assertThat(actual.getString(columnIndex), is(expected));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }
+    }
+    
+    private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
     }
 }

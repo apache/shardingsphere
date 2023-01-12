@@ -312,4 +312,18 @@
     <test-case sql="/* SHARDINGSPHERE_HINT: t_product.SHARDING_TABLE_VALUE=1 */INSERT INTO t_product values (21, 'macbook2022', 4, 13999, 'on sale', '2022-08-08')" db-types="MySQL" scenario-types="tbl">
         <assertion expected-data-file="insert_into_t_product_with_hint.xml" />
     </test-case>
+    
+    <test-case sql="INSERT INTO t_data_type_money (id, val) VALUES (?, ?::money), (?, ?::money), (?, ?::money)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="1:int, -92233720368547758.08:String, 2:int, -$92233720368547758.08:String, 3:int, (92233720368547758.08):String" expected-data-file="insert_min_money_values.xml"/>
+        <assertion parameters="4:int, 92233720368547758.07:String, 5:int, $92233720368547758.07:String, 6:int, 92233720368547758.07:String" expected-data-file="insert_max_money_values.xml"/>
+        <assertion parameters="7:int, 9223372036854775.807:String, 8:int, 9223372036854775.804:String, 9:int, -9223372036854775.807:String" expected-data-file="insert_rounding_money_values.xml"/>
+    </test-case>
+    
+    <test-case sql="UPDATE t_data_type_money SET val = val + ?::money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="12345.6789:String, 1001:int" expected-data-file="update_money_add_value.xml"/>
+    </test-case>
+    
+    <test-case sql="UPDATE t_data_type_money SET val = val + ?::money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="-12345.6789:String, 1002:int" expected-data-file="update_money_subtract_value.xml"/>
+    </test-case>
 </integration-test-cases>
