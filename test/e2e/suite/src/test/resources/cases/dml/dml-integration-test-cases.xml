@@ -122,7 +122,7 @@
 <!--    </test-case>-->
     
     <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" scenario-types="encrypt">
-        <assertion parameters="30:int, tomas:String, 31:int, mike:String" expected-data-file="batch_insert_into_user_table.xml" />
+        <assertion parameters="40:int, tomas:String, 41:int, mike:String" expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
     
     <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
