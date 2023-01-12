@@ -20,15 +20,22 @@ package org.apache.shardingsphere.agent.core.log;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
+import org.apache.shardingsphere.agent.core.path.AgentPath;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
+import java.util.LinkedList;
 import java.util.jar.JarFile;
 
 /**
@@ -52,22 +59,41 @@ public final class LoggerFactory {
         return new Logger(log);
     }
     
+    @SneakyThrows({URISyntaxException.class, IOException.class})
     private static AgentClassLoader getClassLoader() {
-        if (Objects.nonNull(classLoader)) {
+        if (null != classLoader) {
             return classLoader;
         }
         CodeSource codeSource = LoggerFactory.class.getProtectionDomain().getCodeSource();
-        try {
-            File agentFle = new File(codeSource.getLocation().toURI());
-            if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
-                PluginJar pluginJar = new PluginJar(new JarFile(agentFle, true), agentFle);
-                classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(pluginJar));
-                return classLoader;
+        File agentFle = new File(codeSource.getLocation().toURI());
+        if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
+            Collection<File> jarFiles = new LinkedList<>(getJarFiles(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib"))));
+            Collection<PluginJar> pluginJars = new LinkedList<>();
+            for (File each : jarFiles) {
+                pluginJars.add(new PluginJar(new JarFile(each, true), each));
             }
+            File resourcePath = new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
+            classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader().getParent(), pluginJars, Collections.singleton(resourcePath));
+        } else {
             classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
-        } catch (final URISyntaxException | IOException ignored) {
         }
         return classLoader;
+    }
+    
+    @SneakyThrows(IOException.class)
+    private static Collection<File> getJarFiles(final File file) {
+        Collection<File> result = new LinkedList<>();
+        Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
+            
+            @Override
+            public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
+                if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
+                    result.add(path.toFile());
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return result;
     }
     
     /**

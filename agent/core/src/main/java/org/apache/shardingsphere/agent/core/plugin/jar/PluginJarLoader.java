@@ -52,8 +52,7 @@ public final class PluginJarLoader {
      */
     public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
         List<File> jarFiles = new LinkedList<>();
-        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "lib"))));
-        jarFiles.addAll(getJarFiles(new File(String.join("/", agentRootPath.getPath(), "plugins"))));
+        jarFiles.addAll(getJarFiles(new File(String.join(File.separator, agentRootPath.getPath(), "plugins"))));
         Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new PluginJar(new JarFile(each, true), each));
