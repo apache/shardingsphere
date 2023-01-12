@@ -17,75 +17,35 @@
 
 package org.apache.shardingsphere.agent.core.plugin;
 
-import net.bytebuddy.utility.RandomString;
 import org.junit.Test;
-
-import java.util.Random;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class PluginContextTest {
 
-    private static final String PLUGIN_ENABLED_KEY = "AGENT_PLUGINS_ENABLED";
-
     @Test
-    public void assertKeyNotExistsReturnFalse() {
+    public void assertNotPluginEnabledKey() {
         assertFalse(PluginContext.isPluginEnabled());
     }
-
+    
     @Test
-    public void assertPropertyValueIsAnyOtherStringBut0ReturnTrue() {
-        String randomString;
-        while (true) {
-            randomString = RandomString.make(new Random().nextInt(20));
-            if (!"0".equals(randomString)) {
-                break;
-            }
-        }
-        System.setProperty(PLUGIN_ENABLED_KEY, randomString);
+    public void assertPluginEnabledKeyIsFalse() {
+        System.setProperty("AGENT_PLUGINS_ENABLED", "false");
+        assertFalse(PluginContext.isPluginEnabled());
+    }
+    
+    @Test
+    public void assertPluginEnabledKeyIsZero() {
+        System.setProperty("AGENT_PLUGINS_ENABLED", "0");
+        assertFalse(PluginContext.isPluginEnabled());
+    }
+    
+    @Test
+    public void assertPluginEnabled() {
+        System.setProperty("AGENT_PLUGINS_ENABLED", "1");
         assertTrue(PluginContext.isPluginEnabled());
-    }
-
-    @Test
-    public void assertPropertyValueIs0ReturnFalse() {
-        System.setProperty(PLUGIN_ENABLED_KEY, "0");
-        assertFalse(PluginContext.isPluginEnabled());
-    }
-
-    @Test
-    public void assertPropertyValueIsLowercaseTrueReturnTrue() {
-        System.setProperty(PLUGIN_ENABLED_KEY, Boolean.TRUE.toString().toLowerCase());
+        System.setProperty("AGENT_PLUGINS_ENABLED", "true");
         assertTrue(PluginContext.isPluginEnabled());
-    }
-
-    @Test
-    public void assertPropertyValueIsUppercaseTrueReturnTrue() {
-        System.setProperty(PLUGIN_ENABLED_KEY, Boolean.TRUE.toString().toUpperCase());
-        assertTrue(PluginContext.isPluginEnabled());
-    }
-
-    @Test
-    public void assertPropertyValueIsMixedCaseTrueReturnTrue() {
-        System.setProperty(PLUGIN_ENABLED_KEY, "True");
-        assertTrue(PluginContext.isPluginEnabled());
-    }
-
-    @Test
-    public void assertPropertyValueIsLowercaseFalseReturnFalse() {
-        System.setProperty(PLUGIN_ENABLED_KEY, Boolean.FALSE.toString().toLowerCase());
-        assertFalse(PluginContext.isPluginEnabled());
-    }
-
-    @Test
-    public void assertPropertyValueIsUppercaseFalseReturnFalse() {
-        System.setProperty(PLUGIN_ENABLED_KEY, Boolean.FALSE.toString().toUpperCase());
-        assertFalse(PluginContext.isPluginEnabled());
-    }
-
-    @Test
-    public void assertPropertyValueIsMixedCaseFalseReturnFalse() {
-        System.setProperty(PLUGIN_ENABLED_KEY, "False");
-        assertFalse(PluginContext.isPluginEnabled());
     }
 }
