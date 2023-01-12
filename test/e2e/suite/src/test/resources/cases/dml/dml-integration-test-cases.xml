@@ -312,4 +312,10 @@
     <test-case sql="/* SHARDINGSPHERE_HINT: t_product.SHARDING_TABLE_VALUE=1 */INSERT INTO t_product values (21, 'macbook2022', 4, 13999, 'on sale', '2022-08-08')" db-types="MySQL" scenario-types="tbl">
         <assertion expected-data-file="insert_into_t_product_with_hint.xml" />
     </test-case>
+    
+    <test-case sql="INSERT INTO t_data_type_money (id, val) VALUES (1, ?::money), (2, ?::money), (3, ?::money)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="-92233720368547758.08:String, -$92233720368547758.08:String, (92233720368547758.08):String" expected-data-file="insert_min_money_values.xml"/>
+        <assertion parameters="92233720368547758.07:String, $92233720368547758.07:String, 92233720368547758.07:String" expected-data-file="insert_max_money_values.xml"/>
+        <assertion parameters="9223372036854775.807:String, 9223372036854775.804:String, -9223372036854775.807:String" expected-data-file="insert_rounding_money_values.xml"/>
+    </test-case>
 </integration-test-cases>
