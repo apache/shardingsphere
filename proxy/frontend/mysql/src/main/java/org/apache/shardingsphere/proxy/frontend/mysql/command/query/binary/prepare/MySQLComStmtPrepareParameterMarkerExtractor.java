@@ -58,7 +58,7 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
         Map<String, ShardingSphereColumn> columnsOfTable = table.getColumns();
         Map<String, ShardingSphereColumn> caseInsensitiveColumnsOfTable = convertToCaseInsensitiveColumnsOfTable(columnsOfTable);
-        Map<ParameterMarkerSegment, ShardingSphereColumn> result = new LinkedHashMap<>(insertStatement.getParameterCount(), 1);
+        Map<ParameterMarkerSegment, ShardingSphereColumn> result = new LinkedHashMap<>(insertStatement.getParameterMarkerSegments().size(), 1);
         for (InsertValuesSegment each : insertStatement.getValues()) {
             ListIterator<ExpressionSegment> listIterator = each.getValues().listIterator();
             for (int columnIndex = listIterator.nextIndex(); listIterator.hasNext(); columnIndex = listIterator.nextIndex()) {

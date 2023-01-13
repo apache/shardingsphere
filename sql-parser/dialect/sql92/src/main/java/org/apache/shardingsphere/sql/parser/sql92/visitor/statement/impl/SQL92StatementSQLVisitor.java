@@ -113,8 +113,6 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor<ASTNode> {
     
-    private int currentParameterIndex;
-    
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public SQL92StatementSQLVisitor(final Properties props) {
@@ -122,7 +120,7 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
+        return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
     }
     
     @Override

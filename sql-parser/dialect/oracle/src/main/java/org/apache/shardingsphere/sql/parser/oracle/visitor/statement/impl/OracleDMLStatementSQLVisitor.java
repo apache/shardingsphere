@@ -197,7 +197,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
             result.setSelectSubquery(subquerySegment);
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -217,7 +216,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
         result.setSelectSubquery(subquerySegment);
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -326,7 +324,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -440,7 +437,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -461,7 +457,6 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         OracleSelectStatement result = (OracleSelectStatement) visit(ctx.selectSubquery());
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         if (null != ctx.forUpdateClause()) {
             result.setLock((LockSegment) visit(ctx.forUpdateClause()));

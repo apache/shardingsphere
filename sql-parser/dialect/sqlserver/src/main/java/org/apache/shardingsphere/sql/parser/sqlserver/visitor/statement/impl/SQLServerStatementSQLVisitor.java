@@ -198,8 +198,6 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
     
-    private int currentParameterIndex;
-    
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public SQLServerStatementSQLVisitor(final Properties props) {
@@ -207,7 +205,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
+        return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
     }
     
     @Override
@@ -514,7 +512,9 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
-            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+            ParameterMarkerExpressionSegment result = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
+            parameterMarkerSegments.add(result);
+            return result;
         }
         if (null != ctx.literals()) {
             return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
@@ -708,7 +708,6 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -792,7 +791,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
                 offset = new NumberLiteralLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(),
                         ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
             } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                offset = new ParameterMarkerLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(), getCurrentParameterIndex());
+                offset = new ParameterMarkerLimitValueSegment(ctx.expr(0).start.getStartIndex(), ctx.expr(0).stop.getStopIndex(), parameterMarkerSegments.size());
             }
         }
         if (null != ctx.FETCH()) {
@@ -801,7 +800,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
                 rowcount = new NumberLiteralLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(),
                         ((Number) ((LiteralExpressionSegment) astNode).getLiterals()).longValue());
             } else if (astNode instanceof ParameterMarkerExpressionSegment) {
-                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), getCurrentParameterIndex());
+                rowcount = new ParameterMarkerLimitValueSegment(ctx.expr(1).start.getStartIndex(), ctx.expr(1).stop.getStopIndex(), parameterMarkerSegments.size());
             }
         }
         if (null != offset) {
@@ -888,7 +887,6 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -996,7 +994,6 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -1056,7 +1053,6 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
