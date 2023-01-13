@@ -4842,7 +4842,7 @@
         </from>
     </select>
     
-    <select sql-case-id="select_literal_type_cast_money" >
+    <select sql-case-id="select_literal_type_cast_money">
         <projections start-index="7" stop-index="18">
             <expression-projection text="'$99'::money" start-index="7" stop-index="18">
                 <binary-operation-expression start-index="7" stop-index="18">
@@ -4858,7 +4858,7 @@
         </projections>
     </select>
     
-    <select sql-case-id="select_positional_parameter_type_cast_money" parameters="123.00" >
+    <select sql-case-id="select_positional_parameter_type_cast_money" parameters="123.00">
         <projections start-index="7" stop-index="15">
             <expression-projection text="$1::money" start-index="7" stop-index="15">
                 <binary-operation-expression start-index="7" stop-index="15">
@@ -4870,6 +4870,18 @@
                         <common-expression text="money" start-index="11" stop-index="15" />
                     </right>
                 </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_string_constant_type_cast">
+        <projections start-index="7" stop-index="25">
+            <!-- TODO Fix this case after supported string const type cast syntax-->
+            <expression-projection text="int4 '1'" start-index="7" stop-index="14">
+                <literal-expression value="1" start-index="7" stop-index="14" />
+            </expression-projection>
+            <expression-projection text="money '2'" start-index="17" stop-index="25">
+                <literal-expression value="2" start-index="17" stop-index="25" />
             </expression-projection>
         </projections>
     </select>
