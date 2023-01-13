@@ -21,7 +21,8 @@ import Keyword, OpenGaussKeyword, Symbol, Literals;
 
 parameterMarker
     : QUESTION_ literalsType?
-    | DOLLAR_ numberLiterals
+    // TODO Only digits allowed after $, not a number
+    | DOLLAR_ NUMBER_
     ;
 
 reservedKeyword
@@ -942,6 +943,7 @@ aexprConst
     | STRING_
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
+    | constTypeName STRING_
     | TRUE
     | FALSE
     | NULL
@@ -1089,6 +1091,13 @@ simpleTypeName
     | constDatetime
     | constInterval optInterval
     | constInterval LP_ NUMBER_ RP_
+    ;
+
+constTypeName
+    : numeric
+    | bit
+    | character
+    | constDatetime
     ;
 
 exprList

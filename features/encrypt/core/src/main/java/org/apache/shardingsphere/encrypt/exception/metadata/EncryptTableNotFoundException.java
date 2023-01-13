@@ -28,6 +28,6 @@ public final class EncryptTableNotFoundException extends EncryptSQLException {
     private static final long serialVersionUID = 8909641495852822938L;
     
     public EncryptTableNotFoundException(final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 9, "Can not find encrypt table: %s", tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 9, "Can not find encrypt table: `%s`.", tableName);
     }
 }

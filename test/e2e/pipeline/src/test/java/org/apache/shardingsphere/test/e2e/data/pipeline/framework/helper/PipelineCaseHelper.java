@@ -21,10 +21,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -67,16 +69,19 @@ public final class PipelineCaseHelper {
             LocalDateTime now = LocalDateTime.now();
             int randomInt = generateInt(-100, 100);
             int randomUnsignedInt = generateInt(0, 100);
+            String emojiText = "☠️x☺️x✋x☹️";
             if (databaseType instanceof MySQLDatabaseType) {
-                Object[] addObjs = {orderId, userId, generateString(6), randomInt, randomInt, randomInt,
+                Object[] addObjs = {orderId, userId, generateString(6) + "", randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-100000000, 100000000),
                         BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
-                        generateString(1), generateString(1), "1", "2", generateJsonString(32)};
+                        emojiText, generateString(1), "1", "2", generateJsonString(32)};
                 orderData.add(addObjs);
             } else {
+                long currentTimeMillis = System.currentTimeMillis();
                 orderData.add(new Object[]{orderId, userId, generateString(6), randomInt,
-                        BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
-                        generateDouble(0, 1000), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()});
+                        BigDecimal.valueOf(generateDouble(1, 100)), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(0, 1000),
+                        generateJsonString(8), generateJsonString(12), emojiText, new Date(currentTimeMillis), new Time(currentTimeMillis), Timestamp.valueOf(LocalDateTime.now()),
+                        OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{orderItemKeyGenerate.generateKey(), orderId, userId, "SUCCESS"});
         }

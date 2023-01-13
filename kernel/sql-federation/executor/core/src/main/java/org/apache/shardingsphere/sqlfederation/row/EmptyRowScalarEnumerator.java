@@ -15,12 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.sqlfederation.row;
+
+import org.apache.calcite.linq4j.Enumerator;
 
 /**
- * Grant level type enum.
+ * Empty row scalar enumerator.
  */
-public enum GrantLevelTypeEnum {
+public final class EmptyRowScalarEnumerator implements Enumerator<Object> {
     
-    GLOBAL, DB, TABLE
+    @Override
+    public Object current() {
+        return new Object();
+    }
+    
+    @Override
+    public boolean moveNext() {
+        return false;
+    }
+    
+    @Override
+    public void reset() {
+    }
+    
+    @Override
+    public void close() {
+    }
 }

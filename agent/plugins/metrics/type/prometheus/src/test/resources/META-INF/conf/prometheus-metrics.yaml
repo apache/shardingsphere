@@ -19,15 +19,15 @@ metrics:
   - id: a
     type: COUNTER
     name: proxy_requests_total
-    help: the total requests of ShardingSphere-Proxy
+    help: Total requests of ShardingSphere-Proxy
   - id: b
     type: GAUGE
-    name: current_proxy_connections
-    help: the current connections of ShardingSphere-Proxy
+    name: proxy_current_connections
+    help: Current connections of ShardingSphere-Proxy
   - id: c
     type: HISTOGRAM
     name: proxy_execute_latency_millis
-    help: the executor latency millis of ShardingSphere-Proxy
+    help: Executor latency millis of ShardingSphere-Proxy
     labels:
       - name
     props:

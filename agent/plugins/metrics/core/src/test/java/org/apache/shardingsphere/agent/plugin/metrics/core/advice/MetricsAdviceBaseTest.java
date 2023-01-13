@@ -37,5 +37,7 @@ public abstract class MetricsAdviceBaseTest {
         MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
         MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
         MetricsPool.get(MetricIds.PROXY_REQUESTS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_ROLLBACK_TRANSACTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
     }
 }

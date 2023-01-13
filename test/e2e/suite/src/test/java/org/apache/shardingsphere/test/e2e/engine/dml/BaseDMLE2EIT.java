@@ -49,6 +49,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class BaseDMLE2EIT extends SingleE2EIT {
     
+    private static final String DATA_COLUMN_DELIMITER = ", ";
+    
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     public BaseDMLE2EIT(final AssertionTestParameter testParam) {
@@ -109,7 +111,7 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
         int rowCount = 0;
         while (actual.next()) {
             int columnIndex = 1;
-            for (String each : expected.get(rowCount).splitValues(",")) {
+            for (String each : expected.get(rowCount).splitValues(DATA_COLUMN_DELIMITER)) {
                 assertValue(actual, columnIndex, each);
                 columnIndex++;
             }
@@ -125,9 +127,15 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
+        } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
+            assertThat(actual.getString(columnIndex), is(expected));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }
+    }
+    
+    private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
     }
     
     protected void assertGeneratedKeys(final ResultSet generatedKeys) throws SQLException {

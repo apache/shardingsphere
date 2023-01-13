@@ -41,14 +41,14 @@
         
         <fileSet>
             <directory>../plugins/core/target/lib</directory>
-            <outputDirectory>./lib</outputDirectory>
+            <outputDirectory>./plugins/lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>../plugins/metrics/core/target/lib</directory>
-            <outputDirectory>./lib</outputDirectory>
+            <outputDirectory>./plugins/lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
@@ -91,4 +91,14 @@
             </binaries>
         </moduleSet>
     </moduleSets>
+    
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>./lib</outputDirectory>
+            <includes>
+                <include>org.slf4j:slf4j-api</include>
+                <include>ch.qos.logback:*</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 </assembly>

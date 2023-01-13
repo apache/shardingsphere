@@ -120,7 +120,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         if (null != jobBootstrap) {
             jobBootstrap.shutdown();
         }
-        log.info("stop tasks runner, jobId={}", getJobId());
+        log.info("stop tasks runner, jobId={}", jobId);
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
@@ -128,7 +128,9 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerClean() {
         tasksRunnerMap.clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
+        if (null != jobId) {
+            PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
+        }
     }
     
     protected abstract void doClean();

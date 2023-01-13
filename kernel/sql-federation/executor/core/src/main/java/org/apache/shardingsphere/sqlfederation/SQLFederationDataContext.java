@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -37,6 +38,7 @@ public final class SQLFederationDataContext implements DataContext {
     
     private final SqlToRelConverter converter;
     
+    @Getter
     private final Map<String, Object> parameters;
     
     @Override
