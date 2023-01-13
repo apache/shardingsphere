@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.row;
 import org.apache.calcite.linq4j.Enumerator;
 
 /**
- * Empty row enumerator.
+ * Empty row scalar enumerator.
  */
 public final class EmptyRowScalarEnumerator implements Enumerator<Object> {
     

@@ -43,7 +43,7 @@ public final class StringToRexNodeUtil {
      * @param columnMap mapping of column id and column type
      * @return rex node
      */
-    public static RexNode buildRexNode(final String filterValue, final RexBuilder rexBuilder, final Map parameters, final Map<Integer, Integer> columnMap) {
+    public static RexNode buildRexNode(final String filterValue, final RexBuilder rexBuilder, final Map<String, Object> parameters, final Map<Integer, Integer> columnMap) {
         CharStream input = CharStreams.fromString(filterValue);
         ParseRexNodeLexer lexer = new ParseRexNodeLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);

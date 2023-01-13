@@ -26,9 +26,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * SQL federation row enumerator.
+ * SQL federation row scalar enumerator.
  */
-public final class SQLFederationScalarEnumerator implements Enumerator<Object> {
+public final class SQLFederationRowScalarEnumerator implements Enumerator<Object> {
     
     private final Collection<Object> rows;
     
@@ -38,7 +38,7 @@ public final class SQLFederationScalarEnumerator implements Enumerator<Object> {
     
     private Object currentRow;
     
-    public SQLFederationScalarEnumerator(final Collection<Object> rows, final Collection<Statement> statements) {
+    public SQLFederationRowScalarEnumerator(final Collection<Object> rows, final Collection<Statement> statements) {
         this.rows = rows;
         this.statements = statements;
         iterator = rows.iterator();
