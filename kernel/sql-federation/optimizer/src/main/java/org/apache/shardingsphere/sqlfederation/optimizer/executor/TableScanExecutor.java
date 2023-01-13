@@ -33,4 +33,13 @@ public interface TableScanExecutor {
      * @return query results
      */
     Enumerable<Object[]> execute(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
+    
+    /**
+     * Execute.
+     *
+     * @param table table meta data
+     * @param scanContext filterable table scan context
+     * @return query results
+     */
+    Enumerable<Object> executeScalar(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
 }

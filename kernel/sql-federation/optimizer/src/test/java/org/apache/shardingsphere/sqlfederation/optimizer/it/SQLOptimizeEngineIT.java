@@ -198,7 +198,7 @@ public final class SQLOptimizeEngineIT {
     @Test
     public void assertOptimize() {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
-        String expected = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
-        assertThat(testcase.getAssertion().getExpectedResult(), is(expected));
+        String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
+        assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
 }

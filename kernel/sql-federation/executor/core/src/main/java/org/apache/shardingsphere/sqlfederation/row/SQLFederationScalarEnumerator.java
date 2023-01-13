@@ -18,46 +18,45 @@
 package org.apache.shardingsphere.sqlfederation.row;
 
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
- * Memory enumerator.
+ * SQL federation row enumerator.
  */
-public final class MemoryEnumerator<T> implements Enumerator<T> {
+public final class SQLFederationScalarEnumerator implements Enumerator<Object> {
     
-    private final Collection<ShardingSphereRowData> rows;
+    private final Collection<Object> rows;
     
-    private Iterator<ShardingSphereRowData> rowDataIterator;
+    private final Collection<Statement> statements;
     
-    private T current;
+    private Iterator<Object> iterator;
     
-    public MemoryEnumerator(final Collection<ShardingSphereRowData> rows) {
+    private Object currentRow;
+    
+    public SQLFederationScalarEnumerator(final Collection<Object> rows, final Collection<Statement> statements) {
         this.rows = rows;
-        rowDataIterator = rows.iterator();
+        this.statements = statements;
+        iterator = rows.iterator();
     }
     
     @Override
-    public T current() {
-        return current;
+    public Object current() {
+        return currentRow;
     }
     
     @Override
     public boolean moveNext() {
-        if (rowDataIterator.hasNext()) {
-            List rows = rowDataIterator.next().getRows();
-            if (rows.size() == 1) {
-                current = (T) rows.get(0);
-            } else {
-                current = (T) rows.toArray();
-            }
+        if (iterator.hasNext()) {
+            currentRow = iterator.next();
             return true;
         }
-        current = null;
-        rowDataIterator = rows.iterator();
+        currentRow = null;
+        iterator = rows.iterator();
         return false;
     }
     
@@ -67,7 +66,14 @@ public final class MemoryEnumerator<T> implements Enumerator<T> {
     
     @Override
     public void close() {
-        rowDataIterator = rows.iterator();
-        current = null;
+        try {
+            for (Statement each : statements) {
+                each.close();
+            }
+            currentRow = null;
+            iterator = rows.iterator();
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        }
     }
 }

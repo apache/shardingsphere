@@ -18,27 +18,40 @@
 package org.apache.shardingsphere.sqlfederation.row;
 
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 
-import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
- * Empty row enumerator.
+ * Memory enumerator.
  */
-public final class EmptyRowEnumerator<T> implements Enumerator<T> {
+public final class MemoryScalarEnumerator implements Enumerator<Object> {
+    
+    private final Collection<ShardingSphereRowData> rows;
+    
+    private Iterator<ShardingSphereRowData> rowDataIterator;
+    
+    private Object current;
+    
+    public MemoryScalarEnumerator(final Collection<ShardingSphereRowData> rows) {
+        this.rows = rows;
+        rowDataIterator = rows.iterator();
+    }
     
     @Override
-    public T current() {
-        ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
-        System.out.println(type.getActualTypeArguments()[0].getTypeName());
-        if ("Object".equals(type.getActualTypeArguments()[0].getTypeName())) {
-            return (T) new Object();
-        } else {
-            return (T) new Object[0];
-        }
+    public Object current() {
+        return current;
     }
     
     @Override
     public boolean moveNext() {
+        if (rowDataIterator.hasNext()) {
+            current = rowDataIterator.next().getRows();
+            return true;
+        }
+        current = null;
+        rowDataIterator = rows.iterator();
         return false;
     }
     
@@ -48,5 +61,7 @@ public final class EmptyRowEnumerator<T> implements Enumerator<T> {
     
     @Override
     public void close() {
+        rowDataIterator = rows.iterator();
+        current = null;
     }
 }

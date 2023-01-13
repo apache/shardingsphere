@@ -22,12 +22,15 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Planner rule for pushing projections and filters into table scan.
@@ -63,5 +66,20 @@ public class TranslatableProjectFilterRule extends RelOptRule {
             }
         }
         return result;
+    }
+    
+    @Override
+    public boolean matches(final RelOptRuleCall call) {
+        LogicalFilter filter = call.rel(1);
+        RexCall condition = (RexCall) filter.getCondition();
+        for (RexNode each : condition.getOperands()) {
+            String condtionPattern = "\\$[A-Za-z]";
+            String tmp = each.toString();
+            Matcher matcher = Pattern.compile(condtionPattern).matcher(tmp);
+            if (matcher.find()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

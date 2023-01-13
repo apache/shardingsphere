@@ -61,7 +61,7 @@ public final class FilterableTableScanExecutorTest {
                 .execute(shardingSphereTable, mock(ScanNodeExecutorContext.class));
         Enumerator<Object[]> actual = enumerable.enumerator();
         actual.moveNext();
-        Object[] row = actual.current();
-        assertThat(row[0], is(1));
+        Object row = actual.current();
+        assertThat(row, is(1));
     }
 }
