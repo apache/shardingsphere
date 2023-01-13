@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-tracing-type</artifactId>
-        <version>5.3.1-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-tracing-zipkin</artifactId>
     <name>${project.artifactId}</name>
@@ -61,8 +61,6 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
                 <executions>
@@ -98,16 +96,6 @@
                                     <shadedPattern>${shade.package}.brave</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>

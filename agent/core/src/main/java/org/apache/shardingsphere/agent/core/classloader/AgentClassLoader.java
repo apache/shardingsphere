@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
-import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 /**
@@ -44,9 +46,16 @@ public final class AgentClassLoader extends ClassLoader {
     
     private final Collection<PluginJar> pluginJars;
     
+    private final Collection<File> resourcePaths;
+    
     public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars) {
+        this(appClassLoader, pluginJars, Collections.emptyList());
+    }
+    
+    public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars, final Collection<File> resourcePaths) {
         super(appClassLoader);
         this.pluginJars = pluginJars;
+        this.resourcePaths = resourcePaths;
     }
     
     @Override
@@ -104,12 +113,16 @@ public final class AgentClassLoader extends ClassLoader {
         for (PluginJar each : pluginJars) {
             findResource(name, each).ifPresent(result::add);
         }
+        if (result.isEmpty()) {
+            result.addAll(findResourcesFromResourcePaths(name));
+        }
         return Collections.enumeration(result);
     }
     
     @Override
     protected URL findResource(final String name) {
-        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get).orElse(null);
+        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get)
+                .orElseGet(() -> findResourcesFromResourcePaths(name).stream().findFirst().orElse(null));
     }
     
     private Optional<URL> findResource(final String name, final PluginJar pluginJar) {
@@ -122,5 +135,17 @@ public final class AgentClassLoader extends ClassLoader {
         } catch (final MalformedURLException ignored) {
             return Optional.empty();
         }
+    }
+    
+    private Collection<URL> findResourcesFromResourcePaths(final String name) {
+        Collection<URL> result = new LinkedList<>();
+        Collection<File> resourceFiles = resourcePaths.stream().map(each -> new File(String.join(File.separator, each.getPath(), name))).filter(File::exists).collect(Collectors.toList());
+        for (File each : resourceFiles) {
+            try {
+                result.add(each.toURI().toURL());
+            } catch (final MalformedURLException ignored) {
+            }
+        }
+        return result;
     }
 }

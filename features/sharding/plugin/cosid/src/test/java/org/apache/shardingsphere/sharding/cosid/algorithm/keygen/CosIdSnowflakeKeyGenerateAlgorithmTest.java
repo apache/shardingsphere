@@ -32,7 +32,10 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
+import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -116,8 +119,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     public void assertGenerateKeyAsString() {
-        Properties props = new Properties();
-        props.setProperty(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
+        Properties props = PropertiesBuilder.build(new Property(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString()));
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID_SNOWFLAKE", props), KeyGenerateAlgorithm.class);
         algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)),
                 new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), new ModeConfiguration("Standalone", null),
@@ -132,7 +134,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         assertThat(actualState.getSequence(), is(1L));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = ShardingPluginException.class)
     public void assertGenerateKeyWhenNoneInstanceContext() {
         ((KeyGenerateAlgorithm) ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()), KeyGenerateAlgorithm.class)).generateKey();
     }

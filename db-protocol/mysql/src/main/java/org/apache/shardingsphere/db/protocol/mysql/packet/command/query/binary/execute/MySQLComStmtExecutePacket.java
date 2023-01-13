@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnTyp
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
@@ -97,10 +98,12 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
      *
      * @param paramTypes parameter type of values
      * @param longDataIndexes indexes of long data
+     * @param parameterFlags column definition flag of parameters
      * @return parameter values
      * @throws SQLException SQL exception
      */
-    public List<Object> readParameters(final List<MySQLPreparedStatementParameterType> paramTypes, final Set<Integer> longDataIndexes) throws SQLException {
+    public List<Object> readParameters(final List<MySQLPreparedStatementParameterType> paramTypes, final Set<Integer> longDataIndexes,
+                                       final List<Integer> parameterFlags) throws SQLException {
         List<Object> result = new ArrayList<>(paramTypes.size());
         for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
             if (longDataIndexes.contains(paramIndex)) {
@@ -108,7 +111,9 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
                 continue;
             }
             MySQLBinaryProtocolValue binaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(paramTypes.get(paramIndex).getColumnType());
-            result.add(nullBitmap.isNullParameter(paramIndex) ? null : binaryProtocolValue.read(payload));
+            Object value = nullBitmap.isNullParameter(paramIndex) ? null
+                    : binaryProtocolValue.read(payload, (parameterFlags.get(paramIndex) & MySQLColumnDefinitionFlag.UNSIGNED.getValue()) == MySQLColumnDefinitionFlag.UNSIGNED.getValue());
+            result.add(value);
         }
         return result;
     }

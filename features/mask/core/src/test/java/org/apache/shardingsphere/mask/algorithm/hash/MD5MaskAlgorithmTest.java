@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mask.algorithm.hash;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,31 +29,22 @@ public final class MD5MaskAlgorithmTest {
     
     @Test
     public void assertMask() {
-        String actual = createMaskAlgorithm("").mask("abc123456");
-        assertThat(actual, is("0659c7992e268962384eb17fafe88364"));
+        assertThat(createMaskAlgorithm("").mask("abc123456"), is("0659c7992e268962384eb17fafe88364"));
     }
     
     @Test
     public void assertMaskWhenPlainValueIsNull() {
-        String actual = createMaskAlgorithm("").mask(null);
-        assertNull(actual);
+        assertNull(createMaskAlgorithm("").mask(null));
     }
     
     @Test
     public void assertMaskWhenConfigSalt() {
-        String actual = createMaskAlgorithm("202cb962ac5907").mask("abc123456");
-        assertThat(actual, is("02d44390e9354b72dd2aa78d55016f7f"));
+        assertThat(createMaskAlgorithm("202cb962ac5907").mask("abc123456"), is("02d44390e9354b72dd2aa78d55016f7f"));
     }
     
     private MD5MaskAlgorithm createMaskAlgorithm(final String salt) {
         MD5MaskAlgorithm result = new MD5MaskAlgorithm();
-        result.init(createProperties(salt));
-        return result;
-    }
-    
-    private Properties createProperties(final String salt) {
-        Properties result = new Properties();
-        result.setProperty("salt", salt);
+        result.init(PropertiesBuilder.build(new Property("salt", salt)));
         return result;
     }
 }

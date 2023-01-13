@@ -214,19 +214,19 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        if (null != ctx.DOLLAR_()) {
-            int paramIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
-            if (paramIndex > currentParameterIndex) {
-                currentParameterIndex = paramIndex;
-            }
-            return new ParameterMarkerValue(paramIndex - 1, ParameterMarkerType.DOLLAR);
+        if (null == ctx.DOLLAR_()) {
+            return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
         }
-        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
+        int paramIndex = new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue();
+        if (paramIndex > currentParameterIndex) {
+            currentParameterIndex = paramIndex;
+        }
+        return new ParameterMarkerValue(paramIndex - 1, ParameterMarkerType.DOLLAR);
     }
     
     @Override
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
-        return new NumberLiteralValue(ctx.getText());
+        return new NumberLiteralValue(ctx.NUMBER_().getText());
     }
     
     @Override
@@ -298,6 +298,10 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     public ASTNode visitAExpr(final AExprContext ctx) {
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
+        }
+        if (null != ctx.TYPE_CAST_()) {
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)),
+                    new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText()), ctx.TYPE_CAST_().getText(), ctx.getText());
         }
         if (null != ctx.BETWEEN()) {
             return createBetweenSegment(ctx);

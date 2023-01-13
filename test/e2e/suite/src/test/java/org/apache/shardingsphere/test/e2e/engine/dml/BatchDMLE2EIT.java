@@ -52,12 +52,6 @@ public final class BatchDMLE2EIT extends BatchE2EIT {
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
-        switch (getScenario()) {
-            case "replica_query":
-            case "encrypt":
-                return;
-            default:
-        }
         int[] actualUpdateCounts;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCounts = executeBatchForPreparedStatement(connection);
@@ -83,12 +77,6 @@ public final class BatchDMLE2EIT extends BatchE2EIT {
     
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
-        switch (getScenario()) {
-            case "replica_query":
-            case "encrypt":
-                return;
-            default:
-        }
         try (
                 Connection connection = getTargetDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {

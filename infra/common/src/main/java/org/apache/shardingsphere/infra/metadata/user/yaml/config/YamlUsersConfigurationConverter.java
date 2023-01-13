@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.user.yaml.config;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -36,26 +35,13 @@ public final class YamlUsersConfigurationConverter {
     private static final YamlUserSwapper SWAPPER = new YamlUserSwapper();
     
     /**
-     * Convert to users YAML content.
-     *
-     * @param users ShardingSphere users
-     * @return users YAML content
-     */
-    public static Collection<String> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
-        Collection<String> result = new LinkedList<>();
-        users.stream().map(SWAPPER::swapToYamlConfiguration).forEach(each -> result.add(each.toString()));
-        return result;
-    }
-    
-    /**
      * Convert to ShardingSphere users.
      *
      * @param users users YAML content
      * @return ShardingSphere users
      */
-    public static Collection<ShardingSphereUser> convertShardingSphereUser(final Collection<String> users) {
-        Collection<YamlUserConfiguration> yamlUsers = convertYamlUserConfiguration(users);
-        return yamlUsers.stream().map(SWAPPER::swapToObject).collect(Collectors.toList());
+    public static Collection<ShardingSphereUser> convertToShardingSphereUser(final Collection<YamlUserConfiguration> users) {
+        return users.stream().map(SWAPPER::swapToObject).collect(Collectors.toList());
     }
     
     /**
@@ -64,28 +50,9 @@ public final class YamlUsersConfigurationConverter {
      * @param users users YAML content
      * @return YAML user configurations
      */
-    public static Collection<YamlUserConfiguration> convertYamlUserConfiguration(final Collection<String> users) {
-        return users.stream().map(YamlUsersConfigurationConverter::convertYamlUserConfiguration).collect(Collectors.toList());
-    }
-    
-    /**
-     * Convert to YAML user configuration.
-     *
-     * @param yamlUser user YAML content
-     * @return YAML user configuration
-     */
-    private static YamlUserConfiguration convertYamlUserConfiguration(final String yamlUser) {
-        Preconditions.checkArgument(0 < yamlUser.indexOf("@") && 0 < yamlUser.indexOf(":") && yamlUser.indexOf(":") <= yamlUser.length() - 1,
-                "user configuration `%s` is invalid, the configuration format should be like `username@hostname:password`", yamlUser);
-        Preconditions.checkArgument(yamlUser.indexOf("@") < yamlUser.indexOf(":"),
-                "user configuration `%s` is invalid, the configuration format should be like `username@hostname:password`", yamlUser);
-        String username = yamlUser.substring(0, yamlUser.indexOf("@"));
-        String hostname = yamlUser.substring(yamlUser.indexOf("@") + 1, yamlUser.indexOf(":"));
-        String password = yamlUser.substring(yamlUser.indexOf(":") + 1);
-        YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setUsername(username);
-        result.setHostname(hostname);
-        result.setPassword(password);
+    public static Collection<YamlUserConfiguration> convertToYamlUserConfiguration(final Collection<ShardingSphereUser> users) {
+        Collection<YamlUserConfiguration> result = new LinkedList<>();
+        users.stream().map(SWAPPER::swapToYamlConfiguration).forEach(result::add);
         return result;
     }
 }

@@ -17,7 +17,7 @@
 
 plugins:
   logging:
-    BaseLogging:
+    File:
       props:
         level: "INFO"
   metrics:
@@ -37,7 +37,7 @@ plugins:
 #        jaeger-reporter-log-spans: "true"
 #        jaeger-reporter-flush-interval: "1"
     Zipkin:
-      host: "localhost"
+      host: "zipkin.agent.tracing.zipkin.host"
       port: 9411
       props:
         service-name: "shardingsphere"

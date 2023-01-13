@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:8-jdk
 
 ARG APP_NAME
 ENV WAIT_VERSION 2.7.2
@@ -23,5 +23,5 @@ ENV WAIT_VERSION 2.7.2
 ADD target/${APP_NAME}.tar.gz /opt
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait
-RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy-agent-jaeger
-ENTRYPOINT /wait && /opt/shardingsphere-proxy-agent-jaeger/bin/start.sh && tail -f /opt/shardingsphere-proxy-agent-jaeger/logs/stdout.log
+RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy-agent-tracing-jaeger
+ENTRYPOINT /wait && /opt/shardingsphere-proxy-agent-tracing-jaeger/bin/start.sh && tail -f /opt/shardingsphere-proxy-agent-tracing-jaeger/logs/stdout.log

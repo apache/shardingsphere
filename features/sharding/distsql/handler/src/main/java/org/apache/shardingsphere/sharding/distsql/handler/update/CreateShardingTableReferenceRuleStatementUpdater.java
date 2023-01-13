@@ -64,11 +64,9 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
     
     private void checkDuplicatedRuleNames(final String databaseName, final CreateShardingTableReferenceRuleStatement sqlStatement,
                                           final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
-        if (null != currentRuleConfig) {
-            Collection<String> currentRuleNames = currentRuleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
-            Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
-            ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("sharding table reference", databaseName, duplicatedRuleNames));
-        }
+        Collection<String> currentRuleNames = currentRuleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> duplicatedRuleNames = sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("sharding table reference", databaseName, duplicatedRuleNames));
     }
     
     private void checkDuplicatedTablesInShardingTableReferenceRules(final String databaseName, final CreateShardingTableReferenceRuleStatement sqlStatement,

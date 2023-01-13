@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
+import org.junit.After;
 import org.junit.BeforeClass;
 
 public abstract class MetricsAdviceBaseTest {
@@ -26,5 +29,15 @@ public abstract class MetricsAdviceBaseTest {
     @BeforeClass
     public static void setup() {
         MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+    }
+    
+    @After
+    public void reset() {
+        MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_REQUESTS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        MetricsPool.get(MetricIds.PROXY_ROLLBACK_TRANSACTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
     }
 }

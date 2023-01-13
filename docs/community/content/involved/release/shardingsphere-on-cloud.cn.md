@@ -167,7 +167,6 @@ git push origin ${RELEASE.VERSION}-release
 
 ```
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
-~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts/Chart.yaml
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
 ```
 
@@ -190,9 +189,6 @@ git push origin --tags
 cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts
-helm dependency build
-
 cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/charts/governance
 helm dependency build
 
@@ -201,7 +197,6 @@ helm dependency build
 
 cd ~/shardingsphere-on-cloud/charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-charts
-helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-cluster-charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
 ### 5. 上传 charts，生成 index
@@ -266,7 +261,6 @@ helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
 
 解压缩
 - `apache-shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
-- `apache-shardingsphere-operator-cluster-charts-${RELEASE.VERSION}.tgz`
 - `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
 
 进行如下检查:
@@ -296,7 +290,6 @@ helm search repo apache
 ```shell
 NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
 apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
-apache/apache-shardingsphere-operator-cluster-...	${RELEASE.VERSION}        	xxx      	A Helm chart for ShardingSphere-Operator-Cluster
 apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
 ```
 

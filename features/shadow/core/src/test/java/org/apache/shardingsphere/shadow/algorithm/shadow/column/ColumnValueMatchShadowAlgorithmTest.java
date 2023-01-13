@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.exception.data.UnsupportedShadowColumnTypeException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -32,22 +34,16 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
     
     @Test
     public void assertIsShadow() {
-        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("VALUE_MATCH", createProperties()), ShadowAlgorithm.class);
+        Properties props = PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("value", "1"));
+        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("VALUE_MATCH", props), ShadowAlgorithm.class);
         createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
     @Test(expected = UnsupportedShadowColumnTypeException.class)
     public void assertExceptionCase() {
-        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("VALUE_MATCH", createProperties()), ShadowAlgorithm.class);
+        Properties props = PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("value", "1"));
+        ColumnValueMatchedShadowAlgorithm shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("VALUE_MATCH", props), ShadowAlgorithm.class);
         createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("column", SHADOW_COLUMN);
-        result.setProperty("operation", "insert");
-        result.setProperty("value", "1");
-        return result;
     }
 }

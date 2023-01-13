@@ -18,16 +18,63 @@
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
-import org.junit.Ignore;
+import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     
+    private Properties props;
+    
+    private String url;
+    
+    private String serviceName;
+    
+    @Before
+    public void before() {
+        props = E2ETestEnvironment.getInstance().getProps();
+        url = props.getProperty("zipkin.url");
+        serviceName = props.getProperty("zipkin.servername");
+    }
+    
     @Test
-    @Ignore
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
+        try {
+            // TODO this needs to refactor, replace sleep with polling.
+            Thread.sleep(Long.parseLong(props.getProperty("zipkin.waitMs", "60000")));
+        } catch (final InterruptedException ignore) {
+        }
+        // TODO add more detailed assert for zipkin
+        assertSpans();
+        assertTraces();
+    }
+    
+    private void assertSpans() throws IOException {
+        String spansURL = url + "spans?serviceName=" + serviceName;
+        List<?> spans = OkHttpUtils.getInstance().get(spansURL, List.class);
+        assertThat(spans.size(), is(3));
+        assertTrue(spans.contains("/shardingsphere/executesql/"));
+        assertTrue(spans.contains("/shardingsphere/parsesql/"));
+        assertTrue(spans.contains("/shardingsphere/rootinvoke/"));
+    }
+    
+    private void assertTraces() throws IOException {
+        String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/";
+        String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/";
+        String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/";
+        assertFalse(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).isEmpty());
+        assertFalse(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).isEmpty());
+        assertFalse(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).isEmpty());
     }
 }

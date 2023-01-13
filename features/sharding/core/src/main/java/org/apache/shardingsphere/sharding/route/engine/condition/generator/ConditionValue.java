@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -53,7 +54,7 @@ public final class ConditionValue {
         int parameterMarkerIndex = expressionSegment.getParameterMarkerIndex();
         if (parameterMarkerIndex < params.size()) {
             Object result = params.get(parameterMarkerIndex);
-            Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
+            ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding"));
             return (Comparable<?>) result;
         }
         return null;
@@ -61,7 +62,7 @@ public final class ConditionValue {
     
     private Comparable<?> getValue(final LiteralExpressionSegment expressionSegment) {
         Object result = expressionSegment.getLiterals();
-        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
+        ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding"));
         return (Comparable<?>) result;
     }
     

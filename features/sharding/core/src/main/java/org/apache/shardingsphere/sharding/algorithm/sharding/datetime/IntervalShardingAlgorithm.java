@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 
 import java.time.Instant;
@@ -96,12 +97,14 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private String getDateTimePattern(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(DATE_TIME_PATTERN_KEY), "%s can not be null.", DATE_TIME_PATTERN_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(DATE_TIME_PATTERN_KEY),
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s can not be null.", DATE_TIME_PATTERN_KEY)));
         return props.getProperty(DATE_TIME_PATTERN_KEY);
     }
     
     private TemporalAccessor getDateTimeLower(final Properties props, final String dateTimePattern) {
-        Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY), "%s can not be null.", DATE_TIME_LOWER_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(DATE_TIME_LOWER_KEY),
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s can not be null.", DATE_TIME_LOWER_KEY)));
         return getDateTime(DATE_TIME_LOWER_KEY, props.getProperty(DATE_TIME_LOWER_KEY), dateTimePattern);
     }
     
@@ -118,7 +121,8 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private DateTimeFormatter getTableSuffixPattern(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_SUFFIX_FORMAT_KEY), "%s can not be null.", SHARDING_SUFFIX_FORMAT_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_SUFFIX_FORMAT_KEY),
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s can not be null.", SHARDING_SUFFIX_FORMAT_KEY)));
         return DateTimeFormatter.ofPattern(props.getProperty(SHARDING_SUFFIX_FORMAT_KEY));
     }
     

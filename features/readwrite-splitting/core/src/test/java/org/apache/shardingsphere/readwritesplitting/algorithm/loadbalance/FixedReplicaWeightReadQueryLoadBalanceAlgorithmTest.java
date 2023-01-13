@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +33,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,8 +49,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetSingleReadDataSourceInTransaction() {
-        FixedReplicaWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", createSingleDataSourceProperties()), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.setInTransaction(true);
         String routeDataSource = loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), context);
@@ -57,16 +58,10 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
         assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), context), is(routeDataSource));
     }
     
-    private Properties createSingleDataSourceProperties() {
-        Properties result = new Properties();
-        result.setProperty("test_read_ds_1", "5");
-        return result;
-    }
-    
     @Test
     public void assertGetMultipleReadDataSourcesWithoutTransaction() {
-        FixedReplicaWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", createMultipleDataSourcesProperties()), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
+                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
@@ -81,8 +76,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSourcesInTransaction() {
-        FixedReplicaWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", createMultipleDataSourcesProperties()), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
+                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
@@ -95,20 +90,10 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
         assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, transactionConnectionContext), is(routeDataSource));
     }
     
-    private Properties createMultipleDataSourcesProperties() {
-        Properties result = new Properties();
-        result.setProperty("test_read_ds_1", "5");
-        result.setProperty("test_read_ds_2", "5");
-        return result;
-    }
-    
     @Test
     public void assertGetDataSourceWhenReadDataSourceChanged() {
-        Properties props = new Properties();
-        props.setProperty("test_read_ds_1", "1");
-        props.setProperty("test_read_ds_2", "2");
-        FixedReplicaWeightReadQueryLoadBalanceAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", props), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
+                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "1"), new Property("test_read_ds_2", "2"))), ReadQueryLoadBalanceAlgorithm.class);
         algorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"), new TransactionConnectionContext());
         assertThat(algorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
     }

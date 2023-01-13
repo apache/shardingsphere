@@ -45,16 +45,16 @@ public final class SingleTableResultSet implements DatabaseDistSQLResultSet {
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowSingleTableStatement showSingleTableStatement = (ShowSingleTableStatement) sqlStatement;
-        Stream<DataNode> singleTableRules = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof SingleRule)
+        Stream<DataNode> singleTableNodes = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof SingleRule)
                 .map(each -> (SingleRule) each).map(each -> each.getSingleTableDataNodes().values()).flatMap(Collection::stream).filter(Objects::nonNull).map(each -> each.iterator().next());
-        if (null != showSingleTableStatement.getTableName()) {
-            singleTableRules = singleTableRules.filter(each -> showSingleTableStatement.getTableName().equals(each.getTableName()));
+        if (showSingleTableStatement.getTableName().isPresent()) {
+            singleTableNodes = singleTableNodes.filter(each -> showSingleTableStatement.getTableName().get().equals(each.getTableName()));
         }
-        if (null != showSingleTableStatement.getLikeLiteral()) {
-            String pattern = SQLUtil.convertLikePatternToRegex(showSingleTableStatement.getLikeLiteral());
-            singleTableRules = singleTableRules.filter(each -> RegularUtil.matchesCaseInsensitive(pattern, each.getTableName())).collect(Collectors.toList()).stream();
+        if (showSingleTableStatement.getLikePattern().isPresent()) {
+            String pattern = SQLUtil.convertLikePatternToRegex(showSingleTableStatement.getLikePattern().get());
+            singleTableNodes = singleTableNodes.filter(each -> RegularUtil.matchesCaseInsensitive(pattern, each.getTableName())).collect(Collectors.toList()).stream();
         }
-        data = singleTableRules.sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList()).iterator();
+        data = singleTableNodes.sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList()).iterator();
     }
     
     @Override

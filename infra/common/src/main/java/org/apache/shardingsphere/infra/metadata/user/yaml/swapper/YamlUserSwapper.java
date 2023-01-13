@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.user.yaml.swapper;
 
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 import java.util.Objects;
@@ -34,9 +37,9 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
             return null;
         }
         YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setUsername(data.getGrantee().getUsername());
-        result.setHostname(data.getGrantee().getHostname());
+        result.setUser(data.getGrantee().toString());
         result.setPassword(data.getPassword());
+        result.setAuth(data.getAuth());
         return result;
     }
     
@@ -45,6 +48,17 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
         if (Objects.isNull(yamlConfig)) {
             return null;
         }
-        return new ShardingSphereUser(yamlConfig.getUsername(), yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "%" : yamlConfig.getHostname());
+        Grantee grantee = convertYamlUserToGrantee(yamlConfig.getUser());
+        return new ShardingSphereUser(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuth());
+    }
+    
+    private Grantee convertYamlUserToGrantee(final String yamlUser) {
+        if (!yamlUser.contains("@")) {
+            return new Grantee(yamlUser, "");
+        }
+        String username = yamlUser.substring(0, yamlUser.indexOf("@"));
+        String hostname = yamlUser.substring(yamlUser.indexOf("@") + 1);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(username), "user configuration `%s` is invalid, the legal format is `username@hostname`", yamlUser);
+        return new Grantee(username, hostname);
     }
 }

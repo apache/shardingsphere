@@ -147,7 +147,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(getOrderTableRuleConfiguration());
         result.getTables().add(getOrderItemTableRuleConfiguration());
-        result.getBindingTableGroups().add("t_order, t_order_item");
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order, t_order_item"));
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));

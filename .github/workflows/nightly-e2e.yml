@@ -49,8 +49,6 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build IT image
         run: ./mvnw -B clean install -am -pl test/e2e/suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify Suite CI Run
@@ -97,7 +95,7 @@ jobs:
       - name: Load IT image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
-      - name: Run Integration Test
+      - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
   it-single-rule:
@@ -135,7 +133,7 @@ jobs:
       - name: Load IT image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
-      - name: Run Integration Test
+      - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   it-mixture-rule:
@@ -173,7 +171,7 @@ jobs:
       - name: Load IT image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
-      - name: Run Integration Test
+      - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   mysql-proxy-agent:
@@ -193,11 +191,9 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
-      - name: Run Integration Test
+      - name: Run E2E Test
         run: |
           ./mvnw -B clean install -f test/e2e/agent/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
           ./mvnw -B clean install -f test/e2e/agent/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry

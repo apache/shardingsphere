@@ -49,10 +49,10 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @SuppressWarnings("unchecked")
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        Span root = (Span) ((Map<String, Object>) args[2]).get(JaegerConstants.ROOT_SPAN);
+        Span rootSpan = (Span) ((Map<String, Object>) args[2]).get(JaegerConstants.ROOT_SPAN);
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
-        if (null != root) {
-            builder = builder.asChildOf(root);
+        if (null != rootSpan) {
+            builder = builder.asChildOf(rootSpan);
         }
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");

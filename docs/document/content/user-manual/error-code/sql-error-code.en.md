@@ -14,7 +14,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 42000     | 10000       | Resource does not exist. |
+| 42000     | 10000       | There is no storage unit in database \`%s\`. |
 | 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`. |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`. |
@@ -62,10 +62,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 25000     | 14000       | Switch transaction type failed, please terminate the current transaction. |
+| 25000     | 14001       | Can not find transaction manager of \`%s\`.                                         |
+| 25000     | 14002       | Transaction timeout should more than 0s.                                         |
 | 25000     | 14100       | JDBC does not support operations across multiple logical databases in transaction. |
 | 25000     | 14200       | Can not start new XA transaction in a active transaction. |
 | 25000     | 14201       | Failed to create \`%s\` XA data source. |
 | 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45. |
+| 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.     |
+| 25000     | 14302       | Please config application id within seata.conf file.     |
 
 ### Lock
 
@@ -95,8 +99,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | 44000     | 18002       | Altered process configuration does not exist. |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`. |
-| 42S01     | 18030       | Duplicate resource names \`%s\`. |
-| 42S02     | 18031       | Resource names \`%s\` do not exist. |
+| 42S01     | 18030       | Duplicate storage unit names \`%s\`. |
+| 42S02     | 18031       | Storage units names \`%s\` do not exist. |
 | 0A000     | 18032       | Unsupported data type \`%s\` of unique key for pipeline job. |
 | HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`. |
 | 08000     | 18051       | Data check table \`%s\` failed. |
@@ -123,11 +127,11 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 44000     | 19000       | Can not process invalid resources, error message is: %s |
-| 44000     | 19001       | Resources \`%s\` do not exist in database \`%s\`. |
-| 44000     | 19002       | There is no resource in the database \`%s\`. |
-| 44000     | 19003       | Resource \`%s\` is still used by \`%s\`. |
-| 44000     | 19004       | Duplicate resource names \`%s\`. |
+| 44000     | 19000       | Can not process invalid storage units, error message is: %s |
+| 44000     | 19001       | Storage units \`%s\` do not exist in database \`%s\`. |
+| 44000     | 19002       | There is no storage unit in the database \`%s\`. |
+| 44000     | 19003       | Storage units \`%s\` is still used by \`%s\`. |
+| 44000     | 19004       | Duplicate storage unit names \`%s\`. |
 | 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s |
 | 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`. |
 | 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used. |
@@ -143,54 +147,84 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data Sharding
 
-| SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| 44000     | 20000       | Can not find table rule with logic tables \`%s\`. |
-| 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s |
-| 42S02     | 20002       | Can not find data source in sharding rule, invalid actual data node \`%s\`. |
-| 44000     | 20003       | Data nodes must be configured for sharding table \`%s\`. |
-| 44000     | 20004       | Actual table \`%s.%s\` is not in table rule configuration. |
-| 44000     | 20005       | Can not find binding actual table, data source is \`%s\`, logic table is \`%s\`, other actual table is \`%s\`. |
-| 44000     | 20006       | Actual tables \`%s\` are in use. |
-| 42S01     | 20007       | Index \`%s\` already exists. |
-| 42S02     | 20008       | Index \`%s\` does not exist. |
-| 42S01     | 20009       | View name has to bind to %s tables. |
-| 44000     | 20020       | Sharding value can't be null in insert statement. |
-| HY004     | 20021       | Found different types for sharding value \`%s\`. |
-| HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`. |
-| 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\`. |
-| 44000     | 20041       | Can not update sharding value for table \`%s\`. |
-| 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement. |
-| 44000     | 20043       | PREPARE statement can not support sharding tables route to same data sources. |
-| 44000     | 20044       | The table inserted and the table selected must be the same or bind tables. |
-| 0A000     | 20045       | Can not support DML operation with multiple tables \`%s\`. |
-| 42000     | 20046       | %s ... LIMIT can not support route to multiple data nodes. |
-| 44000     | 20047       | Can not find actual data source intersection for logic tables \`%s\`. |
-| 42000     | 20048       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column. |
-| 0A000     | 20049       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\`. |
-| HY000     | 20060       | \`%s %s\` can not route correctly for %s \`%s\`. |
-| 42S02     | 20061       | Can not get route result, please check your sharding rule configuration. |
-| 34000     | 20062       | Can not get cursor name from fetch statement. |
-| HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`. |
-| HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`. |
-| 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match. |
-| 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`. |
-| HY000     | 20099       | Sharding plugin error, reason is: %s |
+| SQL State | Vendor Code | Reason                                                                                                                           |
+| --------- |-------------|----------------------------------------------------------------------------------------------------------------------------------|
+| 44000     | 20000       | Can not find table rule with logic tables \`%s\`.                                                                                |
+| 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s     |
+| 42S02     | 20002       | Can not find data source in sharding rule, invalid actual data node \`%s\`.                                                      |
+| 44000     | 20003       | Data nodes must be configured for sharding table \`%s\`.                                                                         |
+| 44000     | 20004       | Actual table \`%s.%s\` is not in table rule configuration.                                                                       |
+| 44000     | 20005       | Can not find binding actual table, data source is \`%s\`, logic table is \`%s\`, other actual table is \`%s\`.                   |
+| 44000     | 20006       | Actual tables \`%s\` are in use.                                                                                                 |
+| 42S01     | 20007       | Index \`%s\` already exists.                                                                                                     |
+| 42S02     | 20008       | Index \`%s\` does not exist.                                                                                                     |
+| 42S01     | 20009       | View name has to bind to %s tables.                                                                                              |
+| 44000     | 20010       | \`%s\` algorithm does not exist in database \`%s\`.                                                                              |
+| 44000     | 20011       | \`%s\` configuration does not exist in database \`%s\`.                                                                          |
+| 44000     | 20012       | Invalid binding table configuration in ShardingRuleConfiguration.                                                                |
+| 44000     | 20013       | Can not find sharding rule.                                                                                                      |
+| 44000     | 20014       | Only allowed 0 or 1 sharding strategy configuration.                                                                             |
+| 44000     | 20020       | Sharding value can't be null in insert statement.                                                                                |
+| HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                                 |
+| HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                                  |
+| 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                  |
+| 44000     | 20024       | %s value must implements Comparable.                                                                                             |
+| 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\`.                                                                     |
+| 44000     | 20041       | Can not update sharding value for table \`%s\`.                                                                                  |
+| 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement.                                                                  |
+| 44000     | 20043       | PREPARE statement can not support sharding tables route to same data sources.                                                    |
+| 44000     | 20044       | The table inserted and the table selected must be the same or bind tables.                                                       |
+| 0A000     | 20045       | Can not support DML operation with multiple tables \`%s\`.                                                                       |
+| 42000     | 20046       | %s ... LIMIT can not support route to multiple data nodes.                                                                       |
+| 44000     | 20047       | Can not find actual data source intersection for logic tables \`%s\`.                                                            |
+| 42000     | 20048       | INSERT INTO ... SELECT can not support applying key generator with absent generate key column.                                   |
+| 0A000     | 20049       | Alter view rename .. to .. statement should have same config for \`%s\` and \`%s\`.                                              |
+| HY000     | 20060       | \`%s %s\` can not route correctly for %s \`%s\`.                                                                                 |
+| 42S02     | 20061       | Can not get route result, please check your sharding rule configuration.                                                         |
+| 34000     | 20062       | Can not get cursor name from fetch statement.                                                                                    |
+| HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`.                                                                      |
+| HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`.                                                               |
+| 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match.                                            |
+| HY000     | 20083       | Sharding algorithm \`%s\` initialization failed, reason is: %s.                                                                  |
+| 44000     | 20084       | Complex inline algorithm need %d sharing columns, but only found %d.                                                             |
+| 44000     | 20085       | No sharding database route info.                                                                                                 |
+| 44000     | 20086       | Some routed data sources do not belong to configured data sources. routed data sources: \`%s\`, configured data sources: \`%s\`. |
+| 44000     | 20087       | Please check your sharding conditions \`%s\` to avoid same record in table \`%s\` routing to multiple data nodes.                |
+| 44000     | 20088       | Cannot found routing table factor, data source: %s, actual table: %s.                                                            |
+| 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`.                                                                       |
+| HY000     | 20091       | Key generate algorithm \`%s\` initialization failed, reason is: %s.                                                              |
+| HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                        |
+| HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                             |
 
 ### Readwrite Splitting
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
+| 44000     | 20270       | Inline expression %s names size error. |
 | HY004     | 20280       | Invalid read database weight \`%s\`. |
+| 44000     | 20281       | Load balancer algorithm \`%s\` initialization failed, reason is: \`%s\.` |
+| 44000     | 20290       | Data source name is required in database \`%s\.` |
+| 44000     | 20291       | Write data source name is required in database `\`%s\.` |
+| 44000     | 20292       | Read data source names is required in database `\`%s\.` |
+| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.` |
+| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.` |
+| 44000     | 20295       | Auto aware data source name is required in database \`%s\.` |
+| 42S02     | 20296       | Not found load balance type in database \`%s\.` |
+| 44000     | 20297       | Weight load balancer datasource name config does not match data sources in database \`%s\.` |
 
 ### Database HA
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
+| 44000     | 20300       | No available database discovery rule configuration in database \`%s\`. |
+| 44000     | 20301       | Group name is required. |
+| 44000     | 20302       | Data source names are required. |
+| 44000     | 20303       | Can not found database discovery data source rule in database \`%s\`. |
 | HY000     | 20380       | MGR plugin is not active in database \`%s\`. |
 | 44000     | 20381       | MGR is not in single primary mode in database \`%s\`. |
 | 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`. |
 | 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\`. |
+| 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`. |
 
 ### SQL Dialect Translator
 
@@ -207,27 +241,40 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Data Encrypt
 
-| SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| 44000     | 20700       | Can not find logic encrypt column by \`%s\`. |
-| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`. |
+| SQL State | Vendor Code | Reason                                                                                             |
+| --------- | ----------- |----------------------------------------------------------------------------------------------------|
+| 44000     | 20700       | Can not find logic encrypt column by \`%s\`.                                                       |
+| 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`.                                              |
 | 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`. |
-| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt. |
-| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule. |
-| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s |
+| 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
+| 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
+| HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
+| 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
+| 44000     | 20704       | Encrypt column encryptor not found, reason is: %s.                                                 |
+| 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
+| 44000     | 20706       | Assisted query encryptor not found, reason is: %s.                                                 |
+| 44000     | 20707       | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
+| 44000     | 20708       | Encrypt like query encryptor not found, reason is: %s.                                             |
+| 44000     | 20709       | Can not find encrypt table: \`%s\`.                                                                |
 
 ### Shadow Database
 
-| SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type. |
-| 42000     | 20840       | Insert value of index \`%s\` can not support for shadow. |
+| SQL State | Vendor Code | Reason                                                                                            |
+| --------- |-------------|---------------------------------------------------------------------------------------------------|
+| 44000     | 20800       | \`%s\` algorithm does not exist in database \`%s\`.                                               |
+| 44000     | 20801       | \`%s\` configuration does not exist in database \`%s\`.                                           |
+| 44000     | 20802       | No available shadow data sources mappings in shadow table \`%s\`.                                 |
+| 44000     | 20803       | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |
+| HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
+| 42000     | 20840       | Insert value of index \`%s\` can not support for shadow.                                          |
+| HY000     | 20880       | Shadow algorithm \`%s\` initialization failed, reason is: %s.                                     |
+| 44000     | 20881       | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
 
 ### Data Masking
 
-| SQL State | Vendor Code | Reason                                                       |
-| --------- |-------------|------------------------------------------------------------|
-| HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s |
+| SQL State | Vendor Code | Reason                                                      |
+| --------- |-------------|-------------------------------------------------------------|
+| HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
 
 ## Other Exception
 

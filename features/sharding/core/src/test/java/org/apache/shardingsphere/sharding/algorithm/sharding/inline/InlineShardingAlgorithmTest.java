@@ -24,8 +24,10 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,30 +54,14 @@ public final class InlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        inlineShardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()), ShardingAlgorithm.class);
-        inlineShardingAlgorithmWithSimplified = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()), ShardingAlgorithm.class);
-        negativeNumberInlineShardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("INLINE", createNegativeAllowRangeQueryProperties()), ShardingAlgorithm.class);
-    }
-    
-    private Properties createAllowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
-        result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        return result;
-    }
-    
-    private Properties createNegativeAllowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_$->{(order_id % 4).abs()}");
-        result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        return result;
-    }
-    
-    private Properties createDisallowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_${order_id % 4}");
-        return result;
+        Properties allowRangeQueryProps = PropertiesBuilder.build(
+                new Property("algorithm-expression", "t_order_$->{order_id % 4}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString()));
+        inlineShardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", allowRangeQueryProps), ShardingAlgorithm.class);
+        Properties disallowRangeQueryProps = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 4}"));
+        inlineShardingAlgorithmWithSimplified = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", disallowRangeQueryProps), ShardingAlgorithm.class);
+        Properties negativeAllowRangeQuery = PropertiesBuilder.build(
+                new Property("algorithm-expression", "t_order_$->{(order_id % 4).abs()}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString()));
+        negativeNumberInlineShardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", negativeAllowRangeQuery), ShardingAlgorithm.class);
     }
     
     @Test(expected = MismatchedInlineShardingAlgorithmExpressionAndColumnException.class)

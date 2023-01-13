@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -47,15 +49,10 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String idName = "test-cosid";
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID", createAsLongProperties(idName)), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("COSID", PropertiesBuilder.build(new Property(CosIdAlgorithmConstants.ID_NAME_KEY, idName))), KeyGenerateAlgorithm.class);
         assertThat(algorithm.generateKey(), is(1L));
         assertThat(algorithm.generateKey(), is(2L));
-    }
-    
-    private Properties createAsLongProperties(final String idName) {
-        Properties result = new Properties();
-        result.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        return result;
     }
     
     @Test
@@ -79,17 +76,11 @@ public final class CosIdKeyGenerateAlgorithmTest {
         String prefix = "test_";
         IdGenerator idGeneratorDecorator = new StringIdGeneratorDecorator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));
         DefaultIdGeneratorProvider.INSTANCE.set(idName, idGeneratorDecorator);
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID", createAsStringProperties(idName)), KeyGenerateAlgorithm.class);
+        Properties props = PropertiesBuilder.build(new Property(CosIdAlgorithmConstants.ID_NAME_KEY, idName), new Property("as-string", Boolean.TRUE.toString()));
+        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID", props), KeyGenerateAlgorithm.class);
         Comparable<?> actual = algorithm.generateKey();
         assertThat(actual, instanceOf(String.class));
         assertThat(actual.toString(), startsWith(prefix));
         assertThat(actual.toString().length(), lessThanOrEqualTo(16));
-    }
-    
-    private Properties createAsStringProperties(final String idName) {
-        Properties result = new Properties();
-        result.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        result.setProperty("as-string", Boolean.TRUE.toString());
-        return result;
     }
 }

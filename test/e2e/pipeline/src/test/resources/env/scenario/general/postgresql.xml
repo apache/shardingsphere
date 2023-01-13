@@ -55,8 +55,25 @@
     
     <full-insert-order>
         INSERT INTO
-        test.%s(order_id,user_id,status,t_int2,t_numeric,t_bool,t_char,t_varchar,t_float,t_double,t_timestmap,t_timestamptz)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+        test.%s(order_id,
+        user_id,
+        status,
+        t_int2,
+        t_numeric,
+        t_bool,
+        t_bytea,
+        t_char,
+        t_varchar,
+        t_float,
+        t_double,
+        t_json,
+        t_jsonb,
+        t_text,
+        t_date,
+        t_time,
+        t_timestmap,
+        t_timestamptz)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?::json,?::jsonb,?,?,?,?,?)
     </full-insert-order>
     
     <full-insert-order-item>

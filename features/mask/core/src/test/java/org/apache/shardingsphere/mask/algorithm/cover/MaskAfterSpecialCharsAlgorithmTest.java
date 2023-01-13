@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -34,49 +34,41 @@ public final class MaskAfterSpecialCharsAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new MaskAfterSpecialCharsAlgorithm();
-        maskAlgorithm.init(createProperties("d1"));
-    }
-    
-    private Properties createProperties(final String specialChars) {
-        Properties result = new Properties();
-        result.setProperty("special-chars", specialChars);
-        result.setProperty("replace-char", "*");
-        return result;
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
     }
     
     @Test
     public void assertMask() {
-        String actual = maskAlgorithm.mask("abcd134");
-        assertThat(actual, is("abcd1**"));
+        assertThat(maskAlgorithm.mask("abcd134"), is("abcd1**"));
     }
     
     @Test
     public void assertMaskWhenPlainValueMatchedMultipleSpecialChars() {
-        String actual = maskAlgorithm.mask("abcd1234d1234");
-        assertThat(actual, is("abcd1********"));
+        assertThat(maskAlgorithm.mask("abcd1234d1234"), is("abcd1********"));
     }
     
     @Test
     public void assertMaskEmptyString() {
-        String actual = maskAlgorithm.mask("");
-        assertThat(actual, is(""));
+        assertThat(maskAlgorithm.mask(""), is(""));
     }
     
     @Test
     public void assertMaskNull() {
-        String actual = maskAlgorithm.mask(null);
-        assertThat(actual, is(nullValue()));
+        assertThat(maskAlgorithm.mask(null), is(nullValue()));
     }
     
     @Test
     public void assertMaskWhenPlainValueNotMatchedSpecialChars() {
-        String actual = maskAlgorithm.mask("abcd234");
-        assertThat(actual, is("abcd234"));
+        assertThat(maskAlgorithm.mask("abcd234"), is("abcd234"));
     }
     
     @Test(expected = MaskAlgorithmInitializationException.class)
-    public void assertInitWhenConfigWrongProps() {
-        MaskBeforeSpecialCharsAlgorithm maskAlgorithm = new MaskBeforeSpecialCharsAlgorithm();
-        maskAlgorithm.init(createProperties(""));
+    public void assertInitWhenSpecialCharsIsEmpty() {
+        new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", ""), new Property("replace-char", "*")));
+    }
+    
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenReplaceCharIsEmpty() {
+        new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "")));
     }
 }

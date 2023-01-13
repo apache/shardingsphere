@@ -235,7 +235,7 @@ The text of each license is the standard Apache 2.0 license.
     curator-framework 5.3.0:  https://github.com/apache/curator, Apache 2.0
     curator-recipes 5.3.0:  https://github.com/apache/curator, Apache 2.0
     cosid-core 1.16.0: https://github.com/Ahoo-Wang/CosId, Apache 2.0
-    error_prone_annotations 2.3.4: https://github.com/google/error-prone, Apache 2.0
+    error_prone_annotations 2.10.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0 
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
@@ -320,8 +320,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     janino 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.0.0: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
     postgresql 42.4.1: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
-    protobuf-java 3.17.1: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
-    protobuf-java-util 3.17.1: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
+    protobuf-java 3.19.6: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
+    protobuf-java-util 3.19.6: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     jts-io-common 1.19.0: https://github.com/locationtech/jts, EDL 1.0
     jts-core 1.19.0: https://github.com/locationtech/jts, EDL 1.0
 

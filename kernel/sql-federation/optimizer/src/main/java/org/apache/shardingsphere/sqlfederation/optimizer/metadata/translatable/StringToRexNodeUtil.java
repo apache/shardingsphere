@@ -28,6 +28,8 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeLexer;
 import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser;
 
+import java.util.Map;
+
 /**
  * Utility for parsing string and generate rex node.
  */
@@ -37,15 +39,17 @@ public final class StringToRexNodeUtil {
      * Parse string and generate rex node.
      * @param filterValue filter condition
      * @param rexBuilder used to build rex node
+     * @param parameters parameters for SQL placeholder
+     * @param columnMap mapping of column id and column type
      * @return rex node
      */
-    public static RexNode buildRexNode(final String filterValue, final RexBuilder rexBuilder) {
+    public static RexNode buildRexNode(final String filterValue, final RexBuilder rexBuilder, final Map<String, Object> parameters, final Map<Integer, Integer> columnMap) {
         CharStream input = CharStreams.fromString(filterValue);
         ParseRexNodeLexer lexer = new ParseRexNodeLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ParseRexNodeParser parser = new ParseRexNodeParser(tokens);
         ParseTree tree = parser.expression();
-        ParseRexNodeVisitorImpl visitor = new ParseRexNodeVisitorImpl(rexBuilder, new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT));
+        ParseRexNodeVisitorImpl visitor = new ParseRexNodeVisitorImpl(rexBuilder, new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT), parameters, columnMap);
         return visitor.visit(tree);
     }
 }

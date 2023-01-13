@@ -25,7 +25,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/plugins/metrics/target/plugins</directory>
+            <directory>${project.basedir}/../../../../../agent/plugins/metrics/type/target/plugins</directory>
             <outputDirectory>./agent/plugins</outputDirectory>
             <includes>
                 <include>**.jar</include>
@@ -39,8 +39,15 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../../../../agent/plugins/metrics/target/lib</directory>
-            <outputDirectory>./agent/lib</outputDirectory>
+            <directory>${project.basedir}/../../../../../agent/plugins/metrics/core/target/lib</directory>
+            <outputDirectory>./agent/plugins/lib</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../../../../../agent/plugins/core/target/lib</directory>
+            <outputDirectory>./agent/plugins/lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
@@ -60,6 +67,13 @@
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
             <fileMode>0644</fileMode>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>./agent/lib</outputDirectory>
+            <includes>
+                <include>org.slf4j:slf4j-api</include>
+                <include>ch.qos.logback:*</include>
+            </includes>
         </dependencySet>
     </dependencySets>
 </assembly>

@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -28,10 +30,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -56,7 +58,7 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertIsNotEmptyWhenPropsIsNotEmpty() {
-        assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), createProperties(), null, null, false).isEmpty());
+        assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), PropertiesBuilder.build(new Property("foo", "foo_value")), null, null, false).isEmpty());
     }
     
     @Test
@@ -74,12 +76,6 @@ public final class ContextManagerBuilderParameterTest {
         when(databaseConfig.getDataSources().isEmpty()).thenReturn(isEmptyDataSources);
         when(databaseConfig.getRuleConfigurations().isEmpty()).thenReturn(isEmptyRuleConfigs);
         return Collections.singletonMap("foo_ds", databaseConfig);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("foo", "foo_value");
-        return result;
     }
     
     @Test

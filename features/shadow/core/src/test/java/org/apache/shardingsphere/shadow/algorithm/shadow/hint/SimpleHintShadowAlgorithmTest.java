@@ -22,11 +22,12 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,13 +38,8 @@ public final class SimpleHintShadowAlgorithmTest {
     
     @Before
     public void init() {
-        shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SIMPLE_HINT", createProperties()), ShadowAlgorithm.class);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("shadow", Boolean.TRUE.toString());
-        return result;
+        shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("SIMPLE_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))), ShadowAlgorithm.class);
     }
     
     @Test

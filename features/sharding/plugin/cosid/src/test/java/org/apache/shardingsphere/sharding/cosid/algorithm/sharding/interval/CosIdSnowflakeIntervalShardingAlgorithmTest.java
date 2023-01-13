@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstant
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.fixture.IntervalShardingAlgorithmDataFixture;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -50,15 +52,16 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
     }
     
     private static Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai");
-        result.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, IntervalShardingAlgorithmDataFixture.LOGIC_NAME_PREFIX);
-        result.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, IntervalShardingAlgorithmDataFixture.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        result.setProperty(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, IntervalShardingAlgorithmDataFixture.UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER));
-        result.setProperty(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, IntervalShardingAlgorithmDataFixture.SUFFIX_FORMATTER_STRING);
-        result.setProperty(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS");
-        result.put(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, 1);
-        return result;
+        return PropertiesBuilder.build(
+                new Property(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai"),
+                new Property(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, IntervalShardingAlgorithmDataFixture.LOGIC_NAME_PREFIX),
+                new Property(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
+                        IntervalShardingAlgorithmDataFixture.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER)),
+                new Property(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY,
+                        IntervalShardingAlgorithmDataFixture.UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER)),
+                new Property(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, IntervalShardingAlgorithmDataFixture.SUFFIX_FORMATTER_STRING),
+                new Property(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS"),
+                new Property(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1"));
     }
     
     @RunWith(Parameterized.class)

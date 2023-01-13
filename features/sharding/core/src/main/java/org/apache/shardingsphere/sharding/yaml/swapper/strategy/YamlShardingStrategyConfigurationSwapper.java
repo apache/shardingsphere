@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.metadata.InvalidShardingStrategyConfigCountException;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlNoneShardingStrategyConfiguration;
@@ -73,7 +74,7 @@ public final class YamlShardingStrategyConfigurationSwapper implements YamlConfi
             shardingStrategyConfigCount++;
             result = new NoneShardingStrategyConfiguration();
         }
-        Preconditions.checkArgument(shardingStrategyConfigCount <= 1, "Only allowed 0 or 1 sharding strategy configuration.");
+        ShardingSpherePreconditions.checkState(shardingStrategyConfigCount <= 1, InvalidShardingStrategyConfigCountException::new);
         return result;
     }
     

@@ -30,7 +30,7 @@ services:
       - LANG=C.UTF-8
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.41.0
     container_name: agent-prometheus
     restart: always
     volumes:
@@ -49,7 +49,7 @@ services:
     ports:
       - "43070:3307"
       - "43080:3308"
-      - "18090:18090"
+      - "19099:19099"
     links:
       - "mysql:mysql.agent.metrics.host"
     volumes:

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.CompareUtil;
 
 import java.util.Collection;
@@ -50,9 +51,9 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
     private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {
         for (OrderByItem each : orderByItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
-            Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
+            ShardingSpherePreconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, () -> new NotImplementComparableValueException("Order by"));
             Object orderValue2 = o2.getCell(each.getIndex());
-            Preconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, "Order by value must implements Comparable");
+            ShardingSpherePreconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, () -> new NotImplementComparableValueException("Order by"));
             int result = CompareUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(),
                     each.getSegment().getNullsOrderType(selectStatementContext.getDatabaseType().getType()), valueCaseSensitive.get(each.getIndex()));
             if (0 != result) {

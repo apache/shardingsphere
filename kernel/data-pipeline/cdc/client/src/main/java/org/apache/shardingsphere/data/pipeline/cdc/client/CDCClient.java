@@ -89,8 +89,7 @@ public final class CDCClient {
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
                         channel.pipeline().addLast(new LoginRequestHandler(parameter.getUsername(), parameter.getPassword()));
-                        channel.pipeline().addLast(new SubscriptionRequestHandler(parameter.getDatabase(), parameter.getSubscriptionName(), parameter.getSubscribeTables(),
-                                parameter.getSubscriptionMode()));
+                        channel.pipeline().addLast(new SubscriptionRequestHandler(parameter));
                     }
                 });
         ChannelFuture future = bootstrap.connect(address, port).sync();

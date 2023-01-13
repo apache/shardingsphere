@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.repository.standalone.jdbc.mysql;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,18 +30,17 @@ import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MySQLJDBCRepositoryProviderTest {
@@ -63,12 +64,8 @@ public class MySQLJDBCRepositoryProviderTest {
     public void setUp() throws SQLException {
         construction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(connection));
         when(connection.createStatement()).thenReturn(mock(Statement.class));
-        Properties props = new Properties();
-        props.setProperty("jdbc_url", "jdbc:mysql://localhost:3306/config");
-        props.setProperty("username", "sa");
-        props.setProperty("password", "");
-        props.setProperty("provider", "MySQL");
-        repository.init(props);
+        repository.init(PropertiesBuilder.build(new Property("jdbc_url", "jdbc:mysql://localhost:3306/config"),
+                new Property("username", "sa"), new Property("password", ""), new Property("provider", "MySQL")));
     }
     
     @After

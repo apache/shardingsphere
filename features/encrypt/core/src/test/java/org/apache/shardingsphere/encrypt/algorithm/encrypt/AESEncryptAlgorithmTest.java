@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,16 +41,10 @@ public final class AESEncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("AES", createProperties()), EncryptAlgorithm.class);
+        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("AES", PropertiesBuilder.build(new Property("aes-key-value", "test"))), EncryptAlgorithm.class);
     }
     
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("aes-key-value", "test");
-        return result;
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EncryptAlgorithmInitializationException.class)
     public void assertCreateNewInstanceWithoutAESKey() {
         ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("AES", new Properties()), EncryptAlgorithm.class);
     }

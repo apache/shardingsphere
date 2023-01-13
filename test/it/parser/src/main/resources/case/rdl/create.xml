@@ -528,4 +528,19 @@
             </table-rule>
         </rule>
     </create-shadow-rule>
+    
+    <create-mask-rule sql-case-id="create-mask-rule">
+        <rule name="t_mask">
+            <column name="phone_number">
+                <algorithm algorithm-name="MASK_FROM_X_TO_Y">
+                    <property key="from-x" value="1" />
+                    <property key="to-y" value="2" />
+                    <property key="replace-char" value="*" />
+                </algorithm>
+            </column>
+            <column name="address">
+                <algorithm algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </create-mask-rule>
 </sql-parser-test-cases>

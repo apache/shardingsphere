@@ -217,7 +217,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null == ctx.DOLLAR_()) {
             return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
         }
-        int paramIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
+        int paramIndex = new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue();
         if (paramIndex > currentParameterIndex) {
             currentParameterIndex = paramIndex;
         }
@@ -226,7 +226,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
-        return new NumberLiteralValue(ctx.getText());
+        return new NumberLiteralValue(ctx.NUMBER_().getText());
     }
     
     @Override
@@ -298,6 +298,10 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     public ASTNode visitAExpr(final AExprContext ctx) {
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
+        }
+        if (null != ctx.TYPE_CAST_()) {
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)),
+                    new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText()), ctx.TYPE_CAST_().getText(), ctx.getText());
         }
         if (null != ctx.BETWEEN()) {
             return createBetweenSegment(ctx);

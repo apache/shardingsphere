@@ -19,12 +19,8 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
@@ -36,24 +32,13 @@ public final class ShardingConditionEngineFactory {
     /**
      * Create new instance of sharding condition engine.
      *
-     * @param queryContext query context
-     * @param database database
-     * @param rule sharding rule 
-     * @return created instance
-     */
-    public static ShardingConditionEngine<?> createShardingConditionEngine(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
-        return createShardingConditionEngine(queryContext.getSqlStatementContext(), database, rule);
-    }
-    
-    /**
-     * Create new instance of sharding condition engine.
-     *
-     * @param sqlStatementContext SQL statement context
      * @param database database
      * @param rule sharding rule
      * @return created instance
      */
-    public static ShardingConditionEngine<?> createShardingConditionEngine(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database, final ShardingRule rule) {
-        return sqlStatementContext instanceof InsertStatementContext ? new InsertClauseShardingConditionEngine(rule, database) : new WhereClauseShardingConditionEngine(rule, database);
+    public static ShardingConditionEngine<?> createShardingConditionEngine(final ShardingSphereDatabase database, final ShardingRule rule) {
+        ShardingConditionEngine<?> result = RequiredSPIRegistry.getRegisteredService(ShardingConditionEngine.class);
+        result.init(rule, database);
+        return result;
     }
 }

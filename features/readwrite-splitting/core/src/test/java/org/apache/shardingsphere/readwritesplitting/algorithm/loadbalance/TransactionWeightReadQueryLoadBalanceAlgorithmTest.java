@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -48,23 +49,17 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetSingleReadDataSource() {
-        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("TRANSACTION_WEIGHT", createSingleDataSourceProperties()), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.setInTransaction(true);
         assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), context), is("test_read_ds_1"));
     }
     
-    private Properties createSingleDataSourceProperties() {
-        Properties result = new Properties();
-        result.setProperty("test_read_ds_1", "5");
-        return result;
-    }
-    
     @Test
     public void assertGetMultipleReadDataSources() {
-        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("TRANSACTION_WEIGHT", createMultipleDataSourcesProperties()), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
+                "TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
@@ -75,12 +70,5 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
         assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), notNullValue());
         assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), notNullValue());
         assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), notNullValue());
-    }
-    
-    private Properties createMultipleDataSourcesProperties() {
-        Properties result = new Properties();
-        result.setProperty("test_read_ds_1", "5");
-        result.setProperty("test_read_ds_2", "5");
-        return result;
     }
 }

@@ -20,13 +20,15 @@ package org.apache.shardingsphere.infra.util.props;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertiesServerException;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertiesFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedPropertiesTest {
@@ -46,15 +48,14 @@ public final class TypedPropertiesTest {
     }
     
     private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
-        result.setProperty(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
-        result.setProperty(TypedPropertyKeyFixture.INT_VALUE.getKey(), "100");
-        result.setProperty(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "100");
-        result.setProperty(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "10000");
-        result.setProperty(TypedPropertyKeyFixture.LONG_OBJECT_VALUE.getKey(), "10000");
-        result.setProperty(TypedPropertyKeyFixture.STRING_VALUE.getKey(), "new_value");
-        return result;
+        return PropertiesBuilder.build(
+                new Property(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString()),
+                new Property(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString()),
+                new Property(TypedPropertyKeyFixture.INT_VALUE.getKey(), "100"),
+                new Property(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "100"),
+                new Property(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "10000"),
+                new Property(TypedPropertyKeyFixture.LONG_OBJECT_VALUE.getKey(), "10000"),
+                new Property(TypedPropertyKeyFixture.STRING_VALUE.getKey(), "new_value"));
     }
     
     @Test
@@ -71,12 +72,12 @@ public final class TypedPropertiesTest {
     
     @Test(expected = TypedPropertiesServerException.class)
     public void assertGetInvalidValue() {
-        Properties props = new Properties();
-        props.setProperty(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test");
-        props.setProperty(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE.getKey(), "test");
-        props.setProperty(TypedPropertyKeyFixture.INT_VALUE.getKey(), "test");
-        props.setProperty(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "test");
-        props.setProperty(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "test");
+        Properties props = PropertiesBuilder.build(
+                new Property(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test"),
+                new Property(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE.getKey(), "test"),
+                new Property(TypedPropertyKeyFixture.INT_VALUE.getKey(), "test"),
+                new Property(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "test"),
+                new Property(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "test"));
         new TypedPropertiesFixture(props);
     }
 }

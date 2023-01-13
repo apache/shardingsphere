@@ -33,7 +33,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropMaskRuleStatementUpdaterTest {
@@ -59,6 +63,15 @@ public final class DropMaskRuleStatementUpdaterTest {
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(false, "t_mask"), ruleConfig));
         assertTrue(ruleConfig.getMaskAlgorithms().isEmpty());
         assertTrue(ruleConfig.getTables().isEmpty());
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() {
+        MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        DropMaskRuleStatement statement = createSQLStatement(true, "t_user");
+        updater.checkSQLStatement(database, statement, mock(MaskRuleConfiguration.class));
+        assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
+        assertThat(ruleConfig.getTables().size(), is(1));
     }
     
     private DropMaskRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {

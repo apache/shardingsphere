@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.lock.impl.props;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -24,13 +26,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class DefaultLockTypedPropertiesTest {
+public final class DefaultLockTypedPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        Properties lockProperties = new Properties();
-        lockProperties.setProperty("instanceId", "instance-id");
-        DefaultLockTypedProperties actual = new DefaultLockTypedProperties(lockProperties);
+        DefaultLockTypedProperties actual = new DefaultLockTypedProperties(PropertiesBuilder.build(new Property("instanceId", "instance-id")));
         assertThat(actual.getValue(DefaultLockPropertyKey.INSTANCE_ID), is("instance-id"));
     }
     

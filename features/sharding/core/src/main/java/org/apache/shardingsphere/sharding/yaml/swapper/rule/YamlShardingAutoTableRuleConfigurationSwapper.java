@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
@@ -54,7 +55,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapper implements Yaml
     
     @Override
     public ShardingAutoTableRuleConfiguration swapToObject(final YamlShardingAutoTableRuleConfiguration yamlConfig) {
-        Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
+        ShardingSpherePreconditions.checkNotNull(yamlConfig.getLogicTable(), () -> new MissingRequiredShardingConfigurationException("Sharding Logic table"));
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration(yamlConfig.getLogicTable(), yamlConfig.getActualDataSources());
         if (null != yamlConfig.getShardingStrategy()) {
             result.setShardingStrategy(shardingStrategySwapper.swapToObject(yamlConfig.getShardingStrategy()));

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
@@ -82,16 +83,17 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     }
     
     private String createSm4Mode(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SM4_MODE), "%s can not be null.", SM4_MODE);
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_MODE), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_MODE)));
         String result = String.valueOf(props.getProperty(SM4_MODE)).toUpperCase();
-        Preconditions.checkState(MODES.contains(result), "Mode must be either CBC or ECB.");
+        ShardingSpherePreconditions.checkState(MODES.contains(result), () -> new EncryptAlgorithmInitializationException("SM4", "Mode must be either CBC or ECB."));
         return result;
     }
     
     private byte[] createSm4Key(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SM4_KEY), "%s can not be null.", SM4_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_KEY), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_KEY)));
         byte[] result = ByteUtils.fromHexString(String.valueOf(props.getProperty(SM4_KEY)));
-        Preconditions.checkState(KEY_LENGTH == result.length, "Key length must be " + KEY_LENGTH + " bytes long.");
+        ShardingSpherePreconditions.checkState(KEY_LENGTH == result.length,
+                () -> new EncryptAlgorithmInitializationException("SM4", "Key length must be " + KEY_LENGTH + " bytes long."));
         return result;
     }
     
@@ -99,17 +101,17 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         if (!"CBC".equalsIgnoreCase(sm4Mode)) {
             return null;
         }
-        Preconditions.checkArgument(props.containsKey(SM4_IV), "%s can not be null.", SM4_IV);
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_IV), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_IV)));
         String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
         byte[] result = ByteUtils.fromHexString(sm4IvValue);
-        Preconditions.checkState(IV_LENGTH == result.length, "Iv length must be " + IV_LENGTH + " bytes long.");
+        ShardingSpherePreconditions.checkState(IV_LENGTH == result.length, () -> new EncryptAlgorithmInitializationException("SM4", "Iv length must be " + IV_LENGTH + " bytes long."));
         return result;
     }
     
     private String createSm4Padding(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SM4_PADDING), "%s can not be null.", SM4_PADDING);
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_PADDING), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_PADDING)));
         String result = String.valueOf(props.getProperty(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
-        Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding.");
+        ShardingSpherePreconditions.checkState(PADDINGS.contains(result), () -> new EncryptAlgorithmInitializationException("SM4", "Padding must be either PKCS5Padding or PKCS7Padding."));
         return result;
     }
     

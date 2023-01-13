@@ -27,7 +27,7 @@ sqlParser:
     initialCapacity: 128
     maximumSize: 1024
 ```
-* [Distributed Operations](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
+* [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
 ```yaml
 transaction:
   defaultType: XA

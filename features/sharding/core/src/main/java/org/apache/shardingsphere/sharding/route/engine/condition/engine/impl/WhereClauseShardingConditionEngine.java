@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.exception.data.ShardingValueDataTypeEx
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.AlwaysFalseShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -59,13 +58,19 @@ import java.util.Set;
  * Sharding condition engine for where clause.
  */
 @RequiredArgsConstructor
-public final class WhereClauseShardingConditionEngine implements ShardingConditionEngine<SQLStatementContext<?>> {
+public final class WhereClauseShardingConditionEngine {
     
     private final ShardingRule shardingRule;
     
     private final ShardingSphereDatabase database;
     
-    @Override
+    /**
+     * Create sharding conditions.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param params SQL parameters
+     * @return sharding conditions
+     */
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();

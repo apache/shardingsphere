@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.handler.exception.algorithm;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 import java.util.Collection;
@@ -25,9 +24,9 @@ import java.util.Collection;
 /**
  * Invalid algorithm configuration exception.
  */
-public final class InvalidAlgorithmConfigurationException extends RuleDefinitionViolationException {
+public final class InvalidAlgorithmConfigurationException extends AlgorithmDefinitionViolationException {
     
-    private static final long serialVersionUID = 9076740384552385180L;
+    private static final long serialVersionUID = 1352014079406440573L;
     
     public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 150, String.format("Invalid %s algorithms `%s`.", algorithmType, algorithms));

@@ -168,7 +168,6 @@ Update the version in `Chart.yaml` file in release branch:
 
 ```
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
-~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts/Chart.yaml
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
 ```
 
@@ -191,9 +190,6 @@ Before packaging charts, you need to download dependent packages through `helm d
 cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts
-helm dependency build
-
 cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/charts/governance
 helm dependency build
 
@@ -202,7 +198,6 @@ helm dependency build
 
 cd ~/shardingsphere-on-cloud/charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-charts
-helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-cluster-charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
 ### 5. Upload charts and generate index
@@ -268,7 +263,6 @@ helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
 Decompress:
 
 - `apache-shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
-- `apache-shardingsphere-operator-cluster-charts-${RELEASE.VERSION}.tgz`
 - `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
 
 To check the following items:
@@ -299,7 +293,6 @@ If three products can be queried, the release is successful, and `helm repo add`
 ```shell
 NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
 apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
-apache/apache-shardingsphere-operator-cluster-...	${RELEASE.VERSION}        	xxx      	A Helm chart for ShardingSphere-Operator-Cluster
 apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
 ```
 

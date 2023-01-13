@@ -39,7 +39,8 @@ public enum TimeRecorder {
      * @return elapsed time
      */
     public long getElapsedTime() {
-        return System.currentTimeMillis() - CURRENT_RECORDER.get();
+        Long recordMillis = CURRENT_RECORDER.get();
+        return null == recordMillis ? 0L : System.currentTimeMillis() - recordMillis;
     }
     
     /**

@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 
 import java.text.DecimalFormat;
@@ -70,7 +71,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private LocalDateTime getDateTime(final Properties props) {
         String value = props.getProperty(DATE_TIME_LOWER_KEY);
-        Preconditions.checkNotNull(value, "%s cannot be null.", DATE_TIME_LOWER_KEY);
+        ShardingSpherePreconditions.checkNotNull(value, () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s cannot be null.", DATE_TIME_LOWER_KEY)));
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
@@ -79,7 +80,8 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long getShardingSeconds(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s cannot be null.", SHARDING_SECONDS_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_SECONDS_KEY),
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s cannot be null.", SHARDING_SECONDS_KEY)));
         return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
     

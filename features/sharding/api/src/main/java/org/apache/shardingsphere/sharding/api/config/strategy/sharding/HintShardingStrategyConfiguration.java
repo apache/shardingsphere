@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 /**
@@ -29,7 +28,6 @@ public final class HintShardingStrategyConfiguration implements ShardingStrategy
     private final String shardingAlgorithmName;
     
     public HintShardingStrategyConfiguration(final String shardingAlgorithmName) {
-        Preconditions.checkNotNull(shardingAlgorithmName, "Sharding algorithm name is required.");
         this.shardingAlgorithmName = shardingAlgorithmName;
     }
     

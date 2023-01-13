@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
 
 /**
@@ -32,7 +30,6 @@ public final class KeyGenerateStrategyConfiguration {
     private final String keyGeneratorName;
     
     public KeyGenerateStrategyConfiguration(final String column, final String keyGeneratorName) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
         this.column = column;
         this.keyGeneratorName = keyGeneratorName;
     }

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugins</artifactId>
-        <version>5.3.1-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-plugin-core</artifactId>
     <name>${project.artifactId}</name>
@@ -36,8 +36,6 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
                 <executions>
@@ -53,16 +51,6 @@
                                     <shadedPattern>${shade.package}.com.google.common</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>

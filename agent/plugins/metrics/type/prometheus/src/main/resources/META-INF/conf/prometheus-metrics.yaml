@@ -1,0 +1,139 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+metrics:
+  - id: build_info
+    name: build_info
+    type: GaugeMetricFamily
+    help: Build information
+    labels:
+      - version
+      - name
+  - id: meta_data_info
+    name: meta_data_info
+    type: GaugeMetricFamily
+    help: Meta data information. schema_count is logic number of databases; database_count is actual number of databases
+    labels:
+      - name
+  - id: parse_sql_dml_insert_total
+    name: parse_sql_dml_insert_total
+    type: COUNTER
+    help: Total count of parsed INSERT
+  - id: parse_sql_dml_update_total
+    name: parse_sql_dml_update_total
+    type: COUNTER
+    help: Total count of parsed UPDATE
+  - id: parse_sql_dml_delete_total
+    name: parse_sql_dml_delete_total
+    type: COUNTER
+    help: Total count of parsed DELETE
+  - id: parse_sql_dml_select_total
+    name: parse_sql_dml_select_total
+    type: COUNTER
+    help: Total count of parsed SELECT
+  - id: parse_sql_ddl_total
+    name: parse_sql_ddl_total
+    type: COUNTER
+    help: Total count of parsed DDL
+  - id: parse_sql_dcl_total
+    name: parse_sql_dcl_total
+    type: COUNTER
+    help: Total count of parsed DCL
+  - id: parse_sql_dal_total
+    name: parse_sql_dal_total
+    type: COUNTER
+    help: Total count of parsed DAL
+  - id: parse_sql_tcl_total
+    name: parse_sql_tcl_total
+    type: COUNTER
+    help: Total count of parsed TCL
+  - id: parse_dist_sql_rql_total
+    name: parse_dist_sql_rql_total
+    type: COUNTER
+    help: Total count of parsed RDL
+  - id: parse_dist_sql_rdl_total
+    name: parse_dist_sql_rdl_total
+    type: COUNTER
+    help: Total count of parsed RDL
+  - id: parse_dist_sql_ral_total
+    name: parse_dist_sql_ral_total
+    type: COUNTER
+    help: Total count of parsed RAL
+  - id: route_sql_insert_total
+    name: route_sql_insert_total
+    type: COUNTER
+    help: Total count of routed INSERT
+  - id: route_sql_update_total
+    name: route_sql_update_total
+    type: COUNTER
+    help: Total count of routed UPDATE
+  - id: route_sql_delete_total
+    name: route_sql_delete_total
+    type: COUNTER
+    help: Total count of routed DELETE
+  - id: route_sql_select_total
+    name: route_sql_select_total
+    type: COUNTER
+    help: Total count of routed SELECT
+  - id: route_datasource_total
+    name: route_datasource_total
+    type: COUNTER
+    labels: 
+      - name
+    help: Total count of data source routed
+  - id: route_table_total
+    name: route_table_total
+    type: COUNTER
+    labels:
+      - name
+    help: Total count of table routed
+  - id: proxy_info
+    name: proxy_info
+    type: GaugeMetricFamily
+    help: Status information of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK
+    labels:
+      - name
+  - id: proxy_current_connections
+    type: GAUGE
+    name: proxy_current_connections
+    help: Current connections of ShardingSphere-Proxy
+  - id: proxy_requests_total
+    type: COUNTER
+    name: proxy_requests_total
+    help: Total requests of ShardingSphere-Proxy
+  - id: proxy_commit_transactions_total
+    name: proxy_commit_transactions_total
+    type: COUNTER
+    help: Total commit transactions of ShardingSphere-Proxy
+  - id: proxy_rollback_transactions_total
+    name: proxy_rollback_transactions_total
+    type: COUNTER
+    help: Total rollback transactions of ShardingSphere-Proxy
+  - id: proxy_execute_latency_millis
+    type: HISTOGRAM
+    name: proxy_execute_latency_millis
+    help: Execute latency millis histogram of ShardingSphere-Proxy
+    props:
+      buckets:
+        type: exp
+        start: 1
+        factor: 2
+        count: 13
+  - id: proxy_execute_errors_total
+    type: COUNTER
+    name: proxy_execute_errors_total
+    help: Total execute errors of ShardingSphere-Proxy

@@ -39,7 +39,7 @@ props:
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
   proxy-hint-enabled: false
-  sql-show: true
+  sql-show: false
   check-table-metadata-enabled: false
   # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
   # The default value is -1, which means set the minimum value for different JDBC drivers.

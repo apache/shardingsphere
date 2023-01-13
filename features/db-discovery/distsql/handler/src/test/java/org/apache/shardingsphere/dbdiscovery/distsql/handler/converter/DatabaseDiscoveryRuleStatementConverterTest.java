@@ -22,6 +22,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -50,15 +52,9 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     }
     
     private Collection<AbstractDatabaseDiscoverySegment> createDatabaseDiscoveryRuleSegments() {
-        Properties props = createProperties();
-        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment =
-                new DatabaseDiscoveryDefinitionSegment("definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", props), props);
+        Properties props = PropertiesBuilder.build(new Property("key", "value"));
+        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment = new DatabaseDiscoveryDefinitionSegment(
+                "definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", props), props);
         return Collections.singletonList(databaseDiscoveryDefinitionSegment);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("key", "value");
-        return result;
     }
 }

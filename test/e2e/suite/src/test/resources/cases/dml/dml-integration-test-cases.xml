@@ -121,12 +121,8 @@
 <!--        <assertion parameters="5:int, 5000:int, 6:int, 6000:int" expected-data-file="batch_insert_into_single_table.xml" />-->
 <!--    </test-case>-->
     
-    <test-case sql="INSERT INTO t_user(user_id, address_id, pwd, status) values (?, ?, 'a100', 'init'),(?, ?, 'b101', 'init')" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion parameters="100:int, 100000:int, 101:int, 101000:int" expected-data-file="batch_insert_into_user_table.xml" />
-    </test-case>
-    
-    <test-case sql="INSERT INTO t_user(user_id, address_id, pwd, status) values (100, 100000, 'a100', 'init'),(101, 101000, 'b101', 'init')" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="batch_insert_into_user_table.xml" />
+    <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" scenario-types="encrypt">
+        <assertion parameters="40:int, tomas:String, 41:int, mike:String" expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
     
     <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
@@ -167,14 +163,20 @@
 <!--        <assertion expected-data-file="update_single_table.xml" />-->
 <!--    </test-case>-->
     
-    <!--fixme support encrypt scenario of PostgreSQL-->
-    <test-case sql="UPDATE t_user u SET u.pwd = 'abc' WHERE user_id = 10" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="update_user_table.xml" />
+    <test-case sql="UPDATE t_user u SET u.password = ? WHERE u.user_id = ?" db-types="H2,MySQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="222222:String, 10:int" expected-data-file="update_user_table.xml" />
     </test-case>
     
-    <!--fixme support encrypt scenario of PostgreSQL-->
-    <test-case sql="UPDATE t_user u SET u.status = 'update' WHERE u.pwd = 'a10'" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="update_user_table_by_pwd.xml" />
+    <test-case sql="UPDATE t_user u SET u.telephone = ? WHERE u.password = ?" db-types="H2,MySQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="12345678901:String, 111111:String" expected-data-file="update_user_table_by_pwd.xml" />
+    </test-case>
+
+    <test-case sql="UPDATE t_user SET password = ? WHERE user_id = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="222222:String, 10:int" expected-data-file="update_user_table.xml" />
+    </test-case>
+
+    <test-case sql="UPDATE t_user SET telephone = ? WHERE password = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="12345678901:String, 111111:String" expected-data-file="update_user_table_by_pwd.xml" />
     </test-case>
     
     <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
@@ -185,14 +187,12 @@
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
     </test-case>
     
-    <!--fixme support encrypt scenario of PostgreSQL-->
-    <test-case sql="DELETE FROM t_user WHERE user_id = 10" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="delete_user_table.xml" />
+    <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="10:int" expected-data-file="delete_user_table.xml" />
     </test-case>
     
-    <!--fixme support encrypt scenario of PostgreSQL-->
-    <test-case sql="DELETE FROM t_user WHERE pwd = 'a10'" db-types="H2,MySQL,SQLServer,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="delete_user_table.xml" />
+    <test-case sql="DELETE FROM t_user WHERE password = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="111111:String" expected-data-file="delete_user_table.xml" />
     </test-case>
     
     <!--fixme! issue #9769-->
@@ -290,37 +290,40 @@
         <assertion parameters="0:int, 4:int, 5:int" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_data_type_integer (id, col_bigint, col_int, col_mediumint, col_smallint, col_tinyint) values (?, ?, ?, ?, ?, ?)" db-types="MySQL" scenario-types="passthrough">
-        <assertion parameters="1:int, 9223372036854775807:long, 2147483647:int, 8388607:int, 32767:smallint, 127:tinyint" expected-data-file="insert_max_values_into_single_table_integer.xml" />
-        <!-- TODO Support negative value of smallint & tinyint. https://github.com/apache/shardingsphere/issues/21902 -->
-        <assertion parameters="2:int, -9223372036854775808:long, -2147483648:int, -8388608:int, 0:smallint, -128:tinyint" expected-data-file="insert_min_values_into_single_table_integer.xml" />
-        <assertion parameters="3:int, -1:long, -1:int, -1:int, 0:smallint, -1:tinyint" expected-data-file="insert_negative_values_into_single_table_integer.xml" />
-        <!-- <assertion parameters="4:int, 0:int, 0:int, 0:int, -1:smallint, 0:int" expected-data-file="insert_negative_smallint_into_single_table_integer.xml" />-->
-    </test-case>
-    
     <test-case sql="INSERT INTO t_data_type_integer_unsigned (id, col_bigint_unsigned, col_int_unsigned, col_mediumint_unsigned, col_smallint_unsigned, col_tinyint_unsigned) values (?, ?, ?, ?, ?, ?)" db-types="MySQL" scenario-types="passthrough">
         <!-- TODO Test unsigned with MySQL Connector/J 8.0.x client https://github.com/apache/shardingsphere/issues/14349 -->
         <assertion parameters="1:int, 18446744073709551615:decimal, 4294967295:long, 16777215:int, 65535:int, 255:smallint" expected-data-file="insert_max_values_into_single_table_integer_unsigned.xml" />
         <assertion parameters="2:int, 0:long, 0:int, 0:int, 0:smallint, 0:tinyint" expected-data-file="insert_min_values_into_single_table_integer_unsigned.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_data_type_integer (id, col_bigint, col_int, col_mediumint, col_smallint, col_tinyint) values (?, ?, ?, ?, ?, ?)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+    <test-case sql="INSERT INTO t_data_type_integer (id, col_bigint, col_int, col_mediumint, col_smallint, col_tinyint) values (?, ?, ?, ?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="passthrough">
         <assertion parameters="1:int, 9223372036854775807:long, 2147483647:int, 8388607:int, 32767:smallint, 127:tinyint" expected-data-file="insert_max_values_into_single_table_integer.xml" />
         <assertion parameters="2:int, -9223372036854775808:long, -2147483648:int, -8388608:int, -32768:smallint, -128:tinyint" expected-data-file="insert_min_values_into_single_table_integer.xml" />
         <assertion parameters="3:int, -1:long, -1:int, -1:int, -1:smallint, -1:tinyint" expected-data-file="insert_negative_values_into_single_table_integer.xml" />
     </test-case>
     
-    <!--    TODO Fixme https://github.com/apache/shardingsphere/issues/22407 -->
-    <!--    <test-case sql="INSERT INTO t_data_type_floating_point (id, col_float, col_double) VALUES (?, ?::REAL, ?::DOUBLE PRECISION)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">-->
-    <!--        <assertion parameters="1:int, Infinity:String, Infinity:String" expected-data-file="insert_positive_infinity_floating_point_values.xml"/>-->
-    <!--        <assertion parameters="2:int, -Infinity:String, -Infinity:String" expected-data-file="insert_negative_infinity_floating_point_values.xml"/>-->
-    <!--    </test-case>-->
-    <test-case sql="INSERT INTO t_data_type_floating_point (id, col_float, col_double) VALUES (?, ?, ?)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+    <test-case sql="INSERT INTO t_data_type_floating_point (id, col_float, col_double) VALUES (?, ?::REAL, ?::DOUBLE PRECISION)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="1:int, Infinity:String, Infinity:String" expected-data-file="insert_positive_infinity_floating_point_values.xml"/>
+        <assertion parameters="2:int, -Infinity:String, -Infinity:String" expected-data-file="insert_negative_infinity_floating_point_values.xml"/>
         <assertion parameters="3:int, 3.4028235E38:float, 1.7976931348623157E308:double" expected-data-file="insert_max_floating_point_values.xml" />
         <assertion parameters="4:int, 1.4E-45:float, 4.9E-324:double" expected-data-file="insert_min_floating_point_values.xml" />
     </test-case>
     
     <test-case sql="/* SHARDINGSPHERE_HINT: t_product.SHARDING_TABLE_VALUE=1 */INSERT INTO t_product values (21, 'macbook2022', 4, 13999, 'on sale', '2022-08-08')" db-types="MySQL" scenario-types="tbl">
         <assertion expected-data-file="insert_into_t_product_with_hint.xml" />
+    </test-case>
+    
+    <test-case sql="INSERT INTO t_data_type_money (id, val) VALUES (?, ?::money), (?, ?::money), (?, ?::money)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="1:int, -92233720368547758.08:String, 2:int, -$92233720368547758.08:String, 3:int, (92233720368547758.08):String" expected-data-file="insert_min_money_values.xml"/>
+        <assertion parameters="4:int, 92233720368547758.07:String, 5:int, $92233720368547758.07:String, 6:int, 92233720368547758.07:String" expected-data-file="insert_max_money_values.xml"/>
+        <assertion parameters="7:int, 9223372036854775.807:String, 8:int, 9223372036854775.804:String, 9:int, -9223372036854775.807:String" expected-data-file="insert_rounding_money_values.xml"/>
+    </test-case>
+    
+    <test-case sql="UPDATE t_data_type_money SET val = val + ?::money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="12345.6789:String, 1001:int" expected-data-file="update_money_add_value.xml"/>
+    </test-case>
+    
+    <test-case sql="UPDATE t_data_type_money SET val = val + ?::money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="-12345.6789:String, 1002:int" expected-data-file="update_money_subtract_value.xml"/>
     </test-case>
 </integration-test-cases>

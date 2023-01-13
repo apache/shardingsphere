@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.sharding.checker;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingAlgorithmException;
+import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -53,40 +58,52 @@ public final class ShardingRuleConfigurationChecker implements RuleConfiguration
     private void checkTableConfiguration(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
                                          final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
         for (ShardingTableRuleConfiguration each : tables) {
+            checkLogicTable(databaseName, each.getLogicTable());
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getDatabaseShardingStrategy(), shardingAlgorithms);
             checkShardingStrategy(databaseName, each.getTableShardingStrategy(), shardingAlgorithms);
         }
         for (ShardingAutoTableRuleConfiguration each : autoTables) {
+            checkLogicTable(databaseName, each.getLogicTable());
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
             checkShardingStrategy(databaseName, each.getShardingStrategy(), shardingAlgorithms);
         }
     }
     
+    private void checkLogicTable(final String databaseName, final String logicTable) {
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(logicTable), () -> new MissingRequiredShardingConfigurationException("Sharding logic table", databaseName));
+    }
+    
     private void checkKeyGenerateStrategy(final String databaseName, final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Collection<String> keyGenerators) {
         if (null == keyGenerateStrategy) {
             return;
         }
-        Preconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()),
-                "Can not find keyGenerator `%s` in database `%s`.", keyGenerateStrategy.getKeyGeneratorName(), databaseName);
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(keyGenerateStrategy.getColumn()), () -> new MissingRequiredShardingConfigurationException("Key generate column", databaseName));
+        ShardingSpherePreconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()),
+                () -> new MissingRequiredShardingAlgorithmException(keyGenerateStrategy.getKeyGeneratorName(), databaseName));
     }
     
     private void checkAuditStrategy(final String databaseName, final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> auditors) {
         if (null == auditStrategy) {
             return;
         }
-        Preconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
-                "Can not find all auditors `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
+        ShardingSpherePreconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
+                () -> new MissingRequiredShardingAlgorithmException(Joiner.on(",").join(auditStrategy.getAuditorNames()), databaseName));
     }
     
     private void checkShardingStrategy(final String databaseName, final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms) {
         if (null == shardingStrategy || shardingStrategy instanceof NoneShardingStrategyConfiguration) {
             return;
         }
-        Preconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
-                "Can not find shardingAlgorithm `%s` in database `%s`.", shardingStrategy.getShardingAlgorithmName(), databaseName);
+        if (shardingStrategy instanceof ComplexShardingStrategyConfiguration) {
+            ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns()),
+                    () -> new MissingRequiredShardingConfigurationException("Complex sharding columns", databaseName));
+        }
+        ShardingSpherePreconditions.checkNotNull(shardingStrategy.getShardingAlgorithmName(), () -> new MissingRequiredShardingConfigurationException("Sharding algorithm name", databaseName));
+        ShardingSpherePreconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
+                () -> new MissingRequiredShardingAlgorithmException(shardingStrategy.getShardingAlgorithmName(), databaseName));
     }
     
     @Override

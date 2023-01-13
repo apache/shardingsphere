@@ -21,6 +21,8 @@ import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgori
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -42,9 +44,8 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("group-name", "foo_group");
-        DatabaseDiscoveryProviderAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MySQL.MGR", props), DatabaseDiscoveryProviderAlgorithm.class);
+        DatabaseDiscoveryProviderAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(
+                new AlgorithmConfiguration("MySQL.MGR", PropertiesBuilder.build(new Property("group-name", "foo_group"))), DatabaseDiscoveryProviderAlgorithm.class);
         actual.checkEnvironment("foo_db", Collections.singletonList(mockEnvironmentAvailableDataSource()));
     }
     

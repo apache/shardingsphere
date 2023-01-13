@@ -39,11 +39,15 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Translatable table scan.
@@ -156,11 +160,28 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
         PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), pref.preferArray());
         if (null == filters) {
-            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
-                    "project", implementor.getRootExpression(), Expressions.constant(fields))));
+            return generateCodeForNullFilters(implementor, physType);
+        } else {
+            String[] filterValues = new String[number];
+            addFilter(filters, filterValues);
+            return generateCodeForFilters(implementor, physType, filterValues);
         }
-        String[] filterValues = new String[number];
-        addFilter(filters, filterValues);
+    }
+    
+    private Result generateCodeForNullFilters(final EnumerableRelImplementor implementor, final PhysType physType) {
+        if (fields.length == 1) {
+            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+                    "projectScalar", implementor.getRootExpression(), Expressions.constant(fields))));
+        }
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+                "project", implementor.getRootExpression(), Expressions.constant(fields))));
+    }
+    
+    private Result generateCodeForFilters(final EnumerableRelImplementor implementor, final PhysType physType, final String[] filterValues) {
+        if (fields.length == 1) {
+            return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
+                    "projectAndFilterScalar", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
+        }
         return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
                 "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
     }
@@ -168,8 +189,31 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     private void addFilter(final List<RexNode> filters, final String[] filterValues) {
         int index = 0;
         for (RexNode filter : filters) {
-            filterValues[index] = filter.toString();
+            RexCall call = (RexCall) filter;
+            String columnMap = generateColumnMap(call);
+            filterValues[index] = filter + columnMap;
             index++;
+        }
+    }
+    
+    private String generateColumnMap(final RexCall call) {
+        Map<Integer, Integer> result = new HashMap<>();
+        traverseRexCall(call, result);
+        return result.toString();
+    }
+    
+    private void traverseRexCall(final RexCall call, final Map columnMap) {
+        for (RexNode each : call.getOperands()) {
+            if (each instanceof RexInputRef) {
+                RexInputRef reference = (RexInputRef) each;
+                String referenceName = reference.getName();
+                Integer columnId = Integer.valueOf(referenceName.replace("$", ""));
+                Integer columnType = translatableTable.getColumnType(columnId);
+                columnMap.put(columnId, columnType);
+            }
+            if (each instanceof RexCall) {
+                traverseRexCall((RexCall) each, columnMap);
+            }
         }
     }
 }
