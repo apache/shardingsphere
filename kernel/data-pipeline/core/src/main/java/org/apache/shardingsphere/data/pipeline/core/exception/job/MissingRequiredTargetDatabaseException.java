@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Miss requre target database exception.
+ * Missing required target database exception.
  */
-public final class MissRequireTargetDatabaseException extends PipelineSQLException {
+public final class MissingRequiredTargetDatabaseException extends PipelineSQLException {
     
     private static final long serialVersionUID = -1557471818392592482L;
     
-    public MissRequireTargetDatabaseException() {
+    public MissingRequiredTargetDatabaseException() {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Target database name is null. You could define it in DistSQL or select a database.");
     }
 }
