@@ -33,20 +33,19 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 /**
- * SQL route engine advice.
+ * Route count advice.
  */
-public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
+public final class RouteCountAdvice implements InstanceMethodAdvice {
     
     static {
         MetricsPool.create(MetricIds.ROUTE_SQL_INSERT);
         MetricsPool.create(MetricIds.ROUTE_SQL_DELETE);
         MetricsPool.create(MetricIds.ROUTE_SQL_UPDATE);
         MetricsPool.create(MetricIds.ROUTE_SQL_SELECT);
-        MetricsPool.create(MetricIds.ROUTE_DATASOURCE);
-        MetricsPool.create(MetricIds.ROUTE_TABLE);
+        MetricsPool.create(MetricIds.ROUTE_DATA_SOURCES);
+        MetricsPool.create(MetricIds.ROUTE_TABLES);
     }
     
     @Override
@@ -66,14 +65,13 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        RouteContext routeContext = (RouteContext) result;
-        if (null != routeContext) {
-            Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
-            routeUnits.forEach(each -> {
-                RouteMapper dataSourceMapper = each.getDataSourceMapper();
-                MetricsPool.get(MetricIds.ROUTE_DATASOURCE).ifPresent(optional -> optional.inc(dataSourceMapper.getActualName()));
-                each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTE_TABLE).ifPresent(optional -> optional.inc(table.getActualName())));
-            });
+        if (null == result) {
+            return;
+        }
+        for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
+            RouteMapper dataSourceMapper = each.getDataSourceMapper();
+            MetricsPool.get(MetricIds.ROUTE_DATA_SOURCES).ifPresent(optional -> optional.inc(dataSourceMapper.getActualName()));
+            each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTE_TABLES).ifPresent(optional -> optional.inc(table.getActualName())));
         }
     }
 }

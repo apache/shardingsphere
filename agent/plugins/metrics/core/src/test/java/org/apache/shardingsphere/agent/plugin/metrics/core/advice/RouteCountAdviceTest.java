@@ -40,9 +40,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
+public final class RouteCountAdviceTest extends MetricsAdviceBaseTest {
     
-    private final SQLRouteEngineAdvice sqlRouteEngineAdvice = new SQLRouteEngineAdvice();
+    private final RouteCountAdvice routeCountAdvice = new RouteCountAdvice();
     
     @Test
     public void assertInsertRoute() {
@@ -70,7 +70,7 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     
     public void assertRoute(final String metricIds, final QueryContext queryContext) {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        sqlRouteEngineAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{new ConnectionContext(), queryContext});
+        routeCountAdvice.beforeMethod(targetObject, mock(Method.class), new Object[]{new ConnectionContext(), queryContext});
         FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(metricIds).get();
         assertTrue(MetricsPool.get(metricIds).isPresent());
         assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
@@ -84,12 +84,12 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
         RouteMapper tbMapper = new RouteMapper("t_order", "t_order_0");
         RouteUnit routeUnit = new RouteUnit(dsMapper, Collections.singletonList(tbMapper));
         routeContext.getRouteUnits().add(routeUnit);
-        sqlRouteEngineAdvice.afterMethod(targetObject, mock(Method.class), new Object[]{}, routeContext);
-        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_DATASOURCE).get();
-        assertTrue(MetricsPool.get(MetricIds.ROUTE_DATASOURCE).isPresent());
+        routeCountAdvice.afterMethod(targetObject, mock(Method.class), new Object[]{}, routeContext);
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_DATA_SOURCES).get();
+        assertTrue(MetricsPool.get(MetricIds.ROUTE_DATA_SOURCES).isPresent());
         assertThat(wrapper.getFixtureValue(), is(1.0));
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_TABLE).get();
-        assertTrue(MetricsPool.get(MetricIds.ROUTE_TABLE).isPresent());
+        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_TABLES).get();
+        assertTrue(MetricsPool.get(MetricIds.ROUTE_TABLES).isPresent());
         assertThat(wrapper.getFixtureValue(), is(1.0));
     }
 }

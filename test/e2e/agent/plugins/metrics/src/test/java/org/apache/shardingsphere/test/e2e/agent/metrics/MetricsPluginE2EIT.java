@@ -46,9 +46,9 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
     
-    public static final String ROUTE_DATASOURCE = "route_datasource_total";
+    public static final String ROUTE_DATA_SOURCES = "route_datasource_total";
     
-    public static final String ROUTE_TABLE = "route_table_total";
+    public static final String ROUTE_TABLES = "route_table_total";
     
     public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
     
@@ -94,8 +94,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         result.add(ROUTE_SQL_UPDATE);
         result.add(ROUTE_SQL_DELETE);
         result.add(ROUTE_SQL_INSERT);
-        result.add(ROUTE_DATASOURCE);
-        result.add(ROUTE_TABLE);
+        result.add(ROUTE_DATA_SOURCES);
+        result.add(ROUTE_TABLES);
         result.add(PROXY_COMMIT_TRANSACTIONS);
         result.add(PROXY_ROLLBACK_TRANSACTIONS);
         result.add(PROXY_EXECUTE_ERRORS);

@@ -56,9 +56,9 @@ public final class MetricIds {
     
     public static final String ROUTE_SQL_INSERT = "route_sql_insert_total";
     
-    public static final String ROUTE_DATASOURCE = "route_datasource_total";
+    public static final String ROUTE_DATA_SOURCES = "route_datasource_total";
     
-    public static final String ROUTE_TABLE = "route_table_total";
+    public static final String ROUTE_TABLES = "route_table_total";
     
     public static final String PROXY_INFO = "proxy_info";
     
