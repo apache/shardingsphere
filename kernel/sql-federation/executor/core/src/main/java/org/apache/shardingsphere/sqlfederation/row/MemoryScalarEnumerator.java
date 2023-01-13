@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Memory enumerator.
+ * Memory scalar enumerator.
  */
 public final class MemoryScalarEnumerator implements Enumerator<Object> {
     

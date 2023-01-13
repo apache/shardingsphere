@@ -83,11 +83,13 @@ import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.Filtera
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.StringToRexNodeUtil;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.EmptyRowScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.MemoryScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -95,7 +97,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
-    private static final String COLUMN_INFORMATION_PATTERN = "\\{.*}";
+    private static final Pattern COLUMN_INFORMATION_PATTERN = Pattern.compile("\\{.*}");
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -156,7 +157,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new EmptyRowEnumerator();
+                return new EmptyRowScalarEnumerator();
             }
         };
     }
@@ -172,7 +173,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryEnumerator(tableData.getRows());
+                return new MemoryScalarEnumerator(tableData.getRows());
             }
         };
     }
@@ -203,7 +204,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new SQLFederationRowEnumerator(rows, statements);
+                return new SQLFederationRowScalarEnumerator(rows, statements);
             }
         };
     }
@@ -279,7 +280,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new MemoryEnumerator(tableData.getRows());
+                return new MemoryEnumerator<>(tableData.getRows());
             }
         };
     }
@@ -340,30 +341,25 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         RexBuilder rexBuilder = new RexBuilder(typeFactory);
         for (String each : filterValues) {
             if (!Strings.isNullOrEmpty(each)) {
-                Map<Integer, Integer> columnMap = extractColumnMap(each);
+                Map<Integer, Integer> columnIndexDataTypeMap = extractColumnIndexDataTypeMap(each);
                 String filterValue = extractFilterValue(each);
-                result.add(StringToRexNodeUtil.buildRexNode(filterValue, rexBuilder, context.getParameters(), columnMap));
+                result.add(StringToRexNodeUtil.buildRexNode(filterValue, rexBuilder, context.getParameters(), columnIndexDataTypeMap));
             }
         }
         return result;
     }
     
-    private Map<Integer, Integer> extractColumnMap(final String filterExpression) {
-        Matcher matcher = Pattern.compile(COLUMN_INFORMATION_PATTERN).matcher(filterExpression);
-        Map<Integer, Integer> result = new HashMap<>();
+    private Map<Integer, Integer> extractColumnIndexDataTypeMap(final String filterExpression) {
+        Matcher matcher = COLUMN_INFORMATION_PATTERN.matcher(filterExpression);
         if (!matcher.find()) {
-            return result;
+            return Collections.emptyMap();
         }
-        String columnInformation = matcher.group();
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<Integer, Integer>>() {
-        }.getType();
-        result = gson.fromJson(columnInformation, type);
-        return result;
+        return new Gson().fromJson(matcher.group(), new TypeToken<Map<Integer, Integer>>() {
+        }.getType());
     }
     
     private String extractFilterValue(final String filterExpression) {
-        return filterExpression.replaceAll("\\{.*}", "");
+        return COLUMN_INFORMATION_PATTERN.matcher(filterExpression).replaceAll("");
     }
     
     private Collection<RexNode> createProjections(final int[] projects, final RelBuilder relBuilder, final List<String> columnNames) {
@@ -381,7 +377,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new SQLFederationRowEnumerator(rows, statements);
+                return new SQLFederationRowEnumerator<>(rows, statements);
             }
         };
     }
@@ -424,7 +420,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new EmptyRowEnumerator();
+                return new EmptyRowEnumerator<>();
             }
         };
     }

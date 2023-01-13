@@ -48,7 +48,7 @@ public final class MemoryEnumerator<T> implements Enumerator<T> {
     @Override
     public boolean moveNext() {
         if (rowDataIterator.hasNext()) {
-            List rows = rowDataIterator.next().getRows();
+            List<Object> rows = rowDataIterator.next().getRows();
             if (rows.size() == 1) {
                 current = (T) rows.get(0);
             } else {

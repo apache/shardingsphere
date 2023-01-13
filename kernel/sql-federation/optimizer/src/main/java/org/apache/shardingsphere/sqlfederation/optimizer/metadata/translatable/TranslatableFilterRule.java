@@ -26,7 +26,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import java.util.Collections;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -35,6 +34,8 @@ import java.util.regex.Pattern;
 public class TranslatableFilterRule extends RelOptRule {
     
     public static final TranslatableFilterRule INSTANCE = new TranslatableFilterRule(RelFactories.LOGICAL_BUILDER);
+    
+    private static final Pattern CONDITION_PATTERN = Pattern.compile("\\$[A-Za-z]");
     
     public TranslatableFilterRule(final RelBuilderFactory relBuilderFactory) {
         super(operand(LogicalFilter.class, operand(TranslatableTableScan.class, none())), relBuilderFactory, "TranslatableFilterRule");
@@ -45,10 +46,7 @@ public class TranslatableFilterRule extends RelOptRule {
         LogicalFilter filter = call.rel(0);
         RexCall condition = (RexCall) filter.getCondition();
         for (RexNode each : condition.getOperands()) {
-            String condtionPattern = "\\$[A-Za-z]";
-            String tmp = each.toString();
-            Matcher matcher = Pattern.compile(condtionPattern).matcher(tmp);
-            if (matcher.find()) {
+            if (CONDITION_PATTERN.matcher(each.toString()).find()) {
                 return false;
             }
         }
