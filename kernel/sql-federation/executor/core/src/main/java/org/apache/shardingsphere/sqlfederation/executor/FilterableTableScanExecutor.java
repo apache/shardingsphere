@@ -77,7 +77,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecu
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.row.EmptyRowScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
@@ -124,7 +123,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new EmptyRowScalarEnumerator();
+                return new EmptyRowEnumerator();
             }
         };
     }
