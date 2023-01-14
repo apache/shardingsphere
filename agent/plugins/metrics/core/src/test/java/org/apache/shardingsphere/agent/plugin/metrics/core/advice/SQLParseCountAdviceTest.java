@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
+public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertParseInsertSQL() {
@@ -101,9 +101,8 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        new SQLParserEngineAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, sqlStatement);
+        new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement);
         assertTrue(MetricsPool.get(metricIds).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1.0));
+        assertThat(((FixtureWrapper) MetricsPool.get(metricIds).get()).getFixtureValue(), is(1d));
     }
 }
