@@ -43,17 +43,17 @@ import java.lang.reflect.Method;
 public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.PARSE_SQL_INSERT);
-        MetricsPool.create(MetricIds.PARSE_SQL_DELETE);
-        MetricsPool.create(MetricIds.PARSE_SQL_UPDATE);
-        MetricsPool.create(MetricIds.PARSE_SQL_SELECT);
-        MetricsPool.create(MetricIds.PARSE_SQL_DDL);
-        MetricsPool.create(MetricIds.PARSE_SQL_DCL);
-        MetricsPool.create(MetricIds.PARSE_SQL_DAL);
-        MetricsPool.create(MetricIds.PARSE_SQL_TCL);
-        MetricsPool.create(MetricIds.PARSE_DIST_SQL_RQL);
-        MetricsPool.create(MetricIds.PARSE_DIST_SQL_RDL);
-        MetricsPool.create(MetricIds.PARSE_DIST_SQL_RAL);
+        MetricsPool.create(MetricIds.PARSED_INSERT_SQL);
+        MetricsPool.create(MetricIds.PARSED_DELETE_SQL);
+        MetricsPool.create(MetricIds.PARSED_UPDATE_SQL);
+        MetricsPool.create(MetricIds.PARSED_SELECT_SQL);
+        MetricsPool.create(MetricIds.PARSED_DDL);
+        MetricsPool.create(MetricIds.PARSED_DCL);
+        MetricsPool.create(MetricIds.PARSED_DAL);
+        MetricsPool.create(MetricIds.PARSED_TCL);
+        MetricsPool.create(MetricIds.PARSED_RQL);
+        MetricsPool.create(MetricIds.PARSED_RDL);
+        MetricsPool.create(MetricIds.PARSED_RAL);
     }
     
     @Override
@@ -65,31 +65,31 @@ public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
     
     private void countSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_INSERT).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_INSERT_SQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DELETE).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DELETE_SQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_UPDATE).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_UPDATE_SQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_SELECT).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_SELECT_SQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DDLStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DDL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DDL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DCLStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DCL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DCL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DALStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_DAL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DAL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof TCLStatement) {
-            MetricsPool.get(MetricIds.PARSE_SQL_TCL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_TCL).ifPresent(MetricsWrapper::inc);
         }
     }
     
     private void countDistSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof RQLStatement) {
-            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RQL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_RQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof RDLStatement) {
-            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RDL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_RDL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof RALStatement) {
-            MetricsPool.get(MetricIds.PARSE_DIST_SQL_RAL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_RAL).ifPresent(MetricsWrapper::inc);
         }
     }
 }

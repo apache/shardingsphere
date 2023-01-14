@@ -41,12 +41,12 @@ import java.util.Collection;
 public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.ROUTE_SQL_INSERT);
-        MetricsPool.create(MetricIds.ROUTE_SQL_DELETE);
-        MetricsPool.create(MetricIds.ROUTE_SQL_UPDATE);
-        MetricsPool.create(MetricIds.ROUTE_SQL_SELECT);
-        MetricsPool.create(MetricIds.ROUTE_DATASOURCE);
-        MetricsPool.create(MetricIds.ROUTE_TABLE);
+        MetricsPool.create(MetricIds.ROUTED_INSERT_SQL);
+        MetricsPool.create(MetricIds.ROUTED_DELETE_SQL);
+        MetricsPool.create(MetricIds.ROUTED_UPDATE_SQL);
+        MetricsPool.create(MetricIds.ROUTED_SELECT_SQL);
+        MetricsPool.create(MetricIds.ROUTED_DATA_SOURCES);
+        MetricsPool.create(MetricIds.ROUTED_TABLES);
     }
     
     @Override
@@ -54,13 +54,13 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_INSERT).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.ROUTED_INSERT_SQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_DELETE).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.ROUTED_DELETE_SQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_UPDATE).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.ROUTED_UPDATE_SQL).ifPresent(MetricsWrapper::inc);
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.ROUTE_SQL_SELECT).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.ROUTED_SELECT_SQL).ifPresent(MetricsWrapper::inc);
         }
     }
     
@@ -71,8 +71,8 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
             Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
             routeUnits.forEach(each -> {
                 RouteMapper dataSourceMapper = each.getDataSourceMapper();
-                MetricsPool.get(MetricIds.ROUTE_DATASOURCE).ifPresent(optional -> optional.inc(dataSourceMapper.getActualName()));
-                each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTE_TABLE).ifPresent(optional -> optional.inc(table.getActualName())));
+                MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).ifPresent(optional -> optional.inc(dataSourceMapper.getActualName()));
+                each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTED_TABLES).ifPresent(optional -> optional.inc(table.getActualName())));
             });
         }
     }

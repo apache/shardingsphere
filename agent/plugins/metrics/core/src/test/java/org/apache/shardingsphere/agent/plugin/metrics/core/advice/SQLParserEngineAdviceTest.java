@@ -47,57 +47,57 @@ public final class SQLParserEngineAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertParseInsertSQL() {
-        assertParse(MetricIds.PARSE_SQL_INSERT, new MySQLInsertStatement());
+        assertParse(MetricIds.PARSED_INSERT_SQL, new MySQLInsertStatement());
     }
     
     @Test
     public void assertParseDeleteSQL() {
-        assertParse(MetricIds.PARSE_SQL_DELETE, new MySQLDeleteStatement());
+        assertParse(MetricIds.PARSED_DELETE_SQL, new MySQLDeleteStatement());
     }
     
     @Test
     public void assertParseUpdateSQL() {
-        assertParse(MetricIds.PARSE_SQL_UPDATE, new MySQLUpdateStatement());
+        assertParse(MetricIds.PARSED_UPDATE_SQL, new MySQLUpdateStatement());
     }
     
     @Test
     public void assertParseSelectSQL() {
-        assertParse(MetricIds.PARSE_SQL_SELECT, new MySQLSelectStatement());
+        assertParse(MetricIds.PARSED_SELECT_SQL, new MySQLSelectStatement());
     }
     
     @Test
     public void assertParseDDL() {
-        assertParse(MetricIds.PARSE_SQL_DDL, new MySQLCreateDatabaseStatement());
+        assertParse(MetricIds.PARSED_DDL, new MySQLCreateDatabaseStatement());
     }
     
     @Test
     public void assertParseDCL() {
-        assertParse(MetricIds.PARSE_SQL_DCL, new MySQLCreateUserStatement());
+        assertParse(MetricIds.PARSED_DCL, new MySQLCreateUserStatement());
     }
     
     @Test
     public void assertParseDAL() {
-        assertParse(MetricIds.PARSE_SQL_DAL, new MySQLShowDatabasesStatement());
+        assertParse(MetricIds.PARSED_DAL, new MySQLShowDatabasesStatement());
     }
     
     @Test
     public void assertParseTCL() {
-        assertParse(MetricIds.PARSE_SQL_TCL, new MySQLCommitStatement());
+        assertParse(MetricIds.PARSED_TCL, new MySQLCommitStatement());
     }
     
     @Test
     public void assertParseRQL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RQL, new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null));
+        assertParse(MetricIds.PARSED_RQL, new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null));
     }
     
     @Test
     public void assertParseRDL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RDL, new RegisterStorageUnitStatement(false, Collections.emptyList()));
+        assertParse(MetricIds.PARSED_RDL, new RegisterStorageUnitStatement(false, Collections.emptyList()));
     }
     
     @Test
     public void assertParseRAL() {
-        assertParse(MetricIds.PARSE_DIST_SQL_RAL, new ShowMigrationListStatement());
+        assertParse(MetricIds.PARSED_RAL, new ShowMigrationListStatement());
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
