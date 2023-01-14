@@ -33,12 +33,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 /**
- * SQL route engine advice.
+ * Route count advice.
  */
-public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
+public final class RouteCountAdvice implements InstanceMethodAdvice {
     
     static {
         MetricsPool.create(MetricIds.ROUTED_INSERT_SQL);
@@ -66,14 +65,13 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAdvice {
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        RouteContext routeContext = (RouteContext) result;
-        if (null != routeContext) {
-            Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
-            routeUnits.forEach(each -> {
-                RouteMapper dataSourceMapper = each.getDataSourceMapper();
-                MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).ifPresent(optional -> optional.inc(dataSourceMapper.getActualName()));
-                each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTED_TABLES).ifPresent(optional -> optional.inc(table.getActualName())));
-            });
+        if (null == result) {
+            return;
+        }
+        for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
+            RouteMapper dataSourceMapper = each.getDataSourceMapper();
+            MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).ifPresent(optional -> optional.inc(dataSourceMapper.getActualName()));
+            each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTED_TABLES).ifPresent(optional -> optional.inc(table.getActualName())));
         }
     }
 }

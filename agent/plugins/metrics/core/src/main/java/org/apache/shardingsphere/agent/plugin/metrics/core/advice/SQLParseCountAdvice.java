@@ -38,9 +38,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatemen
 import java.lang.reflect.Method;
 
 /**
- * SQL parse engine advice.
+ * SQL parse count advice.
  */
-public final class SQLParserEngineAdvice implements InstanceMethodAdvice {
+public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
     static {
         MetricsPool.create(MetricIds.PARSED_INSERT_SQL);
