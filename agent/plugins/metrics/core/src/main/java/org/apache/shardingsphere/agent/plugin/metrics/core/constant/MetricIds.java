@@ -26,39 +26,39 @@ public final class MetricIds {
     
     public static final String METADATA_INFO = "meta_data_info";
     
-    public static final String PARSED_INSERT_SQL = "parse_sql_dml_insert_total";
+    public static final String PARSED_INSERT_SQL = "parsed_insert_sql_total";
     
-    public static final String PARSED_UPDATE_SQL = "parse_sql_dml_update_total";
+    public static final String PARSED_UPDATE_SQL = "parsed_update_sql_total";
     
-    public static final String PARSED_DELETE_SQL = "parse_sql_dml_delete_total";
+    public static final String PARSED_DELETE_SQL = "parsed_delete_sql_total";
     
-    public static final String PARSED_SELECT_SQL = "parse_sql_dml_select_total";
+    public static final String PARSED_SELECT_SQL = "parsed_select_sql_total";
     
-    public static final String PARSED_DDL = "parse_sql_ddl_total";
+    public static final String PARSED_DDL = "parsed_ddl_total";
     
-    public static final String PARSED_DCL = "parse_sql_dcl_total";
+    public static final String PARSED_DCL = "parsed_dcl_total";
     
-    public static final String PARSED_DAL = "parse_sql_dal_total";
+    public static final String PARSED_DAL = "parsed_dal_total";
     
-    public static final String PARSED_TCL = "parse_sql_tcl_total";
+    public static final String PARSED_TCL = "parsed_tcl_total";
     
-    public static final String PARSED_RQL = "parse_dist_sql_rql_total";
+    public static final String PARSED_RQL = "parsed_rql_total";
     
-    public static final String PARSED_RDL = "parse_dist_sql_rdl_total";
+    public static final String PARSED_RDL = "parsed_rdl_total";
     
-    public static final String PARSED_RAL = "parse_dist_sql_ral_total";
+    public static final String PARSED_RAL = "parsed_ral_total";
     
-    public static final String ROUTED_INSERT_SQL = "route_sql_insert_total";
+    public static final String ROUTED_INSERT_SQL = "routed_insert_sql_total";
     
-    public static final String ROUTED_UPDATE_SQL = "route_sql_update_total";
+    public static final String ROUTED_UPDATE_SQL = "routed_update_sql_total";
     
-    public static final String ROUTED_DELETE_SQL = "route_sql_delete_total";
+    public static final String ROUTED_DELETE_SQL = "routed_delete_sql_total";
     
-    public static final String ROUTED_SELECT_SQL = "route_sql_select_total";
+    public static final String ROUTED_SELECT_SQL = "routed_select_sql_total";
     
-    public static final String ROUTED_DATA_SOURCES = "route_datasource_total";
+    public static final String ROUTED_DATA_SOURCES = "routed_data_sources_total";
     
-    public static final String ROUTED_TABLES = "route_table_total";
+    public static final String ROUTED_TABLES = "routed_tables_total";
     
     public static final String PROXY_INFO = "proxy_info";
     

@@ -29,74 +29,74 @@ metrics:
     help: Meta data information. schema_count is logic number of databases; database_count is actual number of databases
     labels:
       - name
-  - id: parse_sql_dml_insert_total
-    name: parse_sql_dml_insert_total
+  - id: parsed_insert_sql_total
+    name: parsed_insert_sql_total
     type: COUNTER
     help: Total count of parsed INSERT
-  - id: parse_sql_dml_update_total
-    name: parse_sql_dml_update_total
+  - id: parsed_update_sql_total
+    name: parsed_update_sql_total
     type: COUNTER
     help: Total count of parsed UPDATE
-  - id: parse_sql_dml_delete_total
-    name: parse_sql_dml_delete_total
+  - id: parsed_delete_sql_total
+    name: parsed_delete_sql_total
     type: COUNTER
     help: Total count of parsed DELETE
-  - id: parse_sql_dml_select_total
-    name: parse_sql_dml_select_total
+  - id: parsed_select_sql_total
+    name: parsed_select_sql_total
     type: COUNTER
     help: Total count of parsed SELECT
-  - id: parse_sql_ddl_total
-    name: parse_sql_ddl_total
+  - id: parsed_ddl_total
+    name: parsed_ddl_total
     type: COUNTER
     help: Total count of parsed DDL
-  - id: parse_sql_dcl_total
-    name: parse_sql_dcl_total
+  - id: parsed_dcl_total
+    name: parsed_dcl_total
     type: COUNTER
     help: Total count of parsed DCL
-  - id: parse_sql_dal_total
-    name: parse_sql_dal_total
+  - id: parsed_dal_total
+    name: parsed_dal_total
     type: COUNTER
     help: Total count of parsed DAL
-  - id: parse_sql_tcl_total
-    name: parse_sql_tcl_total
+  - id: parsed_tcl_total
+    name: parsed_tcl_total
     type: COUNTER
     help: Total count of parsed TCL
-  - id: parse_dist_sql_rql_total
-    name: parse_dist_sql_rql_total
+  - id: parsed_rql_total
+    name: parsed_rql_total
     type: COUNTER
     help: Total count of parsed RDL
-  - id: parse_dist_sql_rdl_total
-    name: parse_dist_sql_rdl_total
+  - id: parsed_rdl_total
+    name: parsed_rdl_total
     type: COUNTER
     help: Total count of parsed RDL
-  - id: parse_dist_sql_ral_total
-    name: parse_dist_sql_ral_total
+  - id: parsed_ral_total
+    name: parsed_ral_total
     type: COUNTER
     help: Total count of parsed RAL
-  - id: route_sql_insert_total
-    name: route_sql_insert_total
+  - id: routed_insert_sql_total
+    name: routed_insert_sql_total
     type: COUNTER
     help: Total count of routed INSERT
-  - id: route_sql_update_total
-    name: route_sql_update_total
+  - id: routed_update_sql_total
+    name: routed_update_sql_total
     type: COUNTER
     help: Total count of routed UPDATE
-  - id: route_sql_delete_total
-    name: route_sql_delete_total
+  - id: routed_delete_sql_total
+    name: routed_delete_sql_total
     type: COUNTER
     help: Total count of routed DELETE
-  - id: route_sql_select_total
-    name: route_sql_select_total
+  - id: routed_select_sql_total
+    name: routed_select_sql_total
     type: COUNTER
     help: Total count of routed SELECT
-  - id: route_datasource_total
-    name: route_datasource_total
+  - id: routed_data_sources_total
+    name: routed_data_sources_total
     type: COUNTER
     labels: 
       - name
     help: Total count of data source routed
-  - id: route_table_total
-    name: route_table_total
+  - id: routed_tables_total
+    name: routed_tables_total
     type: COUNTER
     labels:
       - name
