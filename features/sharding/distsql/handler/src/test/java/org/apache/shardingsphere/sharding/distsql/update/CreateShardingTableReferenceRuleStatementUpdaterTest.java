@@ -33,8 +33,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,7 +53,9 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     }
     
     private CreateShardingTableReferenceRuleStatement createSQLStatement(final boolean ifNotExists, final String name, final String reference) {
-        return new CreateShardingTableReferenceRuleStatement(ifNotExists, Collections.singletonList(new TableReferenceRuleSegment(name, reference)));
+        Collection<TableReferenceRuleSegment> segments = new LinkedList<>();
+        segments.add(new TableReferenceRuleSegment(name, reference));
+        return new CreateShardingTableReferenceRuleStatement(ifNotExists, segments);
     }
     
     @Test(expected = DuplicateRuleException.class)
