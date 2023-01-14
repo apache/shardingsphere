@@ -251,13 +251,13 @@
     </create-sharding-table-rule>
     
     <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule">
-        <rule table-groups="t_order,t_order_item" />
-        <rule table-groups="t_1,t_2" />
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
     </create-sharding-table-reference-rule>
 
     <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule-with-quota">
-        <rule table-groups="t_order,t_order_item" />
-        <rule table-groups="t_1,t_2" />
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
     </create-sharding-table-reference-rule>
     
     <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule">
@@ -291,7 +291,7 @@
     </create-readwrite-splitting-rule>
     
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-definition-rule">
-        <rule rule-name="ha_group_0" type="mgr">
+        <rule name="ha_group_0" type="mgr">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
@@ -299,7 +299,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/5 * * * * ?" />
         </rule>
-        <rule rule-name="ha_group_1" type="mgr2">
+        <rule name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
             <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
@@ -310,7 +310,7 @@
     </create-database-discovery-definition-rule>
 
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
-        <rule rule-name="ha_group_0" type="mgr">
+        <rule name="ha_group_0" type="mgr">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
@@ -318,7 +318,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/5 * * * * ?" />
         </rule>
-        <rule rule-name="ha_group_1" type="mgr2">
+        <rule name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
             <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
@@ -393,7 +393,7 @@
     </create-encrypt-rule>
     
     <create-shadow-rule sql-case-id="create-shadow-rule">
-        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
@@ -413,7 +413,7 @@
     </create-shadow-rule>
     
     <create-shadow-rule sql-case-id="create-shadow-rule-with-quota">
-        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
@@ -506,7 +506,7 @@
     </create-readwrite-splitting-rule>
 
     <create-database-discovery-definition-rule sql-case-id="create-db-discovery-rule-without-quote-on-build-in-db-discovery-type-name">
-        <rule rule-name="db_discovery_group_0" type="MYSQL.MGR">
+        <rule name="db_discovery_group_0" type="MYSQL.MGR">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="MYSQL.MGR">
@@ -517,7 +517,7 @@
     </create-database-discovery-definition-rule>
 
     <create-shadow-rule sql-case-id="create-shadow-rule-without-quote-on-build-in-shadow-algorithm-name">
-        <rule rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_0">
                     <algorithm algorithm-name="SIMPLE_HINT">

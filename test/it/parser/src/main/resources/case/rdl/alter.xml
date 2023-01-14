@@ -152,8 +152,8 @@
     </alter-sharding-table-rule>
     
     <alter-sharding-table-reference-rule sql-case-id="alter-sharding-table-reference-rule">
-        <rule table-groups="t_order,t_order_item" />
-        <rule table-groups="t_1,t_2" />
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
     </alter-sharding-table-reference-rule>
     
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
@@ -167,7 +167,7 @@
     </alter-readwrite-splitting-rule>
 
     <alter-database-discovery-definition-rule sql-case-id="alter-database-discovery-definition-rule">
-        <rule rule-name="ha_group_0" type="mgr">
+        <rule name="ha_group_0" type="mgr">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
@@ -175,7 +175,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/5 * * * * ?" />
         </rule>
-        <rule rule-name="ha_group_1" type="mgr2">
+        <rule name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
             <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
@@ -240,7 +240,7 @@
     </alter-encrypt-rule>
     
     <alter-shadow-rule sql-case-id="alter-shadow-rule">
-        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
