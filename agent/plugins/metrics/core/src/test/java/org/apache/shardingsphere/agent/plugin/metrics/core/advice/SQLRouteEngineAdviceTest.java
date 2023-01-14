@@ -47,25 +47,25 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertInsertRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_INSERT, queryContext);
+        assertRoute(MetricIds.ROUTED_INSERT_SQL, queryContext);
     }
     
     @Test
     public void assertSelectRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_SELECT, queryContext);
+        assertRoute(MetricIds.ROUTED_SELECT_SQL, queryContext);
     }
     
     @Test
     public void assertDeleteRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_DELETE, queryContext);
+        assertRoute(MetricIds.ROUTED_DELETE_SQL, queryContext);
     }
     
     @Test
     public void assertUpdateRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTE_SQL_UPDATE, queryContext);
+        assertRoute(MetricIds.ROUTED_UPDATE_SQL, queryContext);
     }
     
     public void assertRoute(final String metricIds, final QueryContext queryContext) {
@@ -85,11 +85,11 @@ public final class SQLRouteEngineAdviceTest extends MetricsAdviceBaseTest {
         RouteUnit routeUnit = new RouteUnit(dsMapper, Collections.singletonList(tbMapper));
         routeContext.getRouteUnits().add(routeUnit);
         sqlRouteEngineAdvice.afterMethod(targetObject, mock(Method.class), new Object[]{}, routeContext);
-        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_DATASOURCE).get();
-        assertTrue(MetricsPool.get(MetricIds.ROUTE_DATASOURCE).isPresent());
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).get();
+        assertTrue(MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).isPresent());
         assertThat(wrapper.getFixtureValue(), is(1.0));
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTE_TABLE).get();
-        assertTrue(MetricsPool.get(MetricIds.ROUTE_TABLE).isPresent());
+        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_TABLES).get();
+        assertTrue(MetricsPool.get(MetricIds.ROUTED_TABLES).isPresent());
         assertThat(wrapper.getFixtureValue(), is(1.0));
     }
 }
