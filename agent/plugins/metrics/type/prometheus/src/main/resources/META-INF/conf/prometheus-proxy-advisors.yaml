@@ -49,7 +49,12 @@ advisors:
       - name: rollback
         type: method
   - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.RouteCountAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.SQLRouteCountAdvice
+    pointcuts:
+      - name: route
+        type: method
+  - target: org.apache.shardingsphere.infra.route.engine.SQLRouteEngine
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.RouteResultCountAdvice
     pointcuts:
       - name: route
         type: method
