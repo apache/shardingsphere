@@ -58,8 +58,8 @@ metrics:
     labels:
       - version
       - name
-  - id: meta_data_info
+  - id: proxy_meta_data_info
     type: GaugeMetricFamily
-    help: meta data information
+    help: Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases
     labels:
       - name

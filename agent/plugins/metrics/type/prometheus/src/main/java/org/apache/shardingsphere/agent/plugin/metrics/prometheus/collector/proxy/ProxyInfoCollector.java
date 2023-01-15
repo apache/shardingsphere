@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;

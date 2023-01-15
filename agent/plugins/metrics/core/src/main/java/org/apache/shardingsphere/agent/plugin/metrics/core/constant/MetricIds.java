@@ -24,8 +24,6 @@ public final class MetricIds {
     
     public static final String BUILD_INFO = "build_info";
     
-    public static final String METADATA_INFO = "meta_data_info";
-    
     public static final String PARSED_INSERT_SQL = "parsed_insert_sql_total";
     
     public static final String PARSED_UPDATE_SQL = "parsed_update_sql_total";
@@ -61,6 +59,8 @@ public final class MetricIds {
     public static final String ROUTED_TABLES = "routed_tables_total";
     
     public static final String PROXY_INFO = "proxy_info";
+    
+    public static final String PROXY_METADATA_INFO = "proxy_meta_data_info";
     
     public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
     

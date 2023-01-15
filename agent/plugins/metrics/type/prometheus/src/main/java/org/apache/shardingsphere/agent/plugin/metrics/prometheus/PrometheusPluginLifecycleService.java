@@ -25,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.BuildInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.MetaDataInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.ProxyInfoCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyMetaDataInfoCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyInfoCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
@@ -66,7 +66,7 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
         new BuildInfoCollector(isEnhancedForProxy).register();
         if (isEnhancedForProxy) {
             new ProxyInfoCollector().register();
-            new MetaDataInfoCollector().register();
+            new ProxyMetaDataInfoCollector().register();
         }
         if (isCollectJVMInformation) {
             DefaultExports.initialize();
