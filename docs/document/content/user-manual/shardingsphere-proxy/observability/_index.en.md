@@ -177,7 +177,7 @@ services:
 | routed_select_sql_total           | COUNTER           | Total count of routed SELECT                                                                                                           |
 | routed_data_sources_total         | COUNTER           | Total count of data source routed                                                                                                      |
 | routed_tables_total               | COUNTER           | Total count of table routed                                                                                                            |
-| proxy_info                        | GAUGE             | Status information of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK                                                                |
+| proxy_state                       | GaugeMetricFamily | Status information of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK                                                                |
 | proxy_meta_data_info              | GaugeMetricFamily | Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases |
 | proxy_current_connections         | GAUGE             | Current connections of ShardingSphere-Proxy                                                                                            |
 | proxy_requests_total              | COUNTER           | Total requests of ShardingSphere-Proxy                                                                                                 |

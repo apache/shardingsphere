@@ -47,9 +47,9 @@ metrics:
     type: SUMMARY
     help: proxy execute latency mins
     props:
-  - id: proxy_info
+  - id: proxy_state
     type: GaugeMetricFamily
-    help: proxy information
+    help: State of ShardingSphere-Proxy 
     labels:
       - name
   - id: build_info

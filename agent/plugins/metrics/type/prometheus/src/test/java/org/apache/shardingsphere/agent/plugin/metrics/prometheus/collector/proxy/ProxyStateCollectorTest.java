@@ -36,7 +36,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
+public final class ProxyStateCollectorTest extends ProxyContextRestorer {
     
     @Test
     public void assertCollect() {
@@ -45,6 +45,6 @@ public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        assertFalse(new ProxyInfoCollector().collect().isEmpty());
+        assertFalse(new ProxyStateCollector().collect().isEmpty());
     }
 }
