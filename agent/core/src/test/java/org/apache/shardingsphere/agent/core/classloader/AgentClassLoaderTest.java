@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,7 +44,7 @@ public final class AgentClassLoaderTest {
         File rootPath = AgentPath.getRootPath();
         Collection<PluginJar> pluginJars = PluginJarLoader.load(rootPath);
         AgentClassLoader agentClassLoader = new AgentClassLoader(String.class.getClassLoader(), pluginJars);
-        System.out.println(agentClassLoader.findClass("java.lang.String"));
+        System.out.println("Class Name is " + agentClassLoader.findClass("java.lang.String"));
     }
 
     @Test
