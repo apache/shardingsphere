@@ -42,7 +42,7 @@ public final class DropShardingTableReferenceRulesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingTableReferenceRuleStatement actual, final DropShardingTableReferenceRuleStatementTestCase expected) {
         assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.getNames(), is(expected.getNames()));
+        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.getNames(), is(expected.getRuleNames()));
         assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
     }
 }
