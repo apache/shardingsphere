@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.yaml;
+package org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
- * YAML metric configuration.
+ * YAML metrics configuration.
  */
 @Getter
 @Setter
-public final class YamlMetricConfiguration {
+public final class YamlMetricsConfiguration {
     
-    private String id;
-    
-    private String name;
-    
-    private String type;
-    
-    private String help;
-    
-    private Collection<String> labels = new LinkedList<>();
-    
-    private Map<String, Object> props = new HashMap<>();
+    private Collection<YamlMetricConfiguration> metrics = new LinkedList<>();
 }
