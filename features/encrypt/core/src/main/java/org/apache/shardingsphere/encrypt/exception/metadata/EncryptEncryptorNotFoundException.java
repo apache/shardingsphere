@@ -28,6 +28,6 @@ public final class EncryptEncryptorNotFoundException extends EncryptSQLException
     private static final long serialVersionUID = -4847495252826650747L;
     
     public EncryptEncryptorNotFoundException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, reason);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Encrypt column encryptor not found, reason is: %s.", reason);
     }
 }

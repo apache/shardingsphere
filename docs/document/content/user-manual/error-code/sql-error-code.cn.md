@@ -98,6 +98,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
 | 44000     | 18002       | Altered process configuration does not exist. |
+| 44000     | 18003       | Mode configuration does not exist. |
+| 44000     | 18004       | Target database name is null. You could define it in DistSQL or select a database. |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`. |
 | 42S01     | 18030       | Duplicate storage unit names \`%s\`. |
 | 42S02     | 18031       | Storage units names \`%s\` do not exist. |
@@ -106,6 +108,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 08000     | 18051       | Data check table \`%s\` failed. |
 | 0A000     | 18052       | Unsupported pipeline database type \`%s\`. |
 | 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`. |
+| 0A000     | 18054       | Unsupported mode type \`%s\`. |
 | HY000     | 18080       | Can not find pipeline job \`%s\`. |
 | HY000     | 18081       | Job has already started. |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0. |
@@ -200,7 +203,18 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
+| 44000     | 20270       | Inline expression %s names size error. |
 | HY004     | 20280       | Invalid read database weight \`%s\`. |
+| 44000     | 20281       | Load balancer algorithm \`%s\` initialization failed, reason is: \`%s\.` |
+| 44000     | 20290       | Data source name is required in database \`%s\.` |
+| 44000     | 20291       | Write data source name is required in database `\`%s\.` |
+| 44000     | 20292       | Read data source names is required in database `\`%s\.` |
+| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.` |
+| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.` |
+| 44000     | 20295       | Auto aware data source name is required in database \`%s\.` |
+| 42S02     | 20296       | Not found load balance type in database \`%s\.` |
+| 44000     | 20297       | Weight load balancer datasource name config does not match data sources in database \`%s\.` |
+
 
 ### 数据库高可用
 
@@ -240,6 +254,13 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
 | 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
 | HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
+| 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
+| 44000     | 20704       | Encrypt column encryptor not found, reason is: %s.                                                 |
+| 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
+| 44000     | 20706       | Assisted query encryptor not found, reason is: %s.                                                 |
+| 44000     | 20707       | Like query column of \`%s\` can not be null in database \`%s\`.                                    |
+| 44000     | 20708       | Encrypt like query encryptor not found, reason is: %s.                                             |
+| 44000     | 20709       | Can not find encrypt table: \`%s\`.                                                                |
 
 ### 影子库
 

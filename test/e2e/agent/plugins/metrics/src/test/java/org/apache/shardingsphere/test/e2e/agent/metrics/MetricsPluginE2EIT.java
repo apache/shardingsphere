@@ -38,29 +38,29 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    public static final String TOTAL_PROXY_REQUESTS = "total_proxy_requests";
+    public static final String ROUTED_INSERT_SQL = "routed_insert_sql_total";
     
-    public static final String PROXY_COLLECTION = "proxy_connection_total";
+    public static final String ROUTED_UPDATE_SQL = "routed_update_sql_total";
+    
+    public static final String ROUTED_DELETE_SQL = "routed_delete_sql_total";
+    
+    public static final String ROUTED_SELECT_SQL = "routed_select_sql_total";
+    
+    public static final String ROUTED_DATA_SOURCES = "routed_data_sources_total";
+    
+    public static final String ROUTED_TABLES = "routed_tables_total";
+    
+    public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
+    
+    public static final String PROXY_REQUESTS = "proxy_requests_total";
+    
+    public static final String PROXY_COMMIT_TRANSACTIONS = "proxy_commit_transactions_total";
+    
+    public static final String PROXY_ROLLBACK_TRANSACTIONS = "proxy_rollback_transactions_total";
     
     public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_bucket";
     
-    public static final String PROXY_EXECUTE_ERROR = "proxy_execute_error_total";
-    
-    public static final String SQL_SELECT = "route_sql_select_total";
-    
-    public static final String SQL_UPDATE = "route_sql_update_total";
-    
-    public static final String SQL_DELETE = "route_sql_delete_total";
-    
-    public static final String SQL_INSERT = "route_sql_insert_total";
-    
-    public static final String ROUTE_DATASOURCE = "route_datasource_total";
-    
-    public static final String ROUTE_TABLE = "route_table_total";
-    
-    public static final String TRANSACTION_COMMIT = "proxy_transaction_commit_total";
-    
-    public static final String TRANSACTION_ROLLBACK = "proxy_transaction_rollback_total";
+    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
     
     @Test
     public void assertProxyWithAgent() throws IOException {
@@ -77,8 +77,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
             String metaDataURLWithParam = buildURLWithParameter(metaDataURL, each);
             String queryURLWithParam = buildURLWithParameter(queryURL, each);
             try {
-                assertMetadata(OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class));
-                assertQuery(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
+                assertMetadata(each, OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class));
+                assertQuery(each, OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
             } catch (final IOException ex) {
                 log.info("Access prometheus HTTP RESTful API error: ", ex);
             }
@@ -87,18 +87,18 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     private Collection<String> buildMetricsNames() {
         Collection<String> result = new LinkedHashSet<>();
-        result.add(TOTAL_PROXY_REQUESTS);
-        result.add(PROXY_COLLECTION);
+        result.add(PROXY_REQUESTS);
+        result.add(PROXY_CURRENT_CONNECTIONS);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
-        result.add(SQL_SELECT);
-        result.add(SQL_UPDATE);
-        result.add(SQL_DELETE);
-        result.add(SQL_INSERT);
-        result.add(ROUTE_DATASOURCE);
-        result.add(ROUTE_TABLE);
-        result.add(TRANSACTION_COMMIT);
-        result.add(TRANSACTION_ROLLBACK);
-        result.add(PROXY_EXECUTE_ERROR);
+        result.add(ROUTED_SELECT_SQL);
+        result.add(ROUTED_UPDATE_SQL);
+        result.add(ROUTED_DELETE_SQL);
+        result.add(ROUTED_INSERT_SQL);
+        result.add(ROUTED_DATA_SOURCES);
+        result.add(ROUTED_TABLES);
+        result.add(PROXY_COMMIT_TRANSACTIONS);
+        result.add(PROXY_ROLLBACK_TRANSACTIONS);
+        result.add(PROXY_EXECUTE_ERRORS);
         return result;
     }
     
@@ -107,14 +107,14 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     }
     
     // TODO remove if metadata result is not detailed.
-    private void assertMetadata(final MetricsMetaDataResult metricsMetaDataResult) {
-        assertThat(metricsMetaDataResult.getStatus(), is("success"));
-        assertNotNull(metricsMetaDataResult.getData());
+    private void assertMetadata(final String metricName, final MetricsMetaDataResult metricsMetaDataResult) {
+        assertThat(String.format("Metric name `%s` is not success.", metricName), metricsMetaDataResult.getStatus(), is("success"));
+        assertNotNull(String.format("Metric name `%s` is null.", metricName), metricsMetaDataResult.getData());
     }
     
     // TODO add more detailed assert
-    private static void assertQuery(final MetricsQueryResult metricsQueryResult) {
-        assertThat(metricsQueryResult.getStatus(), is("success"));
-        assertFalse(metricsQueryResult.getData().getResult().isEmpty());
+    private static void assertQuery(final String metricName, final MetricsQueryResult metricsQueryResult) {
+        assertThat(String.format("Metric name `%s` is not success.", metricName), metricsQueryResult.getStatus(), is("success"));
+        assertFalse(String.format("Metric name `%s` is empty.", metricName), metricsQueryResult.getData().getResult().isEmpty());
     }
 }

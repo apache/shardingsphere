@@ -515,10 +515,6 @@ BIGSERIAL
     : B I G S E R I A L
     ;
 
-MONEY
-    : M O N E Y
-    ;
-
 VARCHAR
     : V A R C H A R
     ;
@@ -1379,6 +1375,10 @@ AUTHORIZATION
 
 VERBOSE
     : V E R B O S E
+    ;
+    
+PERFORMANCE
+    : P E R F O R M A N C E
     ;
 
 PARAM

@@ -28,6 +28,6 @@ public final class EncryptAssistedQueryEncryptorNotFoundException extends Encryp
     private static final long serialVersionUID = -8700683634804933320L;
     
     public EncryptAssistedQueryEncryptorNotFoundException(final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, reason);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 6, "Assisted query encryptor not found, reason is: %s.", reason);
     }
 }

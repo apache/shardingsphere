@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-tracing-type</artifactId>
-        <version>5.3.1-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-tracing-jaeger</artifactId>
     <name>${project.artifactId}</name>
@@ -101,10 +101,6 @@
                                 <relocation>
                                     <pattern>okio</pattern>
                                     <shadedPattern>${shade.package}.okio</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.apache.thrift</pattern>

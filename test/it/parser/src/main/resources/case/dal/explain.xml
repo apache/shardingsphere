@@ -284,4 +284,12 @@
     
     <describe sql-case-id="explain_create_materialized_view_with_data" />
     <describe sql-case-id="explain_create_materialized_view_with_no_data" />
+    
+    <describe sql-case-id="explain_performance">
+        <select>
+            <projections start-index="27" stop-index="27">
+                <expression-projection text="1" start-index="27" stop-index="27" />
+            </projections>
+        </select>
+    </describe>
 </sql-parser-test-cases>

@@ -27,13 +27,13 @@ import java.util.List;
 /**
  * Memory enumerator.
  */
-public final class MemoryEnumerator implements Enumerator<Object[]> {
+public final class MemoryEnumerator<T> implements Enumerator<T> {
     
     private final Collection<ShardingSphereRowData> rows;
     
     private Iterator<ShardingSphereRowData> rowDataIterator;
     
-    private List<Object> current;
+    private T current;
     
     public MemoryEnumerator(final Collection<ShardingSphereRowData> rows) {
         this.rows = rows;
@@ -41,14 +41,19 @@ public final class MemoryEnumerator implements Enumerator<Object[]> {
     }
     
     @Override
-    public Object[] current() {
-        return current.toArray();
+    public T current() {
+        return current;
     }
     
     @Override
     public boolean moveNext() {
         if (rowDataIterator.hasNext()) {
-            current = rowDataIterator.next().getRows();
+            List<Object> rows = rowDataIterator.next().getRows();
+            if (rows.size() == 1) {
+                current = (T) rows.get(0);
+            } else {
+                current = (T) rows.toArray();
+            }
             return true;
         }
         current = null;

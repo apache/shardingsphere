@@ -31,17 +31,17 @@ import java.lang.reflect.Method;
 public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice {
     
     static {
-        MetricsPool.create(MetricIds.CURRENT_PROXY_CONNECTIONS);
+        MetricsPool.create(MetricIds.PROXY_CURRENT_CONNECTIONS);
     }
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         switch (method.getName()) {
             case "channelActive":
-                MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).ifPresent(MetricsWrapper::inc);
+                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(MetricsWrapper::inc);
                 break;
             case "channelInactive":
-                MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).ifPresent(MetricsWrapper::dec);
+                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(MetricsWrapper::dec);
                 break;
             default:
                 break;

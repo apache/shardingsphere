@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.infra.fixture.InfraDatabaseTypeFixture
+org.apache.shardingsphere.infra.fixture.InfraLongLengthPrefixDatabaseTypeFixture

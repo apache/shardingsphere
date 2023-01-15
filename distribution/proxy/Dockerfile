@@ -22,7 +22,7 @@ ENV LOCAL_PATH /opt/shardingsphere-proxy
 ADD target/${APP_NAME}.tar.gz /opt
 RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib
 
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk
 MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 
 ENV LOCAL_PATH /opt/shardingsphere-proxy

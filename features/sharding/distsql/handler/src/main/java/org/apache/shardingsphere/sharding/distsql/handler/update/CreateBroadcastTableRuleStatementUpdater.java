@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -27,50 +25,49 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateBroadcastTableRuleStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 
 /**
  * Create broadcast table rule statement updater.
  */
 public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateBroadcastTableRuleStatement, ShardingRuleConfiguration> {
     
-    private boolean ifNotExists;
-    
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement,
-                                  final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        ifNotExists = sqlStatement.isIfNotExists();
-        if (!ifNotExists) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (!sqlStatement.isIfNotExists()) {
             checkDuplicate(sqlStatement, currentRuleConfig);
         }
-    }
-    
-    private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {
-        if (null == currentRuleConfig || currentRuleConfig.getBroadcastTables().isEmpty()) {
-            return;
-        }
-        Collection<String> duplicateBroadcastTables = new LinkedList<>(currentRuleConfig.getBroadcastTables());
-        duplicateBroadcastTables.retainAll(sqlStatement.getTables());
-        ShardingSpherePreconditions.checkState(duplicateBroadcastTables.isEmpty(), () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
     }
     
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final CreateBroadcastTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.setBroadcastTables(sqlStatement.getTables());
+        Collection<String> tables = sqlStatement.getTables();
+        if (sqlStatement.isIfNotExists()) {
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+            tables.removeIf(each -> duplicatedRuleNames.contains(each));
+        }
+        result.setBroadcastTables(tables);
         return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        if (ifNotExists) {
-            Collection<String> currentBroadCastTables = currentRuleConfig.getBroadcastTables();
-            toBeCreatedRuleConfig.getBroadcastTables().removeIf(currentBroadCastTables::contains);
-        }
-        if (toBeCreatedRuleConfig.getBroadcastTables().isEmpty()) {
-            return;
-        }
         currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
+    }
+    
+    private Collection<String> getDuplicatedRuleNames(final CreateBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        if (null != currentRuleConfig && !currentRuleConfig.getBroadcastTables().isEmpty()) {
+            result.addAll(currentRuleConfig.getBroadcastTables());
+        }
+        result.retainAll(sqlStatement.getTables());
+        return result;
+    }
+    
+    private void checkDuplicate(final CreateBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+        ShardingSpherePreconditions.checkState(duplicatedRuleNames.isEmpty(), () -> new DuplicateRuleException("Broadcast", sqlStatement.getTables()));
     }
     
     @Override

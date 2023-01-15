@@ -23,9 +23,9 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
+import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -48,6 +48,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class BaseDMLE2EIT extends SingleE2EIT {
+    
+    private static final String DATA_COLUMN_DELIMITER = ", ";
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
@@ -109,7 +111,7 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
         int rowCount = 0;
         while (actual.next()) {
             int columnIndex = 1;
-            for (String each : expected.get(rowCount).splitValues(",")) {
+            for (String each : expected.get(rowCount).splitValues(DATA_COLUMN_DELIMITER)) {
                 assertValue(actual, columnIndex, each);
                 columnIndex++;
             }
@@ -123,8 +125,16 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
             if (!NOT_VERIFY_FLAG.equals(expected)) {
                 assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
             }
+        } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
+            assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
+        } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
+            assertThat(actual.getString(columnIndex), is(expected));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }
+    }
+    
+    private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
     }
 }

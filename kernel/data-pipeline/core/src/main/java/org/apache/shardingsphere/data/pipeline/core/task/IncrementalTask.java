@@ -139,7 +139,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("importer onFailure, taskId={}", taskId, throwable);
+                log.error("importer onFailure, taskId={}", taskId);
                 stop();
                 close();
             }

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.junit.After;
 import org.junit.Before;
@@ -152,11 +152,15 @@ public abstract class BatchE2EIT extends BaseE2EIT {
         int count = 0;
         while (actualResultSet.next()) {
             int index = 1;
-            for (String each : expectedDatSetRows.get(count).splitValues(",")) {
+            for (String each : expectedDatSetRows.get(count).splitValues(", ")) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
                     if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                     }
+                } else if (Types.CHAR == actualResultSet.getMetaData().getColumnType(index) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
+                    assertThat(String.valueOf(actualResultSet.getObject(index)).trim(), is(each));
+                } else if (isPostgreSQLOrOpenGaussMoney(actualResultSet.getMetaData().getColumnTypeName(index))) {
+                    assertThat(actualResultSet.getString(index), is(each));
                 } else {
                     assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
                 }
@@ -165,5 +169,9 @@ public abstract class BatchE2EIT extends BaseE2EIT {
             count++;
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
+    }
+    
+    private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
     }
 }

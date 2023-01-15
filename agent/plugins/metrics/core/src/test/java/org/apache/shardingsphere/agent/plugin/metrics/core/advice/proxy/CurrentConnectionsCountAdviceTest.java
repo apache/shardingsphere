@@ -37,13 +37,13 @@ public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTe
     private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
     
     @Test
-    public void assertBeforeMethod() {
+    public void assertCountCurrentConnections() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.CURRENT_PROXY_CONNECTIONS).get()).getFixtureValue(), is(1d));
+        assertTrue(MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).isPresent());
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).get()).getFixtureValue(), is(1d));
     }
     
     private Method mockMethod(final String methodName) {

@@ -156,4 +156,9 @@ public final class DatabaseTypeEngineTest {
         DatabaseType schemaNoSupportDatabaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("mysql"));
     }
+    
+    @Test
+    public void assertGetDatabaseTypeWithCorrectOrder() {
+        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:long.length://localhost:3306/test").getType(), is("INFRA.FIXTURE.LONG.LENGTH"));
+    }
 }
