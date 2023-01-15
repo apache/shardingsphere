@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.config;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Metric configuration.
@@ -31,12 +30,13 @@ public final class MetricsConfiguration {
     private final Collection<MetricConfiguration> metrics;
     
     /**
-     * Find metric configuration.
+     * Get metric configuration.
      * 
      * @param id metric ID
      * @return metric configuration
      */
-    public Optional<MetricConfiguration> find(final String id) {
-        return metrics.stream().filter(each -> id.equals(each.getId())).findFirst();
+    public MetricConfiguration get(final String id) {
+        return metrics.stream()
+                .filter(each -> id.equals(each.getId())).findFirst().orElseThrow(() -> new IllegalArgumentException(String.format("Can not find ID `%s` from metrics configuration.", id)));
     }
 }

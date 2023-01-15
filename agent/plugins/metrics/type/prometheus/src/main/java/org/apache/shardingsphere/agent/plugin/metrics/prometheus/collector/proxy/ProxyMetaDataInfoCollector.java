@@ -52,10 +52,10 @@ public final class ProxyMetaDataInfoCollector extends Collector {
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_METADATA_INFO);
-        if (null != ProxyContext.getInstance().getContextManager() && metaDataInfo.isPresent()) {
-            collectProxy(metaDataInfo.get());
-            result.add(metaDataInfo.get());
+        GaugeMetricFamily metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_METADATA_INFO);
+        if (null != ProxyContext.getInstance().getContextManager()) {
+            collectProxy(metaDataInfo);
+            result.add(metaDataInfo);
         }
         return result;
     }

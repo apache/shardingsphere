@@ -44,7 +44,7 @@ public final class MetricsPool {
      * @param id metrics wrapper ID
      */
     public static void create(final String id) {
-        metricsWrapperFactory.create(id).ifPresent(optional -> METRICS_POOL.putIfAbsent(id, optional));
+        METRICS_POOL.putIfAbsent(id, metricsWrapperFactory.create(id));
     }
     
     /**
