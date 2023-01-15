@@ -84,7 +84,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     private MetricsWrapper createCounter(final YamlMetricConfiguration metricConfig) {
-        Counter.Builder builder = Counter.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        Counter.Builder builder = Counter.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         List<String> metricLabels = (List<String>) metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
@@ -93,7 +93,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     private MetricsWrapper createGauge(final YamlMetricConfiguration metricConfig) {
-        Gauge.Builder builder = Gauge.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        Gauge.Builder builder = Gauge.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
@@ -102,7 +102,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     private MetricsWrapper createHistogram(final YamlMetricConfiguration metricConfig) {
-        Histogram.Builder builder = Histogram.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        Histogram.Builder builder = Histogram.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
@@ -134,7 +134,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     private MetricsWrapper createSummary(final YamlMetricConfiguration metricConfig) {
-        Summary.Builder builder = Summary.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        Summary.Builder builder = Summary.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
@@ -160,7 +160,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     private GaugeMetricFamily createGaugeMetricFamily(final YamlMetricConfiguration metricConfig) {
         Collection<String> labels = metricConfig.getLabels();
         return null == labels
-                ? new GaugeMetricFamily(metricConfig.getName(), metricConfig.getHelp(), 1d)
-                : new GaugeMetricFamily(metricConfig.getName(), metricConfig.getHelp(), new ArrayList<>(labels));
+                ? new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), 1d)
+                : new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), new ArrayList<>(labels));
     }
 }

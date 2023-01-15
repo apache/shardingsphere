@@ -17,115 +17,90 @@
 
 metrics:
   - id: build_info
-    name: build_info
     type: GaugeMetricFamily
     help: Build information
     labels:
       - version
       - name
   - id: meta_data_info
-    name: meta_data_info
     type: GaugeMetricFamily
     help: Meta data information. schema_count is logic number of databases; database_count is actual number of databases
     labels:
       - name
   - id: parsed_insert_sql_total
-    name: parsed_insert_sql_total
     type: COUNTER
     help: Total count of parsed INSERT
   - id: parsed_update_sql_total
-    name: parsed_update_sql_total
     type: COUNTER
     help: Total count of parsed UPDATE
   - id: parsed_delete_sql_total
-    name: parsed_delete_sql_total
     type: COUNTER
     help: Total count of parsed DELETE
   - id: parsed_select_sql_total
-    name: parsed_select_sql_total
     type: COUNTER
     help: Total count of parsed SELECT
   - id: parsed_ddl_total
-    name: parsed_ddl_total
     type: COUNTER
     help: Total count of parsed DDL
   - id: parsed_dcl_total
-    name: parsed_dcl_total
     type: COUNTER
     help: Total count of parsed DCL
   - id: parsed_dal_total
-    name: parsed_dal_total
     type: COUNTER
     help: Total count of parsed DAL
   - id: parsed_tcl_total
-    name: parsed_tcl_total
     type: COUNTER
     help: Total count of parsed TCL
   - id: parsed_rql_total
-    name: parsed_rql_total
     type: COUNTER
     help: Total count of parsed RDL
   - id: parsed_rdl_total
-    name: parsed_rdl_total
     type: COUNTER
     help: Total count of parsed RDL
   - id: parsed_ral_total
-    name: parsed_ral_total
     type: COUNTER
     help: Total count of parsed RAL
   - id: routed_insert_sql_total
-    name: routed_insert_sql_total
     type: COUNTER
     help: Total count of routed INSERT
   - id: routed_update_sql_total
-    name: routed_update_sql_total
     type: COUNTER
     help: Total count of routed UPDATE
   - id: routed_delete_sql_total
-    name: routed_delete_sql_total
     type: COUNTER
     help: Total count of routed DELETE
   - id: routed_select_sql_total
-    name: routed_select_sql_total
     type: COUNTER
     help: Total count of routed SELECT
   - id: routed_data_sources_total
-    name: routed_data_sources_total
     type: COUNTER
     labels: 
       - name
     help: Total count of data source routed
   - id: routed_tables_total
-    name: routed_tables_total
     type: COUNTER
     labels:
       - name
     help: Total count of table routed
   - id: proxy_info
-    name: proxy_info
     type: GaugeMetricFamily
     help: Status information of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK
     labels:
       - name
   - id: proxy_current_connections
     type: GAUGE
-    name: proxy_current_connections
     help: Current connections of ShardingSphere-Proxy
   - id: proxy_requests_total
     type: COUNTER
-    name: proxy_requests_total
     help: Total requests of ShardingSphere-Proxy
   - id: proxy_commit_transactions_total
-    name: proxy_commit_transactions_total
     type: COUNTER
     help: Total commit transactions of ShardingSphere-Proxy
   - id: proxy_rollback_transactions_total
-    name: proxy_rollback_transactions_total
     type: COUNTER
     help: Total rollback transactions of ShardingSphere-Proxy
   - id: proxy_execute_latency_millis
     type: HISTOGRAM
-    name: proxy_execute_latency_millis
     help: Execute latency millis histogram of ShardingSphere-Proxy
     props:
       buckets:
@@ -135,5 +110,4 @@ metrics:
         count: 13
   - id: proxy_execute_errors_total
     type: COUNTER
-    name: proxy_execute_errors_total
     help: Total execute errors of ShardingSphere-Proxy
