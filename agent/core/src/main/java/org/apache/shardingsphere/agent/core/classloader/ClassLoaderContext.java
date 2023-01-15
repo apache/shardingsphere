@@ -44,6 +44,6 @@ public final class ClassLoaderContext {
      * @return agent class loader
      */
     public AgentClassLoader getAgentClassLoader() {
-        return appClassLoader != null ? AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentClassLoader(key, pluginJars)) : null;
+        return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentClassLoader(key, pluginJars));
     }
 }

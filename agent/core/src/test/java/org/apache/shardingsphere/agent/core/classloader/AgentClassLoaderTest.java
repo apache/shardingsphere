@@ -17,45 +17,125 @@
 
 package org.apache.shardingsphere.agent.core.classloader;
 
-import org.apache.shardingsphere.agent.core.path.AgentPath;
+import com.google.common.base.Ascii;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.jar.JarFile;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public final class AgentClassLoaderTest {
 
     @Test
-    public void assertClassNotFoundExceptionIsThrownWithEmptyPluginJarList() {
-        AgentClassLoader agentClassLoader = new AgentClassLoader(String.class.getClassLoader(), Collections.emptyList());
-        assertThrows(ClassNotFoundException.class, () -> agentClassLoader.findClass("java.lang.String"));
+    public void assertNullPointerExceptionIsThrownIfClassNameIsNullAndPluginJarListIsEmpty() {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(String.class.getClassLoader(), Collections.emptyList());
+        assertThrows(NullPointerException.class, () -> agentClassLoader.findClass(null));
     }
 
     @Test
-    public void assertCorrectClassIsReturned() throws IOException, ClassNotFoundException {
-        File rootPath = AgentPath.getRootPath();
-        Collection<PluginJar> pluginJars = PluginJarLoader.load(rootPath);
-        AgentClassLoader agentClassLoader = new AgentClassLoader(String.class.getClassLoader(), pluginJars);
-        System.out.println("Class Name is " + agentClassLoader.findClass("java.lang.String"));
+    public void assertClassNotFoundExceptionIsThrownWithEmptyPluginJarList() {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), Collections.emptyList());
+        assertThrows(ClassNotFoundException.class, () -> agentClassLoader.findClass(Ascii.class.getCanonicalName()));
+    }
+
+    @Test
+    public void assertClassNotFoundExceptionIsThrownIfPluginJarListIsNull() {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), null);
+        assertThrows(ClassNotFoundException.class, () -> agentClassLoader.findClass(Ascii.class.getCanonicalName()));
+    }
+
+    @Test
+    public void assertCorrectClassIsReturned() throws IOException, ClassNotFoundException, URISyntaxException {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), getPluginJars());
+        assertThat(agentClassLoader.findClass(Ascii.class.getCanonicalName()).toString(), is(Ascii.class.toString()));
+        assertThat(agentClassLoader.findClass(Mockito.class.getCanonicalName()).toString(), is(Mockito.class.toString()));
+    }
+
+    @Test
+    public void assertEmptyResourcesListIsReturnedWhenNameIsNullAndPluginsJarListIsEmpty() {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), Collections.emptyList());
+        assertThat(Collections.list(agentClassLoader.findResources(null)), is(Collections.emptyList()));
+    }
+
+    @Test
+    public void assertEmptyResourcesListIsReturnedWhenNameIsNullAndPluginsJarListIsNull() {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), null);
+        assertThat(Collections.list(agentClassLoader.findResources(null)), is(Collections.emptyList()));
     }
 
     @Test
     public void assertEmptyResourcesIsReturnedWhenPluginsJarListIsEmpty() {
-        AgentClassLoader agentClassLoader = new AgentClassLoader(String.class.getClassLoader(), Collections.emptyList());
-        assertThat(Collections.list(agentClassLoader.findResources("java.lang.String")), is(Collections.emptyList()));
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), Collections.emptyList());
+        assertThat(Collections.list(agentClassLoader.findResources(Ascii.class.getCanonicalName())), is(Collections.emptyList()));
+    }
+
+    @Test
+    public void assertCorrectResourcesListIsReturned() throws URISyntaxException, IOException {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), getPluginJars());
+
+        final String asciiName = Ascii.class.getCanonicalName().replaceAll("\\.", "/") + ".class";
+        final String mockitoName = Mockito.class.getCanonicalName().replaceAll("\\.", "/") + ".class";
+
+        final List<URL> expectedAsciiResourceList = Collections.singletonList(new URL("jar:file:" + getJarFilePath(Ascii.class) + "!/" + asciiName));
+        final List<URL> actualAsciiResourceList = Collections.list(agentClassLoader.findResources(asciiName));
+
+        final List<URL> expectedMockitoResourceList = Collections.singletonList(new URL("jar:file:" + getJarFilePath(Mockito.class) + "!/" + mockitoName));
+        final List<URL> actualMockitoResourceList = Collections.list(agentClassLoader.findResources(mockitoName));
+
+        assertThat(actualAsciiResourceList.size(), is(1));
+        assertThat(actualAsciiResourceList.get(0), is(expectedAsciiResourceList.get(0)));
+
+        assertThat(actualMockitoResourceList.size(), is(1));
+        assertThat(actualMockitoResourceList.get(0), is(expectedMockitoResourceList.get(0)));
+    }
+
+    @Test
+    public void assertNullResourceIsReturnedWhenWhenNameIsNullAndPluginsJarListIsEmpty() {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), Collections.emptyList());
+        assertThat(agentClassLoader.findResource(null), nullValue());
     }
 
     @Test
     public void assertNullResourceIsReturnedWhenPluginsJarListIsEmpty() {
-        AgentClassLoader agentClassLoader = new AgentClassLoader(String.class.getClassLoader(), Collections.emptyList());
-        assertThat(agentClassLoader.findResource("java.lang.String"), nullValue());
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), Collections.emptyList());
+        assertThat(agentClassLoader.findResource(Ascii.class.getCanonicalName()), nullValue());
+    }
+
+    @Test
+    public void assertCorrectResourceIsReturned() throws URISyntaxException, IOException {
+        final AgentClassLoader agentClassLoader = new AgentClassLoader(AgentClassLoaderTest.class.getClassLoader(), getPluginJars());
+        final String asciiName = Ascii.class.getCanonicalName().replaceAll("\\.", "/") + ".class";
+
+        final URL expectedAsciiResource = new URL("jar:file:" + getJarFilePath(Ascii.class) + "!/" + asciiName);
+        final URL actualAsciiResource = agentClassLoader.findResource(asciiName);
+
+        assertThat(actualAsciiResource, is(expectedAsciiResource));
+    }
+
+    private List<PluginJar> getPluginJars() throws URISyntaxException, IOException {
+        final String guavaJarFilePath = getJarFilePath(Ascii.class);
+        final String mockitoJarFilePath = getJarFilePath(Mockito.class);
+        return Arrays.asList(
+                new PluginJar(new JarFile(guavaJarFilePath), new File(guavaJarFilePath)),
+                new PluginJar(new JarFile(mockitoJarFilePath), new File(mockitoJarFilePath))
+        );
+    }
+
+    private String getJarFilePath(Class clazz) throws URISyntaxException {
+        final URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
+        return Paths.get(url.toURI()).toString();
     }
 }
