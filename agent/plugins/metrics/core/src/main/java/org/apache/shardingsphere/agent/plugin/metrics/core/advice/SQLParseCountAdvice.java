@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
@@ -42,20 +41,6 @@ import java.lang.reflect.Method;
  */
 public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.PARSED_INSERT_SQL);
-        MetricsPool.create(MetricIds.PARSED_DELETE_SQL);
-        MetricsPool.create(MetricIds.PARSED_UPDATE_SQL);
-        MetricsPool.create(MetricIds.PARSED_SELECT_SQL);
-        MetricsPool.create(MetricIds.PARSED_DDL);
-        MetricsPool.create(MetricIds.PARSED_DCL);
-        MetricsPool.create(MetricIds.PARSED_DAL);
-        MetricsPool.create(MetricIds.PARSED_TCL);
-        MetricsPool.create(MetricIds.PARSED_RQL);
-        MetricsPool.create(MetricIds.PARSED_RDL);
-        MetricsPool.create(MetricIds.PARSED_RAL);
-    }
-    
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         SQLStatement sqlStatement = (SQLStatement) result;
@@ -65,31 +50,31 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
     private void countSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.PARSED_INSERT_SQL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_INSERT_SQL).inc();
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.PARSED_DELETE_SQL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DELETE_SQL).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.PARSED_UPDATE_SQL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_UPDATE_SQL).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.PARSED_SELECT_SQL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_SELECT_SQL).inc();
         } else if (sqlStatement instanceof DDLStatement) {
-            MetricsPool.get(MetricIds.PARSED_DDL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DDL).inc();
         } else if (sqlStatement instanceof DCLStatement) {
-            MetricsPool.get(MetricIds.PARSED_DCL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DCL).inc();
         } else if (sqlStatement instanceof DALStatement) {
-            MetricsPool.get(MetricIds.PARSED_DAL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_DAL).inc();
         } else if (sqlStatement instanceof TCLStatement) {
-            MetricsPool.get(MetricIds.PARSED_TCL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_TCL).inc();
         }
     }
     
     private void countDistSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof RQLStatement) {
-            MetricsPool.get(MetricIds.PARSED_RQL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_RQL).inc();
         } else if (sqlStatement instanceof RDLStatement) {
-            MetricsPool.get(MetricIds.PARSED_RDL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_RDL).inc();
         } else if (sqlStatement instanceof RALStatement) {
-            MetricsPool.get(MetricIds.PARSED_RAL).ifPresent(MetricsWrapper::inc);
+            MetricsPool.get(MetricIds.PARSED_RAL).inc();
         }
     }
 }

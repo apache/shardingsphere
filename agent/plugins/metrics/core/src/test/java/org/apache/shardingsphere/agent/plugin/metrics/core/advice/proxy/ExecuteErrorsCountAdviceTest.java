@@ -26,9 +26,8 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class ExecuteErrorsCountAdviceTest extends MetricsAdviceBaseTest {
@@ -37,7 +36,6 @@ public final class ExecuteErrorsCountAdviceTest extends MetricsAdviceBaseTest {
     public void assertCountExecuteErrors() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         new ExecuteErrorsCountAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
-        assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).get()).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS)).getFixtureValue(), is(1d));
     }
 }

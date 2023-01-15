@@ -36,6 +36,6 @@ public final class DropMaskRuleStatementTestCase extends SQLParserTestCase {
     @XmlAttribute(name = "if-exists")
     private boolean ifExists;
     
-    @XmlElement(name = "rule")
-    private final List<String> rules = new LinkedList<>();
+    @XmlElement(name = "rule-name")
+    private final List<String> ruleNames = new LinkedList<>();
 }

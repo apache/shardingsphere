@@ -46,7 +46,7 @@ public final class DropMaskRuleStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("Mask rule assertion error: "), actual.getTables(), is(expected.getRules()));
+            assertThat(assertContext.getText("Mask rule assertion error: "), actual.getTables(), is(expected.getRuleNames()));
         }
     }
 }

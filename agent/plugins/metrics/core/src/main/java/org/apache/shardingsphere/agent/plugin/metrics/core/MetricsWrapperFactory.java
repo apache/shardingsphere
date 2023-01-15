@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core;
 
-import java.util.Optional;
-
 /**
  * Metrics wrapper factory.
  */
@@ -30,5 +28,5 @@ public interface MetricsWrapperFactory {
      * @param id metrics wrapper ID
      * @return metrics wrapper
      */
-    Optional<MetricsWrapper> create(String id);
+    MetricsWrapper create(String id);
 }

@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class CommitTransactionsCountAdviceTest extends MetricsAdviceBaseTest {
@@ -38,7 +37,6 @@ public final class CommitTransactionsCountAdviceTest extends MetricsAdviceBaseTe
     @Test
     public void assertMethod() {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS).get()).getFixtureValue(), is(1D));
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS)).getFixtureValue(), is(1D));
     }
 }

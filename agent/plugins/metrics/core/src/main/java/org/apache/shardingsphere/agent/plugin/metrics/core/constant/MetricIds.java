@@ -58,7 +58,7 @@ public final class MetricIds {
     
     public static final String ROUTED_TABLES = "routed_tables_total";
     
-    public static final String PROXY_INFO = "proxy_info";
+    public static final String PROXY_STATE = "proxy_state";
     
     public static final String PROXY_METADATA_INFO = "proxy_meta_data_info";
     

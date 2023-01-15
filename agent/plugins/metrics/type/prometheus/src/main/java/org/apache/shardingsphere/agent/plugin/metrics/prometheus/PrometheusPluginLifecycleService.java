@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyMetaDataInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyInfoCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyStateCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
@@ -65,7 +65,7 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     private void registerCollector(final boolean isCollectJVMInformation, final boolean isEnhancedForProxy) {
         new BuildInfoCollector(isEnhancedForProxy).register();
         if (isEnhancedForProxy) {
-            new ProxyInfoCollector().register();
+            new ProxyStateCollector().register();
             new ProxyMetaDataInfoCollector().register();
         }
         if (isCollectJVMInformation) {
