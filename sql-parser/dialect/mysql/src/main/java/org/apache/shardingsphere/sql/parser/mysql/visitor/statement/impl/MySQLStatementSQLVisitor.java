@@ -231,8 +231,6 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PROTECTED)
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
-    private int currentParameterIndex;
-    
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public MySQLStatementSQLVisitor(final Properties props) {
@@ -240,7 +238,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
+        return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
     }
     
     @Override
@@ -638,7 +636,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.lockClauseList()) {
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
-        result.setParameterCount(currentParameterIndex);
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -1116,7 +1113,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setParameterCount(currentParameterIndex);
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -1188,7 +1184,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setParameterCount(currentParameterIndex);
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -1261,7 +1256,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.setParameterCount(currentParameterIndex);
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -1329,7 +1323,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.setParameterCount(currentParameterIndex);
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -1374,7 +1367,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         } else {
             result = (MySQLSelectStatement) visit(ctx.getChild(0));
         }
-        result.setParameterCount(currentParameterIndex);
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }

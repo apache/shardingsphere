@@ -205,8 +205,6 @@ import java.util.Properties;
 @Getter(AccessLevel.PROTECTED)
 public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBaseVisitor<ASTNode> {
     
-    private int currentParameterIndex;
-    
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public OpenGaussStatementSQLVisitor(final Properties props) {
@@ -215,13 +213,9 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         if (null == ctx.DOLLAR_()) {
-            return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
+            return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
         }
-        int paramIndex = new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue();
-        if (paramIndex > currentParameterIndex) {
-            currentParameterIndex = paramIndex;
-        }
-        return new ParameterMarkerValue(paramIndex - 1, ParameterMarkerType.DOLLAR);
+        return new ParameterMarkerValue(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue() - 1, ParameterMarkerType.DOLLAR);
     }
     
     @Override
@@ -696,7 +690,6 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -885,7 +878,6 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -904,7 +896,6 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -918,7 +909,6 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         OpenGaussSelectStatement result = (OpenGaussSelectStatement) visit(ctx.selectNoParens());
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }

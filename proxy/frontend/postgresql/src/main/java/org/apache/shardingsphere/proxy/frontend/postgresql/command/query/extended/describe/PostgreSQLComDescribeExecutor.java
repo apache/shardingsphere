@@ -128,7 +128,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatementContext().getSqlStatement();
         Collection<Integer> unspecifiedTypeParameterIndexes = getUnspecifiedTypeParameterIndexes(preparedStatement);
         Optional<ReturningSegment> returningSegment = InsertStatementHandler.getReturningSegment(insertStatement);
-        if (0 == insertStatement.getParameterCount() && unspecifiedTypeParameterIndexes.isEmpty() && !returningSegment.isPresent()) {
+        if (insertStatement.getParameterMarkerSegments().isEmpty() && unspecifiedTypeParameterIndexes.isEmpty() && !returningSegment.isPresent()) {
             return;
         }
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();

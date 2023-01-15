@@ -260,7 +260,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -620,7 +619,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -634,7 +632,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -648,7 +645,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -662,7 +658,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -681,7 +676,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -698,7 +692,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -821,7 +814,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -832,7 +824,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -843,7 +834,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -854,7 +844,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -865,7 +854,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -879,7 +867,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
