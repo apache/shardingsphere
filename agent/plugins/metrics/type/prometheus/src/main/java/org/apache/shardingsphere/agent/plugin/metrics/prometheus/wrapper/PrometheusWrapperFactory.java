@@ -28,10 +28,13 @@ import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.Co
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.GaugeWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.HistogramWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.SummaryWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.yaml.YamlMetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.yaml.YamlMetricsConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,76 +44,70 @@ import java.util.Optional;
  */
 public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
-    private static List<Map<String, Object>> metrics;
+    private static YamlMetricsConfiguration metricsConfig;
     
     static {
         parseMetricsYAML();
     }
     
-    @SuppressWarnings("unchecked")
     private static void parseMetricsYAML() {
         InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream("/META-INF/conf/prometheus-metrics.yaml");
-        Map<String, List<Map<String, Object>>> metricsMap = new Yaml().loadAs(inputStream, LinkedHashMap.class);
-        metrics = metricsMap.get("metrics");
+        metricsConfig = new Yaml().loadAs(inputStream, YamlMetricsConfiguration.class);
     }
     
     @Override
     public Optional<MetricsWrapper> create(final String id) {
-        Optional<Map<String, Object>> metricMap = findMetric(id);
-        if (!metricMap.isPresent()) {
-            return Optional.empty();
-        }
-        Map<String, Object> metric = metricMap.get();
-        return metric.containsKey("type") ? create(metric, (String) metric.get("type")) : Optional.empty();
+        Optional<YamlMetricConfiguration> metricConfig = findMetric(id);
+        return metricConfig.isPresent() ? create(metricConfig.get()) : Optional.empty();
     }
     
-    private Optional<MetricsWrapper> create(final Map<String, Object> metric, final String type) {
-        switch (type.toUpperCase()) {
+    private Optional<MetricsWrapper> create(final YamlMetricConfiguration metricConfig) {
+        if (null == metricConfig.getType()) {
+            return Optional.empty();
+        }
+        switch (metricConfig.getType().toUpperCase()) {
             case "COUNTER":
-                return Optional.of(createCounter(metric));
+                return Optional.of(createCounter(metricConfig));
             case "GAUGE":
-                return Optional.of(createGauge(metric));
+                return Optional.of(createGauge(metricConfig));
             case "HISTOGRAM":
-                return Optional.of(createHistogram(metric));
+                return Optional.of(createHistogram(metricConfig));
             case "SUMMARY":
-                return Optional.of(createSummary(metric));
+                return Optional.of(createSummary(metricConfig));
             default:
                 return Optional.empty();
         }
     }
     
-    private Optional<Map<String, Object>> findMetric(final String id) {
-        return metrics.stream().filter(each -> id.equals(each.get("id"))).findFirst();
+    private Optional<YamlMetricConfiguration> findMetric(final String id) {
+        return metricsConfig.getMetrics().stream().filter(each -> id.equals(each.getId())).findFirst();
     }
     
-    @SuppressWarnings("unchecked")
-    private MetricsWrapper createCounter(final Map<String, Object> metric) {
-        Counter.Builder builder = Counter.build().name((String) metric.get("name")).help((String) metric.get("help"));
-        List<String> metricLabels = (List<String>) metric.get("labels");
+    private MetricsWrapper createCounter(final YamlMetricConfiguration metricConfig) {
+        Counter.Builder builder = Counter.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        List<String> metricLabels = (List<String>) metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
         }
         return new CounterWrapper(builder.register());
     }
     
-    @SuppressWarnings("unchecked")
-    private MetricsWrapper createGauge(final Map<String, Object> metric) {
-        Gauge.Builder builder = Gauge.build().name((String) metric.get("name")).help((String) metric.get("help"));
-        List<String> metricLabels = (List<String>) metric.get("labels");
+    private MetricsWrapper createGauge(final YamlMetricConfiguration metricConfig) {
+        Gauge.Builder builder = Gauge.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
         }
         return new GaugeWrapper(builder.register());
     }
     
-    @SuppressWarnings("unchecked")
-    private MetricsWrapper createHistogram(final Map<String, Object> metric) {
-        Histogram.Builder builder = Histogram.build().name((String) metric.get("name")).help((String) metric.get("help"));
-        List<String> metricLabels = (List<String>) metric.get("labels");
+    private MetricsWrapper createHistogram(final YamlMetricConfiguration metricConfig) {
+        Histogram.Builder builder = Histogram.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
         }
-        Map<String, Object> metricProps = (Map<String, Object>) metric.get("props");
+        Map<String, Object> metricProps = metricConfig.getProps();
         if (null != metricProps) {
             parseHistogramProperties(builder, metricProps);
         }
@@ -136,10 +133,9 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    private MetricsWrapper createSummary(final Map<String, Object> metric) {
-        Summary.Builder builder = Summary.build().name((String) metric.get("name")).help((String) metric.get("help"));
-        List<String> metricLabels = (List<String>) metric.get("labels");
+    private MetricsWrapper createSummary(final YamlMetricConfiguration metricConfig) {
+        Summary.Builder builder = Summary.build().name(metricConfig.getName()).help(metricConfig.getHelp());
+        Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
             builder.labelNames(metricLabels.toArray(new String[0]));
         }
@@ -153,19 +149,18 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
      * @return gauge metric family
      */
     public Optional<GaugeMetricFamily> createGaugeMetricFamily(final String id) {
-        Optional<Map<String, Object>> metricMap = findMetric(id);
+        Optional<YamlMetricConfiguration> metricMap = findMetric(id);
         if (!metricMap.isPresent()) {
             return Optional.empty();
         }
-        Map<String, Object> metric = metricMap.get();
-        return "GAUGEMETRICFAMILY".equalsIgnoreCase((String) metric.get("type")) ? createGaugeMetricFamily(metric) : Optional.empty();
+        YamlMetricConfiguration metricConfig = metricMap.get();
+        return "GAUGEMETRICFAMILY".equalsIgnoreCase(metricConfig.getType()) ? Optional.of(createGaugeMetricFamily(metricConfig)) : Optional.empty();
     }
     
-    @SuppressWarnings("unchecked")
-    private Optional<GaugeMetricFamily> createGaugeMetricFamily(final Map<String, Object> metric) {
-        List<String> metricLabels = (List<String>) metric.get("labels");
-        return Optional.of(null == metricLabels
-                ? new GaugeMetricFamily((String) metric.get("name"), (String) metric.get("help"), 1d)
-                : new GaugeMetricFamily((String) metric.get("name"), (String) metric.get("help"), metricLabels));
+    private GaugeMetricFamily createGaugeMetricFamily(final YamlMetricConfiguration metricConfig) {
+        Collection<String> labels = metricConfig.getLabels();
+        return null == labels
+                ? new GaugeMetricFamily(metricConfig.getName(), metricConfig.getHelp(), 1d)
+                : new GaugeMetricFamily(metricConfig.getName(), metricConfig.getHelp(), new ArrayList<>(labels));
     }
 }
