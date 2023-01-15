@@ -135,7 +135,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
      * @return gauge metric family
      */
     public Optional<GaugeMetricFamily> createGaugeMetricFamily(final String id) {
-        return METRICS_CONFIG.find(id).filter(optional -> "GAUGEMETRICFAMILY".equalsIgnoreCase(optional.getType())).map(this::createGaugeMetricFamily);
+        return METRICS_CONFIG.find(id).filter(optional -> "GAUGE_METRIC_FAMILY".equalsIgnoreCase(optional.getType())).map(this::createGaugeMetricFamily);
     }
     
     private GaugeMetricFamily createGaugeMetricFamily(final MetricConfiguration metricConfig) {

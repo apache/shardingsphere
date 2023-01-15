@@ -48,18 +48,18 @@ metrics:
     help: proxy execute latency mins
     props:
   - id: proxy_state
-    type: GaugeMetricFamily
+    type: GAUGE_METRIC_FAMILY
     help: State of ShardingSphere-Proxy 
     labels:
       - name
   - id: build_info
-    type: GaugeMetricFamily
+    type: GAUGE_METRIC_FAMILY
     help: build information
     labels:
       - version
       - name
   - id: proxy_meta_data_info
-    type: GaugeMetricFamily
+    type: GAUGE_METRIC_FAMILY
     help: Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases
     labels:
       - name
