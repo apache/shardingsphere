@@ -118,6 +118,7 @@ print_usage() {
     echo "-p  Bind port, default is '3307', which could be changed in server.yaml"
     echo "-c  Path to config directory of ShardingSphere-Proxy, default is 'conf'"
     echo "-f  Force start ShardingSphere-Proxy"
+    echo "-g  Enable agent if shardingsphere-agent deployed in 'agent' directory"
     exit 0
 }
 
@@ -132,6 +133,20 @@ print_version() {
 
 if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
     print_version
+fi
+
+
+function enable_agent() {
+    AGENT_PARAM="";
+    AGENT_FILE="${DEPLOY_DIR}/agent/shardingsphere-agent.jar"
+    if [ -f "$AGENT_FILE" ]; then
+      AGENT_PARAM=" -javaagent:${AGENT_FILE} "
+    fi
+}
+
+if [ "$1" == "-g" ] || [ "$1" == "--agent" ] ; then
+    enable_agent
+    set -- "${params[1]}"
 fi
 
 if [ $# == 0 ]; then
@@ -199,7 +214,7 @@ fi
 
 echo -e "Starting the $SERVER_NAME ...\c"
 
-nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
+nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${AGENT_PARAM} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 if [ $? -eq 0 ]; then
   case "$OSTYPE" in
   *solaris*)
