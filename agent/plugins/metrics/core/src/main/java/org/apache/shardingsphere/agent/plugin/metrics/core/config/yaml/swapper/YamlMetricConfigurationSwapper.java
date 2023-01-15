@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.swapper;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.entity.YamlMetricConfiguration;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * YAML metric configuration swapper.
@@ -37,7 +41,13 @@ public final class YamlMetricConfigurationSwapper {
      * @return metric configuration
      */
     public static MetricConfiguration swap(final YamlMetricConfiguration yamlConfig) {
-        return new MetricConfiguration(yamlConfig.getId(), yamlConfig.getType(), yamlConfig.getHelp(),
-                null == yamlConfig.getLabels() ? Collections.emptyList() : yamlConfig.getLabels(), null == yamlConfig.getProps() ? Collections.emptyMap() : yamlConfig.getProps());
+        String id = yamlConfig.getId();
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Metric ID can not be null.");
+        String type = yamlConfig.getType();
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Metric type can not be null.");
+        String help = yamlConfig.getHelp();
+        List<String> labels = null == yamlConfig.getLabels() ? Collections.emptyList() : yamlConfig.getLabels();
+        Map<String, Object> props = null == yamlConfig.getProps() ? Collections.emptyMap() : yamlConfig.getProps();
+        return new MetricConfiguration(id, type, help, labels, props);
     }
 }

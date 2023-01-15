@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +38,7 @@ public final class YamlMetricConfiguration {
     
     private String help;
     
-    private Collection<String> labels = new LinkedList<>();
+    private List<String> labels = new LinkedList<>();
     
     private Map<String, Object> props = new HashMap<>();
 }
