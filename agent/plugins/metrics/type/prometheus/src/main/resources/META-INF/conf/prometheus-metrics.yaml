@@ -17,7 +17,7 @@
 
 metrics:
   - id: build_info
-    type: GaugeMetricFamily
+    type: GAUGE_METRIC_FAMILY
     help: Build information
     labels:
       - version
@@ -78,12 +78,12 @@ metrics:
       - name
     help: Total count of table routed
   - id: proxy_meta_data_info
-    type: GaugeMetricFamily
+    type: GAUGE_METRIC_FAMILY
     help: Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases
     labels:
       - name
   - id: proxy_state
-    type: GaugeMetricFamily
+    type: GAUGE_METRIC_FAMILY
     help: State of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK
     labels:
       - name

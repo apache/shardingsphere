@@ -154,31 +154,31 @@ services:
 
 ## Metrics
 
-| 指标名称                            | 指标类型           | 指标描述                                                                        |
-| :-------------------------------- | :---------------- | :----------------------------------------------------------------------------- |
-| build_info                        | GAUGE             | 构建信息                                                                        |
-| parsed_insert_sql_total           | COUNTER           | INSERT 的解析总数                                                                |
-| parsed_update_sql_total           | COUNTER           | UPDATE 的解析总数                                                                |
-| parsed_delete_sql_total           | COUNTER           | DELETE 的解析总数                                                                |
-| parsed_select_sql_total           | COUNTER           | SELECT 的解析总数                                                                |
-| parsed_ddl_total                  | COUNTER           | DDL 的解析总数                                                                   |
-| parsed_dcl_total                  | COUNTER           | DCL 的解析总数                                                                   |
-| parsed_dal_total                  | COUNTER           | DAL 的解析总数                                                                   |
-| parsed_tcl_total                  | COUNTER           | TCL 的解析总数                                                                   |
-| parsed_rql_total                  | COUNTER           | RQL 的解析总数                                                                   |
-| parsed_rdl_total                  | COUNTER           | RDL 的解析总数                                                                   |
-| parsed_ral_total                  | COUNTER           | RAL 的解析总数                                                                   |
-| routed_insert_sql_total           | COUNTER           | INSERT 的路由总数                                                                |
-| routed_update_sql_total           | COUNTER           | UPDATE 的路由总数                                                                |
-| routed_delete_sql_total           | COUNTER           | DELETE 的路由总数                                                                |
-| routed_select_sql_total           | COUNTER           | SELECT 的路由总数                                                                |
-| routed_data_sources_total         | COUNTER           | 数据源路由总数                                                                    |
-| routed_tables_total               | COUNTER           | 表路由总数                                                                       |
-| proxy_state                       | GaugeMetricFamily | ShardingSphere-Proxy 状态信息。1 表示正常状态；2 表示熔断状态                         |
-| proxy_meta_data_info              | GaugeMetricFamily | ShardingSphere-Proxy 元数据信息，schema_count：逻辑库数量， database_count：数据源数量 |
-| proxy_current_connections         | GAUGE             | ShardingSphere-Proxy 的当前连接数                                                 |
-| proxy_requests_total              | COUNTER           | ShardingSphere-Proxy 的接受请求总数                                               |
-| proxy_commit_transactions_total   | COUNTER           | ShardingSphere-Proxy 的事务提交总数                                               |
-| proxy_rollback_transactions_total | COUNTER           | ShardingSphere-Proxy 的事务回滚总数                                               |
-| proxy_execute_latency_millis      | HISTOGRAM         | ShardingSphere-Proxy 的执行耗时毫秒直方图                                          |
-| proxy_execute_errors_total        | COUNTER           | ShardingSphere-Proxy 的执行异常总数                                               |
+| 指标名称                            | 指标类型             | 指标描述                                                                        |
+| :-------------------------------- | :------------------ | :----------------------------------------------------------------------------- |
+| build_info                        | GAUGE               | 构建信息                                                                        |
+| parsed_insert_sql_total           | COUNTER             | INSERT 的解析总数                                                                |
+| parsed_update_sql_total           | COUNTER             | UPDATE 的解析总数                                                                |
+| parsed_delete_sql_total           | COUNTER             | DELETE 的解析总数                                                                |
+| parsed_select_sql_total           | COUNTER             | SELECT 的解析总数                                                                |
+| parsed_ddl_total                  | COUNTER             | DDL 的解析总数                                                                   |
+| parsed_dcl_total                  | COUNTER             | DCL 的解析总数                                                                   |
+| parsed_dal_total                  | COUNTER             | DAL 的解析总数                                                                   |
+| parsed_tcl_total                  | COUNTER             | TCL 的解析总数                                                                   |
+| parsed_rql_total                  | COUNTER             | RQL 的解析总数                                                                   |
+| parsed_rdl_total                  | COUNTER             | RDL 的解析总数                                                                   |
+| parsed_ral_total                  | COUNTER             | RAL 的解析总数                                                                   |
+| routed_insert_sql_total           | COUNTER             | INSERT 的路由总数                                                                |
+| routed_update_sql_total           | COUNTER             | UPDATE 的路由总数                                                                |
+| routed_delete_sql_total           | COUNTER             | DELETE 的路由总数                                                                |
+| routed_select_sql_total           | COUNTER             | SELECT 的路由总数                                                                |
+| routed_data_sources_total         | COUNTER             | 数据源路由总数                                                                    |
+| routed_tables_total               | COUNTER             | 表路由总数                                                                       |
+| proxy_state                       | GAUGE_METRIC_FAMILY | ShardingSphere-Proxy 状态信息。1 表示正常状态；2 表示熔断状态                         |
+| proxy_meta_data_info              | GAUGE_METRIC_FAMILY | ShardingSphere-Proxy 元数据信息，schema_count：逻辑库数量， database_count：数据源数量 |
+| proxy_current_connections         | GAUGE               | ShardingSphere-Proxy 的当前连接数                                                 |
+| proxy_requests_total              | COUNTER             | ShardingSphere-Proxy 的接受请求总数                                               |
+| proxy_commit_transactions_total   | COUNTER             | ShardingSphere-Proxy 的事务提交总数                                               |
+| proxy_rollback_transactions_total | COUNTER             | ShardingSphere-Proxy 的事务回滚总数                                               |
+| proxy_execute_latency_millis      | HISTOGRAM           | ShardingSphere-Proxy 的执行耗时毫秒直方图                                          |
+| proxy_execute_errors_total        | COUNTER             | ShardingSphere-Proxy 的执行异常总数                                               |
