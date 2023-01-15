@@ -35,7 +35,6 @@ import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.Su
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Prometheus metrics wrapper factory.
@@ -49,23 +48,22 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     @Override
-    public Optional<MetricsWrapper> create(final String id) {
-        Optional<MetricConfiguration> metricConfig = METRICS_CONFIG.find(id);
-        return metricConfig.isPresent() ? create(metricConfig.get()) : Optional.empty();
+    public MetricsWrapper create(final String id) {
+        return create(METRICS_CONFIG.get(id));
     }
     
-    private Optional<MetricsWrapper> create(final MetricConfiguration metricConfig) {
+    private MetricsWrapper create(final MetricConfiguration metricConfig) {
         switch (metricConfig.getType().toUpperCase()) {
             case "COUNTER":
-                return Optional.of(createCounter(metricConfig));
+                return createCounter(metricConfig);
             case "GAUGE":
-                return Optional.of(createGauge(metricConfig));
+                return createGauge(metricConfig);
             case "HISTOGRAM":
-                return Optional.of(createHistogram(metricConfig));
+                return createHistogram(metricConfig);
             case "SUMMARY":
-                return Optional.of(createSummary(metricConfig));
+                return createSummary(metricConfig);
             default:
-                return Optional.empty();
+                throw new UnsupportedOperationException(String.format("Can not support type `%s`.", metricConfig.getType()));
         }
     }
     
@@ -134,11 +132,8 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
      * @param id metric id
      * @return gauge metric family
      */
-    public Optional<GaugeMetricFamily> createGaugeMetricFamily(final String id) {
-        return METRICS_CONFIG.find(id).filter(optional -> "GAUGE_METRIC_FAMILY".equalsIgnoreCase(optional.getType())).map(this::createGaugeMetricFamily);
-    }
-    
-    private GaugeMetricFamily createGaugeMetricFamily(final MetricConfiguration metricConfig) {
+    public GaugeMetricFamily createGaugeMetricFamily(final String id) {
+        MetricConfiguration metricConfig = METRICS_CONFIG.get(id);
         List<String> labels = metricConfig.getLabels();
         return labels.isEmpty() ? new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), 1d) : new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), labels);
     }

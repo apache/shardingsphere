@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.Bootstrap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Build information collector.
@@ -41,15 +40,12 @@ public final class BuildInfoCollector extends Collector {
     
     @Override
     public List<MetricFamilySamples> collect() {
-        Optional<GaugeMetricFamily> artifactInfo = FACTORY.createGaugeMetricFamily(MetricIds.BUILD_INFO);
-        if (!artifactInfo.isPresent()) {
-            return Collections.emptyList();
-        }
-        addMetric(artifactInfo.get(), getClass().getPackage());
+        GaugeMetricFamily artifactInfo = FACTORY.createGaugeMetricFamily(MetricIds.BUILD_INFO);
+        addMetric(artifactInfo, getClass().getPackage());
         if (isEnhancedForProxy) {
-            addMetric(artifactInfo.get(), Bootstrap.class.getPackage());
+            addMetric(artifactInfo, Bootstrap.class.getPackage());
         }
-        return Collections.singletonList(artifactInfo.get());
+        return Collections.singletonList(artifactInfo);
     }
     
     private void addMetric(final GaugeMetricFamily artifactInfo, final Package pkg) {

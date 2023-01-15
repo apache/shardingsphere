@@ -43,15 +43,15 @@ public final class ProxyStateCollector extends Collector {
         if (null == ProxyContext.getInstance().getContextManager()) {
             return Collections.emptyList();
         }
-        Optional<GaugeMetricFamily> proxyState = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_STATE);
+        GaugeMetricFamily proxyState = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_STATE);
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
-        if (!proxyState.isPresent() || !stateContext.isPresent()) {
+        if (!stateContext.isPresent()) {
             return Collections.emptyList();
         }
         List<MetricFamilySamples> result = new LinkedList<>();
         // TODO use original ordinal to display state value, zero should be the 1st ordinal.
-        proxyState.get().addMetric(Collections.singletonList(PROXY_STATE), stateContext.get().getCurrentState().ordinal() + 1);
-        result.add(proxyState.get());
+        proxyState.addMetric(Collections.singletonList(PROXY_STATE), stateContext.get().getCurrentState().ordinal() + 1);
+        result.add(proxyState);
         return result;
     }
 }

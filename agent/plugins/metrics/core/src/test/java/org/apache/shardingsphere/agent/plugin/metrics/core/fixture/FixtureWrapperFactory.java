@@ -20,12 +20,10 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperFactory;
 
-import java.util.Optional;
-
 public final class FixtureWrapperFactory implements MetricsWrapperFactory {
     
     @Override
-    public Optional<MetricsWrapper> create(final String id) {
-        return Optional.of(new FixtureWrapper());
+    public MetricsWrapper create(final String id) {
+        return new FixtureWrapper();
     }
 }
