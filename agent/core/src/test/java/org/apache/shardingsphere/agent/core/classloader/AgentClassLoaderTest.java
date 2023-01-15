@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThrows;
@@ -45,8 +44,8 @@ public final class AgentClassLoaderTest {
     public void assertCorrectClassIsReturned() throws IOException, ClassNotFoundException {
         File rootPath = AgentPath.getRootPath();
         Collection<PluginJar> pluginJars = PluginJarLoader.load(rootPath);
-        AgentClassLoader agentClassLoader = new AgentClassLoader(ArrayList.class.getClassLoader(), pluginJars);
-        System.out.println(agentClassLoader.findClass("ArrayList"));
+        AgentClassLoader agentClassLoader = new AgentClassLoader(String.class.getClassLoader(), pluginJars);
+        System.out.println(agentClassLoader.findClass("java.lang.String"));
     }
 
     @Test
