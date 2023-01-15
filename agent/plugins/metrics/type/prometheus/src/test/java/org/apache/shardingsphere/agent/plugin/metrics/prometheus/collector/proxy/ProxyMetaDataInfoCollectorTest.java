@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy;
 
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.ProxyContextRestorer;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -26,11 +26,11 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class MetaDataInfoCollectorTest extends ProxyContextRestorer {
+public final class ProxyMetaDataInfoCollectorTest extends ProxyContextRestorer {
     
     @Test
     public void assertCollect() {
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertFalse(new MetaDataInfoCollector().collect().isEmpty());
+        assertFalse(new ProxyMetaDataInfoCollector().collect().isEmpty());
     }
 }

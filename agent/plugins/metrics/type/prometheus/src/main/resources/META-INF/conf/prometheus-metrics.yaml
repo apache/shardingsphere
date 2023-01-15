@@ -22,11 +22,6 @@ metrics:
     labels:
       - version
       - name
-  - id: meta_data_info
-    type: GaugeMetricFamily
-    help: Meta data information. schema_count is logic number of databases; database_count is actual number of databases
-    labels:
-      - name
   - id: parsed_insert_sql_total
     type: COUNTER
     help: Total count of parsed INSERT
@@ -82,6 +77,11 @@ metrics:
     labels:
       - name
     help: Total count of table routed
+  - id: proxy_meta_data_info
+    type: GaugeMetricFamily
+    help: Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases
+    labels:
+      - name
   - id: proxy_info
     type: GaugeMetricFamily
     help: Status information of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK

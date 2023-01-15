@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
@@ -38,10 +38,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Meta data information collector.
+ * Proxy meta data information collector.
  */
 @Slf4j
-public final class MetaDataInfoCollector extends Collector {
+public final class ProxyMetaDataInfoCollector extends Collector {
     
     private static final String LOGIC_DB_COUNT = "schema_count";
     
@@ -52,7 +52,7 @@ public final class MetaDataInfoCollector extends Collector {
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.METADATA_INFO);
+        Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_METADATA_INFO);
         if (null != ProxyContext.getInstance().getContextManager() && metaDataInfo.isPresent()) {
             collectProxy(metaDataInfo.get());
             result.add(metaDataInfo.get());
