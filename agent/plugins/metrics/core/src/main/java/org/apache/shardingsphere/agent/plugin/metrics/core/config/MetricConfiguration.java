@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +36,7 @@ public final class MetricConfiguration {
     
     private final String help;
     
-    private final Collection<String> labels;
+    private final List<String> labels;
     
     private final Map<String, Object> props;
 }

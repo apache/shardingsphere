@@ -33,8 +33,6 @@ import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.Ga
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.HistogramWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.SummaryWrapper;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,9 +55,6 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     private Optional<MetricsWrapper> create(final MetricConfiguration metricConfig) {
-        if (null == metricConfig.getType()) {
-            return Optional.empty();
-        }
         switch (metricConfig.getType().toUpperCase()) {
             case "COUNTER":
                 return Optional.of(createCounter(metricConfig));
@@ -76,31 +71,31 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     private MetricsWrapper createCounter(final MetricConfiguration metricConfig) {
         Counter.Builder builder = Counter.build().name(metricConfig.getId()).help(metricConfig.getHelp());
-        List<String> metricLabels = (List<String>) metricConfig.getLabels();
-        if (null != metricLabels) {
-            builder.labelNames(metricLabels.toArray(new String[0]));
+        List<String> labels = metricConfig.getLabels();
+        if (!labels.isEmpty()) {
+            builder.labelNames(labels.toArray(new String[0]));
         }
         return new CounterWrapper(builder.register());
     }
     
     private MetricsWrapper createGauge(final MetricConfiguration metricConfig) {
         Gauge.Builder builder = Gauge.build().name(metricConfig.getId()).help(metricConfig.getHelp());
-        Collection<String> metricLabels = metricConfig.getLabels();
-        if (null != metricLabels) {
-            builder.labelNames(metricLabels.toArray(new String[0]));
+        List<String> labels = metricConfig.getLabels();
+        if (!labels.isEmpty()) {
+            builder.labelNames(labels.toArray(new String[0]));
         }
         return new GaugeWrapper(builder.register());
     }
     
     private MetricsWrapper createHistogram(final MetricConfiguration metricConfig) {
         Histogram.Builder builder = Histogram.build().name(metricConfig.getId()).help(metricConfig.getHelp());
-        Collection<String> metricLabels = metricConfig.getLabels();
-        if (null != metricLabels) {
-            builder.labelNames(metricLabels.toArray(new String[0]));
+        List<String> labels = metricConfig.getLabels();
+        if (!labels.isEmpty()) {
+            builder.labelNames(labels.toArray(new String[0]));
         }
-        Map<String, Object> metricProps = metricConfig.getProps();
-        if (null != metricProps) {
-            parseHistogramProperties(builder, metricProps);
+        Map<String, Object> props = metricConfig.getProps();
+        if (!props.isEmpty()) {
+            parseHistogramProperties(builder, props);
         }
         return new HistogramWrapper(builder.register());
     }
@@ -126,9 +121,9 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     private MetricsWrapper createSummary(final MetricConfiguration metricConfig) {
         Summary.Builder builder = Summary.build().name(metricConfig.getId()).help(metricConfig.getHelp());
-        Collection<String> metricLabels = metricConfig.getLabels();
-        if (null != metricLabels) {
-            builder.labelNames(metricLabels.toArray(new String[0]));
+        List<String> labels = metricConfig.getLabels();
+        if (!labels.isEmpty()) {
+            builder.labelNames(labels.toArray(new String[0]));
         }
         return new SummaryWrapper(builder.register());
     }
@@ -144,9 +139,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     private GaugeMetricFamily createGaugeMetricFamily(final MetricConfiguration metricConfig) {
-        Collection<String> labels = metricConfig.getLabels();
-        return null == labels
-                ? new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), 1d)
-                : new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), new ArrayList<>(labels));
+        List<String> labels = metricConfig.getLabels();
+        return labels.isEmpty() ? new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), 1d) : new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), labels);
     }
 }
