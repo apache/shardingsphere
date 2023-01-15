@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,9 +34,6 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedDatabaseDiscoveryDefinitionRule extends AbstractExpectedIdentifierSQLSegment {
-    
-    @XmlAttribute(name = "rule-name")
-    private String name;
     
     @XmlElement(name = "data-source")
     private Collection<String> dataSources;
