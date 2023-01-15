@@ -30,10 +30,6 @@ import java.lang.reflect.Method;
  */
 public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS);
-    }
-    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         TimeRecorder.INSTANCE.record();
@@ -42,7 +38,7 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         try {
-            MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> optional.observe(TimeRecorder.INSTANCE.getElapsedTime()));
+            MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).observe(TimeRecorder.INSTANCE.getElapsedTime());
         } finally {
             TimeRecorder.INSTANCE.clean();
         }

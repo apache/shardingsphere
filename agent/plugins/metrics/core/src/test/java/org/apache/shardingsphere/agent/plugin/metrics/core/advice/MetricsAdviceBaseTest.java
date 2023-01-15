@@ -33,28 +33,28 @@ public abstract class MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        MetricsPool.get(MetricIds.PARSED_INSERT_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_UPDATE_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_DELETE_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_SELECT_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_DDL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_DCL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_DAL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_TCL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_RQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_RDL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PARSED_RAL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.ROUTED_INSERT_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.ROUTED_UPDATE_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.ROUTED_DELETE_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.ROUTED_SELECT_SQL).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.ROUTED_TABLES).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_REQUESTS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
-        MetricsPool.get(MetricIds.PROXY_ROLLBACK_TRANSACTIONS).ifPresent(optional -> ((FixtureWrapper) optional).reset());
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_INSERT_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_UPDATE_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DELETE_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_SELECT_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DDL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DCL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DAL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_TCL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RDL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RAL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_INSERT_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_UPDATE_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DELETE_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_SELECT_SQL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_TABLES)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUESTS)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_ROLLBACK_TRANSACTIONS)).reset();
     }
 }

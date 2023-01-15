@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,21 +38,14 @@ public final class MetricsPool {
     }
     
     /**
-     * Create metrics wrapper.
+     * Get metrics wrapper.
      *
-     * @param id metrics wrapper ID
-     */
-    public static void create(final String id) {
-        METRICS_POOL.putIfAbsent(id, metricsWrapperFactory.create(id));
-    }
-    
-    /**
-     * Get the metrics wrapper.
-     *
-     * @param id metrics wrapper ID
+     * @param id metric ID
      * @return metrics wrapper
+     * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
-    public static Optional<MetricsWrapper> get(final String id) {
-        return Optional.ofNullable(METRICS_POOL.get(id));
+    public static MetricsWrapper get(final String id) {
+        MetricsWrapper result = METRICS_POOL.get(id);
+        return null != result ? result : METRICS_POOL.computeIfAbsent(id, metricsWrapperFactory::create);
     }
 }
