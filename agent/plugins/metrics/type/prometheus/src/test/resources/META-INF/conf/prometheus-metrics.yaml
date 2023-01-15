@@ -18,15 +18,12 @@
 metrics:
   - id: a
     type: COUNTER
-    name: proxy_requests_total
     help: Total requests of ShardingSphere-Proxy
   - id: b
     type: GAUGE
-    name: proxy_current_connections
     help: Current connections of ShardingSphere-Proxy
   - id: c
     type: HISTOGRAM
-    name: proxy_execute_latency_millis
     help: Executor latency millis of ShardingSphere-Proxy
     labels:
       - name
@@ -40,7 +37,6 @@ metrics:
         - value
   - id: d
     type: HISTOGRAM
-    name: proxy_execute_latency_seconds
     props:
       buckets:
         type: linear
@@ -49,24 +45,20 @@ metrics:
         count: 10
   - id: e
     type: SUMMARY
-    name: proxy_execute_latency_mins
     help: proxy execute latency mins
     props:
   - id: proxy_info
-    name: proxy_info
     type: GaugeMetricFamily
     help: proxy information
     labels:
       - name
   - id: build_info
-    name: build_info
     type: GaugeMetricFamily
     help: build information
     labels:
       - version
       - name
   - id: meta_data_info
-    name: meta_data_info
     type: GaugeMetricFamily
     help: meta data information
     labels:
