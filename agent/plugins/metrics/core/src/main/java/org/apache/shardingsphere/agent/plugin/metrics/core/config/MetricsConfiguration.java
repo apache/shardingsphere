@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.yaml;
+package org.apache.shardingsphere.agent.plugin.metrics.core.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Optional;
 
 /**
- * YAML metrics configuration.
+ * Metric configuration.
  */
-@Getter
-@Setter
-public final class YamlMetricsConfiguration {
+@RequiredArgsConstructor
+public final class MetricsConfiguration {
     
-    private Collection<YamlMetricConfiguration> metrics = new LinkedList<>();
+    private final Collection<MetricConfiguration> metrics;
+    
+    /**
+     * Find metric configuration.
+     * 
+     * @param id metric ID
+     * @return metric configuration
+     */
+    public Optional<MetricConfiguration> find(final String id) {
+        return metrics.stream().filter(each -> id.equals(each.getId())).findFirst();
+    }
 }

@@ -24,15 +24,15 @@ import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricsConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.loader.YamlMetricConfigurationsLoader;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.swapper.YamlMetricsConfigurationSwapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.CounterWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.GaugeWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.HistogramWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.SummaryWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.yaml.YamlMetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.yaml.YamlMetricsConfiguration;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,24 +44,19 @@ import java.util.Optional;
  */
 public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
-    private static YamlMetricsConfiguration metricsConfig;
+    private static final MetricsConfiguration METRICS_CONFIG;
     
     static {
-        parseMetricsYAML();
-    }
-    
-    private static void parseMetricsYAML() {
-        InputStream inputStream = PrometheusWrapperFactory.class.getResourceAsStream("/META-INF/conf/prometheus-metrics.yaml");
-        metricsConfig = new Yaml().loadAs(inputStream, YamlMetricsConfiguration.class);
+        METRICS_CONFIG = YamlMetricsConfigurationSwapper.swap(YamlMetricConfigurationsLoader.load(PrometheusWrapperFactory.class.getResourceAsStream("/META-INF/conf/prometheus-metrics.yaml")));
     }
     
     @Override
     public Optional<MetricsWrapper> create(final String id) {
-        Optional<YamlMetricConfiguration> metricConfig = findMetric(id);
+        Optional<MetricConfiguration> metricConfig = METRICS_CONFIG.find(id);
         return metricConfig.isPresent() ? create(metricConfig.get()) : Optional.empty();
     }
     
-    private Optional<MetricsWrapper> create(final YamlMetricConfiguration metricConfig) {
+    private Optional<MetricsWrapper> create(final MetricConfiguration metricConfig) {
         if (null == metricConfig.getType()) {
             return Optional.empty();
         }
@@ -79,11 +74,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }
     }
     
-    private Optional<YamlMetricConfiguration> findMetric(final String id) {
-        return metricsConfig.getMetrics().stream().filter(each -> id.equals(each.getId())).findFirst();
-    }
-    
-    private MetricsWrapper createCounter(final YamlMetricConfiguration metricConfig) {
+    private MetricsWrapper createCounter(final MetricConfiguration metricConfig) {
         Counter.Builder builder = Counter.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         List<String> metricLabels = (List<String>) metricConfig.getLabels();
         if (null != metricLabels) {
@@ -92,7 +83,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return new CounterWrapper(builder.register());
     }
     
-    private MetricsWrapper createGauge(final YamlMetricConfiguration metricConfig) {
+    private MetricsWrapper createGauge(final MetricConfiguration metricConfig) {
         Gauge.Builder builder = Gauge.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
@@ -101,7 +92,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return new GaugeWrapper(builder.register());
     }
     
-    private MetricsWrapper createHistogram(final YamlMetricConfiguration metricConfig) {
+    private MetricsWrapper createHistogram(final MetricConfiguration metricConfig) {
         Histogram.Builder builder = Histogram.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
@@ -133,7 +124,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }
     }
     
-    private MetricsWrapper createSummary(final YamlMetricConfiguration metricConfig) {
+    private MetricsWrapper createSummary(final MetricConfiguration metricConfig) {
         Summary.Builder builder = Summary.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         Collection<String> metricLabels = metricConfig.getLabels();
         if (null != metricLabels) {
@@ -145,19 +136,14 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     /**
      * Create gauge metric family.
      *
-     * @param id string
+     * @param id metric id
      * @return gauge metric family
      */
     public Optional<GaugeMetricFamily> createGaugeMetricFamily(final String id) {
-        Optional<YamlMetricConfiguration> metricMap = findMetric(id);
-        if (!metricMap.isPresent()) {
-            return Optional.empty();
-        }
-        YamlMetricConfiguration metricConfig = metricMap.get();
-        return "GAUGEMETRICFAMILY".equalsIgnoreCase(metricConfig.getType()) ? Optional.of(createGaugeMetricFamily(metricConfig)) : Optional.empty();
+        return METRICS_CONFIG.find(id).filter(optional -> "GAUGEMETRICFAMILY".equalsIgnoreCase(optional.getType())).map(this::createGaugeMetricFamily);
     }
     
-    private GaugeMetricFamily createGaugeMetricFamily(final YamlMetricConfiguration metricConfig) {
+    private GaugeMetricFamily createGaugeMetricFamily(final MetricConfiguration metricConfig) {
         Collection<String> labels = metricConfig.getLabels();
         return null == labels
                 ? new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), 1d)
