@@ -174,7 +174,7 @@ services:
 | routed_select_sql_total           | COUNTER           | SELECT 的路由总数                                                                |
 | routed_data_sources_total         | COUNTER           | 数据源路由总数                                                                    |
 | routed_tables_total               | COUNTER           | 表路由总数                                                                       |
-| proxy_info                        | GAUGE             | ShardingSphere-Proxy 状态信息。1 表示正常状态；2 表示熔断状态                         |
+| proxy_state                       | GaugeMetricFamily | ShardingSphere-Proxy 状态信息。1 表示正常状态；2 表示熔断状态                         |
 | proxy_meta_data_info              | GaugeMetricFamily | ShardingSphere-Proxy 元数据信息，schema_count：逻辑库数量， database_count：数据源数量 |
 | proxy_current_connections         | GAUGE             | ShardingSphere-Proxy 的当前连接数                                                 |
 | proxy_requests_total              | COUNTER           | ShardingSphere-Proxy 的接受请求总数                                               |

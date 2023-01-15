@@ -22,44 +22,36 @@ import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Proxy information collector.
+ * Proxy state collector.
  */
-public final class ProxyInfoCollector extends Collector {
+public final class ProxyStateCollector extends Collector {
     
     private static final String PROXY_STATE = "state";
     
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
-    
-    private static final ConcurrentHashMap<StateType, Integer> PROXY_STATES = new ConcurrentHashMap<>();
-    
-    static {
-        PROXY_STATES.put(StateType.OK, 1);
-        PROXY_STATES.put(StateType.CIRCUIT_BREAK, 2);
-    }
     
     @Override
     public List<MetricFamilySamples> collect() {
         if (null == ProxyContext.getInstance().getContextManager()) {
             return Collections.emptyList();
         }
-        Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
+        Optional<GaugeMetricFamily> proxyState = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_STATE);
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
-        if (!proxyInfo.isPresent() || !stateContext.isPresent()) {
+        if (!proxyState.isPresent() || !stateContext.isPresent()) {
             return Collections.emptyList();
         }
         List<MetricFamilySamples> result = new LinkedList<>();
-        proxyInfo.get().addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATES.get(stateContext.get().getCurrentState()));
-        result.add(proxyInfo.get());
+        // TODO use original ordinal to display state value, zero should be the 1st ordinal.
+        proxyState.get().addMetric(Collections.singletonList(PROXY_STATE), stateContext.get().getCurrentState().ordinal() + 1);
+        result.add(proxyState.get());
         return result;
     }
 }

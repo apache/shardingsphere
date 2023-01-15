@@ -82,9 +82,9 @@ metrics:
     help: Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases
     labels:
       - name
-  - id: proxy_info
+  - id: proxy_state
     type: GaugeMetricFamily
-    help: Status information of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK
+    help: State of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK
     labels:
       - name
   - id: proxy_current_connections
