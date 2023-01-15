@@ -134,7 +134,7 @@ public final class AgentClassLoaderTest {
         );
     }
 
-    private String getJarFilePath(Class clazz) throws URISyntaxException {
+    private String getJarFilePath(final Class clazz) throws URISyntaxException {
         final URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
         return Paths.get(url.toURI()).toString();
     }
