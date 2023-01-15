@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class RequestsCountAdviceTest extends MetricsAdviceBaseTest {
@@ -39,7 +38,6 @@ public final class RequestsCountAdviceTest extends MetricsAdviceBaseTest {
     public void assertCountRequests() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_REQUESTS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUESTS).get()).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUESTS)).getFixtureValue(), is(1d));
     }
 }

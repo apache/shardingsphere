@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,8 +41,7 @@ public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTe
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).get()).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS)).getFixtureValue(), is(1d));
     }
     
     private Method mockMethod(final String methodName) {

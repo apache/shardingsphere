@@ -30,7 +30,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
@@ -42,11 +41,9 @@ public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext);
-        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).get();
-        assertTrue(MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).isPresent());
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES);
         assertThat(wrapper.getFixtureValue(), is(1d));
-        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_TABLES).get();
-        assertTrue(MetricsPool.get(MetricIds.ROUTED_TABLES).isPresent());
+        wrapper = (FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_TABLES);
         assertThat(wrapper.getFixtureValue(), is(1d));
     }
 }

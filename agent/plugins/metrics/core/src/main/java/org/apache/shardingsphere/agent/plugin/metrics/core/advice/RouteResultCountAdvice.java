@@ -32,11 +32,6 @@ import java.lang.reflect.Method;
  */
 public final class RouteResultCountAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.ROUTED_DATA_SOURCES);
-        MetricsPool.create(MetricIds.ROUTED_TABLES);
-    }
-    
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         if (null == result) {
@@ -44,8 +39,8 @@ public final class RouteResultCountAdvice implements InstanceMethodAdvice {
         }
         for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
             RouteMapper dataSourceMapper = each.getDataSourceMapper();
-            MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).ifPresent(optional -> optional.inc(dataSourceMapper.getActualName()));
-            each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTED_TABLES).ifPresent(optional -> optional.inc(table.getActualName())));
+            MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).inc(dataSourceMapper.getActualName());
+            each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTED_TABLES).inc(table.getActualName()));
         }
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 
 import java.lang.reflect.Method;
@@ -30,12 +29,8 @@ import java.lang.reflect.Method;
  */
 public final class RollbackTransactionsCountAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.PROXY_ROLLBACK_TRANSACTIONS);
-    }
-    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(MetricIds.PROXY_ROLLBACK_TRANSACTIONS).ifPresent(MetricsWrapper::inc);
+        MetricsPool.get(MetricIds.PROXY_ROLLBACK_TRANSACTIONS).inc();
     }
 }

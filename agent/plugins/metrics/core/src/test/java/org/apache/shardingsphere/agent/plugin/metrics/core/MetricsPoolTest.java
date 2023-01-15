@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core;
 
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MetricsPoolTest {
     
     @Test
-    public void assertCreate() {
+    public void assertGet() {
         MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
-        MetricsPool.create("test");
-        assertTrue(MetricsPool.get("test").isPresent());
+        assertThat(MetricsPool.get("test"), instanceOf(FixtureWrapper.class));
     }
 }
