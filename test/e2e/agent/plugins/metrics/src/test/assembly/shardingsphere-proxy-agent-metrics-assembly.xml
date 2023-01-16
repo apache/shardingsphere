@@ -53,7 +53,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>src/test/assembly/bin</directory>
+            <directory>${maven.multiModuleProjectDirectory}/distribution/proxy/src/main/resources/bin</directory>
             <lineEnding>unix</lineEnding>
             <includes>
                 <include>*.sh</include>

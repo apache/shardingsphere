@@ -24,4 +24,4 @@ ADD target/${APP_NAME}.tar.gz /opt
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait
 RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy-agent-metrics
-ENTRYPOINT /wait && /opt/shardingsphere-proxy-agent-metrics/bin/start.sh && tail -f /opt/shardingsphere-proxy-agent-metrics/logs/stdout.log
+ENTRYPOINT /wait && /opt/shardingsphere-proxy-agent-metrics/bin/start.sh -g && tail -f /opt/shardingsphere-proxy-agent-metrics/logs/stdout.log
