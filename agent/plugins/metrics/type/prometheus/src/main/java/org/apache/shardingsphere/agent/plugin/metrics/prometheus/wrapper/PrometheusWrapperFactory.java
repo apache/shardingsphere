@@ -52,16 +52,6 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return create(getMetricConfiguration(id));
     }
     
-    /**
-     * Get metric configuration.
-     *
-     * @param id metric id
-     * @return metric configuration
-     */
-    public MetricConfiguration getMetricConfiguration(final String id) {
-        return METRICS_CONFIG.get(id);
-    }
-    
     private MetricsWrapper create(final MetricConfiguration metricConfig) {
         switch (metricConfig.getType().toUpperCase()) {
             case "COUNTER":
@@ -75,6 +65,16 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
             default:
                 throw new UnsupportedOperationException(String.format("Can not support type `%s`.", metricConfig.getType()));
         }
+    }
+    
+    /**
+     * Get metric configuration.
+     *
+     * @param id metric id
+     * @return metric configuration
+     */
+    public MetricConfiguration getMetricConfiguration(final String id) {
+        return METRICS_CONFIG.get(id);
     }
     
     private MetricsWrapper createCounter(final MetricConfiguration metricConfig) {
