@@ -4859,7 +4859,6 @@
     
     <select sql-case-id="select_string_constant_type_cast">
         <projections start-index="7" stop-index="25">
-            <!-- TODO Fix this case after supported string const type cast syntax-->
             <expression-projection text="int4 '1'" start-index="7" stop-index="14">
                 <expr>
                     <type-cast-expression>
