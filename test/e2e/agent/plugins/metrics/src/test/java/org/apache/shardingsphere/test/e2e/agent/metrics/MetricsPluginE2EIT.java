@@ -88,7 +88,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     private Collection<String> buildMetricsNames() {
         Collection<String> result = new LinkedHashSet<>();
         result.add(PROXY_REQUESTS);
-        result.add(PROXY_CURRENT_CONNECTIONS);
+        result.add(PROXY_CONNECTION_TOTAL);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
         result.add(ROUTED_SELECT_SQL);
         result.add(ROUTED_UPDATE_SQL);
