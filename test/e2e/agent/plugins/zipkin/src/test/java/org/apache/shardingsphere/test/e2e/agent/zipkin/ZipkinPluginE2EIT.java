@@ -29,7 +29,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
@@ -70,11 +69,11 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     }
     
     private void assertTraces() throws IOException {
-        String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/";
-        String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/";
-        String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/";
-        assertFalse(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).isEmpty());
-        assertFalse(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).isEmpty());
-        assertFalse(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).isEmpty());
+        String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/&limit=1000";
+        String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/&limit=1000";
+        String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/&limit=1000";
+        assertThat(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).size(), is(30));
+        assertThat(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).size(), is(77));
+        assertThat(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).size(), is(79));
     }
 }
