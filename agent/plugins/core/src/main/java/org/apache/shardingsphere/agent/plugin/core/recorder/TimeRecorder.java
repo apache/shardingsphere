@@ -48,7 +48,7 @@ public enum TimeRecorder {
         try {
             return getElapsedTime(recordPointMark);
         } finally {
-            CURRENT_RECORDER.get().remove(recordPointMark.getMark());
+            clean(recordPointMark);
         }
     }
     
@@ -58,5 +58,9 @@ public enum TimeRecorder {
     
     private boolean isRecorded(final RecordPointMark recordPointMark) {
         return null != CURRENT_RECORDER.get().get(recordPointMark.getMark());
+    }
+    
+    private void clean(final RecordPointMark recordPointMark) {
+        CURRENT_RECORDER.get().remove(recordPointMark.getMark());
     }
 }
