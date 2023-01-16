@@ -132,7 +132,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_ROWS_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
-                    dataLength = resultSet.getBigDecimal("TABLE_ROWS");
+                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
                 }
             }
             try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_DATA_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
