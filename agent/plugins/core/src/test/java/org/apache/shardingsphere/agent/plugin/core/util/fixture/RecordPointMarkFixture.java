@@ -20,6 +20,9 @@ package org.apache.shardingsphere.agent.plugin.core.util.fixture;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.core.recorder.RecordPointMark;
 
+/**
+ * Record pointmark fixture.
+ */
 @RequiredArgsConstructor
 public final class RecordPointMarkFixture implements RecordPointMark {
     

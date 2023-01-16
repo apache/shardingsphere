@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.agent.plugin.core.recorder;
 
+/**
+ * Record point mark.
+ */
 public interface RecordPointMark {
     
     /**

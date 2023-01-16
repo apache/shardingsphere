@@ -21,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
 
+/**
+ * Advice record point mark.
+ */
 @RequiredArgsConstructor
 public final class AdviceRecordPointMark implements RecordPointMark {
     
