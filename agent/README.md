@@ -45,6 +45,8 @@ apache-shardingsphere-{latest.release.version}-shardingsphere-proxy-bin/agent/sh
 Start agent with `-g` option by bin/start.sh
 ```shell
 sh start.sh -g
+# following commands also work
+sh start.sh --agent
 ```
 
 ### Quick Start with JDBC
