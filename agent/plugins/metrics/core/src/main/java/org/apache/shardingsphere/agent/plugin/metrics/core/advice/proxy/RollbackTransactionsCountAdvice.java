@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 
 import java.lang.reflect.Method;
 
@@ -32,6 +32,6 @@ public final class RollbackTransactionsCountAdvice implements InstanceMethodAdvi
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(PROXY_ROLLBACK_TRANSACTIONS_METRIC_KEY).inc();
+        MetricsWrapperRegistry.get(PROXY_ROLLBACK_TRANSACTIONS_METRIC_KEY).inc();
     }
 }

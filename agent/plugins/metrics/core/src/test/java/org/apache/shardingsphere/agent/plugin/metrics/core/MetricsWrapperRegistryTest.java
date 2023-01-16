@@ -24,11 +24,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MetricsPoolTest {
+public final class MetricsWrapperRegistryTest {
     
     @Test
     public void assertGet() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
-        assertThat(MetricsPool.get("test"), instanceOf(FixtureWrapper.class));
+        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
+        assertThat(MetricsWrapperRegistry.get("test"), instanceOf(FixtureWrapper.class));
     }
 }

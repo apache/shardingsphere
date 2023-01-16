@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
@@ -40,7 +40,7 @@ public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTe
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
-        assertThat(((FixtureWrapper) MetricsPool.get("proxy_current_connections")).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_current_connections")).getFixtureValue(), is(1d));
     }
     
     private Method mockMethod(final String methodName) {

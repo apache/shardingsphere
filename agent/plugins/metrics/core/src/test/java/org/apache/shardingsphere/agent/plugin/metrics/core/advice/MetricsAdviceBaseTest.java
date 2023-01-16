@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
 import org.junit.After;
@@ -27,33 +27,33 @@ public abstract class MetricsAdviceBaseTest {
     
     @BeforeClass
     public static void setup() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
+        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
     }
     
     @After
     public void reset() {
-        ((FixtureWrapper) MetricsPool.get("parsed_insert_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_update_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_delete_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_select_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_ddl_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_dcl_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_dal_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_tcl_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_rql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_rdl_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("parsed_ral_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("routed_insert_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("routed_update_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("routed_delete_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("routed_select_sql_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("routed_data_sources_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("routed_tables_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("proxy_execute_latency_millis")).reset();
-        ((FixtureWrapper) MetricsPool.get("proxy_execute_errors_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("proxy_current_connections")).reset();
-        ((FixtureWrapper) MetricsPool.get("proxy_requests_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("proxy_commit_transactions_total")).reset();
-        ((FixtureWrapper) MetricsPool.get("proxy_rollback_transactions_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_insert_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_update_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_delete_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_select_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_ddl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_dcl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_dal_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_tcl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rdl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_ral_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_insert_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_update_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_delete_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_select_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_data_sources_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_tables_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_latency_millis")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_errors_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_current_connections")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_requests_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_commit_transactions_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_rollback_transactions_total")).reset();
     }
 }

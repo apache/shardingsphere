@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -42,8 +42,8 @@ public final class RouteResultCountAdvice implements InstanceMethodAdvice {
         }
         for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
             RouteMapper dataSourceMapper = each.getDataSourceMapper();
-            MetricsPool.get(ROUTED_DATA_SOURCES_METRIC_KEY).inc(dataSourceMapper.getActualName());
-            each.getTableMappers().forEach(table -> MetricsPool.get(ROUTED_TABLES_METRIC_KEY).inc(table.getActualName()));
+            MetricsWrapperRegistry.get(ROUTED_DATA_SOURCES_METRIC_KEY).inc(dataSourceMapper.getActualName());
+            each.getTableMappers().forEach(table -> MetricsWrapperRegistry.get(ROUTED_TABLES_METRIC_KEY).inc(table.getActualName()));
         }
     }
 }

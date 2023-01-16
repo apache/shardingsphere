@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
@@ -36,6 +36,6 @@ public final class RollbackTransactionsCountAdviceTest extends MetricsAdviceBase
     @Test
     public void assertMethod() {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{});
-        assertThat(((FixtureWrapper) MetricsPool.get("proxy_rollback_transactions_total")).getFixtureValue(), is(1D));
+        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_rollback_transactions_total")).getFixtureValue(), is(1D));
     }
 }

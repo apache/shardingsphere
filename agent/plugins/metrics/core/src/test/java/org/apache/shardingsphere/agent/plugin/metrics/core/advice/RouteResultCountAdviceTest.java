@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -40,9 +40,9 @@ public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext);
-        FixtureWrapper wrapper = (FixtureWrapper) MetricsPool.get("routed_data_sources_total");
+        FixtureWrapper wrapper = (FixtureWrapper) MetricsWrapperRegistry.get("routed_data_sources_total");
         assertThat(wrapper.getFixtureValue(), is(1d));
-        wrapper = (FixtureWrapper) MetricsPool.get("routed_tables_total");
+        wrapper = (FixtureWrapper) MetricsWrapperRegistry.get("routed_tables_total");
         assertThat(wrapper.getFixtureValue(), is(1d));
     }
 }
