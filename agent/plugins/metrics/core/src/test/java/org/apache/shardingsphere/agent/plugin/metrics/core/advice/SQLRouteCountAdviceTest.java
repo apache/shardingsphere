@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
@@ -43,29 +42,29 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertInsertRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTED_INSERT_SQL, queryContext);
-    }
-    
-    @Test
-    public void assertSelectRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTED_SELECT_SQL, queryContext);
-    }
-    
-    @Test
-    public void assertDeleteRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTED_DELETE_SQL, queryContext);
+        assertRoute("routed_insert_sql_total", queryContext);
     }
     
     @Test
     public void assertUpdateRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
-        assertRoute(MetricIds.ROUTED_UPDATE_SQL, queryContext);
+        assertRoute("routed_update_sql_total", queryContext);
     }
     
-    public void assertRoute(final String metricIds, final QueryContext queryContext) {
+    @Test
+    public void assertDeleteRoute() {
+        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
+        assertRoute("routed_delete_sql_total", queryContext);
+    }
+    
+    @Test
+    public void assertSelectRoute() {
+        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
+        assertRoute("routed_select_sql_total", queryContext);
+    }
+    
+    public void assertRoute(final String metricId, final QueryContext queryContext) {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext});
-        assertThat(((FixtureWrapper) MetricsPool.get(metricIds)).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsPool.get(metricId)).getFixtureValue(), is(1d));
     }
 }

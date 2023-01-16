@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -32,6 +31,10 @@ import java.lang.reflect.Method;
  */
 public final class RouteResultCountAdvice implements InstanceMethodAdvice {
     
+    private static final String ROUTED_DATA_SOURCES_METRIC_KEY = "routed_data_sources_total";
+    
+    private static final String ROUTED_TABLES_METRIC_KEY = "routed_tables_total";
+    
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         if (null == result) {
@@ -39,8 +42,8 @@ public final class RouteResultCountAdvice implements InstanceMethodAdvice {
         }
         for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
             RouteMapper dataSourceMapper = each.getDataSourceMapper();
-            MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES).inc(dataSourceMapper.getActualName());
-            each.getTableMappers().forEach(table -> MetricsPool.get(MetricIds.ROUTED_TABLES).inc(table.getActualName()));
+            MetricsPool.get(ROUTED_DATA_SOURCES_METRIC_KEY).inc(dataSourceMapper.getActualName());
+            each.getTableMappers().forEach(table -> MetricsPool.get(ROUTED_TABLES_METRIC_KEY).inc(table.getActualName()));
         }
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
@@ -41,6 +40,28 @@ import java.lang.reflect.Method;
  */
 public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
+    private static final String PARSED_INSERT_SQL_METRIC_KEY = "parsed_insert_sql_total";
+    
+    private static final String PARSED_UPDATE_SQL_METRIC_KEY = "parsed_update_sql_total";
+    
+    private static final String PARSED_DELETE_SQL_METRIC_KEY = "parsed_delete_sql_total";
+    
+    private static final String PARSED_SELECT_SQL_METRIC_KEY = "parsed_select_sql_total";
+    
+    private static final String PARSED_DDL_METRIC_KEY = "parsed_ddl_total";
+    
+    private static final String PARSED_DCL_METRIC_KEY = "parsed_dcl_total";
+    
+    private static final String PARSED_DAL_METRIC_KEY = "parsed_dal_total";
+    
+    private static final String PARSED_TCL_METRIC_KEY = "parsed_tcl_total";
+    
+    private static final String PARSED_RQL_METRIC_KEY = "parsed_rql_total";
+    
+    private static final String PARSED_RDL_METRIC_KEY = "parsed_rdl_total";
+    
+    private static final String PARSED_RAL_METRIC_KEY = "parsed_ral_total";
+    
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         SQLStatement sqlStatement = (SQLStatement) result;
@@ -50,31 +71,31 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
     private void countSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.PARSED_INSERT_SQL).inc();
-        } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.PARSED_DELETE_SQL).inc();
+            MetricsPool.get(PARSED_INSERT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.PARSED_UPDATE_SQL).inc();
+            MetricsPool.get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
+        } else if (sqlStatement instanceof DeleteStatement) {
+            MetricsPool.get(PARSED_DELETE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.PARSED_SELECT_SQL).inc();
+            MetricsPool.get(PARSED_SELECT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DDLStatement) {
-            MetricsPool.get(MetricIds.PARSED_DDL).inc();
+            MetricsPool.get(PARSED_DDL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DCLStatement) {
-            MetricsPool.get(MetricIds.PARSED_DCL).inc();
+            MetricsPool.get(PARSED_DCL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DALStatement) {
-            MetricsPool.get(MetricIds.PARSED_DAL).inc();
+            MetricsPool.get(PARSED_DAL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof TCLStatement) {
-            MetricsPool.get(MetricIds.PARSED_TCL).inc();
+            MetricsPool.get(PARSED_TCL_METRIC_KEY).inc();
         }
     }
     
     private void countDistSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof RQLStatement) {
-            MetricsPool.get(MetricIds.PARSED_RQL).inc();
+            MetricsPool.get(PARSED_RQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RDLStatement) {
-            MetricsPool.get(MetricIds.PARSED_RDL).inc();
+            MetricsPool.get(PARSED_RDL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RALStatement) {
-            MetricsPool.get(MetricIds.PARSED_RAL).inc();
+            MetricsPool.get(PARSED_RAL_METRIC_KEY).inc();
         }
     }
 }
