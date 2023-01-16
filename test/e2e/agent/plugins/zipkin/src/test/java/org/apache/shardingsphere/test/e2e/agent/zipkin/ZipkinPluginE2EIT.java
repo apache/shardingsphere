@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
@@ -54,12 +55,12 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
             Thread.sleep(Long.parseLong(props.getProperty("zipkin.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
-        // TODO add more detailed assert for zipkin
         assertSpans();
         assertTraces();
     }
     
-    private void assertSpans() throws IOException {
+    @SneakyThrows(IOException.class)
+    private void assertSpans() {
         String spansURL = url + "spans?serviceName=" + serviceName;
         List<?> spans = OkHttpUtils.getInstance().get(spansURL, List.class);
         assertThat(spans.size(), is(3));
@@ -68,10 +69,11 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
         assertTrue(spans.contains("/shardingsphere/rootinvoke/"));
     }
     
-    private void assertTraces() throws IOException {
-        String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/&limit=1000";
-        String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/&limit=1000";
-        String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/&limit=1000";
+    @SneakyThrows(IOException.class)
+    private void assertTraces() {
+        String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/&limit=100";
+        String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/&limit=100";
+        String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/&limit=100";
         assertThat(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).size(), is(30));
         assertThat(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).size(), is(77));
         assertThat(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).size(), is(79));
