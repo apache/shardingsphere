@@ -46,6 +46,8 @@ public final class MetricIds {
     
     public static final String PARSED_RAL = "parsed_ral_total";
     
+    public static final String PARSED_RUL = "parsed_rul_total";
+    
     public static final String ROUTED_INSERT_SQL = "routed_insert_sql_total";
     
     public static final String ROUTED_UPDATE_SQL = "routed_update_sql_total";

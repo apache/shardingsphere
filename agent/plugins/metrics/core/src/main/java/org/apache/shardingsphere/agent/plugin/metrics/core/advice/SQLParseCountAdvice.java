@@ -24,6 +24,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -75,6 +76,8 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
             MetricsPool.get(MetricIds.PARSED_RDL).inc();
         } else if (sqlStatement instanceof RALStatement) {
             MetricsPool.get(MetricIds.PARSED_RAL).inc();
+        } else if (sqlStatement instanceof RULStatement) {
+            MetricsPool.get(MetricIds.PARSED_RUL).inc();
         }
     }
 }
