@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy;
 
 import io.prometheus.client.Collector;
-import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -35,24 +33,16 @@ public final class ProxyStateCollector extends Collector {
     
     public static final String PROXY_STATE_METRIC_KEY = "proxy_state";
     
-    private static final String PROXY_STATE = "state";
-    
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {
-        if (null == ProxyContext.getInstance().getContextManager()) {
-            return Collections.emptyList();
-        }
-        GaugeMetricFamily proxyState = FACTORY.createGaugeMetricFamily(PROXY_STATE_METRIC_KEY);
-        Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
-        if (!stateContext.isPresent()) {
-            return Collections.emptyList();
-        }
         List<MetricFamilySamples> result = new LinkedList<>();
-        // TODO use original ordinal to display state value, zero should be the 1st ordinal.
-        proxyState.addMetric(Collections.singletonList(PROXY_STATE), stateContext.get().getCurrentState().ordinal() + 1);
-        result.add(proxyState);
+        if (null == ProxyContext.getInstance().getContextManager()) {
+            return result;
+        }
+        Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
+        stateContext.ifPresent(optional -> result.add(FACTORY.createGaugeMetricFamily(PROXY_STATE_METRIC_KEY, stateContext.get().getCurrentState().ordinal())));
         return result;
     }
 }

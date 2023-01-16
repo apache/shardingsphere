@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.core.util;
 
+import org.apache.shardingsphere.agent.plugin.core.recorder.TimeRecorder;
+import org.apache.shardingsphere.agent.plugin.core.util.fixture.RecordPointMarkFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +37,13 @@ public final class TimeRecorderTest {
     
     @Test
     public void assertGetElapsedTimeWithRecorded() throws InterruptedException {
-        TimeRecorder.INSTANCE.record();
+        TimeRecorder.INSTANCE.record(new RecordPointMarkFixture(TimeRecorderTest.class));
         Thread.sleep(5L);
-        assertThat(TimeRecorder.INSTANCE.getElapsedTime(), greaterThanOrEqualTo(5L));
+        assertThat(TimeRecorder.INSTANCE.getElapsedTime(new RecordPointMarkFixture(TimeRecorderTest.class)), greaterThanOrEqualTo(5L));
     }
     
     @Test
     public void assertGetElapsedTimeWithoutRecorded() {
-        assertThat(TimeRecorder.INSTANCE.getElapsedTime(), is(0L));
+        assertThat(TimeRecorder.INSTANCE.getElapsedTime(new RecordPointMarkFixture(TimeRecorderTest.class)), is(0L));
     }
 }
