@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.agent.plugin.core.util;
 
-import org.apache.shardingsphere.agent.plugin.core.recorder.TimeRecorder;
+import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public final class TimeRecorderTest {
+public final class MethodTimeRecorderTest {
     
     @Test
     public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
-        TimeRecorder.record(Object.class.getDeclaredMethod("toString"));
+        new MethodTimeRecorder(Object.class, Object.class.getDeclaredMethod("toString")).record();
         Thread.sleep(5L);
-        assertThat(TimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
+        assertThat(new MethodTimeRecorder(Object.class, Object.class.getDeclaredMethod("toString")).getElapsedTimeAndClean(), greaterThanOrEqualTo(5L));
     }
     
     @Test
     public void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
-        assertThat(TimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), is(0L));
+        assertThat(new MethodTimeRecorder(Object.class, Object.class.getDeclaredMethod("toString")).getElapsedTimeAndClean(), is(0L));
     }
 }

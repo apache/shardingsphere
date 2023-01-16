@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.logging.file.advice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.recorder.TimeRecorder;
+import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 
 import java.lang.reflect.Method;
 
@@ -31,11 +31,11 @@ public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
-        TimeRecorder.record(method);
+        new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class, method).record();
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
-        log.info("Build meta data contexts finished, cost {} milliseconds.", TimeRecorder.getElapsedTimeAndClean(method));
+        log.info("Build meta data contexts finished, cost {} milliseconds.", new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class, method).getElapsedTimeAndClean());
     }
 }

@@ -17,53 +17,52 @@
 
 package org.apache.shardingsphere.agent.plugin.core.recorder;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Time recorder.
+ * Method time recorder.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TimeRecorder {
+public final class MethodTimeRecorder {
     
-    private static final ThreadLocal<Map<Method, Long>> CURRENT_RECORDER = ThreadLocal.withInitial(HashMap::new);
+    private static final ThreadLocal<Map<String, Long>> CURRENT_RECORDER = ThreadLocal.withInitial(HashMap::new);
+    
+    private final String key;
+    
+    public MethodTimeRecorder(final Class<?> adviceClass, final Method targetMethod) {
+        key = String.format("%s@%s", adviceClass.getCanonicalName(), targetMethod.getName());
+    }
     
     /**
      * Record now.
-     *
-     * @param method method to be recorded
      */
-    public static void record(final Method method) {
-        CURRENT_RECORDER.get().put(method, System.currentTimeMillis());
+    public void record() {
+        CURRENT_RECORDER.get().put(key, System.currentTimeMillis());
     }
     
     /**
      * Get elapsed time and clean.
      *
-     * @param method method to be recorded
      * @return elapsed time
      */
-    public static long getElapsedTimeAndClean(final Method method) {
+    public long getElapsedTimeAndClean() {
         try {
-            return getElapsedTime(method);
+            return getElapsedTime();
         } finally {
-            clean(method);
+            clean();
         }
     }
     
-    private static long getElapsedTime(final Method method) {
-        return isRecorded(method) ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(method) : 0L;
+    private long getElapsedTime() {
+        return isRecorded() ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(key) : 0L;
     }
     
-    private static boolean isRecorded(final Method method) {
-        return null != CURRENT_RECORDER.get().get(method);
+    private boolean isRecorded() {
+        return null != CURRENT_RECORDER.get().get(key);
     }
     
-    private static void clean(final Method method) {
-        CURRENT_RECORDER.get().remove(method);
+    private void clean() {
+        CURRENT_RECORDER.get().remove(key);
     }
 }
