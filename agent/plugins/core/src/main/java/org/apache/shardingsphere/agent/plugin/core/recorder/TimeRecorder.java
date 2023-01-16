@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.agent.plugin.core.recorder;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Time recorder.
  */
-public enum TimeRecorder {
-    
-    INSTANCE;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TimeRecorder {
     
     private static final ThreadLocal<Map<String, Long>> CURRENT_RECORDER = ThreadLocal.withInitial(HashMap::new);
     
@@ -34,7 +36,7 @@ public enum TimeRecorder {
      *
      * @param recordPointMark record point mark
      */
-    public void record(final RecordPointMark recordPointMark) {
+    public static void record(final RecordPointMark recordPointMark) {
         CURRENT_RECORDER.get().put(recordPointMark.getMark(), System.currentTimeMillis());
     }
     
@@ -44,7 +46,7 @@ public enum TimeRecorder {
      * @param recordPointMark record point mark
      * @return elapsed time
      */
-    public long getElapsedTimeAndClean(final RecordPointMark recordPointMark) {
+    public static long getElapsedTimeAndClean(final RecordPointMark recordPointMark) {
         try {
             return getElapsedTime(recordPointMark);
         } finally {
@@ -52,15 +54,15 @@ public enum TimeRecorder {
         }
     }
     
-    private long getElapsedTime(final RecordPointMark recordPointMark) {
+    private static long getElapsedTime(final RecordPointMark recordPointMark) {
         return isRecorded(recordPointMark) ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(recordPointMark.getMark()) : 0;
     }
     
-    private boolean isRecorded(final RecordPointMark recordPointMark) {
+    private static boolean isRecorded(final RecordPointMark recordPointMark) {
         return null != CURRENT_RECORDER.get().get(recordPointMark.getMark());
     }
     
-    private void clean(final RecordPointMark recordPointMark) {
+    private static void clean(final RecordPointMark recordPointMark) {
         CURRENT_RECORDER.get().remove(recordPointMark.getMark());
     }
 }

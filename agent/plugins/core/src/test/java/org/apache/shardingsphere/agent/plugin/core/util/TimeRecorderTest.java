@@ -29,13 +29,13 @@ public final class TimeRecorderTest {
     
     @Test
     public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException {
-        TimeRecorder.INSTANCE.record(new RecordPointMarkFixture(TimeRecorderTest.class));
+        TimeRecorder.record(new RecordPointMarkFixture(TimeRecorderTest.class));
         Thread.sleep(5L);
-        assertThat(TimeRecorder.INSTANCE.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), greaterThanOrEqualTo(5L));
+        assertThat(TimeRecorder.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), greaterThanOrEqualTo(5L));
     }
     
     @Test
     public void assertGetElapsedTimeAndCleanWithoutRecorded() {
-        assertThat(TimeRecorder.INSTANCE.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), is(0L));
+        assertThat(TimeRecorder.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), is(0L));
     }
 }

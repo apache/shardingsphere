@@ -34,12 +34,12 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        TimeRecorder.INSTANCE.record(new AdviceRecordPointMark(ExecuteLatencyHistogramAdvice.class, method));
+        TimeRecorder.record(new AdviceRecordPointMark(ExecuteLatencyHistogramAdvice.class, method));
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         MetricsWrapperRegistry.get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY)
-                .observe(TimeRecorder.INSTANCE.getElapsedTimeAndClean(new AdviceRecordPointMark(ExecuteLatencyHistogramAdvice.class, method)));
+                .observe(TimeRecorder.getElapsedTimeAndClean(new AdviceRecordPointMark(ExecuteLatencyHistogramAdvice.class, method)));
     }
 }
