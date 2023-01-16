@@ -35,9 +35,10 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
     public void assertExecuteLatencyHistogram() throws InterruptedException {
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
+        Method method = mock(Method.class);
+        advice.beforeMethod(targetObject, method, new Object[]{});
         Thread.sleep(500L);
-        advice.afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
+        advice.afterMethod(targetObject, method, new Object[]{}, null);
         assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_latency_millis")).getFixtureValue(), greaterThanOrEqualTo(500D));
     }
 }
