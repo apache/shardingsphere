@@ -4882,4 +4882,39 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_constant_with_nested_type_cast">
+        <projections start-index="7" stop-index="60">
+            <expression-projection text="CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" start-index="7" stop-index="60">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <type-cast-expression>
+                                <expression>
+                                    <type-cast-expression>
+                                        <expression>
+                                            <type-cast-expression>
+                                                <expression>
+                                                    <type-cast-expression>
+                                                        <expression>
+                                                            <literal-expression value="1" start-index="18" stop-index="20" />
+                                                        </expression>
+                                                        <data-type>MONEY</data-type>
+                                                    </type-cast-expression>
+                                                </expression>
+                                                <data-type>VARCHAR</data-type>
+                                            </type-cast-expression>
+                                        </expression>
+                                        <data-type>CHAR(10)</data-type>
+                                    </type-cast-expression>
+                                </expression>
+                                <data-type>VARCHAR</data-type>
+                            </type-cast-expression>
+                        </expression>
+                        <data-type>CHAR(4)</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
