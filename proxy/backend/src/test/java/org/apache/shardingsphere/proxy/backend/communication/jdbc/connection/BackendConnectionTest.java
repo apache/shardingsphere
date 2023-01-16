@@ -67,7 +67,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -191,33 +190,6 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
         Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
         connectionPostProcessors.add(connectionPostProcessor);
         Plugins.getMemberAccessor().set(BackendConnection.class.getDeclaredField("connectionPostProcessors"), backendConnection, connectionPostProcessors);
-    }
-    
-    @Test
-    public void assertIsNotSerialExecuteWhenNotInTransaction() {
-        connectionSession.getTransactionStatus().setInTransaction(false);
-        assertFalse(backendConnection.isSerialExecute());
-    }
-    
-    @Test
-    public void assertIsNotSerialExecuteWhenInTransactionAndBaseTransactionType() {
-        connectionSession.getTransactionStatus().setInTransaction(false);
-        connectionSession.getTransactionStatus().setTransactionType(TransactionType.BASE);
-        assertFalse(backendConnection.isSerialExecute());
-    }
-    
-    @Test
-    public void assertIsSerialExecuteWhenInTransactionAndLocalTransactionType() {
-        connectionSession.getTransactionStatus().setTransactionType(TransactionType.LOCAL);
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        assertTrue(backendConnection.isSerialExecute());
-    }
-    
-    @Test
-    public void assertIsSerialExecuteWhenInTransactionAndXaTransactionType() {
-        connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        assertTrue(backendConnection.isSerialExecute());
     }
     
     @SuppressWarnings("unchecked")
