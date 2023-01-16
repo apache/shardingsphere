@@ -158,7 +158,7 @@ services:
 ## Metrics
 
 | Name                              | Type                | Description                                                                                                                            |
-| :-------------------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------------------------------- |
+|:----------------------------------| :------------------ |:---------------------------------------------------------------------------------------------------------------------------------------|
 | build_info                        | GAUGE               | Build information                                                                                                                      |
 | parsed_insert_sql_total           | COUNTER             | Total count of parsed INSERT                                                                                                           |
 | parsed_update_sql_total           | COUNTER             | Total count of parsed UPDATE                                                                                                           |
@@ -171,6 +171,7 @@ services:
 | parsed_rql_total                  | COUNTER             | Total count of parsed RQL                                                                                                              |
 | parsed_rdl_total                  | COUNTER             | Total count of parsed RDL                                                                                                              |
 | parsed_ral_total                  | COUNTER             | Total count of parsed RAL                                                                                                              |
+| parsed_rul_total                  | COUNTER             | Total count of parsed RUL                                                                                                              |
 | routed_insert_sql_total           | COUNTER             | Total count of routed INSERT                                                                                                           |
 | routed_update_sql_total           | COUNTER             | Total count of routed UPDATE                                                                                                           |
 | routed_delete_sql_total           | COUNTER             | Total count of routed DELETE                                                                                                           |
