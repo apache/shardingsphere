@@ -45,7 +45,8 @@ apache-shardingsphere-{latest.release.version}-shardingsphere-proxy-bin/agent/sh
 Start agent with `-g` option by bin/start.sh
 ```shell
 sh start.sh -g
-# following commands also work
+
+# following command also works
 sh start.sh --agent
 ```
 
