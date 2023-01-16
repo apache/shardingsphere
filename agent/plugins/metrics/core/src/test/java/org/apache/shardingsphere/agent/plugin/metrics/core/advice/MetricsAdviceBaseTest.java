@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
 import org.junit.After;
@@ -33,28 +32,28 @@ public abstract class MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_INSERT_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_UPDATE_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DELETE_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_SELECT_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DDL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DCL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_DAL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_TCL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RDL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RAL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_INSERT_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_UPDATE_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DELETE_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_SELECT_SQL)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DATA_SOURCES)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_TABLES)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_REQUESTS)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS)).reset();
-        ((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_ROLLBACK_TRANSACTIONS)).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_insert_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_update_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_delete_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_select_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_ddl_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_dcl_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_dal_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_tcl_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_rql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_rdl_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("parsed_ral_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("routed_insert_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("routed_update_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("routed_delete_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("routed_select_sql_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("routed_data_sources_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("routed_tables_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("proxy_execute_latency_millis")).reset();
+        ((FixtureWrapper) MetricsPool.get("proxy_execute_errors_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("proxy_current_connections")).reset();
+        ((FixtureWrapper) MetricsPool.get("proxy_requests_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("proxy_commit_transactions_total")).reset();
+        ((FixtureWrapper) MetricsPool.get("proxy_rollback_transactions_total")).reset();
     }
 }
