@@ -158,7 +158,7 @@ services:
 ## Metrics
 
 | Name                              | Type                | Description                                                                                                                            |
-| :-------------------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------------------------------- |
+| :-------------------------------- |:--------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
 | build_info                        | GAUGE               | Build information                                                                                                                      |
 | parsed_insert_sql_total           | COUNTER             | Total count of parsed INSERT                                                                                                           |
 | parsed_update_sql_total           | COUNTER             | Total count of parsed UPDATE                                                                                                           |
@@ -177,7 +177,7 @@ services:
 | routed_select_sql_total           | COUNTER             | Total count of routed SELECT                                                                                                           |
 | routed_data_sources_total         | COUNTER             | Total count of data source routed                                                                                                      |
 | routed_tables_total               | COUNTER             | Total count of table routed                                                                                                            |
-| proxy_state                       | GAUGE_METRIC_FAMILY | Status information of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK                                                                |
+| proxy_state                       | GAUGE               | Status information of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK                                                     |
 | proxy_meta_data_info              | GAUGE_METRIC_FAMILY | Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases |
 | proxy_current_connections         | GAUGE               | Current connections of ShardingSphere-Proxy                                                                                            |
 | proxy_requests_total              | COUNTER             | Total requests of ShardingSphere-Proxy                                                                                                 |
