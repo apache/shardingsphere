@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.proxy.Bootstrap;
 
@@ -34,13 +33,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class BuildInfoCollector extends Collector {
     
+    private static final String BUILD_INFO_METRIC_KEY = "build_info";
+    
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     private final boolean isEnhancedForProxy;
     
     @Override
     public List<MetricFamilySamples> collect() {
-        GaugeMetricFamily artifactInfo = FACTORY.createGaugeMetricFamily(MetricIds.BUILD_INFO);
+        GaugeMetricFamily artifactInfo = FACTORY.createGaugeMetricFamily(BUILD_INFO_METRIC_KEY);
         addMetric(artifactInfo, getClass().getPackage());
         if (isEnhancedForProxy) {
             addMetric(artifactInfo, Bootstrap.class.getPackage());

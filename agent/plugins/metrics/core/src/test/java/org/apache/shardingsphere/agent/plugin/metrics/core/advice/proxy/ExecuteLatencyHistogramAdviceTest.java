@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.junit.Test;
 
@@ -39,6 +38,6 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
         advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
         Thread.sleep(500L);
         advice.afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS)).getFixtureValue(), greaterThanOrEqualTo(500D));
+        assertThat(((FixtureWrapper) MetricsPool.get("proxy_execute_latency_millis")).getFixtureValue(), greaterThanOrEqualTo(500D));
     }
 }

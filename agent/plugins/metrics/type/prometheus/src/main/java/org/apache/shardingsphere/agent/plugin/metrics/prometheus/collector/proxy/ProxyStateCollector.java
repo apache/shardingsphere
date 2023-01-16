@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy;
 
 import io.prometheus.client.Collector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,6 +31,8 @@ import java.util.Optional;
  */
 public final class ProxyStateCollector extends Collector {
     
+    public static final String PROXY_STATE_METRIC_KEY = "proxy_state";
+    
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
     
     @Override
@@ -41,7 +42,7 @@ public final class ProxyStateCollector extends Collector {
             return result;
         }
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
-        stateContext.ifPresent(optional -> result.add(FACTORY.createGaugeMetricFamily(MetricIds.PROXY_STATE, stateContext.get().getCurrentState().ordinal())));
+        stateContext.ifPresent(optional -> result.add(FACTORY.createGaugeMetricFamily(PROXY_STATE_METRIC_KEY, stateContext.get().getCurrentState().ordinal())));
         return result;
     }
 }
