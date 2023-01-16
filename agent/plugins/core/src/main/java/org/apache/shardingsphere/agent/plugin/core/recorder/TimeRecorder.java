@@ -48,43 +48,15 @@ public enum TimeRecorder {
         try {
             return getElapsedTime(recordPointMark);
         } finally {
-            clean(recordPointMark);
+            CURRENT_RECORDER.get().remove(recordPointMark.getMark());
         }
     }
     
-    /**
-     * Get elapsed time.
-     *
-     * @param recordPointMark record point mark
-     * @return elapsed time
-     */
-    public long getElapsedTime(final RecordPointMark recordPointMark) {
+    private long getElapsedTime(final RecordPointMark recordPointMark) {
         return isRecorded(recordPointMark) ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(recordPointMark.getMark()) : 0;
     }
     
-    /**
-     * Is recorded.
-     *
-     * @param recordPointMark record point mark
-     * @return whether there are record
-     */
-    public boolean isRecorded(final RecordPointMark recordPointMark) {
+    private boolean isRecorded(final RecordPointMark recordPointMark) {
         return null != CURRENT_RECORDER.get().get(recordPointMark.getMark());
-    }
-    
-    /**
-     * Clean recorded time.
-     *
-     * @param recordPointMark record point mark
-     */
-    public void clean(final RecordPointMark recordPointMark) {
-        CURRENT_RECORDER.get().remove(recordPointMark.getMark());
-    }
-    
-    /**
-     * Clean recorded time.
-     */
-    public void clean() {
-        CURRENT_RECORDER.remove();
     }
 }
