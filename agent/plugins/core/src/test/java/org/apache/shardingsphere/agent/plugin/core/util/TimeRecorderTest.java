@@ -19,8 +19,6 @@ package org.apache.shardingsphere.agent.plugin.core.util;
 
 import org.apache.shardingsphere.agent.plugin.core.recorder.TimeRecorder;
 import org.apache.shardingsphere.agent.plugin.core.util.fixture.RecordPointMarkFixture;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,21 +27,15 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 public final class TimeRecorderTest {
     
-    @Before
-    @After
-    public void reset() {
-        TimeRecorder.INSTANCE.clean();
-    }
-    
     @Test
-    public void assertGetElapsedTimeWithRecorded() throws InterruptedException {
-        TimeRecorder.INSTANCE.record(new RecordPointMarkFixture(TimeRecorderTest.class));
+    public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException {
+        TimeRecorder.record(new RecordPointMarkFixture(TimeRecorderTest.class));
         Thread.sleep(5L);
-        assertThat(TimeRecorder.INSTANCE.getElapsedTime(new RecordPointMarkFixture(TimeRecorderTest.class)), greaterThanOrEqualTo(5L));
+        assertThat(TimeRecorder.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), greaterThanOrEqualTo(5L));
     }
     
     @Test
-    public void assertGetElapsedTimeWithoutRecorded() {
-        assertThat(TimeRecorder.INSTANCE.getElapsedTime(new RecordPointMarkFixture(TimeRecorderTest.class)), is(0L));
+    public void assertGetElapsedTimeAndCleanWithoutRecorded() {
+        assertThat(TimeRecorder.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), is(0L));
     }
 }

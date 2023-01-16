@@ -32,11 +32,11 @@ public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
-        TimeRecorder.INSTANCE.record(new AdviceRecordPointMark(MetaDataContextsFactoryAdvice.class, method));
+        TimeRecorder.record(new AdviceRecordPointMark(MetaDataContextsFactoryAdvice.class, method));
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
-        log.info("Build meta data contexts finished, cost {} milliseconds.", TimeRecorder.INSTANCE.getElapsedTimeAndClean(new AdviceRecordPointMark(MetaDataContextsFactoryAdvice.class, method)));
+        log.info("Build meta data contexts finished, cost {} milliseconds.", TimeRecorder.getElapsedTimeAndClean(new AdviceRecordPointMark(MetaDataContextsFactoryAdvice.class, method)));
     }
 }
