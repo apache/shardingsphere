@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.core.recorder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,40 +30,40 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TimeRecorder {
     
-    private static final ThreadLocal<Map<String, Long>> CURRENT_RECORDER = ThreadLocal.withInitial(HashMap::new);
+    private static final ThreadLocal<Map<Method, Long>> CURRENT_RECORDER = ThreadLocal.withInitial(HashMap::new);
     
     /**
      * Record now.
      *
-     * @param recordPointMark record point mark
+     * @param method method to be recorded
      */
-    public static void record(final RecordPointMark recordPointMark) {
-        CURRENT_RECORDER.get().put(recordPointMark.getMark(), System.currentTimeMillis());
+    public static void record(final Method method) {
+        CURRENT_RECORDER.get().put(method, System.currentTimeMillis());
     }
     
     /**
      * Get elapsed time and clean.
      *
-     * @param recordPointMark record point mark
+     * @param method method to be recorded
      * @return elapsed time
      */
-    public static long getElapsedTimeAndClean(final RecordPointMark recordPointMark) {
+    public static long getElapsedTimeAndClean(final Method method) {
         try {
-            return getElapsedTime(recordPointMark);
+            return getElapsedTime(method);
         } finally {
-            clean(recordPointMark);
+            clean(method);
         }
     }
     
-    private static long getElapsedTime(final RecordPointMark recordPointMark) {
-        return isRecorded(recordPointMark) ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(recordPointMark.getMark()) : 0;
+    private static long getElapsedTime(final Method method) {
+        return isRecorded(method) ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(method) : 0L;
     }
     
-    private static boolean isRecorded(final RecordPointMark recordPointMark) {
-        return null != CURRENT_RECORDER.get().get(recordPointMark.getMark());
+    private static boolean isRecorded(final Method method) {
+        return null != CURRENT_RECORDER.get().get(method);
     }
     
-    private static void clean(final RecordPointMark recordPointMark) {
-        CURRENT_RECORDER.get().remove(recordPointMark.getMark());
+    private static void clean(final Method method) {
+        CURRENT_RECORDER.get().remove(method);
     }
 }
