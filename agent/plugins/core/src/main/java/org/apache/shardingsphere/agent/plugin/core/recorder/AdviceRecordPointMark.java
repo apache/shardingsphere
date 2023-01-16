@@ -15,38 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util;
+package org.apache.shardingsphere.agent.plugin.core.recorder;
+
+import lombok.RequiredArgsConstructor;
+
+import java.lang.reflect.Method;
 
 /**
- * Time recorder.
+ * Advice record point mark.
  */
-public enum TimeRecorder {
+@RequiredArgsConstructor
+public final class AdviceRecordPointMark implements RecordPointMark {
     
-    INSTANCE;
+    private final Class<?> adviceClazz;
     
-    private static final ThreadLocal<Long> CURRENT_RECORDER = new ThreadLocal<>();
+    private final Method targetMethod;
     
-    /**
-     * Record now.
-     */
-    public void record() {
-        CURRENT_RECORDER.set(System.currentTimeMillis());
-    }
-    
-    /**
-     * Get elapsed time.
-     *
-     * @return elapsed time
-     */
-    public long getElapsedTime() {
-        Long recordMillis = CURRENT_RECORDER.get();
-        return null == recordMillis ? 0L : System.currentTimeMillis() - recordMillis;
-    }
-    
-    /**
-     * Clean recorded time.
-     */
-    public void clean() {
-        CURRENT_RECORDER.remove();
+    @Override
+    public String getMark() {
+        return String.format("%s@%s", adviceClazz.getName(), targetMethod.getName());
     }
 }
