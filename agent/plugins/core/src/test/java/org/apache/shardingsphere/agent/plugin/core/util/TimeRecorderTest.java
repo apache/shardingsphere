@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.core.util;
 
 import org.apache.shardingsphere.agent.plugin.core.recorder.TimeRecorder;
-import org.apache.shardingsphere.agent.plugin.core.util.fixture.RecordPointMarkFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,14 +27,14 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 public final class TimeRecorderTest {
     
     @Test
-    public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException {
-        TimeRecorder.record(new RecordPointMarkFixture(TimeRecorderTest.class));
+    public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
+        TimeRecorder.record(Object.class.getDeclaredMethod("toString"));
         Thread.sleep(5L);
-        assertThat(TimeRecorder.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), greaterThanOrEqualTo(5L));
+        assertThat(TimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
     }
     
     @Test
-    public void assertGetElapsedTimeAndCleanWithoutRecorded() {
-        assertThat(TimeRecorder.getElapsedTimeAndClean(new RecordPointMarkFixture(TimeRecorderTest.class)), is(0L));
+    public void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
+        assertThat(TimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), is(0L));
     }
 }
