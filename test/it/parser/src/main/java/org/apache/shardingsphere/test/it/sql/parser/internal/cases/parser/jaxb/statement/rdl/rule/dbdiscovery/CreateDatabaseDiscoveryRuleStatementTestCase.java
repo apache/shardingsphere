@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryRule;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Create database discovery heartbeat statement.
+ * Create database discovery rule statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseDiscoveryHeartbeatStatement extends CreateRuleStatement {
+public final class CreateDatabaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<DatabaseDiscoveryHeartbeatSegment> heartbeats;
+    @XmlElement(name = "rule")
+    private final List<ExpectedDatabaseDiscoveryRule> rules = new LinkedList<>();
+    
+    @XmlAttribute(name = "if-not-exists")
+    private boolean ifNotExists;
 }

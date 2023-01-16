@@ -19,8 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.converter;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -51,10 +50,10 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
         assertThat(dataSourceRuleConfig.getDiscoveryHeartbeatName(), is("definition_heartbeat"));
     }
     
-    private Collection<AbstractDatabaseDiscoverySegment> createDatabaseDiscoveryRuleSegments() {
+    private Collection<DatabaseDiscoveryRuleSegment> createDatabaseDiscoveryRuleSegments() {
         Properties props = PropertiesBuilder.build(new Property("key", "value"));
-        DatabaseDiscoveryDefinitionSegment databaseDiscoveryDefinitionSegment = new DatabaseDiscoveryDefinitionSegment(
+        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment(
                 "definition", Arrays.asList("resource0", "resource1"), new AlgorithmSegment("MySQL.MGR", props), props);
-        return Collections.singletonList(databaseDiscoveryDefinitionSegment);
+        return Collections.singletonList(databaseDiscoveryRuleSegment);
     }
 }

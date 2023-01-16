@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryDefinitionRule;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Create database discovery definition rule statement test case.
+ * Expected database discovery definition rule.
  */
 @Getter
-public final class CreateDatabaseDiscoveryDefinitionRuleStatementTestCase extends SQLParserTestCase {
+@Setter
+public final class ExpectedDatabaseDiscoveryRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "rule")
-    private final List<ExpectedDatabaseDiscoveryDefinitionRule> rules = new LinkedList<>();
+    @XmlElement(name = "data-source")
+    private Collection<String> dataSources;
     
-    @XmlAttribute(name = "if-not-exists")
-    private boolean ifNotExists;
+    @XmlElement(name = "discovery-type")
+    private ExpectedAlgorithm discoveryType;
+    
+    @XmlElement(name = "property")
+    private final List<ExpectedProperty> properties = new LinkedList<>();
 }
