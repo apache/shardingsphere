@@ -63,8 +63,8 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
         assertRoute("routed_select_sql_total", queryContext);
     }
     
-    public void assertRoute(final String metricIds, final QueryContext queryContext) {
+    public void assertRoute(final String metricId, final QueryContext queryContext) {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext});
-        assertThat(((FixtureWrapper) MetricsPool.get(metricIds)).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsPool.get(metricId)).getFixtureValue(), is(1d));
     }
 }

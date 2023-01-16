@@ -72,10 +72,10 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     private void countSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             MetricsPool.get(PARSED_INSERT_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(PARSED_DELETE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
             MetricsPool.get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
+        } else if (sqlStatement instanceof DeleteStatement) {
+            MetricsPool.get(PARSED_DELETE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof SelectStatement) {
             MetricsPool.get(PARSED_SELECT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DDLStatement) {
