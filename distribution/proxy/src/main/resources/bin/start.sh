@@ -146,7 +146,7 @@ function set_agent_name() {
     fi
 }
 
-function enable_agent() {
+function set_agent_parameter() {
     AGENT_PARAM="";
     if [ -f "$AGENT_FILE" ]; then
       AGENT_PARAM=" -javaagent:${AGENT_FILE} "
@@ -157,7 +157,7 @@ for arg in $*
 do
   if [ "$arg" == "-g" ] || [ "$arg" == "--agent" ] ; then
     set_agent_name
-    enable_agent
+    set_agent_parameter
     set -- "${params[$PARAM_INDEX]}"
     break
   fi
