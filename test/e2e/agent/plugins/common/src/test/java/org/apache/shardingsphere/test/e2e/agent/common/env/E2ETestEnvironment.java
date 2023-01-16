@@ -62,7 +62,7 @@ public final class E2ETestEnvironment {
     }
     
     private void waitForEnvironmentReady(final Properties props) {
-        log.info("wait begin proxy environment");
+        log.info("Proxy with agent environment initializing ...");
         int retryCount = 0;
         while (!isProxyReady(props) && retryCount < Integer.parseInt(props.getProperty("proxy.retry", "30"))) {
             try {
@@ -84,7 +84,7 @@ public final class E2ETestEnvironment {
         } catch (final SQLException ignore) {
             return false;
         }
-        log.info(" it proxy environment success");
+        log.info("Proxy with agent environment initialized successfully ...");
         return true;
     }
     
