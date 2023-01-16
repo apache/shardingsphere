@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.core.util;
 
+import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 import org.junit.Test;
 
@@ -28,13 +29,14 @@ public final class MethodTimeRecorderTest {
     
     @Test
     public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
-        new MethodTimeRecorder(Object.class, Object.class.getDeclaredMethod("toString")).record();
+        MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
+        methodTimeRecorder.record(Object.class.getDeclaredMethod("toString"));
         Thread.sleep(5L);
-        assertThat(new MethodTimeRecorder(Object.class, Object.class.getDeclaredMethod("toString")).getElapsedTimeAndClean(), greaterThanOrEqualTo(5L));
+        assertThat(methodTimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
     }
     
     @Test
     public void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
-        assertThat(new MethodTimeRecorder(Object.class, Object.class.getDeclaredMethod("toString")).getElapsedTimeAndClean(), is(0L));
+        assertThat(new MethodTimeRecorder(AgentAdvice.class).getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), is(0L));
     }
 }

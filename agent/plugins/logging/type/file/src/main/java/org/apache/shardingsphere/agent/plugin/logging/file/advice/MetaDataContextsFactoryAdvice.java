@@ -29,13 +29,15 @@ import java.lang.reflect.Method;
 @Slf4j
 public final class MetaDataContextsFactoryAdvice implements StaticMethodAdvice {
     
+    private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class);
+    
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
-        new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class, method).record();
+        methodTimeRecorder.record(method);
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
-        log.info("Build meta data contexts finished, cost {} milliseconds.", new MethodTimeRecorder(MetaDataContextsFactoryAdvice.class, method).getElapsedTimeAndClean());
+        log.info("Build meta data contexts finished, cost {} milliseconds.", methodTimeRecorder.getElapsedTimeAndClean(method));
     }
 }

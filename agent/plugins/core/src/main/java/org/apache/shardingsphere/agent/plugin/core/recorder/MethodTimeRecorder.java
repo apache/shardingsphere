@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.agent.plugin.core.recorder;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,45 +27,46 @@ import java.util.Map;
 /**
  * Method time recorder.
  */
+@RequiredArgsConstructor
 public final class MethodTimeRecorder {
     
     private static final ThreadLocal<Map<String, Long>> CURRENT_RECORDER = ThreadLocal.withInitial(HashMap::new);
     
-    private final String key;
-    
-    public MethodTimeRecorder(final Class<?> adviceClass, final Method targetMethod) {
-        key = String.format("%s@%s", adviceClass.getCanonicalName(), targetMethod.getName());
-    }
+    private final Class<? extends AgentAdvice> adviceClass;
     
     /**
      * Record now.
+     * 
+     * @param method method to be recorded
      */
-    public void record() {
-        CURRENT_RECORDER.get().put(key, System.currentTimeMillis());
+    public void record(final Method method) {
+        CURRENT_RECORDER.get().put(getKey(method), System.currentTimeMillis());
     }
     
     /**
      * Get elapsed time and clean.
      *
+     * @param method method to be recorded
      * @return elapsed time
      */
-    public long getElapsedTimeAndClean() {
+    public long getElapsedTimeAndClean(final Method method) {
+        String key = getKey(method);
         try {
-            return getElapsedTime();
+            return getElapsedTime(key);
         } finally {
-            clean();
+            clean(key);
         }
     }
     
-    private long getElapsedTime() {
-        return isRecorded() ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(key) : 0L;
+    private String getKey(final Method method) {
+        return String.format("%s@%s", adviceClass.getCanonicalName(), method.getName());
     }
     
-    private boolean isRecorded() {
-        return null != CURRENT_RECORDER.get().get(key);
+    private long getElapsedTime(final String key) {
+        return CURRENT_RECORDER.get().containsKey(key) ? System.currentTimeMillis() - CURRENT_RECORDER.get().get(key) : 0L;
     }
     
-    private void clean() {
+    private void clean(final String key) {
         CURRENT_RECORDER.get().remove(key);
     }
 }

@@ -31,13 +31,15 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     private static final String PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY = "proxy_execute_latency_millis";
     
+    private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(ExecuteLatencyHistogramAdvice.class);
+    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        new MethodTimeRecorder(ExecuteLatencyHistogramAdvice.class, method).record();
+        methodTimeRecorder.record(method);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        MetricsWrapperRegistry.get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(new MethodTimeRecorder(ExecuteLatencyHistogramAdvice.class, method).getElapsedTimeAndClean());
+        MetricsWrapperRegistry.get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
     }
 }
