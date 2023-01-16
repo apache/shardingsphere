@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.core.recorder.RecordPointMark;
 
 /**
- * Record pointmark fixture.
+ * Record point mark fixture.
  */
 @RequiredArgsConstructor
 public final class RecordPointMarkFixture implements RecordPointMark {
