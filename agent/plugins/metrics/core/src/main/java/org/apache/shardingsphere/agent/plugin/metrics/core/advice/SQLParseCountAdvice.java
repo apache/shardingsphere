@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
@@ -71,31 +71,31 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
     private void countSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(PARSED_INSERT_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_INSERT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(PARSED_DELETE_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_DELETE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(PARSED_SELECT_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_SELECT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DDLStatement) {
-            MetricsPool.get(PARSED_DDL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_DDL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DCLStatement) {
-            MetricsPool.get(PARSED_DCL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_DCL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DALStatement) {
-            MetricsPool.get(PARSED_DAL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_DAL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof TCLStatement) {
-            MetricsPool.get(PARSED_TCL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_TCL_METRIC_KEY).inc();
         }
     }
     
     private void countDistSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof RQLStatement) {
-            MetricsPool.get(PARSED_RQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_RQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RDLStatement) {
-            MetricsPool.get(PARSED_RDL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_RDL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RALStatement) {
-            MetricsPool.get(PARSED_RAL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(PARSED_RAL_METRIC_KEY).inc();
         }
     }
 }

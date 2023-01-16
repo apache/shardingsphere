@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -47,13 +47,13 @@ public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(ROUTED_INSERT_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(ROUTED_INSERT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(ROUTED_UPDATE_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(ROUTED_UPDATE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(ROUTED_DELETE_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(ROUTED_DELETE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(ROUTED_SELECT_SQL_METRIC_KEY).inc();
+            MetricsWrapperRegistry.get(ROUTED_SELECT_SQL_METRIC_KEY).inc();
         }
     }
 }
