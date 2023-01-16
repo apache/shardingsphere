@@ -135,18 +135,28 @@ if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
     print_version
 fi
 
+PARAM_INDEX=1
+AGENT_FILE=${DEPLOY_DIR}/agent/shardingsphere-agent.jar
+function set_agent_name() {
+    if [ -d "${DEPLOY_DIR}/agent" ]; then
+        AGENT_NAME=$(ls "${DEPLOY_DIR}/agent/shardingsphere-agent"*)
+        if [ -n "${AGENT_NAME}" ]; then
+          AGENT_FILE=${AGENT_NAME}
+        fi
+    fi
+}
+
 function enable_agent() {
     AGENT_PARAM="";
-    AGENT_FILE="${DEPLOY_DIR}/agent/shardingsphere-agent.jar"
     if [ -f "$AGENT_FILE" ]; then
       AGENT_PARAM=" -javaagent:${AGENT_FILE} "
     fi
 }
 
-PARAM_INDEX=1
 for arg in $*
 do
   if [ "$arg" == "-g" ] || [ "$arg" == "--agent" ] ; then
+    set_agent_name
     enable_agent
     set -- "${params[$PARAM_INDEX]}"
     break
