@@ -46,6 +46,7 @@ public final class CreateDefaultShardingStrategyStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDefaultType(), is(expected.getStrategy().getDefaultType()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())),
