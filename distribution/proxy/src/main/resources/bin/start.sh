@@ -135,7 +135,6 @@ if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
     print_version
 fi
 
-
 function enable_agent() {
     AGENT_PARAM="";
     AGENT_FILE="${DEPLOY_DIR}/agent/shardingsphere-agent.jar"
@@ -144,10 +143,16 @@ function enable_agent() {
     fi
 }
 
-if [ "$1" == "-g" ] || [ "$1" == "--agent" ] ; then
+PARAM_INDEX=1
+for arg in $*
+do
+  if [ "$arg" == "-g" ] || [ "$arg" == "--agent" ] ; then
     enable_agent
-    set -- "${params[1]}"
-fi
+    set -- "${params[$PARAM_INDEX]}"
+    break
+  fi
+  let PARAM_INDEX+=1
+done
 
 if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
