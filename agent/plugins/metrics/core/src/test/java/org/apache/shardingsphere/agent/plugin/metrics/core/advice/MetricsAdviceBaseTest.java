@@ -44,6 +44,7 @@ public abstract class MetricsAdviceBaseTest {
         ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RQL)).reset();
         ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RDL)).reset();
         ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RAL)).reset();
+        ((FixtureWrapper) MetricsPool.get(MetricIds.PARSED_RUL)).reset();
         ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_INSERT_SQL)).reset();
         ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_UPDATE_SQL)).reset();
         ((FixtureWrapper) MetricsPool.get(MetricIds.ROUTED_DELETE_SQL)).reset();
