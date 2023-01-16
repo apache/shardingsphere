@@ -15,38 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util;
+package org.apache.shardingsphere.agent.plugin.core.recorder;
 
-/**
- * Time recorder.
- */
-public enum TimeRecorder {
-    
-    INSTANCE;
-    
-    private static final ThreadLocal<Long> CURRENT_RECORDER = new ThreadLocal<>();
+public interface RecordPointMark {
     
     /**
-     * Record now.
-     */
-    public void record() {
-        CURRENT_RECORDER.set(System.currentTimeMillis());
-    }
-    
-    /**
-     * Get elapsed time.
+     * Get record point mark.
      *
-     * @return elapsed time
+     * @return mark
      */
-    public long getElapsedTime() {
-        Long recordMillis = CURRENT_RECORDER.get();
-        return null == recordMillis ? 0L : System.currentTimeMillis() - recordMillis;
-    }
-    
-    /**
-     * Clean recorded time.
-     */
-    public void clean() {
-        CURRENT_RECORDER.remove();
+    default String getMark() {
+        return "";
     }
 }
