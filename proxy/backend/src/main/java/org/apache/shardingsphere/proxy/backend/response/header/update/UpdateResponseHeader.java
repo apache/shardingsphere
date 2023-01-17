@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,7 +62,7 @@ public final class UpdateResponseHeader implements ResponseHeader {
     }
     
     private long getLastInsertId(final Collection<UpdateResult> updateResults, final Collection<Comparable<?>> autoIncrementGeneratedValues) {
-        List<Long> lastInsertIds = new LinkedList<>();
+        List<Long> lastInsertIds = new ArrayList<>(updateResults.size() + autoIncrementGeneratedValues.size());
         for (UpdateResult each : updateResults) {
             if (each.getLastInsertId() > 0) {
                 lastInsertIds.add(each.getLastInsertId());
