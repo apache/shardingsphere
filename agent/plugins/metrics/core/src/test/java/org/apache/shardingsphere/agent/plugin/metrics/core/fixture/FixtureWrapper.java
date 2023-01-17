@@ -18,44 +18,42 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsWrapper;
 
 /**
  * Fixed metric wrapper.
  */
 @Getter
-public final class FixtureWrapper implements MetricsWrapper {
+public final class FixtureWrapper implements CounterMetricsWrapper, GaugeMetricsWrapper, HistogramMetricsWrapper, SummaryMetricsWrapper {
     
     private Double fixtureValue = 0d;
     
     @Override
-    public void inc(final double value) {
-        fixtureValue += value;
+    public void inc() {
+        fixtureValue++;
     }
     
     @Override
-    public void inc(final double value, final String... labels) {
-        fixtureValue += value;
+    public void inc(final String... labels) {
+        fixtureValue++;
     }
     
     @Override
-    public void dec(final double value) {
-        fixtureValue -= value;
+    public void dec() {
+        fixtureValue--;
     }
     
     @Override
-    public void dec(final double value, final String... labels) {
-        fixtureValue -= value;
+    public void dec(final String... labels) {
+        fixtureValue--;
     }
     
     @Override
     public void observe(final double value) {
         fixtureValue = value;
-    }
-    
-    @Override
-    public void delegate(final Object object) {
-        fixtureValue = -1d;
     }
     
     /**

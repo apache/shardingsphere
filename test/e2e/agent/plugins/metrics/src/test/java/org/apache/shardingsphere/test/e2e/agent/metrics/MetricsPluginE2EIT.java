@@ -38,17 +38,17 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    public static final String ROUTE_SQL_INSERT = "route_sql_insert_total";
+    public static final String ROUTED_INSERT_SQL = "routed_insert_sql_total";
     
-    public static final String ROUTE_SQL_UPDATE = "route_sql_update_total";
+    public static final String ROUTED_UPDATE_SQL = "routed_update_sql_total";
     
-    public static final String ROUTE_SQL_DELETE = "route_sql_delete_total";
+    public static final String ROUTED_DELETE_SQL = "routed_delete_sql_total";
     
-    public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
+    public static final String ROUTED_SELECT_SQL = "routed_select_sql_total";
     
-    public static final String ROUTE_DATASOURCE = "route_datasource_total";
+    public static final String ROUTED_DATA_SOURCES = "routed_data_sources_total";
     
-    public static final String ROUTE_TABLE = "route_table_total";
+    public static final String ROUTED_TABLES = "routed_tables_total";
     
     public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
     
@@ -90,12 +90,12 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         result.add(PROXY_REQUESTS);
         result.add(PROXY_CURRENT_CONNECTIONS);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
-        result.add(ROUTE_SQL_SELECT);
-        result.add(ROUTE_SQL_UPDATE);
-        result.add(ROUTE_SQL_DELETE);
-        result.add(ROUTE_SQL_INSERT);
-        result.add(ROUTE_DATASOURCE);
-        result.add(ROUTE_TABLE);
+        result.add(ROUTED_SELECT_SQL);
+        result.add(ROUTED_UPDATE_SQL);
+        result.add(ROUTED_DELETE_SQL);
+        result.add(ROUTED_INSERT_SQL);
+        result.add(ROUTED_DATA_SOURCES);
+        result.add(ROUTED_TABLES);
         result.add(PROXY_COMMIT_TRANSACTIONS);
         result.add(PROXY_ROLLBACK_TRANSACTIONS);
         result.add(PROXY_EXECUTE_ERRORS);

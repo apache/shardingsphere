@@ -91,6 +91,8 @@ public final class SQLOptimizeEngineIT {
         tables.put("t_merchant", createTMerchantMetaData());
         tables.put("t_product", createTProductMetaData());
         tables.put("t_product_detail", createTProductDetailMetaData());
+        tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
+        tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
         optimizeEngine = new SQLOptimizeEngine(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtil.createHepPlanner());
     }
     
@@ -181,6 +183,62 @@ public final class SQLOptimizeEngineIT {
         ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);
         ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
         return new ShardingSphereTable("t_product", Arrays.asList(productIdColumn, productNameColumn, categoryIdColumn, priceColumn, statusColumn, creationDateColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createMultiTypesFirstTableMetaData() {
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn bitColumn = new ShardingSphereColumn("bit_column", Types.BIT, false, false, false, true, false);
+        ShardingSphereColumn tinyIntColumn = new ShardingSphereColumn("tiny_int_column", Types.TINYINT, false, false, false, true, false);
+        ShardingSphereColumn smallIntColumn = new ShardingSphereColumn("small_int_column", Types.SMALLINT, false, false, false, true, false);
+        ShardingSphereColumn integerColumn = new ShardingSphereColumn("integer_column", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn bigIntColumn = new ShardingSphereColumn("big_int_column", Types.BIGINT, false, false, false, true, false);
+        ShardingSphereColumn floatColumn = new ShardingSphereColumn("float_column", Types.FLOAT, false, false, false, true, false);
+        ShardingSphereColumn realColumn = new ShardingSphereColumn("real_column", Types.REAL, false, false, false, true, false);
+        ShardingSphereColumn doubleColumn = new ShardingSphereColumn("double_column", Types.DOUBLE, false, false, false, true, false);
+        ShardingSphereColumn numericColumn = new ShardingSphereColumn("numeric_column", Types.NUMERIC, false, false, false, true, false);
+        ShardingSphereColumn decimalColumn = new ShardingSphereColumn("decimal_column", Types.DECIMAL, false, false, false, true, false);
+        ShardingSphereColumn charColumn = new ShardingSphereColumn("char_column", Types.CHAR, false, false, false, true, false);
+        ShardingSphereColumn varcharColumn = new ShardingSphereColumn("varchar_column", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn longVarcharColumn = new ShardingSphereColumn("long_varchar_column", Types.LONGVARCHAR, false, false, false, true, false);
+        ShardingSphereColumn dateColumn = new ShardingSphereColumn("date_column", Types.DATE, false, false, false, true, false);
+        ShardingSphereColumn timeColumn = new ShardingSphereColumn("time_column", Types.TIME, false, false, false, true, false);
+        ShardingSphereColumn timeStampColumn = new ShardingSphereColumn("time_stamp_column", Types.TIMESTAMP, false, false, false, true, false);
+        ShardingSphereColumn binaryColumn = new ShardingSphereColumn("binary_column", Types.BINARY, false, false, false, true, false);
+        ShardingSphereColumn varBinaryColumn = new ShardingSphereColumn("varbinary_column", Types.VARBINARY, false, false, false, true, false);
+        ShardingSphereColumn longVarbinaryColumn = new ShardingSphereColumn("long_varbinary_column", Types.LONGVARBINARY, false, false, false, true, false);
+        ShardingSphereColumn nullColumn = new ShardingSphereColumn("null_column", Types.NULL, false, false, false, true, false);
+        ShardingSphereColumn otherColumn = new ShardingSphereColumn("other_column", Types.OTHER, false, false, false, true, false);
+        return new ShardingSphereTable("multi_types_first", Arrays.asList(idColumn, bitColumn, tinyIntColumn, smallIntColumn, integerColumn, bigIntColumn, floatColumn,
+                realColumn, doubleColumn, numericColumn, decimalColumn, charColumn, varcharColumn, longVarcharColumn, dateColumn, timeColumn, timeStampColumn, binaryColumn,
+                varBinaryColumn, longVarbinaryColumn, nullColumn, otherColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createMultiTypesSecondTableMetaData() {
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn bitColumn = new ShardingSphereColumn("bit_column", Types.BIT, false, false, false, true, false);
+        ShardingSphereColumn tinyIntColumn = new ShardingSphereColumn("tiny_int_column", Types.TINYINT, false, false, false, true, false);
+        ShardingSphereColumn smallIntColumn = new ShardingSphereColumn("small_int_column", Types.SMALLINT, false, false, false, true, false);
+        ShardingSphereColumn integerColumn = new ShardingSphereColumn("integer_column", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn bigIntColumn = new ShardingSphereColumn("big_int_column", Types.BIGINT, false, false, false, true, false);
+        ShardingSphereColumn floatColumn = new ShardingSphereColumn("float_column", Types.FLOAT, false, false, false, true, false);
+        ShardingSphereColumn realColumn = new ShardingSphereColumn("real_column", Types.REAL, false, false, false, true, false);
+        ShardingSphereColumn doubleColumn = new ShardingSphereColumn("double_column", Types.DOUBLE, false, false, false, true, false);
+        ShardingSphereColumn numericColumn = new ShardingSphereColumn("numeric_column", Types.NUMERIC, false, false, false, true, false);
+        ShardingSphereColumn decimalColumn = new ShardingSphereColumn("decimal_column", Types.DECIMAL, false, false, false, true, false);
+        ShardingSphereColumn charColumn = new ShardingSphereColumn("char_column", Types.CHAR, false, false, false, true, false);
+        ShardingSphereColumn varcharColumn = new ShardingSphereColumn("varchar_column", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn longVarcharColumn = new ShardingSphereColumn("long_varchar_column", Types.LONGVARCHAR, false, false, false, true, false);
+        ShardingSphereColumn dateColumn = new ShardingSphereColumn("date_column", Types.DATE, false, false, false, true, false);
+        ShardingSphereColumn timeColumn = new ShardingSphereColumn("time_column", Types.TIME, false, false, false, true, false);
+        ShardingSphereColumn timeStampColumn = new ShardingSphereColumn("time_stamp_column", Types.TIMESTAMP, false, false, false, true, false);
+        ShardingSphereColumn binaryColumn = new ShardingSphereColumn("binary_column", Types.BINARY, false, false, false, true, false);
+        ShardingSphereColumn varBinaryColumn = new ShardingSphereColumn("varbinary_column", Types.VARBINARY, false, false, false, true, false);
+        ShardingSphereColumn longVarbinaryColumn = new ShardingSphereColumn("long_varbinary_column", Types.LONGVARBINARY, false, false, false, true, false);
+        return new ShardingSphereTable("multi_types_second", Arrays.asList(idColumn, bitColumn, tinyIntColumn, smallIntColumn, integerColumn, bigIntColumn, floatColumn,
+                realColumn, doubleColumn, numericColumn, decimalColumn, charColumn, varcharColumn, longVarcharColumn, dateColumn, timeColumn, timeStampColumn, binaryColumn,
+                varBinaryColumn, longVarbinaryColumn),
                 Collections.emptyList(), Collections.emptyList());
     }
     

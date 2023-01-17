@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedInExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedListExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
@@ -349,13 +351,22 @@ public final class ExpressionAssert {
         assertExpression(assertContext, actual.getElseExpr(), expected.getElseExpr());
     }
     
+    private static void assertTypeCastExpression(final SQLCaseAssertContext assertContext, final TypeCastExpression actual, final ExpectedTypeCastExpression expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Type cast expression should not exist."), actual);
+            return;
+        }
+        assertNotNull(assertContext.getText("Type cast expression is expected."), actual);
+        assertThat(assertContext.getText("Actual data type is different with expected in type case expression."), actual.getDataType(), is(expected.getDataType()));
+        assertExpression(assertContext, actual.getExpression(), expected.getExpression());
+    }
+    
     /**
      * Assert expression by actual expression segment class type.
      *
      * @param assertContext assert context
      * @param actual actual expression segment
      * @param expected expected expression
-     *
      * @throws UnsupportedOperationException When expression segment class type is not supported.
      */
     public static void assertExpression(final SQLCaseAssertContext assertContext,
@@ -399,6 +410,8 @@ public final class ExpressionAssert {
             assertCollateExpression(assertContext, (CollateExpression) actual, expected.getCollateExpression());
         } else if (actual instanceof CaseWhenExpression) {
             assertCaseWhenExpression(assertContext, (CaseWhenExpression) actual, expected.getCaseWhenExpression());
+        } else if (actual instanceof TypeCastExpression) {
+            assertTypeCastExpression(assertContext, (TypeCastExpression) actual, expected.getTypeCastExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

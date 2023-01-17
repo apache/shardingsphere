@@ -116,7 +116,6 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     public ASTNode visitInsert(final InsertContext ctx) {
         SQL92InsertStatement result = (SQL92InsertStatement) visit(ctx.insertValuesClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -152,7 +151,6 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -202,7 +200,6 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -220,7 +217,6 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.combineClause());
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }

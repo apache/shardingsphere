@@ -17,30 +17,34 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTest {
+    
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_latency_millis")).reset();
+    }
     
     @Test
     public void assertExecuteLatencyHistogram() throws InterruptedException {
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
+        Method method = mock(Method.class);
+        advice.beforeMethod(targetObject, method, new Object[]{});
         Thread.sleep(500L);
-        advice.afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
-        assertTrue(MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).get()).getFixtureValue(), greaterThanOrEqualTo(500D));
+        advice.afterMethod(targetObject, method, new Object[]{}, null);
+        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_latency_millis")).getFixtureValue(), greaterThanOrEqualTo(500D));
     }
 }

@@ -19,9 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
 
 import java.lang.reflect.Method;
 
@@ -30,12 +29,10 @@ import java.lang.reflect.Method;
  */
 public final class RequestsCountAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.PROXY_REQUESTS);
-    }
+    private static final String PROXY_REQUESTS_METRIC_KEY = "proxy_requests_total";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(MetricIds.PROXY_REQUESTS).ifPresent(MetricsWrapper::inc);
+        MetricsWrapperRegistry.<CounterMetricsWrapper>get(PROXY_REQUESTS_METRIC_KEY).inc();
     }
 }

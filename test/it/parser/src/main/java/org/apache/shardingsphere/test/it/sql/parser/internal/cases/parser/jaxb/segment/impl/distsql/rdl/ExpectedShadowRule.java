@@ -32,9 +32,6 @@ import java.util.Collection;
 @Setter
 public final class ExpectedShadowRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlAttribute(name = "rule-name")
-    private String ruleName;
-    
     @XmlAttribute
     private String source;
     

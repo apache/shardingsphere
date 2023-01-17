@@ -12,10 +12,7 @@ weight = 2
 <<<<<<< HEAD
 {{< tabs >}}
 {{% tab name="语法" %}}
-```
-=======
 ```sql
->>>>>>> 731b174a28364b0ec70755800459edb332b68209
 ShowShardingTableRule ::=
   'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 

@@ -17,19 +17,24 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper;
 
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusCounterWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusGaugeWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusHistogramWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusSummaryWrapper;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PrometheusWrapperFactoryTest {
     
     @Test
     public void assertCreate() {
         PrometheusWrapperFactory factory = new PrometheusWrapperFactory();
-        assertTrue(factory.create("a").isPresent());
-        assertTrue(factory.create("b").isPresent());
-        assertTrue(factory.create("c").isPresent());
-        assertTrue(factory.create("d").isPresent());
-        assertTrue(factory.create("e").isPresent());
+        assertThat(factory.create("a"), instanceOf(PrometheusCounterWrapper.class));
+        assertThat(factory.create("b"), instanceOf(PrometheusGaugeWrapper.class));
+        assertThat(factory.create("c"), instanceOf(PrometheusHistogramWrapper.class));
+        assertThat(factory.create("d"), instanceOf(PrometheusHistogramWrapper.class));
+        assertThat(factory.create("e"), instanceOf(PrometheusSummaryWrapper.class));
     }
 }

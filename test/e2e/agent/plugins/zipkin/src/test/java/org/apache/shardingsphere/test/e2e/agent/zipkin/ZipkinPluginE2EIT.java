@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
+import com.google.gson.internal.LinkedTreeMap;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
@@ -24,8 +26,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,19 +52,21 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     }
     
     @Test
-    public void assertProxyWithAgent() throws IOException {
+    @SneakyThrows(IOException.class)
+    public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
         try {
             // TODO this needs to refactor, replace sleep with polling.
             Thread.sleep(Long.parseLong(props.getProperty("zipkin.waitMs", "60000")));
         } catch (final InterruptedException ignore) {
         }
-        // TODO add more detailed assert for zipkin
         assertSpans();
         assertTraces();
+        assertTraceContent();
     }
     
-    private void assertSpans() throws IOException {
+    @SneakyThrows(IOException.class)
+    private void assertSpans() {
         String spansURL = url + "spans?serviceName=" + serviceName;
         List<?> spans = OkHttpUtils.getInstance().get(spansURL, List.class);
         assertThat(spans.size(), is(3));
@@ -69,12 +75,38 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
         assertTrue(spans.contains("/shardingsphere/rootinvoke/"));
     }
     
-    private void assertTraces() throws IOException {
+    @SneakyThrows(IOException.class)
+    private void assertTraces() {
         String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/";
         String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/";
         String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/";
         assertFalse(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).isEmpty());
         assertFalse(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).isEmpty());
         assertFalse(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).isEmpty());
+    }
+    
+    @SneakyThrows(IOException.class)
+    private void assertTraceContent() {
+        Set<String> traceStatement = new LinkedHashSet<>();
+        String traceURL = url + "traces?limit=1000";
+        List<?> traceResult = OkHttpUtils.getInstance().get(traceURL, List.class);
+        traceResult.forEach(each -> traceStatement.addAll(extractTraceTags((List<?>) each)));
+        assertTrue(traceStatement.contains("INSERT INTO t_order (order_id, user_id, status) VALUES (10, 10, 'INSERT_TEST')"));
+        assertTrue(traceStatement.contains("INSERT INTO t_order (order_id, user_id, status) VALUES (1000, 1000, 'ROLL_BACK')"));
+        assertTrue(traceStatement.contains("DELETE FROM t_order WHERE order_id=10"));
+        assertTrue(traceStatement.contains("UPDATE t_order SET status = 'ROLL_BACK' WHERE order_id =1000"));
+        assertTrue(traceStatement.contains("SELECT * FROM t_order"));
+    }
+    
+    private Set<String> extractTraceTags(final List<?> zipkinQueryResults) {
+        Set<String> result = new LinkedHashSet<>();
+        zipkinQueryResults.forEach(each -> {
+            LinkedTreeMap<?, ?> trace = (LinkedTreeMap<?, ?>) each;
+            LinkedTreeMap<?, ?> tag = (LinkedTreeMap<?, ?>) trace.get("tags");
+            if (null != tag.get("db.statement")) {
+                result.add(tag.get("db.statement").toString());
+            }
+        });
+        return result;
     }
 }

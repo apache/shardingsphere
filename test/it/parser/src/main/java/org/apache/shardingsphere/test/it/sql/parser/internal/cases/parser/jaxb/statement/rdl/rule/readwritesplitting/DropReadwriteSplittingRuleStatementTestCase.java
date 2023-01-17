@@ -33,7 +33,7 @@ import java.util.List;
 @Setter
 public final class DropReadwriteSplittingRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "name")
+    @XmlElement(name = "rule-name")
     private final List<String> names = new LinkedList<>();
     
     @XmlAttribute(name = "if-exists")

@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,4 +34,7 @@ public final class CreateDefaultShadowAlgorithmStatementTestCase extends SQLPars
     
     @XmlElement(name = "shadow-algorithm")
     private final Collection<ExpectedShadowAlgorithm> algorithms = new LinkedList<>();
+    
+    @XmlAttribute(name = "if-not-exists")
+    private boolean ifNotExists;
 }

@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,14 +35,18 @@ public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTe
     
     private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
     
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_current_connections")).reset();
+    }
+    
     @Test
     public void assertCountCurrentConnections() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
         advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
-        assertTrue(MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).isPresent());
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).get()).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_current_connections")).getFixtureValue(), is(1d));
     }
     
     private Method mockMethod(final String methodName) {

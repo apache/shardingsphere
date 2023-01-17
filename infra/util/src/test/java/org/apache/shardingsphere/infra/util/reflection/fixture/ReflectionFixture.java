@@ -17,17 +17,26 @@
 
 package org.apache.shardingsphere.infra.util.reflection.fixture;
 
+import lombok.Getter;
+
+@Getter
 public final class ReflectionFixture {
     
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
-    private static String staticValue = "foo";
+    @Getter
+    private static String staticValue = "static_value";
+    
+    private final String instanceValue = "instance_value";
     
     /**
-     * Get static value.
-     * 
-     * @return static value
+     * Get contact value.
+     *
+     * @param val1 value 1
+     * @param val2 value 2
+     * @return contact value
      */
-    public static String getStaticValue() {
-        return staticValue;
+    public String getContactValue(final String val1, final String val2) {
+        return String.join("_", val1, val2);
     }
+    
 }
