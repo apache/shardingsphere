@@ -188,7 +188,12 @@
                 <expr>
                     <function function-name="EXTRACT" start-index="7" stop-index="56" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')">
                         <parameter>
-                            <literal-expression value="2001-02-16 20:38:40" start-index="25" stop-index="55" />
+                            <type-cast-expression>
+                                <expression>
+                                    <literal-expression value="2001-02-16 20:38:40" start-index="35" stop-index="55" />
+                                </expression>
+                                <data-type>TIMESTAMP</data-type>
+                            </type-cast-expression>
                         </parameter>
                     </function>
                 </expr>
