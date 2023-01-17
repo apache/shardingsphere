@@ -30,22 +30,22 @@ public final class GaugeWrapper implements MetricsWrapper {
     private final Gauge gauge;
     
     @Override
-    public void inc(final double value) {
-        gauge.inc(value);
+    public void inc() {
+        gauge.inc(1d);
     }
     
     @Override
-    public void inc(final double value, final String... labels) {
-        gauge.labels(labels).inc(value);
+    public void inc(final String... labels) {
+        gauge.labels(labels).inc(1d);
     }
     
     @Override
-    public void dec(final double value) {
-        gauge.dec(value);
+    public void dec() {
+        gauge.dec(1d);
     }
     
     @Override
-    public void dec(final double value, final String... labels) {
-        gauge.labels(labels).dec(value);
+    public void dec(final String... labels) {
+        gauge.labels(labels).dec(1d);
     }
 }

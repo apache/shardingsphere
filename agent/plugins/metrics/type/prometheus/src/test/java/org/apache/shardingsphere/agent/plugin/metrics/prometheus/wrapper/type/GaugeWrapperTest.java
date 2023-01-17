@@ -31,8 +31,7 @@ public final class GaugeWrapperTest {
         Gauge gauge = Gauge.build().name("a").help("help").create();
         GaugeWrapper gaugeWrapper = new GaugeWrapper(gauge);
         gaugeWrapper.inc();
-        gaugeWrapper.inc(1);
         gauge = (Gauge) Plugins.getMemberAccessor().get(GaugeWrapper.class.getDeclaredField("gauge"), gaugeWrapper);
-        assertThat(gauge.get(), is(2.0));
+        assertThat(gauge.get(), is(1d));
     }
 }

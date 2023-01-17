@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class MetricsWrapperTest {
@@ -28,30 +29,16 @@ public final class MetricsWrapperTest {
     public void assertCreate() {
         FixtureWrapper metricsWrapper = new FixtureWrapper();
         metricsWrapper.inc();
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0d));
-        metricsWrapper.inc(1);
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
+        assertThat(metricsWrapper.getFixtureValue(), is(1d));
         metricsWrapper.inc("a");
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
-        metricsWrapper.inc(1, "b");
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
-        metricsWrapper.inc();
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(5.0d));
+        assertThat(metricsWrapper.getFixtureValue(), is(2d));
         metricsWrapper.dec();
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
-        metricsWrapper.inc(1);
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(5.0d));
-        metricsWrapper.dec(1);
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(4.0d));
-        metricsWrapper.dec(1);
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
+        assertThat(metricsWrapper.getFixtureValue(), is(1d));
         metricsWrapper.dec("c");
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
-        metricsWrapper.dec(1, "d");
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(1.0d));
+        assertThat(metricsWrapper.getFixtureValue(), is(0d));
         metricsWrapper.observe(2);
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
+        assertThat(metricsWrapper.getFixtureValue(), is(2.0d));
         metricsWrapper.observe(3);
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
+        assertThat(metricsWrapper.getFixtureValue(), is(3.0d));
     }
 }

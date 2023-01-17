@@ -31,8 +31,7 @@ public final class CounterWrapperTest {
         Counter counter = Counter.build().name("a").help("help").create();
         CounterWrapper counterWrapper = new CounterWrapper(counter);
         counterWrapper.inc();
-        counterWrapper.inc(1);
         counter = (Counter) Plugins.getMemberAccessor().get(CounterWrapper.class.getDeclaredField("counter"), counterWrapper);
-        assertThat(counter.get(), is(2.0));
+        assertThat(counter.get(), is(1d));
     }
 }
