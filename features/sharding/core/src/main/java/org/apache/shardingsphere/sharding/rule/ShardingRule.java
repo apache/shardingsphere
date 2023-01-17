@@ -588,10 +588,23 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return generated key
      */
     public Comparable<?> generateKey(final String logicTableName) {
+        return getKeyGenerateAlgorithm(logicTableName).generateKey();
+    }
+    
+    private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRule(logicTableName);
         ShardingSpherePreconditions.checkState(tableRule.isPresent(), () -> new GenerateKeyStrategyNotFoundException(logicTableName));
-        KeyGenerateAlgorithm keyGenerator = null != tableRule.get().getKeyGeneratorName() ? keyGenerators.get(tableRule.get().getKeyGeneratorName()) : defaultKeyGenerateAlgorithm;
-        return keyGenerator.generateKey();
+        return null != tableRule.get().getKeyGeneratorName() ? keyGenerators.get(tableRule.get().getKeyGeneratorName()) : defaultKeyGenerateAlgorithm;
+    }
+    
+    /**
+     * Judge whether support auto increment or not.
+     * 
+     * @param logicTableName logic table name
+     * @return whether support auto increment or not
+     */
+    public boolean isSupportAutoIncrement(final String logicTableName) {
+        return getKeyGenerateAlgorithm(logicTableName).isSupportAutoIncrement();
     }
     
     /**

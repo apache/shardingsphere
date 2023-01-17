@@ -23,9 +23,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Update response header.
@@ -43,24 +45,40 @@ public final class UpdateResponseHeader implements ResponseHeader {
     private long updateCount;
     
     public UpdateResponseHeader(final SQLStatement sqlStatement) {
-        this(sqlStatement, Collections.emptyList());
+        this(sqlStatement, Collections.emptyList(), Collections.emptyList());
     }
     
     public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<UpdateResult> updateResults) {
+        this(sqlStatement, updateResults, Collections.emptyList());
+    }
+    
+    public UpdateResponseHeader(final SQLStatement sqlStatement, final Collection<UpdateResult> updateResults, final Collection<Comparable<?>> autoIncrementGeneratedValues) {
         this.sqlStatement = sqlStatement;
-        lastInsertId = getLastInsertId(updateResults);
+        lastInsertId = getLastInsertId(updateResults, autoIncrementGeneratedValues);
         updateCount = updateResults.iterator().hasNext() ? updateResults.iterator().next().getUpdateCount() : 0;
         for (UpdateResult each : updateResults) {
             updateCounts.add(each.getUpdateCount());
         }
     }
     
-    private long getLastInsertId(final Collection<UpdateResult> updateResults) {
-        long result = 0;
+    private long getLastInsertId(final Collection<UpdateResult> updateResults, final Collection<Comparable<?>> autoIncrementGeneratedValues) {
+        List<Long> lastInsertIds = new ArrayList<>(updateResults.size() + autoIncrementGeneratedValues.size());
         for (UpdateResult each : updateResults) {
-            result = Math.max(result, each.getLastInsertId());
+            if (each.getLastInsertId() > 0) {
+                lastInsertIds.add(each.getLastInsertId());
+            }
         }
-        return result;
+        for (Comparable<?> each : autoIncrementGeneratedValues) {
+            if (each instanceof Number) {
+                lastInsertIds.add(((Number) each).longValue());
+            }
+        }
+        return lastInsertIds.isEmpty() ? 0 : getMinLastInsertId(lastInsertIds);
+    }
+    
+    private static long getMinLastInsertId(final List<Long> lastInsertIds) {
+        Collections.sort(lastInsertIds);
+        return lastInsertIds.iterator().next();
     }
     
     /**
