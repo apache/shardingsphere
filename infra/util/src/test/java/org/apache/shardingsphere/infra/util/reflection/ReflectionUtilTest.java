@@ -22,18 +22,30 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public final class ReflectionUtilTest {
     
     @Test
     public void assertGetStaticFieldValue() {
-        assertThat(ReflectionUtil.getStaticFieldValue(ReflectionFixture.class, "staticValue"), is("foo"));
+        assertThat(ReflectionUtil.getStaticFieldValue(ReflectionFixture.class, "staticValue"), is("static_value"));
     }
     
     @Test
     public void assertSetStaticFieldValue() {
-        ReflectionUtil.setStaticFieldValue(ReflectionFixture.class, "staticValue", "bar");
-        assertThat(ReflectionFixture.getStaticValue(), is("bar"));
-        ReflectionUtil.setStaticFieldValue(ReflectionFixture.class, "staticValue", "foo");
+        ReflectionUtil.setStaticFieldValue(ReflectionFixture.class, "staticValue", "other_value");
+        assertThat(ReflectionFixture.getStaticValue(), is("other_value"));
+        ReflectionUtil.setStaticFieldValue(ReflectionFixture.class, "staticValue", "static_value");
+    }
+    
+    @Test
+    public void assertGetFieldValue() {
+        assertThat(ReflectionUtil.getFieldValue(new ReflectionFixture(), "instanceValue").orElse(""), is("instance_value"));
+        assertFalse(ReflectionUtil.getFieldValue(new ReflectionFixture(), "not_existed_field").isPresent());
+    }
+    
+    @Test
+    public void assertInvokeMethod() throws NoSuchMethodException {
+        assertThat(ReflectionUtil.invokeMethod(ReflectionFixture.class.getDeclaredMethod("getInstanceValue"), new ReflectionFixture()), is("instance_value"));
     }
 }

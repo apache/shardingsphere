@@ -19,9 +19,9 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.TimeRecorder;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
 
 import java.lang.reflect.Method;
 
@@ -30,17 +30,17 @@ import java.lang.reflect.Method;
  */
 public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice {
     
+    private static final String PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY = "proxy_execute_latency_millis";
+    
+    private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(ExecuteLatencyHistogramAdvice.class);
+    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        TimeRecorder.INSTANCE.record();
+        methodTimeRecorder.record(method);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        try {
-            MetricsPool.get(MetricIds.PROXY_EXECUTE_LATENCY_MILLIS).observe(TimeRecorder.INSTANCE.getElapsedTime());
-        } finally {
-            TimeRecorder.INSTANCE.clean();
-        }
+        MetricsCollectorRegistry.<HistogramMetricsCollector>get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
     }
 }

@@ -39,4 +39,9 @@ public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgor
     @Override
     public void init(final Properties props) {
     }
+    
+    @Override
+    public boolean isSupportAutoIncrement() {
+        return true;
+    }
 }

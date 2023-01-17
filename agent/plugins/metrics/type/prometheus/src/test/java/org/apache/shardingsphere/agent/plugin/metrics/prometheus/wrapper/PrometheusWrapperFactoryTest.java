@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper;
 
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.CounterWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.GaugeWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.HistogramWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.SummaryWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusCounterCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusGaugeCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusHistogramCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusSummaryCollector;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -30,11 +30,11 @@ public final class PrometheusWrapperFactoryTest {
     
     @Test
     public void assertCreate() {
-        PrometheusWrapperFactory factory = new PrometheusWrapperFactory();
-        assertThat(factory.create("a"), instanceOf(CounterWrapper.class));
-        assertThat(factory.create("b"), instanceOf(GaugeWrapper.class));
-        assertThat(factory.create("c"), instanceOf(HistogramWrapper.class));
-        assertThat(factory.create("d"), instanceOf(HistogramWrapper.class));
-        assertThat(factory.create("e"), instanceOf(SummaryWrapper.class));
+        PrometheusCollectorFactory factory = new PrometheusCollectorFactory();
+        assertThat(factory.create("a"), instanceOf(PrometheusCounterCollector.class));
+        assertThat(factory.create("b"), instanceOf(PrometheusGaugeCollector.class));
+        assertThat(factory.create("c"), instanceOf(PrometheusHistogramCollector.class));
+        assertThat(factory.create("d"), instanceOf(PrometheusHistogramCollector.class));
+        assertThat(factory.create("e"), instanceOf(PrometheusSummaryCollector.class));
     }
 }

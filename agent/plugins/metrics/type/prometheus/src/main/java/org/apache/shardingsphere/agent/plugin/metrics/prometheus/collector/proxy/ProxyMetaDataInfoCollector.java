@@ -20,8 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.prox
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusCollectorFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -43,16 +42,18 @@ import java.util.Optional;
 @Slf4j
 public final class ProxyMetaDataInfoCollector extends Collector {
     
+    private static final String PROXY_METADATA_INFO_METRIC_KEY = "proxy_meta_data_info";
+    
     private static final String LOGIC_DB_COUNT = "schema_count";
     
     private static final String ACTUAL_DB_COUNT = "database_count";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    private static final PrometheusCollectorFactory FACTORY = new PrometheusCollectorFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        GaugeMetricFamily metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_METADATA_INFO);
+        GaugeMetricFamily metaDataInfo = FACTORY.createGaugeMetricFamily(PROXY_METADATA_INFO_METRIC_KEY);
         if (null != ProxyContext.getInstance().getContextManager()) {
             collectProxy(metaDataInfo);
             result.add(metaDataInfo);
