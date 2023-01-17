@@ -31,4 +31,13 @@ public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm, RequiredS
      * @return generated key
      */
     Comparable<?> generateKey();
+    
+    /**
+     * Judge whether support auto increment or not.
+     * 
+     * @return whether support Auto Increment or not
+     */
+    default boolean isSupportAutoIncrement() {
+        return false;
+    }
 }

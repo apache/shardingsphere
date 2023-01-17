@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.driver.fixture.keygen;
+package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -24,7 +24,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
-public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+public final class AutoIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger();
     
@@ -42,7 +42,7 @@ public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAl
     
     @Override
     public String getType() {
-        return "JDBC.INCREMENT.FIXTURE";
+        return "AUTO_INCREMENT.FIXTURE";
     }
     
     @Override
