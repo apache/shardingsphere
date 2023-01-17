@@ -22,7 +22,7 @@
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-
+    
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/../../../../../agent/plugins/metrics/type/target/plugins</directory>
@@ -53,7 +53,7 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${maven.multiModuleProjectDirectory}/distribution/proxy/src/main/resources/bin</directory>
+            <directory>src/test/assembly/bin</directory>
             <lineEnding>unix</lineEnding>
             <includes>
                 <include>*.sh</include>
