@@ -23,43 +23,40 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMet
 import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsCollector;
 
-/**
- * Fixture metrics collector.
- */
 @Getter
-public final class FixtureMetricsCollector implements CounterMetricsCollector, GaugeMetricsCollector, HistogramMetricsCollector, SummaryMetricsCollector {
+public final class MetricsCollectorFixture implements CounterMetricsCollector, GaugeMetricsCollector, HistogramMetricsCollector, SummaryMetricsCollector {
     
-    private Double fixtureValue = 0d;
+    private double value;
     
     @Override
     public void inc() {
-        fixtureValue++;
+        value++;
     }
     
     @Override
     public void inc(final String... labels) {
-        fixtureValue++;
+        value++;
     }
     
     @Override
     public void dec() {
-        fixtureValue--;
+        value--;
     }
     
     @Override
     public void dec(final String... labels) {
-        fixtureValue--;
+        value--;
     }
     
     @Override
     public void observe(final double value) {
-        fixtureValue = value;
+        this.value = value;
     }
     
     /**
      * Reset.
      */
     public void reset() {
-        fixtureValue = 0d;
+        value = 0d;
     }
 }

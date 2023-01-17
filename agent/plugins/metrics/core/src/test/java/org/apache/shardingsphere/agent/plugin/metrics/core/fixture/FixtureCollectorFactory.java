@@ -24,6 +24,6 @@ public final class FixtureCollectorFactory implements MetricsCollectorFactory {
     
     @Override
     public MetricsCollector create(final String id) {
-        return new FixtureMetricsCollector();
+        return new MetricsCollectorFixture();
     }
 }
