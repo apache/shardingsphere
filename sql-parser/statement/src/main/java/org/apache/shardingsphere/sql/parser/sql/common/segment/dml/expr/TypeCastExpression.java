@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
-
-import java.lang.reflect.Method;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rollback transactions count advice for ShardingSphere-Proxy.
+ * Type cast expression.
  */
-public final class RollbackTransactionsCountAdvice implements InstanceMethodAdvice {
+@RequiredArgsConstructor
+@Getter
+public final class TypeCastExpression implements ExpressionSegment {
     
-    private static final String PROXY_ROLLBACK_TRANSACTIONS_METRIC_KEY = "proxy_rollback_transactions_total";
+    private final int startIndex;
     
-    @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsWrapperRegistry.get(PROXY_ROLLBACK_TRANSACTIONS_METRIC_KEY).inc();
-    }
+    private final int stopIndex;
+    
+    private final ExpressionSegment expression;
+    
+    // TODO Parse data type after https://github.com/apache/shardingsphere/issues/23466 fixed
+    private final String dataType;
 }

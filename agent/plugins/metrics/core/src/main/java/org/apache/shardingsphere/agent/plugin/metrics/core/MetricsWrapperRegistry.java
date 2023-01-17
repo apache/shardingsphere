@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Metrics pool.
+ * Metrics wrapper registry.
  */
-public final class MetricsPool {
+public final class MetricsWrapperRegistry {
     
-    private static final ConcurrentHashMap<String, MetricsWrapper> METRICS_POOL = new ConcurrentHashMap<>();
+    private static final Map<String, MetricsWrapper> METRICS_WRAPPERS = new ConcurrentHashMap<>();
     
     private static MetricsWrapperFactory metricsWrapperFactory;
     
@@ -34,7 +35,7 @@ public final class MetricsPool {
      * @param metricsWrapperFactory metrics wrapper factory
      */
     public static void setMetricsFactory(final MetricsWrapperFactory metricsWrapperFactory) {
-        MetricsPool.metricsWrapperFactory = metricsWrapperFactory;
+        MetricsWrapperRegistry.metricsWrapperFactory = metricsWrapperFactory;
     }
     
     /**
@@ -45,7 +46,7 @@ public final class MetricsPool {
      * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
     public static MetricsWrapper get(final String id) {
-        MetricsWrapper result = METRICS_POOL.get(id);
-        return null != result ? result : METRICS_POOL.computeIfAbsent(id, metricsWrapperFactory::create);
+        MetricsWrapper result = METRICS_WRAPPERS.get(id);
+        return null == result ? METRICS_WRAPPERS.computeIfAbsent(id, metricsWrapperFactory::create) : result;
     }
 }

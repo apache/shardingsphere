@@ -154,8 +154,8 @@ services:
 
 ## Metrics
 
-| 指标名称                              | 指标类型             | 指标描述                                                                |
-|:----------------------------------| :------------------ |:--------------------------------------------------------------------|
+| 指标名称                            | 指标类型                | 指标描述                                                                |
+| :-------------------------------- |:--------------------|:--------------------------------------------------------------------|
 | build_info                        | GAUGE               | 构建信息                                                                |
 | parsed_insert_sql_total           | COUNTER             | INSERT 的解析总数                                                        |
 | parsed_update_sql_total           | COUNTER             | UPDATE 的解析总数                                                        |
@@ -175,7 +175,7 @@ services:
 | routed_select_sql_total           | COUNTER             | SELECT 的路由总数                                                        |
 | routed_data_sources_total         | COUNTER             | 数据源路由总数                                                             |
 | routed_tables_total               | COUNTER             | 表路由总数                                                               |
-| proxy_state                       | GAUGE_METRIC_FAMILY | ShardingSphere-Proxy 状态信息。1 表示正常状态；2 表示熔断状态                         |
+| proxy_state                       | GAUGE               | ShardingSphere-Proxy 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态                  |
 | proxy_meta_data_info              | GAUGE_METRIC_FAMILY | ShardingSphere-Proxy 元数据信息，schema_count：逻辑库数量， database_count：数据源数量 |
 | proxy_current_connections         | GAUGE               | ShardingSphere-Proxy 的当前连接数                                         |
 | proxy_requests_total              | COUNTER             | ShardingSphere-Proxy 的接受请求总数                                        |

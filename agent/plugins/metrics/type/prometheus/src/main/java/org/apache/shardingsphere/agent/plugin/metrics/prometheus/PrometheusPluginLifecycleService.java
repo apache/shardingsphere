@@ -23,7 +23,7 @@ import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyMetaDataInfoCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyStateCollector;
@@ -48,7 +48,7 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
         PluginConfigurationValidator.validatePort(getType(), pluginConfig);
         startServer(pluginConfig, isEnhancedForProxy);
-        MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
+        MetricsWrapperRegistry.setMetricsFactory(new PrometheusWrapperFactory());
     }
     
     private void startServer(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
