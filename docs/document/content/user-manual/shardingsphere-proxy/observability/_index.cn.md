@@ -91,20 +91,20 @@ plugins:
 * 参数说明；
 
 | 名称                                | 说明                        | 取值范围                                                                                                                    | 默认值                               |
-|:----------------------------------|:--------------------------|:------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
+|:----------------------------------|:-----------------------------|:------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
 | jvm-information-collector-enabled | 是否开启 JVM 采集器             | true、false                                                                                                              | true                              |
 | service-name                      | 链路跟踪的服务名称               | 自定义                                                                                                                     | shardingsphere                    |
-| jaeger-sampler-type               | Jaeger 采样率类型              | const、probabilistic、ratelimiting、remote                                                                                 | const                             |
-| jaeger-sampler-param              | Jaeger 采样率参数              | const：0、1，probabilistic：0.0 - 1.0，ratelimiting：> 0，自定义每秒采集数量，remote：需要自定义配置远程采样率管理服务地址，JAEGER_SAMPLER_MANAGER_HOST_PORT | 1（const 类型）                       |
-| jaeger-reporter-flush-interval    | Jaeger 上报数据刷新间隔(毫秒)     | 自定义                                                                                                                     | 1000                              |
-| jaeger-reporter-max-queue-size    | Jaeger 上报 span 时最大队列大小   | 自定义                                                                                 | 100                               |
+| jaeger-sampler-type               | Jaeger 采样率类型               | const、probabilistic、ratelimiting、remote                                                                                 | const                             |
+| jaeger-sampler-param              | Jaeger 采样率参数               | const：0、1，probabilistic：0.0 - 1.0，ratelimiting：> 0，自定义每秒采集数量，remote：需要自定义配置远程采样率管理服务地址，JAEGER_SAMPLER_MANAGER_HOST_PORT | 1（const 类型）|
+| jaeger-reporter-flush-interval    | Jaeger 上报数据刷新间隔(毫秒)    | 自定义                                                                                                                     | 1000                              |
+| jaeger-reporter-max-queue-size    | Jaeger 上报 span 时最大队列大小   | 自定义                                                                                                                     | 100                               |
 | url-version                       | Zipkin url 地址                 | 自定义                                                                                                                     | /api/v2/spans                     |
 | sampler-type                      | Zipkin 采样率类型                | const、counting、ratelimiting、boundary                                                                                    | const                             |
-| sampler-param                     | Zipkin 采样率参数                | const： 0、1，counting：0.01 - 1.0，ratelimiting：> 0，自定义每秒采集数量，boundary: 0.0001 - 1.0                                        | 1（const 类型）                       |
-| otel-resource-attributes          | opentelemetry 资源属性          | 字符串键值对（,分割）                                                                                                             | service.name=shardingsphere-agent |
-| otel-traces-exporter              | Tracing expoter                 | zipkin、jaeger                                                                                                           | zipkin                            |
-| otel-traces-sampler               | opentelemetry 采样率类型         | always_on、always_off、traceidratio                                                                                       | always_on                         |
-| otel-traces-sampler-arg           | opentelemetry 采样率参数         | traceidratio：0.0 - 1.0                                                                                                  | 1.0                               |
+| sampler-param                     | Zipkin 采样率参数                | const： 0、1，counting：0.01 - 1.0，ratelimiting：> 0，自定义每秒采集数量，boundary: 0.0001 - 1.0                               | 1（const 类型）                    |
+| otel-resource-attributes          | opentelemetry 资源属性          | 字符串键值对（,分割）                                                                                                         | service.name=shardingsphere-agent |
+| otel-traces-exporter              | Tracing expoter                | zipkin、jaeger                                                                                                            | zipkin                            |
+| otel-traces-sampler               | opentelemetry 采样率类型         | always_on、always_off、traceidratio                                                                                        | always_on                         |
+| otel-traces-sampler-arg           | opentelemetry 采样率参数         | traceidratio：0.0 - 1.0                                                                                                    | 1.0                               |
 
 ## ShardingSphere-Proxy 中使用
 
@@ -154,31 +154,32 @@ services:
 
 ## Metrics
 
-| 指标名称                            | 指标类型                | 指标描述                                                                                 |
-| :-------------------------------- |:--------------------|:-------------------------------------------------------------------------------------|
-| build_info                        | GAUGE               | 构建信息                                                                              |
-| parsed_insert_sql_total           | COUNTER             | INSERT 的解析总数                                                                         |
-| parsed_update_sql_total           | COUNTER             | UPDATE 的解析总数                                                                         |
-| parsed_delete_sql_total           | COUNTER             | DELETE 的解析总数                                                                         |
-| parsed_select_sql_total           | COUNTER             | SELECT 的解析总数                                                                         |
-| parsed_ddl_total                  | COUNTER             | DDL 的解析总数                                                                            |
-| parsed_dcl_total                  | COUNTER             | DCL 的解析总数                                                                            |
-| parsed_dal_total                  | COUNTER             | DAL 的解析总数                                                                            |
-| parsed_tcl_total                  | COUNTER             | TCL 的解析总数                                                                            |
-| parsed_rql_total                  | COUNTER             | RQL 的解析总数                                                                            |
-| parsed_rdl_total                  | COUNTER             | RDL 的解析总数                                                                            |
-| parsed_ral_total                  | COUNTER             | RAL 的解析总数                                                                            |
-| routed_insert_sql_total           | COUNTER             | INSERT 的路由总数                                                                         |
-| routed_update_sql_total           | COUNTER             | UPDATE 的路由总数                                                                         |
-| routed_delete_sql_total           | COUNTER             | DELETE 的路由总数                                                                         |
-| routed_select_sql_total           | COUNTER             | SELECT 的路由总数                                                                         |
-| routed_data_sources_total         | COUNTER             | 数据源路由总数                                                                             |
-| routed_tables_total               | COUNTER             | 表路由总数                                                                                |
-| proxy_state                       | GAUGE               | ShardingSphere-Proxy 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态                       |
-| proxy_meta_data_info              | GAUGE_METRIC_FAMILY | ShardingSphere-Proxy 元数据信息，schema_count：逻辑库数量， database_count：数据源数量         |
-| proxy_current_connections         | GAUGE               | ShardingSphere-Proxy 的当前连接数                                                          |
-| proxy_requests_total              | COUNTER             | ShardingSphere-Proxy 的接受请求总数                                                         |
-| proxy_commit_transactions_total   | COUNTER             | ShardingSphere-Proxy 的事务提交总数                                                         |
-| proxy_rollback_transactions_total | COUNTER             | ShardingSphere-Proxy 的事务回滚总数                                                         |
-| proxy_execute_latency_millis      | HISTOGRAM           | ShardingSphere-Proxy 的执行耗时毫秒直方图                                                    |
-| proxy_execute_errors_total        | COUNTER             | ShardingSphere-Proxy 的执行异常总数                                                         |
+| 指标名称                            | 指标类型                | 指标描述                                                                |
+| :-------------------------------- |:--------------------|:--------------------------------------------------------------------------|
+| build_info                        | GAUGE               | 构建信息                                                                   |
+| parsed_insert_sql_total           | COUNTER             | INSERT 的解析总数                                                          |
+| parsed_update_sql_total           | COUNTER             | UPDATE 的解析总数                                                          |
+| parsed_delete_sql_total           | COUNTER             | DELETE 的解析总数                                                          |
+| parsed_select_sql_total           | COUNTER             | SELECT 的解析总数                                                          |
+| parsed_ddl_total                  | COUNTER             | DDL 的解析总数                                                             |
+| parsed_dcl_total                  | COUNTER             | DCL 的解析总数                                                             |
+| parsed_dal_total                  | COUNTER             | DAL 的解析总数                                                             |
+| parsed_tcl_total                  | COUNTER             | TCL 的解析总数                                                             |
+| parsed_rql_total                  | COUNTER             | RQL 的解析总数                                                             |
+| parsed_rdl_total                  | COUNTER             | RDL 的解析总数                                                             |
+| parsed_ral_total                  | COUNTER             | RAL 的解析总数                                                             |
+| parsed_rul_total                  | COUNTER             | RUL 的解析总数                                                             |
+| routed_insert_sql_total           | COUNTER             | INSERT 的路由总数                                                          |
+| routed_update_sql_total           | COUNTER             | UPDATE 的路由总数                                                          |
+| routed_delete_sql_total           | COUNTER             | DELETE 的路由总数                                                          |
+| routed_select_sql_total           | COUNTER             | SELECT 的路由总数                                                          |
+| routed_data_sources_total         | COUNTER             | 数据源路由总数                                                              |
+| routed_tables_total               | COUNTER             | 表路由总数                                                                 |
+| proxy_state                       | GAUGE               | ShardingSphere-Proxy 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态        |
+| proxy_meta_data_info              | GAUGE_METRIC_FAMILY | ShardingSphere-Proxy 元数据信息，schema_count：逻辑库数量， database_count：数据源数量 |
+| proxy_current_connections         | GAUGE               | ShardingSphere-Proxy 的当前连接数                                           |
+| proxy_requests_total              | COUNTER             | ShardingSphere-Proxy 的接受请求总数                                         |
+| proxy_commit_transactions_total   | COUNTER             | ShardingSphere-Proxy 的事务提交总数                                         |
+| proxy_rollback_transactions_total | COUNTER             | ShardingSphere-Proxy 的事务回滚总数                                         |
+| proxy_execute_latency_millis      | HISTOGRAM           | ShardingSphere-Proxy 的执行耗时毫秒直方图                                    |
+| proxy_execute_errors_total        | COUNTER             | ShardingSphere-Proxy 的执行异常总数                                         |

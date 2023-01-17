@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistr
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -96,6 +97,11 @@ public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertParseRAL() {
         assertParse("parsed_ral_total", new ShowMigrationListStatement());
+    }
+    
+    @Test
+    public void assertParseRUL() {
+        assertParse("parsed_rul_total", new FormatStatement("SELECT * FROM t_order"));
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {

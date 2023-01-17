@@ -23,6 +23,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistr
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -62,6 +63,8 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
     private static final String PARSED_RAL_METRIC_KEY = "parsed_ral_total";
     
+    private static final String PARSED_RUL_METRIC_KEY = "parsed_rul_total";
+    
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         SQLStatement sqlStatement = (SQLStatement) result;
@@ -96,6 +99,8 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
             MetricsWrapperRegistry.get(PARSED_RDL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RALStatement) {
             MetricsWrapperRegistry.get(PARSED_RAL_METRIC_KEY).inc();
+        } else if (sqlStatement instanceof RULStatement) {
+            MetricsWrapperRegistry.get(PARSED_RUL_METRIC_KEY).inc();
         }
     }
 }

@@ -43,6 +43,7 @@ public abstract class MetricsAdviceBaseTest {
         ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rql_total")).reset();
         ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rdl_total")).reset();
         ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_ral_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rul_total")).reset();
         ((FixtureWrapper) MetricsWrapperRegistry.get("routed_insert_sql_total")).reset();
         ((FixtureWrapper) MetricsWrapperRegistry.get("routed_update_sql_total")).reset();
         ((FixtureWrapper) MetricsWrapperRegistry.get("routed_delete_sql_total")).reset();

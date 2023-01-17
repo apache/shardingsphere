@@ -55,6 +55,9 @@ metrics:
   - id: parsed_ral_total
     type: COUNTER
     help: Total count of parsed RAL
+  - id: parsed_rul_total
+    type: COUNTER
+    help: Total count of parsed RUL
   - id: routed_insert_sql_total
     type: COUNTER
     help: Total count of routed INSERT
