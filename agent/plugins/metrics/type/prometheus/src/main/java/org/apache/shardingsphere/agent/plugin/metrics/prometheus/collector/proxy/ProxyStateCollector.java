@@ -42,7 +42,7 @@ public final class ProxyStateCollector extends Collector {
             return result;
         }
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
-        stateContext.ifPresent(optional -> result.add(FACTORY.createGaugeMetricFamily(PROXY_STATE_METRIC_KEY, stateContext.get().getCurrentState().ordinal())));
+        stateContext.ifPresent(optional -> result.add(FACTORY.createGaugeMetric(PROXY_STATE_METRIC_KEY, stateContext.get().getCurrentState().ordinal())));
         return result;
     }
 }

@@ -67,13 +67,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }
     }
     
-    /**
-     * Get metric configuration.
-     *
-     * @param id metric id
-     * @return metric configuration
-     */
-    public MetricConfiguration getMetricConfiguration(final String id) {
+    private MetricConfiguration getMetricConfiguration(final String id) {
         return METRICS_CONFIG.get(id);
     }
     
@@ -149,15 +143,14 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     }
     
     /**
-     * Create gauge metric family.
+     * Create gauge metric with value.
      *
      * @param id metric id
      * @param value value
-     * @return gauge metric family
+     * @return gauge metric
      */
-    public GaugeMetricFamily createGaugeMetricFamily(final String id, final double value) {
+    public GaugeMetricFamily createGaugeMetric(final String id, final double value) {
         MetricConfiguration metricConfig = getMetricConfiguration(id);
-        List<String> labels = metricConfig.getLabels();
-        return labels.isEmpty() ? new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), value) : new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), labels);
+        return new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), value);
     }
 }
