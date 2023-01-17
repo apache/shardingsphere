@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.ProxyContextRestorer;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+public final class ProxyMetaDataInfoCollectorTest extends ProxyContextRestorer {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsCollectorRegistry.setMetricsFactory(new FixtureCollectorFactory());
+    @Test
+    public void assertCollect() {
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        assertFalse(new ProxyMetaDataInfoCollector().collect().isEmpty());
     }
 }

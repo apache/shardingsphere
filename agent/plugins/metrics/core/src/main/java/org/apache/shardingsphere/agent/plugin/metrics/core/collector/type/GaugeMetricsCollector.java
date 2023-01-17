@@ -15,16 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 
-public abstract class MetricsAdviceBaseTest {
+/**
+ * Gauge metrics collector.
+ */
+public interface GaugeMetricsCollector extends MetricsCollector {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsCollectorRegistry.setMetricsFactory(new FixtureCollectorFactory());
-    }
+    /**
+     * Metric increase.
+     */
+    void inc();
+    
+    /**
+     * Metric increase with labels.
+     *
+     * @param labels labels
+     */
+    void inc(String... labels);
+    
+    /**
+     * Metric decrease.
+     */
+    void dec();
+    
+    /**
+     * Metric decrease with labels.
+     *
+     * @param labels counter labels
+     */
+    void dec(String... labels);
 }

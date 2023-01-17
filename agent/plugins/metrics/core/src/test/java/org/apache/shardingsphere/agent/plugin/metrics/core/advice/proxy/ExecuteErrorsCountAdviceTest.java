@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
 
@@ -34,13 +34,13 @@ public final class ExecuteErrorsCountAdviceTest extends MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("proxy_execute_errors_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_errors_total")).reset();
     }
     
     @Test
     public void assertCountExecuteErrors() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         new ExecuteErrorsCountAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
-        assertThat(((FixtureMetricsCollector) MetricsCollectorRegistry.get("proxy_execute_errors_total")).getFixtureValue(), is(1d));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_errors_total")).getValue(), is(1d));
     }
 }

@@ -23,11 +23,11 @@ import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.BuildInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyMetaDataInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyStateCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusCollectorFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.BuildInfoCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy.ProxyMetaDataInfoCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy.ProxyStateCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.PrometheusCollectorFactory;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 

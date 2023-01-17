@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 
-public abstract class MetricsAdviceBaseTest {
+/**
+ * Summary metrics collector.
+ */
+public interface SummaryMetricsCollector extends MetricsCollector {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsCollectorRegistry.setMetricsFactory(new FixtureCollectorFactory());
-    }
+    /**
+     * Observed by value.
+     *
+     * @param value value
+     */
+    void observe(double value);
 }

@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import io.prometheus.client.Counter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-
-import java.lang.reflect.Method;
 
 /**
- * Requests count advice for ShardingSphere-Proxy.
+ * Prometheus counter wrapper.
  */
-public final class RequestsCountAdvice implements InstanceMethodAdvice {
+public final class PrometheusCounterCollector implements CounterMetricsCollector {
     
-    private static final String PROXY_REQUESTS_METRIC_KEY = "proxy_requests_total";
+    private final Counter counter;
+    
+    public PrometheusCounterCollector(final MetricConfiguration config) {
+        counter = Counter.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
+    }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(PROXY_REQUESTS_METRIC_KEY).inc();
+    public void inc() {
+        counter.inc(1d);
+    }
+    
+    @Override
+    public void inc(final String... labels) {
+        counter.labels(labels).inc(1d);
     }
 }

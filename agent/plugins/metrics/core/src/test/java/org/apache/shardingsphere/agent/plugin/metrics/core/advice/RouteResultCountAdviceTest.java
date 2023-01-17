@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -36,8 +36,8 @@ public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("routed_data_sources_total")).reset();
-        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("routed_tables_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_data_sources_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_tables_total")).reset();
     }
     
     @Test
@@ -47,9 +47,9 @@ public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext);
-        FixtureMetricsCollector wrapper = MetricsCollectorRegistry.get("routed_data_sources_total");
-        assertThat(wrapper.getFixtureValue(), is(1d));
+        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get("routed_data_sources_total");
+        assertThat(wrapper.getValue(), is(1d));
         wrapper = MetricsCollectorRegistry.get("routed_tables_total");
-        assertThat(wrapper.getFixtureValue(), is(1d));
+        assertThat(wrapper.getValue(), is(1d));
     }
 }

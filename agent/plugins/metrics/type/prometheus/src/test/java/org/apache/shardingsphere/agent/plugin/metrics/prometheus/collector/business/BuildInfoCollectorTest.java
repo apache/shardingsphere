@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
-import org.junit.BeforeClass;
+import org.junit.Test;
 
-public abstract class MetricsAdviceBaseTest {
+import static org.junit.Assert.assertFalse;
+
+public final class BuildInfoCollectorTest {
     
-    @BeforeClass
-    public static void setup() {
-        MetricsCollectorRegistry.setMetricsFactory(new FixtureCollectorFactory());
+    @Test
+    public void assertCollect() {
+        assertFalse(new BuildInfoCollector(true).collect().isEmpty());
     }
 }

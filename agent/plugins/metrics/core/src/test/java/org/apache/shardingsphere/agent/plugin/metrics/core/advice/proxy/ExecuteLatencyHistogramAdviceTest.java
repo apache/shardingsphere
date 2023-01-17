@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
     
     @After
     public void reset() {
-        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("proxy_execute_latency_millis")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_latency_millis")).reset();
     }
     
     @Test
@@ -45,6 +45,6 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
         advice.beforeMethod(targetObject, method, new Object[]{});
         Thread.sleep(500L);
         advice.afterMethod(targetObject, method, new Object[]{}, null);
-        assertThat(((FixtureMetricsCollector) MetricsCollectorRegistry.get("proxy_execute_latency_millis")).getFixtureValue(), greaterThanOrEqualTo(500D));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_latency_millis")).getValue(), greaterThanOrEqualTo(500D));
     }
 }
