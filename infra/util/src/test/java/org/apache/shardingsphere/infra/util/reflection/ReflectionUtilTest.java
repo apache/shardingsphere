@@ -36,4 +36,22 @@ public final class ReflectionUtilTest {
         assertThat(ReflectionFixture.getStaticValue(), is("bar"));
         ReflectionUtil.setStaticFieldValue(ReflectionFixture.class, "staticValue", "foo");
     }
+    
+    @Test
+    public void assertGetFieldValue() {
+        ReflectionFixture reflectionFixture = new ReflectionFixture();
+        assertThat(ReflectionUtil.getFieldValue(reflectionFixture, "fooField").get(), is("foo_value"));
+        assertThat(ReflectionUtil.getFieldValue(reflectionFixture, "barField").get(), is("bar_value"));
+        assertThat(ReflectionUtil.getFieldValue(new ReflectionFixture(), "foo_field").isPresent(), is(false));
+    }
+    
+    @Test
+    public void assertInvokeMethod() throws NoSuchMethodException {
+        ReflectionFixture reflectionFixture = new ReflectionFixture();
+        assertThat(ReflectionUtil.invokeMethod(reflectionFixture.getClass().getDeclaredMethod("getFooField"), reflectionFixture), is("foo_value"));
+        assertThat(ReflectionUtil.invokeMethod(reflectionFixture.getClass().getDeclaredMethod("getBarField"), reflectionFixture), is("bar_value"));
+        assertThat(ReflectionUtil.invokeMethod(
+                reflectionFixture.getClass().getDeclaredMethod("getContactValue", String.class, String.class),
+                reflectionFixture, "foo", "bar"), is("foo_bar"));
+    }
 }
