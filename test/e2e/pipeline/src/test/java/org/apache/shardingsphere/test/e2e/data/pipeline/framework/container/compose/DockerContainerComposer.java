@@ -37,7 +37,11 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.im
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
+import java.security.InvalidParameterException;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Composed container, include governance container and database container.
@@ -49,23 +53,37 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     private final ShardingSphereProxyClusterContainer proxyContainer;
     
     @Getter
-    private final DockerStorageContainer storageContainer;
+    private final List<DockerStorageContainer> storageContainers = new LinkedList<>();
     
     @Getter
     private final GovernanceContainer governanceContainer;
     
-    public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage) {
+    public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage, final int storageContainerCount) {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        StorageContainerConfiguration storageContainerConfig = DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(storageContainerImage).getMajorVersion() > 5
-                ? MySQLContainerConfigurationFactory.newInstance(null, null, Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER))
-                : StorageContainerConfigurationFactory.newInstance(databaseType);
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
-                "", storageContainerConfig));
+        if (storageContainerCount < 1) {
+            throw new InvalidParameterException("storageContainerCount must >= 1");
+        }
+        for (int i = 0; i < storageContainerCount; i++) {
+            StorageContainerConfiguration storageContainerConfig;
+            if (DatabaseTypeUtil.isMySQL(databaseType)) {
+                int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
+                Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+                storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
+            } else {
+                storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
+            }
+            DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, null,
+                    storageContainerConfig));
+            storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));
+            storageContainers.add(storageContainer);
+        }
         AdaptorContainerConfiguration containerConfig = PipelineProxyClusterContainerConfigurationFactory.newInstance(databaseType, storageContainerImage);
         ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE,
-                AdapterContainerConstants.PROXY, databaseType, storageContainer, "", containerConfig);
-        proxyClusterContainer.dependsOn(governanceContainer, storageContainer);
+                AdapterContainerConstants.PROXY, databaseType, null, "", containerConfig);
+        for (DockerStorageContainer each : storageContainers) {
+            proxyClusterContainer.dependsOn(governanceContainer, each);
+        }
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }
     

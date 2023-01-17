@@ -32,4 +32,13 @@ public final class PipelineTestParameter {
     private final String storageContainerImage;
     
     private final String scenario;
+    
+    private final int storageContainerCount;
+    
+    public PipelineTestParameter(final DatabaseType databaseType, final String storageContainerImage, final String scenario) {
+        this.databaseType = databaseType;
+        this.storageContainerImage = storageContainerImage;
+        this.scenario = scenario;
+        storageContainerCount = 1;
+    }
 }
