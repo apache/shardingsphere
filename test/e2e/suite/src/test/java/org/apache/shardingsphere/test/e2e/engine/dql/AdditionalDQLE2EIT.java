@@ -68,9 +68,9 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
                                                                                         final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                ResultSet actualResultSet = actualStatement.executeQuery(String.format(getSQL(), getAssertion().getSQLValues().toArray()));
+                ResultSet actualResultSet = actualStatement.executeQuery(getSQL());
                 Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                ResultSet expectedResultSet = expectedStatement.executeQuery(String.format(getSQL(), getAssertion().getSQLValues().toArray()))) {
+                ResultSet expectedResultSet = expectedStatement.executeQuery(getSQL())) {
             assertResultSet(actualResultSet, expectedResultSet);
         }
     }
@@ -109,12 +109,11 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(
                                                                                                                final Connection actualConnection,
                                                                                                                final Connection expectedConnection) throws SQLException, ParseException {
-        String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-                ResultSet actualResultSet = actualStatement.executeQuery(sql);
+                ResultSet actualResultSet = actualStatement.executeQuery(getSQL());
                 Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-                ResultSet expectedResultSet = expectedStatement.executeQuery(sql)) {
+                ResultSet expectedResultSet = expectedStatement.executeQuery(getSQL())) {
             assertResultSet(actualResultSet, expectedResultSet);
         }
     }
@@ -155,8 +154,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
-            assertTrue("Not a query statement.", actualStatement.execute(sql) && expectedStatement.execute(sql));
+            assertTrue("Not a query statement.", actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
@@ -202,8 +200,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         try (
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
                 Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
-            String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
-            assertTrue("Not a query statement.", actualStatement.execute(sql) && expectedStatement.execute(sql));
+            assertTrue("Not a query statement.", actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
