@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -43,6 +44,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
+    
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_insert_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_update_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_delete_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_select_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_ddl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_dcl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_dal_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_tcl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rdl_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_ral_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rul_total")).reset();
+    }
     
     @Test
     public void assertParseInsertSQL() {
