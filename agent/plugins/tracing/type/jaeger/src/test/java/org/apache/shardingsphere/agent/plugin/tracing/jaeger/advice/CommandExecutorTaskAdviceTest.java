@@ -53,8 +53,8 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @Test
     public void assertMethod() {
         CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{});
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{}, "Jaeger");
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "Jaeger");
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -65,9 +65,9 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     @Test
     public void assertExceptionHandle() {
         CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{});
-        advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{}, "Jaeger");
+        advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "Jaeger");
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "Jaeger");
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

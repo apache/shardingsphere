@@ -41,8 +41,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"});
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, null);
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"}, "Jaeger");
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, null, "Jaeger");
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -51,9 +51,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertExceptionHandle() {
-        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"});
-        ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
-        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, null);
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"}, "Jaeger");
+        ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "Jaeger");
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, null, "Jaeger");
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

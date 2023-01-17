@@ -43,7 +43,7 @@ public final class CommitTransactionsCountAdviceTest extends MetricsAdviceBaseTe
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{});
+        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(PROXY_COMMIT_TRANSACTIONS_METRIC_KEY)).getValue(), is(1D));
     }
 }

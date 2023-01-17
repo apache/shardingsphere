@@ -40,7 +40,7 @@ public final class ExecuteErrorsCountAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertCountExecuteErrors() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        new ExecuteErrorsCountAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
+        new ExecuteErrorsCountAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_errors_total")).getValue(), is(1d));
     }
 }

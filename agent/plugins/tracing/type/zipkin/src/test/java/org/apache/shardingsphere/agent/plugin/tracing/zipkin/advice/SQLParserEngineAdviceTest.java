@@ -54,8 +54,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "Zipkin");
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "Zipkin");
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());
@@ -66,9 +66,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
-        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "Zipkin");
+        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException(), "Zipkin");
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "Zipkin");
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());

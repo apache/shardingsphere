@@ -32,7 +32,7 @@ public final class ExecuteErrorsCountAdvice implements InstanceMethodAdvice {
     private static final String PROXY_EXECUTE_ERRORS_METRIC_KEY = "proxy_execute_errors_total";
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         MetricsCollectorRegistry.<CounterMetricsCollector>get(PROXY_EXECUTE_ERRORS_METRIC_KEY).inc();
     }
 }

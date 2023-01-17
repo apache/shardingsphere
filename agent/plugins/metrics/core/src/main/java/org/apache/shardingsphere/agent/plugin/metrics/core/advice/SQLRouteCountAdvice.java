@@ -44,7 +44,7 @@ public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
     private static final String ROUTED_SELECT_SQL_METRIC_KEY = "routed_select_sql_total";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {

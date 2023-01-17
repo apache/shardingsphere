@@ -37,7 +37,7 @@ public final class RouteResultCountAdvice implements InstanceMethodAdvice {
     private static final String ROUTED_TABLES_METRIC_KEY = "routed_tables_total";
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         if (null == result) {
             return;
         }

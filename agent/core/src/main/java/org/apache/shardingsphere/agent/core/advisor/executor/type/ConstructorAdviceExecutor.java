@@ -28,12 +28,14 @@ import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
-import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Constructor advice executor.
@@ -43,7 +45,7 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorAdviceExecutor.class);
     
-    private final Collection<ConstructorAdvice> advices;
+    private final Map<String, Collection<ConstructorAdvice>> advices;
     
     /**
      * Advice constructor.
@@ -56,8 +58,10 @@ public final class ConstructorAdviceExecutor implements AdviceExecutor {
         boolean adviceEnabled = PluginContext.isPluginEnabled();
         try {
             if (adviceEnabled) {
-                for (ConstructorAdvice each : advices) {
-                    each.onConstructor(target, args);
+                for (Entry<String, Collection<ConstructorAdvice>> entry : advices.entrySet()) {
+                    for (ConstructorAdvice each : entry.getValue()) {
+                        each.onConstructor(target, args, entry.getKey());
+                    }
                 }
             }
             // CHECKSTYLE:OFF

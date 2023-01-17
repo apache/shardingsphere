@@ -67,7 +67,7 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     private static final String PARSED_RUL_METRIC_KEY = "parsed_rul_total";
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         SQLStatement sqlStatement = (SQLStatement) result;
         countSQL(sqlStatement);
         countDistSQL(sqlStatement);

@@ -39,7 +39,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .startActive(true);
@@ -47,7 +47,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
         BackendConnection connection = AgentReflectionUtil.<ConnectionSession>getFieldValue(target, "connectionSession").getBackendConnection();
         Scope scope = GlobalTracer.get().scopeManager().active();
@@ -56,7 +56,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
         JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

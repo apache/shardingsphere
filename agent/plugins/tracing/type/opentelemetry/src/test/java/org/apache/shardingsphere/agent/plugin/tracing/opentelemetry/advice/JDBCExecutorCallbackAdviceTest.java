@@ -41,8 +41,8 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @Test
     public void assertMethod() {
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "OpenTelemetry");
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "OpenTelemetry");
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
@@ -57,9 +57,9 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @Test
     public void assertExceptionHandle() {
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
-        advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "OpenTelemetry");
+        advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException(), "OpenTelemetry");
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "OpenTelemetry");
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);

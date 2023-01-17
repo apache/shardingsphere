@@ -122,7 +122,7 @@ public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
-        new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement);
+        new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricIds)).getValue(), is(1d));
     }
 }
