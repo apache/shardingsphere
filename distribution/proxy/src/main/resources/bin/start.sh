@@ -135,7 +135,6 @@ if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
     print_version
 fi
 
-PARAM_INDEX=1
 AGENT_FILE=${DEPLOY_DIR}/agent/shardingsphere-agent.jar
 function set_agent_name() {
     if [ -d "${DEPLOY_DIR}/agent" ]; then
@@ -153,15 +152,18 @@ function set_agent_parameter() {
     fi
 }
 
+PARAMETER_INDEX=0
+PARAMETERS=( $* )
 for arg in $*
 do
   if [ "$arg" == "-g" ] || [ "$arg" == "--agent" ] ; then
     set_agent_name
     set_agent_parameter
-    set -- "${params[$PARAM_INDEX]}"
+    unset PARAMETERS[PARAMETER_INDEX]
+    set -- "${PARAMETERS[@]}"
     break
   fi
-  let PARAM_INDEX+=1
+  let PARAMETER_INDEX+=1
 done
 
 if [ $# == 0 ]; then
