@@ -56,7 +56,7 @@ public final class AdvisorConfigurationLoader {
             if (null == advisorsResourceStream) {
                 LOGGER.info("No configuration of advisor for type `{}`.", each);
             } else {
-                mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream)));
+                mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
             }
         }
         return result;

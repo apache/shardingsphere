@@ -38,7 +38,7 @@ public final class YamlAdvisorsConfigurationSwapperTest {
     @Test
     public void assertSwapToObject() {
         Collection<AdvisorConfiguration> actual = YamlAdvisorsConfigurationSwapper.swap(
-                new Yaml().loadAs(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml"), YamlAdvisorsConfiguration.class));
+                new Yaml().loadAs(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml"), YamlAdvisorsConfiguration.class), "FIXTURE");
         assertThat(actual.size(), is(1));
         assertAdvisorConfiguration(actual.iterator().next());
     }
@@ -49,17 +49,17 @@ public final class YamlAdvisorsConfigurationSwapperTest {
         for (MethodAdvisorConfiguration each : actual.getAdvisors()) {
             assertThat(each.getAdviceClassName(), is(YamlAdviceFixture.class.getName()));
         }
-        List<MethodAdvisorConfiguration> actualAdvisorConfig = new ArrayList<>(actual.getAdvisors());
-        assertThat(actualAdvisorConfig.get(0).getPointcut(), is(ElementMatchers.isConstructor()));
-        assertThat(actualAdvisorConfig.get(1).getPointcut(), is(ElementMatchers.isConstructor().and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
-        assertThat(actualAdvisorConfig.get(2).getPointcut(), is(ElementMatchers.named("call")));
-        assertThat(actualAdvisorConfig.get(3).getPointcut(), is(ElementMatchers.named("call").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
-        assertThat(actualAdvisorConfig.get(4).getPointcut(), is(ElementMatchers.named("call")
+        List<MethodAdvisorConfiguration> actualAdvisorConfigs = new ArrayList<>(actual.getAdvisors());
+        assertThat(actualAdvisorConfigs.get(0).getPointcut(), is(ElementMatchers.isConstructor()));
+        assertThat(actualAdvisorConfigs.get(1).getPointcut(), is(ElementMatchers.isConstructor().and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
+        assertThat(actualAdvisorConfigs.get(2).getPointcut(), is(ElementMatchers.named("call")));
+        assertThat(actualAdvisorConfigs.get(3).getPointcut(), is(ElementMatchers.named("call").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
+        assertThat(actualAdvisorConfigs.get(4).getPointcut(), is(ElementMatchers.named("call")
                 .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String")))));
-        assertThat(actualAdvisorConfig.get(5).getPointcut(), is(ElementMatchers.named("staticCall")));
-        assertThat(actualAdvisorConfig.get(6).getPointcut(), is(ElementMatchers.named("staticCall").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
-        assertThat(actualAdvisorConfig.get(7).getPointcut(), is(ElementMatchers.named("staticCall")
+        assertThat(actualAdvisorConfigs.get(5).getPointcut(), is(ElementMatchers.named("staticCall")));
+        assertThat(actualAdvisorConfigs.get(6).getPointcut(), is(ElementMatchers.named("staticCall").and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String")))));
+        assertThat(actualAdvisorConfigs.get(7).getPointcut(), is(ElementMatchers.named("staticCall")
                 .and(ElementMatchers.takesArgument(0, ElementMatchers.named("java.lang.String"))).and(ElementMatchers.takesArgument(1, ElementMatchers.named("java.lang.String")))));
-        
+        actualAdvisorConfigs.forEach(each -> assertThat(each.getPluginType(), is("FIXTURE")));
     }
 }

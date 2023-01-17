@@ -32,4 +32,6 @@ public final class MethodAdvisorConfiguration {
     private final ElementMatcher<? super MethodDescription> pointcut;
     
     private final String adviceClassName;
+    
+    private final String pluginType;
 }
