@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
-
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapper;
+package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper;
 
 /**
- * Summary metrics wrapper.
+ * Metrics collector factory.
  */
-public interface SummaryMetricsWrapper extends MetricsWrapper {
+public interface MetricsCollectorFactory {
     
     /**
-     * Observed by value.
+     * Create metrics collector.
      *
-     * @param value value
+     * @param id metrics ID
+     * @return metrics collector
      */
-    void observe(double value);
+    MetricsCollector create(String id);
 }

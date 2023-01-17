@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureMetricsCollector;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
@@ -47,18 +47,18 @@ public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_insert_sql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_update_sql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_delete_sql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_select_sql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_ddl_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_dcl_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_dal_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_tcl_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rdl_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_ral_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("parsed_rul_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_insert_sql_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_update_sql_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_delete_sql_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_select_sql_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_ddl_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_dcl_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_dal_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_tcl_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_rql_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_rdl_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_ral_total")).reset();
+        ((FixtureMetricsCollector) MetricsCollectorRegistry.get("parsed_rul_total")).reset();
     }
     
     @Test
@@ -123,6 +123,6 @@ public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
         new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement);
-        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get(metricIds)).getFixtureValue(), is(1d));
+        assertThat(((FixtureMetricsCollector) MetricsCollectorRegistry.get(metricIds)).getFixtureValue(), is(1d));
     }
 }

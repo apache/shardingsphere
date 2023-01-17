@@ -29,9 +29,9 @@ public final class PrometheusHistogramWrapperTest {
     @Test
     public void assertCreate() throws ReflectiveOperationException {
         Histogram histogram = Histogram.build().name("a").help("help").create();
-        PrometheusHistogramWrapper histogramWrapper = new PrometheusHistogramWrapper(histogram);
+        PrometheusHistogramCollector histogramWrapper = new PrometheusHistogramCollector(histogram);
         histogramWrapper.observe(1);
-        histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusHistogramWrapper.class.getDeclaredField("histogram"), histogramWrapper);
+        histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusHistogramCollector.class.getDeclaredField("histogram"), histogramWrapper);
         assertThat(histogram.collect().size(), is(1));
     }
 }

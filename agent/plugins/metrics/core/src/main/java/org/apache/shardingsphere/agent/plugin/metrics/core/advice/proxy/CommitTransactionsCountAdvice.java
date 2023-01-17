@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
 
 import java.lang.reflect.Method;
 
@@ -33,6 +33,6 @@ public final class CommitTransactionsCountAdvice implements InstanceMethodAdvice
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsWrapperRegistry.<CounterMetricsWrapper>get(PROXY_COMMIT_TRANSACTIONS_METRIC_KEY).inc();
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(PROXY_COMMIT_TRANSACTIONS_METRIC_KEY).inc();
     }
 }

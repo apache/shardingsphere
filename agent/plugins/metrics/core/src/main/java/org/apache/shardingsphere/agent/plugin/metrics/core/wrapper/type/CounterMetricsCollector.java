@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollector;
 
 /**
- * Gauge metrics wrapper.
+ * Counter metrics collector.
  */
-public interface GaugeMetricsWrapper extends MetricsWrapper {
+public interface CounterMetricsCollector extends MetricsCollector {
     
     /**
      * Metric increase.
@@ -35,16 +35,4 @@ public interface GaugeMetricsWrapper extends MetricsWrapper {
      * @param labels labels
      */
     void inc(String... labels);
-    
-    /**
-     * Metric decrease.
-     */
-    void dec();
-    
-    /**
-     * Metric decrease with labels.
-     *
-     * @param labels counter labels
-     */
-    void dec(String... labels);
 }

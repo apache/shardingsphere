@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureMetricsCollector;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MetricsWrapperTest {
+public final class MetricsCollectorTest {
     
     @Test
     public void assertCreate() {
-        FixtureWrapper metricsWrapper = new FixtureWrapper();
-        metricsWrapper.inc();
-        assertThat(metricsWrapper.getFixtureValue(), is(1d));
-        metricsWrapper.inc("a");
-        assertThat(metricsWrapper.getFixtureValue(), is(2d));
-        metricsWrapper.dec();
-        assertThat(metricsWrapper.getFixtureValue(), is(1d));
-        metricsWrapper.dec("c");
-        assertThat(metricsWrapper.getFixtureValue(), is(0d));
-        metricsWrapper.observe(2);
-        assertThat(metricsWrapper.getFixtureValue(), is(2.0d));
-        metricsWrapper.observe(3);
-        assertThat(metricsWrapper.getFixtureValue(), is(3.0d));
+        FixtureMetricsCollector fixtureMetricsCollector = new FixtureMetricsCollector();
+        fixtureMetricsCollector.inc();
+        assertThat(fixtureMetricsCollector.getFixtureValue(), is(1d));
+        fixtureMetricsCollector.inc("a");
+        assertThat(fixtureMetricsCollector.getFixtureValue(), is(2d));
+        fixtureMetricsCollector.dec();
+        assertThat(fixtureMetricsCollector.getFixtureValue(), is(1d));
+        fixtureMetricsCollector.dec("c");
+        assertThat(fixtureMetricsCollector.getFixtureValue(), is(0d));
+        fixtureMetricsCollector.observe(2);
+        assertThat(fixtureMetricsCollector.getFixtureValue(), is(2.0d));
+        fixtureMetricsCollector.observe(3);
+        assertThat(fixtureMetricsCollector.getFixtureValue(), is(3.0d));
     }
 }

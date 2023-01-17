@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy;
 
 import io.prometheus.client.Collector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusCollectorFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -33,7 +33,7 @@ public final class ProxyStateCollector extends Collector {
     
     public static final String PROXY_STATE_METRIC_KEY = "proxy_state";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    private static final PrometheusCollectorFactory FACTORY = new PrometheusCollectorFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {

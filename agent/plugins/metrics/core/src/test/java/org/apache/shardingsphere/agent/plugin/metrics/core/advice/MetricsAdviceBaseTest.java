@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
 import org.junit.BeforeClass;
 
 public abstract class MetricsAdviceBaseTest {
     
     @BeforeClass
     public static void setup() {
-        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
+        MetricsCollectorRegistry.setMetricsFactory(new FixtureCollectorFactory());
     }
 }

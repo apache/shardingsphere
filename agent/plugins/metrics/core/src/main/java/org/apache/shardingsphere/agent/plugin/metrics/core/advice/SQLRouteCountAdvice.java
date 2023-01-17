@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -48,13 +48,13 @@ public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(ROUTED_INSERT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_INSERT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(ROUTED_UPDATE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_UPDATE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(ROUTED_DELETE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_DELETE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(ROUTED_SELECT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SELECT_SQL_METRIC_KEY).inc();
         }
     }
 }

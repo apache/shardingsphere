@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.prox
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusCollectorFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -48,7 +48,7 @@ public final class ProxyMetaDataInfoCollector extends Collector {
     
     private static final String ACTUAL_DB_COUNT = "database_count";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    private static final PrometheusCollectorFactory FACTORY = new PrometheusCollectorFactory();
     
     @Override
     public List<MetricFamilySamples> collect() {

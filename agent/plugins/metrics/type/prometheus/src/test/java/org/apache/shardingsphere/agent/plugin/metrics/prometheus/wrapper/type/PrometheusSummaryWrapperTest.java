@@ -28,9 +28,9 @@ public final class PrometheusSummaryWrapperTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusSummaryWrapper summaryWrapper = new PrometheusSummaryWrapper(Summary.build().name("a").help("help").create());
+        PrometheusSummaryCollector summaryWrapper = new PrometheusSummaryCollector(Summary.build().name("a").help("help").create());
         summaryWrapper.observe(1);
-        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusSummaryWrapper.class.getDeclaredField("summary"), summaryWrapper);
+        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusSummaryCollector.class.getDeclaredField("summary"), summaryWrapper);
         assertThat(summary.collect().size(), is(1));
     }
 }
