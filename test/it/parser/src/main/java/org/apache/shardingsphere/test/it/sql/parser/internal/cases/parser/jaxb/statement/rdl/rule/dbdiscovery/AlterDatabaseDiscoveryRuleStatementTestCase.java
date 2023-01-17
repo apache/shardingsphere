@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryRule;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-import java.util.Collection;
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Database discovery rule definition segment.
+ * Alter database discovery rule statement test case.
  */
 @Getter
-public final class DatabaseDiscoveryDefinitionSegment extends AbstractDatabaseDiscoverySegment {
+public final class AlterDatabaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
     
-    private final AlgorithmSegment discoveryType;
-    
-    private final Properties discoveryHeartbeat;
-    
-    public DatabaseDiscoveryDefinitionSegment(final String name, final Collection<String> dataSources, final AlgorithmSegment discoveryType, final Properties discoveryHeartbeat) {
-        super(name, dataSources);
-        this.discoveryType = discoveryType;
-        this.discoveryHeartbeat = discoveryHeartbeat;
-    }
+    @XmlElement(name = "rule")
+    private final List<ExpectedDatabaseDiscoveryRule> rules = new LinkedList<>();
 }

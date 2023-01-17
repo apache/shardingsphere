@@ -166,7 +166,7 @@
         </rule>
     </alter-readwrite-splitting-rule>
 
-    <alter-database-discovery-definition-rule sql-case-id="alter-database-discovery-definition-rule">
+    <alter-database-discovery-rule sql-case-id="alter-database-discovery-rule">
         <rule name="ha_group_0" type="mgr">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
@@ -183,7 +183,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/6 * * * * ?" />
         </rule>
-    </alter-database-discovery-definition-rule>
+    </alter-database-discovery-rule>
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">
