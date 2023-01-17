@@ -101,7 +101,7 @@ public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     
     @Test
     public void assertParseRUL() {
-        assertParse(MetricIds.PARSED_RUL, new FormatStatement("SELECT * FROM t_order"));
+        assertParse("parsed_rul_total", new FormatStatement("SELECT * FROM t_order"));
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
