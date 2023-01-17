@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -38,6 +39,14 @@ import static org.mockito.Mockito.mock;
 public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     
     private final SQLRouteCountAdvice advice = new SQLRouteCountAdvice();
+    
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_insert_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_update_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_delete_sql_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_select_sql_total")).reset();
+    }
     
     @Test
     public void assertInsertRoute() {

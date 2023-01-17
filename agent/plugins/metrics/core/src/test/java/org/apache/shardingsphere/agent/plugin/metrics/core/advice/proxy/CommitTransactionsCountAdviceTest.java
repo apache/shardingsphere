@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistr
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -34,6 +35,11 @@ public final class CommitTransactionsCountAdviceTest extends MetricsAdviceBaseTe
     private static final String PROXY_COMMIT_TRANSACTIONS_METRIC_KEY = "proxy_commit_transactions_total";
     
     private final CommitTransactionsCountAdvice advice = new CommitTransactionsCountAdvice();
+    
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_commit_transactions_total")).reset();
+    }
     
     @Test
     public void assertMethod() {

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistr
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -30,6 +31,11 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.mockito.Mockito.mock;
 
 public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTest {
+    
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_latency_millis")).reset();
+    }
     
     @Test
     public void assertExecuteLatencyHistogram() throws InterruptedException {

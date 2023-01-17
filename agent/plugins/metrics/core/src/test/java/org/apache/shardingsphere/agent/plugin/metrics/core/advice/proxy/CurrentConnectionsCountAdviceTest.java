@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistr
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -33,6 +34,11 @@ import static org.mockito.Mockito.when;
 public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTest {
     
     private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
+    
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_current_connections")).reset();
+    }
     
     @Test
     public void assertCountCurrentConnections() {

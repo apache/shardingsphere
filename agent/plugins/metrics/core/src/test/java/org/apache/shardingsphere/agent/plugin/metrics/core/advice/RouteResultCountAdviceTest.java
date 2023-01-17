@@ -22,6 +22,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrappe
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -32,6 +33,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
+    
+    @After
+    public void reset() {
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_data_sources_total")).reset();
+        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_tables_total")).reset();
+    }
     
     @Test
     public void assertCountRouteResult() {
