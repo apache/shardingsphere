@@ -53,7 +53,5 @@ public final class MetricsWrapperTest {
         assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(2.0d));
         metricsWrapper.observe(3);
         assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(3.0d));
-        metricsWrapper.delegate(1);
-        assertThat(metricsWrapper.getFixtureValue(), org.hamcrest.Matchers.is(-1.0d));
     }
 }
