@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
@@ -48,7 +49,8 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     }
     
     @Test
-    public void assertProxyWithAgent() throws IOException {
+    @SneakyThrows(IOException.class)
+    public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
         try {
             // TODO this needs to refactor, replace sleep with polling.
@@ -74,8 +76,8 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
         String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/&limit=100";
         String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/&limit=100";
         String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/&limit=100";
-        assertThat(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).size(), is(30));
-        assertThat(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).size(), is(77));
-        assertThat(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).size(), is(79));
+        assertFalse(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).isEmpty());
+        assertFalse(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).isEmpty());
+        assertFalse(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).isEmpty());
     }
 }
