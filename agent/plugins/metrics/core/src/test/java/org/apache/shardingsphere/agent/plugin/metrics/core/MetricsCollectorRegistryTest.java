@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

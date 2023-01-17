@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Gauge;
+import io.prometheus.client.Counter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusGaugeWrapperTest {
+public final class PrometheusCounterCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        Gauge gauge = Gauge.build().name("a").help("help").create();
-        PrometheusGaugeCollector gaugeWrapper = new PrometheusGaugeCollector(gauge);
-        gaugeWrapper.inc();
-        gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusGaugeCollector.class.getDeclaredField("gauge"), gaugeWrapper);
-        assertThat(gauge.get(), is(1d));
+        PrometheusCounterCollector collector = new PrometheusCounterCollector(new MetricConfiguration("foo_counter", "COUNTER", "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.inc();
+        Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusCounterCollector.class.getDeclaredField("counter"), collector);
+        assertThat(counter.get(), is(1d));
     }
 }

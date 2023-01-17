@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
 import io.prometheus.client.Gauge;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
 
 /**
  * Prometheus gauge wrapper.
  */
-@RequiredArgsConstructor
 public final class PrometheusGaugeCollector implements GaugeMetricsCollector {
     
     private final Gauge gauge;
+    
+    public PrometheusGaugeCollector(final MetricConfiguration config) {
+        gauge = Gauge.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
+    }
     
     @Override
     public void inc() {

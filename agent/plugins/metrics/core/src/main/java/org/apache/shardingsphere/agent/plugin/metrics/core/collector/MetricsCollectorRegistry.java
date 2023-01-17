@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy;
 
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;

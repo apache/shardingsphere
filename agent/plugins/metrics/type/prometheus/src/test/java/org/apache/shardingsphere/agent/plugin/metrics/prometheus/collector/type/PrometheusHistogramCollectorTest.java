@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Summary;
+import io.prometheus.client.Histogram;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusSummaryWrapperTest {
+public final class PrometheusHistogramCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusSummaryCollector summaryWrapper = new PrometheusSummaryCollector(Summary.build().name("a").help("help").create());
-        summaryWrapper.observe(1);
-        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusSummaryCollector.class.getDeclaredField("summary"), summaryWrapper);
-        assertThat(summary.collect().size(), is(1));
+        PrometheusHistogramCollector collector = new PrometheusHistogramCollector(new MetricConfiguration("foo_histogram", "HISTOGRAM", "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.observe(1);
+        Histogram histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusHistogramCollector.class.getDeclaredField("histogram"), collector);
+        assertThat(histogram.collect().size(), is(1));
     }
 }

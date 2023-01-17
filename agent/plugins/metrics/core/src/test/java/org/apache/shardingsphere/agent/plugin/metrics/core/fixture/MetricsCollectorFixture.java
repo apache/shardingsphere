@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.SummaryMetricsCollector;
 
 @Getter
 public final class MetricsCollectorFixture implements CounterMetricsCollector, GaugeMetricsCollector, HistogramMetricsCollector, SummaryMetricsCollector {

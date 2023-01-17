@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 
 /**
- * Gauge metrics collector.
+ * Counter metrics collector.
  */
-public interface GaugeMetricsCollector extends MetricsCollector {
+public interface CounterMetricsCollector extends MetricsCollector {
     
     /**
      * Metric increase.
@@ -35,16 +35,4 @@ public interface GaugeMetricsCollector extends MetricsCollector {
      * @param labels labels
      */
     void inc(String... labels);
-    
-    /**
-     * Metric decrease.
-     */
-    void dec();
-    
-    /**
-     * Metric decrease with labels.
-     *
-     * @param labels counter labels
-     */
-    void dec(String... labels);
 }

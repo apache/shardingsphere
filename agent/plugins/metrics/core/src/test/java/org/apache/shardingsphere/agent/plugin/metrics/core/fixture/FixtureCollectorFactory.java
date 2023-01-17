@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorFactory;
 
 public final class FixtureCollectorFactory implements MetricsCollectorFactory {
     

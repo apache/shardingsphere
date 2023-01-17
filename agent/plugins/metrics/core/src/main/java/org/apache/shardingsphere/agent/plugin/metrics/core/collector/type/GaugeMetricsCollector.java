@@ -15,22 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector.type;
 
-import io.prometheus.client.Summary;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 
 /**
- * Prometheus summary wrapper.
+ * Gauge metrics collector.
  */
-@RequiredArgsConstructor
-public final class PrometheusSummaryCollector implements SummaryMetricsCollector {
+public interface GaugeMetricsCollector extends MetricsCollector {
     
-    private final Summary summary;
+    /**
+     * Metric increase.
+     */
+    void inc();
     
-    @Override
-    public void observe(final double value) {
-        summary.observe(value);
-    }
+    /**
+     * Metric increase with labels.
+     *
+     * @param labels labels
+     */
+    void inc(String... labels);
+    
+    /**
+     * Metric decrease.
+     */
+    void dec();
+    
+    /**
+     * Metric decrease with labels.
+     *
+     * @param labels counter labels
+     */
+    void dec(String... labels);
 }

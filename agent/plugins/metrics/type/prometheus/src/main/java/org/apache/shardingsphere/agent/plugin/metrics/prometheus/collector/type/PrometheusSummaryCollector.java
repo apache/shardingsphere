@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollector;
+import io.prometheus.client.Summary;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.SummaryMetricsCollector;
 
 /**
- * Histogram metrics collector.
+ * Prometheus summary wrapper.
  */
-public interface HistogramMetricsCollector extends MetricsCollector {
+public final class PrometheusSummaryCollector implements SummaryMetricsCollector {
     
-    /**
-     * Observed by value.
-     *
-     * @param value value
-     */
-    void observe(double value);
+    private final Summary summary;
+    
+    public PrometheusSummaryCollector(final MetricConfiguration config) {
+        summary = Summary.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
+    }
+    
+    @Override
+    public void observe(final double value) {
+        summary.observe(value);
+    }
 }

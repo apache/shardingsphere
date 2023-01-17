@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Histogram;
+import io.prometheus.client.Gauge;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusHistogramWrapperTest {
+public final class PrometheusGaugeCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        Histogram histogram = Histogram.build().name("a").help("help").create();
-        PrometheusHistogramCollector histogramWrapper = new PrometheusHistogramCollector(histogram);
-        histogramWrapper.observe(1);
-        histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusHistogramCollector.class.getDeclaredField("histogram"), histogramWrapper);
-        assertThat(histogram.collect().size(), is(1));
+        PrometheusGaugeCollector collector = new PrometheusGaugeCollector(new MetricConfiguration("foo_gauge", "GAUGE", "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.inc();
+        Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusGaugeCollector.class.getDeclaredField("gauge"), collector);
+        assertThat(gauge.get(), is(1d));
+        collector.dec();
+        assertThat(gauge.get(), is(0d));
     }
 }

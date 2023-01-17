@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 
 /**
- * Counter metrics collector.
+ * Summary metrics collector.
  */
-public interface CounterMetricsCollector extends MetricsCollector {
+public interface SummaryMetricsCollector extends MetricsCollector {
     
     /**
-     * Metric increase.
-     */
-    void inc();
-    
-    /**
-     * Metric increase with labels.
+     * Observed by value.
      *
-     * @param labels labels
+     * @param value value
      */
-    void inc(String... labels);
+    void observe(double value);
 }

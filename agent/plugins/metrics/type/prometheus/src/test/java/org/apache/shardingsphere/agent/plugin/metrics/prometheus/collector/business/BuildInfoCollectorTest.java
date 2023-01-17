@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business;
 
 import org.junit.Test;
 
