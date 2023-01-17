@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
-import org.junit.Test;
+import io.prometheus.client.Summary;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsWrapper;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class MetricsWrapperRegistryTest {
+/**
+ * Prometheus summary wrapper.
+ */
+@RequiredArgsConstructor
+public final class PrometheusSummaryWrapper implements SummaryMetricsWrapper {
     
-    @Test
-    public void assertGet() {
-        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
-        assertThat(MetricsWrapperRegistry.get("test"), instanceOf(FixtureWrapper.class));
+    private final Summary summary;
+    
+    @Override
+    public void observe(final double value) {
+        summary.observe(value);
     }
 }

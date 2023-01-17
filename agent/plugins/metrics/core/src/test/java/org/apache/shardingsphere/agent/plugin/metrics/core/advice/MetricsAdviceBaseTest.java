@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
 import org.junit.BeforeClass;
 

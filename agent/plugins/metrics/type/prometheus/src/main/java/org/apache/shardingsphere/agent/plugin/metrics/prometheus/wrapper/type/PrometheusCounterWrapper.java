@@ -17,21 +17,25 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Histogram;
-import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import io.prometheus.client.Counter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class HistogramWrapperTest {
+/**
+ * Prometheus counter wrapper.
+ */
+@RequiredArgsConstructor
+public final class PrometheusCounterWrapper implements CounterMetricsWrapper {
     
-    @Test
-    public void assertCreate() throws ReflectiveOperationException {
-        Histogram histogram = Histogram.build().name("a").help("help").create();
-        HistogramWrapper histogramWrapper = new HistogramWrapper(histogram);
-        histogramWrapper.observe(1);
-        histogram = (Histogram) Plugins.getMemberAccessor().get(HistogramWrapper.class.getDeclaredField("histogram"), histogramWrapper);
-        assertThat(histogram.collect().size(), is(1));
+    private final Counter counter;
+    
+    @Override
+    public void inc() {
+        counter.inc(1d);
+    }
+    
+    @Override
+    public void inc(final String... labels) {
+        counter.labels(labels).inc(1d);
     }
 }

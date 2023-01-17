@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
+package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
 
-import io.prometheus.client.Histogram;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapper;
 
 /**
- * Prometheus histogram wrapper.
+ * Histogram metrics wrapper.
  */
-@RequiredArgsConstructor
-public final class HistogramWrapper implements MetricsWrapper {
+public interface HistogramMetricsWrapper extends MetricsWrapper {
     
-    private final Histogram histogram;
-    
-    @Override
-    public void observe(final double value) {
-        histogram.observe(value);
-    }
+    /**
+     * Observed by value.
+     *
+     * @param value value
+     */
+    void observe(double value);
 }

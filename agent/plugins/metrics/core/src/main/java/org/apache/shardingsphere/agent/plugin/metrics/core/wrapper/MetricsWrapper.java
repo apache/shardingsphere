@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class MetricsWrapperRegistryTest {
-    
-    @Test
-    public void assertGet() {
-        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
-        assertThat(MetricsWrapperRegistry.get("test"), instanceOf(FixtureWrapper.class));
-    }
+/**
+ * Metrics wrapper.
+ */
+public interface MetricsWrapper {
 }

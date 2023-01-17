@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import io.prometheus.client.Summary;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MetricsWrapperRegistryTest {
+public final class PrometheusSummaryWrapperTest {
     
     @Test
-    public void assertGet() {
-        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
-        assertThat(MetricsWrapperRegistry.get("test"), instanceOf(FixtureWrapper.class));
+    public void assertCreate() throws ReflectiveOperationException {
+        PrometheusSummaryWrapper summaryWrapper = new PrometheusSummaryWrapper(Summary.build().name("a").help("help").create());
+        summaryWrapper.observe(1);
+        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusSummaryWrapper.class.getDeclaredField("summary"), summaryWrapper);
+        assertThat(summary.collect().size(), is(1));
     }
 }

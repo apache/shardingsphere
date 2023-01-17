@@ -15,18 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
+
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapper;
 
 /**
- * Metrics wrapper factory.
+ * Gauge metrics wrapper.
  */
-public interface MetricsWrapperFactory {
+public interface GaugeMetricsWrapper extends MetricsWrapper {
     
     /**
-     * Create metrics wrapper.
-     *
-     * @param id metrics wrapper ID
-     * @return metrics wrapper
+     * Metric increase.
      */
-    MetricsWrapper create(String id);
+    void inc();
+    
+    /**
+     * Metric increase with labels.
+     *
+     * @param labels labels
+     */
+    void inc(String... labels);
+    
+    /**
+     * Metric decrease.
+     */
+    void dec();
+    
+    /**
+     * Metric decrease with labels.
+     *
+     * @param labels counter labels
+     */
+    void dec(String... labels);
 }

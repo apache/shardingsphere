@@ -18,13 +18,16 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsWrapper;
 
 /**
  * Fixed metric wrapper.
  */
 @Getter
-public final class FixtureWrapper implements MetricsWrapper {
+public final class FixtureWrapper implements CounterMetricsWrapper, GaugeMetricsWrapper, HistogramMetricsWrapper, SummaryMetricsWrapper {
     
     private Double fixtureValue = 0d;
     

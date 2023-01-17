@@ -23,7 +23,7 @@ import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyMetaDataInfoCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.proxy.ProxyStateCollector;
