@@ -159,10 +159,8 @@ do
   if [ "$arg" == "-g" ] || [ "$arg" == "--agent" ] ; then
     set_agent_name
     set_agent_parameter
-    echo "$@"
     unset PARAMETERS[PARAMETER_INDEX]
     set -- "${PARAMETERS[@]}"
-    echo "$@"
     break
   fi
   let PARAMETER_INDEX+=1
