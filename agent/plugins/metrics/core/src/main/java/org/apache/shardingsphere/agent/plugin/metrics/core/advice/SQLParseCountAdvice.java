@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
@@ -75,33 +75,33 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
     private void countSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_INSERT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_INSERT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_DELETE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DELETE_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_SELECT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SELECT_SQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DDLStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_DDL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DDL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DCLStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_DCL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DCL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof DALStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_DAL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DAL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof TCLStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_TCL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_TCL_METRIC_KEY).inc();
         }
     }
     
     private void countDistSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof RQLStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_RQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RQL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RDLStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_RDL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RDL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RALStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_RAL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RAL_METRIC_KEY).inc();
         } else if (sqlStatement instanceof RULStatement) {
-            MetricsWrapperRegistry.<CounterMetricsWrapper>get(PARSED_RUL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RUL_METRIC_KEY).inc();
         }
     }
 }

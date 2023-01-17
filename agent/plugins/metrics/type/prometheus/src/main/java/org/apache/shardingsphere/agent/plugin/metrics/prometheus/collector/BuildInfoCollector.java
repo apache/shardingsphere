@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusCollectorFactory;
 import org.apache.shardingsphere.proxy.Bootstrap;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public final class BuildInfoCollector extends Collector {
     
     private static final String BUILD_INFO_METRIC_KEY = "build_info";
     
-    private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
+    private static final PrometheusCollectorFactory FACTORY = new PrometheusCollectorFactory();
     
     private final boolean isEnhancedForProxy;
     

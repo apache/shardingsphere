@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Counter;
+import io.prometheus.client.Summary;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsCollector;
 
 /**
- * Prometheus counter wrapper.
+ * Prometheus summary wrapper.
  */
 @RequiredArgsConstructor
-public final class PrometheusCounterWrapper implements CounterMetricsWrapper {
+public final class PrometheusSummaryCollector implements SummaryMetricsCollector {
     
-    private final Counter counter;
-    
-    @Override
-    public void inc() {
-        counter.inc(1d);
-    }
+    private final Summary summary;
     
     @Override
-    public void inc(final String... labels) {
-        counter.labels(labels).inc(1d);
+    public void observe(final double value) {
+        summary.observe(value);
     }
 }

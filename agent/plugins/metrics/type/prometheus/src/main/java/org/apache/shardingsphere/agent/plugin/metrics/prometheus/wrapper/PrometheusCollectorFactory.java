@@ -22,37 +22,37 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.GaugeMetricFamily;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorFactory;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricsConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.loader.YamlMetricConfigurationsLoader;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.swapper.YamlMetricsConfigurationSwapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusCounterWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusGaugeWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusHistogramWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusSummaryWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusCounterCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusGaugeCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusHistogramCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type.PrometheusSummaryCollector;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Prometheus metrics wrapper factory.
+ * Prometheus metrics collector factory.
  */
-public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
+public final class PrometheusCollectorFactory implements MetricsCollectorFactory {
     
     private static final MetricsConfiguration METRICS_CONFIG;
     
     static {
-        METRICS_CONFIG = YamlMetricsConfigurationSwapper.swap(YamlMetricConfigurationsLoader.load(PrometheusWrapperFactory.class.getResourceAsStream("/META-INF/conf/prometheus-metrics.yaml")));
+        METRICS_CONFIG = YamlMetricsConfigurationSwapper.swap(YamlMetricConfigurationsLoader.load(PrometheusCollectorFactory.class.getResourceAsStream("/META-INF/conf/prometheus-metrics.yaml")));
     }
     
     @Override
-    public MetricsWrapper create(final String id) {
+    public MetricsCollector create(final String id) {
         return create(getMetricConfiguration(id));
     }
     
-    private MetricsWrapper create(final MetricConfiguration metricConfig) {
+    private MetricsCollector create(final MetricConfiguration metricConfig) {
         switch (metricConfig.getType().toUpperCase()) {
             case "COUNTER":
                 return createCounter(metricConfig);
@@ -71,25 +71,25 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         return METRICS_CONFIG.get(id);
     }
     
-    private MetricsWrapper createCounter(final MetricConfiguration metricConfig) {
+    private MetricsCollector createCounter(final MetricConfiguration metricConfig) {
         Counter.Builder builder = Counter.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         List<String> labels = metricConfig.getLabels();
         if (!labels.isEmpty()) {
             builder.labelNames(labels.toArray(new String[0]));
         }
-        return new PrometheusCounterWrapper(builder.register());
+        return new PrometheusCounterCollector(builder.register());
     }
     
-    private MetricsWrapper createGauge(final MetricConfiguration metricConfig) {
+    private MetricsCollector createGauge(final MetricConfiguration metricConfig) {
         Gauge.Builder builder = Gauge.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         List<String> labels = metricConfig.getLabels();
         if (!labels.isEmpty()) {
             builder.labelNames(labels.toArray(new String[0]));
         }
-        return new PrometheusGaugeWrapper(builder.register());
+        return new PrometheusGaugeCollector(builder.register());
     }
     
-    private MetricsWrapper createHistogram(final MetricConfiguration metricConfig) {
+    private MetricsCollector createHistogram(final MetricConfiguration metricConfig) {
         Histogram.Builder builder = Histogram.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         List<String> labels = metricConfig.getLabels();
         if (!labels.isEmpty()) {
@@ -99,7 +99,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         if (!props.isEmpty()) {
             parseHistogramProperties(builder, props);
         }
-        return new PrometheusHistogramWrapper(builder.register());
+        return new PrometheusHistogramCollector(builder.register());
     }
     
     @SuppressWarnings("unchecked")
@@ -121,13 +121,13 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
         }
     }
     
-    private MetricsWrapper createSummary(final MetricConfiguration metricConfig) {
+    private MetricsCollector createSummary(final MetricConfiguration metricConfig) {
         Summary.Builder builder = Summary.build().name(metricConfig.getId()).help(metricConfig.getHelp());
         List<String> labels = metricConfig.getLabels();
         if (!labels.isEmpty()) {
             builder.labelNames(labels.toArray(new String[0]));
         }
-        return new PrometheusSummaryWrapper(builder.register());
+        return new PrometheusSummaryCollector(builder.register());
     }
     
     /**

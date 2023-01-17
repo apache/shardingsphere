@@ -29,9 +29,9 @@ public final class PrometheusCounterWrapperTest {
     @Test
     public void assertCreate() throws ReflectiveOperationException {
         Counter counter = Counter.build().name("a").help("help").create();
-        PrometheusCounterWrapper counterWrapper = new PrometheusCounterWrapper(counter);
+        PrometheusCounterCollector counterWrapper = new PrometheusCounterCollector(counter);
         counterWrapper.inc();
-        counter = (Counter) Plugins.getMemberAccessor().get(PrometheusCounterWrapper.class.getDeclaredField("counter"), counterWrapper);
+        counter = (Counter) Plugins.getMemberAccessor().get(PrometheusCounterCollector.class.getDeclaredField("counter"), counterWrapper);
         assertThat(counter.get(), is(1d));
     }
 }

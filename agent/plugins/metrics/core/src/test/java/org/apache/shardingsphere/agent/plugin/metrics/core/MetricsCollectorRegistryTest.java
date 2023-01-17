@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MetricsWrapperRegistryTest {
+public final class MetricsCollectorRegistryTest {
     
     @Test
     public void assertGet() {
-        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
-        assertThat(MetricsWrapperRegistry.get("test"), instanceOf(FixtureWrapper.class));
+        MetricsCollectorRegistry.setMetricsFactory(new FixtureCollectorFactory());
+        assertThat(MetricsCollectorRegistry.get("test"), instanceOf(FixtureMetricsCollector.class));
     }
 }

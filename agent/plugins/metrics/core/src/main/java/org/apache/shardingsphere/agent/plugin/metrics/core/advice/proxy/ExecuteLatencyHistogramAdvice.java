@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorRegistry;
 
 import java.lang.reflect.Method;
 
@@ -41,6 +41,6 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        MetricsWrapperRegistry.<HistogramMetricsWrapper>get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
+        MetricsCollectorRegistry.<HistogramMetricsCollector>get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
     }
 }

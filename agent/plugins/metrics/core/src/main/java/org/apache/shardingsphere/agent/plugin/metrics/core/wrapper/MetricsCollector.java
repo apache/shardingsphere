@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type;
-
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapper;
+package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper;
 
 /**
- * Histogram metrics wrapper.
+ * Metrics collector.
  */
-public interface HistogramMetricsWrapper extends MetricsWrapper {
-    
-    /**
-     * Observed by value.
-     *
-     * @param value value
-     */
-    void observe(double value);
+public interface MetricsCollector {
 }

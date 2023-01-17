@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Summary;
+import io.prometheus.client.Histogram;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsCollector;
 
 /**
- * Prometheus summary wrapper.
+ * Prometheus histogram wrapper.
  */
 @RequiredArgsConstructor
-public final class PrometheusSummaryWrapper implements SummaryMetricsWrapper {
+public final class PrometheusHistogramCollector implements HistogramMetricsCollector {
     
-    private final Summary summary;
+    private final Histogram histogram;
     
     @Override
     public void observe(final double value) {
-        summary.observe(value);
+        histogram.observe(value);
     }
 }

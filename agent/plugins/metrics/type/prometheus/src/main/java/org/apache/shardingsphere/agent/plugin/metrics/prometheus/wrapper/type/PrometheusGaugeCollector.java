@@ -15,51 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import lombok.Getter;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.SummaryMetricsWrapper;
+import io.prometheus.client.Gauge;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsCollector;
 
 /**
- * Fixed metric wrapper.
+ * Prometheus gauge wrapper.
  */
-@Getter
-public final class FixtureWrapper implements CounterMetricsWrapper, GaugeMetricsWrapper, HistogramMetricsWrapper, SummaryMetricsWrapper {
+@RequiredArgsConstructor
+public final class PrometheusGaugeCollector implements GaugeMetricsCollector {
     
-    private Double fixtureValue = 0d;
+    private final Gauge gauge;
     
     @Override
     public void inc() {
-        fixtureValue++;
+        gauge.inc(1d);
     }
     
     @Override
     public void inc(final String... labels) {
-        fixtureValue++;
+        gauge.labels(labels).inc(1d);
     }
     
     @Override
     public void dec() {
-        fixtureValue--;
+        gauge.dec(1d);
     }
     
     @Override
     public void dec(final String... labels) {
-        fixtureValue--;
-    }
-    
-    @Override
-    public void observe(final double value) {
-        fixtureValue = value;
-    }
-    
-    /**
-     * Reset.
-     */
-    public void reset() {
-        fixtureValue = 0d;
+        gauge.labels(labels).dec(1d);
     }
 }

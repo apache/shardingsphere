@@ -21,34 +21,34 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Metrics wrapper registry.
+ * Metrics collector registry.
  */
-public final class MetricsWrapperRegistry {
+public final class MetricsCollectorRegistry {
     
-    private static final Map<String, MetricsWrapper> METRICS_WRAPPERS = new ConcurrentHashMap<>();
+    private static final Map<String, MetricsCollector> METRICS_WRAPPERS = new ConcurrentHashMap<>();
     
-    private static MetricsWrapperFactory metricsWrapperFactory;
+    private static MetricsCollectorFactory metricsCollectorFactory;
     
     /**
-     * Set metrics wrapper factory.
+     * Set metrics collector factory.
      *
-     * @param metricsWrapperFactory metrics wrapper factory
+     * @param metricsCollectorFactory metrics collector factory
      */
-    public static void setMetricsFactory(final MetricsWrapperFactory metricsWrapperFactory) {
-        MetricsWrapperRegistry.metricsWrapperFactory = metricsWrapperFactory;
+    public static void setMetricsFactory(final MetricsCollectorFactory metricsCollectorFactory) {
+        MetricsCollectorRegistry.metricsCollectorFactory = metricsCollectorFactory;
     }
     
     /**
-     * Get metrics wrapper.
+     * Get metrics collector.
      *
      * @param id metric ID
-     * @param <T> type of metrics wrapper
-     * @return metrics wrapper
+     * @param <T> type of metrics collector
+     * @return metrics collector
      * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
     @SuppressWarnings("unchecked")
-    public static <T extends MetricsWrapper> T get(final String id) {
+    public static <T extends MetricsCollector> T get(final String id) {
         T result = (T) METRICS_WRAPPERS.get(id);
-        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, metricsWrapperFactory::create) : result);
+        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, metricsCollectorFactory::create) : result);
     }
 }

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsCollectorFactory;
 
-public final class FixtureWrapperFactory implements MetricsWrapperFactory {
+public final class FixtureCollectorFactory implements MetricsCollectorFactory {
     
     @Override
-    public MetricsWrapper create(final String id) {
-        return new FixtureWrapper();
+    public MetricsCollector create(final String id) {
+        return new FixtureMetricsCollector();
     }
 }

@@ -29,9 +29,9 @@ public final class PrometheusGaugeWrapperTest {
     @Test
     public void assertCreate() throws ReflectiveOperationException {
         Gauge gauge = Gauge.build().name("a").help("help").create();
-        PrometheusGaugeWrapper gaugeWrapper = new PrometheusGaugeWrapper(gauge);
+        PrometheusGaugeCollector gaugeWrapper = new PrometheusGaugeCollector(gauge);
         gaugeWrapper.inc();
-        gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusGaugeWrapper.class.getDeclaredField("gauge"), gaugeWrapper);
+        gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusGaugeCollector.class.getDeclaredField("gauge"), gaugeWrapper);
         assertThat(gauge.get(), is(1d));
     }
 }
