@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class ExpectedDatabaseDiscoveryDefinitionRule extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedDatabaseDiscoveryRule extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "data-source")
     private Collection<String> dataSources;

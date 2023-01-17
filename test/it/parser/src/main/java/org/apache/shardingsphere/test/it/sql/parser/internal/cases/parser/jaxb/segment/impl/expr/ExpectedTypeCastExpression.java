@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Create database discovery heartbeat statement.
+ * Expected type cast expression.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseDiscoveryHeartbeatStatement extends CreateRuleStatement {
+@Setter
+public final class ExpectedTypeCastExpression extends AbstractExpectedSQLSegment {
     
-    private final Collection<DatabaseDiscoveryHeartbeatSegment> heartbeats;
+    private ExpectedExpression expression;
+    
+    @XmlElement(name = "data-type")
+    private String dataType;
 }

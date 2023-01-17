@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedDataSource;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,4 +34,7 @@ public final class RegisterStorageUnitStatementTestCase extends SQLParserTestCas
     
     @XmlElement(name = "data-source")
     private final List<ExpectedDataSource> dataSources = new LinkedList<>();
+    
+    @XmlAttribute(name = "if-not-exists")
+    private boolean ifNotExists;
 }

@@ -15,38 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery;
+
+import lombok.Getter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryRule;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Time recorder.
+ * Alter database discovery rule statement test case.
  */
-public enum TimeRecorder {
+@Getter
+public final class AlterDatabaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
     
-    INSTANCE;
-    
-    private static final ThreadLocal<Long> CURRENT_RECORDER = new ThreadLocal<>();
-    
-    /**
-     * Record now.
-     */
-    public void record() {
-        CURRENT_RECORDER.set(System.currentTimeMillis());
-    }
-    
-    /**
-     * Get elapsed time.
-     *
-     * @return elapsed time
-     */
-    public long getElapsedTime() {
-        Long recordMillis = CURRENT_RECORDER.get();
-        return null == recordMillis ? 0L : System.currentTimeMillis() - recordMillis;
-    }
-    
-    /**
-     * Clean recorded time.
-     */
-    public void clean() {
-        CURRENT_RECORDER.remove();
-    }
+    @XmlElement(name = "rule")
+    private final List<ExpectedDatabaseDiscoveryRule> rules = new LinkedList<>();
 }

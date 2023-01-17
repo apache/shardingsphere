@@ -52,6 +52,7 @@ public final class CreateShardingTableReferenceRuleStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertShardingBindingTableRules(assertContext, actual.getRules(), expected.getRules());
         }
     }

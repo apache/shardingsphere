@@ -49,7 +49,7 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     @Override
     public MetricsWrapper create(final String id) {
-        return create(METRICS_CONFIG.get(id));
+        return create(getMetricConfiguration(id));
     }
     
     private MetricsWrapper create(final MetricConfiguration metricConfig) {
@@ -65,6 +65,10 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
             default:
                 throw new UnsupportedOperationException(String.format("Can not support type `%s`.", metricConfig.getType()));
         }
+    }
+    
+    private MetricConfiguration getMetricConfiguration(final String id) {
+        return METRICS_CONFIG.get(id);
     }
     
     private MetricsWrapper createCounter(final MetricConfiguration metricConfig) {
@@ -133,8 +137,20 @@ public final class PrometheusWrapperFactory implements MetricsWrapperFactory {
      * @return gauge metric family
      */
     public GaugeMetricFamily createGaugeMetricFamily(final String id) {
-        MetricConfiguration metricConfig = METRICS_CONFIG.get(id);
+        MetricConfiguration metricConfig = getMetricConfiguration(id);
         List<String> labels = metricConfig.getLabels();
         return labels.isEmpty() ? new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), 1d) : new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), labels);
+    }
+    
+    /**
+     * Create gauge metric with value.
+     *
+     * @param id metric id
+     * @param value value
+     * @return gauge metric
+     */
+    public GaugeMetricFamily createGaugeMetric(final String id, final double value) {
+        MetricConfiguration metricConfig = getMetricConfiguration(id);
+        return new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), value);
     }
 }

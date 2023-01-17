@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-
-import java.util.Collection;
 
 /**
- * Create database discovery type statement.
+ * Type cast expression.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseDiscoveryTypeStatement extends CreateRuleStatement {
+public final class TypeCastExpression implements ExpressionSegment {
     
-    private final Collection<DatabaseDiscoveryProviderAlgorithmSegment> providers;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final ExpressionSegment expression;
+    
+    // TODO Parse data type after https://github.com/apache/shardingsphere/issues/23466 fixed
+    private final String dataType;
 }

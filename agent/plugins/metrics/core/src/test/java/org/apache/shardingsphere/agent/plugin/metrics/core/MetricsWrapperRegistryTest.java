@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
+package org.apache.shardingsphere.agent.plugin.metrics.core;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Database discovery rule definition segment.
- */
-@Getter
-public final class DatabaseDiscoveryDefinitionSegment extends AbstractDatabaseDiscoverySegment {
+public final class MetricsWrapperRegistryTest {
     
-    private final AlgorithmSegment discoveryType;
-    
-    private final Properties discoveryHeartbeat;
-    
-    public DatabaseDiscoveryDefinitionSegment(final String name, final Collection<String> dataSources, final AlgorithmSegment discoveryType, final Properties discoveryHeartbeat) {
-        super(name, dataSources);
-        this.discoveryType = discoveryType;
-        this.discoveryHeartbeat = discoveryHeartbeat;
+    @Test
+    public void assertGet() {
+        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
+        assertThat(MetricsWrapperRegistry.get("test"), instanceOf(FixtureWrapper.class));
     }
 }

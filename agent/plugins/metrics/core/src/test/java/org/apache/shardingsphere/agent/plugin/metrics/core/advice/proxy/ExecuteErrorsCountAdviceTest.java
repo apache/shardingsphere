@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
 import org.junit.Test;
 
@@ -36,6 +35,6 @@ public final class ExecuteErrorsCountAdviceTest extends MetricsAdviceBaseTest {
     public void assertCountExecuteErrors() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         new ExecuteErrorsCountAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, null);
-        assertThat(((FixtureWrapper) MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS)).getFixtureValue(), is(1d));
+        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_errors_total")).getFixtureValue(), is(1d));
     }
 }
