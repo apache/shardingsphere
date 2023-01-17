@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -90,9 +91,14 @@ public final class CreateTableSQLGeneratorIT {
         rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
         DatabaseType databaseType = testParam.getDatabaseType();
-        StorageContainerConfiguration storageContainerConfig = DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(testParam.getStorageContainerImage()).getMajorVersion() > 5
-                ? MySQLContainerConfigurationFactory.newInstance(null, null, Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER))
-                : StorageContainerConfigurationFactory.newInstance(databaseType);
+        StorageContainerConfiguration storageContainerConfig;
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            int majorVersion = new DockerImageVersion(testParam.getStorageContainerImage()).getMajorVersion();
+            Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+            storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
+        } else {
+            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
+        }
         storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), "",
                 storageContainerConfig);
         storageContainer.start();

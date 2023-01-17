@@ -39,7 +39,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.security.InvalidParameterException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -68,11 +67,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
             if (DatabaseTypeUtil.isMySQL(databaseType)) {
-                final Map<String, String> containerEnvironments = new LinkedHashMap<>();
-                containerEnvironments.put("LANG", "C.UTF-8");
                 int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
                 Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
-                storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, containerEnvironments, mountedResources);
+                storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
             } else {
                 storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
             }
