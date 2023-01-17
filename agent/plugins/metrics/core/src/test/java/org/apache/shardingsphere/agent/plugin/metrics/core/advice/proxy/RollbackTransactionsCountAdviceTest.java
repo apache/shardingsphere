@@ -41,7 +41,7 @@ public final class RollbackTransactionsCountAdviceTest extends MetricsAdviceBase
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{});
+        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_rollback_transactions_total")).getValue(), is(1D));
     }
 }

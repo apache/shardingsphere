@@ -73,7 +73,7 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     }
     
     public void assertRoute(final String metricId, final QueryContext queryContext) {
-        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext});
+        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricId)).getValue(), is(1d));
     }
 }

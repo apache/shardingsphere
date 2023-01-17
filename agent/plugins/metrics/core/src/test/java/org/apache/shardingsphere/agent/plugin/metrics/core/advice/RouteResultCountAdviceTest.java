@@ -46,7 +46,7 @@ public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
         RouteMapper dataSourceMapper = new RouteMapper("logic_db", "ds_0");
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
-        new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext);
+        new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
         MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get("routed_data_sources_total");
         assertThat(wrapper.getValue(), is(1d));
         wrapper = MetricsCollectorRegistry.get("routed_tables_total");

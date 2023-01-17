@@ -27,30 +27,30 @@ import java.lang.reflect.Method;
 public final class YamlAdviceFixture implements ConstructorAdvice, InstanceMethodAdvice, StaticMethodAdvice {
     
     @Override
-    public void onConstructor(final TargetAdviceObject target, final Object[] args) {
+    public void onConstructor(final TargetAdviceObject target, final Object[] args, final String pluginType) {
     }
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
     }
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args) {
+    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final String pluginType) {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final Object result, final String pluginType) {
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
     }
     
     @Override
-    public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
     }
 }

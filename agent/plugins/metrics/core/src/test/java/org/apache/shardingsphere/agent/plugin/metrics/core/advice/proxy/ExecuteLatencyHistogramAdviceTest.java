@@ -42,9 +42,9 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         Method method = mock(Method.class);
-        advice.beforeMethod(targetObject, method, new Object[]{});
+        advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
         Thread.sleep(500L);
-        advice.afterMethod(targetObject, method, new Object[]{}, null);
+        advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_latency_millis")).getValue(), greaterThanOrEqualTo(500D));
     }
 }

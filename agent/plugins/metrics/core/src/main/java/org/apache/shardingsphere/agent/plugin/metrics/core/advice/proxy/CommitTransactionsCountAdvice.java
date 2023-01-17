@@ -32,7 +32,7 @@ public final class CommitTransactionsCountAdvice implements InstanceMethodAdvice
     private static final String PROXY_COMMIT_TRANSACTIONS_METRIC_KEY = "proxy_commit_transactions_total";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         MetricsCollectorRegistry.<CounterMetricsCollector>get(PROXY_COMMIT_TRANSACTIONS_METRIC_KEY).inc();
     }
 }

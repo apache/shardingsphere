@@ -28,13 +28,15 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory;
 import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
-import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 /**
@@ -45,7 +47,7 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdviceExecutor.class);
     
-    private final Collection<StaticMethodAdvice> executors;
+    private final Map<String, Collection<StaticMethodAdvice>> advices;
     
     /**
      * Advice static method.
@@ -83,8 +85,10 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
     private void adviceBefore(final Class<?> klass, final Method method, final Object[] args) {
         try {
-            for (StaticMethodAdvice each : executors) {
-                each.beforeMethod(klass, method, args);
+            for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
+                for (StaticMethodAdvice each : entry.getValue()) {
+                    each.beforeMethod(klass, method, args, entry.getKey());
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -95,8 +99,10 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
     private void adviceThrow(final Class<?> klass, final Method method, final Object[] args, final Throwable ex) {
         try {
-            for (StaticMethodAdvice each : executors) {
-                each.onThrowing(klass, method, args, ex);
+            for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
+                for (StaticMethodAdvice each : entry.getValue()) {
+                    each.onThrowing(klass, method, args, ex, entry.getKey());
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ignored) {
@@ -107,8 +113,10 @@ public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
     private void adviceAfter(final Class<?> klass, final Method method, final Object[] args, final Object result) {
         try {
-            for (StaticMethodAdvice each : executors) {
-                each.afterMethod(klass, method, args, result);
+            for (Entry<String, Collection<StaticMethodAdvice>> entry : advices.entrySet()) {
+                for (StaticMethodAdvice each : entry.getValue()) {
+                    each.afterMethod(klass, method, args, result, entry.getKey());
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {

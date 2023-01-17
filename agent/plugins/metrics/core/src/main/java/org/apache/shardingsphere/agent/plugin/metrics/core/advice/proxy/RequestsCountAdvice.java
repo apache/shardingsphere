@@ -32,7 +32,7 @@ public final class RequestsCountAdvice implements InstanceMethodAdvice {
     private static final String PROXY_REQUESTS_METRIC_KEY = "proxy_requests_total";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         MetricsCollectorRegistry.<CounterMetricsCollector>get(PROXY_REQUESTS_METRIC_KEY).inc();
     }
 }

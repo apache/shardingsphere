@@ -42,7 +42,7 @@ public final class RequestsCountAdviceTest extends MetricsAdviceBaseTest {
     @Test
     public void assertCountRequests() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        advice.beforeMethod(targetObject, mock(Method.class), new Object[]{});
+        advice.beforeMethod(targetObject, mock(Method.class), new Object[]{}, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_requests_total")).getValue(), is(1d));
     }
 }
