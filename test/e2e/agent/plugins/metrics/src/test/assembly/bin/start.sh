@@ -45,15 +45,15 @@ print_usage() {
     exit 0
 }
 
-if [ $# == 0 ]; then
-    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
-fi
-
 if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
     print_usage
 fi
 
 echo "Starting the $SERVER_NAME ..."
+
+if [ $# == 0 ]; then
+    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
+fi
 
 if [ $# == 1 ]; then
     MAIN_CLASS=${MAIN_CLASS}" "$1
@@ -70,6 +70,6 @@ fi
 
 echo "The classpath is ${CLASS_PATH}"
 
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -javaagent:/opt/shardingsphere-proxy-agent-tracing-zipkin/agent/shardingsphere-agent.jar  -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
+nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -javaagent:/opt/shardingsphere-proxy-agent-metrics/agent/shardingsphere-agent.jar  -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"
