@@ -27,7 +27,7 @@ public final class MetricsCollectorRegistry {
     
     private static final Map<String, MetricsCollector> METRICS_WRAPPERS = new ConcurrentHashMap<>();
     
-    private static MetricsCollectorFactory metricsCollectorFactory;
+    private static MetricsCollectorFactory factory;
     
     /**
      * Set metrics collector factory.
@@ -35,7 +35,7 @@ public final class MetricsCollectorRegistry {
      * @param metricsCollectorFactory metrics collector factory
      */
     public static void setMetricsFactory(final MetricsCollectorFactory metricsCollectorFactory) {
-        MetricsCollectorRegistry.metricsCollectorFactory = metricsCollectorFactory;
+        MetricsCollectorRegistry.factory = metricsCollectorFactory;
     }
     
     /**
@@ -49,6 +49,6 @@ public final class MetricsCollectorRegistry {
     @SuppressWarnings("unchecked")
     public static <T extends MetricsCollector> T get(final String id) {
         T result = (T) METRICS_WRAPPERS.get(id);
-        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, metricsCollectorFactory::create) : result);
+        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, factory::create) : result);
     }
 }
