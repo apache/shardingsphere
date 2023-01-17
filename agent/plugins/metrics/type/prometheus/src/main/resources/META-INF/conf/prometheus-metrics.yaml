@@ -83,10 +83,8 @@ metrics:
     labels:
       - name
   - id: proxy_state
-    type: GAUGE_METRIC_FAMILY
-    help: State of ShardingSphere-Proxy. 1 is OK; 2 is CIRCUIT BREAK
-    labels:
-      - name
+    type: GAUGE
+    help: State of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK
   - id: proxy_current_connections
     type: GAUGE
     help: Current connections of ShardingSphere-Proxy

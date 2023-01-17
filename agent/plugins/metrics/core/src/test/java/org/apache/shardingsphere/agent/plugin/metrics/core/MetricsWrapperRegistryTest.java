@@ -15,38 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util;
+package org.apache.shardingsphere.agent.plugin.metrics.core;
 
-/**
- * Time recorder.
- */
-public enum TimeRecorder {
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class MetricsWrapperRegistryTest {
     
-    INSTANCE;
-    
-    private static final ThreadLocal<Long> CURRENT_RECORDER = new ThreadLocal<>();
-    
-    /**
-     * Record now.
-     */
-    public void record() {
-        CURRENT_RECORDER.set(System.currentTimeMillis());
-    }
-    
-    /**
-     * Get elapsed time.
-     *
-     * @return elapsed time
-     */
-    public long getElapsedTime() {
-        Long recordMillis = CURRENT_RECORDER.get();
-        return null == recordMillis ? 0L : System.currentTimeMillis() - recordMillis;
-    }
-    
-    /**
-     * Clean recorded time.
-     */
-    public void clean() {
-        CURRENT_RECORDER.remove();
+    @Test
+    public void assertGet() {
+        MetricsWrapperRegistry.setMetricsFactory(new FixtureWrapperFactory());
+        assertThat(MetricsWrapperRegistry.get("test"), instanceOf(FixtureWrapper.class));
     }
 }

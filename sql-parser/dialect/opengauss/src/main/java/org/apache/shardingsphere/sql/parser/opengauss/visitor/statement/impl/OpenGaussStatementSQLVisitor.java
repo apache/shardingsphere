@@ -134,6 +134,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -294,8 +295,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             return visit(ctx.cExpr());
         }
         if (null != ctx.TYPE_CAST_()) {
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)),
-                    new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText()), ctx.TYPE_CAST_().getText(), ctx.getText());
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)), ctx.typeName().getText());
         }
         if (null != ctx.BETWEEN()) {
             return createBetweenSegment(ctx);
@@ -452,6 +452,9 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public ASTNode visitFunctionExprCommonSubexpr(final FunctionExprCommonSubexprContext ctx) {
+        if (null != ctx.CAST()) {
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)), ctx.typeName().getText());
+        }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
         result.getParameters().addAll(expressionSegments);
@@ -494,6 +497,11 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             value = new NullLiteralValue(ctx.getText());
         } else {
             value = new OtherLiteralValue(ctx.getText());
+        }
+        if (null != ctx.constTypeName() || null != ctx.funcName() && null == ctx.LP_()) {
+            LiteralExpressionSegment expression = new LiteralExpressionSegment(ctx.STRING_().getSymbol().getStartIndex(), ctx.STRING_().getSymbol().getStopIndex(), value.getValue().toString());
+            String dataType = null != ctx.constTypeName() ? ctx.constTypeName().getText() : ctx.funcName().getText();
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), expression, dataType);
         }
         return SQLUtil.createLiteralExpression(value, ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
@@ -553,17 +561,13 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
         }
-        if (null != ctx.TYPE_CAST_() || null != ctx.qualOp()) {
+        if (null != ctx.TYPE_CAST_()) {
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.bExpr(0)), ctx.typeName().getText());
+        }
+        if (null != ctx.qualOp()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.bExpr(0));
-            String operator;
-            ExpressionSegment right;
-            if (null == ctx.TYPE_CAST_()) {
-                operator = ctx.qualOp().getText();
-                right = (ExpressionSegment) visit(ctx.bExpr(1));
-            } else {
-                operator = ctx.TYPE_CAST_().getText();
-                right = new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText());
-            }
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.bExpr(1));
+            String operator = ctx.qualOp().getText();
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }

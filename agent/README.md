@@ -36,10 +36,18 @@ Artifact is `agent/distribution/target/apache-shardingsphere-${latest.release.ve
 
 ### Quick Start with Proxy
 
-Add the javaagent configuration in the Proxy startup script, as follows:
+Add the agent to the Proxy directory, as follows:
 
 ```shell
-nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -javaagent:/xx/xx/shardingsphere-agent-{latest.release.version}.jar -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
+apache-shardingsphere-{latest.release.version}-shardingsphere-proxy-bin/agent/shardingsphere-agent.jar
+```
+
+Start agent with `-g` option by bin/start.sh
+```shell
+sh start.sh -g
+
+# following command also works
+sh start.sh --agent
 ```
 
 ### Quick Start with JDBC

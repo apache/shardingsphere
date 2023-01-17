@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapperFactory;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import javax.xml.bind.annotation.XmlElement;
 
-public final class MetricsPoolTest {
+/**
+ * Expected type cast expression.
+ */
+@Getter
+@Setter
+public final class ExpectedTypeCastExpression extends AbstractExpectedSQLSegment {
     
-    @Test
-    public void assertGet() {
-        MetricsPool.setMetricsFactory(new FixtureWrapperFactory());
-        assertThat(MetricsPool.get("test"), instanceOf(FixtureWrapper.class));
-    }
+    private ExpectedExpression expression;
+    
+    @XmlElement(name = "data-type")
+    private String dataType;
 }

@@ -1960,15 +1960,12 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <binary-operation-expression start-index="35" stop-index="60">
-                                                    <left>
+                                                <type-cast-expression>
+                                                    <expression>
                                                         <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}" start-index="35" stop-index="53" />
-                                                    </left>
-                                                    <operator>::</operator>
-                                                    <right>
-                                                        <common-expression text="jsonb" start-index="56" stop-index="60" />
-                                                    </right>
-                                                </binary-operation-expression>
+                                                    </expression>
+                                                    <data-type>jsonb</data-type>
+                                                </type-cast-expression>
                                                 <parameter-marker-expression parameter-index="0" start-index="35" stop-index="42" />
                                             </right>
                                         </binary-operation-expression>
@@ -2047,27 +2044,21 @@
                                             <right>
                                                 <list-expression start-index="36" stop-index="55" literal-stop-index="91">
                                                     <items>
-                                                        <binary-operation-expression start-index="37" stop-index="62">
-                                                            <left>
+                                                        <type-cast-expression>
+                                                            <expression>
                                                                 <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}" start-index="37" stop-index="55" />
-                                                            </left>
-                                                            <operator>::</operator>
-                                                            <right>
-                                                                <common-expression text="jsonb" start-index="58" stop-index="62" />
-                                                            </right>
-                                                        </binary-operation-expression>
+                                                            </expression>
+                                                            <data-type>jsonb</data-type>
+                                                        </type-cast-expression>
                                                         <parameter-marker-expression parameter-index="0" start-index="37" stop-index="44" />
                                                     </items>
                                                     <items>
-                                                        <binary-operation-expression start-index="65" stop-index="90">
-                                                            <left>
+                                                        <type-cast-expression>
+                                                            <expression>
                                                                 <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}" start-index="65" stop-index="83" />
-                                                            </left>
-                                                            <operator>::</operator>
-                                                            <right>
-                                                                <common-expression text="jsonb" start-index="86" stop-index="90" />
-                                                            </right>
-                                                        </binary-operation-expression>
+                                                            </expression>
+                                                            <data-type>jsonb</data-type>
+                                                        </type-cast-expression>
                                                         <parameter-marker-expression parameter-index="1" start-index="47" stop-index="54" />
                                                     </items>
                                                 </list-expression>
@@ -2145,26 +2136,20 @@
                                     </left>
                                     <between-expr>
                                         <parameter-marker-expression parameter-index="0" start-index="41" stop-index="48" />
-                                        <binary-operation-expression start-index="41" stop-index="66">
-                                            <left>
+                                        <type-cast-expression>
+                                            <expression>
                                                 <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}" start-index="41" stop-index="59" />
-                                            </left>
-                                            <operator>::</operator>
-                                            <right>
-                                                <common-expression text="jsonb" start-index="62" stop-index="66" />
-                                            </right>
-                                        </binary-operation-expression>
+                                            </expression>
+                                            <data-type>jsonb</data-type>
+                                        </type-cast-expression>
                                     </between-expr>
                                     <and-expr>
-                                        <binary-operation-expression start-index="72" stop-index="97">
-                                            <left>
+                                        <type-cast-expression>
+                                            <expression>
                                                 <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}" start-index="72" stop-index="90" />
-                                            </left>
-                                            <operator>::</operator>
-                                            <right>
-                                                <common-expression text="jsonb" start-index="93" stop-index="97" />
-                                            </right>
-                                        </binary-operation-expression>
+                                            </expression>
+                                            <data-type>jsonb</data-type>
+                                        </type-cast-expression>
                                         <parameter-marker-expression parameter-index="1" start-index="54" stop-index="61" />
                                     </and-expr>
                                 </between-expression>
@@ -4845,15 +4830,14 @@
     <select sql-case-id="select_literal_type_cast_money">
         <projections start-index="7" stop-index="18">
             <expression-projection text="'$99'::money" start-index="7" stop-index="18">
-                <binary-operation-expression start-index="7" stop-index="18">
-                    <left>
-                        <literal-expression value="$99" start-index="7" stop-index="11" />
-                    </left>
-                    <operator>::</operator>
-                    <right>
-                        <common-expression text="money" start-index="14" stop-index="18" />
-                    </right>
-                </binary-operation-expression>
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="$99" start-index="7" stop-index="11" />
+                        </expression>
+                        <data-type>money</data-type>
+                    </type-cast-expression>
+                </expr>
             </expression-projection>
         </projections>
     </select>
@@ -4861,27 +4845,74 @@
     <select sql-case-id="select_positional_parameter_type_cast_money" parameters="123.00">
         <projections start-index="7" stop-index="15">
             <expression-projection text="$1::money" start-index="7" stop-index="15">
-                <binary-operation-expression start-index="7" stop-index="15">
-                    <left>
-                        <parameter-marker-expression parameter-index="1" start-index="7" stop-index="8" />
-                    </left>
-                    <operator>::</operator>
-                    <right>
-                        <common-expression text="money" start-index="11" stop-index="15" />
-                    </right>
-                </binary-operation-expression>
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <parameter-marker-expression parameter-index="0" start-index="7" stop-index="8" />
+                        </expression>
+                        <data-type>money</data-type>
+                    </type-cast-expression>
+                </expr>
             </expression-projection>
         </projections>
     </select>
     
     <select sql-case-id="select_string_constant_type_cast">
         <projections start-index="7" stop-index="25">
-            <!-- TODO Fix this case after supported string const type cast syntax-->
             <expression-projection text="int4 '1'" start-index="7" stop-index="14">
-                <literal-expression value="1" start-index="7" stop-index="14" />
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="1" start-index="12" stop-index="14" />
+                        </expression>
+                        <data-type>int4</data-type>
+                    </type-cast-expression>
+                </expr>
             </expression-projection>
             <expression-projection text="money '2'" start-index="17" stop-index="25">
-                <literal-expression value="2" start-index="17" stop-index="25" />
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <literal-expression value="2" start-index="23" stop-index="25" />
+                        </expression>
+                        <data-type>money</data-type>
+                    </type-cast-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_constant_with_nested_type_cast">
+        <projections start-index="7" stop-index="60">
+            <expression-projection text="CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" start-index="7" stop-index="60">
+                <expr>
+                    <type-cast-expression>
+                        <expression>
+                            <type-cast-expression>
+                                <expression>
+                                    <type-cast-expression>
+                                        <expression>
+                                            <type-cast-expression>
+                                                <expression>
+                                                    <type-cast-expression>
+                                                        <expression>
+                                                            <literal-expression value="1" start-index="18" stop-index="20" />
+                                                        </expression>
+                                                        <data-type>MONEY</data-type>
+                                                    </type-cast-expression>
+                                                </expression>
+                                                <data-type>VARCHAR</data-type>
+                                            </type-cast-expression>
+                                        </expression>
+                                        <data-type>CHAR(10)</data-type>
+                                    </type-cast-expression>
+                                </expression>
+                                <data-type>VARCHAR</data-type>
+                            </type-cast-expression>
+                        </expression>
+                        <data-type>CHAR(4)</data-type>
+                    </type-cast-expression>
+                </expr>
             </expression-projection>
         </projections>
     </select>

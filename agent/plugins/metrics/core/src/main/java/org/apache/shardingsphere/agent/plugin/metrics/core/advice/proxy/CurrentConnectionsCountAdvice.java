@@ -19,8 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapperRegistry;
 
 import java.lang.reflect.Method;
 
@@ -29,14 +28,16 @@ import java.lang.reflect.Method;
  */
 public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice {
     
+    private static final String PROXY_CURRENT_CONNECTIONS_METRIC_KEY = "proxy_current_connections";
+    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
         switch (method.getName()) {
             case "channelActive":
-                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).inc();
+                MetricsWrapperRegistry.get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).inc();
                 break;
             case "channelInactive":
-                MetricsPool.get(MetricIds.PROXY_CURRENT_CONNECTIONS).dec();
+                MetricsWrapperRegistry.get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).dec();
                 break;
             default:
                 break;
