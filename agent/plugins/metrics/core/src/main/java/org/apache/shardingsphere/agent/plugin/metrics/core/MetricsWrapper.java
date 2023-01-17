@@ -26,15 +26,6 @@ public interface MetricsWrapper {
      * Metric increase.
      */
     default void inc() {
-        inc(1);
-    }
-    
-    /**
-     * Metric increase by value.
-     *
-     * @param value value
-     */
-    default void inc(double value) {
     }
     
     /**
@@ -43,31 +34,12 @@ public interface MetricsWrapper {
      * @param labels labels
      */
     default void inc(String... labels) {
-        inc(1, labels);
-    }
-    
-    /**
-     * Metric increase by value with labels.
-     *
-     * @param value value
-     * @param labels labels
-     */
-    default void inc(double value, String... labels) {
     }
     
     /**
      * Metric decrease.
      */
     default void dec() {
-        dec(1);
-    }
-    
-    /**
-     * Metric decrease by value.
-     *
-     * @param value value
-     */
-    default void dec(double value) {
     }
     
     /**
@@ -76,16 +48,6 @@ public interface MetricsWrapper {
      * @param labels counter labels
      */
     default void dec(String... labels) {
-        dec(1, labels);
-    }
-    
-    /**
-     * Metric decrease by value with labels.
-     *
-     * @param value value
-     * @param labels labels
-     */
-    default void dec(double value, String... labels) {
     }
     
     /**

@@ -29,23 +29,23 @@ public final class FixtureWrapper implements MetricsWrapper {
     private Double fixtureValue = 0d;
     
     @Override
-    public void inc(final double value) {
-        fixtureValue += value;
+    public void inc() {
+        fixtureValue++;
     }
     
     @Override
-    public void inc(final double value, final String... labels) {
-        fixtureValue += value;
+    public void inc(final String... labels) {
+        fixtureValue++;
     }
     
     @Override
-    public void dec(final double value) {
-        fixtureValue -= value;
+    public void dec() {
+        fixtureValue--;
     }
     
     @Override
-    public void dec(final double value, final String... labels) {
-        fixtureValue -= value;
+    public void dec(final String... labels) {
+        fixtureValue--;
     }
     
     @Override
