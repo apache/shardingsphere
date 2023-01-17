@@ -17,20 +17,35 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Summary;
+import io.prometheus.client.Gauge;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsWrapper;
 
 /**
- * Prometheus summary wrapper.
+ * Prometheus gauge wrapper.
  */
 @RequiredArgsConstructor
-public final class SummaryWrapper implements MetricsWrapper {
+public final class PrometheusGaugeWrapper implements GaugeMetricsWrapper {
     
-    private final Summary summary;
+    private final Gauge gauge;
     
     @Override
-    public void observe(final double value) {
-        summary.observe(value);
+    public void inc() {
+        gauge.inc(1d);
+    }
+    
+    @Override
+    public void inc(final String... labels) {
+        gauge.labels(labels).inc(1d);
+    }
+    
+    @Override
+    public void dec() {
+        gauge.dec(1d);
+    }
+    
+    @Override
+    public void dec(final String... labels) {
+        gauge.labels(labels).dec(1d);
     }
 }

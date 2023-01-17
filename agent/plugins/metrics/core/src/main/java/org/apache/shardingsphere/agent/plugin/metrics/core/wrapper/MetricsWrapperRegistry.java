@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.agent.plugin.metrics.core.wrapper;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,11 +42,13 @@ public final class MetricsWrapperRegistry {
      * Get metrics wrapper.
      *
      * @param id metric ID
+     * @param <T> type of metrics wrapper
      * @return metrics wrapper
      * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
-    public static MetricsWrapper get(final String id) {
-        MetricsWrapper result = METRICS_WRAPPERS.get(id);
-        return null == result ? METRICS_WRAPPERS.computeIfAbsent(id, metricsWrapperFactory::create) : result;
+    @SuppressWarnings("unchecked")
+    public static <T extends MetricsWrapper> T get(final String id) {
+        T result = (T) METRICS_WRAPPERS.get(id);
+        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, metricsWrapperFactory::create) : result);
     }
 }

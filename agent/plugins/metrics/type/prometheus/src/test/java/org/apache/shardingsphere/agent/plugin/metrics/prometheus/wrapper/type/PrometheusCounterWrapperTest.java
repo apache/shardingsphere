@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Gauge;
+import io.prometheus.client.Counter;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class GaugeWrapperTest {
+public final class PrometheusCounterWrapperTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        Gauge gauge = Gauge.build().name("a").help("help").create();
-        GaugeWrapper gaugeWrapper = new GaugeWrapper(gauge);
-        gaugeWrapper.inc();
-        gauge = (Gauge) Plugins.getMemberAccessor().get(GaugeWrapper.class.getDeclaredField("gauge"), gaugeWrapper);
-        assertThat(gauge.get(), is(1d));
+        Counter counter = Counter.build().name("a").help("help").create();
+        PrometheusCounterWrapper counterWrapper = new PrometheusCounterWrapper(counter);
+        counterWrapper.inc();
+        counter = (Counter) Plugins.getMemberAccessor().get(PrometheusCounterWrapper.class.getDeclaredField("counter"), counterWrapper);
+        assertThat(counter.get(), is(1d));
     }
 }

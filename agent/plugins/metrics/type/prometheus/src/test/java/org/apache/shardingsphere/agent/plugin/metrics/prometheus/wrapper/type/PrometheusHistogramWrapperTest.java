@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.type;
 
-import io.prometheus.client.Summary;
+import io.prometheus.client.Histogram;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SummaryWrapperTest {
+public final class PrometheusHistogramWrapperTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        SummaryWrapper summaryWrapper = new SummaryWrapper(Summary.build().name("a").help("help").create());
-        summaryWrapper.observe(1);
-        Summary summary = (Summary) Plugins.getMemberAccessor().get(SummaryWrapper.class.getDeclaredField("summary"), summaryWrapper);
-        assertThat(summary.collect().size(), is(1));
+        Histogram histogram = Histogram.build().name("a").help("help").create();
+        PrometheusHistogramWrapper histogramWrapper = new PrometheusHistogramWrapper(histogram);
+        histogramWrapper.observe(1);
+        histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusHistogramWrapper.class.getDeclaredField("histogram"), histogramWrapper);
+        assertThat(histogram.collect().size(), is(1));
     }
 }
