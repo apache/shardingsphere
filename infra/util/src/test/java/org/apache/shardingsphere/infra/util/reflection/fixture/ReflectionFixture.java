@@ -22,6 +22,10 @@ public final class ReflectionFixture {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     private static String staticValue = "foo";
     
+    private String fooField = "foo_value";
+    
+    private String barField = "bar_value";
+    
     /**
      * Get static value.
      * 
@@ -30,4 +34,34 @@ public final class ReflectionFixture {
     public static String getStaticValue() {
         return staticValue;
     }
+    
+    /**
+     * Get fooField value.
+     *
+     * @return fooField value
+     */
+    public String getFooField() {
+        return fooField;
+    }
+    
+    /**
+     * Get barField value.
+     *
+     * @return barField value
+     */
+    public String getBarField() {
+        return barField;
+    }
+    
+    /**
+     * Get contact value.
+     *
+     * @param val1 not null
+     * @param val2 not null
+     * @return contact value
+     */
+    public String getContactValue(final String val1, final String val2) {
+        return String.join("_", val1, val2);
+    }
+    
 }
