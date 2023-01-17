@@ -20,12 +20,12 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.framework.watcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.BaseContainerComposer;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.DockerContainerComposer;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.BaseContainerComposer;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.DockerContainerComposer;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -47,10 +47,13 @@ public class PipelineWatcher extends TestWatcher {
         }
     }
     
-    // TODO now the meta data mistake is not reproduce, but keep this method, it may be used again later
+    // TODO now the meta data mistake is not reproduce, but keep this method, it may be used again
     private void outputZookeeperData() {
+        if (!(containerComposer instanceof DockerContainerComposer)) {
+            return;
+        }
         DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
-        DatabaseType databaseType = dockerContainerComposer.getStorageContainer().getDatabaseType();
+        DatabaseType databaseType = dockerContainerComposer.getStorageContainers().get(0).getDatabaseType();
         String namespace = "it_db_" + databaseType.getType().toLowerCase();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("ZooKeeper", namespace,
                 dockerContainerComposer.getGovernanceContainer().getServerLists(), new Properties());

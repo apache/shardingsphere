@@ -111,11 +111,11 @@ public abstract class PipelineBaseE2EIT {
     public PipelineBaseE2EIT(final PipelineTestParameter testParam) {
         databaseType = testParam.getDatabaseType();
         containerComposer = ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER
-                ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage())
+                ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
                 : new NativeContainerComposer(testParam.getDatabaseType());
         containerComposer.start();
         if (ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             username = storageContainer.getUsername();
             password = storageContainer.getPassword();
         } else {
@@ -168,14 +168,18 @@ public abstract class PipelineBaseE2EIT {
                 : jdbcUrl;
     }
     
-    protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
+    protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
         if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
             return isInContainer
-                    ? DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName)
-                    : DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getFirstMappedPort(), databaseName);
+                    ? DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
+                    : storageContainer.getJdbcUrl(databaseName);
         }
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
+    }
+    
+    protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
+        return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
     }
     
     protected abstract String getSourceTableOrderName();
