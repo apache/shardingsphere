@@ -53,11 +53,6 @@ public final class FixtureWrapper implements MetricsWrapper {
         fixtureValue = value;
     }
     
-    @Override
-    public void delegate(final Object object) {
-        fixtureValue = -1d;
-    }
-    
     /**
      * Reset.
      */

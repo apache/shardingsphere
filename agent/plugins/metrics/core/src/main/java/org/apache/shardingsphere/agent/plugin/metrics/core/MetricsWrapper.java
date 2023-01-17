@@ -95,12 +95,4 @@ public interface MetricsWrapper {
      */
     default void observe(double value) {
     }
-    
-    /**
-     * Delegated with object.
-     *
-     * @param object object
-     */
-    default void delegate(Object object) {
-    }
 }
