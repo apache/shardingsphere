@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.cursor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
 /**
  * OpenGauss cursor transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = {AdapterContainerConstants.PROXY}, scenario = "cursor")
+@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = {AdapterContainerEnum.PROXY.getValue()}, scenario = "cursor")
 @Slf4j
 public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     

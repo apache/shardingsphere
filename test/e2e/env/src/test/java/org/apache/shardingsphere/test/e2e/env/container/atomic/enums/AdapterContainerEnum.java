@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.constants;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.enums;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Environment constant.
+ * Adapter container type.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EnvironmentConstants {
+@RequiredArgsConstructor
+@Getter
+public enum AdapterContainerEnum {
     
-    public static final String CLUSTER_MODE = "Cluster";
+    JDBC("jdbc"),
     
-    public static final String STANDALONE_MODE = "Standalone";
+    PROXY("proxy");
     
-    public static final int MAX_CONTAINER_QUANTITY = 7;
+    private final String value;
 }

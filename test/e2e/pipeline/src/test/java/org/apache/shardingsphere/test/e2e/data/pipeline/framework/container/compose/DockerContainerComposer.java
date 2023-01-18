@@ -24,9 +24,8 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterModeEnum;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
@@ -68,7 +68,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             StorageContainerConfiguration storageContainerConfig;
             if (DatabaseTypeUtil.isMySQL(databaseType)) {
                 int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
-                Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+                Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
                 storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
             } else {
                 storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
@@ -79,8 +79,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainers.add(storageContainer);
         }
         AdaptorContainerConfiguration containerConfig = PipelineProxyClusterContainerConfigurationFactory.newInstance(databaseType, storageContainerImage);
-        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE,
-                AdapterContainerConstants.PROXY, databaseType, null, "", containerConfig);
+        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(AdapterModeEnum.CLUSTER.getValue(),
+                AdapterContainerEnum.PROXY.getValue(), databaseType, null, "", containerConfig);
         for (DockerStorageContainer each : storageContainers) {
             proxyClusterContainer.dependsOn(governanceContainer, each);
         }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.nested;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Nested transaction test case.
  */
-@TransactionTestCase(transactionTypes = TransactionType.LOCAL, adapters = AdapterContainerConstants.JDBC)
+@TransactionTestCase(transactionTypes = TransactionType.LOCAL, adapters = AdapterContainerEnum.JDBC.getValue())
 public class NestedTransactionTestCase extends BaseTransactionTestCase {
     
     public NestedTransactionTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
