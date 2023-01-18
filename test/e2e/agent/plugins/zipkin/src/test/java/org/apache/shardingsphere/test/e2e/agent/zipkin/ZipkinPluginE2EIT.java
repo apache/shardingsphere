@@ -93,8 +93,7 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
                 "INSERT INTO t_order (order_id, user_id, status) VALUES (10, 10, 'INSERT_TEST')",
                 "DELETE FROM t_order WHERE order_id=10",
                 "UPDATE t_order SET status = 'ROLL_BACK' WHERE order_id =1000",
-                "SELECT * FROM t_order"
-        );
+                "SELECT * FROM t_order");
         traceResult.forEach(each -> traceStatement.addAll(extractTraceTags((List<?>) each)));
         sqlList.forEach(each -> assertTrue(String.format("Zipkin trace should contain `%s`.", each), traceStatement.contains(each)));
     }
