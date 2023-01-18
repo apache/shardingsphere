@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.fixture.ITAutoIncrementKeyGenerateAlgorithmFixture;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.junit.After;
 import org.junit.Before;
@@ -75,6 +76,7 @@ public abstract class BatchE2EIT extends BaseE2EIT {
     @After
     public void tearDown() {
         dataSetEnvironmentManager.cleanData();
+        ITAutoIncrementKeyGenerateAlgorithmFixture.reset();
     }
     
     protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
