@@ -6,7 +6,11 @@ chapter = true
 
 ## Prepare before release
 
-### 1. Confirm release notes
+### 1. Check and update NOTICE
+
+Check and update year in NOTICE.
+
+### 2. Confirm release notes
 
 The release note should be provided in English / Chinese, confirm whether English and Chinese description are clear,
 and shall be classified according to the following labels:
@@ -16,7 +20,7 @@ and shall be classified according to the following labels:
 1. Enhancement
 1. Bug Fix
 
-### 2. Confirm issue list
+### 3. Confirm issue list
 
 Open [Github Issues](https://github.com/apache/shardingsphere-on-cloud/issues), filter the issue whose milestone is `${RELEASE.VERSION}` and status is open:
 
@@ -24,7 +28,7 @@ Open [Github Issues](https://github.com/apache/shardingsphere-on-cloud/issues), 
 1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version;
 1. Confirm that there is no issue in open status under milestone of release version.
 
-### 3. Confirm pull request list
+### 4. Confirm pull request list
 
 Open [Github Pull requests](https://github.com/apache/shardingsphere-on-cloud/pulls), filter pull requests whose milestone is `${RELEASE.VERSION}` and status is open:
 
@@ -32,12 +36,12 @@ Open [Github Pull requests](https://github.com/apache/shardingsphere-on-cloud/pu
 1. For pull requests that cannot merge and do not affect this release, modify milestone to the next version;
 1. Confirm that there is no open pull request under milestone of release version.
 
-### 4. Call for a discussion
+### 5. Call for a discussion
 
 1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)
 1. Follow the mailing list and confirm that the community developers have no questions about the release note.
 
-### 5. Close milestone
+### 6. Close milestone
 
 Open [GitHub milestone](https://github.com/apache/shardingsphere-on-cloud/milestones)
 
@@ -75,7 +79,7 @@ gpg --gen-key
 
 Finish the key creation according to instructions:
 
-> To be noticed: Please use Apache mail for key creation.
+> To be noticed: Please use personal Apache email address for key creation.
 
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
@@ -129,6 +133,8 @@ sub   4096R/0B7EF5B2 2019-03-20
 
 Among them, 700E6065 is public key ID.
 
+Or run `gpg --list-sigs` to check it.
+
 ### 4. Export v1 version secret
 
 ``` shell
@@ -162,24 +168,25 @@ git pull
 git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
-### 2. Update charts version
 
-Update the version in `Chart.yaml` file in release branch:
+### 2. Update charts version and release notes
 
+Update the version of related files in release branch, includes `Chart.yaml`, `values.yaml` and documents. e.g.:
 ```
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
 ```
-
 Modify `version` to `${RELEASE.VERSION}`, `appVersion` to the corresponding application version, and submit a PR to release branch.
+
+Update `RELEASE-NOTES.md` and commit to release branch directly.
 
 ### 3. Create Release Tag
 
-Create a release tag in release branch and submit a PR to release branch.
+Create a release tag in release branch and push to remote repository.
 
 ```shell
 git tag ${RELEASE.VERSION}
-git push origin --tags
+git push origin ${RELEASE.VERSION}
 ```
 
 ### 4. Package charts
