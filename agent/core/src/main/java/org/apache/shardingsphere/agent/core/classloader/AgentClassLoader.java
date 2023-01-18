@@ -54,7 +54,7 @@ public final class AgentClassLoader extends ClassLoader {
     
     public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars, final Collection<File> resourcePaths) {
         super(appClassLoader);
-        this.pluginJars = pluginJars;
+        this.pluginJars = pluginJars != null ? pluginJars : Collections.emptyList();
         this.resourcePaths = resourcePaths;
     }
     
