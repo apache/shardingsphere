@@ -21,6 +21,7 @@
     <id>shardingsphere-agent-bin</id>
     <formats>
         <format>dir</format>
+        <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
     <baseDirectory>agent</baseDirectory>
