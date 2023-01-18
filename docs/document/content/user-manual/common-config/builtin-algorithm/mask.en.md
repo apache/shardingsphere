@@ -121,9 +121,9 @@ Type: TELEPHONE_RANDOM_REPLACE
 
 Attributes:
 
-| *Name*          | *DataType* | *Description*                         |
-|-----------------|--------|---------------------------------------|
-| network-numbers | String | Network numbers (separate with comma) |
+| *Name*          | *DataType* | *Description*                                          |
+|-----------------|--------|--------------------------------------------------------|
+| network-numbers | String | Network numbers (separate with comma, default value: 130,131,132,133,134,135,136,137,138,139,150,151,152,153,155,156,157,158,159,166,170,176,177,178,180,181,182,183,184,185,186,187,188,189,191,198,199) |
 
 #### Landline Number Random Replace Data Masking Algorithm
 

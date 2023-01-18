@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Telephone random replace algorithm.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
     private static final String NETWORK_NUMBERS = "network-numbers";
@@ -59,7 +60,7 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     
     @SneakyThrows
     private String initDefaultNetworkNumbers() {
-        InputStream inputStream = TelephoneRandomReplaceAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/replace/chinese_network_number.dict");
+        InputStream inputStream = TelephoneRandomReplaceAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/replace/chinese_network_numbers.dict");
         LineProcessor<String> lineProcessor = new LineProcessor<String>() {
             
             private final StringBuilder builder = new StringBuilder();

@@ -17,20 +17,28 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public final class TelephoneRandomReplaceAlgorithmTest {
+    
+    private static final Collection<String> DEFAULT_NETWORK_NUMBERS = Arrays.asList("130", "131", "132", "133", "134", "135", "136", "137", "138", "139", "150", "151", "152", "153", "155", "156",
+            "157", "158", "159", "166", "170", "176", "177", "178", "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "191", "198", "199");
     
     private TelephoneRandomReplaceAlgorithm maskAlgorithm;
     
@@ -41,8 +49,11 @@ public final class TelephoneRandomReplaceAlgorithmTest {
     }
     
     @Test
-    public void assertInitWithNullProps() {
+    public void assertInitWithEmptyProps() {
         maskAlgorithm.init(new Properties());
+        Optional<Object> actual = ReflectionUtil.getFieldValue(maskAlgorithm, "networkNumbers");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(DEFAULT_NETWORK_NUMBERS));
     }
     
     @Test
