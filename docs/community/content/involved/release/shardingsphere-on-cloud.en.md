@@ -207,20 +207,16 @@ cd ~/shardingsphere-on-cloud/charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
-### 5. Upload charts and generate index
 
-1. Upload the tgz file generated in the previous step to the Assets of release
-2. generate index.yaml
-```shell
-cd ~/shardingsphere-on-cloud/charts
-mkdir release
-mv *.tgz release
-git checkout gh-pages 
-mv ~/shardingsphere-on-cloud/index.yaml index.yaml
-helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases/download/${RELEASE.VERSION}  . --merge index.yaml
-```
-3. Replace the original index.yaml
+### 5. Publish pre-release on GitHub
 
+Click `Draft a new release` on [GitHub Releases](https://github.com/apache/shardingsphere/releases) page.
+
+Input release version and release notes, select `Set as a pre-release`, click `Publish release`.
+
+### 6. Upload charts
+
+Upload the tgz file generated before to the Assets of GitHub release.
 
 ### Check Release
 
@@ -284,24 +280,6 @@ To check the following items:
   *   All software licenses mentioned in `LICENSE`
   *   All the third party dependency licenses are under `licenses` folder
   *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
-
-### 3. Check products
-
-add repo
-```shell
-helm repo remove apache
-helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
-helm search repo apache
-```
-
-If three products can be queried, the release is successful, and `helm repo add` and `helm search repo -l` will be verified according to the verification value in index.yaml
-
-
-```shell
-NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
-apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
-apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
-```
 
 ## Call for a Vote
 
@@ -396,9 +374,60 @@ Thank you everyone for taking the time to review the release and help us.
 I will process to publish the release and send ANNOUNCE.
 ```
 
-3. Announce release completed by email
+## Finish the Release
 
-Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
+### 1. Merge release branch to main and delete release branch on GitHub
+
+Create a PR to merge `${RELEASE.VERSION}-release` into `main` on GitHub.
+
+### 2. Generate and replace index.yaml
+
+1. Generate index.yaml
+
+```shell
+cd ~/shardingsphere-on-cloud/charts
+mkdir release
+mv *.tgz release
+git checkout gh-pages
+cd release
+mv ~/shardingsphere-on-cloud/index.yaml .
+helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases/download/${RELEASE.VERSION} . --merge index.yaml
+```
+
+Check whether new generated url in index.yaml works or not.
+
+2. Replace the original index.yaml
+
+```shell
+cp index.yaml ~/shardingsphere-on-cloud/index.yaml
+```
+
+Submit PR and merge into `gh-pages` branch on GitHub.
+
+### 3. Check products
+
+Update repository and search:
+```shell
+helm repo remove apache
+helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
+helm search repo apache
+```
+`helm repo add` and `helm search repo -l` will be verified according to the verification value in index.yaml.
+
+If search result includes following two products with correct version, then release is successful:
+```shell
+NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
+apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
+apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
+```
+
+### 4. Update release on GitHub
+
+Edit new release on [GitHub Releases](https://github.com/apache/shardingsphere/releases) page, then select `Set as the latest release` and click `Update release`.
+
+### 5. Announce release completed by email
+
+Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` with **plain text mode** to announce the release is completed.
 
 Announcement e-mail template:
 
