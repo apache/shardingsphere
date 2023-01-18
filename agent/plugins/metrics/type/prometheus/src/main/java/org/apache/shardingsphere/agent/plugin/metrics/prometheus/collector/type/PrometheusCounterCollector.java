@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfigur
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 
 /**
- * Prometheus counter wrapper.
+ * Prometheus counter collector.
  */
 public final class PrometheusCounterCollector implements CounterMetricsCollector {
     

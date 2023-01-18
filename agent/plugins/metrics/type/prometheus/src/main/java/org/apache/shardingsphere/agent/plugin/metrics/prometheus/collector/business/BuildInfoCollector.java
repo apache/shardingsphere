@@ -20,7 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.busi
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.PrometheusCollectorFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.proxy.Bootstrap;
 
 import java.util.Arrays;
@@ -35,21 +36,19 @@ public final class BuildInfoCollector extends Collector {
     
     private static final String BUILD_INFO_METRIC_KEY = "build_info";
     
-    private static final PrometheusCollectorFactory FACTORY = new PrometheusCollectorFactory();
-    
     private final boolean isEnhancedForProxy;
     
     @Override
     public List<MetricFamilySamples> collect() {
-        GaugeMetricFamily artifactInfo = FACTORY.createGaugeMetricFamily(BUILD_INFO_METRIC_KEY);
+        GaugeMetricFamilyMetricsCollector artifactInfo = MetricsCollectorRegistry.get(BUILD_INFO_METRIC_KEY, "Prometheus");
         addMetric(artifactInfo, getClass().getPackage());
         if (isEnhancedForProxy) {
             addMetric(artifactInfo, Bootstrap.class.getPackage());
         }
-        return Collections.singletonList(artifactInfo);
+        return Collections.singletonList((GaugeMetricFamily) artifactInfo.getRawMetricFamilyObject());
     }
     
-    private void addMetric(final GaugeMetricFamily artifactInfo, final Package pkg) {
+    private void addMetric(final GaugeMetricFamilyMetricsCollector artifactInfo, final Package pkg) {
         String version = null == pkg.getImplementationVersion() ? "unknown" : pkg.getImplementationVersion();
         String name = null == pkg.getImplementationTitle() ? "unknown" : pkg.getImplementationTitle();
         artifactInfo.addMetric(Arrays.asList(version, name), 1L);

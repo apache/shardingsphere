@@ -50,8 +50,6 @@ metrics:
   - id: proxy_state
     type: GAUGE_METRIC_FAMILY
     help: State of ShardingSphere-Proxy 
-    labels:
-      - name
   - id: build_info
     type: GAUGE_METRIC_FAMILY
     help: build information
