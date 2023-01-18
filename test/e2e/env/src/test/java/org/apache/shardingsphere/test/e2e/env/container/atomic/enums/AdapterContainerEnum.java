@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.constants;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.enums;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Storage container constants.
+ * Adapter container type.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageContainerConstants {
+@RequiredArgsConstructor
+@Getter
+public enum AdapterContainerEnum {
     
-    public static final String USERNAME = "test_user";
+    JDBC("jdbc"),
     
-    public static final String PASSWORD = "Test@123";
+    PROXY("proxy");
+    
+    private final String value;
 }

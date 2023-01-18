@@ -43,4 +43,8 @@ public final class TransactionTestConstants {
     public static final String NARAYANA = "Narayana";
     
     public static final String BITRONIX = "Bitronix";
+    
+    public static final String JDBC = "jdbc";
+    
+    public static final String PROXY = "proxy";
 }

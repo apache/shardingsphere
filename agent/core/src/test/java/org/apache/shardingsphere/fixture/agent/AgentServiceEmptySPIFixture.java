@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.constants;
+package org.apache.shardingsphere.fixture.agent;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-/**
- * Adapter container constants.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AdapterContainerConstants {
-    
-    public static final String PROXY = "proxy";
-    
-    public static final String JDBC = "jdbc";
+public interface AgentServiceEmptySPIFixture {
 }

@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.constants;
+package org.apache.shardingsphere.fixture.agent;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-/**
- * Storage container constants.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageContainerConstants {
-    
-    public static final String USERNAME = "test_user";
-    
-    public static final String PASSWORD = "Test@123";
+public interface AgentServiceSPIFixture {
 }

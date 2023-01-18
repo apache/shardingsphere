@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 
@@ -30,6 +29,10 @@ import java.util.Optional;
  * MySQL container.
  */
 public final class MySQLContainer extends DockerStorageContainer {
+    
+    public static final int MYSQL_EXPOSED_PORT = 3306;
+    
+    public static final String MYSQL_CONF_IN_CONTAINER = "/etc/mysql/my.cnf";
     
     private final StorageContainerConfiguration storageContainerConfig;
     
@@ -48,12 +51,12 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     public int getExposedPort() {
-        return StorageContainerConstants.MYSQL_EXPOSED_PORT;
+        return MYSQL_EXPOSED_PORT;
     }
     
     @Override
     public int getMappedPort() {
-        return getMappedPort(StorageContainerConstants.MYSQL_EXPOSED_PORT);
+        return getMappedPort(MYSQL_EXPOSED_PORT);
     }
     
     @Override

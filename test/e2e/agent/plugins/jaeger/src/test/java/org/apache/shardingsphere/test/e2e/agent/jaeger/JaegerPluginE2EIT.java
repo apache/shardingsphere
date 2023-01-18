@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.result.JaegerTraceResult;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.result.JaegerTraceResult.JaegerTraceResultData;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Random;
 
 import static org.junit.Assert.assertFalse;
 
@@ -45,8 +46,9 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
         serviceName = props.getProperty("jaeger.servername");
     }
     
+    @SneakyThrows(IOException.class)
     @Test
-    public void assertProxyWithAgent() throws IOException {
+    public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
         try {
             Thread.sleep(Long.parseLong(props.getProperty("jaeger.waitMs", "60000")));
@@ -55,12 +57,14 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
         assertTraces();
     }
     
-    private void assertTraces() throws IOException {
+    @SneakyThrows(IOException.class)
+    private void assertTraces() {
         String traceURL = url + "traces?service=" + serviceName;
         JaegerTraceResult jaegerTraceResult = OkHttpUtils.getInstance().get(traceURL, JaegerTraceResult.class);
-        assertFalse(jaegerTraceResult.getData().isEmpty());
-        String traceId = jaegerTraceResult.getData().get(new Random().nextInt(jaegerTraceResult.getData().size())).getTraceID();
-        String traceIdURL = url + "traces/" + traceId;
-        assertFalse(OkHttpUtils.getInstance().get(traceIdURL, JaegerTraceResult.class).getData().isEmpty());
+        assertFalse("Jaeger should have tracing data.", jaegerTraceResult.getData().isEmpty());
+        for (JaegerTraceResultData each : jaegerTraceResult.getData()) {
+            String traceIdURL = url + "traces/" + each.getTraceID();
+            assertFalse(String.format("Jaeger trace '%s' should has corresponding data", traceIdURL), OkHttpUtils.getInstance().get(traceIdURL, JaegerTraceResult.class).getData().isEmpty());
+        }
     }
 }
