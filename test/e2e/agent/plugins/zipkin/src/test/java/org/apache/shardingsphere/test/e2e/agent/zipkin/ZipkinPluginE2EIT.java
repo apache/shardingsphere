@@ -70,19 +70,22 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
         String spansURL = url + "spans?serviceName=" + serviceName;
         List<?> spans = OkHttpUtils.getInstance().get(spansURL, List.class);
         assertThat(spans.size(), is(3));
-        assertTrue(spans.contains("/shardingsphere/executesql/"));
-        assertTrue(spans.contains("/shardingsphere/parsesql/"));
-        assertTrue(spans.contains("/shardingsphere/rootinvoke/"));
+        final String executeSQLSpan = "/shardingsphere/executesql/";
+        final String parseSQLSpan = "/shardingsphere/parsesql/";
+        final String rootInvokeSpan = "/shardingsphere/rootinvoke/";
+        assertTrue(String.format("Zipkin span `%s` should exist.", executeSQLSpan), spans.contains(executeSQLSpan));
+        assertTrue(String.format("Zipkin span `%s` should exist.", parseSQLSpan), spans.contains(parseSQLSpan));
+        assertTrue(String.format("Zipkin span `%s` should exist.", rootInvokeSpan), spans.contains(rootInvokeSpan));
     }
     
     @SneakyThrows(IOException.class)
     private void assertTraces() {
-        String tracesExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/";
-        String tracesParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/";
-        String tracesRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/";
-        assertFalse(OkHttpUtils.getInstance().get(tracesExecuteSqlUrl, List.class).isEmpty());
-        assertFalse(OkHttpUtils.getInstance().get(tracesParseSqlUrl, List.class).isEmpty());
-        assertFalse(OkHttpUtils.getInstance().get(tracesRootInvokeURL, List.class).isEmpty());
+        final String traceExecuteSqlUrl = url + "traces?spanName=/shardingsphere/executesql/";
+        final String traceParseSqlUrl = url + "traces?spanName=/shardingsphere/parsesql/";
+        final String traceRootInvokeURL = url + "traces?spanName=/shardingsphere/rootinvoke/";
+        assertFalse(String.format("Zipkin trace `%s` should exist.", traceExecuteSqlUrl), OkHttpUtils.getInstance().get(traceExecuteSqlUrl, List.class).isEmpty());
+        assertFalse(String.format("Zipkin trace `%s` should exist.", traceParseSqlUrl), OkHttpUtils.getInstance().get(traceParseSqlUrl, List.class).isEmpty());
+        assertFalse(String.format("Zipkin trace `%s` should exist.", traceRootInvokeURL), OkHttpUtils.getInstance().get(traceRootInvokeURL, List.class).isEmpty());
     }
     
     @SneakyThrows(IOException.class)
@@ -90,12 +93,18 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
         Set<String> traceStatement = new LinkedHashSet<>();
         String traceURL = url + "traces?limit=1000";
         List<?> traceResult = OkHttpUtils.getInstance().get(traceURL, List.class);
+        final String insertSQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (10, 10, 'INSERT_TEST')";
+        final String insertRollBackSQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (10, 10, 'INSERT_TEST')";
+        final String deleteSQL = "DELETE FROM t_order WHERE order_id=10";
+        final String updateRollBackSQL = "UPDATE t_order SET status = 'ROLL_BACK' WHERE order_id =1000";
+        final String selectSQL = "SELECT * FROM t_order";
         traceResult.forEach(each -> traceStatement.addAll(extractTraceTags((List<?>) each)));
-        assertTrue(traceStatement.contains("INSERT INTO t_order (order_id, user_id, status) VALUES (10, 10, 'INSERT_TEST')"));
-        assertTrue(traceStatement.contains("INSERT INTO t_order (order_id, user_id, status) VALUES (1000, 1000, 'ROLL_BACK')"));
-        assertTrue(traceStatement.contains("DELETE FROM t_order WHERE order_id=10"));
-        assertTrue(traceStatement.contains("UPDATE t_order SET status = 'ROLL_BACK' WHERE order_id =1000"));
-        assertTrue(traceStatement.contains("SELECT * FROM t_order"));
+        assertTrue(String.format("Zipkin should trace the SQL : `%s`", insertSQL), traceStatement.contains(insertSQL));
+        assertTrue(String.format("Zipkin should trace the SQL : `%s`", insertRollBackSQL), traceStatement.contains(insertRollBackSQL));
+        assertTrue(String.format("Zipkin should trace the SQL : `%s`", deleteSQL), traceStatement.contains(deleteSQL));
+        assertTrue(String.format("Zipkin should trace the SQL : `%s`", updateRollBackSQL), traceStatement.contains(updateRollBackSQL));
+        assertTrue(String.format("Zipkin should trace the SQL : `%s`", selectSQL), traceStatement.contains(selectSQL));
+        assertTrue(String.format("Zipkin should trace the SQL : `%s`", insertSQL), traceStatement.contains(insertSQL));
     }
     
     private Set<String> extractTraceTags(final List<?> zipkinQueryResults) {
