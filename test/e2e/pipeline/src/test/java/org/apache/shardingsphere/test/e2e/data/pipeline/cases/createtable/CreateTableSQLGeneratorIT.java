@@ -31,12 +31,12 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironme
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.After;
 import org.junit.Test;
@@ -94,7 +94,7 @@ public final class CreateTableSQLGeneratorIT {
         StorageContainerConfiguration storageContainerConfig;
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             int majorVersion = new DockerImageVersion(testParam.getStorageContainerImage()).getMajorVersion();
-            Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+            Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
             storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
         } else {
             storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);

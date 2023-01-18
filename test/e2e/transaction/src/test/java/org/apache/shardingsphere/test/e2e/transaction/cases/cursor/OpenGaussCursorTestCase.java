@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBas
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -41,7 +40,7 @@ import static org.junit.Assert.fail;
 /**
  * OpenGauss cursor transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = {AdapterContainerConstants.PROXY}, scenario = "cursor")
+@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = TransactionTestConstants.PROXY, scenario = "cursor")
 @Slf4j
 public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     

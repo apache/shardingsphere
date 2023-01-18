@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.e2e.discovery.framework.container.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtil;
 import org.apache.shardingsphere.test.e2e.discovery.util.DiscoveryContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,13 +65,13 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final int order) {
-        return 0 == order ? Collections.singletonMap(String.format("/env/scenario/%s/my.cnf", scenario), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER)
+        return 0 == order ? Collections.singletonMap(String.format("/env/scenario/%s/my.cnf", scenario), MySQLContainer.MYSQL_CONF_IN_CONTAINER)
                 : Collections.singletonMap(String.format("/env/scenario/%s/%s/my.cnf", scenario, databaseType.getType().toLowerCase() + "_" + order),
-                        StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+                        MySQLContainer.MYSQL_CONF_IN_CONTAINER);
     }
     
     private static List<StorageContainerConfiguration> getDefaultConfiguration(final DatabaseType databaseType) {
         return Collections.singletonList(new StorageContainerConfiguration(getCommand(), getContainerEnvironments(),
-                Collections.singletonMap(String.format("/env/%s/my.cnf", databaseType.getType().toLowerCase()), StorageContainerConstants.MYSQL_CONF_IN_CONTAINER)));
+                Collections.singletonMap(String.format("/env/%s/my.cnf", databaseType.getType().toLowerCase()), MySQLContainer.MYSQL_CONF_IN_CONTAINER)));
     }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransaction
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
@@ -35,7 +34,7 @@ import static org.junit.Assert.fail;
 /**
  * MySQL truncate XA transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, adapters = {AdapterContainerConstants.PROXY}, transactionTypes = {TransactionType.XA})
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, adapters = TransactionTestConstants.PROXY, transactionTypes = {TransactionType.XA})
 @Slf4j
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
