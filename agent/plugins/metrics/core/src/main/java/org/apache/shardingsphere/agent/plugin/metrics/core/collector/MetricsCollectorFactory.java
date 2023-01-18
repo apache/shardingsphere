@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.collector;
 
 import org.apache.shardingsphere.agent.plugin.core.spi.PluginTypedSPI;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
 /**
  * Metrics collector factory.
@@ -27,8 +28,8 @@ public interface MetricsCollectorFactory extends PluginTypedSPI {
     /**
      * Create metrics collector.
      *
-     * @param id metrics ID
+     * @param metricConfig metrics configuration
      * @return metrics collector
      */
-    MetricsCollector create(String id);
+    MetricsCollector create(MetricConfiguration metricConfig);
 }
