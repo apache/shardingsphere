@@ -30,7 +30,7 @@ import java.util.List;
 @Setter
 public final class JaegerTraceResult implements JsonConfiguration {
     
-    private List<Data> data;
+    private List<JaegerTraceResultData> data;
     
     private int total;
     
@@ -42,7 +42,7 @@ public final class JaegerTraceResult implements JsonConfiguration {
     
     @Getter
     @Setter
-    public static final class Data {
+    public static final class JaegerTraceResultData {
         
         private String traceID;
         
