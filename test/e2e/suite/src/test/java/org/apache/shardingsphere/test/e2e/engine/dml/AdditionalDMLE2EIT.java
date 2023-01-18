@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameter
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -92,8 +91,6 @@ public final class AdditionalDMLE2EIT extends BaseDMLE2EIT {
     }
     
     @Test
-    @Ignore
-    // TODO support execute update with column indexes
     public void assertExecuteUpdateWithColumnIndexes() throws SQLException, ParseException {
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
@@ -121,8 +118,6 @@ public final class AdditionalDMLE2EIT extends BaseDMLE2EIT {
     }
     
     @Test
-    @Ignore
-    // TODO support execute update with column names
     public void assertExecuteUpdateWithColumnNames() throws SQLException, ParseException {
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
@@ -212,8 +207,6 @@ public final class AdditionalDMLE2EIT extends BaseDMLE2EIT {
     }
     
     @Test
-    @Ignore
-    // TODO support execute with column indexes
     public void assertExecuteWithColumnIndexes() throws SQLException, ParseException {
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
@@ -243,8 +236,6 @@ public final class AdditionalDMLE2EIT extends BaseDMLE2EIT {
     }
     
     @Test
-    @Ignore
-    // TODO support execute with column names
     public void assertExecuteWithColumnNames() throws SQLException, ParseException {
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
