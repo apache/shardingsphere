@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * SQL parse count advice.
@@ -46,39 +47,46 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        String sqlType = getSQLType((SQLStatement) result);
-        if (null != sqlType) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SQL_METRIC_KEY, pluginType).inc(sqlType);
-        }
+        getSQLType((SQLStatement) result).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SQL_METRIC_KEY, pluginType).inc(optional));
     }
     
-    private String getSQLType(final SQLStatement sqlStatement) {
-        String result = null;
+    private Optional<String> getSQLType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            result = "INSERT";
-        } else if (sqlStatement instanceof UpdateStatement) {
-            result = "UPDATE";
-        } else if (sqlStatement instanceof DeleteStatement) {
-            result = "DELETE";
-        } else if (sqlStatement instanceof SelectStatement) {
-            result = "SELECT";
-        } else if (sqlStatement instanceof DDLStatement) {
-            result = "DDL";
-        } else if (sqlStatement instanceof DCLStatement) {
-            result = "DCL";
-        } else if (sqlStatement instanceof DALStatement) {
-            result = "DAL";
-        } else if (sqlStatement instanceof TCLStatement) {
-            result = "TCL";
-        } else if (sqlStatement instanceof RQLStatement) {
-            result = "RQL";
-        } else if (sqlStatement instanceof RDLStatement) {
-            result = "RDL";
-        } else if (sqlStatement instanceof RALStatement) {
-            result = "RAL";
-        } else if (sqlStatement instanceof RULStatement) {
-            result = "RUL";
+            return Optional.of("INSERT");
         }
-        return result;
+        if (sqlStatement instanceof UpdateStatement) {
+            return Optional.of("UPDATE");
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return Optional.of("DELETE");
+        }
+        if (sqlStatement instanceof SelectStatement) {
+            return Optional.of("SELECT");
+        }
+        if (sqlStatement instanceof DDLStatement) {
+            return Optional.of("DDL");
+        }
+        if (sqlStatement instanceof DCLStatement) {
+            return Optional.of("DCL");
+        }
+        if (sqlStatement instanceof DALStatement) {
+            return Optional.of("DAL");
+        }
+        if (sqlStatement instanceof TCLStatement) {
+            return Optional.of("TCL");
+        }
+        if (sqlStatement instanceof RQLStatement) {
+            return Optional.of("RQL");
+        }
+        if (sqlStatement instanceof RDLStatement) {
+            return Optional.of("RDL");
+        }
+        if (sqlStatement instanceof RALStatement) {
+            return Optional.of("RAL");
+        }
+        if (sqlStatement instanceof RULStatement) {
+            return Optional.of("RUL");
+        }
+        return Optional.empty();
     }
 }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * SQL route count advice.
@@ -41,23 +42,22 @@ public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        String sqlType = getSQLType(sqlStatement);
-        if (null != sqlType) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SQL_METRIC_KEY, pluginType).inc(sqlType);
-        }
+        getSQLType(sqlStatement).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SQL_METRIC_KEY, pluginType).inc(optional));
     }
     
-    private String getSQLType(final SQLStatement sqlStatement) {
-        String result = null;
+    private Optional<String> getSQLType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            result = "INSERT";
-        } else if (sqlStatement instanceof UpdateStatement) {
-            result = "UPDATE";
-        } else if (sqlStatement instanceof DeleteStatement) {
-            result = "DELETE";
-        } else if (sqlStatement instanceof SelectStatement) {
-            result = "SELECT";
+            return Optional.of("INSERT");
         }
-        return result;
+        if (sqlStatement instanceof UpdateStatement) {
+            return Optional.of("UPDATE");
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return Optional.of("DELETE");
+        }
+        if (sqlStatement instanceof SelectStatement) {
+            return Optional.of("SELECT");
+        }
+        return Optional.empty();
     }
 }

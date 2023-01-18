@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class MetricsCollectorRegistry {
     
-    private static final Map<String, MetricsCollector> METRICS_WRAPPERS = new ConcurrentHashMap<>();
+    private static final Map<String, MetricsCollector> METRICS_COLLECTORS = new ConcurrentHashMap<>();
     
     /**
      * Get metrics collector.
@@ -40,7 +40,7 @@ public final class MetricsCollectorRegistry {
      */
     @SuppressWarnings("unchecked")
     public static <T extends MetricsCollector> T get(final String id, final String pluginType) {
-        T result = (T) METRICS_WRAPPERS.get(id);
-        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, PluginServiceLoader.getServiceLoader(MetricsCollectorFactory.class).getService(pluginType)::create) : result);
+        T result = (T) METRICS_COLLECTORS.get(id);
+        return (T) (null == result ? METRICS_COLLECTORS.computeIfAbsent(id, PluginServiceLoader.getServiceLoader(MetricsCollectorFactory.class).getService(pluginType)::create) : result);
     }
 }
