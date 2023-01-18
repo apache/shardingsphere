@@ -50,6 +50,9 @@ public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGene
         return true;
     }
     
+    /**
+     * Reset.
+     */
     public static void reset() {
         ID_GENERATOR.set(1L);
     }
