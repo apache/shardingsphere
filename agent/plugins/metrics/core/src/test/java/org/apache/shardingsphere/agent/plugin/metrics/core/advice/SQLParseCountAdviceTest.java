@@ -43,13 +43,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
+public final class SQLParseCountAdviceTest {
     
     private static final String PARSED_SQL_METRIC_KEY = "parsed_sql_total";
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(PARSED_SQL_METRIC_KEY)).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(PARSED_SQL_METRIC_KEY, "FIXTURE")).reset();
     }
     
     @Test
@@ -114,6 +114,6 @@ public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
         new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricIds)).getValue(), is(1d));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricIds, "FIXTURE")).getValue(), is(1d));
     }
 }

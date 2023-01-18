@@ -42,10 +42,9 @@ public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         String sqlType = getSQLType(sqlStatement);
-        if (null == sqlType) {
-            return;
+        if (null != sqlType) {
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SQL_METRIC_KEY, pluginType).inc(sqlType);
         }
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SQL_METRIC_KEY).inc(sqlType);
     }
     
     private String getSQLType(final SQLStatement sqlStatement) {

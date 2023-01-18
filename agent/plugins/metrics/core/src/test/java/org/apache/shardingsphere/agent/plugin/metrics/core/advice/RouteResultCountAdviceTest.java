@@ -32,12 +32,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
+public final class RouteResultCountAdviceTest {
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_data_sources_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_tables_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_data_sources_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_tables_total", "FIXTURE")).reset();
     }
     
     @Test
@@ -47,9 +47,9 @@ public final class RouteResultCountAdviceTest extends MetricsAdviceBaseTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
-        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get("routed_data_sources_total");
+        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get("routed_data_sources_total", "FIXTURE");
         assertThat(wrapper.getValue(), is(1d));
-        wrapper = MetricsCollectorRegistry.get("routed_tables_total");
+        wrapper = MetricsCollectorRegistry.get("routed_tables_total", "FIXTURE");
         assertThat(wrapper.getValue(), is(1d));
     }
 }

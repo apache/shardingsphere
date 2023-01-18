@@ -28,22 +28,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class AgentServiceLoaderTest {
-
+    
     @Test(expected = NullPointerException.class)
     public void assertGetServiceLoaderWithNullValue() {
         AgentServiceLoader.getServiceLoader(null);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertGetServiceLoaderWithNoInterface() {
         AgentServiceLoader.getServiceLoader(Object.class);
     }
-
+    
     @Test
     public void assertGetServiceLoaderWithEmptyInstances() {
         assertTrue(AgentServiceLoader.getServiceLoader(AgentServiceEmptySPIFixture.class).getServices().isEmpty());
     }
-
+    
     @Test
     public void assertGetServiceLoaderWithImplementSPI() {
         AgentServiceLoader<AgentServiceSPIFixture> actual = AgentServiceLoader.getServiceLoader(AgentServiceSPIFixture.class);

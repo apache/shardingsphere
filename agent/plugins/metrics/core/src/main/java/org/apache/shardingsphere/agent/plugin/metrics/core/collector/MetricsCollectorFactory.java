@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.collector;
 
+import org.apache.shardingsphere.agent.plugin.core.spi.PluginTypedSPI;
+
 /**
  * Metrics collector factory.
  */
-public interface MetricsCollectorFactory {
+public interface MetricsCollectorFactory extends PluginTypedSPI {
     
     /**
      * Create metrics collector.

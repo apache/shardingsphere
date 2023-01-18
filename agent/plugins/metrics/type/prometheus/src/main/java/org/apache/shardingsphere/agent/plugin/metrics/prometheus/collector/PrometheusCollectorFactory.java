@@ -89,4 +89,9 @@ public final class PrometheusCollectorFactory implements MetricsCollectorFactory
         MetricConfiguration metricConfig = getMetricConfiguration(id);
         return new GaugeMetricFamily(metricConfig.getId(), metricConfig.getHelp(), value);
     }
+    
+    @Override
+    public String getType() {
+        return "Prometheus";
+    }
 }

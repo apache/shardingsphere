@@ -36,7 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
+public final class SQLRouteCountAdviceTest {
     
     private static final String ROUTED_SQL_METRIC_KEY = "routed_sql_total";
     
@@ -44,7 +44,7 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(ROUTED_SQL_METRIC_KEY)).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(ROUTED_SQL_METRIC_KEY, "FIXTURE")).reset();
     }
     
     @Test
@@ -73,6 +73,6 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     
     public void assertRoute(final String metricId, final QueryContext queryContext) {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricId)).getValue(), is(1d));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricId, "FIXTURE")).getValue(), is(1d));
     }
 }

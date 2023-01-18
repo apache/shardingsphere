@@ -35,10 +35,10 @@ public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         switch (method.getName()) {
             case "channelActive":
-                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).inc();
+                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY, pluginType).inc();
                 break;
             case "channelInactive":
-                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).dec();
+                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY, pluginType).dec();
                 break;
             default:
                 break;

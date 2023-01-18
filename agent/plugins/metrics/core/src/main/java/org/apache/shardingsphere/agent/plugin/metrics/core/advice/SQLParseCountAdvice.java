@@ -47,10 +47,9 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         String sqlType = getSQLType((SQLStatement) result);
-        if (null == sqlType) {
-            return;
+        if (null != sqlType) {
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SQL_METRIC_KEY, pluginType).inc(sqlType);
         }
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SQL_METRIC_KEY).inc(sqlType);
     }
     
     private String getSQLType(final SQLStatement sqlStatement) {
