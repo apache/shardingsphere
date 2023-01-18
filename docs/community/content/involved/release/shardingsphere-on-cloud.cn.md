@@ -6,7 +6,11 @@ chapter = true
 
 ## 准备工作
 
-### 1. 确认 Release Note
+### 1. 检查并更新 NOTICE
+
+检查并更新 NOTICE 文件中的年份。
+
+### 2. 确认 Release Note
 
 Release Note 需提供中文/英文两种版本，确认中英文描述是否明确，并按以下标签进行分类：
 
@@ -15,7 +19,7 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 功能增强
 1. 漏洞修复
 
-### 2. 确认 Issue 列表
+### 3. 确认 Issue 列表
 
 打开 [Github Issues](https://github.com/apache/shardingsphere-on-cloud/issues)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
 
@@ -23,7 +27,7 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Issue。
 
-### 3. 确认 Pull Request 列表
+### 4. 确认 Pull Request 列表
 
 打开 [Github Pull requests](https://github.com/apache/shardingsphere-on-cloud/pulls)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull Request:
 
@@ -31,12 +35,12 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 无法 Merge 且不影响本次发版的 Pull Request，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Pull Request。
 
-### 4. 发送讨论邮件
+### 5. 发送讨论邮件
 
 1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
 1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
-### 5. 关闭 Milestone
+### 6. 关闭 Milestone
 
 打开 [Github Milestone](https://github.com/apache/shardingsphere-on-cloud/milestones)
 
@@ -74,7 +78,7 @@ gpg --gen-key
 
 根据提示完成 key：
 
-> 注意：请使用 Apache mail 生成 GPG 的 Key。
+> 注意：请使用个人 Apache 邮箱生成 GPG 的 Key。
 
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
@@ -128,6 +132,8 @@ sub   4096R/0B7EF5B2 2019-03-20
 
 其中 700E6065 为公钥 ID。
 
+或者使用 `gpg --list-signatures` 查看。
+
 ### 4. 导出 v1 版本密钥
 
 ``` shell
@@ -161,10 +167,9 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-### 2. 更新 charts 版本
+### 2. 更新 charts 版本及 release notes
 
-在发布分支上更新 `Chart.yaml` 文件中的版本：
-
+在发布分支上更新文件中的版本，示例：`Chart.yaml`、`values.yaml`、文档。示例：
 ```
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
@@ -172,13 +177,15 @@ git push origin ${RELEASE.VERSION}-release
 
 将 `version` 修改为 `${RELEASE.VERSION}`，`appVersion` 修改为对应的应用版本，并提交 PR 到发布分支。
 
+更新 `RELEASE-NOTES.md`。
+
 ### 3. 创建发布 tag
 
-在发布分支上创建发布 tag，并提交 PR 到发布分支。
+在发布分支上创建发布 tag，并推送到远程仓库。
 
 ```shell
 git tag ${RELEASE.VERSION}
-git push origin --tags
+git push origin ${RELEASE.VERSION}
 ```
 
 ### 4. 打包 charts
