@@ -17,8 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="item_id" type="numeric" />
+        <column name="GENERATED_KEY" type="numeric" />
     </metadata>
     <row values="1" />
-    <row values="1" />
+    <row values="2" />
 </dataset>
