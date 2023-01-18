@@ -62,7 +62,7 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
         String traceURL = url + "traces?service=" + serviceName;
         JaegerTraceResult jaegerTraceResult = OkHttpUtils.getInstance().get(traceURL, JaegerTraceResult.class);
         assertFalse("Jaeger should have tracing data.", jaegerTraceResult.getData().isEmpty());
-        for(JaegerTraceResultData each : jaegerTraceResult.getData()) {
+        for (JaegerTraceResultData each : jaegerTraceResult.getData()) {
             String traceIdURL = url + "traces/" + each.getTraceID();
             assertFalse(String.format("Jaeger trace '%s' should has corresponding data", traceIdURL), OkHttpUtils.getInstance().get(traceIdURL, JaegerTraceResult.class).getData().isEmpty());
         }
