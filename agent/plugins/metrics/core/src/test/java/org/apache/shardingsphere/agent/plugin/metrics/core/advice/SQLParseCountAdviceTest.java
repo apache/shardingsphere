@@ -45,80 +45,71 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     
+    private static final String PARSED_SQL_METRIC_KEY = "parsed_sql_total";
+    
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_insert_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_update_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_delete_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_select_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_ddl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_dcl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_dal_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_tcl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rdl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_ral_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rul_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(PARSED_SQL_METRIC_KEY)).reset();
     }
     
     @Test
     public void assertParseInsertSQL() {
-        assertParse("parsed_insert_sql_total", new MySQLInsertStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLInsertStatement());
     }
     
     @Test
     public void assertParseDeleteSQL() {
-        assertParse("parsed_delete_sql_total", new MySQLDeleteStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLDeleteStatement());
     }
     
     @Test
     public void assertParseUpdateSQL() {
-        assertParse("parsed_update_sql_total", new MySQLUpdateStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLUpdateStatement());
     }
     
     @Test
     public void assertParseSelectSQL() {
-        assertParse("parsed_select_sql_total", new MySQLSelectStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLSelectStatement());
     }
     
     @Test
     public void assertParseDDL() {
-        assertParse("parsed_ddl_total", new MySQLCreateDatabaseStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLCreateDatabaseStatement());
     }
     
     @Test
     public void assertParseDCL() {
-        assertParse("parsed_dcl_total", new MySQLCreateUserStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLCreateUserStatement());
     }
     
     @Test
     public void assertParseDAL() {
-        assertParse("parsed_dal_total", new MySQLShowDatabasesStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLShowDatabasesStatement());
     }
     
     @Test
     public void assertParseTCL() {
-        assertParse("parsed_tcl_total", new MySQLCommitStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new MySQLCommitStatement());
     }
     
     @Test
     public void assertParseRQL() {
-        assertParse("parsed_rql_total", new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null));
+        assertParse(PARSED_SQL_METRIC_KEY, new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null));
     }
     
     @Test
     public void assertParseRDL() {
-        assertParse("parsed_rdl_total", new RegisterStorageUnitStatement(false, Collections.emptyList()));
+        assertParse(PARSED_SQL_METRIC_KEY, new RegisterStorageUnitStatement(false, Collections.emptyList()));
     }
     
     @Test
     public void assertParseRAL() {
-        assertParse("parsed_ral_total", new ShowMigrationListStatement());
+        assertParse(PARSED_SQL_METRIC_KEY, new ShowMigrationListStatement());
     }
     
     @Test
     public void assertParseRUL() {
-        assertParse("parsed_rul_total", new FormatStatement("SELECT * FROM t_order"));
+        assertParse(PARSED_SQL_METRIC_KEY, new FormatStatement("SELECT * FROM t_order"));
     }
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
