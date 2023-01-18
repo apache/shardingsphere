@@ -22,6 +22,8 @@ import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -43,27 +45,22 @@ import java.util.Optional;
 @Slf4j
 public final class ProxyMetaDataInfoCollector extends Collector {
     
-    private static final String PROXY_METADATA_INFO_METRIC_KEY = "proxy_meta_data_info";
-    
-    private static final String LOGIC_DB_COUNT = "schema_count";
-    
-    private static final String ACTUAL_DB_COUNT = "database_count";
+    private final MetricConfiguration config = new MetricConfiguration("proxy_meta_data_info",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases",
+            Collections.singletonList("name"), Collections.emptyMap());
     
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        GaugeMetricFamilyMetricsCollector metaDataInfo = MetricsCollectorRegistry.get(PROXY_METADATA_INFO_METRIC_KEY, "Prometheus");
-        if (null != ProxyContext.getInstance().getContextManager()) {
-            collectProxy(metaDataInfo);
-            result.add((GaugeMetricFamily) metaDataInfo.getRawMetricFamilyObject());
+        if (null == ProxyContext.getInstance().getContextManager()) {
+            return result;
         }
-        return result;
-    }
-    
-    private void collectProxy(final GaugeMetricFamilyMetricsCollector collector) {
+        GaugeMetricFamilyMetricsCollector metaDataInfo = MetricsCollectorRegistry.get(config, "Prometheus");
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        collector.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaData().getDatabases().size());
-        collector.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
+        metaDataInfo.addMetric(Collections.singletonList("schema_count"), metaDataContexts.getMetaData().getDatabases().size());
+        metaDataInfo.addMetric(Collections.singletonList("database_count"), getDatabaseNames(metaDataContexts).size());
+        result.add((GaugeMetricFamily) metaDataInfo.getRawMetricFamilyObject());
+        return result;
     }
     
     private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {

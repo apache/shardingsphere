@@ -20,9 +20,6 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorFactory;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricsConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.loader.YamlMetricConfigurationsLoader;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.swapper.YamlMetricsConfigurationSwapper;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusCounterCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusGaugeCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusGaugeMetricFamilyCollector;
@@ -34,25 +31,18 @@ import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.
  */
 public final class PrometheusCollectorFactory implements MetricsCollectorFactory {
     
-    private static final MetricsConfiguration METRICS_CONFIG;
-    
-    static {
-        METRICS_CONFIG = YamlMetricsConfigurationSwapper.swap(YamlMetricConfigurationsLoader.load(PrometheusCollectorFactory.class.getResourceAsStream("/META-INF/conf/prometheus-metrics.yaml")));
-    }
-    
     @Override
-    public MetricsCollector create(final String id) {
-        MetricConfiguration metricConfig = METRICS_CONFIG.get(id);
-        switch (metricConfig.getType().toUpperCase()) {
-            case "COUNTER":
+    public MetricsCollector create(final MetricConfiguration metricConfig) {
+        switch (metricConfig.getType()) {
+            case COUNTER:
                 return new PrometheusCounterCollector(metricConfig);
-            case "GAUGE":
+            case GAUGE:
                 return new PrometheusGaugeCollector(metricConfig);
-            case "HISTOGRAM":
+            case HISTOGRAM:
                 return new PrometheusHistogramCollector(metricConfig);
-            case "SUMMARY":
+            case SUMMARY:
                 return new PrometheusSummaryCollector(metricConfig);
-            case "GAUGE_METRIC_FAMILY":
+            case GAUGE_METRIC_FAMILY:
                 return new PrometheusGaugeMetricFamilyCollector(metricConfig);
             default:
                 throw new UnsupportedOperationException(String.format("Can not support type `%s`.", metricConfig.getType()));

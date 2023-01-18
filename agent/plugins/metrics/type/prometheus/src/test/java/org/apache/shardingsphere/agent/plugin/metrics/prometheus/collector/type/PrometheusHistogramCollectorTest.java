@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
 import io.prometheus.client.Histogram;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -31,7 +32,8 @@ public final class PrometheusHistogramCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusHistogramCollector collector = new PrometheusHistogramCollector(new MetricConfiguration("foo_histogram", "HISTOGRAM", "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        PrometheusHistogramCollector collector = new PrometheusHistogramCollector(new MetricConfiguration("foo_histogram",
+                MetricCollectorType.HISTOGRAM, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.observe(1);
         Histogram histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusHistogramCollector.class.getDeclaredField("histogram"), collector);
         assertThat(histogram.collect().size(), is(1));

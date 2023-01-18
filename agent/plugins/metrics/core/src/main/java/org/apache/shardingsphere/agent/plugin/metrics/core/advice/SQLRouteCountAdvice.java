@@ -21,6 +21,8 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -36,13 +39,14 @@ import java.util.Optional;
  */
 public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
     
-    private static final String ROUTED_SQL_METRIC_KEY = "routed_sql_total";
+    private final MetricConfiguration config = new MetricConfiguration("routed_sql_total",
+            MetricCollectorType.COUNTER, "Total count of routed SQL", Collections.singletonList("type"), Collections.emptyMap());
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        getSQLType(sqlStatement).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SQL_METRIC_KEY, pluginType).inc(optional));
+        getSQLType(sqlStatement).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(optional));
     }
     
     private Optional<String> getSQLType(final SQLStatement sqlStatement) {

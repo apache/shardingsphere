@@ -19,26 +19,30 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 
 /**
  * Current connections count advice for ShardingSphere-Proxy.
  */
 public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice {
     
-    private static final String PROXY_CURRENT_CONNECTIONS_METRIC_KEY = "proxy_current_connections";
+    private final MetricConfiguration config = new MetricConfiguration("proxy_current_connections",
+            MetricCollectorType.GAUGE, "Current connections of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         switch (method.getName()) {
             case "channelActive":
-                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY, pluginType).inc();
+                MetricsCollectorRegistry.<GaugeMetricsCollector>get(config, pluginType).inc();
                 break;
             case "channelInactive":
-                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY, pluginType).dec();
+                MetricsCollectorRegistry.<GaugeMetricsCollector>get(config, pluginType).dec();
                 break;
             default:
                 break;

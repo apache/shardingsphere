@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -34,10 +36,16 @@ import static org.mockito.Mockito.mock;
 
 public final class RouteResultCountAdviceTest {
     
+    private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration("routed_data_sources_total",
+            MetricCollectorType.COUNTER, "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
+    
+    private final MetricConfiguration routedTablesConfig = new MetricConfiguration("routed_tables_total",
+            MetricCollectorType.COUNTER, "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
+    
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_data_sources_total", "FIXTURE")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_tables_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(routedDataSourcesConfig, "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(routedTablesConfig, "FIXTURE")).reset();
     }
     
     @Test
@@ -47,9 +55,9 @@ public final class RouteResultCountAdviceTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
-        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get("routed_data_sources_total", "FIXTURE");
+        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get(routedDataSourcesConfig, "FIXTURE");
         assertThat(wrapper.getValue(), is(1d));
-        wrapper = MetricsCollectorRegistry.get("routed_tables_total", "FIXTURE");
+        wrapper = MetricsCollectorRegistry.get(routedTablesConfig, "FIXTURE");
         assertThat(wrapper.getValue(), is(1d));
     }
 }

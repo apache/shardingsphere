@@ -20,6 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.busi
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusGaugeMetricFamilyCollector;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -34,7 +36,8 @@ import java.util.Optional;
  */
 public final class ProxyStateCollector extends Collector {
     
-    public static final String PROXY_STATE_METRIC_KEY = "proxy_state";
+    private final MetricConfiguration config = new MetricConfiguration("proxy_state",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "State of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK", Collections.emptyList(), Collections.emptyMap());
     
     @Override
     public List<MetricFamilySamples> collect() {
@@ -46,7 +49,7 @@ public final class ProxyStateCollector extends Collector {
         if (!stateContext.isPresent()) {
             return result;
         }
-        PrometheusGaugeMetricFamilyCollector collector = MetricsCollectorRegistry.get(PROXY_STATE_METRIC_KEY, "Prometheus");
+        PrometheusGaugeMetricFamilyCollector collector = MetricsCollectorRegistry.get(config, "Prometheus");
         collector.addMetric(Collections.emptyList(), stateContext.get().getCurrentState().ordinal());
         result.add((GaugeMetricFamily) collector.getRawMetricFamilyObject());
         return result;

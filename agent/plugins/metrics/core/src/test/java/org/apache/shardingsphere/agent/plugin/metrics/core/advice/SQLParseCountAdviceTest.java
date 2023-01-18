@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
@@ -45,75 +47,76 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLParseCountAdviceTest {
     
-    private static final String PARSED_SQL_METRIC_KEY = "parsed_sql_total";
+    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total",
+            MetricCollectorType.COUNTER, "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(PARSED_SQL_METRIC_KEY, "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
     public void assertParseInsertSQL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLInsertStatement());
+        assertParse(new MySQLInsertStatement());
     }
     
     @Test
     public void assertParseDeleteSQL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLDeleteStatement());
+        assertParse(new MySQLDeleteStatement());
     }
     
     @Test
     public void assertParseUpdateSQL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLUpdateStatement());
+        assertParse(new MySQLUpdateStatement());
     }
     
     @Test
     public void assertParseSelectSQL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLSelectStatement());
+        assertParse(new MySQLSelectStatement());
     }
     
     @Test
     public void assertParseDDL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLCreateDatabaseStatement());
+        assertParse(new MySQLCreateDatabaseStatement());
     }
     
     @Test
     public void assertParseDCL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLCreateUserStatement());
+        assertParse(new MySQLCreateUserStatement());
     }
     
     @Test
     public void assertParseDAL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLShowDatabasesStatement());
+        assertParse(new MySQLShowDatabasesStatement());
     }
     
     @Test
     public void assertParseTCL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new MySQLCommitStatement());
+        assertParse(new MySQLCommitStatement());
     }
     
     @Test
     public void assertParseRQL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null));
+        assertParse(new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null));
     }
     
     @Test
     public void assertParseRDL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new RegisterStorageUnitStatement(false, Collections.emptyList()));
+        assertParse(new RegisterStorageUnitStatement(false, Collections.emptyList()));
     }
     
     @Test
     public void assertParseRAL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new ShowMigrationListStatement());
+        assertParse(new ShowMigrationListStatement());
     }
     
     @Test
     public void assertParseRUL() {
-        assertParse(PARSED_SQL_METRIC_KEY, new FormatStatement("SELECT * FROM t_order"));
+        assertParse(new FormatStatement("SELECT * FROM t_order"));
     }
     
-    private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
+    private void assertParse(final SQLStatement sqlStatement) {
         new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricIds, "FIXTURE")).getValue(), is(1d));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).getValue(), is(1d));
     }
 }

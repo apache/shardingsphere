@@ -19,11 +19,12 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
 public final class FixtureCollectorFactory implements MetricsCollectorFactory {
     
     @Override
-    public MetricsCollector create(final String id) {
+    public MetricsCollector create(final MetricConfiguration metricConfig) {
         return new MetricsCollectorFixture();
     }
     

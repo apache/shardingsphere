@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.entity;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Collection;
-import java.util.LinkedList;
+package org.apache.shardingsphere.agent.plugin.metrics.core.config;
 
 /**
- * YAML metrics configuration.
+ * Metric collector type.
  */
-@Getter
-@Setter
-public final class YamlMetricsConfiguration {
+public enum MetricCollectorType {
     
-    private Collection<YamlMetricConfiguration> metrics = new LinkedList<>();
+    COUNTER,
+    GAUGE,
+    HISTOGRAM,
+    SUMMARY,
+    GAUGE_METRIC_FAMILY
 }

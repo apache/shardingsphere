@@ -32,7 +32,7 @@ public final class MetricConfiguration {
     
     private final String id;
     
-    private final String type;
+    private final MetricCollectorType type;
     
     private final String help;
     

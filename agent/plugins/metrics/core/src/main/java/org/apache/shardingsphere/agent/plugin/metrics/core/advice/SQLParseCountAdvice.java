@@ -21,6 +21,8 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -43,11 +46,12 @@ import java.util.Optional;
  */
 public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
-    private static final String PARSED_SQL_METRIC_KEY = "parsed_sql_total";
+    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total",
+            MetricCollectorType.COUNTER, "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        getSQLType((SQLStatement) result).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SQL_METRIC_KEY, pluginType).inc(optional));
+        getSQLType((SQLStatement) result).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(optional));
     }
     
     private Optional<String> getSQLType(final SQLStatement sqlStatement) {
