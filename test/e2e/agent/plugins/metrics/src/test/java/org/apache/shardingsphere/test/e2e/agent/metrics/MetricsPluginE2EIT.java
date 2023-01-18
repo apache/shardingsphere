@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    private static final String ROUTED_SQL = "routed_sql_total";
+    public static final String ROUTED_SQL = "routed_sql_total";
     
     public static final String ROUTED_DATA_SOURCES = "routed_data_sources_total";
     
