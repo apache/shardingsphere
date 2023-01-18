@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.collector;
 
+import org.apache.shardingsphere.agent.plugin.core.spi.PluginServiceLoader;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,28 +29,18 @@ public final class MetricsCollectorRegistry {
     
     private static final Map<String, MetricsCollector> METRICS_WRAPPERS = new ConcurrentHashMap<>();
     
-    private static MetricsCollectorFactory factory;
-    
-    /**
-     * Set metrics collector factory.
-     *
-     * @param metricsCollectorFactory metrics collector factory
-     */
-    public static void setMetricsFactory(final MetricsCollectorFactory metricsCollectorFactory) {
-        MetricsCollectorRegistry.factory = metricsCollectorFactory;
-    }
-    
     /**
      * Get metrics collector.
      *
      * @param id metric ID
+     * @param pluginType plugin type
      * @param <T> type of metrics collector
      * @return metrics collector
      * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
     @SuppressWarnings("unchecked")
-    public static <T extends MetricsCollector> T get(final String id) {
+    public static <T extends MetricsCollector> T get(final String id, final String pluginType) {
         T result = (T) METRICS_WRAPPERS.get(id);
-        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, factory::create) : result);
+        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, PluginServiceLoader.getServiceLoader(MetricsCollectorFactory.class).getService(pluginType)::create) : result);
     }
 }

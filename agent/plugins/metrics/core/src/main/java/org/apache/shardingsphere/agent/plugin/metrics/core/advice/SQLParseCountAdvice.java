@@ -69,39 +69,39 @@ public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         SQLStatement sqlStatement = (SQLStatement) result;
-        countSQL(sqlStatement);
-        countDistSQL(sqlStatement);
+        countSQL(sqlStatement, pluginType);
+        countDistSQL(sqlStatement, pluginType);
     }
     
-    private void countSQL(final SQLStatement sqlStatement) {
+    private void countSQL(final SQLStatement sqlStatement, final String pluginType) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_INSERT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_INSERT_SQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_UPDATE_SQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DELETE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DELETE_SQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SELECT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SELECT_SQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof DDLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DDL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DDL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof DCLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DCL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DCL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof DALStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DAL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DAL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof TCLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_TCL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_TCL_METRIC_KEY, pluginType).inc();
         }
     }
     
-    private void countDistSQL(final SQLStatement sqlStatement) {
+    private void countDistSQL(final SQLStatement sqlStatement, final String pluginType) {
         if (sqlStatement instanceof RQLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof RDLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RDL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RDL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof RALStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RAL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RAL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof RULStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RUL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RUL_METRIC_KEY, pluginType).inc();
         }
     }
 }

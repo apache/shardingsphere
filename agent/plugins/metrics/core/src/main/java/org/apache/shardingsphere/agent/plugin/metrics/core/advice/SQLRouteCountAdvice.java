@@ -48,13 +48,13 @@ public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_INSERT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_INSERT_SQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_UPDATE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_UPDATE_SQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_DELETE_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_DELETE_SQL_METRIC_KEY, pluginType).inc();
         } else if (sqlStatement instanceof SelectStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SELECT_SQL_METRIC_KEY).inc();
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SELECT_SQL_METRIC_KEY, pluginType).inc();
         }
     }
 }

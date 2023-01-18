@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
@@ -30,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class CommitTransactionsCountAdviceTest extends MetricsAdviceBaseTest {
+public final class CommitTransactionsCountAdviceTest {
     
     private static final String PROXY_COMMIT_TRANSACTIONS_METRIC_KEY = "proxy_commit_transactions_total";
     
@@ -38,12 +37,12 @@ public final class CommitTransactionsCountAdviceTest extends MetricsAdviceBaseTe
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_commit_transactions_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_commit_transactions_total", "FIXTURE")).reset();
     }
     
     @Test
     public void assertMethod() {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(PROXY_COMMIT_TRANSACTIONS_METRIC_KEY)).getValue(), is(1D));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(PROXY_COMMIT_TRANSACTIONS_METRIC_KEY, "FIXTURE")).getValue(), is(1D));
     }
 }

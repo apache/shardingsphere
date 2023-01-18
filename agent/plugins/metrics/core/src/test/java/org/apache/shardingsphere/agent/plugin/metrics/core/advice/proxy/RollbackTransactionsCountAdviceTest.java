@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
@@ -30,18 +29,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class RollbackTransactionsCountAdviceTest extends MetricsAdviceBaseTest {
+public final class RollbackTransactionsCountAdviceTest {
     
     private final RollbackTransactionsCountAdvice advice = new RollbackTransactionsCountAdvice();
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_rollback_transactions_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_rollback_transactions_total", "FIXTURE")).reset();
     }
     
     @Test
     public void assertMethod() {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_rollback_transactions_total")).getValue(), is(1D));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_rollback_transactions_total", "FIXTURE")).getValue(), is(1D));
     }
 }

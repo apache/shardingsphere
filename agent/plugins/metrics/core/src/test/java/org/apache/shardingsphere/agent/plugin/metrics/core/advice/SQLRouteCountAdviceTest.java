@@ -36,16 +36,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
+public final class SQLRouteCountAdviceTest {
     
     private final SQLRouteCountAdvice advice = new SQLRouteCountAdvice();
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_insert_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_update_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_delete_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_select_sql_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_insert_sql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_update_sql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_delete_sql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_select_sql_total", "FIXTURE")).reset();
     }
     
     @Test
@@ -74,6 +74,6 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     
     public void assertRoute(final String metricId, final QueryContext queryContext) {
         advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricId)).getValue(), is(1d));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricId, "FIXTURE")).getValue(), is(1d));
     }
 }

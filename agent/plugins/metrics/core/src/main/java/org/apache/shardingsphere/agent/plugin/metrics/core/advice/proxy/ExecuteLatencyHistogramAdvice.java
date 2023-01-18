@@ -41,6 +41,6 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        MetricsCollectorRegistry.<HistogramMetricsCollector>get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
+        MetricsCollectorRegistry.<HistogramMetricsCollector>get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY, pluginType).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
     }
 }

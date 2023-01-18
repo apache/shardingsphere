@@ -43,22 +43,22 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
+public final class SQLParseCountAdviceTest {
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_insert_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_update_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_delete_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_select_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_ddl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_dcl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_dal_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_tcl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rdl_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_ral_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rul_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_insert_sql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_update_sql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_delete_sql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_select_sql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_ddl_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_dcl_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_dal_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_tcl_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rql_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rdl_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_ral_total", "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("parsed_rul_total", "FIXTURE")).reset();
     }
     
     @Test
@@ -123,6 +123,6 @@ public final class SQLParseCountAdviceTest extends MetricsAdviceBaseTest {
     
     private void assertParse(final String metricIds, final SQLStatement sqlStatement) {
         new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricIds)).getValue(), is(1d));
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricIds, "FIXTURE")).getValue(), is(1d));
     }
 }
