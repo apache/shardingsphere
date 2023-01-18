@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -35,11 +36,11 @@ import static org.mockito.Mockito.mock;
 
 public final class RouteResultCountAdviceTest {
     
-    private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration(
-            "routed_data_sources_total", "COUNTER", "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
+    private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration("routed_data_sources_total",
+            MetricCollectorType.COUNTER, "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
     
-    private final MetricConfiguration routedTablesConfig = new MetricConfiguration(
-            "routed_tables_total", "COUNTER", "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
+    private final MetricConfiguration routedTablesConfig = new MetricConfiguration("routed_tables_total",
+            MetricCollectorType.COUNTER, "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
     
     @After
     public void reset() {

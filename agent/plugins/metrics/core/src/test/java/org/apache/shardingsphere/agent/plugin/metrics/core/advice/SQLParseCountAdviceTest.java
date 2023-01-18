@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
@@ -46,7 +47,8 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLParseCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total", "COUNTER", "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total",
+            MetricCollectorType.COUNTER, "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());
     
     @After
     public void reset() {

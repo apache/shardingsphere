@@ -17,26 +17,14 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
-
 /**
- * Metric configuration.
+ * Metric collector type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MetricConfiguration {
+public enum MetricCollectorType {
     
-    private final String id;
-    
-    private final MetricCollectorType type;
-    
-    private final String help;
-    
-    private final List<String> labels;
-    
-    private final Map<String, Object> props;
+    COUNTER,
+    GAUGE,
+    HISTOGRAM,
+    SUMMARY,
+    GAUGE_METRIC_FAMILY
 }

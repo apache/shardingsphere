@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -38,7 +39,8 @@ import java.util.Optional;
  */
 public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
     
-    private final MetricConfiguration config = new MetricConfiguration("routed_sql_total", "COUNTER", "Total count of routed SQL", Collections.singletonList("type"), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("routed_sql_total",
+            MetricCollectorType.COUNTER, "Total count of routed SQL", Collections.singletonList("type"), Collections.emptyMap());
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {

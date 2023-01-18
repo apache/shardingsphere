@@ -33,16 +33,16 @@ public final class PrometheusCollectorFactory implements MetricsCollectorFactory
     
     @Override
     public MetricsCollector create(final MetricConfiguration metricConfig) {
-        switch (metricConfig.getType().toUpperCase()) {
-            case "COUNTER":
+        switch (metricConfig.getType()) {
+            case COUNTER:
                 return new PrometheusCounterCollector(metricConfig);
-            case "GAUGE":
+            case GAUGE:
                 return new PrometheusGaugeCollector(metricConfig);
-            case "HISTOGRAM":
+            case HISTOGRAM:
                 return new PrometheusHistogramCollector(metricConfig);
-            case "SUMMARY":
+            case SUMMARY:
                 return new PrometheusSummaryCollector(metricConfig);
-            case "GAUGE_METRIC_FAMILY":
+            case GAUGE_METRIC_FAMILY:
                 return new PrometheusGaugeMetricFamilyCollector(metricConfig);
             default:
                 throw new UnsupportedOperationException(String.format("Can not support type `%s`.", metricConfig.getType()));

@@ -22,6 +22,7 @@ import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.proxy.Bootstrap;
 
@@ -35,7 +36,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class BuildInfoCollector extends Collector {
     
-    private final MetricConfiguration config = new MetricConfiguration("build_info", "GAUGE_METRIC_FAMILY", "Build information", Arrays.asList("version", "name"), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("build_info",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "Build information", Arrays.asList("version", "name"), Collections.emptyMap());
     
     private final boolean isEnhancedForProxy;
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Gauge;
+import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
@@ -25,19 +25,16 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusGaugeCollectorTest {
+public final class PrometheusGaugeMetricFamilyCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusGaugeCollector collector = new PrometheusGaugeCollector(new MetricConfiguration("foo_gauge",
-                MetricCollectorType.GAUGE, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.inc();
-        Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusGaugeCollector.class.getDeclaredField("gauge"), collector);
-        assertThat(gauge.get(), is(1d));
-        collector.dec();
-        assertThat(gauge.get(), is(0d));
+        PrometheusGaugeMetricFamilyCollector collector = new PrometheusGaugeMetricFamilyCollector(new MetricConfiguration("foo_gauge_metric_family",
+                MetricCollectorType.GAUGE_METRIC_FAMILY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.addMetric(Collections.emptyList(), 1d);
+        assertThat(Plugins.getMemberAccessor().get(PrometheusGaugeMetricFamilyCollector.class.getDeclaredField("gaugeMetricFamily"), collector), instanceOf(GaugeMetricFamily.class));
     }
 }

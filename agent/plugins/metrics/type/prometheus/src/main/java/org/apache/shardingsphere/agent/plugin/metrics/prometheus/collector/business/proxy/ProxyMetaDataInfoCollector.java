@@ -22,6 +22,7 @@ import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -44,8 +45,8 @@ import java.util.Optional;
 @Slf4j
 public final class ProxyMetaDataInfoCollector extends Collector {
     
-    private final MetricConfiguration config = new MetricConfiguration(
-            "proxy_meta_data_info", "GAUGE_METRIC_FAMILY", "Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases",
+    private final MetricConfiguration config = new MetricConfiguration("proxy_meta_data_info",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases",
             Collections.singletonList("name"), Collections.emptyMap());
     
     @Override

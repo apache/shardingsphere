@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
@@ -33,8 +34,8 @@ import static org.mockito.Mockito.mock;
 
 public final class CommitTransactionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration(
-            "proxy_commit_transactions_total", "COUNTER", "Total commit transactions of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_commit_transactions_total",
+            MetricCollectorType.COUNTER, "Total commit transactions of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
     
     private final CommitTransactionsCountAdvice advice = new CommitTransactionsCountAdvice();
     

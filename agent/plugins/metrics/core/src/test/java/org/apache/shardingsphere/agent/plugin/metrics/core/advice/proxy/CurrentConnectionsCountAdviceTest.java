@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
@@ -34,8 +35,8 @@ import static org.mockito.Mockito.when;
 
 public final class CurrentConnectionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration(
-            "proxy_current_connections", "GAUGE", "Current connections of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_current_connections",
+            MetricCollectorType.GAUGE, "Current connections of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
     
     private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
     

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -34,11 +35,11 @@ import java.util.Collections;
  */
 public final class RouteResultCountAdvice implements InstanceMethodAdvice {
     
-    private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration(
-            "routed_data_sources_total", "COUNTER", "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
+    private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration("routed_data_sources_total",
+            MetricCollectorType.COUNTER, "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
     
-    private final MetricConfiguration routedTablesConfig = new MetricConfiguration(
-            "routed_tables_total", "COUNTER", "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
+    private final MetricConfiguration routedTablesConfig = new MetricConfiguration("routed_tables_total",
+            MetricCollectorType.COUNTER, "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
