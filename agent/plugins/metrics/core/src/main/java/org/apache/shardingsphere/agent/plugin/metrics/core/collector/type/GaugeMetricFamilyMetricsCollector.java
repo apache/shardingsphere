@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector.type;
 
-import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.SummaryMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
+
+import java.util.List;
 
 /**
- * Prometheus summary collector.
+ * Gauge metric family metrics collector.
  */
-public final class PrometheusSummaryCollector implements SummaryMetricsCollector {
+public interface GaugeMetricFamilyMetricsCollector extends MetricsCollector {
     
-    private final Summary summary;
+    /**
+     * Add metric.
+     *
+     * @param labelValues label values
+     * @param value value
+     */
+    void addMetric(List<String> labelValues, double value);
     
-    public PrometheusSummaryCollector(final MetricConfiguration config) {
-        summary = Summary.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
-    }
-    
-    @Override
-    public void observe(final double value) {
-        summary.observe(value);
-    }
+    /**
+     * Get raw metric family object.
+     * 
+     * @return raw metric family object
+     */
+    Object getRawMetricFamilyObject();
 }

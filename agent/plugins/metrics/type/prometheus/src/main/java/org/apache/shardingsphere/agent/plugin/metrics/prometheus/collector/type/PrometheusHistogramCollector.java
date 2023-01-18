@@ -25,7 +25,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.Histog
 import java.util.Map;
 
 /**
- * Prometheus histogram wrapper.
+ * Prometheus histogram collector.
  */
 public final class PrometheusHistogramCollector implements HistogramMetricsCollector {
     

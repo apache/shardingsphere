@@ -20,7 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.busi
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.PrometheusCollectorFactory;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -48,23 +49,21 @@ public final class ProxyMetaDataInfoCollector extends Collector {
     
     private static final String ACTUAL_DB_COUNT = "database_count";
     
-    private static final PrometheusCollectorFactory FACTORY = new PrometheusCollectorFactory();
-    
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
-        GaugeMetricFamily metaDataInfo = FACTORY.createGaugeMetricFamily(PROXY_METADATA_INFO_METRIC_KEY);
+        GaugeMetricFamilyMetricsCollector metaDataInfo = MetricsCollectorRegistry.get(PROXY_METADATA_INFO_METRIC_KEY, "Prometheus");
         if (null != ProxyContext.getInstance().getContextManager()) {
             collectProxy(metaDataInfo);
-            result.add(metaDataInfo);
+            result.add((GaugeMetricFamily) metaDataInfo.getRawMetricFamilyObject());
         }
         return result;
     }
     
-    private void collectProxy(final GaugeMetricFamily metricFamily) {
+    private void collectProxy(final GaugeMetricFamilyMetricsCollector collector) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaData().getDatabases().size());
-        metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
+        collector.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaData().getDatabases().size());
+        collector.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
     }
     
     private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {
