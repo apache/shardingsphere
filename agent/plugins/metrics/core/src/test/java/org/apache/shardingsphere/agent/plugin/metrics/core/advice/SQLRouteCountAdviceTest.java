@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
@@ -42,10 +42,10 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     
     @After
     public void reset() {
-        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_insert_sql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_update_sql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_delete_sql_total")).reset();
-        ((FixtureWrapper) MetricsWrapperRegistry.get("routed_select_sql_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_insert_sql_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_update_sql_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_delete_sql_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_select_sql_total")).reset();
     }
     
     @Test
@@ -73,7 +73,7 @@ public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     }
     
     public void assertRoute(final String metricId, final QueryContext queryContext) {
-        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext});
-        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get(metricId)).getFixtureValue(), is(1d));
+        advice.beforeMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, "FIXTURE");
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(metricId)).getValue(), is(1d));
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.GaugeMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 
 import java.lang.reflect.Method;
 
@@ -32,13 +32,13 @@ public final class CurrentConnectionsCountAdvice implements InstanceMethodAdvice
     private static final String PROXY_CURRENT_CONNECTIONS_METRIC_KEY = "proxy_current_connections";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         switch (method.getName()) {
             case "channelActive":
-                MetricsWrapperRegistry.<GaugeMetricsWrapper>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).inc();
+                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).inc();
                 break;
             case "channelInactive":
-                MetricsWrapperRegistry.<GaugeMetricsWrapper>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).dec();
+                MetricsCollectorRegistry.<GaugeMetricsCollector>get(PROXY_CURRENT_CONNECTIONS_METRIC_KEY).dec();
                 break;
             default:
                 break;

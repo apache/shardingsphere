@@ -19,18 +19,19 @@ package org.apache.shardingsphere.agent.core.advisor.executor;
 
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.ConstructorAdviceExecutor;
+import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.StaticMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
-import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Advice executor factory.
@@ -53,16 +54,21 @@ public final class AdviceExecutorFactory {
      * @return found advice executor
      */
     public Optional<AdviceExecutor> findMatchedAdviceExecutor(final InDefinedShape methodDescription) {
-        Collection<AgentAdvice> advices = advisorConfig.getAdvisors().stream()
-                .filter(each -> each.getPointcut().matches(methodDescription)).map(each -> adviceFactory.getAdvice(each.getAdviceClassName())).collect(Collectors.toList());
+        Map<String, Collection<AgentAdvice>> advices = new HashMap<>();
+        for (MethodAdvisorConfiguration each : advisorConfig.getAdvisors()) {
+            if (each.getPointcut().matches(methodDescription)) {
+                advices.computeIfAbsent(each.getPluginType(), key -> new LinkedList<>());
+                advices.get(each.getPluginType()).add(adviceFactory.getAdvice(each.getAdviceClassName()));
+            }
+        }
         if (isConstructor(methodDescription)) {
-            return Optional.of(new ConstructorAdviceExecutor(advices.stream().map(each -> (ConstructorAdvice) each).collect(Collectors.toList())));
+            return Optional.of(new ConstructorAdviceExecutor(convert(advices)));
         }
         if (isStaticMethod(methodDescription)) {
-            return Optional.of(new StaticMethodAdviceExecutor(advices.stream().map(each -> (StaticMethodAdvice) each).collect(Collectors.toList())));
+            return Optional.of(new StaticMethodAdviceExecutor(convert(advices)));
         }
         if (isMethod(methodDescription)) {
-            return Optional.of(new InstanceMethodAdviceExecutor(advices.stream().map(each -> (InstanceMethodAdvice) each).collect(Collectors.toList())));
+            return Optional.of(new InstanceMethodAdviceExecutor(convert(advices)));
         }
         return Optional.empty();
     }
@@ -77,5 +83,17 @@ public final class AdviceExecutorFactory {
     
     private boolean isMethod(final InDefinedShape methodDescription) {
         return !(methodDescription.isAbstract() || methodDescription.isSynthetic());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends AgentAdvice> Map<String, Collection<T>> convert(final Map<String, Collection<AgentAdvice>> advices) {
+        Map<String, Collection<T>> result = new HashMap<>();
+        for (Entry<String, Collection<AgentAdvice>> entry : advices.entrySet()) {
+            result.put(entry.getKey(), new LinkedList<>());
+            for (AgentAdvice each : entry.getValue()) {
+                result.get(entry.getKey()).add((T) each);
+            }
+        }
+        return result;
     }
 }

@@ -61,8 +61,8 @@ public final class SQLParserEngineAdviceTest {
     @Test
     public void assertMethod() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"});
-        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null);
+        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, "OpenTracing");
+        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -72,9 +72,9 @@ public final class SQLParserEngineAdviceTest {
     @Test
     public void assertExceptionHandle() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"});
-        ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException());
-        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null);
+        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, "OpenTracing");
+        ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException(), "OpenTracing");
+        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

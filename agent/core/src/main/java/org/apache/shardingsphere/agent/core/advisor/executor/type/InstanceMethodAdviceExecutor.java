@@ -37,6 +37,8 @@ import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 /**
@@ -47,7 +49,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceMethodAdviceExecutor.class);
     
-    private final Collection<InstanceMethodAdvice> advices;
+    private final Map<String, Collection<InstanceMethodAdvice>> advices;
     
     /**
      * Advice instance method.
@@ -85,8 +87,10 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private void adviceBefore(final TargetAdviceObject target, final Method method, final Object[] args) {
         try {
-            for (InstanceMethodAdvice each : advices) {
-                each.beforeMethod(target, method, args);
+            for (Entry<String, Collection<InstanceMethodAdvice>> entry : advices.entrySet()) {
+                for (InstanceMethodAdvice each : entry.getValue()) {
+                    each.beforeMethod(target, method, args, entry.getKey());
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
@@ -97,8 +101,10 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private void adviceThrow(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable ex) {
         try {
-            for (InstanceMethodAdvice each : advices) {
-                each.onThrowing(target, method, args, ex);
+            for (Entry<String, Collection<InstanceMethodAdvice>> entry : advices.entrySet()) {
+                for (InstanceMethodAdvice each : entry.getValue()) {
+                    each.onThrowing(target, method, args, ex, entry.getKey());
+                }
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ignored) {
@@ -109,8 +115,11 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     
     private void adviceAfter(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
         try {
-            for (InstanceMethodAdvice each : advices) {
-                each.afterMethod(target, method, args, result);
+            for (Entry<String, Collection<InstanceMethodAdvice>> entry : advices.entrySet()) {
+                for (InstanceMethodAdvice each : entry.getValue()) {
+                    each.afterMethod(target, method, args, result, entry.getKey());
+                }
+                
             }
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {

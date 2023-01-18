@@ -41,7 +41,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     
     @Override
     @SuppressWarnings("unchecked")
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if ((boolean) args[1]) {
@@ -60,12 +60,12 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         ((Scope) target.getAttachment()).close();
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
         OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

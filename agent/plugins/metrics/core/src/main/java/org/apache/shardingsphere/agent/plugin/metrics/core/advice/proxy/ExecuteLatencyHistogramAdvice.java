@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.HistogramMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 
 import java.lang.reflect.Method;
 
@@ -35,12 +35,12 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(ExecuteLatencyHistogramAdvice.class);
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         methodTimeRecorder.record(method);
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        MetricsWrapperRegistry.<HistogramMetricsWrapper>get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+        MetricsCollectorRegistry.<HistogramMetricsCollector>get(PROXY_EXECUTE_LATENCY_MILLIS_METRIC_KEY).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
     }
 }

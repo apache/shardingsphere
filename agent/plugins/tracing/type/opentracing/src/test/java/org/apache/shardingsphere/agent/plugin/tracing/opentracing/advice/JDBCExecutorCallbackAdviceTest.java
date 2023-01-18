@@ -69,8 +69,8 @@ public final class JDBCExecutorCallbackAdviceTest {
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap});
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null);
+        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, "OpenTracing");
+        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
@@ -90,9 +90,9 @@ public final class JDBCExecutorCallbackAdviceTest {
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap});
-        advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null);
+        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, "OpenTracing");
+        advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException(), "OpenTracing");
+        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

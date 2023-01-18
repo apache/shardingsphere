@@ -60,8 +60,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "OpenTelemetry");
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(2));
@@ -75,9 +75,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true});
-        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
+        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException(), "OpenTelemetry");
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "OpenTelemetry");
         parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(2));

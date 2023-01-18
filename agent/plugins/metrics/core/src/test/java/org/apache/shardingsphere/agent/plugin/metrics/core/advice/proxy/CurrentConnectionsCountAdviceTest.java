@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
 
@@ -37,16 +37,16 @@ public final class CurrentConnectionsCountAdviceTest extends MetricsAdviceBaseTe
     
     @After
     public void reset() {
-        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_current_connections")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_current_connections")).reset();
     }
     
     @Test
     public void assertCountCurrentConnections() {
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
-        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{});
-        advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{});
-        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_current_connections")).getFixtureValue(), is(1d));
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{}, "FIXTURE");
+        advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{}, "FIXTURE");
+        advice.beforeMethod(targetObject, mockMethod("channelInactive"), new Object[]{}, "FIXTURE");
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_current_connections")).getValue(), is(1d));
     }
     
     private Method mockMethod(final String methodName) {

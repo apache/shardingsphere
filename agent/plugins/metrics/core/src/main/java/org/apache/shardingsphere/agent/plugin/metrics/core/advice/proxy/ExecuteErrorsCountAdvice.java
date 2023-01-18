@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.type.CounterMetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 
 import java.lang.reflect.Method;
 
@@ -32,7 +32,7 @@ public final class ExecuteErrorsCountAdvice implements InstanceMethodAdvice {
     private static final String PROXY_EXECUTE_ERRORS_METRIC_KEY = "proxy_execute_errors_total";
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        MetricsWrapperRegistry.<CounterMetricsWrapper>get(PROXY_EXECUTE_ERRORS_METRIC_KEY).inc();
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(PROXY_EXECUTE_ERRORS_METRIC_KEY).inc();
     }
 }

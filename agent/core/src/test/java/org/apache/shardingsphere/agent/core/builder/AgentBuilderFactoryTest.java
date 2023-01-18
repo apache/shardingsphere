@@ -54,16 +54,16 @@ public final class AgentBuilderFactoryTest {
     
     private static AdvisorConfiguration createAdvisorConfiguration() {
         AdvisorConfiguration result = new AdvisorConfiguration("org.apache.shardingsphere.fixture.targeted.TargetObjectFixture");
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callWhenExceptionThrown"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callWhenExceptionThrown"), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCall"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCall"), BarAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCallWhenExceptionThrown"), FooAdvice.class.getName()));
-        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCallWhenExceptionThrown"), BarAdvice.class.getName()));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), FooAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.isConstructor().and(ElementMatchers.takesArguments(1)), BarAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), FooAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("call"), BarAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callWhenExceptionThrown"), FooAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("callWhenExceptionThrown"), BarAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCall"), FooAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCall"), BarAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCallWhenExceptionThrown"), FooAdvice.class.getName(), "FIXTURE"));
+        result.getAdvisors().add(new MethodAdvisorConfiguration(ElementMatchers.named("staticCallWhenExceptionThrown"), BarAdvice.class.getName(), "FIXTURE"));
         return result;
     }
     

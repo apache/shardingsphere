@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 
 import java.lang.reflect.Method;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -45,9 +46,9 @@ public class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
-    @SneakyThrows
+    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @SuppressWarnings("unchecked")
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         Span root = (Span) ((Map<String, Object>) args[2]).get(OpenTelemetryConstants.ROOT_SPAN);
         Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
@@ -69,12 +70,12 @@ public class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         ((Span) target.getAttachment()).end();
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
         ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);
     }
 }

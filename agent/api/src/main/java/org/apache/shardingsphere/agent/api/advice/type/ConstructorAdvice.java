@@ -31,6 +31,7 @@ public interface ConstructorAdvice extends AgentAdvice {
      *
      * @param target intercepted target object
      * @param args all arguments of the intercepted constructor
+     * @param pluginType plugin type
      */
-    void onConstructor(TargetAdviceObject target, Object[] args);
+    void onConstructor(TargetAdviceObject target, Object[] args, String pluginType);
 }

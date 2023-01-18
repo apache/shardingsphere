@@ -44,7 +44,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     @Override
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @SuppressWarnings("unchecked")
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
         Span span = null == root ? Tracing.currentTracer().nextSpan().name(OPERATION_NAME) : Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
@@ -64,12 +64,12 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         ((Span) target.getAttachment()).finish();
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
         ((Span) target.getAttachment()).error(throwable);
     }
 }

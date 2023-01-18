@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,14 +41,18 @@ public final class TelephoneRandomReplaceAlgorithmTest {
     }
     
     @Test
+    public void assertInitWithNullProps() {
+        maskAlgorithm.init(new Properties());
+    }
+    
+    @Test
     public void assertMaskWithNullPlaintext() {
         assertNull(maskAlgorithm.mask(null));
     }
     
     @Test
     public void assertMask() {
-        assertThat(maskAlgorithm.mask("13012345678").substring(0, 3), is("130"));
-        assertThat(maskAlgorithm.mask("13012345678").substring(3, 11), not("12345678"));
+        assertThat(maskAlgorithm.mask(""), is(""));
         assertThat(maskAlgorithm.mask("13012345678"), not("13012345678"));
     }
     

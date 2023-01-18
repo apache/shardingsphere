@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.wrapper.MetricsWrapperRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MetricsAdviceBaseTest;
 import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureWrapper;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
     
     @After
     public void reset() {
-        ((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_latency_millis")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_latency_millis")).reset();
     }
     
     @Test
@@ -42,9 +42,9 @@ public final class ExecuteLatencyHistogramAdviceTest extends MetricsAdviceBaseTe
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         Method method = mock(Method.class);
-        advice.beforeMethod(targetObject, method, new Object[]{});
+        advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
         Thread.sleep(500L);
-        advice.afterMethod(targetObject, method, new Object[]{}, null);
-        assertThat(((FixtureWrapper) MetricsWrapperRegistry.get("proxy_execute_latency_millis")).getFixtureValue(), greaterThanOrEqualTo(500D));
+        advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
+        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get("proxy_execute_latency_millis")).getValue(), greaterThanOrEqualTo(500D));
     }
 }
