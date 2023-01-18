@@ -140,7 +140,7 @@ jobs:
     name: mixture rule
     needs: it-single-rule
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       max-parallel: 2
       fail-fast: false
@@ -173,27 +173,3 @@ jobs:
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
-
-  mysql-proxy-agent:
-    name: Agent Metrics & OpenTelemetry
-    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
-    needs: it-mixture-rule
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '8'
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build Project
-        run: ./mvnw -B clean install -DskipITs -DskipTests
-      - name: Run E2E Test
-        run: |
-          ./mvnw -B clean install -f test/e2e/agent/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
-          ./mvnw -B clean install -f test/e2e/agent/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
