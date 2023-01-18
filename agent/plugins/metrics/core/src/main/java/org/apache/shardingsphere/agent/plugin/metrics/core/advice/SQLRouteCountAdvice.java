@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -35,26 +35,30 @@ import java.lang.reflect.Method;
  */
 public final class SQLRouteCountAdvice implements InstanceMethodAdvice {
     
-    private static final String ROUTED_INSERT_SQL_METRIC_KEY = "routed_insert_sql_total";
-    
-    private static final String ROUTED_UPDATE_SQL_METRIC_KEY = "routed_update_sql_total";
-    
-    private static final String ROUTED_DELETE_SQL_METRIC_KEY = "routed_delete_sql_total";
-    
-    private static final String ROUTED_SELECT_SQL_METRIC_KEY = "routed_select_sql_total";
+    private static final String ROUTED_SQL_METRIC_KEY = "routed_sql_total";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        if (sqlStatement instanceof InsertStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_INSERT_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_UPDATE_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_DELETE_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof SelectStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SELECT_SQL_METRIC_KEY).inc();
+        String sqlType = getSQLType(sqlStatement);
+        if (null == sqlType) {
+            return;
         }
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(ROUTED_SQL_METRIC_KEY).inc(sqlType);
+    }
+    
+    private String getSQLType(final SQLStatement sqlStatement) {
+        String result = null;
+        if (sqlStatement instanceof InsertStatement) {
+            result = "INSERT";
+        } else if (sqlStatement instanceof UpdateStatement) {
+            result = "UPDATE";
+        } else if (sqlStatement instanceof DeleteStatement) {
+            result = "DELETE";
+        } else if (sqlStatement instanceof SelectStatement) {
+            result = "SELECT";
+        }
+        return result;
     }
 }

@@ -38,38 +38,37 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLRouteCountAdviceTest extends MetricsAdviceBaseTest {
     
+    private static final String ROUTED_SQL_METRIC_KEY = "routed_sql_total";
+    
     private final SQLRouteCountAdvice advice = new SQLRouteCountAdvice();
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_insert_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_update_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_delete_sql_total")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get("routed_select_sql_total")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(ROUTED_SQL_METRIC_KEY)).reset();
     }
     
     @Test
     public void assertInsertRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
-        assertRoute("routed_insert_sql_total", queryContext);
+        assertRoute(ROUTED_SQL_METRIC_KEY, queryContext);
     }
     
     @Test
     public void assertUpdateRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
-        assertRoute("routed_update_sql_total", queryContext);
+        assertRoute(ROUTED_SQL_METRIC_KEY, queryContext);
     }
     
     @Test
     public void assertDeleteRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
-        assertRoute("routed_delete_sql_total", queryContext);
+        assertRoute(ROUTED_SQL_METRIC_KEY, queryContext);
     }
     
     @Test
     public void assertSelectRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
-        assertRoute("routed_select_sql_total", queryContext);
+        assertRoute(ROUTED_SQL_METRIC_KEY, queryContext);
     }
     
     public void assertRoute(final String metricId, final QueryContext queryContext) {

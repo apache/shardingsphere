@@ -160,22 +160,8 @@ services:
 | Name                              | Type                | Description                                                                                                                            |
 | :-------------------------------- |:--------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
 | build_info                        | GAUGE               | Build information                                                                                                                      |
-| parsed_insert_sql_total           | COUNTER             | Total count of parsed INSERT                                                                                                           |
-| parsed_update_sql_total           | COUNTER             | Total count of parsed UPDATE                                                                                                           |
-| parsed_delete_sql_total           | COUNTER             | Total count of parsed DELETE                                                                                                           |
-| parsed_select_sql_total           | COUNTER             | Total count of parsed SELECT                                                                                                           |
-| parsed_ddl_total                  | COUNTER             | Total count of parsed DDL                                                                                                              |
-| parsed_dcl_total                  | COUNTER             | Total count of parsed DCL                                                                                                              |
-| parsed_dal_total                  | COUNTER             | Total count of parsed DAL                                                                                                              |
-| parsed_tcl_total                  | COUNTER             | Total count of parsed TCL                                                                                                              |
-| parsed_rql_total                  | COUNTER             | Total count of parsed RQL                                                                                                              |
-| parsed_rdl_total                  | COUNTER             | Total count of parsed RDL                                                                                                              |
-| parsed_ral_total                  | COUNTER             | Total count of parsed RAL                                                                                                              |
-| parsed_rul_total                  | COUNTER             | Total count of parsed RUL                                                                                                              |
-| routed_insert_sql_total           | COUNTER             | Total count of routed INSERT                                                                                                           |
-| routed_update_sql_total           | COUNTER             | Total count of routed UPDATE                                                                                                           |
-| routed_delete_sql_total           | COUNTER             | Total count of routed DELETE                                                                                                           |
-| routed_select_sql_total           | COUNTER             | Total count of routed SELECT                                                                                                           |
+| parsed_sql_total                  | COUNTER             | Total count of parsed by type. (INSERT, UPDATE, DELETE, SELECT, DDL, DCL, DAL, TCL, RQL, RDL, RAL, RUL)                                |
+| routed_sql_total                  | COUNTER             | Total count of routed by type. (INSERT, UPDATE, DELETE, SELECT)                                                                        |
 | routed_data_sources_total         | COUNTER             | Total count of data source routed                                                                                                      |
 | routed_tables_total               | COUNTER             | Total count of table routed                                                                                                            |
 | proxy_state                       | GAUGE               | Status information of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK                                                     |
