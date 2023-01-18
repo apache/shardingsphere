@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Integration test of add resource.
  */
-@TransactionTestCase(adapters = "proxy", scenario = "addResource")
+@TransactionTestCase(adapters = TransactionTestConstants.PROXY, scenario = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     public AddResourceTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
