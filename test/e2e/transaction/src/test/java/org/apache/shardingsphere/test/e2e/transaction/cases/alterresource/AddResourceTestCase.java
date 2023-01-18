@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.alterresource;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
@@ -33,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Integration test of add resource.
  */
-@TransactionTestCase(adapters = AdapterContainerEnum.PROXY.getValue(), scenario = "addResource")
+@TransactionTestCase(adapters = "proxy", scenario = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     public AddResourceTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {

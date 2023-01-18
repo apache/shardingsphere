@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.cursor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
@@ -41,7 +40,7 @@ import static org.junit.Assert.fail;
 /**
  * OpenGauss cursor transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = {AdapterContainerEnum.PROXY.getValue()}, scenario = "cursor")
+@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = {"proxy"}, scenario = "cursor")
 @Slf4j
 public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
