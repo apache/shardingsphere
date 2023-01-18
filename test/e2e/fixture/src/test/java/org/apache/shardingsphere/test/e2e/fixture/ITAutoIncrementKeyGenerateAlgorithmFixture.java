@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Getter
 public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    private final AtomicLong idGenerator = new AtomicLong(1L);
+    private static final AtomicLong ID_GENERATOR = new AtomicLong(1L);
     
     private Properties props;
     
@@ -37,7 +37,7 @@ public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGene
     
     @Override
     public Long generateKey() {
-        return idGenerator.getAndIncrement();
+        return ID_GENERATOR.getAndIncrement();
     }
     
     @Override
@@ -48,5 +48,9 @@ public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGene
     @Override
     public boolean isSupportAutoIncrement() {
         return true;
+    }
+    
+    public static void reset() {
+        ID_GENERATOR.set(1L);
     }
 }

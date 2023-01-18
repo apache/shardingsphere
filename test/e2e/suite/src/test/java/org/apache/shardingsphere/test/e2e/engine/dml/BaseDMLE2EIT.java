@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.e2e.fixture.ITAutoIncrementKeyGenerateAlgorithmFixture;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -66,6 +67,7 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
     @After
     public final void tearDown() {
         dataSetEnvironmentManager.cleanData();
+        ITAutoIncrementKeyGenerateAlgorithmFixture.reset();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
