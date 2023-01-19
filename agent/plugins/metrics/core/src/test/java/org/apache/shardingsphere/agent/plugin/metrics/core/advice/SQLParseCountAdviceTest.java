@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
@@ -115,7 +116,7 @@ public final class SQLParseCountAdviceTest {
     }
     
     private void assertParse(final SQLStatement sqlStatement) {
-        new SQLParseCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, sqlStatement, "FIXTURE");
+        new SQLParseCountAdvice().afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, sqlStatement, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).getValue(), is(1d));
     }
 }
