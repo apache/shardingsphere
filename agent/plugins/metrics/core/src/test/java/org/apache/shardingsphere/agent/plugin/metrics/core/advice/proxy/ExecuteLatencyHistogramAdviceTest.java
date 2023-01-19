@@ -49,6 +49,6 @@ public final class ExecuteLatencyHistogramAdviceTest {
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
         Thread.sleep(500L);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).getValue(), greaterThanOrEqualTo(500D));
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(500d));
     }
 }

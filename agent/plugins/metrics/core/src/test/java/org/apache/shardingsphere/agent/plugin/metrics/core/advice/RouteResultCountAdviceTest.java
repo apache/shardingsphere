@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -56,9 +57,9 @@ public final class RouteResultCountAdviceTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
-        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get(routedDataSourcesConfig, "FIXTURE");
-        assertThat(wrapper.getValue(), is(1d));
-        wrapper = MetricsCollectorRegistry.get(routedTablesConfig, "FIXTURE");
-        assertThat(wrapper.getValue(), is(1d));
+        MetricsCollector collector = MetricsCollectorRegistry.get(routedDataSourcesConfig, "FIXTURE");
+        assertThat(collector.toString(), is("ds_0=1"));
+        collector = MetricsCollectorRegistry.get(routedTablesConfig, "FIXTURE");
+        assertThat(collector.toString(), is("t_order_0=1"));
     }
 }

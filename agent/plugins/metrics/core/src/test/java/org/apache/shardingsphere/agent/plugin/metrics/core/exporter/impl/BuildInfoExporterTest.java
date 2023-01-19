@@ -45,6 +45,6 @@ public final class BuildInfoExporterTest {
     public void assertExport() {
         Optional<GaugeMetricFamilyMetricsCollector> collector = new BuildInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(1d));
+        assertThat(collector.get().toString(), is("1"));
     }
 }

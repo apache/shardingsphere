@@ -73,6 +73,6 @@ public final class ProxyStateExporterTest {
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyStateExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(0d));
+        assertThat(collector.get().toString(), is("0"));
     }
 }

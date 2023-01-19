@@ -46,6 +46,6 @@ public final class CommitTransactionsCountAdviceTest {
     @Test
     public void assertMethod() {
         advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).getValue(), is(1D));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("1"));
     }
 }

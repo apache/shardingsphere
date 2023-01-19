@@ -63,6 +63,6 @@ public final class ProxyMetaDataInfoExporterTest {
         ProxyContext.init(contextManager);
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(0d));
+        assertThat(collector.get().toString(), is("0"));
     }
 }
