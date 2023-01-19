@@ -17,30 +17,25 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.GaugeMetricFamily;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
+import io.prometheus.client.Counter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.util.List;
+import java.util.Collections;
 
-/**
- * Prometheus gauge metric family collector.
- */
-public final class PrometheusGaugeMetricFamilyCollector implements GaugeMetricFamilyMetricsCollector {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class PrometheusMetricsCounterCollectorTest {
     
-    private final GaugeMetricFamily gaugeMetricFamily;
-    
-    public PrometheusGaugeMetricFamilyCollector(final MetricConfiguration config) {
-        gaugeMetricFamily = new GaugeMetricFamily(config.getId(), config.getHelp(), config.getLabels());
-    }
-    
-    @Override
-    public void addMetric(final List<String> labelValues, final double value) {
-        gaugeMetricFamily.addMetric(labelValues, value);
-    }
-    
-    @Override
-    public Object getRawMetricFamilyObject() {
-        return gaugeMetricFamily;
+    @Test
+    public void assertCreate() throws ReflectiveOperationException {
+        PrometheusMetricsCounterCollector collector = new PrometheusMetricsCounterCollector(new MetricConfiguration("foo_counter",
+                MetricCollectorType.COUNTER, "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.inc();
+        Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusMetricsCounterCollector.class.getDeclaredField("counter"), collector);
+        assertThat(counter.get(), is(1d));
     }
 }

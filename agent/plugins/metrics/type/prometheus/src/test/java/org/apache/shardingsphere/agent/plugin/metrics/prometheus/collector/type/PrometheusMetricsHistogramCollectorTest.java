@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Counter;
+import io.prometheus.client.Histogram;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
@@ -28,14 +28,14 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusCounterCollectorTest {
+public final class PrometheusMetricsHistogramCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusCounterCollector collector = new PrometheusCounterCollector(new MetricConfiguration("foo_counter",
-                MetricCollectorType.COUNTER, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.inc();
-        Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusCounterCollector.class.getDeclaredField("counter"), collector);
-        assertThat(counter.get(), is(1d));
+        PrometheusMetricsHistogramCollector collector = new PrometheusMetricsHistogramCollector(new MetricConfiguration("foo_histogram",
+                MetricCollectorType.HISTOGRAM, "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.observe(1);
+        Histogram histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusMetricsHistogramCollector.class.getDeclaredField("histogram"), collector);
+        assertThat(histogram.collect().size(), is(1));
     }
 }

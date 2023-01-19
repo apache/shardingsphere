@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Summary;
+import io.prometheus.client.Gauge;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
@@ -28,14 +28,16 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusSummaryWrapperTest {
+public final class PrometheusMetricsGaugeCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusMetricsSummaryCollector collector = new PrometheusMetricsSummaryCollector(new MetricConfiguration("foo_summary",
-                MetricCollectorType.SUMMARY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.observe(1);
-        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusMetricsSummaryCollector.class.getDeclaredField("summary"), collector);
-        assertThat(summary.collect().size(), is(1));
+        PrometheusMetricsGaugeCollector collector = new PrometheusMetricsGaugeCollector(new MetricConfiguration("foo_gauge",
+                MetricCollectorType.GAUGE, "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        collector.inc();
+        Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusMetricsGaugeCollector.class.getDeclaredField("gauge"), collector);
+        assertThat(gauge.get(), is(1d));
+        collector.dec();
+        assertThat(gauge.get(), is(0d));
     }
 }

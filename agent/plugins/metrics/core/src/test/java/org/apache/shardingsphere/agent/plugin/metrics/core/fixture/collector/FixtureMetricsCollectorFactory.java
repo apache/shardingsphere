@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
+package org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector;
 
-import io.prometheus.client.Summary;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorFactory;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.SummaryMetricsCollector;
 
-/**
- * Prometheus summary collector.
- */
-public final class PrometheusSummaryCollector implements SummaryMetricsCollector {
+public final class FixtureMetricsCollectorFactory implements MetricsCollectorFactory {
     
-    private final Summary summary;
-    
-    public PrometheusSummaryCollector(final MetricConfiguration config) {
-        summary = Summary.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
+    @Override
+    public MetricsCollector create(final MetricConfiguration metricConfig) {
+        return new MetricsCollectorFixture();
     }
     
     @Override
-    public void observe(final double value) {
-        summary.observe(value);
+    public String getType() {
+        return "FIXTURE";
     }
 }

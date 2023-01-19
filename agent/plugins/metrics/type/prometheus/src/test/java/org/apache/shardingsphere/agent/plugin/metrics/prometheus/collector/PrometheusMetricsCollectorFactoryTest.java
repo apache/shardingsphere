@@ -19,11 +19,11 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusCounterCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusGaugeCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusGaugeMetricFamilyCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusHistogramCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusSummaryCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsCounterCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsGaugeCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsGaugeMetricFamilyCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsHistogramCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusMetricsSummaryCollector;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -31,35 +31,35 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusCollectorFactoryTest {
+public final class PrometheusMetricsCollectorFactoryTest {
     
     @Test
     public void assertCreateCounterCollector() {
         MetricConfiguration config = new MetricConfiguration("test_counter", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusCollectorFactory().create(config), instanceOf(PrometheusCounterCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsCounterCollector.class));
     }
     
     @Test
     public void assertCreateGaugeCollector() {
         MetricConfiguration config = new MetricConfiguration("test_gauge", MetricCollectorType.GAUGE, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusCollectorFactory().create(config), instanceOf(PrometheusGaugeCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsGaugeCollector.class));
     }
     
     @Test
     public void assertCreateHistogramCollector() {
         MetricConfiguration config = new MetricConfiguration("test_histogram", MetricCollectorType.HISTOGRAM, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusCollectorFactory().create(config), instanceOf(PrometheusHistogramCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsHistogramCollector.class));
     }
     
     @Test
     public void assertCreateSummaryCollector() {
         MetricConfiguration config = new MetricConfiguration("test_summary", MetricCollectorType.SUMMARY, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusCollectorFactory().create(config), instanceOf(PrometheusSummaryCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsSummaryCollector.class));
     }
     
     @Test
     public void assertCreateGaugeMetricFamilyCollector() {
         MetricConfiguration config = new MetricConfiguration("test_summary", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusCollectorFactory().create(config), instanceOf(PrometheusGaugeMetricFamilyCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsGaugeMetricFamilyCollector.class));
     }
 }

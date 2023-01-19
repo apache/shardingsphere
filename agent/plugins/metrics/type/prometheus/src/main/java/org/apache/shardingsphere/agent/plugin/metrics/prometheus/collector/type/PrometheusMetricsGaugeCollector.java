@@ -22,13 +22,13 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfigur
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
 
 /**
- * Prometheus gauge collector.
+ * Prometheus metrics gauge collector.
  */
-public final class PrometheusGaugeCollector implements GaugeMetricsCollector {
+public final class PrometheusMetricsGaugeCollector implements GaugeMetricsCollector {
     
     private final Gauge gauge;
     
-    public PrometheusGaugeCollector(final MetricConfiguration config) {
+    public PrometheusMetricsGaugeCollector(final MetricConfiguration config) {
         gauge = Gauge.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
     }
     
