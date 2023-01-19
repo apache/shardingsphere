@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.netty;
 
 import com.google.common.hash.Hashing;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -39,11 +40,11 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscri
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopSubscriptionRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -52,7 +53,6 @@ import org.apache.shardingsphere.proxy.backend.handler.cdc.CDCBackendHandler;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -89,12 +89,17 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
         log.error("caught CDC resolution error", cause);
         // TODO add CDC exception to wrapper this exception, and add the parameters requestId and whether to close connect
+        CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
+        ChannelFuture channelFuture;
         if (cause instanceof ShardingSphereSQLException) {
             SQLException sqlException = ((ShardingSphereSQLException) cause).toSQLException();
             String errorMessage = String.format("ERROR %s (%s): %s", sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage());
-            ctx.writeAndFlush(CDCResponseGenerator.failed("", CDCResponseErrorCode.SERVER_ERROR, errorMessage)).addListener(ChannelFutureListener.CLOSE);
+            channelFuture = ctx.writeAndFlush(CDCResponseGenerator.failed("", CDCResponseErrorCode.SERVER_ERROR, errorMessage));
         } else {
-            ctx.writeAndFlush(CDCResponseGenerator.failed("", CDCResponseErrorCode.SERVER_ERROR, cause.getMessage())).addListener(ChannelFutureListener.CLOSE);
+            channelFuture = ctx.writeAndFlush(CDCResponseGenerator.failed("", CDCResponseErrorCode.SERVER_ERROR, cause.getMessage()));
+        }
+        if (CDCConnectionStatus.NOT_LOGGED_IN == connectionContext.getStatus()) {
+            channelFuture.addListener(ChannelFutureListener.CLOSE);
         }
     }
     
@@ -134,7 +139,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             return;
         }
         BasicBody body = request.getLogin().getBasicBody();
-        Optional<AuthorityRule> authorityRule = findAuthorityRule();
+        Optional<AuthorityRule> authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class);
         if (!authorityRule.isPresent()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, "Not find authority rule")).addListener(ChannelFutureListener.CLOSE);
             return;
@@ -145,25 +150,17 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             connectionContext.setCurrentUser(user.get());
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
         } else {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, "Incorrect username or password")).addListener(ChannelFutureListener.CLOSE);
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_USERNAME_OR_PASSWORD, "Illegal username or password"))
+                    .addListener(ChannelFutureListener.CLOSE);
         }
-    }
-    
-    private Optional<AuthorityRule> findAuthorityRule() {
-        Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
-        return globalRules.stream().filter(rule -> rule instanceof AuthorityRule).map(rule -> (AuthorityRule) rule).findFirst();
     }
     
     private void checkPrivileges(final Grantee grantee, final String currentDatabase) {
-        if (null == grantee) {
-            return;
-        }
-        Optional<AuthorityRule> authorityRule = findAuthorityRule();
-        ShardingSpherePreconditions.checkState(authorityRule.isPresent(), () -> new SQLCheckException("Not find authority rule"));
-        Optional<ShardingSpherePrivileges> privileges = authorityRule.get().findPrivileges(grantee);
-        ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new SQLCheckException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
-        ShardingSpherePreconditions.checkState(null == currentDatabase || privileges.filter(optional -> optional.hasPrivileges(currentDatabase)).isPresent(),
-                () -> new SQLCheckException(String.format("Unknown database '%s'", currentDatabase)));
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
+                .orElseThrow(() -> new MissingRequiredRuleException("authority"));
+        ShardingSpherePrivileges privileges = authorityRule.findPrivileges(grantee)
+                .orElseThrow(() -> new SQLCheckException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
+        ShardingSpherePreconditions.checkState(privileges.hasPrivileges(currentDatabase), () -> new SQLCheckException(String.format("Unknown database '%s'", currentDatabase)));
     }
     
     private String getHostAddress(final ChannelHandlerContext context) {
@@ -180,8 +177,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         CreateSubscriptionRequest createSubscriptionRequest = request.getCreateSubscription();
         if (createSubscriptionRequest.getTableNamesList().isEmpty() || createSubscriptionRequest.getDatabase().isEmpty() || createSubscriptionRequest.getSubscriptionName().isEmpty()
                 || createSubscriptionRequest.getSubscriptionMode() == SubscriptionMode.UNKNOWN) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal create subscription request parameter"))
-                    .addListener(ChannelFutureListener.CLOSE);
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal create subscription request parameter"));
             return;
         }
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), createSubscriptionRequest.getDatabase());
@@ -221,7 +217,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             backendHandler.dropSubscription(connectionContext.getJobId());
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
         } catch (final SQLException ex) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, ex.getMessage())).addListener(ChannelFutureListener.CLOSE);
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, ex.getMessage()));
         }
     }
     
