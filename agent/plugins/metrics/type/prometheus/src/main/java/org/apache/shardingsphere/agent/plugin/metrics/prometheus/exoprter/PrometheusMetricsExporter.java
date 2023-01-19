@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter;
 
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.ProxyContextRestorer;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.Test;
+import io.prometheus.client.Collector;
+import io.prometheus.client.GaugeMetricFamily;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
 
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
+import java.util.Collections;
+import java.util.List;
 
-public final class ProxyMetaDataInfoCollectorTest extends ProxyContextRestorer {
+/**
+ * Prometheus metrics exporter.
+ */
+@RequiredArgsConstructor
+public final class PrometheusMetricsExporter extends Collector {
     
-    @Test
-    public void assertCollect() {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertFalse(new ProxyMetaDataInfoCollector().collect().isEmpty());
+    private final MetricsExporter exporter;
+    
+    @Override
+    public List<MetricFamilySamples> collect() {
+        return exporter.export("Prometheus")
+                .<List<MetricFamilySamples>>map(optional -> Collections.singletonList((GaugeMetricFamily) optional.getRawMetricFamilyObject())).orElse(Collections.emptyList());
     }
 }

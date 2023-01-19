@@ -571,7 +571,7 @@ Go to [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) and ch
 docker logout
 ```
 
-### 4. Publish release in GitHub
+### 4. Publish release on GitHub
 
 Click `Draft a new release` in [GitHub Releases](https://github.com/apache/shardingsphere/releases).
 
@@ -610,7 +610,7 @@ If code conflicted, you may merge `master` into `${RELEASE.VERSION}-release` bef
 
 ### 9. Announce release completed by email
 
-Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` with **plain text mode** to announce the release is finished.
+Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` with **plain text mode** to announce the release is completed.
 
 Announcement e-mail template:
 

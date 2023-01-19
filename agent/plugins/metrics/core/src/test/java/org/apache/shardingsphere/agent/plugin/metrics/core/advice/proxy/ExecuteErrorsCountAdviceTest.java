@@ -34,8 +34,7 @@ import static org.mockito.Mockito.mock;
 
 public final class ExecuteErrorsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total",
-            MetricCollectorType.COUNTER, "Total execute errors of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
     
     @After
     public void reset() {

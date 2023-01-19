@@ -19,12 +19,15 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.SummaryMetricsCollector;
 
+import java.util.List;
+
 @Getter
-public final class MetricsCollectorFixture implements CounterMetricsCollector, GaugeMetricsCollector, HistogramMetricsCollector, SummaryMetricsCollector {
+public final class MetricsCollectorFixture implements CounterMetricsCollector, GaugeMetricsCollector, HistogramMetricsCollector, SummaryMetricsCollector, GaugeMetricFamilyMetricsCollector {
     
     private double value;
     
@@ -51,6 +54,16 @@ public final class MetricsCollectorFixture implements CounterMetricsCollector, G
     @Override
     public void observe(final double value) {
         this.value = value;
+    }
+    
+    @Override
+    public void addMetric(final List<String> labelValues, final double value) {
+        this.value += value;
+    }
+    
+    @Override
+    public Object getRawMetricFamilyObject() {
+        return null;
     }
     
     /**

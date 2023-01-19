@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 public final class RouteResultCountAdviceTest {
     
     private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total",
-            MetricCollectorType.COUNTER, "Total count of routed result", Arrays.asList("object", "name"));
+            MetricCollectorType.COUNTER, null, Arrays.asList("object", "name"));
     
     @After
     public void reset() {

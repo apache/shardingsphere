@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy;
+package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.GaugeMetricFamily;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -35,32 +34,28 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Proxy meta data information collector.
  */
 @Slf4j
-public final class ProxyMetaDataInfoCollector extends Collector {
+public final class ProxyMetaDataInfoExporter implements MetricsExporter {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_meta_data_info",
             MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases",
             Collections.singletonList("name"), Collections.emptyMap());
     
     @Override
-    public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> result = new LinkedList<>();
+    public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
         if (null == ProxyContext.getInstance().getContextManager()) {
-            return result;
+            return Optional.empty();
         }
-        GaugeMetricFamilyMetricsCollector metaDataInfo = MetricsCollectorRegistry.get(config, "Prometheus");
+        GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metaDataInfo.addMetric(Collections.singletonList("schema_count"), metaDataContexts.getMetaData().getDatabases().size());
-        metaDataInfo.addMetric(Collections.singletonList("database_count"), getDatabaseNames(metaDataContexts).size());
-        result.add((GaugeMetricFamily) metaDataInfo.getRawMetricFamilyObject());
-        return result;
+        result.addMetric(Collections.singletonList("schema_count"), metaDataContexts.getMetaData().getDatabases().size());
+        result.addMetric(Collections.singletonList("database_count"), getDatabaseNames(metaDataContexts).size());
+        return Optional.of(result);
     }
     
     private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {

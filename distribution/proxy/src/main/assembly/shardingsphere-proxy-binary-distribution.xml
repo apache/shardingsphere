@@ -76,6 +76,9 @@
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
             <fileMode>0644</fileMode>
+            <excludes>
+                <exclude>org.apache.shardingsphere:shardingsphere-agent*</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
 </assembly>

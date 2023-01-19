@@ -15,43 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy;
+package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.GaugeMetricFamily;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusGaugeMetricFamilyCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
- * Proxy state collector.
+ * Proxy state exporter.
  */
-public final class ProxyStateCollector extends Collector {
+public final class ProxyStateExporter implements MetricsExporter {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_state",
             MetricCollectorType.GAUGE_METRIC_FAMILY, "State of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK", Collections.emptyList(), Collections.emptyMap());
     
     @Override
-    public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> result = new LinkedList<>();
+    public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
         if (null == ProxyContext.getInstance().getContextManager()) {
-            return result;
+            return Optional.empty();
         }
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
         if (!stateContext.isPresent()) {
-            return result;
+            return Optional.empty();
         }
-        PrometheusGaugeMetricFamilyCollector collector = MetricsCollectorRegistry.get(config, "Prometheus");
-        collector.addMetric(Collections.emptyList(), stateContext.get().getCurrentState().ordinal());
-        result.add((GaugeMetricFamily) collector.getRawMetricFamilyObject());
-        return result;
+        GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
+        result.addMetric(Collections.emptyList(), stateContext.get().getCurrentState().ordinal());
+        return Optional.of(result);
     }
 }

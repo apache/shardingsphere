@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business;
+package org.apache.shardingsphere.agent.plugin.metrics.core.exporter;
 
-import org.junit.Test;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 
-import static org.junit.Assert.assertFalse;
+import java.util.Optional;
 
-public final class BuildInfoCollectorTest {
+/**
+ * Metrics exporter.
+ */
+public interface MetricsExporter {
     
-    @Test
-    public void assertCollect() {
-        assertFalse(new BuildInfoCollector(true).collect().isEmpty());
-    }
+    /**
+     * Export.
+     * 
+     * @param pluginType plugin type
+     * @return gauge metric family metrics collector
+     */
+    Optional<GaugeMetricFamilyMetricsCollector> export(String pluginType);
 }

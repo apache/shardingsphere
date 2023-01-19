@@ -34,8 +34,7 @@ import static org.mockito.Mockito.mock;
 
 public final class RequestsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_requests_total",
-            MetricCollectorType.COUNTER, "Total requests of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_requests_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
     
     private final RequestsCountAdvice advice = new RequestsCountAdvice();
     

@@ -34,8 +34,7 @@ import static org.mockito.Mockito.mock;
 
 public final class RollbackTransactionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_rollback_transactions_total",
-            MetricCollectorType.COUNTER, "Total rollback transactions of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_rollback_transactions_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
     
     private final RollbackTransactionsCountAdvice advice = new RollbackTransactionsCountAdvice();
     

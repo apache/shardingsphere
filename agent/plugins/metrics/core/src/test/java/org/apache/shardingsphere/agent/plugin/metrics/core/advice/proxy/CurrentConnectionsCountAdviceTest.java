@@ -35,8 +35,7 @@ import static org.mockito.Mockito.when;
 
 public final class CurrentConnectionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_current_connections",
-            MetricCollectorType.GAUGE, "Current connections of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_current_connections", MetricCollectorType.GAUGE, null, Collections.emptyList(), Collections.emptyMap());
     
     private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
     
