@@ -78,7 +78,9 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Build Project
-        run: ./mvnw -B clean install -DskipITs -DskipTests
+        run: |
+          ./mvnw -B clean install -DskipITs -DskipTests
+          ./mvnw -B clean install -DskipITs -DskipTests -Prelease
       - name: Run E2E Test
         run: |
           ./mvnw -B clean install -f test/e2e/agent/plugins/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Pit.env.${{ matrix.plugin }}
