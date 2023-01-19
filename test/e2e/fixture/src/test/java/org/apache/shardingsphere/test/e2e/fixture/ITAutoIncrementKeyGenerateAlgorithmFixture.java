@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.hint;
+package org.apache.shardingsphere.test.e2e.fixture;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-/**
- * Hint value context.
- */
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
+
 @Getter
-@Setter
-@ToString
-public final class HintValueContext {
+public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    private final Multimap<String, Comparable<?>> shardingDatabaseValues = ArrayListMultimap.create();
+    private final AtomicLong idGenerator = new AtomicLong(1L);
     
-    private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
+    private Properties props;
     
-    private String dataSourceName = "";
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
-    private boolean databaseShardingOnly;
+    @Override
+    public Long generateKey() {
+        return idGenerator.getAndIncrement();
+    }
     
-    private boolean writeRouteOnly;
+    @Override
+    public String getType() {
+        return "IT.AUTO_INCREMENT.FIXTURE";
+    }
     
-    private boolean useTraffic;
-    
-    private boolean skipEncryptRewrite;
-    
-    private String disableAuditNames = "";
-    
-    private boolean shadow;
+    @Override
+    public boolean isSupportAutoIncrement() {
+        idGenerator.set(1L);
+        return true;
+    }
 }

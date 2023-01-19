@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.test.e2e.fixture.ITKeyGenerateAlgorithmFixture
+org.apache.shardingsphere.test.e2e.fixture.ITAutoIncrementKeyGenerateAlgorithmFixture

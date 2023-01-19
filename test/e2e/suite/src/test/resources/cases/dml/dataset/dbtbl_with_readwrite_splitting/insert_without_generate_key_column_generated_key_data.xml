@@ -17,9 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
-        <column name="type" />
-        <column name="props" />
+        <column name="item_id" type="numeric" />
     </metadata>
-    <row values="auto_increment| IT.AUTO_INCREMENT.FIXTURE| {}" />
+    <row values="1" />
 </dataset>
