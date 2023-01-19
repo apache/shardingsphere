@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.jar.JarFile;
 
 /**
- * Logger factory.
+ * Agent logger factory.
  */
 public final class LoggerFactory {
     
@@ -55,8 +55,7 @@ public final class LoggerFactory {
     public static Logger getLogger(final Class<?> clazz) {
         Class<?> factoryClazz = getClassLoader().loadClass("org.slf4j.LoggerFactory");
         Method method = factoryClazz.getMethod("getLogger", Class.class);
-        Object log = method.invoke(null, clazz);
-        return new Logger(log);
+        return new Logger(method.invoke(null, clazz));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

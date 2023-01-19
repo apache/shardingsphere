@@ -21,30 +21,30 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
-import org.junit.After;
-import org.junit.Test;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-public final class JDKBuildInfoExporterTest {
+/**
+ * Build information exporter.
+ */
+public final class BuildInfoExporter implements MetricsExporter {
     
-    @After
-    public void reset() {
-        MetricConfiguration config = new MetricConfiguration("jdk_build_info", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Arrays.asList("version", "name"), Collections.emptyMap());
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
+    private final MetricConfiguration config = new MetricConfiguration("build_info",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "Build information", Arrays.asList("name", "version"), Collections.emptyMap());
+    
+    @Override
+    public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
+        GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
+        addJDKBuildInfo(result, getClass().getPackage());
+        return Optional.of(result);
     }
     
-    @Test
-    public void assertExport() {
-        Optional<GaugeMetricFamilyMetricsCollector> collector = new JDKBuildInfoExporter().export("FIXTURE");
-        assertTrue(collector.isPresent());
-        assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(2d));
+    private void addJDKBuildInfo(final GaugeMetricFamilyMetricsCollector collector, final Package pkg) {
+        String name = "ShardingSphere";
+        String version = null == pkg.getImplementationVersion() ? "unknown" : pkg.getImplementationVersion();
+        collector.addMetric(Arrays.asList(name, version), 1d);
     }
 }

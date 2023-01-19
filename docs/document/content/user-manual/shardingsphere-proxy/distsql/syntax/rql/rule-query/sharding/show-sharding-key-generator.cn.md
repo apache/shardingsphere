@@ -13,7 +13,7 @@ weight = 6
 {{% tab name="语法" %}}
 ```sql
 ShowShardingKeyGenerators::=
-  'SHOW' 'SHARDING' 'KEY' 'GENERATOR' ('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'KEY' 'GENERATORS' ('FROM' databaseName)?
 
 databaseName ::=
   identifier

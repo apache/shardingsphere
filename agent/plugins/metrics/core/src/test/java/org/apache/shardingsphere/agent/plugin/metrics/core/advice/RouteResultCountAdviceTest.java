@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
@@ -51,7 +52,7 @@ public final class RouteResultCountAdviceTest {
         RouteMapper dataSourceMapper = new RouteMapper("logic_db", "ds_0");
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
-        new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
+        new RouteResultCountAdvice().afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
         MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE");
         // TODO assert by specific label
         assertThat(wrapper.getValue(), is(2d));

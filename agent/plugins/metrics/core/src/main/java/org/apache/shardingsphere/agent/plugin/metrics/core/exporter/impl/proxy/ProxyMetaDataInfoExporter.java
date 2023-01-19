@@ -37,7 +37,7 @@ import java.util.HashSet;
 import java.util.Optional;
 
 /**
- * Proxy meta data information collector.
+ * Proxy meta data information exporter.
  */
 @Slf4j
 public final class ProxyMetaDataInfoExporter implements MetricsExporter {
