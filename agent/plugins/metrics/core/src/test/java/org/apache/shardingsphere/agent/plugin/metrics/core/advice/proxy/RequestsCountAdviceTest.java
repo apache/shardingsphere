@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.advice.MockTargetAdviceObject;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
@@ -45,7 +45,7 @@ public final class RequestsCountAdviceTest {
     
     @Test
     public void assertCountRequests() {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
+        TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         advice.beforeMethod(targetObject, mock(Method.class), new Object[]{}, "FIXTURE");
         assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).getValue(), is(1d));
     }

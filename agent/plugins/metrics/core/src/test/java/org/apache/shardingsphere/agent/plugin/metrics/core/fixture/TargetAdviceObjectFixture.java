@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
+package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 
-public final class MockTargetAdviceObject implements TargetAdviceObject {
+@Getter
+@Setter
+public final class TargetAdviceObjectFixture implements TargetAdviceObject {
     
-    private Object object;
-    
-    @Override
-    public Object getAttachment() {
-        return object;
-    }
-    
-    @Override
-    public void setAttachment(final Object attachment) {
-        object = attachment;
-    }
+    private Object attachment;
 }
