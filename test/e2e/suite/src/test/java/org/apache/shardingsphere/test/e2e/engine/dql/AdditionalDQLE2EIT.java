@@ -53,7 +53,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643  
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
         }
@@ -103,7 +103,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643  
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
         }
@@ -151,7 +151,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643  
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
         }
@@ -199,7 +199,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
-        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643  
+        // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
         if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
             return;
         }
