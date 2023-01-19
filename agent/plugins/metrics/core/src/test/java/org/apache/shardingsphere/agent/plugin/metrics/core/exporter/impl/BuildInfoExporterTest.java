@@ -33,17 +33,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class JDKBuildInfoExporterTest {
+public final class BuildInfoExporterTest {
     
     @After
     public void reset() {
-        MetricConfiguration config = new MetricConfiguration("jdk_build_info", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Arrays.asList("version", "name"), Collections.emptyMap());
+        MetricConfiguration config = new MetricConfiguration("build_info", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Arrays.asList("name", "version"), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
     public void assertExport() {
-        Optional<GaugeMetricFamilyMetricsCollector> collector = new JDKBuildInfoExporter().export("FIXTURE");
+        Optional<GaugeMetricFamilyMetricsCollector> collector = new BuildInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
         assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(2d));
     }

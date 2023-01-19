@@ -156,7 +156,7 @@ services:
 
 | 指标名称                            | 指标类型             | 指标描述                                                                                |
 | :-------------------------------- | :------------------ | :------------------------------------------------------------------------------------ |
-| jdk_build_info                    | GAUGE_METRIC_FAMILY | 构建信息                                                                                |
+| build_info                        | GAUGE_METRIC_FAMILY | 构建信息                                                                                |
 | parsed_sql_total                  | COUNTER             | 按类型（INSERT、UPDATE、DELETE、SELECT、DDL、DCL、DAL、TCL、RQL、RDL、RAL、RUL）分类的解析总数 |
 | routed_sql_total                  | COUNTER             | 按类型（INSERT、UPDATE、DELETE、SELECT）分类的路由总数                                      |
 | routed_data_sources_total         | COUNTER             | 数据源路由总数                                                                           |

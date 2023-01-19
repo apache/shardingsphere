@@ -17,42 +17,34 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
-import org.apache.shardingsphere.proxy.Bootstrap;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
 /**
- * JDK build information collector.
+ * Build information exporter.
  */
-@RequiredArgsConstructor
-public final class JDKBuildInfoExporter implements MetricsExporter {
+public final class BuildInfoExporter implements MetricsExporter {
     
-    private final MetricConfiguration config = new MetricConfiguration("jdk_build_info",
-            MetricCollectorType.GAUGE_METRIC_FAMILY, "JDK build information", Arrays.asList("version", "name"), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("build_info",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "Build information", Arrays.asList("name", "version"), Collections.emptyMap());
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         addJDKBuildInfo(result, getClass().getPackage());
-        try {
-            Class.forName(Bootstrap.class.getCanonicalName());
-            addJDKBuildInfo(result, Bootstrap.class.getPackage());
-        } catch (final ClassNotFoundException ignored) {
-        }
         return Optional.of(result);
     }
     
     private void addJDKBuildInfo(final GaugeMetricFamilyMetricsCollector collector, final Package pkg) {
+        String name = "ShardingSphere";
         String version = null == pkg.getImplementationVersion() ? "unknown" : pkg.getImplementationVersion();
-        String name = null == pkg.getImplementationTitle() ? "unknown" : pkg.getImplementationTitle();
-        collector.addMetric(Arrays.asList(version, name), 1d);
+        collector.addMetric(Arrays.asList(name, version), 1d);
     }
 }
