@@ -24,7 +24,6 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.Counte
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.lang.reflect.Method;
@@ -44,8 +43,7 @@ public final class RouteResultCountAdvice implements InstanceMethodAdvice {
             return;
         }
         for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
-            RouteMapper dataSourceMapper = each.getDataSourceMapper();
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(routedResultConfig, pluginType).inc("data_source", dataSourceMapper.getActualName());
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(routedResultConfig, pluginType).inc("data_source", each.getDataSourceMapper().getActualName());
             each.getTableMappers().forEach(table -> MetricsCollectorRegistry.<CounterMetricsCollector>get(routedResultConfig, pluginType).inc("table", table.getActualName()));
         }
     }

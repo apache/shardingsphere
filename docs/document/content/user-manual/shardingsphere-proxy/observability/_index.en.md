@@ -162,7 +162,7 @@ services:
 | build_info                        | GAUGE_METRIC_FAMILY | Build information                                                                                                                      |
 | parsed_sql_total                  | COUNTER             | Total count of parsed by type (INSERT, UPDATE, DELETE, SELECT, DDL, DCL, DAL, TCL, RQL, RDL, RAL, RUL)                                 |
 | routed_sql_total                  | COUNTER             | Total count of routed by type (INSERT, UPDATE, DELETE, SELECT)                                                                         |
-| routed_result_total               | COUNTER             | Total count of routed result. (data source routed, table routed)                                                                       |
+| routed_result_total               | COUNTER             | Total count of routed result (data source routed, table routed)                                                                        |
 | proxy_state                       | GAUGE_METRIC_FAMILY | Status information of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK                                                     |
 | proxy_meta_data_info              | GAUGE_METRIC_FAMILY | Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases |
 | proxy_current_connections         | GAUGE               | Current connections of ShardingSphere-Proxy                                                                                            |

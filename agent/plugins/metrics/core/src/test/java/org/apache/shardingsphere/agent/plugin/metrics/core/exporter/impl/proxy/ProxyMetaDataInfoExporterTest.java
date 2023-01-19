@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy;
 
+import org.apache.shardingsphere.agent.plugin.metrics.core.ProxyContextRestorer;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.After;
@@ -38,15 +39,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ProxyMetaDataInfoExporterTest {
-    
-    private final ContextManager originalContextManager = ProxyContext.getInstance().getContextManager();
+public final class ProxyMetaDataInfoExporterTest extends ProxyContextRestorer {
     
     @After
     public void reset() {
         MetricConfiguration config = new MetricConfiguration("proxy_meta_data_info", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.singletonList("name"), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
-        ProxyContext.init(originalContextManager);
     }
     
     @Test
@@ -63,6 +61,6 @@ public final class ProxyMetaDataInfoExporterTest {
         ProxyContext.init(contextManager);
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(0d));
+        assertThat(collector.get().toString(), is("schema_count=0, database_count=0"));
     }
 }

@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
+package org.apache.shardingsphere.agent.plugin.metrics.core;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorFactory;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.junit.After;
+import org.junit.Before;
 
-public final class FixtureCollectorFactory implements MetricsCollectorFactory {
+public abstract class ProxyContextRestorer {
     
-    @Override
-    public MetricsCollector create(final MetricConfiguration metricConfig) {
-        return new MetricsCollectorFixture();
+    private ContextManager currentContextManager;
+    
+    @Before
+    public void recordCurrentContextManager() {
+        currentContextManager = ProxyContext.getInstance().getContextManager();
     }
     
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    @After
+    public void restorePreviousContextManager() {
+        ProxyContext.init(currentContextManager);
     }
 }

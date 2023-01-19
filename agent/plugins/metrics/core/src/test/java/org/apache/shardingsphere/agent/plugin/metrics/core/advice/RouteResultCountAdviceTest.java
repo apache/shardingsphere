@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -38,8 +38,7 @@ import static org.mockito.Mockito.mock;
 
 public final class RouteResultCountAdviceTest {
     
-    private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total",
-            MetricCollectorType.COUNTER, null, Arrays.asList("object", "name"));
+    private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total", MetricCollectorType.COUNTER, null, Arrays.asList("object", "name"));
     
     @After
     public void reset() {
@@ -53,8 +52,6 @@ public final class RouteResultCountAdviceTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
-        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE");
-        // TODO assert by specific label
-        assertThat(wrapper.getValue(), is(2d));
+        assertThat(MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE").toString(), is("data_source.ds_0=1, table.t_order_0=1"));
     }
 }

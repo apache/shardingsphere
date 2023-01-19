@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceO
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
 
@@ -49,6 +49,6 @@ public final class ExecuteLatencyHistogramAdviceTest {
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
         Thread.sleep(500L);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).getValue(), greaterThanOrEqualTo(500D));
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(500d));
     }
 }

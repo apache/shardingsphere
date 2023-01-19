@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
@@ -53,29 +53,29 @@ public final class SQLRouteCountAdviceTest {
     @Test
     public void assertInsertRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
-        assertRoute(queryContext);
+        assertRoute(queryContext, "INSERT=1");
     }
     
     @Test
     public void assertUpdateRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
-        assertRoute(queryContext);
+        assertRoute(queryContext, "UPDATE=1");
     }
     
     @Test
     public void assertDeleteRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
-        assertRoute(queryContext);
+        assertRoute(queryContext, "DELETE=1");
     }
     
     @Test
     public void assertSelectRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
-        assertRoute(queryContext);
+        assertRoute(queryContext, "SELECT=1");
     }
     
-    public void assertRoute(final QueryContext queryContext) {
+    public void assertRoute(final QueryContext queryContext, final String expected) {
         advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, "FIXTURE");
-        assertThat(((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).getValue(), is(1d));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }
 }

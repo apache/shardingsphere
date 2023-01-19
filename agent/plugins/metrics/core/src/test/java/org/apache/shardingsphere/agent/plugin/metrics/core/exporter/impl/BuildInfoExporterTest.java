@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.junit.After;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -45,6 +45,6 @@ public final class BuildInfoExporterTest {
     public void assertExport() {
         Optional<GaugeMetricFamilyMetricsCollector> collector = new BuildInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(1d));
+        assertThat(collector.get().toString(), containsString("ShardingSphere=1, "));
     }
 }

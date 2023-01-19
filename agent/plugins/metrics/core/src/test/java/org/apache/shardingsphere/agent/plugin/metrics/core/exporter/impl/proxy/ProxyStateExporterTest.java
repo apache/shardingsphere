@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy;
 
+import org.apache.shardingsphere.agent.plugin.metrics.core.ProxyContextRestorer;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -47,15 +48,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ProxyStateExporterTest {
-    
-    private final ContextManager originalContextManager = ProxyContext.getInstance().getContextManager();
+public final class ProxyStateExporterTest extends ProxyContextRestorer {
     
     @After
     public void reset() {
         MetricConfiguration config = new MetricConfiguration("proxy_state", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.emptyList(), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
-        ProxyContext.init(originalContextManager);
     }
     
     @Test
@@ -73,6 +71,6 @@ public final class ProxyStateExporterTest {
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyStateExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(((MetricsCollectorFixture) collector.get()).getValue(), is(0d));
+        assertThat(collector.get().toString(), is("0"));
     }
 }
