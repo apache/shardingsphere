@@ -34,8 +34,7 @@ import static org.mockito.Mockito.mock;
 
 public final class ExecuteLatencyHistogramAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_latency_millis",
-            MetricCollectorType.HISTOGRAM, "Execute latency millis histogram of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_latency_millis", MetricCollectorType.HISTOGRAM, null, Collections.emptyList(), Collections.emptyMap());
     
     @After
     public void reset() {

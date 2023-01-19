@@ -34,8 +34,7 @@ import static org.mockito.Mockito.mock;
 
 public final class CommitTransactionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_commit_transactions_total",
-            MetricCollectorType.COUNTER, "Total commit transactions of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_commit_transactions_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
     
     private final CommitTransactionsCountAdvice advice = new CommitTransactionsCountAdvice();
     

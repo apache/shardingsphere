@@ -37,10 +37,10 @@ import static org.mockito.Mockito.mock;
 public final class RouteResultCountAdviceTest {
     
     private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration("routed_data_sources_total",
-            MetricCollectorType.COUNTER, "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
+            MetricCollectorType.COUNTER, null, Collections.singletonList("name"), Collections.emptyMap());
     
     private final MetricConfiguration routedTablesConfig = new MetricConfiguration("routed_tables_total",
-            MetricCollectorType.COUNTER, "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
+            MetricCollectorType.COUNTER, null, Collections.singletonList("name"), Collections.emptyMap());
     
     @After
     public void reset() {

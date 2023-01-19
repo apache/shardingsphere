@@ -47,8 +47,7 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLParseCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total",
-            MetricCollectorType.COUNTER, "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     @After
     public void reset() {

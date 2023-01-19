@@ -40,8 +40,7 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLRouteCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("routed_sql_total",
-            MetricCollectorType.COUNTER, "Total count of routed SQL", Collections.singletonList("type"), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("routed_sql_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     private final SQLRouteCountAdvice advice = new SQLRouteCountAdvice();
     
