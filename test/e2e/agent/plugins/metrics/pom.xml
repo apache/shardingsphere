@@ -29,7 +29,6 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <docker.app.name>apache-shardingsphere-${project.version}-shardingsphere-proxy-bin</docker.app.name>
     </properties>
     
     <dependencies>
@@ -124,7 +123,7 @@
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
-                                <APP_NAME>${docker.app.name}</APP_NAME>
+                                <APP_NAME>${docker.distribution.name}</APP_NAME>
                             </buildArgs>
                         </configuration>
                         <executions>
