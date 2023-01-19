@@ -53,6 +53,7 @@ public final class RouteResultCountAdviceTest {
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
         MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE");
+        // TODO assert by specific label
         assertThat(wrapper.getValue(), is(2d));
     }
 }
