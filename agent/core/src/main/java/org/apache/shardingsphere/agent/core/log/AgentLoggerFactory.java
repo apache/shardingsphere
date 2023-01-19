@@ -41,7 +41,7 @@ import java.util.jar.JarFile;
 /**
  * Agent logger factory.
  */
-public final class LoggerFactory {
+public final class AgentLoggerFactory {
     
     private static AgentClassLoader classLoader;
     
@@ -58,12 +58,17 @@ public final class LoggerFactory {
         return new Logger(method.invoke(null, clazz));
     }
     
-    @SneakyThrows({URISyntaxException.class, IOException.class})
     private static AgentClassLoader getClassLoader() {
         if (null != classLoader) {
             return classLoader;
         }
-        CodeSource codeSource = LoggerFactory.class.getProtectionDomain().getCodeSource();
+        classLoader = getLoggerClassLoader();
+        return classLoader;
+    }
+    
+    @SneakyThrows({URISyntaxException.class, IOException.class})
+    private static AgentClassLoader getLoggerClassLoader() {
+        CodeSource codeSource = AgentLoggerFactory.class.getProtectionDomain().getCodeSource();
         File agentFle = new File(codeSource.getLocation().toURI());
         if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
             Collection<File> jarFiles = new LinkedList<>(getJarFiles(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib"))));
@@ -72,11 +77,9 @@ public final class LoggerFactory {
                 pluginJars.add(new PluginJar(new JarFile(each, true), each));
             }
             File resourcePath = new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
-            classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader().getParent(), pluginJars, Collections.singleton(resourcePath));
-        } else {
-            classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
+            return new AgentClassLoader(AgentLoggerFactory.class.getClassLoader().getParent(), pluginJars, Collections.singleton(resourcePath));
         }
-        return classLoader;
+        return new AgentClassLoader(AgentLoggerFactory.class.getClassLoader(), Collections.emptyList());
     }
     
     @SneakyThrows(IOException.class)
@@ -162,14 +165,14 @@ public final class LoggerFactory {
         
         @SneakyThrows(ReflectiveOperationException.class)
         private void invokeMethod(final String methodName, final String msg) {
-            Class<?> actualLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
+            Class<?> actualLogger = AgentLoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
             Method method = actualLogger.getMethod(methodName, String.class);
             method.invoke(logger, msg);
         }
         
         @SneakyThrows(ReflectiveOperationException.class)
         private void invokeMethod(final String methodName, final String msg, final Object... arguments) {
-            Class<?> actualLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
+            Class<?> actualLogger = AgentLoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
             Method method = actualLogger.getMethod(methodName, String.class, Object[].class);
             method.invoke(logger, msg, arguments);
         }

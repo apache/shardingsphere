@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.core.advisor.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.loader.YamlAdvisorsConfigurationLoader;
@@ -38,7 +38,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(PluginJarLoader.class);
+    private static final Logger LOGGER = AgentLoggerFactory.getLogger(PluginJarLoader.class);
     
     /**
      * Load advisor configurations.

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.core.plugin.jar;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.jar.JarFile;
 
 /**
@@ -41,7 +40,7 @@ import java.util.jar.JarFile;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginJarLoader {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(PluginJarLoader.class);
+    private static final Logger LOGGER = AgentLoggerFactory.getLogger(PluginJarLoader.class);
     
     /**
      * Load plugin jars.
@@ -51,8 +50,7 @@ public final class PluginJarLoader {
      * @throws IOException IO exception
      */
     public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
-        List<File> jarFiles = new LinkedList<>();
-        jarFiles.addAll(getJarFiles(new File(String.join(File.separator, agentRootPath.getPath(), "plugins"))));
+        Collection<File> jarFiles = getJarFiles(new File(String.join(File.separator, agentRootPath.getPath(), "plugins")));
         Collection<PluginJar> result = new LinkedList<>();
         for (File each : jarFiles) {
             result.add(new PluginJar(new JarFile(each, true), each));
