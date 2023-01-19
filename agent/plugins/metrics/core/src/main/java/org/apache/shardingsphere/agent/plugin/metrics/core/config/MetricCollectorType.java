@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.constants;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.agent.plugin.metrics.core.config;
 
 /**
- * Adapter container constants.
+ * Metric collector type.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AdapterContainerConstants {
+public enum MetricCollectorType {
     
-    public static final String PROXY = "proxy";
-    
-    public static final String JDBC = "jdbc";
+    COUNTER,
+    GAUGE,
+    HISTOGRAM,
+    SUMMARY,
+    GAUGE_METRIC_FAMILY
 }

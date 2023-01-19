@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
 import io.prometheus.client.Gauge;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -31,7 +32,8 @@ public final class PrometheusGaugeCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusGaugeCollector collector = new PrometheusGaugeCollector(new MetricConfiguration("foo_gauge", "GAUGE", "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        PrometheusGaugeCollector collector = new PrometheusGaugeCollector(new MetricConfiguration("foo_gauge",
+                MetricCollectorType.GAUGE, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.inc();
         Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusGaugeCollector.class.getDeclaredField("gauge"), collector);
         assertThat(gauge.get(), is(1d));

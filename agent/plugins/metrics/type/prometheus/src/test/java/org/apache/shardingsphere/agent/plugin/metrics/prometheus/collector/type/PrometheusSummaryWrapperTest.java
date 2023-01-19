@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
 import io.prometheus.client.Summary;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -31,7 +32,8 @@ public final class PrometheusSummaryWrapperTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusSummaryCollector collector = new PrometheusSummaryCollector(new MetricConfiguration("foo_summary", "SUMMARY", "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        PrometheusSummaryCollector collector = new PrometheusSummaryCollector(new MetricConfiguration("foo_summary",
+                MetricCollectorType.SUMMARY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.observe(1);
         Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusSummaryCollector.class.getDeclaredField("summary"), collector);
         assertThat(summary.collect().size(), is(1));

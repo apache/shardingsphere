@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.enums;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.FixtureCollectorFactory;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class MetricsCollectorRegistryTest {
+/**
+ * Adapter container type.
+ */
+@RequiredArgsConstructor
+@Getter
+public enum AdapterContainerEnum {
     
-    @Test
-    public void assertGet() {
-        MetricsCollectorRegistry.setMetricsFactory(new FixtureCollectorFactory());
-        assertThat(MetricsCollectorRegistry.get("test"), instanceOf(MetricsCollectorFixture.class));
-    }
+    JDBC("jdbc"),
+    
+    PROXY("proxy");
+    
+    private final String value;
 }

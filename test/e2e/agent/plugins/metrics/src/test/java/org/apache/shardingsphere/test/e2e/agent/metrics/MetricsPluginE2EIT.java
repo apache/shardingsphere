@@ -38,13 +38,7 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    public static final String ROUTED_INSERT_SQL = "routed_insert_sql_total";
-    
-    public static final String ROUTED_UPDATE_SQL = "routed_update_sql_total";
-    
-    public static final String ROUTED_DELETE_SQL = "routed_delete_sql_total";
-    
-    public static final String ROUTED_SELECT_SQL = "routed_select_sql_total";
+    public static final String ROUTED_SQL = "routed_sql_total";
     
     public static final String ROUTED_DATA_SOURCES = "routed_data_sources_total";
     
@@ -90,10 +84,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         result.add(PROXY_REQUESTS);
         result.add(PROXY_CURRENT_CONNECTIONS);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
-        result.add(ROUTED_SELECT_SQL);
-        result.add(ROUTED_UPDATE_SQL);
-        result.add(ROUTED_DELETE_SQL);
-        result.add(ROUTED_INSERT_SQL);
+        result.add(ROUTED_SQL);
         result.add(ROUTED_DATA_SOURCES);
         result.add(ROUTED_TABLES);
         result.add(PROXY_COMMIT_TRANSACTIONS);

@@ -15,28 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.config;
+package org.apache.shardingsphere.fixture.agent;
 
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-
-/**
- * Metric configuration.
- */
-@RequiredArgsConstructor
-public final class MetricsConfiguration {
-    
-    private final Collection<MetricConfiguration> metrics;
-    
-    /**
-     * Get metric configuration.
-     * 
-     * @param id metric ID
-     * @return metric configuration
-     */
-    public MetricConfiguration get(final String id) {
-        return metrics.stream()
-                .filter(each -> id.equals(each.getId())).findFirst().orElseThrow(() -> new IllegalArgumentException(String.format("Can not find ID `%s` from metrics configuration.", id)));
-    }
+public interface AgentServiceSPIFixture {
 }

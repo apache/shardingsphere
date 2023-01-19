@@ -19,8 +19,10 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
@@ -36,72 +38,59 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * SQL parse count advice.
  */
 public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
-    private static final String PARSED_INSERT_SQL_METRIC_KEY = "parsed_insert_sql_total";
-    
-    private static final String PARSED_UPDATE_SQL_METRIC_KEY = "parsed_update_sql_total";
-    
-    private static final String PARSED_DELETE_SQL_METRIC_KEY = "parsed_delete_sql_total";
-    
-    private static final String PARSED_SELECT_SQL_METRIC_KEY = "parsed_select_sql_total";
-    
-    private static final String PARSED_DDL_METRIC_KEY = "parsed_ddl_total";
-    
-    private static final String PARSED_DCL_METRIC_KEY = "parsed_dcl_total";
-    
-    private static final String PARSED_DAL_METRIC_KEY = "parsed_dal_total";
-    
-    private static final String PARSED_TCL_METRIC_KEY = "parsed_tcl_total";
-    
-    private static final String PARSED_RQL_METRIC_KEY = "parsed_rql_total";
-    
-    private static final String PARSED_RDL_METRIC_KEY = "parsed_rdl_total";
-    
-    private static final String PARSED_RAL_METRIC_KEY = "parsed_ral_total";
-    
-    private static final String PARSED_RUL_METRIC_KEY = "parsed_rul_total";
+    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total",
+            MetricCollectorType.COUNTER, "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        SQLStatement sqlStatement = (SQLStatement) result;
-        countSQL(sqlStatement);
-        countDistSQL(sqlStatement);
+        getSQLType((SQLStatement) result).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(optional));
     }
     
-    private void countSQL(final SQLStatement sqlStatement) {
+    private Optional<String> getSQLType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_INSERT_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_UPDATE_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DELETE_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof SelectStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_SELECT_SQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof DDLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DDL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof DCLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DCL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof DALStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_DAL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof TCLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_TCL_METRIC_KEY).inc();
+            return Optional.of("INSERT");
         }
-    }
-    
-    private void countDistSQL(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof UpdateStatement) {
+            return Optional.of("UPDATE");
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return Optional.of("DELETE");
+        }
+        if (sqlStatement instanceof SelectStatement) {
+            return Optional.of("SELECT");
+        }
+        if (sqlStatement instanceof DDLStatement) {
+            return Optional.of("DDL");
+        }
+        if (sqlStatement instanceof DCLStatement) {
+            return Optional.of("DCL");
+        }
+        if (sqlStatement instanceof DALStatement) {
+            return Optional.of("DAL");
+        }
+        if (sqlStatement instanceof TCLStatement) {
+            return Optional.of("TCL");
+        }
         if (sqlStatement instanceof RQLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RQL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof RDLStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RDL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof RALStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RAL_METRIC_KEY).inc();
-        } else if (sqlStatement instanceof RULStatement) {
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(PARSED_RUL_METRIC_KEY).inc();
+            return Optional.of("RQL");
         }
+        if (sqlStatement instanceof RDLStatement) {
+            return Optional.of("RDL");
+        }
+        if (sqlStatement instanceof RALStatement) {
+            return Optional.of("RAL");
+        }
+        if (sqlStatement instanceof RULStatement) {
+            return Optional.of("RUL");
+        }
+        return Optional.empty();
     }
 }

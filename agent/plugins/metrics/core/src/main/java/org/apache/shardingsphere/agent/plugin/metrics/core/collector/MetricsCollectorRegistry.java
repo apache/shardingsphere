@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.collector;
 
+import org.apache.shardingsphere.agent.plugin.core.spi.PluginServiceLoader;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,30 +28,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class MetricsCollectorRegistry {
     
-    private static final Map<String, MetricsCollector> METRICS_WRAPPERS = new ConcurrentHashMap<>();
-    
-    private static MetricsCollectorFactory factory;
-    
-    /**
-     * Set metrics collector factory.
-     *
-     * @param metricsCollectorFactory metrics collector factory
-     */
-    public static void setMetricsFactory(final MetricsCollectorFactory metricsCollectorFactory) {
-        MetricsCollectorRegistry.factory = metricsCollectorFactory;
-    }
+    private static final Map<String, MetricsCollector> COLLECTORS = new ConcurrentHashMap<>();
     
     /**
      * Get metrics collector.
      *
-     * @param id metric ID
+     * @param metricConfig metric configuration
+     * @param pluginType plugin type
      * @param <T> type of metrics collector
      * @return metrics collector
      * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
     @SuppressWarnings("unchecked")
-    public static <T extends MetricsCollector> T get(final String id) {
-        T result = (T) METRICS_WRAPPERS.get(id);
-        return (T) (null == result ? METRICS_WRAPPERS.computeIfAbsent(id, factory::create) : result);
+    public static <T extends MetricsCollector> T get(final MetricConfiguration metricConfig, final String pluginType) {
+        T result = (T) COLLECTORS.get(metricConfig.getId());
+        return (T) (null == result
+                ? COLLECTORS.computeIfAbsent(metricConfig.getId(), key -> PluginServiceLoader.getServiceLoader(MetricsCollectorFactory.class).getService(pluginType).create(metricConfig))
+                : result);
     }
 }

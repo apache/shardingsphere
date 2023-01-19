@@ -15,20 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.constants;
+package org.apache.shardingsphere.fixture.agent.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.fixture.agent.AgentServiceSPIFixture;
 
-/**
- * Environment constant.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EnvironmentConstants {
-    
-    public static final String CLUSTER_MODE = "Cluster";
-    
-    public static final String STANDALONE_MODE = "Standalone";
-    
-    public static final int MAX_CONTAINER_QUANTITY = 7;
+public class AgentServiceSPIFixtureImpl implements AgentServiceSPIFixture {
 }

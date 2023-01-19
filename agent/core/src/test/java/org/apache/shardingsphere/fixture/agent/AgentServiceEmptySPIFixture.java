@@ -15,20 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.entity;
+package org.apache.shardingsphere.fixture.agent;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Collection;
-import java.util.LinkedList;
-
-/**
- * YAML metrics configuration.
- */
-@Getter
-@Setter
-public final class YamlMetricsConfiguration {
-    
-    private Collection<YamlMetricConfiguration> metrics = new LinkedList<>();
+public interface AgentServiceEmptySPIFixture {
 }

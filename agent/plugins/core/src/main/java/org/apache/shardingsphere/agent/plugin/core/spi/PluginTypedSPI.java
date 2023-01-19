@@ -15,30 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.entity;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+package org.apache.shardingsphere.agent.plugin.core.spi;
 
 /**
- * YAML metric configuration.
+ * Plugin typed SPI.
  */
-@Getter
-@Setter
-public final class YamlMetricConfiguration {
+public interface PluginTypedSPI {
     
-    private String id;
-    
-    private String type;
-    
-    private String help;
-    
-    private List<String> labels = new LinkedList<>();
-    
-    private Map<String, Object> props = new HashMap<>();
+    /**
+     * Get type.
+     *
+     * @return type
+     */
+    String getType();
 }

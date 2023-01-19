@@ -20,10 +20,11 @@
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
     <id>shardingsphere-agent-bin</id>
     <formats>
+        <format>dir</format>
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${project.build.finalName}-shardingsphere-agent-bin</baseDirectory>
+    <baseDirectory>agent</baseDirectory>
     
     <fileSets>
         <fileSet>

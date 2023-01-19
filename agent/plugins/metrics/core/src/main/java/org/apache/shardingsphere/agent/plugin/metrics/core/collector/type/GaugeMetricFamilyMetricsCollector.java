@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.loader;
+package org.apache.shardingsphere.agent.plugin.metrics.core.collector.type;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.yaml.entity.YamlMetricsConfiguration;
-import org.yaml.snakeyaml.Yaml;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 
-import java.io.InputStream;
+import java.util.List;
 
 /**
- * YAML Metric configuration loader.
+ * Gauge metric family metrics collector.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlMetricConfigurationsLoader {
+public interface GaugeMetricFamilyMetricsCollector extends MetricsCollector {
     
     /**
-     * Load advisors configuration.
-     * 
-     * @param inputStream input stream
-     * @return loaded advisors configuration
+     * Add metric.
+     *
+     * @param labelValues label values
+     * @param value value
      */
-    public static YamlMetricsConfiguration load(final InputStream inputStream) {
-        YamlMetricsConfiguration result = new Yaml().loadAs(inputStream, YamlMetricsConfiguration.class);
-        return null == result ? new YamlMetricsConfiguration() : result;
-    }
+    void addMetric(List<String> labelValues, double value);
+    
+    /**
+     * Get raw metric family object.
+     * 
+     * @return raw metric family object
+     */
+    Object getRawMetricFamilyObject();
 }

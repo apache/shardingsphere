@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy;
 
 import io.prometheus.client.Collector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.PrometheusCollectorFactory;
+import io.prometheus.client.GaugeMetricFamily;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type.PrometheusGaugeMetricFamilyCollector;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +36,8 @@ import java.util.Optional;
  */
 public final class ProxyStateCollector extends Collector {
     
-    public static final String PROXY_STATE_METRIC_KEY = "proxy_state";
-    
-    private static final PrometheusCollectorFactory FACTORY = new PrometheusCollectorFactory();
+    private final MetricConfiguration config = new MetricConfiguration("proxy_state",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "State of ShardingSphere-Proxy. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK", Collections.emptyList(), Collections.emptyMap());
     
     @Override
     public List<MetricFamilySamples> collect() {
@@ -42,7 +46,12 @@ public final class ProxyStateCollector extends Collector {
             return result;
         }
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
-        stateContext.ifPresent(optional -> result.add(FACTORY.createGaugeMetric(PROXY_STATE_METRIC_KEY, stateContext.get().getCurrentState().ordinal())));
+        if (!stateContext.isPresent()) {
+            return result;
+        }
+        PrometheusGaugeMetricFamilyCollector collector = MetricsCollectorRegistry.get(config, "Prometheus");
+        collector.addMetric(Collections.emptyList(), stateContext.get().getCurrentState().ordinal());
+        result.add((GaugeMetricFamily) collector.getRawMetricFamilyObject());
         return result;
     }
 }

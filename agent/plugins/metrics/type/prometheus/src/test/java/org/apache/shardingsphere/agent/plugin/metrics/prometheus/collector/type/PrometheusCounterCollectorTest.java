@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
 import io.prometheus.client.Counter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -31,7 +32,8 @@ public final class PrometheusCounterCollectorTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusCounterCollector collector = new PrometheusCounterCollector(new MetricConfiguration("foo_counter", "COUNTER", "foo_help", Collections.emptyList(), Collections.emptyMap()));
+        PrometheusCounterCollector collector = new PrometheusCounterCollector(new MetricConfiguration("foo_counter",
+                MetricCollectorType.COUNTER, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.inc();
         Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusCounterCollector.class.getDeclaredField("counter"), collector);
         assertThat(counter.get(), is(1d));
