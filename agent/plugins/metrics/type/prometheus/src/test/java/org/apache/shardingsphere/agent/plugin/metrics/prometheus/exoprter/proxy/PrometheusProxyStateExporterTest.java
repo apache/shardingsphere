@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business.proxy;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter.proxy;
 
 import org.apache.shardingsphere.agent.plugin.metrics.prometheus.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -36,7 +36,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public final class ProxyStateCollectorTest extends ProxyContextRestorer {
+public final class PrometheusProxyStateExporterTest extends ProxyContextRestorer {
     
     @Test
     public void assertCollect() {
@@ -45,6 +45,6 @@ public final class ProxyStateCollectorTest extends ProxyContextRestorer {
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        assertFalse(new ProxyStateCollector().collect().isEmpty());
+        assertFalse(new PrometheusProxyStateExporter().collect().isEmpty());
     }
 }

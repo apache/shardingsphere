@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business;
+package org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-public final class BuildInfoCollectorTest {
+public final class PrometheusJDKBuildInfoExporterTest {
     
     @Test
     public void assertCollect() {
-        assertFalse(new BuildInfoCollector(true).collect().isEmpty());
+        assertFalse(new PrometheusJDKBuildInfoExporter().collect().isEmpty());
     }
 }
