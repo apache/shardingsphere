@@ -67,8 +67,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         result.add("proxy_current_connections");
         result.add("proxy_execute_latency_millis_bucket");
         result.add("routed_sql_total");
-        result.add("routed_data_sources_total");
-        result.add("routed_tables_total");
+        result.add("routed_result_total");
         result.add("proxy_commit_transactions_total");
         result.add("proxy_rollback_transactions_total");
         result.add("proxy_execute_errors_total");

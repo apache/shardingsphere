@@ -9,7 +9,6 @@ weight = 2
 
 ### 语法
 
-<<<<<<< HEAD
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql

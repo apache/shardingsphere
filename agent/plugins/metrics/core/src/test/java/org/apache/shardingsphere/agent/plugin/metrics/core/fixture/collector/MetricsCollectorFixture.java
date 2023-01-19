@@ -42,9 +42,8 @@ public final class MetricsCollectorFixture implements CounterMetricsCollector, G
     
     @Override
     public void inc(final String... labels) {
-        for (String each : labels) {
-            labeledValues.put(each, labeledValues.getOrDefault(each, 0) + 1);
-        }
+        String key = String.join(".", labels);
+        labeledValues.put(key, labeledValues.getOrDefault(key, 0) + 1);
     }
     
     @Override
@@ -54,9 +53,8 @@ public final class MetricsCollectorFixture implements CounterMetricsCollector, G
     
     @Override
     public void dec(final String... labels) {
-        for (String each : labels) {
-            labeledValues.put(each, labeledValues.getOrDefault(each, 0) - 1);
-        }
+        String key = String.join(".", labels);
+        labeledValues.put(key, labeledValues.getOrDefault(key, 0) - 1);
     }
     
     @Override
