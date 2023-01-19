@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
+package org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
@@ -61,12 +61,14 @@ public final class MetricsCollectorFixture implements CounterMetricsCollector, G
     
     @Override
     public void observe(final double value) {
-        this.value = Double.valueOf(value).intValue();
+        this.value = (int) value;
     }
     
     @Override
     public void addMetric(final List<String> labelValues, final double value) {
-        this.value += value;
+        for (String each : labelValues) {
+            labeledValues.put(each, labeledValues.getOrDefault(each, 0) + (int) value);
+        }
     }
     
     @Override

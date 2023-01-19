@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
+package org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector;
 
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorFactory;

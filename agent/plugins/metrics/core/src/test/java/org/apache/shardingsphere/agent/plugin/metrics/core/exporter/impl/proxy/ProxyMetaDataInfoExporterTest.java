@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.After;
@@ -63,6 +63,6 @@ public final class ProxyMetaDataInfoExporterTest {
         ProxyContext.init(contextManager);
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(collector.get().toString(), is("0"));
+        assertThat(collector.get().toString(), is("schema_count=0, database_count=0"));
     }
 }
