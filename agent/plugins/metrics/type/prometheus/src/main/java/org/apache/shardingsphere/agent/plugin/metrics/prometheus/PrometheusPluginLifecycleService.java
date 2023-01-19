@@ -24,9 +24,10 @@ import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter.PrometheusJDKBuildInfoExporter;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter.proxy.PrometheusProxyMetaDataInfoExporter;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter.proxy.PrometheusProxyStateExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.JDKBuildInfoExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy.ProxyMetaDataInfoExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy.ProxyStateExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter.PrometheusMetricsExporter;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 import java.io.IOException;
@@ -60,10 +61,10 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     }
     
     private void registerCollector(final boolean isCollectJVMInformation, final boolean isEnhancedForProxy) {
-        new PrometheusJDKBuildInfoExporter().register();
+        new PrometheusMetricsExporter(new JDKBuildInfoExporter()).register().register();
         if (isEnhancedForProxy) {
-            new PrometheusProxyStateExporter().register();
-            new PrometheusProxyMetaDataInfoExporter().register();
+            new PrometheusMetricsExporter(new ProxyStateExporter()).register();
+            new PrometheusMetricsExporter(new ProxyMetaDataInfoExporter()).register();
         }
         if (isCollectJVMInformation) {
             DefaultExports.initialize();
