@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,4 +40,12 @@ public final class MetricConfiguration {
     private final List<String> labels;
     
     private final Map<String, Object> props;
+    
+    public MetricConfiguration(final String id, final MetricCollectorType type, final String help) {
+        this(id, type, help, Collections.emptyList(), Collections.emptyMap());
+    }
+    
+    public MetricConfiguration(final String id, final MetricCollectorType type, final String help, final List<String> labels) {
+        this(id, type, help, labels, Collections.emptyMap());
+    }
 }
