@@ -15,45 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.business;
+package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
 import org.apache.shardingsphere.proxy.Bootstrap;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Build information collector.
+ * JDK build information collector.
  */
 @RequiredArgsConstructor
-public final class BuildInfoCollector extends Collector {
+public final class JDKBuildInfoExporter implements MetricsExporter {
     
-    private final MetricConfiguration config = new MetricConfiguration("build_info",
-            MetricCollectorType.GAUGE_METRIC_FAMILY, "Build information", Arrays.asList("version", "name"), Collections.emptyMap());
-    
-    private final boolean isEnhancedForProxy;
+    private final MetricConfiguration config = new MetricConfiguration("jdk_build_info",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "JDK build information", Arrays.asList("version", "name"), Collections.emptyMap());
     
     @Override
-    public List<MetricFamilySamples> collect() {
-        GaugeMetricFamilyMetricsCollector artifactInfo = MetricsCollectorRegistry.get(config, "Prometheus");
-        addMetric(artifactInfo, getClass().getPackage());
-        if (isEnhancedForProxy) {
-            addMetric(artifactInfo, Bootstrap.class.getPackage());
+    public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
+        GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
+        addJDKBuildInfo(result, getClass().getPackage());
+        try {
+            Class.forName(Bootstrap.class.getCanonicalName());
+            addJDKBuildInfo(result, Bootstrap.class.getPackage());
+        } catch (final ClassNotFoundException ignored) {
         }
-        return Collections.singletonList((GaugeMetricFamily) artifactInfo.getRawMetricFamilyObject());
+        return Optional.of(result);
     }
     
-    private void addMetric(final GaugeMetricFamilyMetricsCollector artifactInfo, final Package pkg) {
+    private void addJDKBuildInfo(final GaugeMetricFamilyMetricsCollector collector, final Package pkg) {
         String version = null == pkg.getImplementationVersion() ? "unknown" : pkg.getImplementationVersion();
         String name = null == pkg.getImplementationTitle() ? "unknown" : pkg.getImplementationTitle();
-        artifactInfo.addMetric(Arrays.asList(version, name), 1L);
+        collector.addMetric(Arrays.asList(version, name), 1d);
     }
 }
