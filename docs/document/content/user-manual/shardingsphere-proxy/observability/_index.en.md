@@ -159,7 +159,7 @@ services:
 
 | Name                              | Type                | Description                                                                                                                            |
 | :-------------------------------- | :------------------ | :------------------------------------------------------------------------------------------------------------------------------------- |
-| jdk_build_info                    | GAUGE_METRIC_FAMILY | Build information                                                                                                                      |
+| build_info                        | GAUGE_METRIC_FAMILY | Build information                                                                                                                      |
 | parsed_sql_total                  | COUNTER             | Total count of parsed by type (INSERT, UPDATE, DELETE, SELECT, DDL, DCL, DAL, TCL, RQL, RDL, RAL, RUL)                                 |
 | routed_sql_total                  | COUNTER             | Total count of routed by type (INSERT, UPDATE, DELETE, SELECT)                                                                         |
 | routed_data_sources_total         | COUNTER             | Total count of data source routed                                                                                                      |
