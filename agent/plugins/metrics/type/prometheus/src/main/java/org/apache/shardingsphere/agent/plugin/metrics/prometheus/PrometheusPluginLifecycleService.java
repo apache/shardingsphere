@@ -61,7 +61,7 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     }
     
     private void registerCollector(final boolean isCollectJVMInformation, final boolean isEnhancedForProxy) {
-        new PrometheusMetricsExporter(new JDKBuildInfoExporter()).register().register();
+        new PrometheusMetricsExporter(new JDKBuildInfoExporter()).register();
         if (isEnhancedForProxy) {
             new PrometheusMetricsExporter(new ProxyStateExporter()).register();
             new PrometheusMetricsExporter(new ProxyMetaDataInfoExporter()).register();
