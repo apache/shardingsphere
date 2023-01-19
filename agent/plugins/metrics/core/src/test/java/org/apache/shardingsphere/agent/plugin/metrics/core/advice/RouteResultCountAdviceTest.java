@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,16 +37,12 @@ import static org.mockito.Mockito.mock;
 
 public final class RouteResultCountAdviceTest {
     
-    private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration("routed_data_sources_total",
-            MetricCollectorType.COUNTER, "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
-    
-    private final MetricConfiguration routedTablesConfig = new MetricConfiguration("routed_tables_total",
-            MetricCollectorType.COUNTER, "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
+    private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total",
+            MetricCollectorType.COUNTER, "Total count of routed result", Arrays.asList("object", "name"));
     
     @After
     public void reset() {
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(routedDataSourcesConfig, "FIXTURE")).reset();
-        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(routedTablesConfig, "FIXTURE")).reset();
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE")).reset();
     }
     
     @Test
@@ -55,9 +52,7 @@ public final class RouteResultCountAdviceTest {
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");
         routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.singleton(tableMapper)));
         new RouteResultCountAdvice().afterMethod(new MockTargetAdviceObject(), mock(Method.class), new Object[]{}, routeContext, "FIXTURE");
-        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get(routedDataSourcesConfig, "FIXTURE");
-        assertThat(wrapper.getValue(), is(1d));
-        wrapper = MetricsCollectorRegistry.get(routedTablesConfig, "FIXTURE");
-        assertThat(wrapper.getValue(), is(1d));
+        MetricsCollectorFixture wrapper = MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE");
+        assertThat(wrapper.getValue(), is(2d));
     }
 }

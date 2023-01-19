@@ -40,9 +40,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     public static final String ROUTED_SQL = "routed_sql_total";
     
-    public static final String ROUTED_DATA_SOURCES = "routed_data_sources_total";
-    
-    public static final String ROUTED_TABLES = "routed_tables_total";
+    public static final String ROUTED_RESULT = "routed_result_total";
     
     public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
     
@@ -85,8 +83,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         result.add(PROXY_CURRENT_CONNECTIONS);
         result.add(PROXY_EXECUTE_LATENCY_MILLIS);
         result.add(ROUTED_SQL);
-        result.add(ROUTED_DATA_SOURCES);
-        result.add(ROUTED_TABLES);
+        result.add(ROUTED_RESULT);
         result.add(PROXY_COMMIT_TRANSACTIONS);
         result.add(PROXY_ROLLBACK_TRANSACTIONS);
         result.add(PROXY_EXECUTE_ERRORS);

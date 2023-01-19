@@ -28,18 +28,15 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * Route result count advice.
  */
 public final class RouteResultCountAdvice implements InstanceMethodAdvice {
     
-    private final MetricConfiguration routedDataSourcesConfig = new MetricConfiguration("routed_data_sources_total",
-            MetricCollectorType.COUNTER, "Total count of data source routed", Collections.singletonList("name"), Collections.emptyMap());
-    
-    private final MetricConfiguration routedTablesConfig = new MetricConfiguration("routed_tables_total",
-            MetricCollectorType.COUNTER, "Total count of table routed", Collections.singletonList("name"), Collections.emptyMap());
+    private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total",
+            MetricCollectorType.COUNTER, "Total count of routed result", Arrays.asList("object", "name"));
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
@@ -48,8 +45,8 @@ public final class RouteResultCountAdvice implements InstanceMethodAdvice {
         }
         for (RouteUnit each : ((RouteContext) result).getRouteUnits()) {
             RouteMapper dataSourceMapper = each.getDataSourceMapper();
-            MetricsCollectorRegistry.<CounterMetricsCollector>get(routedDataSourcesConfig, pluginType).inc(dataSourceMapper.getActualName());
-            each.getTableMappers().forEach(table -> MetricsCollectorRegistry.<CounterMetricsCollector>get(routedTablesConfig, pluginType).inc(table.getActualName()));
+            MetricsCollectorRegistry.<CounterMetricsCollector>get(routedResultConfig, pluginType).inc("data_source", dataSourceMapper.getActualName());
+            each.getTableMappers().forEach(table -> MetricsCollectorRegistry.<CounterMetricsCollector>get(routedResultConfig, pluginType).inc("table", table.getActualName()));
         }
     }
 }
