@@ -17,49 +17,64 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
+import brave.Span;
+import brave.Tracing;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import zipkin2.Span;
 
 import java.io.IOException;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
-public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
+public final class ZipkinSQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
+    private static final String SQL_STATEMENT = "select 1";
+    
+    private ZipkinSQLParserEngineAdvice advice;
+    
+    private Span parentSpan;
+    
+    @Before
+    public void setup() {
+        parentSpan = Tracing.currentTracer().newTrace().name("parent").start();
+        ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, parentSpan);
+        advice = new ZipkinSQLParserEngineAdvice();
+    }
+    
     @Test
     public void assertMethod() {
-        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, "Zipkin");
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "Zipkin");
-        Span span = COLLECTOR.pop();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "Zipkin");
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "Zipkin");
+        parentSpan.finish();
+        zipkin2.Span span = COLLECTOR.pop();
+        assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
-        assertThat(tags.get(ZipkinConstants.Tags.CONNECTION_COUNT), is("0"));
-        assertThat(span.name(), is("/ShardingSphere/rootInvoke/".toLowerCase()));
     }
     
     @Test
     public void assertExceptionHandle() {
-        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, "Zipkin");
-        advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "Zipkin");
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "Zipkin");
-        Span span = COLLECTOR.pop();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "Zipkin");
+        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException(), "Zipkin");
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "Zipkin");
+        parentSpan.finish();
+        zipkin2.Span span = COLLECTOR.pop();
+        assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
         assertThat(tags.get("error"), is("IOException"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
-        assertThat(tags.get(ZipkinConstants.Tags.CONNECTION_COUNT), is("0"));
-        assertThat(span.name(), is("/ShardingSphere/rootInvoke/".toLowerCase()));
     }
 }

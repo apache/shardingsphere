@@ -33,9 +33,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
- * JDBC executor callback advice executor.
+ * OpenTracing JDBC executor callback advice executor.
  */
-public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
+public final class OpenTracingJDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     

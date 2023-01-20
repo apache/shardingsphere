@@ -32,12 +32,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
+public final class JaegerSQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
-    private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
+    private static final JaegerSQLParserEngineAdvice ADVICE = new JaegerSQLParserEngineAdvice();
     
     @Test
     public void assertMethod() {

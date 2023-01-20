@@ -17,17 +17,17 @@
 
 advisors:
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
-    advice: org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.CommandExecutorTaskAdvice
+    advice: org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.OpenTracingCommandExecutorTaskAdvice
     pointcuts:
       - name: run
         type: method
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
-    advice: org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.SQLParserEngineAdvice
+    advice: org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.OpenTracingSQLParserEngineAdvice
     pointcuts:
       - name: parse
         type: method
   - target: org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback
-    advice: org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.JDBCExecutorCallbackAdvice
+    advice: org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice.OpenTracingJDBCExecutorCallbackAdvice
     pointcuts:
       - name: execute
         type: method

@@ -38,14 +38,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
-public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
+public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
     
     private static final String SQL_STATEMENT = "select 1";
     
-    private SQLParserEngineAdvice advice;
+    private OpenTelemetrySQLParserEngineAdvice advice;
     
     private Span parentSpan;
     
@@ -55,7 +55,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
                 .spanBuilder("parent")
                 .startSpan();
         ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, parentSpan);
-        advice = new SQLParserEngineAdvice();
+        advice = new OpenTelemetrySQLParserEngineAdvice();
     }
     
     @Test

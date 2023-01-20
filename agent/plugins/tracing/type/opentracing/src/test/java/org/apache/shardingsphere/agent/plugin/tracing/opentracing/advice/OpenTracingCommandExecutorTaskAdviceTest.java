@@ -39,9 +39,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public final class CommandExecutorTaskAdviceTest {
+public final class OpenTracingCommandExecutorTaskAdviceTest {
     
-    private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
+    private static final OpenTracingCommandExecutorTaskAdvice ADVICE = new OpenTracingCommandExecutorTaskAdvice();
     
     private static MockTracer tracer;
     

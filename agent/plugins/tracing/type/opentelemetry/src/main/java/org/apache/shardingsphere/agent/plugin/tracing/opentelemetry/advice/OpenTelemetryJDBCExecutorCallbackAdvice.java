@@ -39,9 +39,9 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * JDBC executor callback advice executor.
+ * OpenTelemetry JDBC executor callback advice executor.
  */
-public class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
+public class OpenTelemetryJDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     

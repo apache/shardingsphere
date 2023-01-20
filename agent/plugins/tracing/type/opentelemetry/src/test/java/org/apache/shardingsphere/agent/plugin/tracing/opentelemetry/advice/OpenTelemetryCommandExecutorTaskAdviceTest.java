@@ -33,14 +33,14 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
+public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
     
     @Test
     public void assertMethod() {
-        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, "OpenTelemetry");
         advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "OpenTelemetry");
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
@@ -53,7 +53,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertExceptionHandle() {
-        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, "OpenTelemetry");
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "OpenTelemetry");
         advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "OpenTelemetry");

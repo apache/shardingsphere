@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
+public final class JaegerCommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
@@ -52,7 +52,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertMethod() {
-        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        JaegerCommandExecutorTaskAdvice advice = new JaegerCommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, "Jaeger");
         advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "Jaeger");
         List<MockSpan> spans = COLLECTOR.finishedSpans();
@@ -64,7 +64,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     @Test
     public void assertExceptionHandle() {
-        CommandExecutorTaskAdvice advice = new CommandExecutorTaskAdvice();
+        JaegerCommandExecutorTaskAdvice advice = new JaegerCommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, "Jaeger");
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "Jaeger");
         advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "Jaeger");

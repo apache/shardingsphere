@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 
-public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
+public final class ZipkinJDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
@@ -44,7 +44,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     
     @Test
     public void assertMethod() {
-        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        ZipkinJDBCExecutorCallbackAdvice advice = new ZipkinJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "Zipkin");
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "Zipkin");
         Span span = COLLECTOR.pop();
@@ -61,7 +61,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     
     @Test
     public void assertExceptionHandle() {
-        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        ZipkinJDBCExecutorCallbackAdvice advice = new ZipkinJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "Zipkin");
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException(), "Zipkin");
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "Zipkin");
