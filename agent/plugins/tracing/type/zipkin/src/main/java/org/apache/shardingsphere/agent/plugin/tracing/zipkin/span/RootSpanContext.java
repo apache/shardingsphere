@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.span;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
+
 /**
  * Root span context.
  */
 public final class RootSpanContext {
     
-    private static final InheritableThreadLocal<Object> VALUE = new InheritableThreadLocal<>();
+    private static final TransmittableThreadLocal<Object> VALUE = new TransmittableThreadLocal<>();
     
     /**
      * Judge whether empty root span.
