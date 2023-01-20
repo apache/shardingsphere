@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.core.log;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.path.AgentPath;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
@@ -32,9 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.CodeSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.jar.JarFile;
 
@@ -43,12 +40,12 @@ import java.util.jar.JarFile;
  */
 public final class AgentLoggerFactory {
     
-    private static AgentClassLoader classLoader;
+    private static AgentLoggerClassLoader classLoader;
     
     /**
      * Get logger.
      * 
-     * @param clazz Class
+     * @param clazz class
      * @return logger
      */
     @SneakyThrows(ReflectiveOperationException.class)
@@ -58,28 +55,35 @@ public final class AgentLoggerFactory {
         return new Logger(method.invoke(null, clazz));
     }
     
-    private static AgentClassLoader getClassLoader() {
+    private static AgentLoggerClassLoader getClassLoader() {
         if (null != classLoader) {
             return classLoader;
         }
-        classLoader = getLoggerClassLoader();
+        synchronized (AgentLoggerFactory.class) {
+            if (null == classLoader) {
+                classLoader = getAgentLoggerClassLoader();
+            }
+        }
         return classLoader;
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
-    private static AgentClassLoader getLoggerClassLoader() {
-        CodeSource codeSource = AgentLoggerFactory.class.getProtectionDomain().getCodeSource();
-        File agentFle = new File(codeSource.getLocation().toURI());
+    private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
+        File agentFle = new File(AgentLoggerFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
-            Collection<File> jarFiles = new LinkedList<>(getJarFiles(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib"))));
-            Collection<PluginJar> pluginJars = new LinkedList<>();
-            for (File each : jarFiles) {
-                pluginJars.add(new PluginJar(new JarFile(each, true), each));
-            }
+            Collection<PluginJar> pluginJars = getPluginJars(getJarFiles(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib"))));
             File resourcePath = new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
-            return new AgentClassLoader(AgentLoggerFactory.class.getClassLoader().getParent(), pluginJars, Collections.singleton(resourcePath));
+            return new AgentLoggerClassLoader(pluginJars, resourcePath);
         }
-        return new AgentClassLoader(AgentLoggerFactory.class.getClassLoader(), Collections.emptyList());
+        return new AgentLoggerClassLoader();
+    }
+    
+    private static Collection<PluginJar> getPluginJars(final Collection<File> jarFiles) throws IOException {
+        Collection<PluginJar> result = new LinkedList<>();
+        for (File each : jarFiles) {
+            result.add(new PluginJar(new JarFile(each, true), each));
+        }
+        return result;
     }
     
     @SneakyThrows(IOException.class)

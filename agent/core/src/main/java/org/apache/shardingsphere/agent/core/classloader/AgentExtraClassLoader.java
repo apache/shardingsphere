@@ -36,9 +36,9 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 /**
- * Agent class loader.
+ * Agent extra class loader.
  */
-public final class AgentClassLoader extends ClassLoader {
+public abstract class AgentExtraClassLoader extends ClassLoader {
     
     static {
         registerAsParallelCapable();
@@ -48,11 +48,11 @@ public final class AgentClassLoader extends ClassLoader {
     
     private final Collection<File> resourcePaths;
     
-    public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars) {
+    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars) {
         this(appClassLoader, pluginJars, Collections.emptyList());
     }
     
-    public AgentClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars, final Collection<File> resourcePaths) {
+    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars, final Collection<File> resourcePaths) {
         super(appClassLoader);
         this.pluginJars = pluginJars;
         this.resourcePaths = resourcePaths;
@@ -102,8 +102,8 @@ public final class AgentClassLoader extends ClassLoader {
         definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
-    private Class<?> defineClass(final String name, final PluginJar each, final ZipEntry entry) throws IOException {
-        byte[] data = ByteStreams.toByteArray(each.getJarFile().getInputStream(entry));
+    private Class<?> defineClass(final String name, final PluginJar pluginJar, final ZipEntry entry) throws IOException {
+        byte[] data = ByteStreams.toByteArray(pluginJar.getJarFile().getInputStream(entry));
         return defineClass(name, data, 0, data.length);
     }
     
