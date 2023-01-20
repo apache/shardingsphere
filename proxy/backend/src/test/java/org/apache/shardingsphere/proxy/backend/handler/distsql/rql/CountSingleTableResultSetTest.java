@@ -45,10 +45,9 @@ public final class CountSingleTableResultSetTest {
         resultSet.init(mockDatabase(), mock(CountSingleTableStatement.class));
         assertTrue(resultSet.next());
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("single_table"));
-        assertThat(actual.get(1), is("db_1"));
-        assertThat(actual.get(2), is(2));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("db_1"));
+        assertThat(actual.get(1), is(2));
         assertFalse(resultSet.next());
     }
     

@@ -32,7 +32,6 @@ databaseName ::=
 
 | Column     | Description                                         |
 |------------|-----------------------------------------------------|
-| table_name | Single table name                                   |
 | database   | The database name where the single table is located |
 | count      | The count of single table                           |
 
@@ -46,11 +45,11 @@ COUNT SINGLE TABLE
 
 ```sql
 mysql> COUNT SINGLE TABLE;
-+--------------+----------+-------+
-| rule_name    | database | count |
-+--------------+----------+-------+
-| t_single_0   | ds       | 2     |
-+--------------+----------+-------+
++----------+--------+
+| database | count  |
++----------+--------+
+| ds       | 2      |
++----------+--------+
 1 row in set (0.02 sec)
 ```
 
