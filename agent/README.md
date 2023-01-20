@@ -27,7 +27,7 @@ cd shardingsphere
 ./mvnw clean install -Prelease
 ```
 
-Artifact is `agent/distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`
+Artifact is `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`
 
 ## Quick Start
 

@@ -64,7 +64,7 @@
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../../agent/distribution/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
+            <directory>../agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
             <includes>
                 <include>**/*</include>
             </includes>

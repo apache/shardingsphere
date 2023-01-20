@@ -79,7 +79,6 @@ jobs:
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Build Project
         run: |
-          ./mvnw -B clean install -DskipITs -DskipTests
           ./mvnw -B clean install -DskipITs -DskipTests -Prelease
       - name: Run E2E Test
         run: |

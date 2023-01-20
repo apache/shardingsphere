@@ -20,8 +20,8 @@
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
     <id>shardingsphere-agent-bin</id>
     <formats>
-        <format>tar.gz</format>
         <format>dir</format>
+        <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
     <baseDirectory>agent</baseDirectory>
@@ -41,14 +41,14 @@
         </fileSet>
         
         <fileSet>
-            <directory>../plugins/core/target/lib</directory>
+            <directory>../../agent/plugins/core/target/lib</directory>
             <outputDirectory>./plugins/lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../plugins/metrics/core/target/lib</directory>
+            <directory>../../agent/plugins/metrics/core/target/lib</directory>
             <outputDirectory>./plugins/lib</outputDirectory>
             <includes>
                 <include>**.jar</include>
@@ -56,21 +56,21 @@
         </fileSet>
         
         <fileSet>
-            <directory>../plugins/logging/type/target/plugins</directory>
+            <directory>../../agent/plugins/logging/type/target/plugins</directory>
             <outputDirectory>./plugins/logging</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../plugins/tracing/type/target/plugins</directory>
+            <directory>../../agent/plugins/tracing/type/target/plugins</directory>
             <outputDirectory>./plugins/tracing</outputDirectory>
             <includes>
                 <include>**.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>../plugins/metrics/type/target/plugins</directory>
+            <directory>../../agent/plugins/metrics/type/target/plugins</directory>
             <outputDirectory>./plugins/metrics</outputDirectory>
             <includes>
                 <include>**.jar</include>

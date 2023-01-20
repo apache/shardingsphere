@@ -313,7 +313,7 @@ cd ${RELEASE.VERSION}
 cp -f ~/shardingsphere/distribution/src/target/*.zip* .
 cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* .
 cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* .
-cp -f ~/shardingsphere/agent/distribution/target/*.tar.gz* .
+cp -f ~/shardingsphere/distribution/agent/target/*.tar.gz* .
 ```
 
 ### 4. 提交 Apache SVN
