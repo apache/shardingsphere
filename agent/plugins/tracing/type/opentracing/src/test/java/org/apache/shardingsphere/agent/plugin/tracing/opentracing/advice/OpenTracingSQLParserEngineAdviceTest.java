@@ -36,9 +36,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class SQLParserEngineAdviceTest {
+public final class OpenTracingSQLParserEngineAdviceTest {
     
-    private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
+    private static final OpenTracingSQLParserEngineAdvice ADVICE = new OpenTracingSQLParserEngineAdvice();
     
     private static MockTracer tracer;
     

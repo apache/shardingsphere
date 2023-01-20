@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class JDBCExecutorCallbackAdviceTest {
+public final class OpenTracingJDBCExecutorCallbackAdviceTest {
     
     private static MockTracer tracer;
     
@@ -68,7 +68,7 @@ public final class JDBCExecutorCallbackAdviceTest {
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
-        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        OpenTracingJDBCExecutorCallbackAdvice advice = new OpenTracingJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, "OpenTracing");
         advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
@@ -89,7 +89,7 @@ public final class JDBCExecutorCallbackAdviceTest {
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
-        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        OpenTracingJDBCExecutorCallbackAdvice advice = new OpenTracingJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, "OpenTracing");
         advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException(), "OpenTracing");
         advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null, "OpenTracing");

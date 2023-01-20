@@ -30,9 +30,9 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice executor.
+ * OpenTelemetry command executor task advice executor.
  */
-public class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
+public class OpenTelemetryCommandExecutorTaskAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     

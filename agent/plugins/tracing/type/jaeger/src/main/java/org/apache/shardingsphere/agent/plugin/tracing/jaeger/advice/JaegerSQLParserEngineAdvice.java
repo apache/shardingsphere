@@ -15,44 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
 import io.opentracing.Scope;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 
 import java.lang.reflect.Method;
 
 /**
- * Command executor task advice executor.
+ * SQL parser engine advice executor.
  */
-public final class CommandExecutorTaskAdvice implements InstanceMethodAdvice {
+public final class JaegerSQLParserEngineAdvice implements InstanceMethodAdvice {
     
-    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
-    
-    private static final String ROOT_SPAN = "ot_root_span_";
+    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
+                .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
+                .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
                 .startActive(true);
-        ExecutorDataMap.getValue().put(ROOT_SPAN, scope.span());
+        target.setAttachment(scope);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        GlobalTracer.get().scopeManager().active().close();
-        ExecutorDataMap.getValue().remove(ROOT_SPAN);
+        ((Scope) target.getAttachment()).close();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
+        JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

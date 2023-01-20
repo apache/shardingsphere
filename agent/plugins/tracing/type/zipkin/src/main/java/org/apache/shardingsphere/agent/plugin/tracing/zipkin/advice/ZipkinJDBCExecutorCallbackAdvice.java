@@ -15,19 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-import io.opentracing.tag.Tags;
-import io.opentracing.util.GlobalTracer;
+import brave.Span;
+import brave.Tracing;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -39,9 +35,9 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * JDBC executor callback advice executor.
+ * Zipkin JDBC executor callback advice executor.
  */
-public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
+public final class ZipkinJDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
@@ -49,34 +45,31 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @SuppressWarnings("unchecked")
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Span rootSpan = (Span) ((Map<String, Object>) args[2]).get(JaegerConstants.ROOT_SPAN);
-        Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
-        if (null != rootSpan) {
-            builder = builder.asChildOf(rootSpan);
-        }
+        Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
+        Span span = null == root ? Tracing.currentTracer().nextSpan().name(OPERATION_NAME) : Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME);
+        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
+        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");
         DataSourceMetaData metaData = AgentReflectionUtil.invokeMethod(
                 JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
                 target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
-        builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
-                .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
-                .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())
-                .withTag(Tags.PEER_HOSTNAME.getKey(), metaData.getHostname())
-                .withTag(Tags.PEER_PORT.getKey(), metaData.getPort())
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.DB_STATEMENT.getKey(), executionUnit.getExecutionUnit().getSqlUnit().getSql())
-                .withTag(JaegerConstants.ShardingSphereTags.DB_BIND_VARIABLES.getKey(), executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
-        target.setAttachment(builder.startActive(true));
+        span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
+        span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostname());
+        span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
+        span.tag(ZipkinConstants.Tags.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql());
+        span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
+        span.start();
+        target.setAttachment(span);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        ((Scope) target.getAttachment()).close();
+        ((Span) target.getAttachment()).finish();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
+        ((Span) target.getAttachment()).error(throwable);
     }
 }

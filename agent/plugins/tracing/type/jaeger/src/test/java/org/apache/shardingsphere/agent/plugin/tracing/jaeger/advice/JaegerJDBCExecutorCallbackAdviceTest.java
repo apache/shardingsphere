@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
+public final class JaegerJDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
@@ -45,7 +45,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     
     @Test
     public void assertMethod() {
-        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        JaegerJDBCExecutorCallbackAdvice advice = new JaegerJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "Jaeger");
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "Jaeger");
         List<MockSpan> spans = COLLECTOR.finishedSpans();
@@ -62,7 +62,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     
     @Test
     public void assertExceptionHandle() {
-        JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
+        JaegerJDBCExecutorCallbackAdvice advice = new JaegerJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "Jaeger");
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException(), "Jaeger");
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "Jaeger");

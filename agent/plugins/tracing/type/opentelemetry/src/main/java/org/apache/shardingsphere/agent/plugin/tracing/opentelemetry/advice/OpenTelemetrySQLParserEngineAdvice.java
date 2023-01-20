@@ -31,9 +31,9 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import java.lang.reflect.Method;
 
 /**
- * SQL parser engine advice executor.
+ * OpenTelemetry SQL parser engine advice executor.
  */
-public class SQLParserEngineAdvice implements InstanceMethodAdvice {
+public class OpenTelemetrySQLParserEngineAdvice implements InstanceMethodAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
