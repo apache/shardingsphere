@@ -67,7 +67,7 @@ weight = 5
 
 #### Single Table
 
-`SINGLE`, `STORAGE`, `UNIT`, `SINGLE_TABLE`
+`SINGLE`, `STORAGE`, `UNIT`
 
 #### Readwrite Splitting
 

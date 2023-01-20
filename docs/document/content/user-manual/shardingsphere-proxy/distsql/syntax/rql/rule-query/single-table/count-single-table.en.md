@@ -56,7 +56,7 @@ mysql> COUNT SINGLE TABLE;
 
 ### Reserved word
 
-`COUNT`, `SINGLE`, `TABLE`, `RULE`
+`COUNT`, `SINGLE`, `TABLE`, `FROM`
 
 ### Related links
 

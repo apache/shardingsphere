@@ -57,7 +57,7 @@ mysql> COUNT SINGLE TABLE;
 
 ### 保留字
 
-`COUNT`、`SINGLE`、`TABLE`、`RULE`
+`COUNT`、`SINGLE`、`TABLE`、`FROM`
 
 ### 相关链接
 
