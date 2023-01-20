@@ -47,8 +47,8 @@ services:
       - "mysql:mysql.agent.tracing.opentelemetry.host"
       - "zipkin:zipkin.agent.tracing.opentelemetry.host"
     volumes:
-      - ./proxy/conf:/opt/shardingsphere-proxy-agent-tracing-opentelemetry/conf
-      - ./agent/conf:/opt/shardingsphere-proxy-agent-tracing-opentelemetry/agent/conf
+      - ./proxy/conf:/opt/shardingsphere-proxy/conf
+      - ./agent/conf:/opt/shardingsphere-proxy/agent/conf
     depends_on:
       - mysql
       - zipkin
