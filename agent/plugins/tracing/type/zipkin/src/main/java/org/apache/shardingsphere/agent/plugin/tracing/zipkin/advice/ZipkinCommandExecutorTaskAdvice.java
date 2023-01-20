@@ -20,39 +20,31 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
-import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.lang.reflect.Method;
 
 /**
  * Zipkin command executor task advice executor.
  */
-public final class ZipkinCommandExecutorTaskAdvice implements InstanceMethodAdvice {
-    
-    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+public final class ZipkinCommandExecutorTaskAdvice extends TracingCommandExecutorTaskAdvice<Span> {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Span span = Tracing.currentTracer().newTrace().name(OPERATION_NAME);
-        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT).tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
-        RootSpanContext.set(span);
+    protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
+        Span result = Tracing.currentTracer().newTrace().name(OPERATION_NAME);
+        result.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT).tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
+        return result;
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        BackendConnection connection = AgentReflectionUtil.<ConnectionSession>getFieldValue(target, "connectionSession").getBackendConnection();
-        Span span = RootSpanContext.get();
-        span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
-        span.finish();
+    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target, final int connectionSize) {
+        rootSpan.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connectionSize));
+        rootSpan.finish();
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        RootSpanContext.<Span>get().error(throwable);
+    protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
+        rootSpan.error(throwable);
     }
 }
