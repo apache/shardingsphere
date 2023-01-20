@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 
@@ -30,22 +30,20 @@ import java.lang.reflect.Method;
 /**
  * OpenTracing command executor task advice executor.
  */
-public final class OpenTracingCommandExecutorTaskAdvice implements InstanceMethodAdvice {
-    
-    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+public final class OpenTracingCommandExecutorTaskAdvice extends TracingCommandExecutorTaskAdvice<Span> {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        RootSpanContext.set(GlobalTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME).startActive(true).span());
+    protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
+        return GlobalTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME).startActive(true).span();
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target, final int connectionSize) {
         GlobalTracer.get().scopeManager().active().close();
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
         OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

@@ -18,41 +18,35 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
-import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
-import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.lang.reflect.Method;
 
 /**
  * Command executor task advice executor.
  */
-public final class JaegerCommandExecutorTaskAdvice implements InstanceMethodAdvice {
-    
-    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+public final class JaegerCommandExecutorTaskAdvice extends TracingCommandExecutorTaskAdvice<Span> {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        RootSpanContext.set(GlobalTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME).startActive(true).span());
+    protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
+        return GlobalTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME).startActive(true).span();
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        BackendConnection connection = AgentReflectionUtil.<ConnectionSession>getFieldValue(target, "connectionSession").getBackendConnection();
+    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target, final int connectionSize) {
         Scope scope = GlobalTracer.get().scopeManager().active();
-        scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connection.getConnectionSize());
+        scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connectionSize);
         scope.close();
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
         JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }
