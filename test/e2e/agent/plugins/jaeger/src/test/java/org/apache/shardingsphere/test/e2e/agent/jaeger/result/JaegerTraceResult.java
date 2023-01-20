@@ -58,10 +58,10 @@ public final class JaegerTraceResult implements JsonConfiguration {
     @Getter
     @Setter
     public static final class Span {
-    
+        
         @SerializedName("traceID")
         private String traceId;
-    
+        
         @SerializedName("spanID")
         private String spanId;
         
@@ -78,7 +78,7 @@ public final class JaegerTraceResult implements JsonConfiguration {
         private List<Object> tags;
         
         private List<String> logs;
-    
+        
         @SerializedName("processID")
         private String processId;
         
