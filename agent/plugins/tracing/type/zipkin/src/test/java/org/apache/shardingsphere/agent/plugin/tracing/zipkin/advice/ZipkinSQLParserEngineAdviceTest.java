@@ -22,7 +22,7 @@ import brave.Tracing;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.span.RootSpanContext;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -43,12 +43,9 @@ public final class ZipkinSQLParserEngineAdviceTest extends AbstractSQLParserEngi
     
     private ZipkinSQLParserEngineAdvice advice;
     
-    private Span parentSpan;
-    
     @Before
     public void setup() {
-        parentSpan = Tracing.currentTracer().newTrace().name("parent").start();
-        ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, parentSpan);
+        RootSpanContext.set(Tracing.currentTracer().newTrace().name("parent").start());
         advice = new ZipkinSQLParserEngineAdvice();
     }
     
@@ -56,7 +53,7 @@ public final class ZipkinSQLParserEngineAdviceTest extends AbstractSQLParserEngi
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "Zipkin");
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "Zipkin");
-        parentSpan.finish();
+        RootSpanContext.<Span>get().finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
@@ -69,7 +66,7 @@ public final class ZipkinSQLParserEngineAdviceTest extends AbstractSQLParserEngi
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "Zipkin");
         advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException(), "Zipkin");
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "Zipkin");
-        parentSpan.finish();
+        RootSpanContext.<Span>get().finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();

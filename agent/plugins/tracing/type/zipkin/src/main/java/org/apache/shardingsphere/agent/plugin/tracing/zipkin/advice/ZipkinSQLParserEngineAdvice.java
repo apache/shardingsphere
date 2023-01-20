@@ -19,11 +19,10 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import brave.Span;
 import brave.Tracing;
-import brave.propagation.TraceContext;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.span.RootSpanContext;
 
 import java.lang.reflect.Method;
 
@@ -36,8 +35,7 @@ public final class ZipkinSQLParserEngineAdvice implements InstanceMethodAdvice {
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
-        Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
+        Span span = Tracing.currentTracer().newChild(RootSpanContext.<Span>get().context()).name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
         span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
         span.tag(ZipkinConstants.Tags.DB_STATEMENT, String.valueOf(args[0]));

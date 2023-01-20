@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.span.RootSpanContext;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -40,19 +40,19 @@ public final class ZipkinCommandExecutorTaskAdvice implements InstanceMethodAdvi
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         Span span = Tracing.currentTracer().newTrace().name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME).kind(Span.Kind.CLIENT).tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE).start();
-        ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, span);
+        RootSpanContext.set(span);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         BackendConnection connection = AgentReflectionUtil.<ConnectionSession>getFieldValue(target, "connectionSession").getBackendConnection();
-        Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
+        Span span = RootSpanContext.get();
         span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
         span.finish();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).error(throwable);
+        RootSpanContext.<Span>get().error(throwable);
     }
 }
