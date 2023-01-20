@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.agent.core.plugin.classloader;
 
 import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.jar.JarFile;
 
 /**
  * Agent plugin class loader.
  */
 public final class AgentPluginClassLoader extends AgentExtraClassLoader {
     
-    public AgentPluginClassLoader(final ClassLoader classLoader, final Collection<PluginJar> pluginJars) {
+    public AgentPluginClassLoader(final ClassLoader classLoader, final Collection<JarFile> pluginJars) {
         super(classLoader, pluginJars, Collections.emptyList());
     }
 }

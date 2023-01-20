@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.agent.core.log;
 
 import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.jar.JarFile;
 
 /**
  * Agent logger class loader.
  */
 public final class AgentLoggerClassLoader extends AgentExtraClassLoader {
     
-    public AgentLoggerClassLoader(final Collection<PluginJar> pluginJars, final File resourcePath) {
+    public AgentLoggerClassLoader(final Collection<JarFile> pluginJars, final File resourcePath) {
         super(AgentLoggerFactory.class.getClassLoader().getParent(), pluginJars, Collections.singleton(resourcePath));
     }
     

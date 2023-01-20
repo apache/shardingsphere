@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.core.log;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.path.AgentPath;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,17 +70,17 @@ public final class AgentLoggerFactory {
     private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
         File agentFle = new File(AgentLoggerFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
-            Collection<PluginJar> pluginJars = getPluginJars(getJarFiles(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib"))));
+            Collection<JarFile> pluginJars = getPluginJars(getJarFiles(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib"))));
             File resourcePath = new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
             return new AgentLoggerClassLoader(pluginJars, resourcePath);
         }
         return new AgentLoggerClassLoader();
     }
     
-    private static Collection<PluginJar> getPluginJars(final Collection<File> jarFiles) throws IOException {
-        Collection<PluginJar> result = new LinkedList<>();
+    private static Collection<JarFile> getPluginJars(final Collection<File> jarFiles) throws IOException {
+        Collection<JarFile> result = new LinkedList<>();
         for (File each : jarFiles) {
-            result.add(new PluginJar(new JarFile(each, true), each));
+            result.add(new JarFile(each, true));
         }
         return result;
     }

@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
@@ -31,6 +30,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.jar.JarFile;
 
 /**
  * Plugin lifecycle service manager.
@@ -50,7 +50,7 @@ public final class PluginLifecycleServiceManager {
      * @param agentClassLoader agent class loader
      * @param isEnhancedForProxy is enhanced for proxy
      */
-    public static void init(final Map<String, PluginConfiguration> pluginConfigs, final Collection<PluginJar> pluginJars, final ClassLoader agentClassLoader, final boolean isEnhancedForProxy) {
+    public static void init(final Map<String, PluginConfiguration> pluginConfigs, final Collection<JarFile> pluginJars, final ClassLoader agentClassLoader, final boolean isEnhancedForProxy) {
         if (STARTED_FLAG.compareAndSet(false, true)) {
             PluginLifecycleServiceManager.start(pluginConfigs, agentClassLoader, isEnhancedForProxy);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginLifecycleServiceManager.close(pluginJars)));
@@ -81,7 +81,7 @@ public final class PluginLifecycleServiceManager {
         }
     }
     
-    private static void close(final Collection<PluginJar> pluginJars) {
+    private static void close(final Collection<JarFile> pluginJars) {
         AgentServiceLoader.getServiceLoader(PluginLifecycleService.class).getServices().forEach(each -> {
             try {
                 each.close();
@@ -93,7 +93,7 @@ public final class PluginLifecycleServiceManager {
         });
         pluginJars.forEach(each -> {
             try {
-                each.getJarFile().close();
+                each.close();
             } catch (final IOException ex) {
                 LOGGER.error("Failed to close jar file.", ex);
             }

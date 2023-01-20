@@ -49,11 +49,11 @@ public final class PluginJarLoader {
      * @return plugin jars
      * @throws IOException IO exception
      */
-    public static Collection<PluginJar> load(final File agentRootPath) throws IOException {
+    public static Collection<JarFile> load(final File agentRootPath) throws IOException {
         Collection<File> jarFiles = getJarFiles(new File(String.join(File.separator, agentRootPath.getPath(), "plugins")));
-        Collection<PluginJar> result = new LinkedList<>();
+        Collection<JarFile> result = new LinkedList<>();
         for (File each : jarFiles) {
-            result.add(new PluginJar(new JarFile(each, true), each));
+            result.add(new JarFile(each, true));
             LOGGER.info("Loaded jar: {}", each.getName());
         }
         return result;
