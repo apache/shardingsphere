@@ -41,7 +41,7 @@ public final class JaegerCommandExecutorTaskAdvice extends TracingCommandExecuto
     @Override
     protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target, final int connectionSize) {
         Scope scope = GlobalTracer.get().scopeManager().active();
-        scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(),connectionSize);
+        scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connectionSize);
         scope.close();
     }
     
