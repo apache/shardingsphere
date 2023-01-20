@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.span;
+package org.apache.shardingsphere.agent.plugin.tracing.core;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 
