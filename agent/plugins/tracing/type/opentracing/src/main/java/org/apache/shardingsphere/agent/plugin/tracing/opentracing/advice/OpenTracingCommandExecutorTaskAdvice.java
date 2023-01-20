@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-import io.opentracing.Scope;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
 
@@ -35,20 +34,14 @@ public final class OpenTracingCommandExecutorTaskAdvice implements InstanceMetho
     
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
-    private static final String ROOT_SPAN = "ot_root_span_";
-    
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
-                .startActive(true);
-        ExecutorDataMap.getValue().put(ROOT_SPAN, scope.span());
+        RootSpanContext.set(GlobalTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME).startActive(true).span());
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         GlobalTracer.get().scopeManager().active().close();
-        ExecutorDataMap.getValue().remove(ROOT_SPAN);
     }
     
     @Override

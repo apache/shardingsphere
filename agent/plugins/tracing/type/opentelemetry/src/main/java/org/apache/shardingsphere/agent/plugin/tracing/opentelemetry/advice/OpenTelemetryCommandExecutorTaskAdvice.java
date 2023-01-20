@@ -24,8 +24,8 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
 
@@ -44,13 +44,12 @@ public class OpenTelemetryCommandExecutorTaskAdvice implements InstanceMethodAdv
                 .setSpanKind(SpanKind.CLIENT);
         Span span = spanBuilder.startSpan();
         target.setAttachment(span);
-        ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, span);
+        RootSpanContext.set(span);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         ((Span) target.getAttachment()).end();
-        ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
     }
     
     @Override

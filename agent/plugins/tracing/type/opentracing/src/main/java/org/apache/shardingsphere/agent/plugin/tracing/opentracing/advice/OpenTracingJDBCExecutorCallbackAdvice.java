@@ -24,13 +24,13 @@ import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 
 /**
  * OpenTracing JDBC executor callback advice executor.
@@ -40,12 +40,10 @@ public final class OpenTracingJDBCExecutorCallbackAdvice implements InstanceMeth
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
-    @SuppressWarnings("unchecked")
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if ((boolean) args[1]) {
-            builder.asChildOf(root);
+            builder.asChildOf(RootSpanContext.<Span>get());
         } else {
             JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
             ExecutionUnit unit = executionUnit.getExecutionUnit();
