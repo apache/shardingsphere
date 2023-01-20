@@ -17,27 +17,28 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Gauge;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import io.prometheus.client.Counter;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class PrometheusGaugeCollectorTest {
+/**
+ * Prometheus metrics counter collector.
+ */
+public final class PrometheusMetricsCounterCollector implements CounterMetricsCollector {
     
-    @Test
-    public void assertCreate() throws ReflectiveOperationException {
-        PrometheusGaugeCollector collector = new PrometheusGaugeCollector(new MetricConfiguration("foo_gauge",
-                MetricCollectorType.GAUGE, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.inc();
-        Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusGaugeCollector.class.getDeclaredField("gauge"), collector);
-        assertThat(gauge.get(), is(1d));
-        collector.dec();
-        assertThat(gauge.get(), is(0d));
+    private final Counter counter;
+    
+    public PrometheusMetricsCounterCollector(final MetricConfiguration config) {
+        counter = Counter.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
+    }
+    
+    @Override
+    public void inc() {
+        counter.inc(1d);
+    }
+    
+    @Override
+    public void inc(final String... labels) {
+        counter.labels(labels).inc(1d);
     }
 }

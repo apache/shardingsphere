@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Histogram;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import io.prometheus.client.Summary;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.SummaryMetricsCollector;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class PrometheusHistogramCollectorTest {
+/**
+ * Prometheus metrics summary collector.
+ */
+public final class PrometheusMetricsSummaryCollector implements SummaryMetricsCollector {
     
-    @Test
-    public void assertCreate() throws ReflectiveOperationException {
-        PrometheusHistogramCollector collector = new PrometheusHistogramCollector(new MetricConfiguration("foo_histogram",
-                MetricCollectorType.HISTOGRAM, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.observe(1);
-        Histogram histogram = (Histogram) Plugins.getMemberAccessor().get(PrometheusHistogramCollector.class.getDeclaredField("histogram"), collector);
-        assertThat(histogram.collect().size(), is(1));
+    private final Summary summary;
+    
+    public PrometheusMetricsSummaryCollector(final MetricConfiguration config) {
+        summary = Summary.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
+    }
+    
+    @Override
+    public void observe(final double value) {
+        summary.observe(value);
     }
 }

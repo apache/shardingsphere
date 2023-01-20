@@ -17,28 +17,30 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type;
 
-import io.prometheus.client.Counter;
+import io.prometheus.client.GaugeMetricFamily;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+
+import java.util.List;
 
 /**
- * Prometheus counter collector.
+ * Prometheus metrics gauge metric family collector.
  */
-public final class PrometheusCounterCollector implements CounterMetricsCollector {
+public final class PrometheusMetricsGaugeMetricFamilyCollector implements GaugeMetricFamilyMetricsCollector {
     
-    private final Counter counter;
+    private final GaugeMetricFamily gaugeMetricFamily;
     
-    public PrometheusCounterCollector(final MetricConfiguration config) {
-        counter = Counter.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0])).register();
+    public PrometheusMetricsGaugeMetricFamilyCollector(final MetricConfiguration config) {
+        gaugeMetricFamily = new GaugeMetricFamily(config.getId(), config.getHelp(), config.getLabels());
     }
     
     @Override
-    public void inc() {
-        counter.inc(1d);
+    public void addMetric(final List<String> labelValues, final double value) {
+        gaugeMetricFamily.addMetric(labelValues, value);
     }
     
     @Override
-    public void inc(final String... labels) {
-        counter.labels(labels).inc(1d);
+    public Object getRawMetricFamilyObject() {
+        return gaugeMetricFamily;
     }
 }

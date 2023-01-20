@@ -25,13 +25,13 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.Histog
 import java.util.Map;
 
 /**
- * Prometheus histogram collector.
+ * Prometheus metrics histogram collector.
  */
-public final class PrometheusHistogramCollector implements HistogramMetricsCollector {
+public final class PrometheusMetricsHistogramCollector implements HistogramMetricsCollector {
     
     private final Histogram histogram;
     
-    public PrometheusHistogramCollector(final MetricConfiguration config) {
+    public PrometheusMetricsHistogramCollector(final MetricConfiguration config) {
         Builder builder = Histogram.build().name(config.getId()).help(config.getHelp()).labelNames(config.getLabels().toArray(new String[0]));
         appendProperties(builder, config.getProps());
         histogram = builder.register();
