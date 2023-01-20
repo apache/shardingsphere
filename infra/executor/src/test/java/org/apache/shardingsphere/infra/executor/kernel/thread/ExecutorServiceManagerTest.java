@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.kernel.thread;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -27,17 +28,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ExecutorServiceManagerTest {
     
-    private static final InheritableThreadLocal<String> INHERITABLE_THREAD_LOCAL = new InheritableThreadLocal<>();
+    private static final TransmittableThreadLocal<String> TRANSMITTABLE_THREAD_LOCAL = new TransmittableThreadLocal<>();
     
     @Test(timeout = 1000L)
-    public void assertInheritableThreadLocalValueChangedForReusedThread() throws InterruptedException {
+    public void assertThreadLocalValueChangedForReusedThread() throws InterruptedException {
         AtomicBoolean finished = new AtomicBoolean(false);
         ExecutorService executorService = new ExecutorServiceManager(1).getExecutorService();
         executorService.submit(() -> {
-            INHERITABLE_THREAD_LOCAL.set("foo");
-            executorService.submit(() -> assertThat(INHERITABLE_THREAD_LOCAL.get(), is("foo")));
+            TRANSMITTABLE_THREAD_LOCAL.set("foo");
+            executorService.submit(() -> assertThat(TRANSMITTABLE_THREAD_LOCAL.get(), is("foo")));
         });
-        INHERITABLE_THREAD_LOCAL.set("bar");
+        TRANSMITTABLE_THREAD_LOCAL.set("bar");
         executorService.submit(() -> {
             assertValueChangedInConcurrencyThread();
             finished.set(true);
@@ -49,8 +50,7 @@ public final class ExecutorServiceManagerTest {
     
     private void assertValueChangedInConcurrencyThread() {
         try {
-            assertThat(INHERITABLE_THREAD_LOCAL.get(), is("foo"));
-//            assertThat(INHERITABLE_THREAD_LOCAL.get(), is("bar"));
+            assertThat(TRANSMITTABLE_THREAD_LOCAL.get(), is("bar"));
         } catch (final AssertionError ex) {
             ex.printStackTrace();
             throw ex;
