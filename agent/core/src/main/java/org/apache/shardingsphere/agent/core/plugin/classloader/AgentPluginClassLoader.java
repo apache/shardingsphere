@@ -15,36 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.classloader;
+package org.apache.shardingsphere.agent.core.plugin.classloader;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
+import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
 
 /**
- * Class loader context.
+ * Agent plugin class loader.
  */
-@RequiredArgsConstructor
-public final class ClassLoaderContext {
+public final class AgentPluginClassLoader extends AgentExtraClassLoader {
     
-    private static final Map<ClassLoader, AgentExtraClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
-    
-    @Getter
-    private final ClassLoader appClassLoader;
-    
-    private final Collection<PluginJar> pluginJars;
-    
-    /**
-     * Get plugin class loader.
-     *
-     * @return plugin class loader
-     */
-    public AgentExtraClassLoader getPluginClassLoader() {
-        return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentPluginClassLoader(key, pluginJars));
+    public AgentPluginClassLoader(final ClassLoader classLoader, final Collection<PluginJar> pluginJars) {
+        super(classLoader, pluginJars, Collections.emptyList());
     }
 }
