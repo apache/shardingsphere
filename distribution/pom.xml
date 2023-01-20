@@ -30,8 +30,8 @@
     
     <modules>
         <module>src</module>
-        <module>jdbc</module>
         <module>agent</module>
+        <module>jdbc</module>
         <module>proxy</module>
         <module>proxy-native</module>
     </modules>
