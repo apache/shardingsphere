@@ -66,39 +66,35 @@ public final class AgentLoggerFactory {
         return classLoader;
     }
     
-    @SneakyThrows({URISyntaxException.class, IOException.class})
+    @SneakyThrows(URISyntaxException.class)
     private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
         File agentFle = new File(AgentLoggerFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
-            Collection<JarFile> pluginJars = getPluginJars(getJarFiles(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib"))));
-            File resourcePath = new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
-            return new AgentLoggerClassLoader(pluginJars, resourcePath);
-        }
-        return new AgentLoggerClassLoader();
-    }
-    
-    private static Collection<JarFile> getPluginJars(final Collection<File> jarFiles) throws IOException {
-        Collection<JarFile> result = new LinkedList<>();
-        for (File each : jarFiles) {
-            result.add(new JarFile(each, true));
-        }
-        return result;
+        return agentFle.isFile() && agentFle.getName().endsWith(".jar") ? new AgentLoggerClassLoader(getLoggingJars(), getLoggingResourcePath()) : new AgentLoggerClassLoader();
     }
     
     @SneakyThrows(IOException.class)
-    private static Collection<File> getJarFiles(final File file) {
-        Collection<File> result = new LinkedList<>();
-        Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
+    private static Collection<JarFile> getLoggingJars() {
+        Collection<JarFile> result = new LinkedList<>();
+        Files.walkFileTree(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib")).toPath(), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
                 if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
-                    result.add(path.toFile());
+                    result.add(getJarFile(path));
                 }
                 return FileVisitResult.CONTINUE;
             }
         });
         return result;
+    }
+    
+    @SneakyThrows(IOException.class)
+    private static JarFile getJarFile(final Path path) {
+        return new JarFile(path.toFile(), true);
+    }
+    
+    private static File getLoggingResourcePath() {
+        return new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
     }
     
     /**
