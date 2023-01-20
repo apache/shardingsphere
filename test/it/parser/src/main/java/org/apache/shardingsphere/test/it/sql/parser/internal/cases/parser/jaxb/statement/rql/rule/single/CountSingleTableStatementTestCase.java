@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
 /**
- * Count single table rule statement test case.
+ * Count single table statement test case.
  */
 public final class CountSingleTableStatementTestCase extends DatabaseContainedTestCase {
 }

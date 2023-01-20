@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Count single table rule statement.
+ * Count single table statement.
  */
 public final class CountSingleTableStatement extends ShowRulesStatement {
     

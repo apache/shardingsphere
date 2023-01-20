@@ -33,7 +33,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Result set for single table rule.
+ * Result set for single table.
  */
 public final class CountSingleTableResultSet implements DatabaseDistSQLResultSet {
     
