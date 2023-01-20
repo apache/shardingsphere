@@ -22,7 +22,6 @@ import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.result.JaegerTraceResult;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.result.JaegerTraceResult.JaegerTraceResultData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,9 +61,6 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
         String traceURL = url + "traces?service=" + serviceName;
         JaegerTraceResult jaegerTraceResult = OkHttpUtils.getInstance().get(traceURL, JaegerTraceResult.class);
         assertFalse("Jaeger should have tracing data.", jaegerTraceResult.getData().isEmpty());
-        for (JaegerTraceResultData each : jaegerTraceResult.getData()) {
-            String traceIdURL = url + "traces/" + each.getTraceID();
-            assertFalse(String.format("Jaeger trace '%s' should has corresponding data", traceIdURL), OkHttpUtils.getInstance().get(traceIdURL, JaegerTraceResult.class).getData().isEmpty());
-        }
+        jaegerTraceResult.getData().forEach(each -> assertFalse("Jaeger should have span data.", each.getSpans().isEmpty()));
     }
 }

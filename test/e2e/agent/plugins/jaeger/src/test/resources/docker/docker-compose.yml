@@ -54,8 +54,8 @@ services:
       - "jaeger:jaeger.agent.tracing.jaeger.host"
       - "zipkin:zipkin.agent.tracing.jaeger.host"
     volumes:
-      - ./proxy/conf:/opt/shardingsphere-proxy-agent-tracing-jaeger/conf
-      - ./agent/conf:/opt/shardingsphere-proxy-agent-tracing-jaeger/agent/conf
+      - ./proxy/conf:/opt/shardingsphere-proxy/conf
+      - ./agent/conf:/opt/shardingsphere-proxy/agent/conf
     depends_on:
       - mysql
       - jaeger
