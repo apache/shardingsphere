@@ -36,6 +36,6 @@ public final class DropEncryptRuleStatementTestCase extends SQLParserTestCase {
     @XmlAttribute(name = "if-exists")
     private boolean ifExists;
     
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
+    @XmlElement(name = "rule-name")
+    private final List<String> ruleNames = new LinkedList<>();
 }

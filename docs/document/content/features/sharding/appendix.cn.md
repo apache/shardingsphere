@@ -3,6 +3,10 @@ title = "附录"
 weight = 3
 +++
 
+有限支持的 SQL：
+
+- 使用 JDBC 规范 `getGeneratedKeys` 接口返回自增主键时，需要配合使用支持自增的分布式主键生成器，不支持其他类型的分布式主键生成器
+
 不支持的 SQL：
 
 - CASE WHEN 中包含子查询

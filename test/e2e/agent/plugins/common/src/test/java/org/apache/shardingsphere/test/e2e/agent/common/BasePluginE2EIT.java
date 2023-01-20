@@ -57,5 +57,6 @@ public abstract class BasePluginE2EIT {
         for (Long each : results) {
             JDBCAgentTestUtils.deleteOrderByOrderId(each, dataSource);
         }
+        JDBCAgentTestUtils.createExecuteError(dataSource);
     }
 }

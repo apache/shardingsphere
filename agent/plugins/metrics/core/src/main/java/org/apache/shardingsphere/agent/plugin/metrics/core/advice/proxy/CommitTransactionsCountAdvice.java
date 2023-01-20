@@ -19,23 +19,24 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 
 /**
  * Commit transactions count advice for ShardingSphere-Proxy.
  */
 public final class CommitTransactionsCountAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.PROXY_COMMIT_TRANSACTIONS);
-    }
+    private final MetricConfiguration config = new MetricConfiguration("proxy_commit_transactions_total",
+            MetricCollectorType.COUNTER, "Total commit transactions of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
-        MetricsPool.get(MetricIds.PROXY_COMMIT_TRANSACTIONS).ifPresent(MetricsWrapper::inc);
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc();
     }
 }

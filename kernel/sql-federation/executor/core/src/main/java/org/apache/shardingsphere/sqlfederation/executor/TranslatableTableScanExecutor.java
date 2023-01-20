@@ -83,11 +83,8 @@ import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.Filtera
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.StringToRexNodeUtil;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.row.EmptyRowScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
-import org.apache.shardingsphere.sqlfederation.row.MemoryScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowScalarEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
 import java.sql.Connection;
@@ -157,7 +154,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new EmptyRowScalarEnumerator();
+                return new EmptyRowEnumerator();
             }
         };
     }
@@ -173,7 +170,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryScalarEnumerator(tableData.getRows());
+                return new MemoryEnumerator(tableData.getRows());
             }
         };
     }
@@ -204,7 +201,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new SQLFederationRowScalarEnumerator(rows, statements);
+                return new SQLFederationRowEnumerator(rows, statements);
             }
         };
     }

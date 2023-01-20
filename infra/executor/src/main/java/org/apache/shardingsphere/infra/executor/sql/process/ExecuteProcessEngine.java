@@ -100,9 +100,7 @@ public final class ExecuteProcessEngine {
      */
     public static void finishExecution(final String executionID, final SQLExecutionUnit executionUnit, final EventBusContext eventBusContext) {
         Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
-        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            reporter.get().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
-        }
+        reporter.ifPresent(executeProcessReporter -> executeProcessReporter.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext));
     }
     
     /**

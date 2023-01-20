@@ -137,4 +137,13 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
     private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
         return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
     }
+    
+    protected void assertGeneratedKeys(final ResultSet generatedKeys) throws SQLException {
+        if (null == getGeneratedKeyDataSet()) {
+            return;
+        }
+        assertThat("Only support single table for DML.", getGeneratedKeyDataSet().getMetaDataList().size(), is(1));
+        assertMetaData(generatedKeys.getMetaData(), getGeneratedKeyDataSet().getMetaDataList().get(0).getColumns());
+        assertRows(generatedKeys, getGeneratedKeyDataSet().getRows());
+    }
 }

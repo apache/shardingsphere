@@ -34,8 +34,9 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param target the target object
      * @param method the target method
      * @param args all method arguments
+     * @param pluginType plugin type
      */
-    default void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args) {
+    default void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, String pluginType) {
     }
     
     /**
@@ -46,8 +47,9 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param method the target method
      * @param args all method arguments
      * @param result original call result
+     * @param pluginType plugin type
      */
-    default void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
+    default void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, String pluginType) {
     }
     
     /**
@@ -57,7 +59,8 @@ public interface InstanceMethodAdvice extends AgentAdvice {
      * @param method the target method
      * @param args all method arguments
      * @param throwable exception from target method
+     * @param pluginType plugin type
      */
-    default void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable) {
+    default void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, String pluginType) {
     }
 }

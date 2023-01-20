@@ -26,21 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageContainerConstants {
     
-    public static final int MYSQL_EXPOSED_PORT = 3306;
-    
-    public static final int POSTGRESQL_EXPOSED_PORT = 5432;
-    
-    public static final int OPENGAUSS_EXPOSED_PORT = 5432;
-    
     public static final String USERNAME = "test_user";
     
     public static final String PASSWORD = "Test@123";
-    
-    public static final String MYSQL_CONF_IN_CONTAINER = "/etc/mysql/my.cnf";
-    
-    public static final String POSTGRESQL_CONF_IN_CONTAINER = "/etc/postgresql/postgresql.conf";
-    
-    public static final String OPENGAUSS_CONF_IN_CONTAINER = "/usr/local/opengauss/share/postgresql/postgresql.conf.sample";
-    
-    public static final String OPENGAUSS_HBA_IN_CONF_CONTAINER = "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample";
 }

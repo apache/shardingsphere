@@ -154,7 +154,7 @@ We use `config-sharding.yaml`, the default sharding configuration scenario provi
  
 
 - Examine the data results in Prometheus Server and Zipkin Server
-Query `proxy_info` and get the data results through Prometheus Web.
+Query `proxy_state` and get the data results through Prometheus Web.
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qkskv1szv60s1nsigli6.png)
  
 
@@ -165,7 +165,7 @@ Query `proxy_info` and get the data results through Prometheus Web.
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3hi7hqnjhoq7b0xcewxy.png) 
 
 - Examine the data results of Prometheus Server and Zipkin Server
-Query `parse_sql_dml_select_total `data results through Prometheus Web.
+Query `parsed_select_sql_total `data results through Prometheus Web.
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m9a0yzmk4mr8rknzmeyr.png)
  
 Query tracing information via Zipkin Web:

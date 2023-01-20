@@ -34,6 +34,12 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
+    public static final int OPENGAUSS_EXPOSED_PORT = 5432;
+    
+    public static final String OPENGAUSS_CONF_IN_CONTAINER = "/usr/local/opengauss/share/postgresql/postgresql.conf.sample";
+    
+    public static final String OPENGAUSS_HBA_IN_CONF_CONTAINER = "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample";
+    
     private final StorageContainerConfiguration storageContainerConfig;
     
     public OpenGaussContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
@@ -53,12 +59,12 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public int getExposedPort() {
-        return StorageContainerConstants.OPENGAUSS_EXPOSED_PORT;
+        return OPENGAUSS_EXPOSED_PORT;
     }
     
     @Override
     public int getMappedPort() {
-        return getMappedPort(StorageContainerConstants.OPENGAUSS_EXPOSED_PORT);
+        return getMappedPort(OPENGAUSS_EXPOSED_PORT);
     }
     
     @Override

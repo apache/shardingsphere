@@ -32,7 +32,6 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -168,16 +167,6 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
             }
         }
         return result;
-    }
-    
-    /**
-     * Whether execute SQL serial or not.
-     *
-     * @return true or false
-     */
-    public boolean isSerialExecute() {
-        return connectionSession.getTransactionStatus().isInTransaction()
-                && (TransactionType.LOCAL == connectionSession.getTransactionStatus().getTransactionType() || TransactionType.XA == connectionSession.getTransactionStatus().getTransactionType());
     }
     
     /**

@@ -36,14 +36,14 @@ plugins:
         jaeger-sampler-param: "1"
         jaeger-reporter-log-spans: "true"
         jaeger-reporter-flush-interval: "1"
-    Zipkin:
-      host: "zipkin.agent.tracing.zipkin.host"
-      port: 9411
-      props:
-        service-name: "shardingsphere"
-        url-version: "/api/v2/spans"
-        sampler-type: "const"
-        sampler-param: "1"
+#    Zipkin:
+#      host: "zipkin.agent.tracing.zipkin.host"
+#      port: 9411
+#      props:
+#        service-name: "shardingsphere"
+#        url-version: "/api/v2/spans"
+#        sampler-type: "const"
+#        sampler-param: "1"
 #    OpenTracing:
 #      props:
 #        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"

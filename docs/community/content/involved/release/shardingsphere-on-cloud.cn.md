@@ -6,7 +6,11 @@ chapter = true
 
 ## 准备工作
 
-### 1. 确认 Release Note
+### 1. 检查并更新 NOTICE
+
+检查并更新 NOTICE 文件中的年份。
+
+### 2. 确认 Release Note
 
 Release Note 需提供中文/英文两种版本，确认中英文描述是否明确，并按以下标签进行分类：
 
@@ -15,7 +19,7 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 功能增强
 1. 漏洞修复
 
-### 2. 确认 Issue 列表
+### 3. 确认 Issue 列表
 
 打开 [Github Issues](https://github.com/apache/shardingsphere-on-cloud/issues)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
 
@@ -23,7 +27,7 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Issue。
 
-### 3. 确认 Pull Request 列表
+### 4. 确认 Pull Request 列表
 
 打开 [Github Pull requests](https://github.com/apache/shardingsphere-on-cloud/pulls)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull Request:
 
@@ -31,12 +35,12 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 无法 Merge 且不影响本次发版的 Pull Request，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Pull Request。
 
-### 4. 发送讨论邮件
+### 5. 发送讨论邮件
 
 1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
 1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
-### 5. 关闭 Milestone
+### 6. 关闭 Milestone
 
 打开 [Github Milestone](https://github.com/apache/shardingsphere-on-cloud/milestones)
 
@@ -74,7 +78,7 @@ gpg --gen-key
 
 根据提示完成 key：
 
-> 注意：请使用 Apache mail 生成 GPG 的 Key。
+> 注意：请使用个人 Apache 邮箱生成 GPG 的 Key。
 
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
@@ -128,6 +132,8 @@ sub   4096R/0B7EF5B2 2019-03-20
 
 其中 700E6065 为公钥 ID。
 
+或者使用 `gpg --list-sigs` 查看。
+
 ### 4. 导出 v1 版本密钥
 
 ``` shell
@@ -161,10 +167,9 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-### 2. 更新 charts 版本
+### 2. 更新 charts 版本及 release notes
 
-在发布分支上更新 `Chart.yaml` 文件中的版本：
-
+在发布分支上更新文件中的版本，包括：`Chart.yaml`、`values.yaml`、文档。示例：
 ```
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
 ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
@@ -172,13 +177,15 @@ git push origin ${RELEASE.VERSION}-release
 
 将 `version` 修改为 `${RELEASE.VERSION}`，`appVersion` 修改为对应的应用版本，并提交 PR 到发布分支。
 
+更新 `RELEASE-NOTES.md`。
+
 ### 3. 创建发布 tag
 
-在发布分支上创建发布 tag，并提交 PR 到发布分支。
+在发布分支上创建发布 tag，并推送到远程仓库。
 
 ```shell
 git tag ${RELEASE.VERSION}
-git push origin --tags
+git push origin ${RELEASE.VERSION}
 ```
 
 ### 4. 打包 charts
@@ -199,20 +206,16 @@ cd ~/shardingsphere-on-cloud/charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-charts
 helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
-### 5. 上传 charts，生成 index
-1. 上传上一步生成的 tgz 文件至 release 的 Assets 下
-2. 生成 index.yaml
-```shell
-cd ~/shardingsphere-on-cloud/charts
-mkdir release
-mv *.tgz release
-git checkout gh-pages 
-mv ~/shardingsphere-on-cloud/index.yaml index.yaml
-helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases/download/${RELEASE.VERSION}  . --merge index.yaml
-```
-3. 替换原有的 index.yaml
 
+### 5. GitHub 版本预发布
 
+在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面创建新版本。
+
+编辑版本号及版本说明，选择 `Set as a pre-release`，并点击 `Publish release`。
+
+### 6. 上传 charts
+
+上传前面生成的 tgz 文件至 GitHub release 的 Assets 下。
 
 ## 检查发布结果
 
@@ -275,23 +278,6 @@ helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
   - 依赖许可证的完整版全部在 `license` 目录；
   - 如果依赖的是 Apache 许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中。
-
-### 3. 检查仓库制品
-
-添加仓库
-```shell
-helm repo remove apache
-helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
-helm search repo apache
-```
-
-可以查询到三个制品即为发布成功，`helm repo add` 和 `helm search repo -l` 会根据 index.yaml 中的校验值进行校验 
-
-```shell
-NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
-apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
-apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
-```
 
 ## 发起投票
 
@@ -384,9 +370,60 @@ Thank you everyone for taking the time to review the release and help us.
 I will process to publish the release and send ANNOUNCE.
 ```
 
-3. 邮件通知版本发布完成
+## 完成发布
 
-发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
+### 1. 合并 release 分支到 main，合并完成后删除 release 分支
+
+提交 PR 到 GitHub，将分支 `${RELEASE.VERSION}-release` 合并到 `main`。
+
+### 2. 生成并替换 index.yaml
+
+1. 生成 index.yaml
+
+```shell
+cd ~/shardingsphere-on-cloud/charts
+mkdir release
+mv *.tgz release
+git checkout gh-pages
+cd release
+mv ~/shardingsphere-on-cloud/index.yaml .
+helm repo index --url https://github.com/apache/shardingsphere-on-cloud/releases/download/${RELEASE.VERSION} . --merge index.yaml
+```
+
+检查 index.yaml 新生成的 url 是否可用。
+
+2. 替换原有的 index.yaml
+
+```shell
+cp index.yaml ~/shardingsphere-on-cloud/index.yaml
+```
+
+提交 PR 到 GitHub 并合并到 `gh-pages` 分支。
+
+### 3. 检查仓库制品
+
+更新仓库并查询：
+```shell
+helm repo remove apache
+helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
+helm search repo apache
+```
+`helm repo add` 和 `helm search repo -l` 会根据 index.yaml 中的校验值进行校验。
+
+如果查询到以下两个制品并且版本号正确，即为发布成功：
+```shell
+NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
+apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
+apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
+```
+
+### 4. GitHub 版本发布
+
+在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面编辑最新版本， 选择 `Set as the latest release`，并点击 `Update release`。
+
+### 5. 邮件通知版本发布完成
+
+使用**纯文本模式**发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
 通知邮件模板：
 

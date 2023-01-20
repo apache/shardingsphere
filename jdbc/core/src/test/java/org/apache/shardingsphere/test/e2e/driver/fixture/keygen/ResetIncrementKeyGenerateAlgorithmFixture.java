@@ -45,4 +45,9 @@ public final class ResetIncrementKeyGenerateAlgorithmFixture implements KeyGener
     public String getType() {
         return "JDBC.RESET_INCREMENT.FIXTURE";
     }
+    
+    @Override
+    public boolean isSupportAutoIncrement() {
+        return true;
+    }
 }

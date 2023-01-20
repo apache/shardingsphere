@@ -19,11 +19,12 @@ package org.apache.shardingsphere.agent.core.classloader;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
+import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarFile;
 
 /**
  * Class loader context.
@@ -31,19 +32,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public final class ClassLoaderContext {
     
-    private static final Map<ClassLoader, AgentClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
+    private static final Map<ClassLoader, AgentExtraClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
     
     @Getter
     private final ClassLoader appClassLoader;
     
-    private final Collection<PluginJar> pluginJars;
+    private final Collection<JarFile> pluginJars;
     
     /**
-     * Get agent class loader.
+     * Get plugin class loader.
      *
-     * @return agent class loader
+     * @return plugin class loader
      */
-    public AgentClassLoader getAgentClassLoader() {
-        return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentClassLoader(key, pluginJars));
+    public AgentExtraClassLoader getPluginClassLoader() {
+        return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentPluginClassLoader(key, pluginJars));
     }
 }

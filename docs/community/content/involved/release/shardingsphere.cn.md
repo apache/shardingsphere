@@ -6,7 +6,13 @@ chapter = true
 
 ## 准备工作
 
-### 1. 确认 Release Note
+### 1. 检查并更新 LICENSE 和 NOTICE
+
+检查并更新 LICENSE 文件中的依赖版本号。
+
+检查并更新 NOTICE 文件中的年份。
+
+### 2. 确认 Release Note
 
 Release Note 需提供中文/英文两种版本，确认中英文描述是否明确，并按以下标签进行分类：
 
@@ -15,7 +21,7 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 功能增强
 1. 漏洞修复
 
-### 2. 确认 Issue 列表
+### 3. 确认 Issue 列表
 
 打开 [Github Issues](https://github.com/apache/shardingsphere/issues)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
 
@@ -23,7 +29,7 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Issue。
 
-### 3. 确认 Pull Request 列表
+### 4. 确认 Pull Request 列表
 
 打开 [Github Pull requests](https://github.com/apache/shardingsphere/pulls)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull Request:
 
@@ -31,13 +37,13 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 无法 Merge 且不影响本次发版的 Pull Request，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Pull Request。
 
-### 4. 发送讨论邮件
+### 5. 发送讨论邮件
 
 1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note；
 1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
 1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
-### 5. 关闭 Milestone
+### 6. 关闭 Milestone
 
 打开 [Github Milestone](https://github.com/apache/shardingsphere/milestones) 
 
@@ -75,7 +81,7 @@ gpg --gen-key
 
 根据提示完成 key：
 
-> 注意：请使用 Apache mail 生成 GPG 的 Key。
+> 注意：请使用个人 Apache 邮箱生成 GPG 的 Key。
 
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
@@ -129,6 +135,8 @@ sub   4096R/0B7EF5B2 2019-03-20
 
 其中 700E6065 为公钥 ID。
 
+或者运行 `gpg --list-sigs` 查看。
+
 ### 4. 将公钥同步到服务器
 
 命令如下：
@@ -143,14 +151,18 @@ gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 
 ### 1. 创建发布分支
 
-假设从 Github 下载的 ShardingSphere 源代码在 `~/shardingsphere/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
-创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
+假设从 GitHub 下载的 ShardingSphere 源代码在 `~/open_source/shardingsphere/`，从本地重新克隆一份到 `~/shardingsphere/` 目录。
+
+假设即将发布的版本为 `${RELEASE.VERSION}`，创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
 
 ```shell
-## ${name} 为源码所在分支，如：master，dev-4.x
-git clone --branch ${name} https://github.com/apache/shardingsphere.git ~/shardingsphere
+cd ~
+git clone ~/open_source/shardingsphere
 cd ~/shardingsphere/
-git pull
+git remote remove origin
+git remote add origin https://github.com/apache/shardingsphere
+git fetch
+git checkout -b master --track origin/master
 git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
@@ -179,7 +191,7 @@ GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`
 
 ## 发布 Apache Maven 中央仓库
 
-### 1. 设置 settings.xml 文件
+### 1. 设置 settings-security.xml 和 settings.xml 文件
 
 将以下模板添加到 `~/.m2/settings.xml` 中，所有密码需要加密后再填入。
 加密设置可参考[这里](http://maven.apache.org/guides/mini/guide-encryption.html)。
@@ -202,6 +214,10 @@ GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`
 ```
 
 ### 2. 发布预校验
+
+```shell
+export GPG_TTY=$(tty)
+```
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
@@ -233,17 +249,23 @@ mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 
 ```shell
 git push origin ${RELEASE.VERSION}-release
-git push origin --tags
+git push origin ${RELEASE.VERSION}
 ```
 
 ### 4. 部署发布
 
+使用稳定的网络环境，本过程可能持续`1`个小时以上。
+
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
+mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
 ```
 
+-DlocalCheckout=true：从本地 checkout 代替从远程仓库拉取代码。
+
 执行完该命令后，待发布版本会自动上传到 Apache 的临时筹备仓库 (staging repository)。
-访问 https://repository.apache.org/#stagingRepositories，使用 Apache 的 LDAP 账户登录后，就会看到上传的版本，`Repository` 列的内容即为 ${STAGING.REPOSITORY}。
+
+访问 [staging repository](https://repository.apache.org/#stagingRepositories )，使用 Apache 的 LDAP 账户登录后，就会看到上传的版本。`Repository` 列的内容即为 ${STAGING.REPOSITORY}。
+
 点击 `Close` 来告诉 Nexus 这个构建已经完成，只有这样该版本才是可用的。
 如果电子签名等出现问题，`Close` 会失败，可以通过 `Activity` 查看失败信息。
 
@@ -265,30 +287,33 @@ svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/de
 cd ~/ss_svn/dev/shardingsphere
 ```
 
-### 2. 添加 gpg 公钥
+### 2. 添加 gpg 公钥并提交
 
-仅第一次部署的账号需要添加，只要 `KEYS` 中包含已经部署过的账户的公钥即可。
+**仅第一次**部署的账号需要添加，只要 `KEYS` 中包含已经部署过的账户的公钥即可。
 
 ```shell
 gpg -a --export ${GPG用户名} >> KEYS
+svn --username=${APACHE LDAP 用户名} commit -m 'Add gpg key for ${APACHE LDAP 用户名}'
 ```
+
+可以运行 `gpg --show-keys KEYS` 验证公钥是否已添加。
 
 ### 3. 将待发布的内容添加至 SVN 目录
 
 创建版本号目录。
 
 ```shell
-mkdir -p ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+mkdir ${RELEASE.VERSION}
 ```
 
 将源码包、二进制包和 ShardingSphere-Proxy 可执行二进制包添加至 SVN 工作目录。
 
 ```shell
-cp -f ~/shardingsphere/distribution/src/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/agent/distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cd ${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/src/target/*.zip* .
+cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* .
+cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* .
+cp -f ~/shardingsphere/distribution/agent/target/*.tar.gz* .
 ```
 
 ### 4. 提交 Apache SVN
@@ -491,6 +516,8 @@ I will process to publish the release and send ANNOUNCE.
 
 ### 1. 将源码、二进制包以及 KEYS 从 svn 的 dev 目录移动到 release 目录
 
+需要 PMC 帮忙操作。
+
 将发布内容移动到发布区：
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
@@ -502,7 +529,7 @@ svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "de
 svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
-### 2. 在 Apache Staging 仓库找到 ShardingSphere 并点击 `Release`
+### 2. 在 [staging repository](https://repository.apache.org/#stagingRepositories ) 找到 ShardingSphere 并点击 `Release`
 
 ### 3. 发布 Docker
 
@@ -526,6 +553,7 @@ docker login
 3.3 构建并推送 ShardingSphere-Proxy Docker image
 
 ```shell
+cd ~/shardingsphere
 git checkout ${RELEASE.VERSION}
 ./mvnw -pl distribution/proxy -B -Prelease,docker.buildx.push clean package
 ```
@@ -534,11 +562,15 @@ git checkout ${RELEASE.VERSION}
 
 查看 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) 是否有发布的镜像，确保镜像同时支持 `linux/amd64` 和 `linux/arm64`。
 
-### 4. GitHub版本发布
+```shell
+docker logout
+```
 
-在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面的 `${RELEASE.VERSION}` 版本上点击 `Edit`。
+### 4. GitHub 版本发布
 
-编辑版本号及版本说明，并点击 `Publish release`。
+在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面创建新版本。
+
+编辑版本号及版本说明，选择 `Set as the latest release`，并点击 `Publish release`。
 
 ### 5. 从发布区移除上一版本内容
 
@@ -570,9 +602,9 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 
 ### 9. 邮件通知版本发布完成
 
-发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
+使用**纯文本模式**发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
-通知邮件模板（使用纯文本模式）：
+通知邮件模板：
 
 标题：
 

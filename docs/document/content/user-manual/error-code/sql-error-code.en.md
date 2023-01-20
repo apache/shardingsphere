@@ -98,6 +98,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 44000     | 18002       | Altered process configuration does not exist. |
+| 44000     | 18003       | Mode configuration does not exist. |
+| 44000     | 18004       | Target database name is null. You could define it in DistSQL or select a database. |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`. |
 | 42S01     | 18030       | Duplicate storage unit names \`%s\`. |
 | 42S02     | 18031       | Storage units names \`%s\` do not exist. |
@@ -106,6 +108,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 18051       | Data check table \`%s\` failed. |
 | 0A000     | 18052       | Unsupported pipeline database type \`%s\`. |
 | 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`. |
+| 0A000     | 18054       | Unsupported mode type \`%s\`. |
 | HY000     | 18080       | Can not find pipeline job \`%s\`. |
 | HY000     | 18081       | Job has already started. |
 | HY000     | 18082       | Sharding count of job \`%s\` is 0. |

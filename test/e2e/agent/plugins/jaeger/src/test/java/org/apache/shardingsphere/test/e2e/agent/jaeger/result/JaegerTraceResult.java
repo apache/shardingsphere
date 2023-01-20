@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger.result;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
@@ -30,7 +31,7 @@ import java.util.List;
 @Setter
 public final class JaegerTraceResult implements JsonConfiguration {
     
-    private List<Data> data;
+    private List<JaegerTraceResultData> data;
     
     private int total;
     
@@ -42,11 +43,12 @@ public final class JaegerTraceResult implements JsonConfiguration {
     
     @Getter
     @Setter
-    public static final class Data {
+    public static final class JaegerTraceResultData {
         
-        private String traceID;
+        @SerializedName("traceID")
+        private String traceId;
         
-        private List<Span> spans;
+        private List<Object> spans;
         
         private Object processes;
         
@@ -57,9 +59,11 @@ public final class JaegerTraceResult implements JsonConfiguration {
     @Setter
     public static final class Span {
         
-        private String traceID;
+        @SerializedName("traceID")
+        private String traceId;
         
-        private String spanID;
+        @SerializedName("spanID")
+        private String spanId;
         
         private int flags;
         
@@ -75,7 +79,8 @@ public final class JaegerTraceResult implements JsonConfiguration {
         
         private List<String> logs;
         
-        private String processID;
+        @SerializedName("processID")
+        private String processId;
         
         private String warnings;
     }

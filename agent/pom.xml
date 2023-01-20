@@ -32,8 +32,6 @@
         <module>api</module>
         <module>core</module>
         <module>plugins</module>
-        
-        <module>distribution</module>
     </modules>
     
     <properties>

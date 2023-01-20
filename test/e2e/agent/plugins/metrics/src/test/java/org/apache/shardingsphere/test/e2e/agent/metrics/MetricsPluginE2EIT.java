@@ -38,30 +38,6 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    public static final String ROUTE_SQL_INSERT = "route_sql_insert_total";
-    
-    public static final String ROUTE_SQL_UPDATE = "route_sql_update_total";
-    
-    public static final String ROUTE_SQL_DELETE = "route_sql_delete_total";
-    
-    public static final String ROUTE_SQL_SELECT = "route_sql_select_total";
-    
-    public static final String ROUTE_DATASOURCE = "route_datasource_total";
-    
-    public static final String ROUTE_TABLE = "route_table_total";
-    
-    public static final String PROXY_CURRENT_CONNECTIONS = "proxy_current_connections";
-    
-    public static final String PROXY_REQUESTS = "proxy_requests_total";
-    
-    public static final String PROXY_COMMIT_TRANSACTIONS = "proxy_commit_transactions_total";
-    
-    public static final String PROXY_ROLLBACK_TRANSACTIONS = "proxy_rollback_transactions_total";
-    
-    public static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis_bucket";
-    
-    public static final String PROXY_EXECUTE_ERRORS = "proxy_execute_errors_total";
-    
     @Test
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
@@ -87,18 +63,14 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     private Collection<String> buildMetricsNames() {
         Collection<String> result = new LinkedHashSet<>();
-        result.add(PROXY_REQUESTS);
-        result.add(PROXY_CURRENT_CONNECTIONS);
-        result.add(PROXY_EXECUTE_LATENCY_MILLIS);
-        result.add(ROUTE_SQL_SELECT);
-        result.add(ROUTE_SQL_UPDATE);
-        result.add(ROUTE_SQL_DELETE);
-        result.add(ROUTE_SQL_INSERT);
-        result.add(ROUTE_DATASOURCE);
-        result.add(ROUTE_TABLE);
-        result.add(PROXY_COMMIT_TRANSACTIONS);
-        result.add(PROXY_ROLLBACK_TRANSACTIONS);
-        result.add(PROXY_EXECUTE_ERRORS);
+        result.add("proxy_requests_total");
+        result.add("proxy_current_connections");
+        result.add("proxy_execute_latency_millis_bucket");
+        result.add("routed_sql_total");
+        result.add("routed_result_total");
+        result.add("proxy_commit_transactions_total");
+        result.add("proxy_rollback_transactions_total");
+        result.add("proxy_execute_errors_total");
         return result;
     }
     

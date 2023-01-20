@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterModeEnum;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
@@ -37,7 +37,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JdbcStandaloneTestParameterGenerator {
     
-    private static final Collection<String> ADAPTERS = Collections.singleton(AdapterContainerConstants.JDBC);
+    private static final Collection<String> ADAPTERS = Collections.singleton(AdapterContainerEnum.JDBC.getValue());
     
     private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"));
     
@@ -50,7 +50,7 @@ public final class JdbcStandaloneTestParameterGenerator {
      * @return assertion test parameter
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getAssertionTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), AdapterModeEnum.STANDALONE.getValue(), DATABASE_TYPES).getAssertionTestParameter(sqlCommandType);
     }
     
     /**
@@ -60,6 +60,6 @@ public final class JdbcStandaloneTestParameterGenerator {
      * @return case test parameter
      */
     public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getCaseTestParameter(sqlCommandType);
+        return new E2ETestParameterGenerator(ADAPTERS, ENV.getScenarios(), AdapterModeEnum.STANDALONE.getValue(), DATABASE_TYPES).getCaseTestParameter(sqlCommandType);
     }
 }

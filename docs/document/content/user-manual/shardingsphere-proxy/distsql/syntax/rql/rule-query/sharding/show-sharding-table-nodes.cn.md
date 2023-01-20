@@ -13,7 +13,7 @@ weight = 10
 {{% tab name="语法" %}}
 ```sql
 ShowShardingTableNode::=
-  'SHOW' 'SHARDING' 'TABLE' 'NODE' ('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'NODES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -71,7 +71,7 @@ mysql> SHOW SHARDING TABLE NODES;
 
 ### 保留字
 
-`SHOW`、`SHARDING`、`TABLE`、`NODE`、`FROM`
+`SHOW`、`SHARDING`、`TABLE`、`NODES`、`FROM`
 
 ### 相关链接
 

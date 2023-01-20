@@ -49,6 +49,6 @@ public final class AdviceFactory {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private AgentAdvice createAdvice(final String adviceClassName) {
-        return (AgentAdvice) Class.forName(adviceClassName, true, classLoaderContext.getAgentClassLoader()).getDeclaredConstructor().newInstance();
+        return (AgentAdvice) Class.forName(adviceClassName, true, classLoaderContext.getPluginClassLoader()).getDeclaredConstructor().newInstance();
     }
 }

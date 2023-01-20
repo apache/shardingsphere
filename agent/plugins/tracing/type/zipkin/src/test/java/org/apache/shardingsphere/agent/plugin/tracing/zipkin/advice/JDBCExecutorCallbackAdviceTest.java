@@ -45,8 +45,8 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @Test
     public void assertMethod() {
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "Zipkin");
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "Zipkin");
         Span span = COLLECTOR.pop();
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
@@ -62,9 +62,9 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     @Test
     public void assertExceptionHandle() {
         JDBCExecutorCallbackAdvice advice = new JDBCExecutorCallbackAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()});
-        advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null);
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "Zipkin");
+        advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException(), "Zipkin");
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "Zipkin");
         Span span = COLLECTOR.pop();
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();

@@ -14,7 +14,7 @@ weight = 10
 {{% tab name="Grammar" %}}
 ```sql
 ShowShardingTableNode::=
-  'SHOW' 'SHARDING' 'TABLE' 'NODE' ('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'NODES' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -72,7 +72,7 @@ mysql> SHOW SHARDING TABLE NODES;
 
 ### Reserved word
 
-`SHOW`, `SHARDING`, `TABLE`, `NODE`, `FROM`
+`SHOW`, `SHARDING`, `TABLE`, `NODES`, `FROM`
 
 ### Related links
 
