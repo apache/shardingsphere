@@ -54,20 +54,13 @@ import java.util.stream.Collectors;
  */
 public final class XAShardingSphereTransactionManager implements ShardingSphereTransactionManager {
     
-    private static final Collection<String> XA_PROVIDERS;
-    
     private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
     
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
-    static {
-        XA_PROVIDERS = ShardingSphereServiceLoader.getServiceInstances(XATransactionManagerProvider.class)
-                .stream().map(TypedSPI::getType).collect(Collectors.toSet());
-    }
-    
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
-        xaTransactionManagerProvider = null == providerType || !XA_PROVIDERS.contains(providerType)
+        xaTransactionManagerProvider = null == providerType || !containsProviderType(providerType)
                 ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
                 : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, providerType, new Properties());
         xaTransactionManagerProvider.init();
