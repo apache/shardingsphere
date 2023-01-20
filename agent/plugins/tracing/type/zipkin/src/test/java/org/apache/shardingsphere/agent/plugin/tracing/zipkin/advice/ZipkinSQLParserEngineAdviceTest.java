@@ -22,7 +22,7 @@ import brave.Tracing;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.zipkin.span.RootSpanContext;
+import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
