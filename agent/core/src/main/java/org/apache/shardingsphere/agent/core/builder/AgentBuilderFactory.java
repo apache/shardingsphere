@@ -24,11 +24,11 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 /**
  * Agent builder factory.
@@ -46,7 +46,7 @@ public final class AgentBuilderFactory {
      * @return created agent builder
      */
     public static AgentBuilder create(final Map<String, PluginConfiguration> pluginConfigs,
-                                      final Collection<PluginJar> pluginJars, final Map<String, AdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {
+                                      final Collection<JarFile> pluginJars, final Map<String, AdvisorConfiguration> advisorConfigs, final boolean isEnhancedForProxy) {
         return new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())

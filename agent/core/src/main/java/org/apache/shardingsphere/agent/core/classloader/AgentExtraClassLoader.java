@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.classloader;
 
 import com.google.common.io.ByteStreams;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -44,15 +44,15 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
         registerAsParallelCapable();
     }
     
-    private final Collection<PluginJar> pluginJars;
+    private final Collection<JarFile> pluginJars;
     
     private final Collection<File> resourcePaths;
     
-    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars) {
+    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<JarFile> pluginJars) {
         this(appClassLoader, pluginJars, Collections.emptyList());
     }
     
-    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<PluginJar> pluginJars, final Collection<File> resourcePaths) {
+    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<JarFile> pluginJars, final Collection<File> resourcePaths) {
         super(appClassLoader);
         this.pluginJars = pluginJars;
         this.resourcePaths = resourcePaths;
@@ -61,8 +61,8 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = convertClassNameToPath(name);
-        for (PluginJar each : pluginJars) {
-            ZipEntry entry = each.getJarFile().getEntry(path);
+        for (JarFile each : pluginJars) {
+            ZipEntry entry = each.getEntry(path);
             if (null == entry) {
                 continue;
             }
@@ -80,14 +80,14 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
         return String.join("", className.replace(".", "/"), ".class");
     }
     
-    private void definePackage(final String className, final PluginJar pluginJar) throws IOException {
+    private void definePackage(final String className, final JarFile pluginJar) throws IOException {
         int index = className.lastIndexOf('.');
         if (-1 == index) {
             return;
         }
         String packageName = className.substring(0, index);
         if (null == getPackage(packageName)) {
-            definePackage(packageName, pluginJar.getJarFile().getManifest());
+            definePackage(packageName, pluginJar.getManifest());
         }
     }
     
@@ -102,15 +102,15 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
         definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
-    private Class<?> defineClass(final String name, final PluginJar pluginJar, final ZipEntry entry) throws IOException {
-        byte[] data = ByteStreams.toByteArray(pluginJar.getJarFile().getInputStream(entry));
+    private Class<?> defineClass(final String name, final JarFile pluginJar, final ZipEntry entry) throws IOException {
+        byte[] data = ByteStreams.toByteArray(pluginJar.getInputStream(entry));
         return defineClass(name, data, 0, data.length);
     }
     
     @Override
     protected Enumeration<URL> findResources(final String name) {
         Collection<URL> result = new LinkedList<>();
-        for (PluginJar each : pluginJars) {
+        for (JarFile each : pluginJars) {
             findResource(name, each).ifPresent(result::add);
         }
         if (result.isEmpty()) {
@@ -125,13 +125,13 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
                 .orElseGet(() -> findResourcesFromResourcePaths(name).stream().findFirst().orElse(null));
     }
     
-    private Optional<URL> findResource(final String name, final PluginJar pluginJar) {
-        JarEntry entry = pluginJar.getJarFile().getJarEntry(name);
+    private Optional<URL> findResource(final String name, final JarFile pluginJar) {
+        JarEntry entry = pluginJar.getJarEntry(name);
         if (null == entry) {
             return Optional.empty();
         }
         try {
-            return Optional.of(new URL(String.format("jar:file:%s!/%s", pluginJar.getSourcePath().getAbsolutePath(), name)));
+            return Optional.of(new URL(String.format("jar:file:%s!/%s", pluginJar.getName(), name)));
         } catch (final MalformedURLException ignored) {
             return Optional.empty();
         }

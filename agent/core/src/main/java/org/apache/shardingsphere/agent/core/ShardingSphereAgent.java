@@ -20,19 +20,19 @@ package org.apache.shardingsphere.agent.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.builder.AgentBuilderFactory;
-import org.apache.shardingsphere.agent.core.path.AgentPath;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationLoader;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
+import org.apache.shardingsphere.agent.core.builder.AgentBuilderFactory;
+import org.apache.shardingsphere.agent.core.path.AgentPath;
 import org.apache.shardingsphere.agent.core.plugin.config.PluginConfigurationLoader;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.Collection;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 /**
  * ShardingSphere agent.
@@ -50,7 +50,7 @@ public final class ShardingSphereAgent {
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         File rootPath = AgentPath.getRootPath();
         Map<String, PluginConfiguration> pluginConfigs = PluginConfigurationLoader.load(rootPath);
-        Collection<PluginJar> pluginJars = PluginJarLoader.load(rootPath);
+        Collection<JarFile> pluginJars = PluginJarLoader.load(rootPath);
         boolean isEnhancedForProxy = isEnhancedForProxy();
         Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(pluginJars, pluginConfigs.keySet(), isEnhancedForProxy);
         AgentBuilderFactory.create(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy).installOn(instrumentation);

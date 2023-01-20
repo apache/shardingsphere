@@ -20,11 +20,11 @@ package org.apache.shardingsphere.agent.core.classloader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarFile;
 
 /**
  * Class loader context.
@@ -37,7 +37,7 @@ public final class ClassLoaderContext {
     @Getter
     private final ClassLoader appClassLoader;
     
-    private final Collection<PluginJar> pluginJars;
+    private final Collection<JarFile> pluginJars;
     
     /**
      * Get plugin class loader.
