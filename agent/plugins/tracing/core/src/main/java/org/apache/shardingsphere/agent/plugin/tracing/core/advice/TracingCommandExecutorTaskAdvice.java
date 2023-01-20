@@ -50,7 +50,7 @@ public abstract class TracingCommandExecutorTaskAdvice<T> implements InstanceMet
     protected abstract void finishRootSpan(T rootSpan, TargetAdviceObject target, int connectionSize);
     
     @Override
-    public final void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, String pluginType) {
+    public final void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
         recordException(RootSpanContext.get(), target, throwable);
     }
     
