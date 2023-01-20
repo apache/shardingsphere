@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class UnifiedCreditCodeRandomReplaceAlgorithmTest {
+public final class UnifiedCreditCodeRandomReplaceAlgorithmTest {
     
     private UnifiedCreditCodeRandomReplaceAlgorithm maskAlgorithm;
     
