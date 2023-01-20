@@ -135,6 +135,18 @@ weight = 9
 |-----------------|----------|-------------|
 | landline-numbers | String   | 座机号码（以英文逗号分隔） |
 
+#### 统⼀信⽤码随机替换
+
+类型：UNIFIED_CREDIT_CODE_RANDOM_REPLACE
+
+可配置属性：
+
+| *名称*            | *数据类型* | *说明*        |
+|-----------------|----------|-------------|
+| registration-department-codes | String   | 登记管理部门代码（以英文逗号分隔） |
+| category-codes | String   | 机构类别代码（以英文逗号分隔） |
+| administrative-division-codes | String   | 等级管理机关行政区划码（以英文逗号分隔） |
+
 ## 操作步骤
 1. 在脱敏规则中配置脱敏算法；
 2. 为脱敏算法指定脱敏算法类型。
