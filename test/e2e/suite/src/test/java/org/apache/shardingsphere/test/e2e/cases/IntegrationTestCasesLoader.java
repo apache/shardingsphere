@@ -45,11 +45,11 @@ import java.util.stream.Collectors;
  */
 public final class IntegrationTestCasesLoader {
     
+    private static final String FILE_EXTENSION = ".xml";
+    
     private static final IntegrationTestCasesLoader INSTANCE = new IntegrationTestCasesLoader();
     
     private final Map<SQLCommandType, Collection<IntegrationTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
-    
-    private static final String FILE_EXTENSION = ".xml";
     
     /**
      * Get singleton instance.
