@@ -49,6 +49,8 @@ public final class IntegrationTestCasesLoader {
     
     private final Map<SQLCommandType, Collection<IntegrationTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
     
+    private static final String FILE_EXTENSION = ".xml";
+    
     /**
      * Get singleton instance.
      *
@@ -90,7 +92,7 @@ public final class IntegrationTestCasesLoader {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
-                if (file.getFileName().toString().startsWith(sqlCommandType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
+                if (file.getFileName().toString().startsWith(sqlCommandType.getFilePrefix()) && file.getFileName().toString().endsWith(FILE_EXTENSION)) {
                     result.add(file.toFile());
                 }
                 return FileVisitResult.CONTINUE;
