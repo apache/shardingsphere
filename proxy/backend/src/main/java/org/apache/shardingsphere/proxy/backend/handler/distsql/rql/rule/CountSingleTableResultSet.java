@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableStatement;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -36,7 +36,7 @@ import java.util.Optional;
 /**
  * Result set for single table rule.
  */
-public final class CountSingleTableRuleResultSet implements DatabaseDistSQLResultSet {
+public final class CountSingleTableResultSet implements DatabaseDistSQLResultSet {
     
     private static final String SINGLE_TABLE = "single_table";
     
@@ -44,7 +44,7 @@ public final class CountSingleTableRuleResultSet implements DatabaseDistSQLResul
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("rule_name", "database", "count");
+        return Arrays.asList("table_name", "database", "count");
     }
     
     @Override
@@ -81,6 +81,6 @@ public final class CountSingleTableRuleResultSet implements DatabaseDistSQLResul
     
     @Override
     public String getType() {
-        return CountSingleTableRuleStatement.class.getName();
+        return CountSingleTableStatement.class.getName();
     }
 }

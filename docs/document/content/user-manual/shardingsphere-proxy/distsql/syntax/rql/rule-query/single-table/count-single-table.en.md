@@ -5,15 +5,15 @@ weight = 4
 
 ### Description
 
-The `COUNT SINGLE_TABLE RULE` syntax is used to query number of single table rules for specified database.
+The `COUNT SINGLE TABLE` syntax is used to query number of single table for specified database.
 
 ### Syntax
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-CountSingleTableRule::=
-  'COUNT' 'SINGLE_TABLE' 'RULE' ('FROM' databaseName)?
+CountSingleTable::=
+  'COUNT' 'SINGLE' 'TABLE' ('FROM' databaseName)?
   
 databaseName ::=
   identifier
@@ -30,22 +30,22 @@ databaseName ::=
 
 ### Return Value Description
 
-| Column    | Description                                         |
-|-----------|-----------------------------------------------------|
-| rule_name | Single table rule name                              |
-| database  | The database name where the single table is located |
-| count     | The count of single table rules                     |
+| Column     | Description                                         |
+|------------|-----------------------------------------------------|
+| table_name | Single table name                                   |
+| database   | The database name where the single table is located |
+| count      | The count of single table                           |
 
 ### Example
 
 - Query the number of single table rules for specified database.
 
 ```sql
-COUNT SINGLE_TABLE RULE
+COUNT SINGLE TABLE
 ``` 
 
 ```sql
-mysql> COUNT SINGLE_TABLE RULE;
+mysql> COUNT SINGLE TABLE;
 +--------------+----------+-------+
 | rule_name    | database | count |
 +--------------+----------+-------+
@@ -56,7 +56,7 @@ mysql> COUNT SINGLE_TABLE RULE;
 
 ### Reserved word
 
-`COUNT`, `SINGLE_TABLE`, `RULE`
+`COUNT`, `SINGLE`, `TABLE`, `RULE`
 
 ### Related links
 

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 /**
  * Count single table rule statement test case.
  */
-public final class CountSingleTableRuleStatementTestCase extends DatabaseContainedTestCase {
+public final class CountSingleTableStatementTestCase extends DatabaseContainedTestCase {
 }

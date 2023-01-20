@@ -22,9 +22,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 /**
  * Count single table rule statement.
  */
-public final class CountSingleTableRuleStatement extends ShowRulesStatement {
+public final class CountSingleTableStatement extends ShowRulesStatement {
     
-    public CountSingleTableRuleStatement(final DatabaseSegment database) {
+    public CountSingleTableStatement(final DatabaseSegment database) {
         super(database);
     }
 }
