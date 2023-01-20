@@ -15,29 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.thread;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.span;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.ThreadFactory;
+import com.alibaba.ttl.TransmittableThreadLocal;
 
 /**
- * Executor thread factory builder.
+ * Root span context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorThreadFactoryBuilder {
+public final class RootSpanContext {
     
-    private static final String NAME_FORMAT_PREFIX = "ShardingSphere-";
+    private static final TransmittableThreadLocal<Object> VALUE = new TransmittableThreadLocal<>();
     
     /**
-     * Build thread factory with thread name format.
+     * Judge whether empty root span.
      * 
-     * @param nameFormat thread name format
-     * @return thread factory
+     * @return empty span or not
      */
-    public static ThreadFactory build(final String nameFormat) {
-        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(NAME_FORMAT_PREFIX + nameFormat).build();
+    public static boolean isEmpty() {
+        return null == VALUE.get();
+    }
+    
+    /**
+     * Get root span.
+     * 
+     * @param <T> type of span
+     * @return root span
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T get() {
+        return (T) VALUE.get();
+    }
+    
+    /**
+     * Set root span.
+     * 
+     * @param value root span
+     * @param <T> type of span
+     */
+    public static <T> void set(final T value) {
+        VALUE.set(value);
     }
 }
