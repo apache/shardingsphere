@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenTelemetryConstants {
     
-    public static final String ROOT_SPAN = "opentelemetry_root_span";
-    
     public static final String COMPONENT = "component";
     
     public static final String COMPONENT_NAME = "ShardingSphere";

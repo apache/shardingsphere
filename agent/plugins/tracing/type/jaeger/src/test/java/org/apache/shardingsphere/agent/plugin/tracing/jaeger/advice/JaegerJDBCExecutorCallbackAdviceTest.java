@@ -19,9 +19,8 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
 import io.opentracing.mock.MockSpan;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
-import org.junit.Before;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -37,11 +36,6 @@ public final class JaegerJDBCExecutorCallbackAdviceTest extends AbstractJDBCExec
     
     @ClassRule
     public static final JaegerCollector COLLECTOR = new JaegerCollector();
-    
-    @Before
-    public void setup() {
-        getExtraMap().put(JaegerConstants.ROOT_SPAN, null);
-    }
     
     @Test
     public void assertMethod() {
