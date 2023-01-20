@@ -101,20 +101,22 @@
             <build>
                 <plugins>
                     <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/test/assembly/shardingsphere-proxy-agent-opentelemetry-assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
+                        <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>assembly</id>
+                                <id>copy-resources</id>
                                 <goals>
-                                    <goal>single</goal>
+                                    <goal>copy-resources</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>target/</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/../../../../../distribution/proxy/target/</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -126,7 +128,7 @@
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
-                                <APP_NAME>${project.build.finalName}</APP_NAME>
+                                <APP_NAME>${docker.distribution.name}</APP_NAME>
                             </buildArgs>
                         </configuration>
                         <executions>
