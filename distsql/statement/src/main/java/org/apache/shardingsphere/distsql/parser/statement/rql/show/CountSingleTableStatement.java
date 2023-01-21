@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Count single table rule statement test case.
+ * Count single table statement.
  */
-public final class CountSingleTableRuleStatementTestCase extends DatabaseContainedTestCase {
+public final class CountSingleTableStatement extends ShowRulesStatement {
+    
+    public CountSingleTableStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }

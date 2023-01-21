@@ -5,15 +5,15 @@ weight = 4
 
 ### 描述
 
-`COUNT SINGLE_TABLE RULE` 语法用于查询指定逻辑库中的单表规则个数。
+`COUNT SINGLE TABLE` 语法用于查询指定逻辑库中的单表个数。
 
 ### 语法
 
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-CountSingleTableRule::=
-  'COUNT' 'SINGLE_TABLE' 'RULE' ('FROM' databaseName)?
+CountSingleTable::=
+  'COUNT' 'SINGLE' 'TABLE' ('FROM' databaseName)?
   
 databaseName ::=
   identifier
@@ -31,33 +31,32 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列        | 说明                 |
-|-----------|---------------------|
-| rule_name | 规则名称              |
-| database  | 单表所在的数据库名称    |
-| count     | 规则个数              |
+| 列         | 说明                  |
+|------------|----------------------|
+| database   | 单表所在的数据库名称    |
+| count      | 单表个数              |
 
 ### 示例
 
 - 查询当前逻辑库中的单表规则个数
 
 ```sql
-COUNT SINGLE_TABLE RULE
+COUNT SINGLE TABLE
 ```
 
 ```sql
-mysql> COUNT SINGLE_TABLE RULE;
-+--------------+----------+-------+
-| rule_name    | database | count |
-+--------------+----------+-------+
-| t_single_0   | ds       | 2     |
-+--------------+----------+-------+
+mysql> COUNT SINGLE TABLE;
++----------+--------+
+| database | count  |
++----------+--------+
+| ds       | 2      |
++----------+--------+
 1 row in set (0.02 sec)
 ```
 
 ### 保留字
 
-`COUNT`、`SINGLE_TABLE`、`RULE`
+`COUNT`、`SINGLE`、`TABLE`、`FROM`
 
 ### 相关链接
 

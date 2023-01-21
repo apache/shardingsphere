@@ -17,9 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="rule_name" />
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="single_table| encrypt_and_readwrite_splitting| 11" />
+    <row values="encrypt| 4" />
 </dataset>

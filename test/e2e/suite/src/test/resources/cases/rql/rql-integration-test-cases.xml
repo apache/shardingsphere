@@ -101,8 +101,8 @@
         <assertion expected-data-file="show_single_tables.xml" />
     </test-case>
     
-    <test-case sql="COUNT SINGLE_TABLE RULE" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
-        <assertion expected-data-file="count_single_table_rule.xml" />
+    <test-case sql="COUNT SINGLE TABLE" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+        <assertion expected-data-file="count_single_table.xml" />
     </test-case>
     
     <test-case sql="SHOW READWRITE_SPLITTING RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">

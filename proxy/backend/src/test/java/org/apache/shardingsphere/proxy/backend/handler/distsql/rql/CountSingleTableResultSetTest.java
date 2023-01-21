@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.CountSingleTableRuleResultSet;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.CountSingleTableResultSet;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Test;
 
@@ -37,18 +37,17 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountSingleTableRuleResultSetTest {
+public final class CountSingleTableResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        CountSingleTableRuleResultSet resultSet = new CountSingleTableRuleResultSet();
-        resultSet.init(mockDatabase(), mock(CountSingleTableRuleStatement.class));
+        CountSingleTableResultSet resultSet = new CountSingleTableResultSet();
+        resultSet.init(mockDatabase(), mock(CountSingleTableStatement.class));
         assertTrue(resultSet.next());
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("single_table"));
-        assertThat(actual.get(1), is("db_1"));
-        assertThat(actual.get(2), is(2));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("db_1"));
+        assertThat(actual.get(1), is(2));
         assertFalse(resultSet.next());
     }
     
