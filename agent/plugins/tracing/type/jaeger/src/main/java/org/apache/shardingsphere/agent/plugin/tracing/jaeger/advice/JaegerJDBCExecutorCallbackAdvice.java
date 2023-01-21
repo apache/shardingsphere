@@ -22,42 +22,27 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 
 import java.lang.reflect.Method;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * JDBC executor callback advice executor.
  */
-public final class JaegerJDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
-    
-    private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
+public final class JaegerJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
     @Override
-    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    protected void recordExecuteInfo(final Span rootSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData) {
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if (!RootSpanContext.isEmpty()) {
             builder = builder.asChildOf(RootSpanContext.<Span>get());
         }
-        JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");
-        DataSourceMetaData metaData = AgentReflectionUtil.invokeMethod(
-                JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
-                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
                 .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())

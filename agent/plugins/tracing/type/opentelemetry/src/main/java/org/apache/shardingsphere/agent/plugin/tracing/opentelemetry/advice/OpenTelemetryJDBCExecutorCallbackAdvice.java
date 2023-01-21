@@ -23,32 +23,22 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 
 import java.lang.reflect.Method;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * OpenTelemetry JDBC executor callback advice executor.
  */
-public class OpenTelemetryJDBCExecutorCallbackAdvice implements InstanceMethodAdvice {
-    
-    private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
+public class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
     @Override
-    @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    protected void recordExecuteInfo(final Span rootSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData) {
         Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
         if (!RootSpanContext.isEmpty()) {
@@ -56,10 +46,6 @@ public class OpenTelemetryJDBCExecutorCallbackAdvice implements InstanceMethodAd
         }
         spanBuilder.setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME);
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE);
-        JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");
-        DataSourceMetaData metaData = AgentReflectionUtil.invokeMethod(JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
-                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName())
                 .setAttribute(OpenTelemetryConstants.PEER_HOSTNAME, metaData.getHostname())
                 .setAttribute(OpenTelemetryConstants.PEER_PORT, String.valueOf(metaData.getPort()))
