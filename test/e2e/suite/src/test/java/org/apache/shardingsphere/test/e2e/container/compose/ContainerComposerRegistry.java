@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.StandaloneContainerComposer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterModeEnum;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
@@ -61,7 +61,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     
     private boolean isClusterMode(final E2ETestParameter testParam) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return AdapterModeEnum.CLUSTER.getValue().equalsIgnoreCase(testParam.getMode()) && AdapterContainerEnum.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
+        return AdapterMode.CLUSTER.getValue().equalsIgnoreCase(testParam.getMode()) && AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
     }
     
     @Override

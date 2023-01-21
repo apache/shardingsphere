@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterModeEnum;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 
 /**
@@ -62,10 +62,10 @@ public final class TotalSuitesCountCalculator {
     }
     
     private static boolean isRunDCL() {
-        return ENV.getRunModes().contains(AdapterModeEnum.CLUSTER.getValue());
+        return ENV.getRunModes().contains(AdapterMode.CLUSTER.getValue());
     }
     
     private static boolean isRunProxy() {
-        return ENV.getRunModes().contains(AdapterModeEnum.CLUSTER.getValue()) && ENV.getClusterEnvironment().getAdapters().contains(AdapterContainerEnum.PROXY.getValue());
+        return ENV.getRunModes().contains(AdapterMode.CLUSTER.getValue()) && ENV.getClusterEnvironment().getAdapters().contains(AdapterType.PROXY.getValue());
     }
 }
