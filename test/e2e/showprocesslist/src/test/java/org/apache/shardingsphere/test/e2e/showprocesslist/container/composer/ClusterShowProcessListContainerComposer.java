@@ -24,6 +24,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
@@ -56,8 +58,10 @@ public final class ClusterShowProcessListContainerComposer {
                 StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode()), AdapterContainerUtil.getAdapterContainerImage());
-        jdbcContainer = AdapterContainerFactory.newInstance(testParam.getRunMode(), "jdbc", testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
-        proxyContainer = AdapterContainerFactory.newInstance(testParam.getRunMode(), "proxy", testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
+        jdbcContainer = AdapterContainerFactory.newInstance(
+                AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.JDBC, testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
+        proxyContainer = AdapterContainerFactory.newInstance(
+                AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.PROXY, testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
         if (proxyContainer instanceof DockerITContainer) {
             if (isClusterMode(testParam.getRunMode())) {
                 ((DockerITContainer) proxyContainer).dependsOn(governanceContainer);

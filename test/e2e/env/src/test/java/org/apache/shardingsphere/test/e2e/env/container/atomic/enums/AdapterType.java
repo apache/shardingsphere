@@ -21,15 +21,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Adapter mode type.
+ * Adapter type.
  */
 @RequiredArgsConstructor
 @Getter
-public enum AdapterModeEnum {
+public enum AdapterType {
     
-    STANDALONE("Standalone"),
+    JDBC("jdbc"),
     
-    CLUSTER("Cluster");
+    PROXY("proxy");
     
     private final String value;
 }
