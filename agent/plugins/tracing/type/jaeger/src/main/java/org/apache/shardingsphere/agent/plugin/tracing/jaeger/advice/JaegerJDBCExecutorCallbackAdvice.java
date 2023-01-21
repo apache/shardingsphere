@@ -26,6 +26,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -47,12 +48,10 @@ public final class JaegerJDBCExecutorCallbackAdvice implements InstanceMethodAdv
     
     @Override
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    @SuppressWarnings("unchecked")
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Span rootSpan = (Span) ((Map<String, Object>) args[2]).get(JaegerConstants.ROOT_SPAN);
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
-        if (null != rootSpan) {
-            builder = builder.asChildOf(rootSpan);
+        if (!RootSpanContext.isEmpty()) {
+            builder = builder.asChildOf(RootSpanContext.<Span>get());
         }
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");

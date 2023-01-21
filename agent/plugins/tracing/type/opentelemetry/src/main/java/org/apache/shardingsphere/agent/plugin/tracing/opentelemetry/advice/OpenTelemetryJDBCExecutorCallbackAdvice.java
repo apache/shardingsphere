@@ -27,6 +27,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -47,13 +48,11 @@ public class OpenTelemetryJDBCExecutorCallbackAdvice implements InstanceMethodAd
     
     @Override
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    @SuppressWarnings("unchecked")
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Span root = (Span) ((Map<String, Object>) args[2]).get(OpenTelemetryConstants.ROOT_SPAN);
         Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
-        if (null != root) {
-            spanBuilder.setParent(Context.current().with(root));
+        if (!RootSpanContext.isEmpty()) {
+            spanBuilder.setParent(Context.current().with(RootSpanContext.<Span>get()));
         }
         spanBuilder.setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME);
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE);

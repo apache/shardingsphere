@@ -21,10 +21,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
+        <artifactId>shardingsphere-test-e2e-agent-plugins-tracing</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-e2e-agent-plugins-zipkin</artifactId>
+    <artifactId>shardingsphere-test-e2e-agent-plugins-jaeger</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -89,9 +89,9 @@
     
     <profiles>
         <profile>
-            <id>it.env.zipkin</id>
+            <id>it.env.jaeger</id>
             <properties>
-                <it.env>zipkin</it.env>
+                <it.env>jaeger</it.env>
             </properties>
             <build>
                 <plugins>
@@ -105,10 +105,10 @@
                                 </goals>
                                 <phase>validate</phase>
                                 <configuration>
-                                    <outputDirectory>target/</outputDirectory>
+                                    <outputDirectory>target</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../../../../../distribution/proxy/target/</directory>
+                                            <directory>${project.basedir}/../../../../../../distribution/proxy/target/</directory>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -119,7 +119,7 @@
                         <groupId>com.spotify</groupId>
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <configuration>
-                            <repository>apache/shardingsphere-proxy-agent-tracing-zipkin-test</repository>
+                            <repository>apache/shardingsphere-proxy-agent-tracing-jaeger-test</repository>
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
@@ -140,7 +140,7 @@
                         <artifactId>docker-compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>agent-zipkin-up</id>
+                                <id>agent-jaeger-up</id>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
@@ -151,7 +151,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>agent-zipkin-down</id>
+                                <id>agent-jaeger-down</id>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>

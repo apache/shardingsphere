@@ -26,7 +26,6 @@ import io.opentelemetry.sdk.trace.data.SpanData;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -54,7 +53,6 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
         parentSpan = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
                 .spanBuilder("parent")
                 .startSpan();
-        ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, parentSpan);
         advice = new OpenTelemetrySQLParserEngineAdvice();
     }
     

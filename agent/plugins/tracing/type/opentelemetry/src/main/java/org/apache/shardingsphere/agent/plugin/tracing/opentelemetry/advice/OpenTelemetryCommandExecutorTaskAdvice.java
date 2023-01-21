@@ -23,38 +23,34 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
 
 /**
  * OpenTelemetry command executor task advice executor.
  */
-public class OpenTelemetryCommandExecutorTaskAdvice implements InstanceMethodAdvice {
-    
-    private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
+public final class OpenTelemetryCommandExecutorTaskAdvice extends TracingCommandExecutorTaskAdvice<Span> {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
         SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
                 .spanBuilder(OPERATION_NAME)
                 .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
                 .setSpanKind(SpanKind.CLIENT);
-        Span span = spanBuilder.startSpan();
-        target.setAttachment(span);
-        ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, span);
+        Span result = spanBuilder.startSpan();
+        target.setAttachment(result);
+        return result;
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target, final int connectionSize) {
         ((Span) target.getAttachment()).end();
-        ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
         ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);
     }
 }

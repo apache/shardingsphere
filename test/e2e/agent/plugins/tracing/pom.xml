@@ -21,16 +21,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test-e2e-agent</artifactId>
+        <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
+    <artifactId>shardingsphere-test-e2e-agent-plugins-tracing</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>common</module>
-        <module>metrics</module>
-        <module>tracing</module>
+        <module>jaeger</module>
+        <module>opentelemetry</module>
+        <module>zipkin</module>
     </modules>
 </project>

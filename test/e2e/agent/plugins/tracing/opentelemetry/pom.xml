@@ -21,10 +21,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
+        <artifactId>shardingsphere-test-e2e-agent-plugins-tracing</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-e2e-agent-plugins-jaeger</artifactId>
+    <artifactId>shardingsphere-test-e2e-agent-plugins-opentelemetry</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -47,6 +47,11 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
         
         <dependency>
@@ -89,9 +94,9 @@
     
     <profiles>
         <profile>
-            <id>it.env.jaeger</id>
+            <id>it.env.opentelemetry</id>
             <properties>
-                <it.env>jaeger</it.env>
+                <it.env>opentelemetry</it.env>
             </properties>
             <build>
                 <plugins>
@@ -105,10 +110,10 @@
                                 </goals>
                                 <phase>validate</phase>
                                 <configuration>
-                                    <outputDirectory>target/</outputDirectory>
+                                    <outputDirectory>target</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../../../../../distribution/proxy/target/</directory>
+                                            <directory>${project.basedir}/../../../../../../distribution/proxy/target/</directory>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -119,7 +124,7 @@
                         <groupId>com.spotify</groupId>
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <configuration>
-                            <repository>apache/shardingsphere-proxy-agent-tracing-jaeger-test</repository>
+                            <repository>apache/shardingsphere-proxy-agent-tracing-opentelemetry-test</repository>
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
@@ -140,7 +145,7 @@
                         <artifactId>docker-compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>agent-jaeger-up</id>
+                                <id>agent-opentelemetry-up</id>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
@@ -151,7 +156,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>agent-jaeger-down</id>
+                                <id>agent-opentelemetry-down</id>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>
