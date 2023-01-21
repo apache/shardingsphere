@@ -20,27 +20,27 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingSQLParserEngineAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 
 import java.lang.reflect.Method;
 
 /**
  * Zipkin SQL parser engine advice executor.
  */
-public final class ZipkinSQLParserEngineAdvice implements InstanceMethodAdvice {
+public final class ZipkinSQLParserEngineAdvice extends TracingSQLParserEngineAdvice<Span> {
     
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Span span = Tracing.currentTracer().newChild(RootSpanContext.<Span>get().context()).name(OPERATION_NAME);
-        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
-        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
-        span.tag(ZipkinConstants.Tags.DB_STATEMENT, String.valueOf(args[0]));
-        span.start();
-        target.setAttachment(span);
+    protected Object recordSQLParseInfo(final Span rootSpan, final TargetAdviceObject target, final String sql) {
+        Span result = Tracing.currentTracer().newChild(RootSpanContext.<Span>get().context()).name(OPERATION_NAME);
+        result.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
+        result.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
+        result.tag(ZipkinConstants.Tags.DB_STATEMENT, sql);
+        result.start();
+        return result;
     }
     
     @Override
