@@ -20,7 +20,6 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingSQLParserEngineAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 
@@ -35,7 +34,7 @@ public final class ZipkinSQLParserEngineAdvice extends TracingSQLParserEngineAdv
     
     @Override
     protected Object recordSQLParseInfo(final Span rootSpan, final TargetAdviceObject target, final String sql) {
-        Span result = Tracing.currentTracer().newChild(RootSpanContext.<Span>get().context()).name(OPERATION_NAME);
+        Span result = Tracing.currentTracer().newChild(rootSpan.context()).name(OPERATION_NAME);
         result.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
         result.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
         result.tag(ZipkinConstants.Tags.DB_STATEMENT, sql);

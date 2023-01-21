@@ -23,7 +23,6 @@ import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
@@ -40,8 +39,8 @@ public final class JaegerJDBCExecutorCallbackAdvice extends TracingJDBCExecutorC
     @Override
     protected void recordExecuteInfo(final Span rootSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData) {
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
-        if (!RootSpanContext.isEmpty()) {
-            builder = builder.asChildOf(RootSpanContext.<Span>get());
+        if (null != rootSpan) {
+            builder = builder.asChildOf(rootSpan);
         }
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
