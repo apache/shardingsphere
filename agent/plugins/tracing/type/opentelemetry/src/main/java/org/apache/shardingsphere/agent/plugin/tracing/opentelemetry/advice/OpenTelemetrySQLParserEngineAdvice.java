@@ -24,7 +24,6 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingSQLParserEngineAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 
@@ -43,7 +42,7 @@ public final class OpenTelemetrySQLParserEngineAdvice extends TracingSQLParserEn
                 .setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE)
                 .setAttribute(OpenTelemetryConstants.DB_STATEMENT, sql);
         if (null != rootSpan) {
-            spanBuilder.setParent(Context.current().with(RootSpanContext.<Span>get()));
+            spanBuilder.setParent(Context.current().with(rootSpan));
         }
         return spanBuilder.startSpan();
     }
