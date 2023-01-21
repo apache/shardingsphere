@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.infra.executor.sql.process.fixture;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public final class ExecuteProcessReporterFixture implements ExecuteProcessReporter {
     
-    public static final LinkedList<String> ACTIONS = new LinkedList<>();
+    public static final List<String> ACTIONS = new LinkedList<>();
     
     @Override
     public void report(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {

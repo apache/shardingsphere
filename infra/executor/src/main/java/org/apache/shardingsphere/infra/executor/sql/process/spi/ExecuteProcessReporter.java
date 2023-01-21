@@ -33,33 +33,37 @@ public interface ExecuteProcessReporter extends OptionalSPI {
     
     /**
      * Report this connection for proxy.
+     * 
      * @param executionGroupContext execution group context
      */
     void report(ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext);
     
     /**
      * Report the summary of this task.
+     * 
      * @param queryContext query context
      * @param executionGroupContext execution group context
      * @param constants constants
-     * @param eventBusContext event bus context                 
+     * @param eventBusContext event bus context
      */
     void report(QueryContext queryContext, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessConstants constants, EventBusContext eventBusContext);
     
     /**
      * Report a unit of this task.
+     * 
      * @param executionID execution ID
      * @param executionUnit execution unit
      * @param constants constants
-     * @param eventBusContext event bus context                    
+     * @param eventBusContext event bus context
      */
     void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants constants, EventBusContext eventBusContext);
     
     /**
      * Report this task on completion.
+     * 
      * @param executionID execution ID
      * @param constants constants
-     * @param eventBusContext event bus context                  
+     * @param eventBusContext event bus context
      */
     void report(String executionID, ExecuteProcessConstants constants, EventBusContext eventBusContext);
     
