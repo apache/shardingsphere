@@ -79,8 +79,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             if (authResult.isFinished()) {
                 connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
                 connectionSession.setCurrentDatabase(authResult.getDatabase());
-                connectionSession.setExecutionId(ExecuteProcessEngine.initializeConnection(connectionSession.getGrantee(), connectionSession.getDatabaseName(),
-                        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext()));
+                connectionSession.setExecutionId(ExecuteProcessEngine.initializeConnection(connectionSession.getGrantee(), connectionSession.getDatabaseName()));
             }
             return authResult.isFinished();
             // CHECKSTYLE:OFF

@@ -50,16 +50,14 @@ public final class ExecuteProcessEngine {
      *
      * @param grantee grantee
      * @param databaseName database name
-     * @param eventBusContext event bus context
      * @return execution id
      */
-    public static String initializeConnection(final Grantee grantee, final String databaseName, final EventBusContext eventBusContext) {
+    public static String initializeConnection(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList());
         executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
         executionGroupContext.setGrantee(grantee);
         executionGroupContext.setDatabaseName(databaseName);
-        Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
-        reporter.ifPresent(executeProcessReporter -> executeProcessReporter.report(executionGroupContext));
+        OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class).ifPresent(optional -> optional.report(executionGroupContext));
         return executionGroupContext.getExecutionID();
     }
     
@@ -69,8 +67,7 @@ public final class ExecuteProcessEngine {
      * @param executionID execution id
      */
     public static void finishConnection(final String executionID) {
-        Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
-        reporter.ifPresent(executeProcessReporter -> executeProcessReporter.reportRemove(executionID));
+        OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class).ifPresent(optional -> optional.reportRemove(executionID));
     }
     
     /**
@@ -78,7 +75,7 @@ public final class ExecuteProcessEngine {
      *
      * @param queryContext query context
      * @param executionGroupContext execution group context
-     * @param eventBusContext event bus context             
+     * @param eventBusContext event bus context
      */
     public static void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
         Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
@@ -96,18 +93,18 @@ public final class ExecuteProcessEngine {
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param eventBusContext event bus context                      
+     * @param eventBusContext event bus context
      */
     public static void finishExecution(final String executionID, final SQLExecutionUnit executionUnit, final EventBusContext eventBusContext) {
-        Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
-        reporter.ifPresent(executeProcessReporter -> executeProcessReporter.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext));
+        OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class)
+                .ifPresent(optional -> optional.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext));
     }
     
     /**
      * Finish execution.
      *
      * @param executionID execution ID
-     * @param eventBusContext event bus context                    
+     * @param eventBusContext event bus context
      */
     public static void finishExecution(final String executionID, final EventBusContext eventBusContext) {
         Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
