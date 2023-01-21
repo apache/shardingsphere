@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingT
 import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLStatementParserFacade;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
@@ -61,6 +62,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -157,23 +159,12 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateWithIfNotExistsStatement() {
-        CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
-        updater.checkSQLStatement(database, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order_item_input", Collections.singletonList("logic_ds"));
-        autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("test_product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
-        autoTableRuleSegment.setShardingColumn("custom_id");
-        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
-        KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_input", Collections.singletonList("ds_${0..1}.t_order_${0..5}"), keyGenerator, null);
-        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "user_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties())));
-        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
-        tableRuleSegment.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment));
-        CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, Arrays.asList(autoTableRuleSegment, tableRuleSegment));
+        Collection<AbstractTableRuleSegment> segments = new LinkedList<>();
+        segments.add(createCompleteAutoTableRule());
+        segments.add(createCompleteTableRule());
+        CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, segments);
         updater.checkSQLStatement(database, statementWithIfNotExists, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfigWithIfNotExists = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfigWithIfNotExists);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statementWithIfNotExists));
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
         ShardingTableRuleConfiguration tableRule = tableRuleIterator.next();

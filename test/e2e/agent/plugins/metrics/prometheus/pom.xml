@@ -21,10 +21,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
+        <artifactId>shardingsphere-test-e2e-agent-plugins-metrics</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-e2e-agent-plugins-opentelemetry</artifactId>
+    <artifactId>shardingsphere-test-e2e-agent-plugins-metrics-prometheus</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -47,11 +48,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
         
         <dependency>
@@ -94,9 +90,9 @@
     
     <profiles>
         <profile>
-            <id>it.env.opentelemetry</id>
+            <id>it.env.metrics</id>
             <properties>
-                <it.env>opentelemetry</it.env>
+                <it.env>metrics</it.env>
             </properties>
             <build>
                 <plugins>
@@ -113,7 +109,7 @@
                                     <outputDirectory>target/</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../../../../../distribution/proxy/target/</directory>
+                                            <directory>${project.basedir}/../../../../../../distribution/proxy/target/</directory>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -124,7 +120,7 @@
                         <groupId>com.spotify</groupId>
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <configuration>
-                            <repository>apache/shardingsphere-proxy-agent-tracing-opentelemetry-test</repository>
+                            <repository>apache/shardingsphere-proxy-agent-metrics-test</repository>
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
@@ -145,7 +141,7 @@
                         <artifactId>docker-compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>agent-opentelemetry-up</id>
+                                <id>agent-metrics-up</id>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
@@ -156,7 +152,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>agent-opentelemetry-down</id>
+                                <id>agent-metrics-down</id>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>

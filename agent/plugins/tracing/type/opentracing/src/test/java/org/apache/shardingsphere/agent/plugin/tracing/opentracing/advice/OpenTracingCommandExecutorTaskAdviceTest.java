@@ -22,6 +22,8 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.junit.Before;
@@ -39,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public final class OpenTracingCommandExecutorTaskAdviceTest {
+public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
     private static final OpenTracingCommandExecutorTaskAdvice ADVICE = new OpenTracingCommandExecutorTaskAdvice();
     
@@ -63,7 +65,7 @@ public final class OpenTracingCommandExecutorTaskAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
+        TargetAdviceObject targetObject = getTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, "OpenTracing");
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
@@ -74,7 +76,7 @@ public final class OpenTracingCommandExecutorTaskAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
+        TargetAdviceObject targetObject = getTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, "OpenTracing");
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException(), "OpenTracing");
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, null, "OpenTracing");
