@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
@@ -30,10 +31,10 @@ import java.lang.reflect.Method;
 /**
  * SQL parser engine advice executor.
  */
-public final class JaegerSQLParserEngineAdvice extends TracingSQLParserEngineAdvice<Scope> {
+public final class JaegerSQLParserEngineAdvice extends TracingSQLParserEngineAdvice<Span> {
     
     @Override
-    protected Object recordSQLParseInfo(final Scope rootSpan, final TargetAdviceObject target, final String sql) {
+    protected Object recordSQLParseInfo(final Span rootSpan, final TargetAdviceObject target, final String sql) {
         return GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
