@@ -29,6 +29,8 @@ BIGINT: B I G I N T;
 
 VARCHAR: V A R C H A R;
 
+DATE: D A T E;
+
 CAST: C A S T;
 
 SARG: S A R G;

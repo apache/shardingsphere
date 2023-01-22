@@ -38,4 +38,5 @@ RANGE_:              '..';
 NEGETIVE_INFINITY_:  '-∞';
 POSITIVE_INFINITY_:  '+∞';
 QUESTION_:           '?';
-
+MINUS_:              '-';
+DOT_:              '.';
