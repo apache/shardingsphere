@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -23,25 +23,34 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.util.Optional;
 
 /**
- * Governance execute process reporter.
+ * Execute process report.
  */
-public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
+public final class ExecuteProcessReporter {
     
-    @Override
+    /**
+     * Report this connection for proxy.
+     *
+     * @param executionGroupContext execution group context
+     */
     public void report(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_SLEEP, true);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
     }
     
-    @Override
+    /**
+     * Report the summary of this task.
+     *
+     * @param queryContext query context
+     * @param executionGroupContext execution group context
+     * @param constants constants
+     */
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
-                       final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
+                       final ExecuteProcessConstants constants) {
         ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getExecutionID());
         boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants, isProxyContext);
@@ -49,18 +58,34 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }
     
-    @Override
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
+    /**
+     * Report a unit of this task.
+     *
+     * @param executionID execution ID
+     * @param executionUnit execution unit
+     * @param constants constants
+     */
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
         Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
     }
     
-    @Override
+    /**
+     * Report this task on completion.
+     *
+     * @param executionID execution ID
+     * @param constants constants
+     * @param eventBusContext event bus context
+     */
     public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
     }
     
-    @Override
+    /**
+     * Report clean the task.
+     *
+     * @param executionID execution ID
+     */
     public void reportClean(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
@@ -74,7 +99,11 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
         }
     }
     
-    @Override
+    /**
+     * Report remove process context.
+     *
+     * @param executionID execution ID
+     */
     public void reportRemove(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ShowProcessListManager.getInstance().removeProcessContext(executionID);

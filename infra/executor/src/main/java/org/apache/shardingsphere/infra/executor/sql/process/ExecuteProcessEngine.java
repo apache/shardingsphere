@@ -25,17 +25,14 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.spi.type.optional.OptionalSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -54,7 +51,7 @@ public final class ExecuteProcessEngine {
      */
     public static String initializeConnection(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = createExecutionGroupContext(grantee, databaseName);
-        OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class).ifPresent(optional -> optional.report(executionGroupContext));
+        new ExecuteProcessReporter().report(executionGroupContext);
         return executionGroupContext.getExecutionID();
     }
     
@@ -72,7 +69,7 @@ public final class ExecuteProcessEngine {
      * @param executionID execution ID
      */
     public static void finishConnection(final String executionID) {
-        OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class).ifPresent(optional -> optional.reportRemove(executionID));
+        new ExecuteProcessReporter().reportRemove(executionID);
     }
     
     /**
@@ -83,13 +80,12 @@ public final class ExecuteProcessEngine {
      * @param eventBusContext event bus context
      */
     public static void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
-        Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
         if (Strings.isNullOrEmpty(executionGroupContext.getExecutionID())) {
             executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
         }
-        if (reporter.isPresent() && isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
+        if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
-            reporter.get().report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START, eventBusContext);
+            new ExecuteProcessReporter().report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
     }
     
@@ -98,11 +94,9 @@ public final class ExecuteProcessEngine {
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param eventBusContext event bus context
      */
-    public static void finishExecution(final String executionID, final SQLExecutionUnit executionUnit, final EventBusContext eventBusContext) {
-        OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class)
-                .ifPresent(optional -> optional.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext));
+    public static void finishExecution(final String executionID, final SQLExecutionUnit executionUnit) {
+        new ExecuteProcessReporter().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
     }
     
     /**
@@ -112,9 +106,8 @@ public final class ExecuteProcessEngine {
      * @param eventBusContext event bus context
      */
     public static void finishExecution(final String executionID, final EventBusContext eventBusContext) {
-        Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
-        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            reporter.get().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
+        if (ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            new ExecuteProcessReporter().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
         }
     }
     
@@ -122,9 +115,8 @@ public final class ExecuteProcessEngine {
      * Clean execution.
      */
     public static void cleanExecution() {
-        Optional<ExecuteProcessReporter> reporter = OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class);
-        if (reporter.isPresent() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            reporter.get().reportClean(ExecutorDataMap.getValue().get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
+        if (ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            new ExecuteProcessReporter().reportClean(ExecutorDataMap.getValue().get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
         }
         ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
     }

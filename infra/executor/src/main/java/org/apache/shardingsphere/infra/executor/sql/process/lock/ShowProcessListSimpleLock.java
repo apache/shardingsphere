@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process.lock;
+package org.apache.shardingsphere.infra.executor.sql.process.lock;
 
 import lombok.SneakyThrows;
 

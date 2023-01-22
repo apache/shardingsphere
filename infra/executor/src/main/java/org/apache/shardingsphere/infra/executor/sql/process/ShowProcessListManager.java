@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 
 import java.sql.Statement;
 import java.util.Collection;

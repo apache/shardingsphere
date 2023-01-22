@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -39,13 +39,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class GovernanceExecuteProcessReporterTest {
+public class ExecuteProcessReporterTest {
     
     private MockedStatic<ShowProcessListManager> mockedStatic;
     
     private ShowProcessListManager showProcessListManager;
     
-    private final GovernanceExecuteProcessReporter reporter = new GovernanceExecuteProcessReporter();
+    private final ExecuteProcessReporter reporter = new ExecuteProcessReporter();
     
     @Before
     public void setUp() {
@@ -58,7 +58,7 @@ public final class GovernanceExecuteProcessReporterTest {
     public void assertReport() {
         QueryContext queryContext = new QueryContext(null, null, null);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        reporter.report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID, EventBusContextHolderFixture.EVENT_BUS_CONTEXT);
+        reporter.report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID);
         verify(showProcessListManager, times(1)).putProcessContext(eq(executionGroupContext.getExecutionID()), any());
     }
     
@@ -77,7 +77,7 @@ public final class GovernanceExecuteProcessReporterTest {
         ExecuteProcessContext executeProcessContext = mock(ExecuteProcessContext.class);
         when(executeProcessContext.getProcessUnits()).thenReturn(Collections.emptyMap());
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(executeProcessContext);
-        reporter.report("foo_id", sqlExecutionUnit, ExecuteProcessConstants.EXECUTE_ID, EventBusContextHolderFixture.EVENT_BUS_CONTEXT);
+        reporter.report("foo_id", sqlExecutionUnit, ExecuteProcessConstants.EXECUTE_ID);
         verify(showProcessListManager, times(1)).getProcessContext(eq("foo_id"));
     }
     

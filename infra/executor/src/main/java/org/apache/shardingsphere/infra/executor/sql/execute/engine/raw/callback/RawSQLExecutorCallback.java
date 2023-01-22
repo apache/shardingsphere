@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
@@ -38,10 +37,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     @SuppressWarnings("rawtypes")
     private final Collection<RawExecutorCallback> callbacks;
     
-    private final EventBusContext eventBusContext;
-    
-    public RawSQLExecutorCallback(final EventBusContext eventBusContext) {
-        this.eventBusContext = eventBusContext;
+    public RawSQLExecutorCallback() {
         callbacks = ShardingSphereServiceLoader.getServiceInstances(RawExecutorCallback.class);
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
@@ -53,7 +49,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
             String executionID = dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString();
             for (RawSQLExecutionUnit each : inputs) {
-                ExecuteProcessEngine.finishExecution(executionID, each, eventBusContext);
+                ExecuteProcessEngine.finishExecution(executionID, each);
             }
         }
         return result;
