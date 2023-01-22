@@ -60,15 +60,16 @@ public final class RawExecutor {
      */
     public List<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext, final QueryContext queryContext,
                                        final RawSQLExecutorCallback callback) throws SQLException {
+        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
-            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return results.isEmpty() || Objects.isNull(results.get(0)) ? Collections
                     .singletonList(new UpdateResult(0, 0L)) : results;
         } finally {
-            ExecuteProcessEngine.cleanExecution();
+            executeProcessEngine.cleanExecution();
         }
     }
     

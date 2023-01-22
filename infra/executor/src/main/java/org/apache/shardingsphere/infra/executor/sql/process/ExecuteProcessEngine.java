@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -39,8 +37,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Execute process engine.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteProcessEngine {
+    
+    private final ExecuteProcessReporter reporter = new ExecuteProcessReporter();
     
     /**
      * Initialize connection.
@@ -49,13 +48,13 @@ public final class ExecuteProcessEngine {
      * @param databaseName database name
      * @return execution ID
      */
-    public static String initializeConnection(final Grantee grantee, final String databaseName) {
+    public String initializeConnection(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = createExecutionGroupContext(grantee, databaseName);
-        new ExecuteProcessReporter().report(executionGroupContext);
+        reporter.report(executionGroupContext);
         return executionGroupContext.getExecutionID();
     }
     
-    private static ExecutionGroupContext<SQLExecutionUnit> createExecutionGroupContext(final Grantee grantee, final String databaseName) {
+    private ExecutionGroupContext<SQLExecutionUnit> createExecutionGroupContext(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<SQLExecutionUnit> result = new ExecutionGroupContext<>(Collections.emptyList());
         result.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
         result.setGrantee(grantee);
@@ -68,8 +67,8 @@ public final class ExecuteProcessEngine {
      *
      * @param executionID execution ID
      */
-    public static void finishConnection(final String executionID) {
-        new ExecuteProcessReporter().reportRemove(executionID);
+    public void finishConnection(final String executionID) {
+        reporter.reportRemove(executionID);
     }
     
     /**
@@ -79,13 +78,13 @@ public final class ExecuteProcessEngine {
      * @param executionGroupContext execution group context
      * @param eventBusContext event bus context
      */
-    public static void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
+    public void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
         if (Strings.isNullOrEmpty(executionGroupContext.getExecutionID())) {
             executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
         }
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
-            new ExecuteProcessReporter().report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
+            reporter.report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
     }
     
@@ -95,8 +94,8 @@ public final class ExecuteProcessEngine {
      * @param executionID execution ID
      * @param executionUnit execution unit
      */
-    public static void finishExecution(final String executionID, final SQLExecutionUnit executionUnit) {
-        new ExecuteProcessReporter().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+    public void finishExecution(final String executionID, final SQLExecutionUnit executionUnit) {
+        reporter.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
     }
     
     /**
@@ -105,23 +104,23 @@ public final class ExecuteProcessEngine {
      * @param executionID execution ID
      * @param eventBusContext event bus context
      */
-    public static void finishExecution(final String executionID, final EventBusContext eventBusContext) {
+    public void finishExecution(final String executionID, final EventBusContext eventBusContext) {
         if (ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            new ExecuteProcessReporter().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
+            reporter.report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
         }
     }
     
     /**
      * Clean execution.
      */
-    public static void cleanExecution() {
+    public void cleanExecution() {
         if (ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            new ExecuteProcessReporter().reportClean(ExecutorDataMap.getValue().get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
+            reporter.reportClean(ExecutorDataMap.getValue().get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
         }
         ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
     }
     
-    private static boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {
+    private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof MySQLStatement && (sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement);
     }
 }

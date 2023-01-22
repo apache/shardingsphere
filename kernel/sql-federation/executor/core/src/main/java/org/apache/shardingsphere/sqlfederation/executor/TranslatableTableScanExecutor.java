@@ -154,7 +154,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new EmptyRowEnumerator();
+                return new EmptyRowEnumerator<>();
             }
         };
     }
@@ -170,19 +170,20 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new MemoryEnumerator(tableData.getRows());
+                return new MemoryEnumerator<>(tableData.getRows());
             }
         };
     }
     
     private AbstractEnumerable<Object> executeScalarEnumerable(final DatabaseType databaseType, final QueryContext queryContext,
                                                                final ShardingSphereDatabase database, final ExecutionContext context) {
+        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            ExecuteProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
-            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
@@ -190,7 +191,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
-            ExecuteProcessEngine.cleanExecution();
+            executeProcessEngine.cleanExecution();
         }
     }
     
@@ -201,7 +202,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object> enumerator() {
-                return new SQLFederationRowEnumerator(rows, statements);
+                return new SQLFederationRowEnumerator<>(rows, statements);
             }
         };
     }
@@ -237,12 +238,13 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     private AbstractEnumerable<Object[]> execute(final DatabaseType databaseType, final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
+        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            ExecuteProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
-            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
@@ -250,7 +252,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
-            ExecuteProcessEngine.cleanExecution();
+            executeProcessEngine.cleanExecution();
         }
     }
     

@@ -47,9 +47,10 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
         if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
             String executionID = dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString();
             for (RawSQLExecutionUnit each : inputs) {
-                ExecuteProcessEngine.finishExecution(executionID, each);
+                executeProcessEngine.finishExecution(executionID, each);
             }
         }
         return result;
