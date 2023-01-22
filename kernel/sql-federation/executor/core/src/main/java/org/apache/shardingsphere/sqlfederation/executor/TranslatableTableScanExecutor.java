@@ -181,7 +181,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            executeProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
@@ -242,7 +242,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            executeProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
