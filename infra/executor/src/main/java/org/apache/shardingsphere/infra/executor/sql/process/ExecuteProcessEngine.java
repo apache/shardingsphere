@@ -50,21 +50,26 @@ public final class ExecuteProcessEngine {
      *
      * @param grantee grantee
      * @param databaseName database name
-     * @return execution id
+     * @return execution ID
      */
     public static String initializeConnection(final Grantee grantee, final String databaseName) {
-        ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList());
-        executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
-        executionGroupContext.setGrantee(grantee);
-        executionGroupContext.setDatabaseName(databaseName);
+        ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = createExecutionGroupContext(grantee, databaseName);
         OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class).ifPresent(optional -> optional.report(executionGroupContext));
         return executionGroupContext.getExecutionID();
+    }
+    
+    private static ExecutionGroupContext<SQLExecutionUnit> createExecutionGroupContext(final Grantee grantee, final String databaseName) {
+        ExecutionGroupContext<SQLExecutionUnit> result = new ExecutionGroupContext<>(Collections.emptyList());
+        result.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
+        result.setGrantee(grantee);
+        result.setDatabaseName(databaseName);
+        return result;
     }
     
     /**
      * Finish connection.
      *
-     * @param executionID execution id
+     * @param executionID execution ID
      */
     public static void finishConnection(final String executionID) {
         OptionalSPIRegistry.findRegisteredService(ExecuteProcessReporter.class).ifPresent(optional -> optional.reportRemove(executionID));
