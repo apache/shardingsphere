@@ -484,8 +484,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return;
         }
         if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(databaseName -> {
-                if (!databaseName.equals(connectionDatabaseName)) {
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> {
+                if (!optional.equals(connectionDatabaseName)) {
                     throw new JDBCTransactionAcrossDatabasesException();
                 }
             });

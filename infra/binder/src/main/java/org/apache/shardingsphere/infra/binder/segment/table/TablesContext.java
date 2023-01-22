@@ -79,7 +79,7 @@ public final class TablesContext {
                 SimpleTableSegment simpleTableSegment = (SimpleTableSegment) each;
                 tables.add(simpleTableSegment);
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
-                simpleTableSegment.getOwner().ifPresent(owner -> schemaNames.add(owner.getIdentifier().getValue()));
+                simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
                 findDatabaseName(simpleTableSegment, databaseType).ifPresent(databaseNames::add);
             }
             if (each instanceof SubqueryTableSegment) {
