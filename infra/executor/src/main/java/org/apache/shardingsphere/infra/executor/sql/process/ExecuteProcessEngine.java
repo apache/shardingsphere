@@ -76,9 +76,8 @@ public final class ExecuteProcessEngine {
      *
      * @param queryContext query context
      * @param executionGroupContext execution group context
-     * @param eventBusContext event bus context
      */
-    public void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
+    public void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         if (Strings.isNullOrEmpty(executionGroupContext.getExecutionID())) {
             executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
         }
