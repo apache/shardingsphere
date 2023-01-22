@@ -32,6 +32,10 @@ INTEGER_
     : INT_
     ;
 
+DATE_
+    : YEAR_ MINUS_ MONTH_ MINUS_ DAY_
+    ;
+
 NEGETIVE_INFINITY_:  '-∞';
 
 POSITIVE_INFINITY_:  '+∞';
@@ -42,4 +46,15 @@ INT_
 
 HEX_
     : [0-9a-fA-F]
+    ;
+
+YEAR_
+    : [0-9]+
+    ;
+
+MONTH_
+    : [0-9]+
+    ;
+DAY_
+    : [0-9]+
     ;
