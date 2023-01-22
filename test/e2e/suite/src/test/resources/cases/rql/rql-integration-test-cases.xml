@@ -117,6 +117,10 @@
         <assertion expected-data-file="show_encrypt_rule.xml" />
     </test-case>
     
+    <test-case sql="SHOW MASK RULES" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding">
+        <assertion expected-data-file="show_mask_rule.xml" />
+    </test-case>
+    
     <!--TODO add db discovery tests-->
     <test-case sql="SHOW DB_DISCOVERY RULES" scenario-types="sharding_governance">
         <assertion expected-data-file="show_discovery_rules.xml" />
@@ -148,5 +152,9 @@
     
     <test-case sql="COUNT SHADOW RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="count_shadow_rule.xml" />
+    </test-case>
+    
+    <test-case sql="COUNT MASK RULE;" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding">
+        <assertion expected-data-file="count_mask_rule.xml" />
     </test-case>
 </integration-test-cases>
