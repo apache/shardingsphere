@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process;
+package org.apache.shardingsphere.infra.executor.sql.process.fixture;
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 

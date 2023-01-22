@@ -116,7 +116,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private void finishReport(final Map<String, Object> dataMap, final SQLExecutionUnit executionUnit) {
         if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            ExecuteProcessEngine.finishExecution(dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString(), executionUnit, eventBusContext);
+            ExecuteProcessEngine.finishExecution(dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString(), executionUnit);
         }
     }
     
