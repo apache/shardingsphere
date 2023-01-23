@@ -38,12 +38,12 @@ public final class JooQDialectRegistry {
     private static final Map<DatabaseType, SQLDialect> DATABASE_DIALECT_MAP = new HashMap<>();
     
     static {
-        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"), SQLDialect.POSTGRES);
-        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), SQLDialect.MYSQL);
-        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MariaDB"), SQLDialect.MARIADB);
-        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "openGauss"), SQLDialect.POSTGRES);
-        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), SQLDialect.H2);
-        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQL92"), SQLDialect.DEFAULT);
+        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL"), SQLDialect.POSTGRES);
+        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getService(DatabaseType.class, "MySQL"), SQLDialect.MYSQL);
+        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getService(DatabaseType.class, "MariaDB"), SQLDialect.MARIADB);
+        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getService(DatabaseType.class, "openGauss"), SQLDialect.POSTGRES);
+        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getService(DatabaseType.class, "H2"), SQLDialect.H2);
+        DATABASE_DIALECT_MAP.put(TypedSPIRegistry.getService(DatabaseType.class, "SQL92"), SQLDialect.DEFAULT);
     }
     
     /**

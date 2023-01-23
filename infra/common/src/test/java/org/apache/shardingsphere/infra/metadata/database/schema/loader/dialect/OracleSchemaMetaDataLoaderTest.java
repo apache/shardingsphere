@@ -263,8 +263,8 @@ public final class OracleSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findRegisteredService(
-                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "Oracle").getType());
+        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findService(
+                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "Oracle").getType());
         assertTrue(result.isPresent());
         return result.get();
     }

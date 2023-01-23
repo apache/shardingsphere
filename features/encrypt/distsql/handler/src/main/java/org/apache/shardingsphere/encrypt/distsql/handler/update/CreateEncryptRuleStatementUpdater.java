@@ -95,7 +95,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
-        Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+        Collection<String> notExistedEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors));
     }
     

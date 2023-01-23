@@ -90,7 +90,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     private void checkAlgorithmType(final AlterShadowRuleStatement sqlStatement) {
         Collection<String> invalidAlgorithmTypes = sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
                 .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet()).stream()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
+                .filter(each -> !TypedSPIRegistry.findService(ShadowAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidAlgorithmTypes.isEmpty(), () -> new InvalidAlgorithmConfigurationException("shadow", invalidAlgorithmTypes));
     }
     

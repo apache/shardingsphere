@@ -31,7 +31,7 @@ import java.util.Collections;
 @Slf4j
 public final class DefaultPostgreSQLSessionVariableHandler implements PostgreSQLSessionVariableHandler {
     
-    private final Collection<String> replayRequiredSessionVariables = TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "PostgreSQL")
+    private final Collection<String> replayRequiredSessionVariables = TypedSPIRegistry.findService(ReplayRequiredSessionVariables.class, "PostgreSQL")
             .orElseGet(() -> Collections::emptySet).getReplayRequiredVariables();
     
     @Override

@@ -61,8 +61,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
         CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType).orElse(null);
-        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, targetDatabaseType.getType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, targetDatabaseType.getType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
         Collection<String> createdSchemaNames = new HashSet<>();
         for (CreateTableEntry each : createTableConfig.getCreateTableEntries()) {
             String targetSchemaName = each.getTargetName().getSchemaName().getOriginal();

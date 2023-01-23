@@ -42,7 +42,7 @@ public final class ReadwriteSplittingRuleBuilderTest {
                         new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Collections.singletonList("readDataSourceName")),
                         null, "loadBalancerName")),
                 Collections.emptyMap());
-        DatabaseRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        DatabaseRuleBuilder builder = OrderedSPIRegistry.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ReadwriteSplittingRule.class));
     }
 }

@@ -81,7 +81,7 @@ public final class ImporterConfiguration {
      * @return schema name. nullable
      */
     public String getSchemaName(final LogicTableName logicTableName) {
-        return TypedSPIRegistry.getRegisteredService(DatabaseType.class, dataSourceConfig.getDatabaseType().getType()).isSchemaAvailable()
+        return TypedSPIRegistry.getService(DatabaseType.class, dataSourceConfig.getDatabaseType().getType()).isSchemaAvailable()
                 ? tableNameSchemaNameMapping.getSchemaName(logicTableName)
                 : null;
     }

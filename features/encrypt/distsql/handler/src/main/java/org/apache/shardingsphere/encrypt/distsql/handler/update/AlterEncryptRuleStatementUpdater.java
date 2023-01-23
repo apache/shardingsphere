@@ -86,7 +86,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         for (EncryptRuleSegment each : sqlStatement.getRules()) {
             encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet()));
         }
-        Collection<String> invalidEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+        Collection<String> invalidEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidEncryptors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("encryptor", invalidEncryptors));
     }
     

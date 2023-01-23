@@ -61,8 +61,8 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     
     @Override
     public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
-        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, param.getDatabaseType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, param.getDatabaseType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
         List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }

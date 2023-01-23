@@ -71,6 +71,6 @@ public final class YamlEncryptRuleConfigurationSwapperTest {
     
     private YamlEncryptRuleConfigurationSwapper getSwapper() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        return (YamlEncryptRuleConfigurationSwapper) OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        return (YamlEncryptRuleConfigurationSwapper) OrderedSPIRegistry.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
 }

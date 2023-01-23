@@ -49,7 +49,7 @@ public final class DefaultPostgreSQLSessionVariableHandlerTest {
         try (MockedStatic<TypedSPIRegistry> typedSPIRegistry = mockStatic(TypedSPIRegistry.class)) {
             ReplayRequiredSessionVariables replayRequiredSessionVariables = mock(ReplayRequiredSessionVariables.class);
             when(replayRequiredSessionVariables.getReplayRequiredVariables()).thenReturn(Collections.singleton("datestyle"));
-            typedSPIRegistry.when(() -> TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "PostgreSQL")).thenReturn(Optional.of(replayRequiredSessionVariables));
+            typedSPIRegistry.when(() -> TypedSPIRegistry.findService(ReplayRequiredSessionVariables.class, "PostgreSQL")).thenReturn(Optional.of(replayRequiredSessionVariables));
             new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, "datestyle", "postgres");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("datestyle", "postgres");
         }

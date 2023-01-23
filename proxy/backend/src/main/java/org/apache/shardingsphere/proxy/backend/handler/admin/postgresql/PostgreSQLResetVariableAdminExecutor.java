@@ -36,7 +36,7 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     @Override
     public void execute(final ConnectionSession connectionSession) {
         String variableName = resetParameterStatement.getConfigurationParameter();
-        PostgreSQLSessionVariableHandler variableHandler = TypedSPIRegistry.findRegisteredService(
+        PostgreSQLSessionVariableHandler variableHandler = TypedSPIRegistry.findService(
                 PostgreSQLSessionVariableHandler.class, variableName).orElseGet(DefaultPostgreSQLSessionVariableHandler::new);
         variableHandler.handle(connectionSession, variableName, DEFAULT);
     }

@@ -215,7 +215,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static void checkLoadBalancers(final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> notExistedLoadBalancers = segments.stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReadQueryLoadBalanceAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
+                .filter(each -> !TypedSPIRegistry.findService(ReadQueryLoadBalanceAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }

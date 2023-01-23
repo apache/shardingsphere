@@ -110,7 +110,7 @@ public abstract class AbstractSQLRewriterIT {
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, getTestParameters().getDatabaseType());
+        DatabaseType databaseType = TypedSPIRegistry.getService(DatabaseType.class, getTestParameters().getDatabaseType());
         Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
         when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);

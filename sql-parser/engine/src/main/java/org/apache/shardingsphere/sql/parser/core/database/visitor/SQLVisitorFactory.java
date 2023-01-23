@@ -45,7 +45,7 @@ public final class SQLVisitorFactory {
      * @return created instance
      */
     public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule, final Properties props) {
-        SQLVisitorFacade facade = TypedSPIRegistry.getRegisteredService(SQLVisitorFacade.class, String.join(".", databaseType, visitorType));
+        SQLVisitorFacade facade = TypedSPIRegistry.getService(SQLVisitorFacade.class, String.join(".", databaseType, visitorType));
         return createParseTreeVisitor(facade, visitorRule.getType(), props);
     }
     

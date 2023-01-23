@@ -159,7 +159,7 @@ public final class DataSourceReflection {
      */
     public void addDefaultDataSourceProperties() {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
-                TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
+                TypedSPIRegistry.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
                         .map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
         Optional<String> jdbcUrl = dataSourcePoolMetaDataReflection.getJdbcUrl();
         Optional<Properties> jdbcConnectionProps = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();

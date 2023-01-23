@@ -45,8 +45,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
         PersistRepositoryConfiguration repositoryConfig = param.getModeConfiguration().getRepository();
         StandalonePersistRepository repository = null == repositoryConfig
-                ? RequiredSPIRegistry.getRegisteredService(StandalonePersistRepository.class)
-                : TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
+                ? RequiredSPIRegistry.getService(StandalonePersistRepository.class)
+                : TypedSPIRegistry.getService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, param);
         InstanceContext instanceContext = buildInstanceContext(param);

@@ -33,13 +33,13 @@ import java.util.Properties;
 public final class RequiredSPIRegistry {
     
     /**
-     * Get registered service.
+     * Get service.
      *
      * @param spiClass required SPI class
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends RequiredSPI> T getRegisteredService(final Class<T> spiClass) {
+    public static <T extends RequiredSPI> T getService(final Class<T> spiClass) {
         T result = getRequiredService(spiClass);
         if (result instanceof SPIPostProcessor) {
             ((SPIPostProcessor) result).init(new Properties());

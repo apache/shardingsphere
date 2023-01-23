@@ -114,8 +114,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ColumnValueReader columnValueReader = TypedSPIRegistry.findRegisteredService(ColumnValueReader.class, param.getDatabaseType())
-                        .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(ColumnValueReader.class));
+                ColumnValueReader columnValueReader = TypedSPIRegistry.findService(ColumnValueReader.class, param.getDatabaseType())
+                        .orElseGet(() -> RequiredSPIRegistry.getService(ColumnValueReader.class));
                 while (resultSet.next()) {
                     if (isCanceling()) {
                         throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName());
@@ -137,12 +137,12 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     private String getQuerySQL(final DataConsistencyCalculateParameter param) {
-        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, param.getDatabaseType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, param.getDatabaseType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
         String logicTableName = param.getLogicTableName();
         String schemaName = param.getSchemaName();
         String uniqueKey = param.getUniqueKey().getName();
-        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && TypedSPIRegistry.getRegisteredService(DatabaseType.class, param.getDatabaseType()).isSchemaAvailable()
+        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && TypedSPIRegistry.getService(DatabaseType.class, param.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
         if (null == param.getPreviousCalculatedResult() && null == param.getTableCheckPosition()) {

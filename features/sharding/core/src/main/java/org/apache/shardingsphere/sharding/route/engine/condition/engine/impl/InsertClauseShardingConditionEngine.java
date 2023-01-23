@@ -118,7 +118,7 @@ public final class InsertClauseShardingConditionEngine {
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
                 if (null == datetimeService) {
-                    datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
+                    datetimeService = RequiredSPIRegistry.getService(DatetimeService.class);
                 }
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
             } else if (ExpressionConditionUtils.isNullExpression(each)) {

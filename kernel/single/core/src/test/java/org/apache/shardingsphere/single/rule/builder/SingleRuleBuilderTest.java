@@ -37,7 +37,7 @@ public final class SingleRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        DatabaseRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class).iterator().next();
+        DatabaseRuleBuilder builder = OrderedSPIRegistry.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
     }
@@ -45,7 +45,7 @@ public final class SingleRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuildWithDefaultDataSource() {
-        DatabaseRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class).iterator().next();
+        DatabaseRuleBuilder builder = OrderedSPIRegistry.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(
                 new SingleRuleConfiguration("foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));

@@ -196,7 +196,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
         CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig);
         DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceResourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
-        Map<LogicTableName, Set<String>> shardingColumnsMap = RequiredSPIRegistry.getRegisteredService(ShardingColumnsExtractor.class).getShardingColumnsMap(
+        Map<LogicTableName, Set<String>> shardingColumnsMap = RequiredSPIRegistry.getService(ShardingColumnsExtractor.class).getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), Collections.singleton(new LogicTableName(jobConfig.getTargetTableName())));
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, tableNameSchemaNameMapping);
         return new MigrationTaskConfiguration(jobConfig.getSourceResourceName(), createTableConfig, dumperConfig, importerConfig);
@@ -204,7 +204,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig) {
         String sourceSchemaName = jobConfig.getSourceSchemaName();
-        String targetSchemaName = TypedSPIRegistry.getRegisteredService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
+        String targetSchemaName = TypedSPIRegistry.getService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
         CreateTableEntry createTableEntry = new CreateTableEntry(
                 jobConfig.getSource(), new SchemaTableName(new SchemaName(sourceSchemaName), new TableName(jobConfig.getSourceTableName())),
                 jobConfig.getTarget(), new SchemaTableName(new SchemaName(targetSchemaName), new TableName(jobConfig.getTargetTableName())));
@@ -258,7 +258,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         super.startDisabledJob(jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "CONSISTENCY_CHECK").startDisabledJob(optional);
+                TypedSPIRegistry.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").startDisabledJob(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -271,7 +271,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     public void stop(final String jobId) {
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "CONSISTENCY_CHECK").stop(optional);
+                TypedSPIRegistry.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").stop(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -312,8 +312,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         String targetTableName = jobConfig.getTargetTableName();
         // TODO use jobConfig.targetSchemaName
         String targetSchemaName = jobConfig.getSourceSchemaName();
-        PipelineSQLBuilder pipelineSQLBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        PipelineSQLBuilder pipelineSQLBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {

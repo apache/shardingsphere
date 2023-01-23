@@ -56,7 +56,7 @@ public final class DataSourcePropertiesValidator {
     }
     
     private void validateProperties(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
         if (!poolMetaData.isPresent()) {
             return;
         }

@@ -61,7 +61,7 @@ public final class MetaDataRefreshEngine {
         if (IGNORED_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return;
         }
-        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findRegisteredService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
+        Optional<MetaDataRefresher> schemaRefresher = TypedSPIRegistry.findService(MetaDataRefresher.class, sqlStatementClass.getSuperclass().getName());
         if (schemaRefresher.isPresent()) {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName())).toLowerCase();

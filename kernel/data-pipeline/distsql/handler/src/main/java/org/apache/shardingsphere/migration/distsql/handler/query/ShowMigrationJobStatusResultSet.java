@@ -44,7 +44,7 @@ public final class ShowMigrationJobStatusResultSet implements DatabaseDistSQLRes
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION");
+        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getService(PipelineJobAPI.class, "MIGRATION");
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(((ShowMigrationStatusStatement) sqlStatement).getJobId());
         long currentTimeMillis = System.currentTimeMillis();
         data = jobItemInfos.stream().map(each -> {

@@ -35,7 +35,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     @Test
     public void assertValidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getValidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
@@ -51,7 +51,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     @Test(expected = MissingRequiredDBDiscoveryConfigurationException.class)
     public void assertInvalidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getInvalidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     

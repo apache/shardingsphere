@@ -61,8 +61,8 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
         }
         IncrementalTaskProgress taskProgress = new IncrementalTaskProgress();
         // TODO databaseType
-        PositionInitializer positionInitializer = TypedSPIRegistry.findRegisteredService(
-                PositionInitializer.class, databaseType).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PositionInitializer.class));
+        PositionInitializer positionInitializer = TypedSPIRegistry.findService(
+                PositionInitializer.class, databaseType).orElseGet(() -> RequiredSPIRegistry.getService(PositionInitializer.class));
         taskProgress.setPosition(positionInitializer.init(yamlProgress.getPosition()));
         taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());
         return new JobItemIncrementalTasksProgress(taskProgress);

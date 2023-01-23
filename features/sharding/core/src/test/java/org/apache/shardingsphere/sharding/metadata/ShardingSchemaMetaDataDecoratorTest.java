@@ -52,7 +52,7 @@ public final class ShardingSchemaMetaDataDecoratorTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable(TABLE_NAME)).thenReturn(Optional.of(TABLE_NAME));
         Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingSchemaMetaDataDecorator builder = (ShardingSchemaMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(shardingRule);
+        ShardingSchemaMetaDataDecorator builder = (ShardingSchemaMetaDataDecorator) OrderedSPIRegistry.getServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(shardingRule);
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(createTableMetaData());
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);

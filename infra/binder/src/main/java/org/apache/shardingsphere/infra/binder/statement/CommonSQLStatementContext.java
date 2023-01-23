@@ -59,22 +59,22 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLStatement) {
-            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
+            return TypedSPIRegistry.getService(DatabaseType.class, "MySQL");
         }
         if (sqlStatement instanceof PostgreSQLStatement) {
-            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL");
+            return TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL");
         }
         if (sqlStatement instanceof OracleStatement) {
-            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "Oracle");
+            return TypedSPIRegistry.getService(DatabaseType.class, "Oracle");
         }
         if (sqlStatement instanceof SQLServerStatement) {
-            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer");
+            return TypedSPIRegistry.getService(DatabaseType.class, "SQLServer");
         }
         if (sqlStatement instanceof OpenGaussStatement) {
-            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "openGauss");
+            return TypedSPIRegistry.getService(DatabaseType.class, "openGauss");
         }
         if (sqlStatement instanceof SQL92Statement) {
-            return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQL92");
+            return TypedSPIRegistry.getService(DatabaseType.class, "SQL92");
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }

@@ -80,7 +80,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private Map<String, ReadwriteSplittingDataSourceRule> createReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                                   final Collection<ShardingSphereRule> builtRules) {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(
-                config.getName() + "." + config.getLoadBalancerName(), RequiredSPIRegistry.getRegisteredService(ReadQueryLoadBalanceAlgorithm.class));
+                config.getName() + "." + config.getLoadBalancerName(), RequiredSPIRegistry.getService(ReadQueryLoadBalanceAlgorithm.class));
         return null == config.getStaticStrategy()
                 ? createDynamicReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm)
                 : createStaticReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);

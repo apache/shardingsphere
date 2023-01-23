@@ -68,15 +68,15 @@ public final class BootstrapInitializer {
                 proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
                 createInstanceMetaData(proxyConfig, port), force);
         ContextManagerBuilder contextManagerBuilder = null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
+                ? RequiredSPIRegistry.getService(ContextManagerBuilder.class)
+                : TypedSPIRegistry.getService(ContextManagerBuilder.class, modeConfig.getType());
         return contextManagerBuilder.build(param);
     }
     
     private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
         String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(
                 ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(), ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
-        return TypedSPIRegistry.getRegisteredService(InstanceMetaDataBuilder.class, instanceType).build(port);
+        return TypedSPIRegistry.getService(InstanceMetaDataBuilder.class, instanceType).build(port);
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {

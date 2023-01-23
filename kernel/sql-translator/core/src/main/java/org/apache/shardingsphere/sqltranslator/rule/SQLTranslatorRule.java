@@ -41,7 +41,7 @@ public final class SQLTranslatorRule implements GlobalRule {
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        translator = TypedSPIRegistry.findRegisteredService(SQLTranslator.class, ruleConfig.getType()).orElse(RequiredSPIRegistry.getRegisteredService(SQLTranslator.class));
+        translator = TypedSPIRegistry.findService(SQLTranslator.class, ruleConfig.getType()).orElse(RequiredSPIRegistry.getService(SQLTranslator.class));
         useOriginalSQLWhenTranslatingFailed = ruleConfig.isUseOriginalSQLWhenTranslatingFailed();
     }
     

@@ -37,7 +37,7 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
         VariableAssignSegment variableAssignSegment = setStatement.getVariableAssigns().iterator().next();
         String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
         String assignValue = variableAssignSegment.getAssignValue();
-        PostgreSQLSessionVariableHandler variableHandler = TypedSPIRegistry.findRegisteredService(
+        PostgreSQLSessionVariableHandler variableHandler = TypedSPIRegistry.findService(
                 PostgreSQLSessionVariableHandler.class, variableName).orElseGet(DefaultPostgreSQLSessionVariableHandler::new);
         variableHandler.handle(connectionSession, variableName, assignValue);
     }

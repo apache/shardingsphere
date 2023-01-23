@@ -69,7 +69,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     public OpenGaussComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket comQueryPacket, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "openGauss"), comQueryPacket.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPIRegistry.getService(DatabaseType.class, "openGauss"), comQueryPacket.getSql(), connectionSession);
     }
     
     @Override

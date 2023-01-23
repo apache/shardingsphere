@@ -65,7 +65,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            xaDataSource = new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
+            xaDataSource = new DataSourceSwapper(TypedSPIRegistry.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
             this.xaTransactionManagerProvider = xaTransactionManagerProvider;
             xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);
         }
@@ -86,7 +86,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         if (!enlistedTransactions.get().containsKey(transaction)) {
             Connection connection = dataSource.getConnection();
-            XAConnection xaConnection = TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getType()).wrap(xaDataSource, connection);
+            XAConnection xaConnection = TypedSPIRegistry.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(xaDataSource, connection);
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 

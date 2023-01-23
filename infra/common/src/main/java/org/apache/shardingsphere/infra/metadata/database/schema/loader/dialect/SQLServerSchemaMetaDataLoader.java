@@ -80,7 +80,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = RequiredSPIRegistry.getRegisteredService(DataTypeLoader.class).load(connection.getMetaData());
+            Map<String, Integer> dataTypes = RequiredSPIRegistry.getService(DataTypeLoader.class).load(connection.getMetaData());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");

@@ -87,8 +87,8 @@ public final class DataSourceSwapper {
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
         Map<String, Object> result = new HashMap<>(3, 1);
-        DataSourcePropertyProvider provider = TypedSPIRegistry.findRegisteredService(DataSourcePropertyProvider.class, dataSource.getClass().getName())
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(DataSourcePropertyProvider.class));
+        DataSourcePropertyProvider provider = TypedSPIRegistry.findService(DataSourcePropertyProvider.class, dataSource.getClass().getName())
+                .orElseGet(() -> RequiredSPIRegistry.getService(DataSourcePropertyProvider.class));
         try {
             result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));
             result.put("user", findGetterMethod(dataSource, provider.getUsernamePropertyName()).invoke(dataSource));

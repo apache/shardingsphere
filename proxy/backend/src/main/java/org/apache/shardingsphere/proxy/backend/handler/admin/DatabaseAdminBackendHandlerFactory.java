@@ -46,7 +46,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @return created instance
      */
     public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorCreator> creator = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorCreator.class, databaseType.getType());
+        Optional<DatabaseAdminExecutorCreator> creator = TypedSPIRegistry.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!creator.isPresent()) {
             return Optional.empty();
         }
@@ -65,7 +65,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      */
     public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                             final ConnectionSession connectionSession, final String sql) {
-        Optional<DatabaseAdminExecutorCreator> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorCreator.class, databaseType.getType());
+        Optional<DatabaseAdminExecutorCreator> executorFactory = TypedSPIRegistry.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }

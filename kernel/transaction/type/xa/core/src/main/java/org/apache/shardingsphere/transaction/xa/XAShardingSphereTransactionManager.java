@@ -57,8 +57,8 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
         xaTransactionManagerProvider = null == providerType
-                ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
-                : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, providerType, new Properties());
+                ? RequiredSPIRegistry.getService(XATransactionManagerProvider.class)
+                : TypedSPIRegistry.getService(XATransactionManagerProvider.class, providerType, new Properties());
         xaTransactionManagerProvider.init();
         Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);
         resourceDataSources.forEach((key, value) -> cachedDataSources.put(value.getOriginalName(), newXATransactionDataSource(databaseTypes.get(key), value)));
@@ -142,6 +142,6 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public boolean containsProviderType(final String providerType) {
-        return TypedSPIRegistry.findRegisteredService(XATransactionManagerProvider.class, providerType).isPresent();
+        return TypedSPIRegistry.findService(XATransactionManagerProvider.class, providerType).isPresent();
     }
 }

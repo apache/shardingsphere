@@ -41,17 +41,17 @@ import static org.mockito.Mockito.when;
 
 public final class PostgreSQLXAConnectionWrapperTest {
     
-    private final DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL");
+    private final DatabaseType databaseType = TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL");
     
     @Test
     public void assertWrap() throws SQLException {
-        XAConnection actual = TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
+        XAConnection actual = TypedSPIRegistry.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(PGXAConnection.class));
     }
     
     private XADataSource createXADataSource() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        return new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
+        return new DataSourceSwapper(TypedSPIRegistry.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
     }
     
     private Connection mockConnection() throws SQLException {

@@ -45,7 +45,7 @@ public final class OrderedSPIRegistryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetRegisteredServicesByClass() {
-        Map<Class<?>, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServicesByClass(OrderedSPIFixture.class, Collections.singleton(OrderedInterfaceFixtureImpl.class));
+        Map<Class<?>, OrderedSPIFixture> actual = OrderedSPIRegistry.getServicesByClass(OrderedSPIFixture.class, Collections.singleton(OrderedInterfaceFixtureImpl.class));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(OrderedInterfaceFixtureImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
     }
@@ -54,7 +54,7 @@ public final class OrderedSPIRegistryTest {
     @Test
     public void assertGetRegisteredServices() {
         OrderedInterfaceFixtureImpl key = new OrderedInterfaceFixtureImpl();
-        Map<OrderedInterfaceFixtureImpl, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key));
+        Map<OrderedInterfaceFixtureImpl, OrderedSPIFixture> actual = OrderedSPIRegistry.getServices(OrderedSPIFixture.class, Collections.singleton(key));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(key), instanceOf(OrderedSPIFixtureImpl.class));
     }
@@ -62,7 +62,7 @@ public final class OrderedSPIRegistryTest {
     @Test
     public void assertGetRegisteredServicesFromCache() {
         OrderedInterfaceFixture key = new OrderedInterfaceFixtureImpl();
-        assertThat(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key)),
-                is(OrderedSPIRegistry.getRegisteredServices(OrderedSPIFixture.class, Collections.singleton(key))));
+        assertThat(OrderedSPIRegistry.getServices(OrderedSPIFixture.class, Collections.singleton(key)),
+                is(OrderedSPIRegistry.getServices(OrderedSPIFixture.class, Collections.singleton(key))));
     }
 }

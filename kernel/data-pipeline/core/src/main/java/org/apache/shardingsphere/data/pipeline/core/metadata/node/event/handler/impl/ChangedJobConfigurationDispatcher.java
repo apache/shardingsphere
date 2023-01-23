@@ -53,7 +53,7 @@ public final class ChangedJobConfigurationDispatcher implements PipelineMetaData
             return;
         }
         log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfig.isDisabled());
-        TypedSPIRegistry.findRegisteredService(PipelineChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getTypeName())
+        TypedSPIRegistry.findService(PipelineChangedJobConfigurationProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getTypeName())
                 .ifPresent(optional -> optional.process(event.getType(), jobConfig));
     }
 }

@@ -92,7 +92,7 @@ public abstract class AbstractBaseExecutorTest {
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()));
         when(result.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getStorageTypes())
-                .thenReturn(Collections.singletonMap("ds_0", TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")));
+                .thenReturn(Collections.singletonMap("ds_0", TypedSPIRegistry.getService(DatabaseType.class, "H2")));
         ShardingRule shardingRule = mockShardingRule();
         when(result.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
         return result;

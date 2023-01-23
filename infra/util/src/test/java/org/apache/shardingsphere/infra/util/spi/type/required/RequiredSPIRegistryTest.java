@@ -36,24 +36,24 @@ public final class RequiredSPIRegistryTest {
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
     public void assertRegisteredServiceWithEmptyImplementation() {
-        RequiredSPIRegistry.getRegisteredService(EmptyRequiredSPIFixture.class);
+        RequiredSPIRegistry.getService(EmptyRequiredSPIFixture.class);
     }
     
     @Test
     public void assertRegisteredServiceWithOneImplementation() {
-        SingleRequiredSPIFixture actual = RequiredSPIRegistry.getRegisteredService(SingleRequiredSPIFixture.class);
+        SingleRequiredSPIFixture actual = RequiredSPIRegistry.getService(SingleRequiredSPIFixture.class);
         assertThat(actual, instanceOf(SingleRequiredSPIFixtureImpl.class));
         assertTrue(((SingleRequiredSPIFixtureImpl) actual).isInitialized());
     }
     
     @Test
     public void assertRegisteredServiceWithMoreImplementationsAndWithDefaultImplementation() {
-        assertThat(RequiredSPIRegistry.getRegisteredService(MultipleWithDefaultRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
+        assertThat(RequiredSPIRegistry.getService(MultipleWithDefaultRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
     }
     
     @Test
     public void assertRegisteredServiceWithMoreImplementationsAndWithoutDefaultImplementation() {
-        MultipleWithoutDefaultRequiredSPIFixture actual = RequiredSPIRegistry.getRegisteredService(MultipleWithoutDefaultRequiredSPIFixture.class);
+        MultipleWithoutDefaultRequiredSPIFixture actual = RequiredSPIRegistry.getService(MultipleWithoutDefaultRequiredSPIFixture.class);
         assertTrue(actual instanceof FooNotDefaultMultipleRequiredSPIFixtureImpl || actual instanceof BarNotDefaultMultipleRequiredSPIFixtureImpl);
     }
 }

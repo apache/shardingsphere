@@ -93,7 +93,7 @@ public final class ShardingResultMergerEngineTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext sqlStatementContext = new SelectStatementContext(createShardingSphereMetaData(database),
                 Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
-        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), null, props,
+        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getService(DatabaseType.class, "MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }
     
@@ -105,7 +105,7 @@ public final class ShardingResultMergerEngineTest {
     public void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         CommonSQLStatementContext<PostgreSQLShowStatement> sqlStatementContext = new CommonSQLStatementContext<>(new PostgreSQLShowStatement(""));
-        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), null, props,
+        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getService(DatabaseType.class, "MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
@@ -117,7 +117,7 @@ public final class ShardingResultMergerEngineTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         InsertStatementContext sqlStatementContext = createInsertStatementContext(insertStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), null, props,
+        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getService(DatabaseType.class, "MySQL"), null, props,
                 sqlStatementContext), instanceOf(TransparentResultMerger.class));
     }
     
@@ -131,7 +131,7 @@ public final class ShardingResultMergerEngineTest {
     public void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         CommonSQLStatementContext<OpenGaussFetchStatement> sqlStatementContext = new CommonSQLStatementContext<>(new OpenGaussFetchStatement());
-        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), null, props,
+        assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getService(DatabaseType.class, "MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDDLResultMerger.class));
     }
 }

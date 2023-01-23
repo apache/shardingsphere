@@ -49,15 +49,15 @@ public final class ExampleScenarioFactory {
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
         return null == feature ? Collections.emptyList() : 
-                Arrays.stream(feature.split(",")).map(each -> TypedSPIRegistry.getRegisteredService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
+                Arrays.stream(feature.split(",")).map(each -> TypedSPIRegistry.getService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
     }
     
     private FrameworkExampleScenario getFrameworkScenario(final String framework) {
-        return TypedSPIRegistry.getRegisteredService(FrameworkExampleScenario.class, framework);
+        return TypedSPIRegistry.getService(FrameworkExampleScenario.class, framework);
     }
     
     private TransactionExampleScenario getTransactionScenario(final String transaction) {
-        return TypedSPIRegistry.getRegisteredService(TransactionExampleScenario.class, transaction);
+        return TypedSPIRegistry.getService(TransactionExampleScenario.class, transaction);
     }
     
     /**

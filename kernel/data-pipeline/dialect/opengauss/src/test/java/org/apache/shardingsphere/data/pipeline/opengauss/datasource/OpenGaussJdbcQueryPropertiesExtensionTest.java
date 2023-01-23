@@ -32,7 +32,7 @@ public final class OpenGaussJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, "openGauss");
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findService(JdbcQueryPropertiesExtension.class, "openGauss");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
     }

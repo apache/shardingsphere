@@ -102,7 +102,7 @@ public final class ShardingSphereDataScheduleCollector {
         
         private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
-            Optional<ShardingSphereDataCollector> dataCollector = TypedSPIRegistry.findRegisteredService(ShardingSphereDataCollector.class, table.getName());
+            Optional<ShardingSphereDataCollector> dataCollector = TypedSPIRegistry.findService(ShardingSphereDataCollector.class, table.getName());
             if (!dataCollector.isPresent()) {
                 return;
             }

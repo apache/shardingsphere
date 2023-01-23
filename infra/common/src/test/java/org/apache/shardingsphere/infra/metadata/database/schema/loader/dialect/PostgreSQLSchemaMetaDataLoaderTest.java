@@ -173,8 +173,8 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findRegisteredService(
-                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL").getType());
+        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findService(
+                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL").getType());
         assertTrue(result.isPresent());
         return result.get();
     }

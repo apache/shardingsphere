@@ -154,7 +154,7 @@ public final class SingleSQLRouterTest {
                 DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Collections.singletonList(new RouteMapper("t_order", "t_order"))));
-        SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
+        SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPIRegistry.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), mockReadwriteSplittingDatabase(), rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is("foo_ds"));
@@ -169,7 +169,7 @@ public final class SingleSQLRouterTest {
         RouteUnit writeRouteUnit = new RouteUnit(new RouteMapper("write_ds", "write_ds"), Collections.singletonList(new RouteMapper("t_order", "t_order")));
         routeContext.getRouteUnits().add(readWriteRouteUnit);
         routeContext.getRouteUnits().add(writeRouteUnit);
-        SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
+        SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPIRegistry.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
@@ -184,7 +184,7 @@ public final class SingleSQLRouterTest {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.emptyList()));
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.emptyList()));
-        SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
+        SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPIRegistry.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), mockDatabaseWithMultipleResources(), rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is("ds_1"));

@@ -260,7 +260,7 @@ public final class ShardingTableRuleStatementChecker {
                 .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment().getName()));
         ShardingSpherePreconditions.checkState(notExistKeyGenerator.isEmpty(), () -> new MissingRequiredAlgorithmException("key generator", notExistKeyGenerator));
         Collection<String> invalidKeyGenerators = requiredKeyGenerators.stream()
-                .distinct().filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .distinct().filter(each -> !TypedSPIRegistry.findService(KeyGenerateAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidKeyGenerators.isEmpty(), () -> new InvalidAlgorithmConfigurationException("key generator", invalidKeyGenerators));
     }
     
@@ -272,7 +272,7 @@ public final class ShardingTableRuleStatementChecker {
                     .map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList()).stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
         }
         Collection<String> invalidAuditors = requiredAuditors.stream()
-                .distinct().filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAuditAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .distinct().filter(each -> !TypedSPIRegistry.findService(ShardingAuditAlgorithm.class, each).isPresent()).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidAuditors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("auditor", invalidAuditors));
     }
     
@@ -286,7 +286,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkAutoTableShardingAlgorithms(final Collection<AutoTableRuleSegment> rules) {
         rules.forEach(each -> {
-            ShardingSpherePreconditions.checkState(TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName()).isPresent(),
+            ShardingSpherePreconditions.checkState(TypedSPIRegistry.findService(ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName()).isPresent(),
                     () -> new InvalidAlgorithmConfigurationException("sharding", each.getShardingAlgorithmSegment().getName()));
             ShardingAlgorithm shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
                     new AlgorithmConfiguration(each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps()), ShardingAlgorithm.class);

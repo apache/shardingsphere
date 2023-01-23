@@ -53,7 +53,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        connectionSession = new ConnectionSession(TypedSPIRegistry.getRegisteredService(DatabaseType.class, databaseProtocolFrontendEngine.getType()),
+        connectionSession = new ConnectionSession(TypedSPIRegistry.getService(DatabaseType.class, databaseProtocolFrontendEngine.getType()),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType(), channel);
     }
     

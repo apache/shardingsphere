@@ -42,6 +42,6 @@ public final class CDCImporterCreatorTest {
     @Test
     public void assertCreateCDCImporter() {
         CDCImporterConnector importerConnector = new CDCImporterConnector(mock(Channel.class), "test", 1, Collections.emptyList(), null);
-        assertThat(TypedSPIRegistry.getRegisteredService(ImporterCreator.class, "CDC").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(CDCImporter.class));
+        assertThat(TypedSPIRegistry.getService(ImporterCreator.class, "CDC").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(CDCImporter.class));
     }
 }

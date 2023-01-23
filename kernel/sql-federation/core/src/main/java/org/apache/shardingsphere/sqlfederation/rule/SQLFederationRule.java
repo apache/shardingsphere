@@ -43,8 +43,8 @@ public final class SQLFederationRule implements GlobalRule {
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        sqlFederationExecutor = TypedSPIRegistry.findRegisteredService(SQLFederationExecutor.class, configuration.getSqlFederationType())
-                .orElse(RequiredSPIRegistry.getRegisteredService(SQLFederationExecutor.class));
+        sqlFederationExecutor = TypedSPIRegistry.findService(SQLFederationExecutor.class, configuration.getSqlFederationType())
+                .orElse(RequiredSPIRegistry.getService(SQLFederationExecutor.class));
     }
     
     /**
@@ -64,8 +64,8 @@ public final class SQLFederationRule implements GlobalRule {
         Preconditions.checkArgument(SQLFederationTypeEnum.isValidSQLFederationType(sqlFederationType), "%s is not a valid sqlFederationType.", sqlFederationType);
         if (!configuration.getSqlFederationType().equals(sqlFederationType)) {
             configuration.setSqlFederationType(sqlFederationType);
-            sqlFederationExecutor = TypedSPIRegistry.findRegisteredService(SQLFederationExecutor.class, configuration.getSqlFederationType())
-                    .orElse(RequiredSPIRegistry.getRegisteredService(SQLFederationExecutor.class));
+            sqlFederationExecutor = TypedSPIRegistry.findService(SQLFederationExecutor.class, configuration.getSqlFederationType())
+                    .orElse(RequiredSPIRegistry.getService(SQLFederationExecutor.class));
         }
         sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor, eventBusContext);
         return sqlFederationExecutor;

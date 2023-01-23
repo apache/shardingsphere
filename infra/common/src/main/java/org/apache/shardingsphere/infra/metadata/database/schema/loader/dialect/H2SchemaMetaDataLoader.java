@@ -82,7 +82,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Map<String, Integer> dataTypes = RequiredSPIRegistry.getRegisteredService(DataTypeLoader.class).load(connection.getMetaData());
+            Map<String, Integer> dataTypes = RequiredSPIRegistry.getService(DataTypeLoader.class).load(connection.getMetaData());
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(connection, tables);
             preparedStatement.setString(1, connection.getCatalog());
