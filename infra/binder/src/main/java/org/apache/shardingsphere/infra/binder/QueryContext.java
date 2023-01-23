@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -37,7 +38,8 @@ public final class QueryContext {
     
     private final List<Object> parameters;
     
-    private final String sqlStatementDatabaseName;
+    @Getter(AccessLevel.NONE)
+    private final String databaseName;
     
     private final HintValueContext hintValueContext;
     
@@ -49,7 +51,7 @@ public final class QueryContext {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         parameters = params;
-        sqlStatementDatabaseName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(null) : null;
+        databaseName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(null) : null;
         this.hintValueContext = hintValueContext;
     }
     
@@ -59,6 +61,6 @@ public final class QueryContext {
      * @return got database name
      */
     public Optional<String> getDatabaseNameFromSQLStatement() {
-        return Optional.ofNullable(sqlStatementDatabaseName);
+        return Optional.ofNullable(databaseName);
     }
 }
