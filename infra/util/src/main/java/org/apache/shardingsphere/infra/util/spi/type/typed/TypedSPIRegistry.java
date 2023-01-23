@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -31,6 +33,18 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TypedSPIRegistry {
+    
+    /**
+     * Judge whether contains service.
+     * 
+     * @param spiClass typed SPI class
+     * @param type type
+     * @param <T> SPI class type
+     * @return contains or not
+     */
+    public static <T extends TypedSPI> boolean contains(final Class<T> spiClass, final String type) {
+        return ShardingSphereServiceLoader.getServiceInstances(spiClass).stream().anyMatch(each -> matchesType(type, each));
+    }
     
     /**
      * Find service.
@@ -46,7 +60,7 @@ public final class TypedSPIRegistry {
                 return Optional.of(each);
             }
         }
-        return Optional.empty();
+        return getRequiredSPI(spiClass);
     }
     
     /**
@@ -68,7 +82,7 @@ public final class TypedSPIRegistry {
                 return Optional.of(each);
             }
         }
-        return Optional.empty();
+        return getRequiredSPI(spiClass);
     }
     
     private static boolean matchesType(final String type, final TypedSPI instance) {
@@ -93,11 +107,7 @@ public final class TypedSPIRegistry {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type) {
-        Optional<T> result = findService(spiClass, type);
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new ServiceProviderNotFoundServerException(spiClass, type);
+        return findService(spiClass, type).orElseGet(() -> getRequiredSPI(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
     }
     
     /**
@@ -110,10 +120,11 @@ public final class TypedSPIRegistry {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
-        Optional<T> result = findService(spiClass, type, props);
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new ServiceProviderNotFoundServerException(spiClass, type);
+        return findService(spiClass, type, props).orElseGet(() -> getRequiredSPI(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T extends TypedSPI> Optional<T> getRequiredSPI(final Class<T> spiClass) {
+        return RequiredSPI.class.isAssignableFrom(spiClass) ? Optional.of((T) RequiredSPIRegistry.getService((Class<? extends RequiredSPI>) spiClass)) : Optional.empty();
     }
 }

@@ -110,16 +110,16 @@ public final class DialectTableMetaDataLoaderFactory {
      * @return new instance of dialect table meta data loader
      */
     public static Optional<DialectTableMetaDataLoader> newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectTableMetaDataLoader.class, databaseType.getName());
+        return TypedSPIRegistry.findService(DialectTableMetaDataLoader.class, databaseType.getName());
     }
 }
 ```
-Here you can see that a static block is used, and all the `DialectTableMetaDataLoader` implementation classes are registered through `ShardingSphereServiceLoader.register` while class loading is in process. By using `TypedSPIRegistry.findRegisteredService`, we can get our specified spi extension class.
+Here you can see that a static block is used, and all the `DialectTableMetaDataLoader` implementation classes are registered through `ShardingSphereServiceLoader.register` while class loading is in process. By using `TypedSPIRegistry.findService`, we can get our specified spi extension class.
 
 ```
-TypedSPIRegistry.findRegisteredService(final Class<T> spiClass, final String type)
+TypedSPIRegistry.findService(final Class<T> spiClass, final String type)
 ```
-So we just have to pay attention to `ShardingSphereServiceLoader.register` and `ypedSPIRegistry.findRegisteredService` approaches.
+So we just have to pay attention to `ShardingSphereServiceLoader.register` and `TypedSPIRegistry.findService` approaches.
 
 **`ShardingSphereServiceLoader`**
 
@@ -215,10 +215,10 @@ private static <T> Collection<Object> load(final Class<T> serviceInterface) {
 ```
 **`TypedSPIRegistry`**
 
-The `findRegisteredService` method in `TypedSPIRegistry` is essentially a call to the `getSingletonServiceInstancesmethod` of the `ShardingSphereServiceLoader`.
+The `findService` method in `TypedSPIRegistry` is essentially a call to the `getSingletonServiceInstancesmethod` of the `ShardingSphereServiceLoader`.
 
 ```java
-public static <T extends StatelessTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
+public static <T extends StatelessTypedSPI> Optional<T> findService(final Class<T> spiClass, final String type) {
         for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 return Optional.of(each);

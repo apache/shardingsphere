@@ -36,42 +36,42 @@ import static org.junit.Assert.assertTrue;
 public final class TypedSPIRegistryTest {
     
     @Test
-    public void assertFindRegisteredServiceWithoutProperties() {
+    public void assertFindServiceWithoutProperties() {
         assertTrue(TypedSPIRegistry.findService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
     }
     
     @Test
-    public void assertFindRegisteredServiceWithProperties() {
+    public void assertFindServiceWithProperties() {
         assertTrue(TypedSPIRegistry.findService(TypedSPIFixture.class, "TYPED.FIXTURE", new Properties()).isPresent());
     }
     
     @Test
-    public void assertGetRegisteredServiceWithoutProperties() {
+    public void assertGetServiceWithoutProperties() {
         assertThat(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
     }
     
     @Test
-    public void assertGetRegisteredServiceWithProperties() {
+    public void assertGetServiceWithProperties() {
         assertThat(((TypedSPIFixtureImpl) TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
     }
     
     @Test
-    public void assertGetRegisteredServiceWithNullProperties() {
+    public void assertGetServiceWithNullProperties() {
         assertNull(((TypedSPIFixtureImpl) TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE", null)).getValue());
     }
     
     @Test
-    public void assertGetRegisteredServiceWithAlias() {
+    public void assertGetServiceWithAlias() {
         assertNotNull(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.ALIAS", new Properties()));
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
-    public void assertGetRegisteredServiceWithoutPropertiesWhenTypeIsNotExist() {
+    public void assertGetServiceWithoutPropertiesWhenTypeIsNotExist() {
         TypedSPIRegistry.getService(TypedSPIFixture.class, "NOT_EXISTED");
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
-    public void assertGetRegisteredServiceWithPropertiesWhenTypeIsNotExist() {
+    public void assertGetServiceWithPropertiesWhenTypeIsNotExist() {
         TypedSPIRegistry.getService(TypedSPIFixture.class, "NOT_EXISTED", new Properties());
     }
 }

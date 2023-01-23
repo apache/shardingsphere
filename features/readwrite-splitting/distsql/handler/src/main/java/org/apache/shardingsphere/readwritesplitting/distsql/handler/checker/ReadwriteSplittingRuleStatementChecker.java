@@ -203,19 +203,24 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkDuplicateReadDataSourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments, final Collection<String> readDataSourceNames) {
-        segments.forEach(each -> {
+        for (ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getReadDataSources()) {
-                each.getReadDataSources().forEach(readDataSource -> {
-                    ShardingSpherePreconditions.checkState(readDataSourceNames.add(readDataSource), () -> new InvalidRuleConfigurationException("Readwrite splitting", each.getName(),
-                            String.format("Can not config duplicate read storage unit `%s` in database `%s`", readDataSource, databaseName)));
-                });
+                checkDuplicateReadDataSourceNames(databaseName, each, readDataSourceNames);
             }
-        });
+        }
+    }
+    
+    private static void checkDuplicateReadDataSourceNames(final String databaseName, final ReadwriteSplittingRuleSegment segment, final Collection<String> readDataSourceNames) {
+        for (String each : segment.getReadDataSources()) {
+            ShardingSpherePreconditions.checkState(readDataSourceNames.add(each),
+                    () -> new InvalidRuleConfigurationException(
+                            "Readwrite splitting", segment.getName(), String.format("Can not config duplicate read storage unit `%s` in database `%s`.", each, databaseName)));
+        }
     }
     
     private static void checkLoadBalancers(final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> notExistedLoadBalancers = segments.stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull).distinct()
-                .filter(each -> !TypedSPIRegistry.findService(ReadQueryLoadBalanceAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
+                .filter(each -> !TypedSPIRegistry.contains(ReadQueryLoadBalanceAlgorithm.class, each)).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }
