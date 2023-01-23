@@ -59,7 +59,7 @@ public final class RawExecutor {
                                        final QueryContext queryContext, final RawSQLExecutorCallback callback) throws SQLException {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(queryContext, executionGroupContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
             executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
