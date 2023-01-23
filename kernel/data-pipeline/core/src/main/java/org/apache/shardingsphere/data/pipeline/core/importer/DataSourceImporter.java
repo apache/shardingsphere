@@ -87,8 +87,8 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         this.dataSourceManager = (PipelineDataSourceManager) importerConnector.getConnector();
         this.channel = channel;
-        pipelineSqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        pipelineSqlBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType(), null)
+                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
         this.jobProgressListener = jobProgressListener;
     }
     

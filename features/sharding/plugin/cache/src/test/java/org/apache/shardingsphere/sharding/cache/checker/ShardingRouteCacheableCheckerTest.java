@@ -165,7 +165,7 @@ public final class ShardingRouteCacheableCheckerTest {
                 new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
                 new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereDatabase(DATABASE_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"),
+        return new ShardingSphereDatabase(DATABASE_NAME, TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL"),
                 new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, shardingCacheRule)),
                 Collections.singletonMap(SCHEMA_NAME, schema));
     }

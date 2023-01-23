@@ -79,10 +79,10 @@ public final class CreateTrafficRuleStatementUpdater implements GlobalRuleRALUpd
     private Collection<String> getInvalidAlgorithmNames(final CreateTrafficRuleStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (TrafficRuleSegment each : sqlStatement.getSegments()) {
-            if (!TypedSPIRegistry.findRegisteredService(TrafficAlgorithm.class, each.getAlgorithm().getName()).isPresent()) {
+            if (!TypedSPIRegistry.findService(TrafficAlgorithm.class, each.getAlgorithm().getName()).isPresent()) {
                 result.add(each.getAlgorithm().getName());
             }
-            if (null != each.getLoadBalancer() && !TypedSPIRegistry.findRegisteredService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName()).isPresent()) {
+            if (null != each.getLoadBalancer() && !TypedSPIRegistry.findService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName()).isPresent()) {
                 result.add(each.getLoadBalancer().getName());
             }
         }

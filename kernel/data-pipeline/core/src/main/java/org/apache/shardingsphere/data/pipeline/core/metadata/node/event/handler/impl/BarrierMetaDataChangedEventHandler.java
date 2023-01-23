@@ -39,7 +39,7 @@ public final class BarrierMetaDataChangedEventHandler implements PipelineMetaDat
     @Override
     public void handle(final DataChangedEvent event) {
         if (event.getType() == Type.ADDED) {
-            RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class).notifyChildrenNodeCountCheck(event.getKey());
+            RequiredSPIRegistry.getService(PipelineDistributedBarrier.class).notifyChildrenNodeCountCheck(event.getKey());
         }
     }
 }

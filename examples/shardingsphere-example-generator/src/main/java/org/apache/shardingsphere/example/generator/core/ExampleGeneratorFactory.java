@@ -64,7 +64,7 @@ public final class ExampleGeneratorFactory {
         YamlExampleConfiguration exampleConfig = buildExampleConfiguration();
         YamlExampleConfigurationValidator.validate(exampleConfig);
         for (String each : exampleConfig.getProducts()) {
-            TypedSPIRegistry.getRegisteredService(ExampleGenerator.class, each).generate(templateConfig, exampleConfig);
+            TypedSPIRegistry.getService(ExampleGenerator.class, each).generate(templateConfig, exampleConfig);
         }
     }
     

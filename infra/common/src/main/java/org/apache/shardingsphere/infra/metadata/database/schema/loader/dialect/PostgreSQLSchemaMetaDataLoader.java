@@ -74,7 +74,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"));
+            Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL"));
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
             Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, tables, schemaNames);
             Map<String, Multimap<String, ConstraintMetaData>> schemaConstraintMetaDataMap = loadConstraintMetaDataMap(connection, schemaNames);
@@ -112,7 +112,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         Collection<String> roleTableGrants = loadRoleTableGrants(connection, tables);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
-            Map<String, Integer> dataTypes = RequiredSPIRegistry.getRegisteredService(DataTypeLoader.class).load(connection.getMetaData());
+            Map<String, Integer> dataTypes = RequiredSPIRegistry.getService(DataTypeLoader.class).load(connection.getMetaData());
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
                 String tableName = resultSet.getString("table_name");

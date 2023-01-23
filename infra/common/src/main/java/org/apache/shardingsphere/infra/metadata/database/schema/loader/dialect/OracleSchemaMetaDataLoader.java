@@ -78,7 +78,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1);
-        try (Connection connection = new MetaDataLoaderConnectionAdapter(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {
+        try (Connection connection = new MetaDataLoaderConnectionAdapter(TypedSPIRegistry.getService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {
             for (List<String> each : Lists.partition(new ArrayList<>(tables), MAX_EXPRESSION_SIZE)) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
                 indexMetaDataMap.putAll(loadIndexMetaData(connection, each));
@@ -95,7 +95,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Optional<DataTypeLoader> loader = TypedSPIRegistry.findRegisteredService(DataTypeLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "Oracle").getType());
+            Optional<DataTypeLoader> loader = TypedSPIRegistry.findService(DataTypeLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "Oracle").getType());
             Preconditions.checkState(loader.isPresent());
             Map<String, Integer> dataTypes = loader.get().load(connection.getMetaData());
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);

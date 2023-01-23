@@ -71,6 +71,6 @@ public final class YamlMaskRuleConfigurationSwapperTest {
     
     private YamlMaskRuleConfigurationSwapper getSwapper() {
         MaskRuleConfiguration ruleConfig = mock(MaskRuleConfiguration.class);
-        return (YamlMaskRuleConfigurationSwapper) OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        return (YamlMaskRuleConfigurationSwapper) OrderedSPIRegistry.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
 }

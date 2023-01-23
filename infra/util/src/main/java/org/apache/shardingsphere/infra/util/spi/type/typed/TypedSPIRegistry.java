@@ -33,14 +33,14 @@ import java.util.Properties;
 public final class TypedSPIRegistry {
     
     /**
-     * Find registered service.
+     * Find service.
      *
      * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 return Optional.of(each);
@@ -50,15 +50,15 @@ public final class TypedSPIRegistry {
     }
     
     /**
-     * Find registered service.
+     * Find service.
      *
      * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 Properties stringTypeProps = convertToStringTypedProperties(props);
@@ -85,15 +85,15 @@ public final class TypedSPIRegistry {
     }
     
     /**
-     * Get registered service.
+     * Get service.
      *
      * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type) {
-        Optional<T> result = findRegisteredService(spiClass, type);
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type) {
+        Optional<T> result = findService(spiClass, type);
         if (result.isPresent()) {
             return result.get();
         }
@@ -101,16 +101,16 @@ public final class TypedSPIRegistry {
     }
     
     /**
-     * Get registered service.
+     * Get service.
      * 
      * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
-        Optional<T> result = findRegisteredService(spiClass, type, props);
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
+        Optional<T> result = findService(spiClass, type, props);
         if (result.isPresent()) {
             return result.get();
         }

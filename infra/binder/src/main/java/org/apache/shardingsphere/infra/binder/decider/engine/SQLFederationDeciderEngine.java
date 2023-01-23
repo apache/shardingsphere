@@ -45,7 +45,7 @@ public final class SQLFederationDeciderEngine {
     
     public SQLFederationDeciderEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
-        deciders = OrderedSPIRegistry.getRegisteredServices(SQLFederationDecider.class, rules);
+        deciders = OrderedSPIRegistry.getServices(SQLFederationDecider.class, rules);
     }
     
     /**

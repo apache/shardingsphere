@@ -39,7 +39,7 @@ public final class JdbcStandaloneTestParameterGenerator {
     
     private static final Collection<String> ADAPTERS = Collections.singleton(AdapterType.JDBC.getValue());
     
-    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"));
+    private static final Collection<DatabaseType> DATABASE_TYPES = Collections.singleton(TypedSPIRegistry.getService(DatabaseType.class, "H2"));
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     

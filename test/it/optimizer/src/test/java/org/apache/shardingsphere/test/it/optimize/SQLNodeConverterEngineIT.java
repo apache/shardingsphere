@@ -223,8 +223,8 @@ public final class SQLNodeConverterEngineIT {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
         result.putAll((null == databaseType
-                ? RequiredSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType)).build());
+                ? RequiredSPIRegistry.getService(OptimizerSQLDialectBuilder.class)
+                : TypedSPIRegistry.getService(OptimizerSQLDialectBuilder.class, databaseType)).build());
         return result;
     }
 }

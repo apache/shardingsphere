@@ -50,14 +50,14 @@ public final class MaskResultDecoratorEngineTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
-        MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
+        MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPIRegistry.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(MaskDQLResultDecorator.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() {
-        MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
+        MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPIRegistry.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
         assertThat(actual, instanceOf(TransparentResultDecorator.class));
     }

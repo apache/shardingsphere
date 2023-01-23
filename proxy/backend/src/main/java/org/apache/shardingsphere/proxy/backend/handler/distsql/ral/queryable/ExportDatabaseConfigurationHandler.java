@@ -118,7 +118,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
             return;
         }
         stringBuilder.append("rules:").append(System.lineSeparator());
-        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet()) {
+        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet()) {
             if (checkRuleConfigIsEmpty(entry.getKey())) {
                 continue;
             }

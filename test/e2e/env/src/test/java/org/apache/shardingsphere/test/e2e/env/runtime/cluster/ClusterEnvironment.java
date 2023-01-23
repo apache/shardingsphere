@@ -62,7 +62,7 @@ public final class ClusterEnvironment {
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
-        return Arrays.stream(props.getProperty("it.cluster.databases").split(",")).map(each -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
+        return Arrays.stream(props.getProperty("it.cluster.databases").split(",")).map(each -> TypedSPIRegistry.getService(DatabaseType.class, each.trim())).collect(Collectors.toSet());
     }
     
     /**

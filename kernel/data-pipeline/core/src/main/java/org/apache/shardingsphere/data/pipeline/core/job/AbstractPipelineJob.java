@@ -61,7 +61,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected void setJobId(final String jobId) {
         this.jobId = jobId;
-        jobAPI = TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
+        jobAPI = TypedSPIRegistry.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
     }
     
     protected void prepare(final PipelineJobItemContext jobItemContext) {
@@ -101,7 +101,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             return false;
         }
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class).persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        RequiredSPIRegistry.getService(PipelineDistributedBarrier.class).persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
         return true;
     }
     

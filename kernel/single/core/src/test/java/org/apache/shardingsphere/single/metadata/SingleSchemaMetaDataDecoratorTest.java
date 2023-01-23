@@ -48,7 +48,7 @@ public final class SingleSchemaMetaDataDecoratorTest {
     public void assertDecorate() {
         SingleRule singleRule = mock(SingleRule.class);
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleRule);
-        SingleSchemaMetaDataDecorator builder = (SingleSchemaMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(singleRule);
+        SingleSchemaMetaDataDecorator builder = (SingleSchemaMetaDataDecorator) OrderedSPIRegistry.getServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(singleRule);
         Map<String, SchemaMetaData> schemaMetaDataMap = mockSchemaMetaDataMap();
         TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleRule, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = tableMetaData.getColumns().iterator();

@@ -110,7 +110,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private ShardingSphereSQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getType());
+        return sqlParserRule.getSQLParserEngine(TypedSPIRegistry.getService(DatabaseType.class, "MySQL").getType());
     }
     
     private List<String> extractMultiStatements(final Pattern pattern, final String sql) {
@@ -181,7 +181,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private static class BatchedJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
         BatchedJDBCExecutorCallback(final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"),
+            super(TypedSPIRegistry.getService(DatabaseType.class, "MySQL"),
                     storageTypes, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         

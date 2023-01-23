@@ -55,7 +55,7 @@ public final class JobConfigurationBuilder {
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         result.setUniqueKeyColumn(createYamlPipelineColumnMetaData());
-        TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
+        TypedSPIRegistry.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
     }
     

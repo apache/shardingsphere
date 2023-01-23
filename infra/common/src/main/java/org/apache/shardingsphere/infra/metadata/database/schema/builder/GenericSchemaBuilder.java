@@ -118,7 +118,7 @@ public final class GenericSchemaBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Map<String, ShardingSphereSchema> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
-        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataDecorator> entry : OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, material.getRules()).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataDecorator> entry : OrderedSPIRegistry.getServices(RuleBasedSchemaMetaDataDecorator.class, material.getRules()).entrySet()) {
             if (!(entry.getKey() instanceof TableContainedRule)) {
                 continue;
             }

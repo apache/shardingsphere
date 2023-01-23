@@ -42,7 +42,7 @@ public final class RQLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        DistSQLResultSet resultSet = TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         return new RQLBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
     }
 }

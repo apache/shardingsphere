@@ -38,7 +38,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test
     public void assertCheckWhenConfigValidConfiguration() {
         EncryptRuleConfiguration config = createValidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
@@ -54,7 +54,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test(expected = EncryptEncryptorNotFoundException.class)
     public void assertCheckWhenConfigInvalidCipherColumn() {
         EncryptRuleConfiguration config = createInvalidCipherColumnConfig();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
@@ -70,7 +70,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test(expected = EncryptEncryptorNotFoundException.class)
     public void assertCheckWhenConfigInvalidAssistColumn() {
         EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
@@ -87,7 +87,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test(expected = EncryptEncryptorNotFoundException.class)
     public void assertCheckWhenConfigInvalidLikeColumn() {
         EncryptRuleConfiguration config = createInvalidLikeColumnConfig();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     

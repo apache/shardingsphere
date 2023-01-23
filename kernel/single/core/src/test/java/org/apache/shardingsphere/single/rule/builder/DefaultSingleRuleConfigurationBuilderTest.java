@@ -33,7 +33,7 @@ public final class DefaultSingleRuleConfigurationBuilderTest {
     @Test
     public void assertBuild() {
         DefaultDatabaseRuleConfigurationBuilder builder =
-                OrderedSPIRegistry.getRegisteredServices(DefaultDatabaseRuleConfigurationBuilder.class, Collections.singleton(new SingleRuleBuilder())).values().iterator().next();
+                OrderedSPIRegistry.getServices(DefaultDatabaseRuleConfigurationBuilder.class, Collections.singleton(new SingleRuleBuilder())).values().iterator().next();
         assertThat(builder.build(), instanceOf(SingleRuleConfiguration.class));
     }
 }

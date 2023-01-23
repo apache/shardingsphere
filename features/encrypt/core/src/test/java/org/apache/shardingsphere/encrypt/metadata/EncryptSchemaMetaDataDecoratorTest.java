@@ -82,6 +82,6 @@ public final class EncryptSchemaMetaDataDecoratorTest {
     }
     
     private EncryptSchemaMetaDataDecorator getEncryptMetaDataBuilder(final EncryptRule encryptRule, final Collection<ShardingSphereRule> rules) {
-        return (EncryptSchemaMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(encryptRule);
+        return (EncryptSchemaMetaDataDecorator) OrderedSPIRegistry.getServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(encryptRule);
     }
 }

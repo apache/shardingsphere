@@ -41,7 +41,7 @@ public final class H2Container extends EmbeddedStorageContainer {
     private final ScenarioDataPath scenarioDataPath;
     
     public H2Container(final String scenario) {
-        super(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), scenario);
+        super(TypedSPIRegistry.getService(DatabaseType.class, "H2"), scenario);
         scenarioDataPath = new ScenarioDataPath(scenario);
     }
     

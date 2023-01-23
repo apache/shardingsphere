@@ -68,7 +68,7 @@ public final class DataSourceUtils {
     private static AtomikosDataSourceBean createAtomikosDataSourceBean(final DatabaseType databaseType, final DataSource dataSource, final String databaseName) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(databaseName);
-        result.setXaDataSource(new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource));
+        result.setXaDataSource(new DataSourceSwapper(TypedSPIRegistry.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource));
         return result;
     }
     

@@ -190,8 +190,8 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findRegisteredService(
-                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer").getType());
+        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findService(
+                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "SQLServer").getType());
         assertTrue(result.isPresent());
         return result.get();
     }

@@ -68,8 +68,8 @@ public final class OptimizerParserContextFactory {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
         result.putAll((null == databaseType
-                ? RequiredSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(OptimizerSQLDialectBuilder.class, databaseType.getType())).build());
+                ? RequiredSPIRegistry.getService(OptimizerSQLDialectBuilder.class)
+                : TypedSPIRegistry.getService(OptimizerSQLDialectBuilder.class, databaseType.getType())).build());
         return result;
     }
 }

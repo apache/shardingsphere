@@ -148,7 +148,7 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
-            typedSPIRegistry.when(() -> TypedSPIRegistry.findRegisteredService(SQLFederationExecutor.class, "NONE")).thenReturn(Optional.of(federationExecutor));
+            typedSPIRegistry.when(() -> TypedSPIRegistry.findService(SQLFederationExecutor.class, "NONE")).thenReturn(Optional.of(federationExecutor));
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
             SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration("ORIGINAL"));
             when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);

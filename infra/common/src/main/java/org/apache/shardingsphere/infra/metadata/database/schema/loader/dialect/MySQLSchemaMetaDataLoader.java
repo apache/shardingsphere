@@ -107,7 +107,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Optional<DataTypeLoader> loader = TypedSPIRegistry.findRegisteredService(DataTypeLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getType());
+            Optional<DataTypeLoader> loader = TypedSPIRegistry.findService(DataTypeLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "MySQL").getType());
             Preconditions.checkState(loader.isPresent());
             Map<String, Integer> dataTypes = loader.get().load(connection.getMetaData());
             String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();

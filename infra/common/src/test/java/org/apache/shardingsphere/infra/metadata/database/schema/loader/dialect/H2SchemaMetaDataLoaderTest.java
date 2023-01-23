@@ -147,8 +147,8 @@ public final class H2SchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findRegisteredService(
-                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2").getType());
+        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findService(
+                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "H2").getType());
         assertTrue(result.isPresent());
         return result.get();
     }

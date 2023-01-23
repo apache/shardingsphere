@@ -126,18 +126,18 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
             return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement,
-                    (DatabaseDistSQLResultSet) TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+                    (DatabaseDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
             return new QueryableGlobalRuleRALBackendHandler(sqlStatement,
-                    (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+                    (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
             return new UpdatableGlobalRuleRALBackendHandler(sqlStatement,
-                    TypedSPIRegistry.getRegisteredService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+                    TypedSPIRegistry.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }

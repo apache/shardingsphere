@@ -46,7 +46,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
         if (jobConfig.isDisabled()) {
             Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
             PipelineJobCenter.stop(jobId);
-            PipelineDistributedBarrier pipelineDistributedBarrier = RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class);
+            PipelineDistributedBarrier pipelineDistributedBarrier = RequiredSPIRegistry.getService(PipelineDistributedBarrier.class);
             for (Integer each : shardingItems) {
                 pipelineDistributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
             }

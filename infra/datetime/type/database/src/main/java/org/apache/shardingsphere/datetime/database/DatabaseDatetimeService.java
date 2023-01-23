@@ -42,7 +42,7 @@ public final class DatabaseDatetimeService implements DatetimeService {
     public Date getDatetime() {
         try {
             return loadDatetime(timeServiceConfig.getDataSource(),
-                    TypedSPIRegistry.getRegisteredService(DatetimeLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(timeServiceConfig.getStorageType())).getDatetimeLoadingSQL());
+                    TypedSPIRegistry.getService(DatetimeLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(timeServiceConfig.getStorageType())).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
             throw new DatetimeLoadingException(ex);
         }

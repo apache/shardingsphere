@@ -68,7 +68,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 Connection connection = hikariDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             String type = jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER);
-            provider = null == type ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class) : TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, type);
+            provider = null == type ? RequiredSPIRegistry.getService(JDBCRepositoryProvider.class) : TypedSPIRegistry.getService(JDBCRepositoryProvider.class, type);
             if (!jdbcUrl.contains(H2_FILE_MODE_KEY)) {
                 statement.execute(provider.dropTableSQL());
             }

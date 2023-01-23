@@ -86,7 +86,7 @@ public final class DatabaseDiscoverySQLRouterTest {
         InstanceContext instanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         rule = new DatabaseDiscoveryRule(DATA_SOURCE_NAME, Collections.singletonMap(PRIMARY_DATA_SOURCE, new MockedDataSource()), config, instanceContext);
-        sqlRouter = (DatabaseDiscoverySQLRouter) OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
+        sqlRouter = (DatabaseDiscoverySQLRouter) OrderedSPIRegistry.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
     }
     
     @Test

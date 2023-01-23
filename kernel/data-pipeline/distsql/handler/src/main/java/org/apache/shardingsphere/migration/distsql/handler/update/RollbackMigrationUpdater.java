@@ -32,7 +32,7 @@ public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrat
     
     @Override
     public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) throws SQLException {
-        ((InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION")).rollback(sqlStatement.getJobId());
+        ((InventoryIncrementalJobAPI) TypedSPIRegistry.getService(PipelineJobAPI.class, "MIGRATION")).rollback(sqlStatement.getJobId());
     }
     
     @Override
