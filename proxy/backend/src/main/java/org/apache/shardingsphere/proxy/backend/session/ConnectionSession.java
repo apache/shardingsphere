@@ -63,7 +63,7 @@ public final class ConnectionSession {
     
     private final BackendConnection backendConnection;
     
-    private final ExecutorStatementManager<?, ?, ?> statementManager;
+    private final ExecutorStatementManager statementManager;
     
     private final ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
     
