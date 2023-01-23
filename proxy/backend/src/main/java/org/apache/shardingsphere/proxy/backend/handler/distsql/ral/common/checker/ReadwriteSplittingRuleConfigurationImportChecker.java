@@ -81,7 +81,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findService(ReadQueryLoadBalanceAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.contains(ReadQueryLoadBalanceAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }

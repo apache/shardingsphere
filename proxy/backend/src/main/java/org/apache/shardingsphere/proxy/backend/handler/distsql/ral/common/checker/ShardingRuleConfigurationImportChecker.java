@@ -97,8 +97,8 @@ public final class ShardingRuleConfigurationImportChecker {
     
     private void checkInvalidAlgorithms(final String algorithmType, final Collection<AlgorithmConfiguration> algorithmConfigs) {
         Collection<String> invalidAlgorithms = algorithmConfigs.stream()
-                .filter(each -> !TypedSPIRegistry.findService(ALGORITHM_TYPE_MAP.get(algorithmType), each.getType(), each.getProps()).isPresent())
-                .map(AlgorithmConfiguration::getType).collect(Collectors.toList());
+                .map(AlgorithmConfiguration::getType)
+                .filter(each -> !TypedSPIRegistry.contains(ALGORITHM_TYPE_MAP.get(algorithmType), each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(algorithmType, invalidAlgorithms));
     }
     

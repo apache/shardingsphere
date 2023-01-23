@@ -260,7 +260,7 @@ public final class ShardingTableRuleStatementChecker {
                 .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment().getName()));
         ShardingSpherePreconditions.checkState(notExistKeyGenerator.isEmpty(), () -> new MissingRequiredAlgorithmException("key generator", notExistKeyGenerator));
         Collection<String> invalidKeyGenerators = requiredKeyGenerators.stream()
-                .distinct().filter(each -> !TypedSPIRegistry.findService(KeyGenerateAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .distinct().filter(each -> !TypedSPIRegistry.contains(KeyGenerateAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidKeyGenerators.isEmpty(), () -> new InvalidAlgorithmConfigurationException("key generator", invalidKeyGenerators));
     }
     
