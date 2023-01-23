@@ -32,7 +32,7 @@ rules:
           shardingAlgorithmName: it_standard_fixture
       keyGenerateStrategy:
         column: item_id
-        keyGeneratorName: constant
+        keyGeneratorName: auto_increment
       auditStrategy:
         auditorNames:
           - auditor_constant
@@ -77,8 +77,8 @@ rules:
         algorithm-expression: db_${db_inline_item_id % 2}
 
   keyGenerators:
-    constant:
-      type: IT.FIXTURE
+    auto_increment:
+      type: IT.AUTO_INCREMENT.FIXTURE
 
   auditors:
     auditor_constant:

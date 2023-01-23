@@ -27,6 +27,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CommonSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
@@ -38,10 +42,6 @@ import org.apache.shardingsphere.test.e2e.transaction.framework.container.compos
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 import org.apache.shardingsphere.test.e2e.transaction.util.TestCaseClassScanner;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
@@ -122,7 +122,7 @@ public abstract class BaseE2EIT {
     }
     
     final boolean isProxyAdapter(final TransactionTestParameter testParam) {
-        return AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter());
+        return AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
     }
     
     private ProxyDataSource createProxyDataSource() {
@@ -205,7 +205,7 @@ public abstract class BaseE2EIT {
     private static void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                                         final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
                                                         final Map<String, TransactionTestParameter> testParams, final String scenario) {
-        if (AdapterContainerConstants.PROXY.equals(currentTestCaseInfo.getRunningAdaptor())) {
+        if (AdapterType.PROXY.getValue().equals(currentTestCaseInfo.getRunningAdaptor())) {
             List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
                     : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();

@@ -23,12 +23,11 @@ import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.BuildInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.MetaDataInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.ProxyInfoCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.prometheus.wrapper.PrometheusWrapperFactory;
 import org.apache.shardingsphere.agent.plugin.core.config.validator.PluginConfigurationValidator;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.BuildInfoExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy.ProxyMetaDataInfoExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy.ProxyStateExporter;
+import org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter.PrometheusMetricsExporter;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 import java.io.IOException;
@@ -48,7 +47,6 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
         PluginConfigurationValidator.validatePort(getType(), pluginConfig);
         startServer(pluginConfig, isEnhancedForProxy);
-        MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
     }
     
     private void startServer(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
@@ -63,10 +61,10 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     }
     
     private void registerCollector(final boolean isCollectJVMInformation, final boolean isEnhancedForProxy) {
-        new BuildInfoCollector(isEnhancedForProxy).register();
+        new PrometheusMetricsExporter(new BuildInfoExporter()).register();
         if (isEnhancedForProxy) {
-            new ProxyInfoCollector().register();
-            new MetaDataInfoCollector().register();
+            new PrometheusMetricsExporter(new ProxyStateExporter()).register();
+            new PrometheusMetricsExporter(new ProxyMetaDataInfoExporter()).register();
         }
         if (isCollectJVMInformation) {
             DefaultExports.initialize();

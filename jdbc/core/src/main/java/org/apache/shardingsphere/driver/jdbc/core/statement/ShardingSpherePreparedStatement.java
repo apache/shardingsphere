@@ -46,6 +46,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -295,8 +296,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private List<QueryResult> executeQuery0() throws SQLException {
         if (hasRawExecutionRule()) {
-            return executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getQueryContext(),
-                    new RawSQLExecutorCallback(eventBusContext)).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
+            return executor.getRawExecutor().execute(createRawExecutionGroupContext(),
+                    executionContext.getQueryContext(), new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
         cacheStatements(executionGroupContext.getInputGroups());
@@ -337,8 +338,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             executionContext = createExecutionContext(queryContext);
             if (hasRawExecutionRule()) {
-                Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getQueryContext(),
-                        new RawSQLExecutorCallback(eventBusContext));
+                Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getQueryContext(), new RawSQLExecutorCallback());
                 return accumulate(executeResults);
             }
             return isNeedImplicitCommitTransaction(executionContext) ? executeUpdateWithImplicitCommitTransaction() : useDriverToExecuteUpdate();
@@ -407,8 +407,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             executionContext = createExecutionContext(queryContext);
             if (hasRawExecutionRule()) {
                 // TODO process getStatement
-                Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getQueryContext(),
-                        new RawSQLExecutorCallback(eventBusContext));
+                Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getQueryContext(), new RawSQLExecutorCallback());
                 return executeResults.iterator().next() instanceof QueryResult;
             }
             return isNeedImplicitCommitTransaction(executionContext) ? executeWithImplicitCommitTransaction() : useDriverToExecute();
@@ -550,7 +549,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 connection.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
         ExecutionContext result = kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()),
                 metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
-        findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
+        findGeneratedKey(result).ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
         return result;
     }
     
@@ -614,7 +613,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey(executionContext);
         if (generatedKey.isPresent() && statementOption.isReturnGeneratedKeys() && !generatedValues.isEmpty()) {
-            return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedValues.iterator(), this);
+            return new GeneratedKeysResultSet(getGeneratedKeysColumnName(generatedKey.get().getColumnName()), generatedValues.iterator(), this);
         }
         for (PreparedStatement each : statements) {
             ResultSet resultSet = each.getGeneratedKeys();
@@ -623,7 +622,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
         }
         String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
-        return new GeneratedKeysResultSet(columnName, generatedValues.iterator(), this);
+        return new GeneratedKeysResultSet(getGeneratedKeysColumnName(columnName), generatedValues.iterator(), this);
+    }
+    
+    private String getGeneratedKeysColumnName(final String columnName) {
+        return metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType() instanceof MySQLDatabaseType ? "GENERATED_KEY" : columnName;
     }
     
     @Override

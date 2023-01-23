@@ -63,6 +63,7 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
+        <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         
         <antlr4.version>4.9.2</antlr4.version>
         <snakeyaml.version>1.33</snakeyaml.version>
@@ -181,6 +182,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
             </dependency>
             
             <dependency>

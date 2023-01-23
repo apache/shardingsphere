@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.process.event.KillProcessListIdRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
@@ -53,8 +53,7 @@ public final class ProcessStandaloneSubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        BatchYamlExecuteProcessContext batchYamlExecuteProcessContext = new BatchYamlExecuteProcessContext(new ArrayList<>(
-                ShowProcessListManager.getInstance().getProcessContexts().values()));
+        BatchYamlExecuteProcessContext batchYamlExecuteProcessContext = new BatchYamlExecuteProcessContext(new ArrayList<>(ShowProcessListManager.getInstance().getProcessContexts().values()));
         eventBusContext.post(new ShowProcessListResponseEvent(batchYamlExecuteProcessContext.getContexts().isEmpty()
                 ? Collections.emptyList()
                 : Collections.singletonList(YamlEngine.marshal(batchYamlExecuteProcessContext))));

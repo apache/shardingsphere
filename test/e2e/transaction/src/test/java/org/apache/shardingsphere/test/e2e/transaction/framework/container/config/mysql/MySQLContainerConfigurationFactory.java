@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +54,6 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/mysql/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER);
+        return Collections.singletonMap("/env/mysql/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
     }
 }

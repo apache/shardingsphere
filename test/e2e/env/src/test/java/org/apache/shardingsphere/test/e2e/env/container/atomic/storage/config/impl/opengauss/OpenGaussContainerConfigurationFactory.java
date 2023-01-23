@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,8 +52,8 @@ public final class OpenGaussContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put("/env/postgresql/postgresql.conf", StorageContainerConstants.OPENGAUSS_CONF_IN_CONTAINER);
-        result.put("/env/opengauss/pg_hba.conf", StorageContainerConstants.OPENGAUSS_HBA_IN_CONF_CONTAINER);
+        result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
+        result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;
     }
 }

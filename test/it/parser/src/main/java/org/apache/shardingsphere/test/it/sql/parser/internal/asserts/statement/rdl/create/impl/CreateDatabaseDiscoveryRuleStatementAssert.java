@@ -19,20 +19,16 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.AlgorithmAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.PropertiesAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryDefinitionRule;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryRule;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,32 +48,32 @@ public final class CreateDatabaseDiscoveryRuleStatementAssert {
      * @param actual actual create database discovery rule statement
      * @param expected expected create database discovery rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDatabaseDiscoveryRuleStatement actual, final SQLParserTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDatabaseDiscoveryRuleStatement actual, final CreateDatabaseDiscoveryRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertDatabaseDiscoveryRules(assertContext, actual.getRules(), expected);
+            assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
+            assertDatabaseDiscoveryRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
     
-    private static void assertDatabaseDiscoveryRules(final SQLCaseAssertContext assertContext, final Collection<AbstractDatabaseDiscoverySegment> actual,
-                                                     final SQLParserTestCase expected) {
-        assertDiscoveryDefinitionRule(assertContext, actual, ((CreateDatabaseDiscoveryDefinitionRuleStatementTestCase) expected).getRules());
-    }
-    
-    private static void assertDiscoveryDefinitionRule(final SQLCaseAssertContext assertContext, final Collection<AbstractDatabaseDiscoverySegment> actual,
-                                                      final List<ExpectedDatabaseDiscoveryDefinitionRule> expected) {
+    private static void assertDatabaseDiscoveryRules(final SQLCaseAssertContext assertContext, final Collection<DatabaseDiscoveryRuleSegment> actual,
+                                                     final List<ExpectedDatabaseDiscoveryRule> expected) {
         assertThat(assertContext.getText(String.format("Actual database discovery rule size should be %s , but it was %s", expected.size(),
                 actual.size())), actual.size(), is(expected.size()));
-        Map<String, DatabaseDiscoveryDefinitionSegment> actualMap = actual.stream().map(each -> (DatabaseDiscoveryDefinitionSegment) each)
-                .collect(Collectors.toMap(AbstractDatabaseDiscoverySegment::getName, each -> each));
-        expected.forEach(each -> {
-            DatabaseDiscoveryDefinitionSegment actualSegment = actualMap.get(each.getName());
-            assertThat(actualSegment.getName(), is(each.getName()));
-            assertThat(actualSegment.getDataSources(), is(each.getDataSources()));
-            PropertiesAssert.assertIs(assertContext, actualSegment.getDiscoveryHeartbeat(), each.getProperties());
-            AlgorithmAssert.assertIs(assertContext, actualSegment.getDiscoveryType(), each.getDiscoveryType());
-        });
+        int count = 0;
+        for (DatabaseDiscoveryRuleSegment each : actual) {
+            assertDiscoveryRule(assertContext, each, expected.get(count));
+            count++;
+        }
+    }
+    
+    private static void assertDiscoveryRule(final SQLCaseAssertContext assertContext, final DatabaseDiscoveryRuleSegment actual,
+                                            final ExpectedDatabaseDiscoveryRule expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getDataSources(), is(expected.getDataSources()));
+        PropertiesAssert.assertIs(assertContext, actual.getDiscoveryHeartbeat(), expected.getProperties());
+        AlgorithmAssert.assertIs(assertContext, actual.getDiscoveryType(), expected.getDiscoveryType());
     }
 }

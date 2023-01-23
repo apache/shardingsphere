@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CountDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
@@ -64,17 +63,17 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     @Override
     public ASTNode visitCreateDatabaseDiscoveryRule(final CreateDatabaseDiscoveryRuleContext ctx) {
         return new CreateDatabaseDiscoveryRuleStatement(null != ctx.ifNotExists(),
-                ctx.databaseDiscoveryRule().stream().map(each -> (AbstractDatabaseDiscoverySegment) visit(each)).collect(Collectors.toList()));
+                ctx.databaseDiscoveryRule().stream().map(each -> (DatabaseDiscoveryRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterDatabaseDiscoveryRule(final AlterDatabaseDiscoveryRuleContext ctx) {
-        return new AlterDatabaseDiscoveryRuleStatement(ctx.databaseDiscoveryRule().stream().map(each -> (AbstractDatabaseDiscoverySegment) visit(each)).collect(Collectors.toList()));
+        return new AlterDatabaseDiscoveryRuleStatement(ctx.databaseDiscoveryRule().stream().map(each -> (DatabaseDiscoveryRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitDatabaseDiscoveryRule(final DatabaseDiscoveryRuleContext ctx) {
-        return new DatabaseDiscoveryDefinitionSegment(getIdentifierValue(ctx.ruleName()), buildResources(ctx.storageUnits()), (AlgorithmSegment) visit(ctx.algorithmDefinition()),
+        return new DatabaseDiscoveryRuleSegment(getIdentifierValue(ctx.ruleName()), buildResources(ctx.storageUnits()), (AlgorithmSegment) visit(ctx.algorithmDefinition()),
                 getProperties(ctx.discoveryHeartbeat().propertiesDefinition()));
     }
     

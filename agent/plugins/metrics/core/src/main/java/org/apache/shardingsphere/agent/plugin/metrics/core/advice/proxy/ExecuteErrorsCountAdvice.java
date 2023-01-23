@@ -19,23 +19,24 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 
 /**
  * Execute errors count advice for ShardingSphere-Proxy.
  */
 public final class ExecuteErrorsCountAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.PROXY_EXECUTE_ERRORS);
-    }
+    private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total",
+            MetricCollectorType.COUNTER, "Total execute errors of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        MetricsPool.get(MetricIds.PROXY_EXECUTE_ERRORS).ifPresent(MetricsWrapper::inc);
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc();
     }
 }

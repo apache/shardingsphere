@@ -59,7 +59,7 @@ public final class ShadowRuleAssert {
             assertThat(assertContext.getText(String.format("`%s`'s shadow rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getSource(), is(expected.getSource()));
             assertThat(assertContext.getText(String.format("`%s`'s shadow rule segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getRuleName(), is(expected.getRuleName()));
+                    actual.getClass().getSimpleName())), actual.getRuleName(), is(expected.getName()));
             for (ExpectedShadowTableRule each : expected.getShadowTableRules()) {
                 assertIsTableRules(assertContext, actual.getShadowTableRules().get(each.getTableName()), each.getAlgorithms());
             }

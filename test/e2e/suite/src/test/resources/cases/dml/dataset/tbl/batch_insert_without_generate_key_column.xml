@@ -26,10 +26,10 @@
     </metadata>
     <row data-node="tbl.t_order_item_0" values="100000, 1000, 10, 1, 1, 2017-08-08" />
     <row data-node="tbl.t_order_item_0" values="100001, 1000, 10, 2, 1, 2017-08-08" />
-    <row data-node="tbl.t_order_item_1" values="1, 1, 1, 1, 1, '2017-08-08'" />
+    <row data-node="tbl.t_order_item_1" values="1, 1, 1, 1, 1, 2017-08-08" />
     <row data-node="tbl.t_order_item_1" values="100100, 1001, 10, 3, 1, 2017-08-08" />
     <row data-node="tbl.t_order_item_1" values="100101, 1001, 10, 4, 1, 2017-08-08" />
-    <row data-node="tbl.t_order_item_2" values="1, 2, 2, 2, 2, '2017-08-08'" />
+    <row data-node="tbl.t_order_item_2" values="2, 2, 2, 2, 2, 2017-08-08" />
     <row data-node="tbl.t_order_item_2" values="100200, 1002, 10, 5, 1, 2017-08-08" />
     <row data-node="tbl.t_order_item_2" values="100201, 1002, 10, 6, 1, 2017-08-08" />
     <row data-node="tbl.t_order_item_3" values="100300, 1003, 10, 7, 1, 2017-08-08" />

@@ -207,8 +207,7 @@ public final class ProxySQLExecutor {
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
         // TODO handle query header
-        return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback(ProxyContext.getInstance().getContextManager().getInstanceContext()
-                .getEventBusContext()));
+        return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback());
     }
     
     private List<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,

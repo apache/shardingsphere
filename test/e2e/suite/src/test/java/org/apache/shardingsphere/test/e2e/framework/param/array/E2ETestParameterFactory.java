@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.framework.param.array;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
@@ -45,11 +45,11 @@ public final class E2ETestParameterFactory {
     public static Collection<AssertionTestParameter> getAssertionTestParameters(final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
-            if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
+            if (AdapterMode.STANDALONE.getValue().equalsIgnoreCase(each)) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType)
                         : JdbcStandaloneTestParameterGenerator.getAssertionTestParameter(sqlCommandType));
-            } else if (EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(each)) {
+            } else if (AdapterMode.CLUSTER.getValue().equalsIgnoreCase(each)) {
                 result.addAll(ClusterTestParameterArrayGenerator.getAssertionTestParameter(sqlCommandType));
             }
         }
@@ -65,11 +65,11 @@ public final class E2ETestParameterFactory {
     public static Collection<E2ETestParameter> getCaseTestParameters(final SQLCommandType sqlCommandType) {
         Collection<E2ETestParameter> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
-            if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
+            if (AdapterMode.STANDALONE.getValue().equalsIgnoreCase(each)) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)
                         ? ProxyStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType)
                         : JdbcStandaloneTestParameterGenerator.getCaseTestParameter(sqlCommandType));
-            } else if (EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(each)) {
+            } else if (AdapterMode.CLUSTER.getValue().equalsIgnoreCase(each)) {
                 result.addAll(ClusterTestParameterArrayGenerator.getCaseTestParameter(sqlCommandType));
             }
         }

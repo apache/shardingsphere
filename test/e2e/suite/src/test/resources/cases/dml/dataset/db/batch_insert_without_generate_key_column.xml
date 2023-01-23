@@ -20,7 +20,8 @@
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
+        <column name="product_id" type="numeric" />
+        <column name="quantity" type="numeric" />
         <column name="creation_date" type="datetime" />
     </metadata>
     <row data-node="db_0.t_order_item" values="100001, 1000, 10, 1, 1, 2017-08-08" />
@@ -31,7 +32,7 @@
     <row data-node="db_0.t_order_item" values="200002, 2000, 20, 3, 1, 2017-08-08" />
     <row data-node="db_0.t_order_item" values="200101, 2001, 20, 4, 1, 2017-08-08" />
     <row data-node="db_0.t_order_item" values="200102, 2001, 20, 4, 1, 2017-08-08" />
-    <row data-node="db_1.t_order_item" values="1, 1, 1, insert, 2017-08-08" />
+    <row data-node="db_1.t_order_item" values="1, 1, 1, 1, 1, 2017-08-08" />
     <row data-node="db_1.t_order_item" values="110001, 1100, 11, 5, 1, 2017-08-08" />
     <row data-node="db_1.t_order_item" values="110002, 1100, 11, 5, 1, 2017-08-08" />
     <row data-node="db_1.t_order_item" values="110101, 1101, 11, 6, 1, 2017-08-08" />
@@ -40,7 +41,7 @@
     <row data-node="db_1.t_order_item" values="210002, 2100, 21, 7, 1, 2017-08-08" />
     <row data-node="db_1.t_order_item" values="210101, 2101, 21, 8, 1, 2017-08-08" />
     <row data-node="db_1.t_order_item" values="210102, 2101, 21, 8, 1, 2017-08-08" />
-    <row data-node="db_2.t_order_item" values="1, 2, 2, insert, 2017-08-08" />
+    <row data-node="db_2.t_order_item" values="2, 2, 2, 2, 2, 2017-08-08" />
     <row data-node="db_2.t_order_item" values="120001, 1200, 12, 9, 1, 2017-08-08" />
     <row data-node="db_2.t_order_item" values="120002, 1200, 12, 9, 1, 2017-08-08" />
     <row data-node="db_2.t_order_item" values="120101, 1201, 12, 10, 1, 2017-08-08" />

@@ -21,13 +21,14 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.config.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.discovery.framework.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -36,7 +37,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.test.e2e.discovery.framework.container.config.ProxyClusterContainerConfigurationFactory;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -64,7 +64,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     public DockerContainerComposer(final String scenario, final DatabaseType databaseType, final String storageContainerImage) {
         super("");
         this.databaseType = databaseType;
-        this.storageContainers = new LinkedList<>();
+        storageContainers = new LinkedList<>();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         List<StorageContainerConfiguration> containerConfigs = MySQLContainerConfigurationFactory.newInstance(scenario, databaseType);
         containerConfigs.forEach(each -> {
@@ -72,10 +72,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainer.setNetworkAliases(Collections.singletonList(databaseType.getType().toLowerCase() + "_" + ContainerUtil.generateStorageContainerId()));
             storageContainers.add(storageContainer);
         });
-        
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario);
-        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory
-                .newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY, databaseType, null, "", containerConfig);
+        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(
+                AdapterMode.CLUSTER, AdapterType.PROXY, databaseType, null, "", containerConfig);
         storageContainers.forEach(each -> proxyClusterContainer.dependsOn(governanceContainer, each));
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }

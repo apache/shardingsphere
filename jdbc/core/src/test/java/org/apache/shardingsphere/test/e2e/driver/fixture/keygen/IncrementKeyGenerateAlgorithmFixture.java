@@ -44,4 +44,9 @@ public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAl
     public String getType() {
         return "JDBC.INCREMENT.FIXTURE";
     }
+    
+    @Override
+    public boolean isSupportAutoIncrement() {
+        return true;
+    }
 }

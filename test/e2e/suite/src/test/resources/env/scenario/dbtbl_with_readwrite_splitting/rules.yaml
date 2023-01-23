@@ -40,7 +40,7 @@ rules:
           shardingAlgorithmName: it_standard_fixture
       keyGenerateStrategy:
         column: item_id
-        keyGeneratorName: constant
+        keyGeneratorName: auto_increment
       auditStrategy:
         auditorNames:
           - auditor_constant
@@ -88,8 +88,8 @@ rules:
         algorithm-expression: t_order_federate_sharding_${order_id_sharding % 2}
 
   keyGenerators:
-    constant:
-      type: IT.FIXTURE
+    auto_increment:
+      type: IT.AUTO_INCREMENT.FIXTURE
 
   auditors:
     auditor_constant:

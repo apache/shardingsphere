@@ -19,12 +19,14 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsPool;
-import org.apache.shardingsphere.agent.plugin.metrics.core.MetricsWrapper;
-import org.apache.shardingsphere.agent.plugin.metrics.core.constant.MetricIds;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
+import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
+import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -36,60 +38,59 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * SQL parse count advice.
  */
 public final class SQLParseCountAdvice implements InstanceMethodAdvice {
     
-    static {
-        MetricsPool.create(MetricIds.PARSED_INSERT_SQL);
-        MetricsPool.create(MetricIds.PARSED_DELETE_SQL);
-        MetricsPool.create(MetricIds.PARSED_UPDATE_SQL);
-        MetricsPool.create(MetricIds.PARSED_SELECT_SQL);
-        MetricsPool.create(MetricIds.PARSED_DDL);
-        MetricsPool.create(MetricIds.PARSED_DCL);
-        MetricsPool.create(MetricIds.PARSED_DAL);
-        MetricsPool.create(MetricIds.PARSED_TCL);
-        MetricsPool.create(MetricIds.PARSED_RQL);
-        MetricsPool.create(MetricIds.PARSED_RDL);
-        MetricsPool.create(MetricIds.PARSED_RAL);
-    }
+    private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total",
+            MetricCollectorType.COUNTER, "Total count of parsed SQL", Collections.singletonList("type"), Collections.emptyMap());
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result) {
-        SQLStatement sqlStatement = (SQLStatement) result;
-        countSQL(sqlStatement);
-        countDistSQL(sqlStatement);
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+        getSQLType((SQLStatement) result).ifPresent(optional -> MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(optional));
     }
     
-    private void countSQL(final SQLStatement sqlStatement) {
+    private Optional<String> getSQLType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            MetricsPool.get(MetricIds.PARSED_INSERT_SQL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof DeleteStatement) {
-            MetricsPool.get(MetricIds.PARSED_DELETE_SQL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof UpdateStatement) {
-            MetricsPool.get(MetricIds.PARSED_UPDATE_SQL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof SelectStatement) {
-            MetricsPool.get(MetricIds.PARSED_SELECT_SQL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof DDLStatement) {
-            MetricsPool.get(MetricIds.PARSED_DDL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof DCLStatement) {
-            MetricsPool.get(MetricIds.PARSED_DCL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof DALStatement) {
-            MetricsPool.get(MetricIds.PARSED_DAL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof TCLStatement) {
-            MetricsPool.get(MetricIds.PARSED_TCL).ifPresent(MetricsWrapper::inc);
+            return Optional.of("INSERT");
         }
-    }
-    
-    private void countDistSQL(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof UpdateStatement) {
+            return Optional.of("UPDATE");
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return Optional.of("DELETE");
+        }
+        if (sqlStatement instanceof SelectStatement) {
+            return Optional.of("SELECT");
+        }
+        if (sqlStatement instanceof DDLStatement) {
+            return Optional.of("DDL");
+        }
+        if (sqlStatement instanceof DCLStatement) {
+            return Optional.of("DCL");
+        }
+        if (sqlStatement instanceof DALStatement) {
+            return Optional.of("DAL");
+        }
+        if (sqlStatement instanceof TCLStatement) {
+            return Optional.of("TCL");
+        }
         if (sqlStatement instanceof RQLStatement) {
-            MetricsPool.get(MetricIds.PARSED_RQL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof RDLStatement) {
-            MetricsPool.get(MetricIds.PARSED_RDL).ifPresent(MetricsWrapper::inc);
-        } else if (sqlStatement instanceof RALStatement) {
-            MetricsPool.get(MetricIds.PARSED_RAL).ifPresent(MetricsWrapper::inc);
+            return Optional.of("RQL");
         }
+        if (sqlStatement instanceof RDLStatement) {
+            return Optional.of("RDL");
+        }
+        if (sqlStatement instanceof RALStatement) {
+            return Optional.of("RAL");
+        }
+        if (sqlStatement instanceof RULStatement) {
+            return Optional.of("RUL");
+        }
+        return Optional.empty();
     }
 }

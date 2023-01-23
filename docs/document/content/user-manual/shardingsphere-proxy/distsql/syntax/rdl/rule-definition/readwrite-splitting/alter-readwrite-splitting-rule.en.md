@@ -60,7 +60,7 @@ value ::=
 ### Supplement
 
 - Dynamic readwrite-splitting rules rely on database discovery rules;
-- `loadBalancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm;
+- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm]((/en/user-manual/common-config/builtin-algorithm/load-balance/));
 
 ### Example
 
@@ -86,9 +86,10 @@ ALTER READWRITE_SPLITTING RULE ms_group_1 (
 
 ### Reserved word
 
-`ALTER`, `READWRITE_SPLITTING`, `RULE`, `WRITE_RESOURCE`, `READ_RESOURCES`, `AUTO_AWARE_RESOURCE`
+`ALTER`, `READWRITE_SPLITTING`, `RULE`, `WRITE_STORAGE_UNIT`, `READ_STORAGE_UNITS`, `AUTO_AWARE_RESOURCE`
 , `WRITE_DATA_SOURCE_QUERY_ENABLED`, `TYPE`, `NAME`, `PROPERTIES`, `TRUE`, `FALSE`
 
 ### Related links
 
 - [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/)

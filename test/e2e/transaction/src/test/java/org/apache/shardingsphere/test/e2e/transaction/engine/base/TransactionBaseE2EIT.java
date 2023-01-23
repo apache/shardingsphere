@@ -19,10 +19,10 @@ package org.apache.shardingsphere.test.e2e.transaction.engine.base;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
@@ -120,7 +120,7 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
     }
     
     protected void callTestCases(final TransactionTestParameter testParam) throws SQLException {
-        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter())) {
+        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             for (TransactionType each : testParam.getTransactionTypes()) {
                 if (TransactionType.LOCAL.equals(each)) {
                     log.info("Call transaction IT {}, alter transaction rule {}.", testParam, "");

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.framework.param.array;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
@@ -42,7 +42,7 @@ public final class ClusterTestParameterArrayGenerator {
      * @return assertion test parameter
      */
     public static Collection<AssertionTestParameter> getAssertionTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), EnvironmentConstants.CLUSTER_MODE,
+        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), AdapterMode.CLUSTER.getValue(),
                 ENV.getClusterEnvironment().getDatabaseTypes()).getAssertionTestParameter(sqlCommandType);
     }
     
@@ -53,7 +53,7 @@ public final class ClusterTestParameterArrayGenerator {
      * @return case parameter
      */
     public static Collection<E2ETestParameter> getCaseTestParameter(final SQLCommandType sqlCommandType) {
-        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), EnvironmentConstants.CLUSTER_MODE,
+        return new E2ETestParameterGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), AdapterMode.CLUSTER.getValue(),
                 ENV.getClusterEnvironment().getDatabaseTypes()).getCaseTestParameter(sqlCommandType);
     }
 }

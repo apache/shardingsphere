@@ -61,7 +61,7 @@ public final class MetaDataContexts implements AutoCloseable {
                 .orElseGet(ShardingSphereData::new);
         Optional<ShardingSphereData> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
                 .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
-        loadedShardingSphereData.ifPresent(sphereData -> useLoadedToReplaceInit(result, sphereData));
+        loadedShardingSphereData.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
         return result;
     }
     

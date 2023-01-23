@@ -21,10 +21,13 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionE2EEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionTestCaseRegistry;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionE2EEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionTestCaseRegistry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,11 +110,11 @@ public final class TransactionE2EEnvironment {
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", StorageContainerConstants.MYSQL_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", MySQLContainer.MYSQL_EXPOSED_PORT).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", StorageContainerConstants.POSTGRESQL_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", PostgreSQLContainer.POSTGRESQL_EXPOSED_PORT).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", StorageContainerConstants.OPENGAUSS_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", OpenGaussContainer.OPENGAUSS_EXPOSED_PORT).toString());
             default:
                 throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
         }
