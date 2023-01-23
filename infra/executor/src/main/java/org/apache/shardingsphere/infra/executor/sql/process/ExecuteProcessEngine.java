@@ -74,10 +74,10 @@ public final class ExecuteProcessEngine {
     /**
      * Initialize execution.
      *
-     * @param queryContext query context
      * @param executionGroupContext execution group context
+     * @param queryContext query context
      */
-    public void initializeExecution(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (Strings.isNullOrEmpty(executionGroupContext.getExecutionID())) {
             executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
         }
