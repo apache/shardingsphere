@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.List;
@@ -29,23 +28,34 @@ import java.util.List;
 /**
  * Default sharding condition engine.
  */
-public final class DefaultShardingConditionEngine implements ShardingConditionEngine<SQLStatementContext<?>> {
+public final class DefaultShardingConditionEngine {
     
     private ShardingRule shardingRule;
     
     private ShardingSphereDatabase database;
     
-    @Override
+    /**
+     * Initialize sharding condition engine.
+     *
+     * @param shardingRule sharding rule
+     * @param database sharding database
+     */
     public void init(final ShardingRule shardingRule, final ShardingSphereDatabase database) {
         this.shardingRule = shardingRule;
         this.database = database;
     }
     
-    @Override
-    public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+    /**
+     * Create sharding conditions.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param params SQL parameters
+     * @return sharding conditions
+     */
+    public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
         if (sqlStatementContext instanceof InsertStatementContext) {
-            return new InsertClauseShardingConditionEngine(shardingRule, database).createShardingConditions((InsertStatementContext) sqlStatementContext, parameters);
+            return new InsertClauseShardingConditionEngine(shardingRule, database).createShardingConditions((InsertStatementContext) sqlStatementContext, params);
         }
-        return new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(sqlStatementContext, parameters);
+        return new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(sqlStatementContext, params);
     }
 }

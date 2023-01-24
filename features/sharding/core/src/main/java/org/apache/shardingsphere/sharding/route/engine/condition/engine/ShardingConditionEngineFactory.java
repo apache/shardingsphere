@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
@@ -36,8 +36,8 @@ public final class ShardingConditionEngineFactory {
      * @param rule sharding rule
      * @return created instance
      */
-    public static ShardingConditionEngine<?> createShardingConditionEngine(final ShardingSphereDatabase database, final ShardingRule rule) {
-        ShardingConditionEngine<?> result = RequiredSPIRegistry.getService(ShardingConditionEngine.class);
+    public static DefaultShardingConditionEngine createShardingConditionEngine(final ShardingSphereDatabase database, final ShardingRule rule) {
+        DefaultShardingConditionEngine result = new DefaultShardingConditionEngine();
         result.init(rule, database);
         return result;
     }

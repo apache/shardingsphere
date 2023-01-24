@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckExceptio
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.DefaultShardingConditionEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -45,7 +45,6 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
         this.props = props;
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
@@ -54,7 +53,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
                     || sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(rule::isShardingTable)) {
                 return;
             }
-            ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(database, rule);
+            DefaultShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(database, rule);
             ShardingSpherePreconditions.checkState(!shardingConditionEngine.createShardingConditions(sqlStatementContext, params).isEmpty(),
                     () -> new SQLCheckException("Not allow DML operation without sharding conditions"));
         }
