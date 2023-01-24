@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -82,7 +83,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            Map<String, Integer> dataTypes = RequiredSPIRegistry.getService(DataTypeLoader.class).load(connection.getMetaData());
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPIRegistry.getService(DatabaseType.class, getType()));
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(connection, tables);
             preparedStatement.setString(1, connection.getCatalog());

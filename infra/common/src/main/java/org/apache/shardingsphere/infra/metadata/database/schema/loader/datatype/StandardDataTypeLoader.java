@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
-
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DataTypeLoader;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -26,11 +24,17 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Abstract data type loader.
+ * Standard data type loader.
  */
-public abstract class AbstractDataTypeLoader implements DataTypeLoader {
+public final class StandardDataTypeLoader {
     
-    @Override
+    /**
+     * Load data type.
+     *
+     * @param databaseMetaData database meta data
+     * @return data type map
+     * @throws SQLException SQL exception
+     */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
