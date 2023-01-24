@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
+
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
- * Default data type loader.
+ * Dialect data type loader.
  */
-public final class DefaultDataTypeLoader extends AbstractDataTypeLoader {
+@SingletonSPI
+public interface DialectDataTypeLoader extends TypedSPI, RequiredSPI {
     
-    @Override
-    public String getType() {
-        return "Default";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+    /**
+     * Load data type.
+     *
+     * @return data type map
+     * @throws SQLException SQL exception
+     */
+    Map<String, Integer> load() throws SQLException;
 }

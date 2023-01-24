@@ -17,4 +17,3 @@
 
 org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.dialect.MySQLDataTypeLoader
 org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.dialect.OracleDataTypeLoader
-org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DefaultDataTypeLoader
