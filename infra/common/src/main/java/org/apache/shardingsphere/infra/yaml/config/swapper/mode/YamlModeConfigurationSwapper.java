@@ -34,7 +34,7 @@ public final class YamlModeConfigurationSwapper implements YamlConfigurationSwap
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType(data.getType());
         if (null != data.getRepository()) {
-            YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = TypedSPIRegistry.getRegisteredService(
+            YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = TypedSPIRegistry.getService(
                     YamlPersistRepositoryConfigurationSwapper.class, data.getType());
             result.setRepository(swapper.swapToYamlConfiguration(data.getRepository()));
         }
@@ -46,7 +46,7 @@ public final class YamlModeConfigurationSwapper implements YamlConfigurationSwap
         if (null == yamlConfig.getRepository()) {
             return new ModeConfiguration(yamlConfig.getType(), null);
         }
-        YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = TypedSPIRegistry.getRegisteredService(
+        YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = TypedSPIRegistry.getService(
                 YamlPersistRepositoryConfigurationSwapper.class, yamlConfig.getType());
         return new ModeConfiguration(yamlConfig.getType(), swapper.swapToObject(yamlConfig.getRepository()));
     }

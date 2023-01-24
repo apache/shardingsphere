@@ -33,7 +33,7 @@ public final class MySQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, "MySQL");
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findService(JdbcQueryPropertiesExtension.class, "MySQL");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
         assertQueryProperties(extension.get().extendQueryProperties());

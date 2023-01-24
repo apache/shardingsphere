@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
+package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
@@ -60,9 +60,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class WhereClauseShardingConditionEngine {
     
-    private final ShardingRule shardingRule;
-    
     private final ShardingSphereDatabase database;
+    
+    private final ShardingRule shardingRule;
     
     /**
      * Create sharding conditions.

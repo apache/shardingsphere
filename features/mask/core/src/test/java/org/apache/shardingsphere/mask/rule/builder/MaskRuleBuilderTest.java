@@ -36,7 +36,7 @@ public final class MaskRuleBuilderTest {
     @Test
     public void assertBuild() {
         MaskRuleConfiguration ruleConfig = mock(MaskRuleConfiguration.class);
-        DatabaseRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        DatabaseRuleBuilder builder = OrderedSPIRegistry.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(MaskRule.class));
     }
 }

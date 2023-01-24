@@ -53,7 +53,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
         Map<String, MySQLSessionVariableHandler> handlers = sessionVariables.keySet().stream().collect(Collectors.toMap(Function.identity(),
-                value -> TypedSPIRegistry.findRegisteredService(MySQLSessionVariableHandler.class, value).orElseGet(DefaultMySQLSessionVariableHandler::new)));
+                value -> TypedSPIRegistry.findService(MySQLSessionVariableHandler.class, value).orElseGet(DefaultMySQLSessionVariableHandler::new)));
         for (String each : handlers.keySet()) {
             handlers.get(each).handle(connectionSession, each, sessionVariables.get(each));
         }
@@ -82,7 +82,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         String sql = "SET " + concatenatedGlobalVariables;
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getType()).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPIRegistry.getService(DatabaseType.class, "MySQL").getType()).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         DatabaseBackendHandler databaseBackendHandler = DatabaseCommunicationEngineFactory.getInstance()

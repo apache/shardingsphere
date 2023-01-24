@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.spi.impl.PipelineDistributedBarrierImpl;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public final class PipelineDistributedBarrierImplTest {
+public final class PipelineDistributedBarrierTest {
     
     @BeforeClass
     public static void setUp() {
@@ -44,10 +44,10 @@ public final class PipelineDistributedBarrierImplTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrierImpl instance = new PipelineDistributedBarrierImpl();
+        PipelineDistributedBarrier instance = new PipelineDistributedBarrier();
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
-        Map<?, ?> countDownLatchMap = (Map<?, ?>) Plugins.getMemberAccessor().get(PipelineDistributedBarrierImpl.class.getDeclaredField("countDownLatchMap"), instance);
+        Map<?, ?> countDownLatchMap = (Map<?, ?>) Plugins.getMemberAccessor().get(PipelineDistributedBarrier.class.getDeclaredField("countDownLatchHolders"), instance);
         assertNotNull(countDownLatchMap);
         assertTrue(countDownLatchMap.containsKey(parentPath));
         instance.unregister(parentPath);
@@ -59,7 +59,7 @@ public final class PipelineDistributedBarrierImplTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrierImpl instance = new PipelineDistributedBarrierImpl();
+        PipelineDistributedBarrier instance = new PipelineDistributedBarrier();
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);

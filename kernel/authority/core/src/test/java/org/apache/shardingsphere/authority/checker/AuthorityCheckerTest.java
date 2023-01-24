@@ -48,7 +48,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
     }
     
@@ -60,7 +60,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule));
         assertFalse(sqlChecker.check(new Grantee("admin", "localhost"), rule));
@@ -74,7 +74,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);

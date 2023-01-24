@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -69,16 +68,13 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        InstanceMetaData instanceMetaData = TypedSPIRegistry.getRegisteredService(InstanceMetaDataBuilder.class, "JDBC").build(-1);
+        InstanceMetaData instanceMetaData = TypedSPIRegistry.getService(InstanceMetaDataBuilder.class, "JDBC").build(-1);
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         Collection<RuleConfiguration> databaseRuleConfigs = new LinkedList<>(ruleConfigs);
         databaseRuleConfigs.removeAll(globalRuleConfigs);
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
                 new DataSourceProvidedDatabaseConfiguration(dataSourceMap, databaseRuleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData, false);
-        ContextManagerBuilder contextManagerBuilder = null == modeConfig
-                ? RequiredSPIRegistry.getRegisteredService(ContextManagerBuilder.class)
-                : TypedSPIRegistry.getRegisteredService(ContextManagerBuilder.class, modeConfig.getType());
-        return contextManagerBuilder.build(param);
+        return TypedSPIRegistry.getService(ContextManagerBuilder.class, null == modeConfig ? null : modeConfig.getType()).build(param);
     }
     
     @Override

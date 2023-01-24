@@ -44,7 +44,7 @@ public final class ShardingRuleBuilderTest {
     @Before
     public void setUp() {
         ruleConfig = new ShardingRuleConfiguration();
-        builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        builder = OrderedSPIRegistry.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
     
     @SuppressWarnings("unchecked")

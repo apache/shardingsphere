@@ -56,7 +56,7 @@ public final class EncryptResultDecoratorEngineTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
-        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
+        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(EncryptDQLResultDecorator.class));
     }
@@ -65,14 +65,14 @@ public final class EncryptResultDecoratorEngineTest {
     public void assertNewInstanceWithDALStatement() {
         SQLStatementContext<ExplainStatement> sqlStatementContext = mock(ExplainStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
-        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
+        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), sqlStatementContext);
         assertThat(actual, instanceOf(EncryptDALResultDecorator.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() {
-        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
+        EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
         assertThat(actual, instanceOf(TransparentResultDecorator.class));
     }

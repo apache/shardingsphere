@@ -70,7 +70,7 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     }
     
     private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {
-        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getType());
+        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getType());
         if (fetchSizeSetter.isPresent()) {
             fetchSizeSetter.get().setFetchSize(statement);
         }

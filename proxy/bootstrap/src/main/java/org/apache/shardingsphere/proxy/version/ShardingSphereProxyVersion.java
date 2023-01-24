@@ -69,7 +69,7 @@ public final class ShardingSphereProxyVersion {
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
         log.info("{}, database name is `{}`", databaseServerInfo, database.getName());
-        TypedSPIRegistry.getRegisteredService(DatabaseProtocolFrontendEngine.class, DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()).getType(), new Properties())
+        TypedSPIRegistry.getService(DatabaseProtocolFrontendEngine.class, DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()).getType(), new Properties())
                 .setDatabaseVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
     }
     

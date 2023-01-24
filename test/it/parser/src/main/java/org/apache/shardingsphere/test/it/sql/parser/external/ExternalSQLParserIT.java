@@ -46,7 +46,7 @@ public abstract class ExternalSQLParserIT {
         sqlCaseId = testParam.getSqlCaseId();
         sql = testParam.getSql();
         databaseType = testParam.getDatabaseType();
-        resultReporter = TypedSPIRegistry.getRegisteredService(SQLParseResultReporterCreator.class, testParam.getReportType()).create(databaseType);
+        resultReporter = TypedSPIRegistry.getService(SQLParseResultReporterCreator.class, testParam.getReportType()).create(databaseType);
     }
     
     @Test

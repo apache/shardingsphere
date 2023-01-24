@@ -76,7 +76,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(
-                    connection, TypedSPIRegistry.getRegisteredService(DatabaseType.class, dataSource.getDatabaseType().getType()).isSchemaAvailable() ? schemaName : null, tableNamePattern);
+                    connection, TypedSPIRegistry.getService(DatabaseType.class, dataSource.getDatabaseType().getType()).isSchemaAvailable() ? schemaName : null, tableNamePattern);
             this.tableMetaDataMap.putAll(tableMetaDataMap);
         }
     }

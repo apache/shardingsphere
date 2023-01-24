@@ -108,8 +108,8 @@ public final class MySQLSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findRegisteredService(
-                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getType());
+        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findService(
+                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "MySQL").getType());
         assertTrue(result.isPresent());
         return result.get();
     }

@@ -55,7 +55,7 @@ public final class SQLRewriteEntry {
         this.database = database;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
-        decorators = OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class, database.getRuleMetaData().getRules());
+        decorators = OrderedSPIRegistry.getServices(SQLRewriteContextDecorator.class, database.getRuleMetaData().getRules());
     }
     
     /**

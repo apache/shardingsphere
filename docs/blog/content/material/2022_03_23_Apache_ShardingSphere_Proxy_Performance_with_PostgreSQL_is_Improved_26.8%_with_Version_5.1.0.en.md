@@ -60,7 +60,7 @@ Taking a frequently called ShardingSphere class `org.apache.shardingsphere.infra
         this.executorDriverManager = executorDriverManager;
         this.option = option;
         sqlExecutionUnitBuilder = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, 
-                key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
+                key -> TypedSPIRegistry.getService(SQLExecutionUnitBuilder.class, key, new Properties()));
     }
 ```
 
@@ -69,7 +69,7 @@ In the code above, only two `type` will be passed into `computeIfAbsent`, and mo
 ```java
 SQLExecutionUnitBuilder result;
 if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
-    result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
+    result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getService(SQLExecutionUnitBuilder.class, key, new Properties()));
 }
 return result;
 ```

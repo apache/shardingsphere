@@ -76,7 +76,7 @@ public final class SchemaMetaDataLoaderEngine {
     }
     
     private static Collection<SchemaMetaData> load(final SchemaMetaDataLoaderMaterial material) throws SQLException {
-        Optional<DialectSchemaMetaDataLoader> dialectSchemaMetaDataLoader = TypedSPIRegistry.findRegisteredService(DialectSchemaMetaDataLoader.class, material.getStorageType().getType());
+        Optional<DialectSchemaMetaDataLoader> dialectSchemaMetaDataLoader = TypedSPIRegistry.findService(DialectSchemaMetaDataLoader.class, material.getStorageType().getType());
         if (dialectSchemaMetaDataLoader.isPresent()) {
             try {
                 return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());

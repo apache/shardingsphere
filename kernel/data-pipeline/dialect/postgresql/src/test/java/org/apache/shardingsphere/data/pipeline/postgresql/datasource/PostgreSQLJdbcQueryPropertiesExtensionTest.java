@@ -32,7 +32,7 @@ public final class PostgreSQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, "PostgreSQL");
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findService(JdbcQueryPropertiesExtension.class, "PostgreSQL");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
     }

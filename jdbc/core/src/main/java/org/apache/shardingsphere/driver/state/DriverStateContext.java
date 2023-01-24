@@ -40,7 +40,7 @@ public final class DriverStateContext {
      * @return connection
      */
     public static Connection getConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
-        return TypedSPIRegistry.getRegisteredService(
+        return TypedSPIRegistry.getService(
                 DriverState.class, contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(databaseName, contextManager, jdbcContext);
     }
 }

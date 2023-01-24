@@ -40,7 +40,7 @@ public final class DistributedLockHolder {
     
     @SuppressWarnings("unchecked")
     public DistributedLockHolder(final String type, final Object client, final TypedProperties<?> props) {
-        creator = TypedSPIRegistry.getRegisteredService(DistributedLockCreator.class, type);
+        creator = TypedSPIRegistry.getService(DistributedLockCreator.class, type);
         this.client = client;
         this.props = props;
         locks = new ConcurrentHashMap<>();

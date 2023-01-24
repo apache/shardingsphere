@@ -31,7 +31,7 @@ import java.util.Collections;
 @Slf4j
 public final class DefaultMySQLSessionVariableHandler implements MySQLSessionVariableHandler {
     
-    private final Collection<String> replayRequiredSessionVariables = TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "MySQL")
+    private final Collection<String> replayRequiredSessionVariables = TypedSPIRegistry.findService(ReplayRequiredSessionVariables.class, "MySQL")
             .orElseGet(() -> Collections::emptySet).getReplayRequiredVariables();
     
     @Override

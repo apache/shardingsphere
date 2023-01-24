@@ -17,12 +17,9 @@
 
 <dataset>
     <metadata>
-        <column name="table_name" />
-        <column name="storage_unit_name" />
+        <column name="rule_name" />
+        <column name="database" />
+        <column name="count" />
     </metadata>
-    <row values="t_country| ds_2" />
-    <row values="t_product_category| ds_2" />
-    <row values="t_user| ds_0" />
-    <row values="temp| ds_1" />
+    <row values="mask| mask_encrypt| 1" />
 </dataset>
-

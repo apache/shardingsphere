@@ -214,10 +214,10 @@ public final class MigrationJobAPITest {
     @SneakyThrows(SQLException.class)
     private void initTableData(final MigrationJobConfiguration jobConfig) {
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
-        initTableData(TypedSPIRegistry.getRegisteredService(
+        initTableData(TypedSPIRegistry.getService(
                 PipelineDataSourceCreator.class, sourceDataSourceConfig.getType()).createPipelineDataSource(sourceDataSourceConfig.getDataSourceConfiguration()));
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
-        initTableData(TypedSPIRegistry.getRegisteredService(
+        initTableData(TypedSPIRegistry.getService(
                 PipelineDataSourceCreator.class, targetDataSourceConfig.getType()).createPipelineDataSource(targetDataSourceConfig.getDataSourceConfiguration()));
     }
     

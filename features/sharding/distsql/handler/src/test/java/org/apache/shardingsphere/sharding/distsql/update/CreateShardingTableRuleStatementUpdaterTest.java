@@ -250,7 +250,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     private DistSQLStatement getDistSQLStatement(final String sql) {
         ShardingDistSQLStatementParserFacade facade = new ShardingDistSQLStatementParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
-        SQLVisitor visitor = TypedSPIRegistry.getRegisteredService(FeaturedDistSQLStatementParserFacade.class, facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = TypedSPIRegistry.getService(FeaturedDistSQLStatementParserFacade.class, facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
         return (DistSQLStatement) ((ParseTreeVisitor) visitor).visit(parseASTNode.getRootNode());
     }
     

@@ -19,25 +19,10 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Map;
-
 /**
  * Data type loader fixture.
  */
 public final class DataTypeLoaderFixture extends AbstractDataTypeLoader {
-    
-    /**
-     * Load data type.
-     *
-     * @param database database
-     * @return data type map
-     * @throws SQLException SQL exception
-     */
-    public Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
-        return super.load(database);
-    }
     
     @Override
     public String getType() {

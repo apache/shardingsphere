@@ -34,8 +34,8 @@ import org.apache.shardingsphere.sharding.cache.checker.algorithm.CacheableShard
 import org.apache.shardingsphere.sharding.cache.api.ShardingCacheOptions;
 import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -104,7 +104,7 @@ public final class ShardingRouteCacheableChecker {
         if (1 != tableNames.size() && !shardingRule.isAllBindingTables(tableNames) || containsNonCacheableShardingAlgorithm(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
-        List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(statementContext, params);
+        List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(database, shardingRule).createShardingConditions(statementContext, params);
         return checkShardingConditionsCacheable(shardingConditions);
     }
     
@@ -131,7 +131,7 @@ public final class ShardingRouteCacheableChecker {
                 return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
             }
         }
-        List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(shardingRule, database).createShardingConditions(statementContext, params);
+        List<ShardingCondition> shardingConditions = new InsertClauseShardingConditionEngine(database, shardingRule).createShardingConditions(statementContext, params);
         return checkShardingConditionsCacheable(shardingConditions);
     }
     
@@ -146,7 +146,7 @@ public final class ShardingRouteCacheableChecker {
                 || !isShardingTable && !shardingRule.isAllBroadcastTables(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
-        List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(statementContext, params);
+        List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(database, shardingRule).createShardingConditions(statementContext, params);
         return checkShardingConditionsCacheable(shardingConditions);
     }
     

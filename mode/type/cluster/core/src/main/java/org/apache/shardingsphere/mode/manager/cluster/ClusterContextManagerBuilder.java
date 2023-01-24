@@ -63,7 +63,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private ClusterPersistRepository getClusterPersistRepository(final ClusterPersistRepositoryConfiguration config) {
         Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
-        ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
+        ClusterPersistRepository result = TypedSPIRegistry.getService(ClusterPersistRepository.class, config.getType(), config.getProps());
         result.init(config);
         return result;
     }

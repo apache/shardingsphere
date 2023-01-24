@@ -260,7 +260,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, checkJobId);
-        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(
+        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getService(
                 PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
         result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         return result;

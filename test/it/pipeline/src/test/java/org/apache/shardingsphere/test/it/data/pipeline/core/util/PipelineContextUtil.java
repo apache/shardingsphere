@@ -74,7 +74,7 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, PERSIST_REPOSITORY_CONFIG.getType(), PERSIST_REPOSITORY_CONFIG.getProps());
+                ClusterPersistRepository result = TypedSPIRegistry.getService(ClusterPersistRepository.class, PERSIST_REPOSITORY_CONFIG.getType(), PERSIST_REPOSITORY_CONFIG.getProps());
                 result.init(PERSIST_REPOSITORY_CONFIG);
                 return result;
             }

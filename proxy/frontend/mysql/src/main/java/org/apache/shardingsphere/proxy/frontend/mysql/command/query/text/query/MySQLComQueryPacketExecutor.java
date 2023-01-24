@@ -64,7 +64,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
-        DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
+        DatabaseType databaseType = TypedSPIRegistry.getService(DatabaseType.class, "MySQL");
         SQLStatement sqlStatement = parseSql(packet.getSql(), databaseType);
         proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
                 : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSql(), sqlStatement, connectionSession, packet.getHintValueContext());

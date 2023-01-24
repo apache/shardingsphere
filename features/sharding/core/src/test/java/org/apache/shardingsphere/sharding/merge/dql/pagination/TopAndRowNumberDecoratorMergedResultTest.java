@@ -65,7 +65,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getService(DatabaseType.class, "SQLServer"));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
                 mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(ConnectionContext.class));
         assertFalse(actual.next());
@@ -73,7 +73,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithoutOffsetWithRowCount() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer"));
+        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
@@ -96,7 +96,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), sqlStatement, DefaultDatabase.LOGIC_NAME);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getService(DatabaseType.class, "SQLServer"));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(),
                 mockQueryResult(), mockQueryResult()), selectStatementContext, mockShardingSphereDatabase(), mock(ConnectionContext.class));
         for (int i = 0; i < 7; i++) {
@@ -107,7 +107,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer"));
+        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getService(DatabaseType.class, "SQLServer"));
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
@@ -123,7 +123,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "SQLServer"));
+        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPIRegistry.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();

@@ -71,7 +71,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     
-    private final DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
+    private final DatabaseType databaseType = TypedSPIRegistry.getService(DatabaseType.class, "MySQL");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;

@@ -52,7 +52,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     public PartialSQLRouteExecutor(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
-        routers = OrderedSPIRegistry.getRegisteredServices(SQLRouter.class, rules);
+        routers = OrderedSPIRegistry.getServices(SQLRouter.class, rules);
     }
     
     @Override

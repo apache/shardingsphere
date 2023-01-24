@@ -75,7 +75,7 @@ public final class DriverJDBCExecutor {
                                           final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(queryContext, executionGroupContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
             executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
@@ -98,7 +98,7 @@ public final class DriverJDBCExecutor {
                              final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(queryContext, executionGroupContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
@@ -140,7 +140,7 @@ public final class DriverJDBCExecutor {
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(queryContext, executionGroupContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
             executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);

@@ -66,8 +66,8 @@ public final class XATransactionDataSourceTest {
     
     @Test
     public void assertGetAtomikosConnection() throws SQLException, RollbackException, SystemException {
-        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         try (Connection ignored = transactionDataSource.getConnection()) {
             verify(xaTransactionManagerProvider, times(0)).getTransactionManager();
         }
@@ -75,8 +75,8 @@ public final class XATransactionDataSourceTest {
     
     @Test
     public void assertGetHikariConnection() throws SQLException, RollbackException, SystemException {
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         try (Connection ignored = transactionDataSource.getConnection()) {
             verify(transaction).enlistResource(any(SingleXAResource.class));
             verify(transaction).registerSynchronization(any(Synchronization.class));
@@ -89,16 +89,16 @@ public final class XATransactionDataSourceTest {
     
     @Test
     public void assertCloseAtomikosDataSourceBean() {
-        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds11");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds11", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds11");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds11", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
         verify(xaTransactionManagerProvider, times(0)).removeRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertCloseHikariDataSource() {
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPIRegistry.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
         verify(xaTransactionManagerProvider).removeRecoveryResource(anyString(), any(XADataSource.class));
         

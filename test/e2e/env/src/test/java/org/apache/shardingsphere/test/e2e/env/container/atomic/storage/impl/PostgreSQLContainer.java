@@ -37,7 +37,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     private final StorageContainerConfiguration storageContainerConfig;
     
     public PostgreSQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, scenario);
+        super(TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, scenario);
         this.storageContainerConfig = storageContainerConfig;
     }
     
