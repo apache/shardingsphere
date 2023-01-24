@@ -32,7 +32,7 @@ Supported database types definition
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/metadata/database/schema/loader/spi/DialectSchemaMetaDataLoader.java)
+[`org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/metadata/database/schema/loader/metadata/DialectSchemaMetaDataLoader.java)
 
 ### Definition
 
