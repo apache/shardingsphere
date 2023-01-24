@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.impl;
+package org.apache.shardingsphere.data.pipeline.core.util;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Map;
@@ -37,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  * Pipeline distributed barrier.
  */
 @Slf4j
-public final class PipelineDistributedBarrierImpl implements PipelineDistributedBarrier {
+public final class PipelineDistributedBarrier {
     
     private static final LazyInitializer<ClusterPersistRepository> REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
         
@@ -55,7 +54,7 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
     }
     
     /**
-     * Register count down latch.
+     * Register distributed barrier.
      *
      * @param barrierPath barrier path
      * @param totalCount total count
@@ -117,7 +116,11 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
         return false;
     }
     
-    @Override
+    /**
+     * notify children node count check.
+     *
+     * @param nodePath node path
+     */
     public void notifyChildrenNodeCountCheck(final String nodePath) {
         if (Strings.isNullOrEmpty(nodePath)) {
             return;
