@@ -55,9 +55,9 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public final class InsertClauseShardingConditionEngine {
     
-    private final ShardingRule shardingRule;
-    
     private final ShardingSphereDatabase database;
+    
+    private final ShardingRule shardingRule;
     
     /**
      * Create sharding conditions.
@@ -148,7 +148,7 @@ public final class InsertClauseShardingConditionEngine {
     
     private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> params) {
         SelectStatementContext selectStatementContext = sqlStatementContext.getInsertSelectContext().getSelectStatementContext();
-        return new LinkedList<>(new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(selectStatementContext, params));
+        return new LinkedList<>(new WhereClauseShardingConditionEngine(database, shardingRule).createShardingConditions(selectStatementContext, params));
     }
     
     private void appendGeneratedKeyConditions(final InsertStatementContext sqlStatementContext, final List<ShardingCondition> shardingConditions) {

@@ -27,14 +27,14 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import java.util.List;
 
 /**
- * Default sharding condition engine.
+ * Sharding condition engine.
  */
 @RequiredArgsConstructor
-public final class DefaultShardingConditionEngine {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingConditionEngine {
     
     private final ShardingSphereDatabase database;
+    
+    private final ShardingRule shardingRule;
     
     /**
      * Create sharding conditions.
@@ -44,9 +44,8 @@ public final class DefaultShardingConditionEngine {
      * @return sharding conditions
      */
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
-        if (sqlStatementContext instanceof InsertStatementContext) {
-            return new InsertClauseShardingConditionEngine(shardingRule, database).createShardingConditions((InsertStatementContext) sqlStatementContext, params);
-        }
-        return new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(sqlStatementContext, params);
+        return sqlStatementContext instanceof InsertStatementContext
+                ? new InsertClauseShardingConditionEngine(database, shardingRule).createShardingConditions((InsertStatementContext) sqlStatementContext, params)
+                : new WhereClauseShardingConditionEngine(database, shardingRule).createShardingConditions(sqlStatementContext, params);
     }
 }
