@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
+import javax.sql.DataSource;
+import java.util.Collection;
 
 /**
- * Data type loader fixture.
+ * Schema meta data loader material.
  */
-public final class DataTypeLoaderFixture extends AbstractDataTypeLoader {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaMetaDataLoaderMaterial {
     
-    @Override
-    public String getType() {
-        return "INFRA.FIXTURE";
-    }
+    private final Collection<String> actualTableNames;
+    
+    private final DataSource dataSource;
+    
+    private final DatabaseType storageType;
+    
+    private final String defaultSchemaName;
 }
