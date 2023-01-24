@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWith
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
@@ -66,8 +65,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     }
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        String sql = TypedSPIRegistry.findService(PipelineSQLBuilder.class, getDatabaseType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class)).buildCheckEmptySQL(schemaName, tableName);
+        String sql = TypedSPIRegistry.getService(PipelineSQLBuilder.class, getDatabaseType(), null).buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);

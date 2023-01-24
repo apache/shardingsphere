@@ -23,7 +23,6 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
 
@@ -67,9 +66,7 @@ public final class OptimizerParserContextFactory {
     private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll((null == databaseType
-                ? RequiredSPIRegistry.getService(OptimizerSQLDialectBuilder.class)
-                : TypedSPIRegistry.getService(OptimizerSQLDialectBuilder.class, databaseType.getType())).build());
+        result.putAll(TypedSPIRegistry.getService(OptimizerSQLDialectBuilder.class, null == databaseType ? null : databaseType.getType()).build());
         return result;
     }
 }

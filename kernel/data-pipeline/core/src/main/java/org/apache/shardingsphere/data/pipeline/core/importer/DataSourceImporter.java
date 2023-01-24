@@ -42,7 +42,6 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterCo
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
@@ -87,8 +86,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         this.dataSourceManager = (PipelineDataSourceManager) importerConnector.getConnector();
         this.channel = channel;
-        pipelineSqlBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
+        pipelineSqlBuilder = TypedSPIRegistry.getService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType(), null);
         this.jobProgressListener = jobProgressListener;
     }
     

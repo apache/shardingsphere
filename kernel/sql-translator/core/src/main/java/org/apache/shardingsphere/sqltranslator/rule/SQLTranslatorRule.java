@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sqltranslator.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
@@ -41,7 +40,7 @@ public final class SQLTranslatorRule implements GlobalRule {
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        translator = TypedSPIRegistry.findService(SQLTranslator.class, ruleConfig.getType()).orElse(RequiredSPIRegistry.getService(SQLTranslator.class));
+        translator = TypedSPIRegistry.getService(SQLTranslator.class, ruleConfig.getType());
         useOriginalSQLWhenTranslatingFailed = ruleConfig.isUseOriginalSQLWhenTranslatingFailed();
     }
     

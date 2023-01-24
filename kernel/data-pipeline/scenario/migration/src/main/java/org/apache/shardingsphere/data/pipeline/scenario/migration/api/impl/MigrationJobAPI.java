@@ -312,8 +312,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         String targetTableName = jobConfig.getTargetTableName();
         // TODO use jobConfig.targetSchemaName
         String targetSchemaName = jobConfig.getSourceSchemaName();
-        PipelineSQLBuilder pipelineSQLBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
+        PipelineSQLBuilder pipelineSQLBuilder = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType(), null);
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {

@@ -28,7 +28,6 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.util.Litmus;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -222,9 +221,7 @@ public final class SQLNodeConverterEngineIT {
     private Properties createSQLDialectProperties(final String databaseType) {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
-        result.putAll((null == databaseType
-                ? RequiredSPIRegistry.getService(OptimizerSQLDialectBuilder.class)
-                : TypedSPIRegistry.getService(OptimizerSQLDialectBuilder.class, databaseType)).build());
+        result.putAll(TypedSPIRegistry.getService(OptimizerSQLDialectBuilder.class, databaseType).build());
         return result;
     }
 }
