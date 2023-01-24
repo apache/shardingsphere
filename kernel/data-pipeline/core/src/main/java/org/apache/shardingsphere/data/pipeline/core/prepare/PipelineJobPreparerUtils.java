@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -132,8 +131,7 @@ public final class PipelineJobPreparerUtils {
         }
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        return TypedSPIRegistry.findService(PositionInitializer.class, databaseType)
-                .orElseGet(() -> RequiredSPIRegistry.getService(PositionInitializer.class)).init(dataSource, dumperConfig.getJobId());
+        return TypedSPIRegistry.getService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
     }
     
     /**
@@ -178,8 +176,7 @@ public final class PipelineJobPreparerUtils {
      */
     public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
-        PositionInitializer positionInitializer = TypedSPIRegistry.findService(PositionInitializer.class, databaseType.getType())
-                .orElseGet(() -> RequiredSPIRegistry.getService(PositionInitializer.class));
+        PositionInitializer positionInitializer = TypedSPIRegistry.getService(PositionInitializer.class, databaseType.getType());
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {

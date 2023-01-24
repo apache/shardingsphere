@@ -51,7 +51,9 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callb
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.MySQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
@@ -78,7 +80,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -148,7 +149,8 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
-            typedSPIRegistry.when(() -> TypedSPIRegistry.findService(SQLFederationExecutor.class, "NONE")).thenReturn(Optional.of(federationExecutor));
+            typedSPIRegistry.when(() -> TypedSPIRegistry.getService(SQLFederationExecutor.class, "NONE")).thenReturn(federationExecutor);
+            typedSPIRegistry.when(() -> TypedSPIRegistry.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new MySQLQueryHeaderBuilder());
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
             SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration("ORIGINAL"));
             when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);

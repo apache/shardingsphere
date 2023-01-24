@@ -21,7 +21,6 @@ import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
@@ -87,8 +86,7 @@ public final class DataSourceSwapper {
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
         Map<String, Object> result = new HashMap<>(3, 1);
-        DataSourcePropertyProvider provider = TypedSPIRegistry.findService(DataSourcePropertyProvider.class, dataSource.getClass().getName())
-                .orElseGet(() -> RequiredSPIRegistry.getService(DataSourcePropertyProvider.class));
+        DataSourcePropertyProvider provider = TypedSPIRegistry.getService(DataSourcePropertyProvider.class, dataSource.getClass().getName());
         try {
             result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));
             result.put("user", findGetterMethod(dataSource, provider.getUsernamePropertyName()).invoke(dataSource));

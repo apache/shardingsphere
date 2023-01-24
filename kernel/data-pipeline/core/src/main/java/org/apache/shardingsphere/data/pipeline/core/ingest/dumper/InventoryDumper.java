@@ -45,7 +45,6 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueRead
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
@@ -84,10 +83,8 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
-        sqlBuilder = TypedSPIRegistry.findService(PipelineSQLBuilder.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getService(PipelineSQLBuilder.class));
-        columnValueReader = TypedSPIRegistry.findService(ColumnValueReader.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType())
-                .orElseGet(() -> RequiredSPIRegistry.getService(ColumnValueReader.class));
+        sqlBuilder = TypedSPIRegistry.getService(PipelineSQLBuilder.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType(), null);
+        columnValueReader = TypedSPIRegistry.getService(ColumnValueReader.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType());
         this.metaDataLoader = metaDataLoader;
     }
     
