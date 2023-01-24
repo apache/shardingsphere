@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.spi.impl;
+package org.apache.shardingsphere.data.pipeline.core.util;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -24,11 +24,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -38,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  * Pipeline distributed barrier.
  */
 @Slf4j
-public final class PipelineDistributedBarrierImpl implements PipelineDistributedBarrier {
+public final class PipelineDistributedBarrier {
     
     private static final LazyInitializer<ClusterPersistRepository> REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
         
@@ -48,7 +46,7 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
         }
     };
     
-    private final Map<String, InnerCountDownLatchHolder> countDownLatchMap = new ConcurrentHashMap<>();
+    private final Map<String, InnerCountDownLatchHolder> countDownLatchHolders = new ConcurrentHashMap<>();
     
     @SneakyThrows(ConcurrentException.class)
     private static ClusterPersistRepository getRepository() {
@@ -56,14 +54,14 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
     }
     
     /**
-     * Register count down latch.
+     * Register distributed barrier.
      *
      * @param barrierPath barrier path
      * @param totalCount total count
      */
     public void register(final String barrierPath, final int totalCount) {
         getRepository().persist(barrierPath, "");
-        countDownLatchMap.computeIfAbsent(barrierPath, k -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
+        countDownLatchHolders.computeIfAbsent(barrierPath, key -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
     }
     
     /**
@@ -88,7 +86,7 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
      */
     public void unregister(final String barrierPath) {
         getRepository().delete(String.join("/", barrierPath));
-        InnerCountDownLatchHolder holder = countDownLatchMap.remove(barrierPath);
+        InnerCountDownLatchHolder holder = countDownLatchHolders.remove(barrierPath);
         if (null != holder) {
             holder.getCountDownLatch().countDown();
         }
@@ -103,7 +101,7 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
      * @return true if the count reached zero and false if the waiting time elapsed before the count reached zero
      */
     public boolean await(final String barrierPath, final long timeout, final TimeUnit timeUnit) {
-        InnerCountDownLatchHolder holder = countDownLatchMap.get(barrierPath);
+        InnerCountDownLatchHolder holder = countDownLatchHolders.get(barrierPath);
         if (null == holder) {
             return false;
         }
@@ -118,18 +116,18 @@ public final class PipelineDistributedBarrierImpl implements PipelineDistributed
         return false;
     }
     
-    @Override
+    /**
+     * notify children node count check.
+     *
+     * @param nodePath node path
+     */
     public void notifyChildrenNodeCountCheck(final String nodePath) {
         if (Strings.isNullOrEmpty(nodePath)) {
             return;
         }
         String barrierPath = nodePath.substring(0, nodePath.lastIndexOf("/"));
-        InnerCountDownLatchHolder holder = countDownLatchMap.get(barrierPath);
-        if (null == holder) {
-            return;
-        }
-        List<String> childrenKeys = getRepository().getChildrenKeys(barrierPath);
-        if (childrenKeys.size() == holder.getTotalCount()) {
+        InnerCountDownLatchHolder holder = countDownLatchHolders.get(barrierPath);
+        if (null != holder && getRepository().getChildrenKeys(barrierPath).size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();
         }
     }
