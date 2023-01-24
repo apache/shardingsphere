@@ -34,9 +34,9 @@ public interface DataTypeLoader extends TypedSPI, RequiredSPI {
     /**
      * Load data type.
      *
-     * @param database database
+     * @param databaseMetaData database meta data
      * @return data type map
      * @throws SQLException SQL exception
      */
-    Map<String, Integer> load(DatabaseMetaData database) throws SQLException;
+    Map<String, Integer> load(DatabaseMetaData databaseMetaData) throws SQLException;
 }

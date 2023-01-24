@@ -29,15 +29,9 @@ import java.util.Map;
  */
 public final class OracleDataTypeLoader extends AbstractDataTypeLoader {
     
-    /**
-     * Load data type.
-     *
-     * @param database database
-     * @return data type map
-     * @throws SQLException SQL exception
-     */
-    public Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
-        Map<String, Integer> result = super.load(database);
+    @Override
+    public Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
+        Map<String, Integer> result = super.load(databaseMetaData);
         result.putIfAbsent("NUMBER", Types.NUMERIC);
         return result;
     }

@@ -30,16 +30,10 @@ import java.util.TreeMap;
  */
 public abstract class AbstractDataTypeLoader implements DataTypeLoader {
     
-    /**
-     * Load data type.
-     *
-     * @param database database
-     * @return data type map
-     * @throws SQLException SQL exception
-     */
-    public Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
+    @Override
+    public Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        try (ResultSet resultSet = database.getTypeInfo()) {
+        try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
             while (resultSet.next()) {
                 result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
             }
