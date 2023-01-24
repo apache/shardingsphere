@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
+package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,22 +29,12 @@ import java.util.List;
 /**
  * Default sharding condition engine.
  */
+@RequiredArgsConstructor
 public final class DefaultShardingConditionEngine {
     
-    private ShardingRule shardingRule;
+    private final ShardingRule shardingRule;
     
-    private ShardingSphereDatabase database;
-    
-    /**
-     * Initialize sharding condition engine.
-     *
-     * @param shardingRule sharding rule
-     * @param database sharding database
-     */
-    public void init(final ShardingRule shardingRule, final ShardingSphereDatabase database) {
-        this.shardingRule = shardingRule;
-        this.database = database;
-    }
+    private final ShardingSphereDatabase database;
     
     /**
      * Create sharding conditions.
