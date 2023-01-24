@@ -70,7 +70,7 @@ public final class WhereClauseShardingConditionEngineTest {
     
     @Before
     public void setUp() {
-        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")));
+        shardingConditionEngine = new WhereClauseShardingConditionEngine(ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")), shardingRule);
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.findTableNamesByColumnSegment(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));

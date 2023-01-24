@@ -67,7 +67,7 @@ public final class InsertClauseShardingConditionEngineTest {
     @Before
     public void setUp() {
         InsertStatement insertStatement = mockInsertStatement();
-        shardingConditionEngine = new InsertClauseShardingConditionEngine(shardingRule, mock(ShardingSphereDatabase.class));
+        shardingConditionEngine = new InsertClauseShardingConditionEngine(mock(ShardingSphereDatabase.class), shardingRule);
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));

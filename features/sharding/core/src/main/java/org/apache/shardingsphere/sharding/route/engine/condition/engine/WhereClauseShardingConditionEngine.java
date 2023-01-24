@@ -60,9 +60,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class WhereClauseShardingConditionEngine {
     
-    private final ShardingRule shardingRule;
-    
     private final ShardingSphereDatabase database;
+    
+    private final ShardingRule shardingRule;
     
     /**
      * Create sharding conditions.
