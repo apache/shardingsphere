@@ -17,25 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Map;
-
 /**
  * Default data type loader.
  */
 public final class DefaultDataTypeLoader extends AbstractDataTypeLoader {
-    
-    /**
-     * Load data type.
-     *
-     * @param database database
-     * @return data type map
-     * @throws SQLException SQL exception
-     */
-    public Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
-        return super.load(database);
-    }
     
     @Override
     public String getType() {
