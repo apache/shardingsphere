@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
@@ -68,10 +67,8 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private static ShardingConditions getMergedShardingConditions(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule) {
-        ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(database, rule);
-        List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
+        List<ShardingCondition> shardingConditions = new ShardingConditionEngine(database, rule).createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
         ShardingConditions result = new ShardingConditions(shardingConditions, queryContext.getSqlStatementContext(), rule);
         if (result.isNeedMerge()) {
             result.merge();

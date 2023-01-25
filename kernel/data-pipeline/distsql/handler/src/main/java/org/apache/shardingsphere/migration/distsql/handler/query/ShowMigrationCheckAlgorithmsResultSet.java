@@ -39,7 +39,7 @@ public final class ShowMigrationCheckAlgorithmsResultSet implements DatabaseDist
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION");
+        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getService(PipelineJobAPI.class, "MIGRATION");
         data = jobAPI.listDataConsistencyCheckAlgorithms().stream().map(
                 each -> (Collection<Object>) Arrays.<Object>asList(each.getType(), String.join(",", each.getSupportedDatabaseTypes()), each.getDescription())).collect(Collectors.toList()).iterator();
     }

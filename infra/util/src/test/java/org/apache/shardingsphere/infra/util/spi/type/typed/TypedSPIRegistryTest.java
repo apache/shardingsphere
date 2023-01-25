@@ -36,42 +36,42 @@ import static org.junit.Assert.assertTrue;
 public final class TypedSPIRegistryTest {
     
     @Test
-    public void assertFindRegisteredServiceWithoutProperties() {
-        assertTrue(TypedSPIRegistry.findRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
+    public void assertFindServiceWithoutProperties() {
+        assertTrue(TypedSPIRegistry.findService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
     }
     
     @Test
-    public void assertFindRegisteredServiceWithProperties() {
-        assertTrue(TypedSPIRegistry.findRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", new Properties()).isPresent());
+    public void assertFindServiceWithProperties() {
+        assertTrue(TypedSPIRegistry.findService(TypedSPIFixture.class, "TYPED.FIXTURE", new Properties()).isPresent());
     }
     
     @Test
-    public void assertGetRegisteredServiceWithoutProperties() {
-        assertThat(TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
+    public void assertGetServiceWithoutProperties() {
+        assertThat(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
     }
     
     @Test
-    public void assertGetRegisteredServiceWithProperties() {
-        assertThat(((TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
+    public void assertGetServiceWithProperties() {
+        assertThat(((TypedSPIFixtureImpl) TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
     }
     
     @Test
-    public void assertGetRegisteredServiceWithNullProperties() {
-        assertNull(((TypedSPIFixtureImpl) TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.FIXTURE", null)).getValue());
+    public void assertGetServiceWithNullProperties() {
+        assertNull(((TypedSPIFixtureImpl) TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE", null)).getValue());
     }
     
     @Test
-    public void assertGetRegisteredServiceWithAlias() {
-        assertNotNull(TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "TYPED.ALIAS", new Properties()));
+    public void assertGetServiceWithAlias() {
+        assertNotNull(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.ALIAS", new Properties()));
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
-    public void assertGetRegisteredServiceWithoutPropertiesWhenTypeIsNotExist() {
-        TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "NOT_EXISTED");
+    public void assertGetServiceWithoutPropertiesWhenTypeIsNotExist() {
+        TypedSPIRegistry.getService(TypedSPIFixture.class, "NOT_EXISTED");
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
-    public void assertGetRegisteredServiceWithPropertiesWhenTypeIsNotExist() {
-        TypedSPIRegistry.getRegisteredService(TypedSPIFixture.class, "NOT_EXISTED", new Properties());
+    public void assertGetServiceWithPropertiesWhenTypeIsNotExist() {
+        TypedSPIRegistry.getService(TypedSPIFixture.class, "NOT_EXISTED", new Properties());
     }
 }

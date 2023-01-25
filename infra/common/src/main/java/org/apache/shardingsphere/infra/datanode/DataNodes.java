@@ -42,7 +42,7 @@ public final class DataNodes {
     
     public DataNodes(final Collection<ShardingSphereRule> rules) {
         this.rules = rules;
-        dataNodeBuilders = OrderedSPIRegistry.getRegisteredServices(DataNodeBuilder.class, rules);
+        dataNodeBuilders = OrderedSPIRegistry.getServices(DataNodeBuilder.class, rules);
     }
     
     /**

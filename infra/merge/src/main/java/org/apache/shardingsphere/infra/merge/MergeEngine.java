@@ -55,7 +55,7 @@ public final class MergeEngine {
     public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         this.database = database;
         this.props = props;
-        engines = OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class, database.getRuleMetaData().getRules());
+        engines = OrderedSPIRegistry.getServices(ResultProcessEngine.class, database.getRuleMetaData().getRules());
         this.connectionContext = connectionContext;
     }
     

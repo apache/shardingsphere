@@ -29,8 +29,8 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
@@ -45,7 +45,7 @@ import java.util.concurrent.Callable;
 @RequiredArgsConstructor
 public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(StaticMethodAdviceExecutor.class);
+    private static final Logger LOGGER = AgentLoggerFactory.getLogger(StaticMethodAdviceExecutor.class);
     
     private final Map<String, Collection<StaticMethodAdvice>> advices;
     

@@ -98,7 +98,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             Optional<InventoryIncrementalJobItemProgress> jobItemProgress = getJobItemProgress(jobId, each);
-            jobItemProgress.ifPresent(progress -> progress.setActive(!jobConfigPOJO.isDisabled()));
+            jobItemProgress.ifPresent(optional -> optional.setActive(!jobConfigPOJO.isDisabled()));
             map.put(each, jobItemProgress.orElse(null));
         }, LinkedHashMap::putAll);
     }
@@ -193,8 +193,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("Algorithm type and job configuration are null."));
         return null == algorithmType
                 ? DataConsistencyCalculateAlgorithmChooser.choose(
-                        TypedSPIRegistry.getRegisteredService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
-                        TypedSPIRegistry.getRegisteredService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
+                        TypedSPIRegistry.getService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
+                        TypedSPIRegistry.getService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
                 : ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(algorithmType, algorithmProps), DataConsistencyCalculateAlgorithm.class);
     }
     

@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -28,15 +29,12 @@ import java.util.List;
 /**
  * Sharding condition engine.
  */
-public interface ShardingConditionEngine<T extends SQLStatementContext<?>> extends RequiredSPI {
+@RequiredArgsConstructor
+public final class ShardingConditionEngine {
     
-    /**
-     * Initialize sharding condition engine.
-     *
-     * @param rule sharding rule
-     * @param database sharding database
-     */
-    void init(ShardingRule rule, ShardingSphereDatabase database);
+    private final ShardingSphereDatabase database;
+    
+    private final ShardingRule shardingRule;
     
     /**
      * Create sharding conditions.
@@ -45,5 +43,9 @@ public interface ShardingConditionEngine<T extends SQLStatementContext<?>> exten
      * @param params SQL parameters
      * @return sharding conditions
      */
-    List<ShardingCondition> createShardingConditions(T sqlStatementContext, List<Object> params);
+    public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+        return sqlStatementContext instanceof InsertStatementContext
+                ? new InsertClauseShardingConditionEngine(database, shardingRule).createShardingConditions((InsertStatementContext) sqlStatementContext, params)
+                : new WhereClauseShardingConditionEngine(database, shardingRule).createShardingConditions(sqlStatementContext, params);
+    }
 }

@@ -44,7 +44,7 @@ public final class PostgreSQLSetVariableAdminExecutorTest {
         PostgreSQLSetVariableAdminExecutor executor = new PostgreSQLSetVariableAdminExecutor(setStatement);
         try (MockedStatic<TypedSPIRegistry> mockStatic = mockStatic(TypedSPIRegistry.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);
-            mockStatic.when(() -> TypedSPIRegistry.findRegisteredService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
+            mockStatic.when(() -> TypedSPIRegistry.findService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
             executor.execute(null);
             verify(mockHandler).handle(null, "key", "value");
         }

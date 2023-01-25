@@ -49,8 +49,8 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        Map<String, DataSource> dataSources = createDataSources(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"));
-        Map<String, DatabaseType> databaseTypes = createDatabaseTypes(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"));
+        Map<String, DataSource> dataSources = createDataSources(TypedSPIRegistry.getService(DatabaseType.class, "H2"));
+        Map<String, DatabaseType> databaseTypes = createDatabaseTypes(TypedSPIRegistry.getService(DatabaseType.class, "H2"));
         xaTransactionManager.init(databaseTypes, dataSources, "Atomikos");
     }
     

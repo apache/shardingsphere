@@ -173,6 +173,6 @@ public final class E2ETestParameterGenerator {
     
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
         String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL,openGauss" : databaseTypes;
-        return Splitter.on(',').trimResults().splitToList(candidates).stream().map(each -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, each)).collect(Collectors.toList());
+        return Splitter.on(',').trimResults().splitToList(candidates).stream().map(each -> TypedSPIRegistry.getService(DatabaseType.class, each)).collect(Collectors.toList());
     }
 }

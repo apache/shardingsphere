@@ -39,7 +39,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
-        return OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet().stream()
+        return OrderedSPIRegistry.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet().stream()
                 .map(entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
     }
     
@@ -53,7 +53,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         Collection<Class<?>> ruleConfigTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
-        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(YamlRuleConfigurationSwapper.class, ruleConfigTypes).entrySet()) {
+        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getServicesByClass(YamlRuleConfigurationSwapper.class, ruleConfigTypes).entrySet()) {
             result.addAll(swapToRuleConfigurations(yamlRuleConfigs, entry.getKey(), entry.getValue()));
         }
         return result;

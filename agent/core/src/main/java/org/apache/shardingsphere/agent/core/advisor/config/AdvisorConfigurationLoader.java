@@ -19,18 +19,18 @@ package org.apache.shardingsphere.agent.core.advisor.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.classloader.AgentClassLoader;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper.YamlAdvisorsConfigurationSwapper;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
+import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 /**
  * Advisor configuration loader.
@@ -38,7 +38,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AdvisorConfigurationLoader {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(PluginJarLoader.class);
+    private static final Logger LOGGER = AgentLoggerFactory.getLogger(PluginJarLoader.class);
     
     /**
      * Load advisor configurations.
@@ -48,11 +48,11 @@ public final class AdvisorConfigurationLoader {
      * @param isEnhancedForProxy is enhanced for proxy
      * @return loaded configurations
      */
-    public static Map<String, AdvisorConfiguration> load(final Collection<PluginJar> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
+    public static Map<String, AdvisorConfiguration> load(final Collection<JarFile> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
-        AgentClassLoader agentClassLoader = new AgentClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
+        AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
         for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getResourceStream(agentClassLoader, each, isEnhancedForProxy);
+            InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each, isEnhancedForProxy);
             if (null == advisorsResourceStream) {
                 LOGGER.info("No configuration of advisor for type `{}`.", each);
             } else {
@@ -62,13 +62,13 @@ public final class AdvisorConfigurationLoader {
         return result;
     }
     
-    private static InputStream getResourceStream(final ClassLoader agentClassLoader, final String pluginType, final boolean isEnhancedForProxy) {
-        InputStream accurateResourceStream = getResourceStream(agentClassLoader, getFileName(pluginType, isEnhancedForProxy));
-        return null == accurateResourceStream ? getResourceStream(agentClassLoader, getFileName(pluginType)) : accurateResourceStream;
+    private static InputStream getResourceStream(final ClassLoader pluginClassLoader, final String pluginType, final boolean isEnhancedForProxy) {
+        InputStream accurateResourceStream = getResourceStream(pluginClassLoader, getFileName(pluginType, isEnhancedForProxy));
+        return null == accurateResourceStream ? getResourceStream(pluginClassLoader, getFileName(pluginType)) : accurateResourceStream;
     }
     
-    private static InputStream getResourceStream(final ClassLoader agentClassLoader, final String fileName) {
-        return agentClassLoader.getResourceAsStream(String.join("/", "META-INF", "conf", fileName));
+    private static InputStream getResourceStream(final ClassLoader pluginClassLoader, final String fileName) {
+        return pluginClassLoader.getResourceAsStream(String.join("/", "META-INF", "conf", fileName));
     }
     
     private static String getFileName(final String pluginType, final boolean isEnhancedForProxy) {

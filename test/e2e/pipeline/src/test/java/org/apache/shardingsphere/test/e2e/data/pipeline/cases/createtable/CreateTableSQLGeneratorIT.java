@@ -132,7 +132,7 @@ public final class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> actualDDLs = TypedSPIRegistry.getRegisteredService(
+                Collection<String> actualDDLs = TypedSPIRegistry.getService(
                         CreateTableSQLGenerator.class, testParam.getDatabaseType().getType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
                 assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }

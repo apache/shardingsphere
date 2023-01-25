@@ -44,7 +44,7 @@ public final class ShardingRuleConfigurationCheckerTest {
         ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
         ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
-        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPIRegistry.getRegisteredServicesByClass(
+        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPIRegistry.getServicesByClass(
                 RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
@@ -55,7 +55,7 @@ public final class ShardingRuleConfigurationCheckerTest {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
-        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPIRegistry.getRegisteredServicesByClass(
+        RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPIRegistry.getServicesByClass(
                 RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }

@@ -32,7 +32,7 @@ public final class AlterInventoryIncrementalRuleUpdater implements RALUpdater<Al
     
     @Override
     public void executeUpdate(final String databaseName, final AlterInventoryIncrementalRuleStatement sqlStatement) {
-        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, sqlStatement.getJobTypeName());
+        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getService(PipelineJobAPI.class, sqlStatement.getJobTypeName());
         PipelineProcessConfiguration processConfig = InventoryIncrementalProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         jobAPI.alterProcessConfiguration(processConfig);
     }

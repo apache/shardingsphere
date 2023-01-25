@@ -49,7 +49,7 @@ public final class DefaultMySQLSessionVariableHandlerTest {
         try (MockedStatic<TypedSPIRegistry> typedSPIRegistry = mockStatic(TypedSPIRegistry.class)) {
             ReplayRequiredSessionVariables replayRequiredSessionVariables = mock(ReplayRequiredSessionVariables.class);
             when(replayRequiredSessionVariables.getReplayRequiredVariables()).thenReturn(Collections.singleton("sql_mode"));
-            typedSPIRegistry.when(() -> TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "MySQL")).thenReturn(Optional.of(replayRequiredSessionVariables));
+            typedSPIRegistry.when(() -> TypedSPIRegistry.findService(ReplayRequiredSessionVariables.class, "MySQL")).thenReturn(Optional.of(replayRequiredSessionVariables));
             new DefaultMySQLSessionVariableHandler().handle(connectionSession, "sql_mode", "''");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("sql_mode", "''");
         }

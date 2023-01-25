@@ -106,7 +106,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, getProtocolTypeType().getType()).orElseGet(DefaultSaneQueryResultEngine::new).getSaneQueryResult(sqlStatement, ex);
+        return TypedSPIRegistry.findService(SaneQueryResultEngine.class, getProtocolTypeType().getType()).orElseGet(DefaultSaneQueryResultEngine::new).getSaneQueryResult(sqlStatement, ex);
     }
     
     private DatabaseType getProtocolTypeType() {

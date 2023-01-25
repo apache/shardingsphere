@@ -72,7 +72,7 @@ public final class DataSourcePoolCreator {
      */
     public static DataSource create(final DataSourceProperties dataSourceProps) {
         DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         if (poolMetaData.isPresent()) {
             setDefaultFields(dataSourceReflection, poolMetaData.get());

@@ -32,10 +32,10 @@ public final class PrometheusSummaryWrapperTest {
     
     @Test
     public void assertCreate() throws ReflectiveOperationException {
-        PrometheusSummaryCollector collector = new PrometheusSummaryCollector(new MetricConfiguration("foo_summary",
+        PrometheusMetricsSummaryCollector collector = new PrometheusMetricsSummaryCollector(new MetricConfiguration("foo_summary",
                 MetricCollectorType.SUMMARY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.observe(1);
-        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusSummaryCollector.class.getDeclaredField("summary"), collector);
+        Summary summary = (Summary) Plugins.getMemberAccessor().get(PrometheusMetricsSummaryCollector.class.getDeclaredField("summary"), collector);
         assertThat(summary.collect().size(), is(1));
     }
 }

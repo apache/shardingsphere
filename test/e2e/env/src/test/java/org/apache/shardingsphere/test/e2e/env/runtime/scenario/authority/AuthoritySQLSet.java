@@ -72,6 +72,6 @@ public final class AuthoritySQLSet {
     }
     
     private Collection<DatabaseType> getDatabaseTypes() {
-        return Splitter.on(",").trimResults().splitToList(databaseTypes).stream().map(each -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, each)).collect(Collectors.toList());
+        return Splitter.on(",").trimResults().splitToList(databaseTypes).stream().map(each -> TypedSPIRegistry.getService(DatabaseType.class, each)).collect(Collectors.toList());
     }
 }

@@ -77,7 +77,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
         channel = createChannel(pipelineChannelCreator);
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = TypedSPIRegistry.getRegisteredService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
+        importer = TypedSPIRegistry.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
                 ImporterType.INVENTORY);
         position = inventoryDumperConfig.getPosition();
     }

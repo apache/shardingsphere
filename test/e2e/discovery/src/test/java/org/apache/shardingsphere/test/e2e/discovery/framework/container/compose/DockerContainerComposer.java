@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.Ad
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterContainerEnum;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterModeEnum;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -73,8 +73,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainers.add(storageContainer);
         });
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario);
-        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory
-                .newInstance(AdapterModeEnum.CLUSTER.getValue(), AdapterContainerEnum.PROXY.getValue(), databaseType, null, "", containerConfig);
+        ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(
+                AdapterMode.CLUSTER, AdapterType.PROXY, databaseType, null, "", containerConfig);
         storageContainers.forEach(each -> proxyClusterContainer.dependsOn(governanceContainer, each));
         proxyContainer = getContainers().registerContainer(proxyClusterContainer);
     }

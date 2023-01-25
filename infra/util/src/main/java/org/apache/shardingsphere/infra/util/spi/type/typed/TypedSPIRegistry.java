@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -33,32 +35,44 @@ import java.util.Properties;
 public final class TypedSPIRegistry {
     
     /**
-     * Find registered service.
+     * Judge whether contains service.
+     * 
+     * @param spiClass typed SPI class
+     * @param type type
+     * @param <T> SPI class type
+     * @return contains or not
+     */
+    public static <T extends TypedSPI> boolean contains(final Class<T> spiClass, final String type) {
+        return ShardingSphereServiceLoader.getServiceInstances(spiClass).stream().anyMatch(each -> matchesType(type, each));
+    }
+    
+    /**
+     * Find service.
      *
      * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 return Optional.of(each);
             }
         }
-        return Optional.empty();
+        return getRequiredSPI(spiClass);
     }
     
     /**
-     * Find registered service.
+     * Find service.
      *
      * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 Properties stringTypeProps = convertToStringTypedProperties(props);
@@ -68,7 +82,7 @@ public final class TypedSPIRegistry {
                 return Optional.of(each);
             }
         }
-        return Optional.empty();
+        return getRequiredSPI(spiClass);
     }
     
     private static boolean matchesType(final String type, final TypedSPI instance) {
@@ -85,35 +99,32 @@ public final class TypedSPIRegistry {
     }
     
     /**
-     * Get registered service.
+     * Get service.
      *
      * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type) {
-        Optional<T> result = findRegisteredService(spiClass, type);
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new ServiceProviderNotFoundServerException(spiClass, type);
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type) {
+        return findService(spiClass, type).orElseGet(() -> getRequiredSPI(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
     }
     
     /**
-     * Get registered service.
+     * Get service.
      * 
      * @param spiClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> SPI class type
-     * @return registered service
+     * @return service
      */
-    public static <T extends TypedSPI> T getRegisteredService(final Class<T> spiClass, final String type, final Properties props) {
-        Optional<T> result = findRegisteredService(spiClass, type, props);
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new ServiceProviderNotFoundServerException(spiClass, type);
+    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
+        return findService(spiClass, type, props).orElseGet(() -> getRequiredSPI(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static <T extends TypedSPI> Optional<T> getRequiredSPI(final Class<T> spiClass) {
+        return RequiredSPI.class.isAssignableFrom(spiClass) ? Optional.of((T) RequiredSPIRegistry.getService((Class<? extends RequiredSPI>) spiClass)) : Optional.empty();
     }
 }

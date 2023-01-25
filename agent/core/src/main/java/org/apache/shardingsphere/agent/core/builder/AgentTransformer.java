@@ -23,16 +23,16 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptChainEngine;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.MethodAdvisorBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.TargetAdviceObjectBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
-import org.apache.shardingsphere.agent.core.plugin.jar.PluginJar;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
-import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 /**
  * Agent transformer.
@@ -42,7 +42,7 @@ public final class AgentTransformer implements Transformer {
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
-    private final Collection<PluginJar> pluginJars;
+    private final Collection<JarFile> pluginJars;
     
     private final Map<String, AdvisorConfiguration> advisorConfigs;
     
@@ -55,7 +55,7 @@ public final class AgentTransformer implements Transformer {
             return builder;
         }
         ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
-        PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getAgentClassLoader(), isEnhancedForProxy);
+        PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getPluginClassLoader(), isEnhancedForProxy);
         return AgentBuilderInterceptChainEngine.intercept(builder,
                 new TargetAdviceObjectBuilderInterceptor(), new MethodAdvisorBuilderInterceptor(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())));
     }

@@ -49,7 +49,7 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     
     @Override
     public DatabaseType getTrunkDatabaseType() {
-        return TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
+        return TypedSPIRegistry.getService(DatabaseType.class, "MySQL");
     }
     
     @Override

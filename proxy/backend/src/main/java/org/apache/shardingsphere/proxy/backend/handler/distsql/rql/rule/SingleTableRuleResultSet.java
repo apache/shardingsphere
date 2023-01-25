@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * Result set for show single table rule.
+ * Result set for show default single table storage unit.
  */
 public final class SingleTableRuleResultSet implements DatabaseDistSQLResultSet {
     

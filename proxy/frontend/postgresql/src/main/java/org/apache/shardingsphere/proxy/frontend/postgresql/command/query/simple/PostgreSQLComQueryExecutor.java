@@ -69,7 +69,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket comQueryPacket, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSql(), connectionSession);
     }
     
     @Override

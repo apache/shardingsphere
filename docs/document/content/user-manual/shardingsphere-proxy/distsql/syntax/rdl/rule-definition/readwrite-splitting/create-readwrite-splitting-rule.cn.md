@@ -64,7 +64,7 @@ value ::=
 
 - 支持创建静态读写分离规则和动态读写分离规则；
 - 动态读写分离规则依赖于数据库发现规则；
-- `loadBalancerType` 指定负载均衡算法类型，请参考负载均衡算法；
+- `loadBalancerType` 指定负载均衡算法类型，请参考[负载均衡算法](/cn/user-manual/common-config/builtin-algorithm/load-balance/)；
 - 重复的 `ruleName` 将无法被创建；
 - `ifNotExists` 子句用于避免出现 `Duplicate readwrite_splitting rule` 错误。
 
@@ -120,3 +120,4 @@ CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
 ### 相关链接
 
 - [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [负载均衡算法](/cn/user-manual/common-config/builtin-algorithm/load-balance/)

@@ -21,8 +21,8 @@ import net.bytebuddy.agent.builder.AgentBuilder.Listener;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory;
-import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 
 /**
  * Agent logging listener.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.agent.core.log.LoggerFactory.Logger;
 @SuppressWarnings("NullableProblems")
 public final class AgentLoggingListener implements Listener {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentLoggingListener.class);
+    private static final Logger LOGGER = AgentLoggerFactory.getLogger(AgentLoggingListener.class);
     
     @Override
     public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {

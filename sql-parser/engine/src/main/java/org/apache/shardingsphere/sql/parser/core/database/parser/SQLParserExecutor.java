@@ -52,7 +52,7 @@ public final class SQLParserExecutor {
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {
-        DatabaseTypedSQLParserFacade sqlParserFacade = TypedSPIRegistry.getRegisteredService(DatabaseTypedSQLParserFacade.class, databaseType);
+        DatabaseTypedSQLParserFacade sqlParserFacade = TypedSPIRegistry.getService(DatabaseTypedSQLParserFacade.class, databaseType);
         SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
         try {
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);

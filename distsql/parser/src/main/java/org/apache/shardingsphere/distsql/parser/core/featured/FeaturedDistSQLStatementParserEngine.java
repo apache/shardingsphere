@@ -60,7 +60,7 @@ public final class FeaturedDistSQLStatementParserEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
-        SQLVisitor visitor = TypedSPIRegistry.getRegisteredService(FeaturedDistSQLStatementParserFacade.class, featureType).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = TypedSPIRegistry.getService(FeaturedDistSQLStatementParserFacade.class, featureType).getVisitorClass().getDeclaredConstructor().newInstance();
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException(sql);
         }

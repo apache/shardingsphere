@@ -44,7 +44,7 @@ public final class ShowMigrationRuleResultSet implements DatabaseDistSQLResultSe
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = ((InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION")).showProcessConfiguration();
+        PipelineProcessConfiguration processConfig = ((InventoryIncrementalJobAPI) TypedSPIRegistry.getService(PipelineJobAPI.class, "MIGRATION")).showProcessConfiguration();
         Collection<Object> row = new LinkedList<>();
         row.add(getString(processConfig.getRead()));
         row.add(getString(processConfig.getWrite()));

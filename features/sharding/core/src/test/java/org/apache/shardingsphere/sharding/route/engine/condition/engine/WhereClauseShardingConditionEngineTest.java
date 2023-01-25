@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -71,7 +70,7 @@ public final class WhereClauseShardingConditionEngineTest {
     
     @Before
     public void setUp() {
-        shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")));
+        shardingConditionEngine = new WhereClauseShardingConditionEngine(ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")), shardingRule);
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.findTableNamesByColumnSegment(anyCollection(), any())).thenReturn(Maps.of("foo_sharding_col", "table_1"));

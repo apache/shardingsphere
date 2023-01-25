@@ -87,7 +87,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     protected final String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (TypedSPIRegistry.getRegisteredService(DatabaseType.class, getType()).isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
+        if (TypedSPIRegistry.getService(DatabaseType.class, getType()).isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(quote(schemaName)).append(".");
         }
         result.append(quote(tableName));

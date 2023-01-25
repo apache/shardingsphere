@@ -44,7 +44,7 @@ public final class UpdatableScalingRALBackendHandler implements ProxyBackendHand
     @Override
     public ResponseHeader execute() throws SQLException {
         String databaseName = getDatabaseName(connectionSession);
-        TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatement.getClass().getCanonicalName()).executeUpdate(databaseName, sqlStatement);
+        TypedSPIRegistry.getService(RALUpdater.class, sqlStatement.getClass().getCanonicalName()).executeUpdate(databaseName, sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
     

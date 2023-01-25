@@ -40,17 +40,17 @@ import static org.mockito.Mockito.when;
 
 public final class MySQLXAConnectionWrapperTest {
     
-    private final DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
+    private final DatabaseType databaseType = TypedSPIRegistry.getService(DatabaseType.class, "MySQL");
     
     @Test
     public void assertWrap() throws SQLException {
-        XAConnection actual = TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
+        XAConnection actual = TypedSPIRegistry.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
     }
     
     private XADataSource createXADataSource() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        return new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
+        return new DataSourceSwapper(TypedSPIRegistry.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
     }
     
     private Connection mockConnection() throws SQLException {

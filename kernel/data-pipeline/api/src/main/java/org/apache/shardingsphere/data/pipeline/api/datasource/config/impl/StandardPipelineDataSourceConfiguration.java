@@ -98,7 +98,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     }
     
     private void appendJdbcQueryProperties(final String databaseType, final Map<String, Object> yamlConfig) {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, databaseType);
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }

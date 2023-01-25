@@ -65,7 +65,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         String sql = String.format(SQL, packet.getTable(), databaseName);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL").getType()).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPIRegistry.getService(DatabaseType.class, "MySQL").getType()).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, databaseName);
         BackendConnection backendConnection = connectionSession.getBackendConnection();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());

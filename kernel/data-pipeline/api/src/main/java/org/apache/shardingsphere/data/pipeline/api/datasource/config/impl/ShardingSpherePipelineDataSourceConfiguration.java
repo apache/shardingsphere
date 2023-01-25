@@ -77,7 +77,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     private void appendJdbcQueryProperties(final String databaseType) {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, databaseType);
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }

@@ -54,7 +54,7 @@ public final class SQLExceptionTransformEngine {
             if (cause instanceof DatabaseProtocolException) {
                 return new DatabaseProtocolSQLException(cause.getMessage()).toSQLException();
             }
-            Optional<SQLDialectExceptionMapper> dialectExceptionMapper = TypedSPIRegistry.findRegisteredService(SQLDialectExceptionMapper.class, databaseType);
+            Optional<SQLDialectExceptionMapper> dialectExceptionMapper = TypedSPIRegistry.findService(SQLDialectExceptionMapper.class, databaseType);
             if (dialectExceptionMapper.isPresent()) {
                 return dialectExceptionMapper.get().convert((SQLDialectException) cause);
             }
