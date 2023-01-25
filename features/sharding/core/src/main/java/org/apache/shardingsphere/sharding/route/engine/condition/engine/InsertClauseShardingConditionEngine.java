@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKey
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
@@ -99,7 +99,7 @@ public final class InsertClauseShardingConditionEngine {
     private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames,
                                                       final InsertValueContext insertValueContext, final List<Object> params, final int rowNumber) {
         ShardingCondition result = new ShardingCondition();
-        DatetimeService datetimeService = null;
+        ShardingSphereTimeService timeService = null;
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             if (!columnNames.hasNext()) {
                 throw new InsertColumnsAndValuesMismatchedException(rowNumber);
@@ -117,10 +117,10 @@ public final class InsertClauseShardingConditionEngine {
             } else if (each instanceof CommonExpressionSegment) {
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
-                if (null == datetimeService) {
-                    datetimeService = RequiredSPIRegistry.getService(DatetimeService.class);
+                if (null == timeService) {
+                    timeService = RequiredSPIRegistry.getService(ShardingSphereTimeService.class);
                 }
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(timeService.getDatetime())));
             } else if (ExpressionConditionUtils.isNullExpression(each)) {
                 throw new NullShardingValueException();
             }

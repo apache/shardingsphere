@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
+import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
@@ -42,7 +42,7 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
     public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> params) {
         List<Comparable<?>> shardingConditionValues = new LinkedList<>();
         List<Integer> parameterMarkerIndexes = new ArrayList<>(predicate.getExpressionList().size());
-        DatetimeService datetimeService = RequiredSPIRegistry.getService(DatetimeService.class);
+        ShardingSphereTimeService timeService = RequiredSPIRegistry.getService(ShardingSphereTimeService.class);
         for (ExpressionSegment each : predicate.getExpressionList()) {
             ConditionValue conditionValue = new ConditionValue(each, params);
             Optional<Comparable<?>> value = conditionValue.getValue();
@@ -52,7 +52,7 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
                 continue;
             }
             if (ExpressionConditionUtils.isNowExpression(each)) {
-                shardingConditionValues.add(datetimeService.getDatetime());
+                shardingConditionValues.add(timeService.getDatetime());
             }
         }
         return shardingConditionValues.isEmpty() ? Optional.empty()
