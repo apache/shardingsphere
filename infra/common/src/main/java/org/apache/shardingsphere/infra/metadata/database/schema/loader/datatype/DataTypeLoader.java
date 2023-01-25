@@ -15,28 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.spi;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Data type loader.
  */
-@SingletonSPI
-public interface DataTypeLoader extends TypedSPI, RequiredSPI {
+public final class DataTypeLoader {
     
     /**
      * Load data type.
      *
      * @param databaseMetaData database meta data
+     * @param databaseType database type
      * @return data type map
      * @throws SQLException SQL exception
      */
-    Map<String, Integer> load(DatabaseMetaData databaseMetaData) throws SQLException;
+    public Map<String, Integer> load(final DatabaseMetaData databaseMetaData, final DatabaseType databaseType) throws SQLException {
+        Map<String, Integer> result = new StandardDataTypeLoader().load(databaseMetaData);
+        Optional<DialectDataTypeLoader> loader = TypedSPIRegistry.findService(DialectDataTypeLoader.class,
+                (databaseType instanceof BranchDatabaseType) ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType());
+        if (loader.isPresent()) {
+            result.putAll(loader.get().load());
+        }
+        return result;
+    }
 }

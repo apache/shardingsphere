@@ -15,38 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatype;
-
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
 
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * MySQL data type loader.
+ * Standard data type loader.
  */
-public final class MySQLDataTypeLoader extends AbstractDataTypeLoader {
+public final class StandardDataTypeLoader {
     
-    @Override
+    /**
+     * Load data type.
+     *
+     * @param databaseMetaData database meta data
+     * @return data type map
+     * @throws SQLException SQL exception
+     */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
-        Map<String, Integer> result = super.load(databaseMetaData);
-        result.putIfAbsent("JSON", Types.LONGVARCHAR);
-        result.putIfAbsent("GEOMETRY", Types.BINARY);
-        result.putIfAbsent("GEOMETRYCOLLECTION", Types.BINARY);
-        result.putIfAbsent("YEAR", Types.DATE);
-        result.putIfAbsent("POINT", Types.BINARY);
-        result.putIfAbsent("MULTIPOINT", Types.BINARY);
-        result.putIfAbsent("POLYGON", Types.BINARY);
-        result.putIfAbsent("MULTIPOLYGON", Types.BINARY);
-        result.putIfAbsent("LINESTRING", Types.BINARY);
-        result.putIfAbsent("MULTILINESTRING", Types.BINARY);
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
+            while (resultSet.next()) {
+                result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
+            }
+        }
         return result;
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
     }
 }

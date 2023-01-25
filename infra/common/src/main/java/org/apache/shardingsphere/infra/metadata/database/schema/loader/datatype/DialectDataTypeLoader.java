@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.annotation;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
 
-import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
- * ShardingSphere transactional annotation.
+ * Dialect data type loader.
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface ShardingSphereTransactionType {
+@SingletonSPI
+public interface DialectDataTypeLoader extends TypedSPI, RequiredSPI {
     
     /**
-     * Transaction type, include LOCAL, XA, BASE, default is LOCAL.
+     * Load data type.
      *
-     * @return transaction type
+     * @return data type map
+     * @throws SQLException SQL exception
      */
-    TransactionType value() default TransactionType.LOCAL;
+    Map<String, Integer> load() throws SQLException;
 }

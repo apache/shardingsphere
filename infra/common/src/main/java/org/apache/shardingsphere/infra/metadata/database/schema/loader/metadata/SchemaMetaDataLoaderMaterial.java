@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatype;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Map;
+import javax.sql.DataSource;
+import java.util.Collection;
 
 /**
- * Oracle data type loader.
+ * Schema meta data loader material.
  */
-public final class OracleDataTypeLoader extends AbstractDataTypeLoader {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaMetaDataLoaderMaterial {
     
-    @Override
-    public Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
-        Map<String, Integer> result = super.load(databaseMetaData);
-        result.putIfAbsent("NUMBER", Types.NUMERIC);
-        return result;
-    }
+    private final Collection<String> actualTableNames;
     
-    @Override
-    public String getType() {
-        return "Oracle";
-    }
+    private final DataSource dataSource;
+    
+    private final DatabaseType storageType;
+    
+    private final String defaultSchemaName;
 }

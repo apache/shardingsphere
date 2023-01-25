@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.spi;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;

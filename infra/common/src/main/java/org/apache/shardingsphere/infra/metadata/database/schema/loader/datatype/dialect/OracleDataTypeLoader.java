@@ -15,17 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.dialect;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DialectDataTypeLoader;
+
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Data type loader fixture.
+ * Oracle data type loader.
  */
-public final class DataTypeLoaderFixture extends AbstractDataTypeLoader {
+public final class OracleDataTypeLoader implements DialectDataTypeLoader {
+    
+    @Override
+    public Map<String, Integer> load() throws SQLException {
+        Map<String, Integer> result = new HashMap<>(1, 1);
+        result.putIfAbsent("NUMBER", Types.NUMERIC);
+        return result;
+    }
     
     @Override
     public String getType() {
-        return "INFRA.FIXTURE";
+        return "Oracle";
     }
 }
