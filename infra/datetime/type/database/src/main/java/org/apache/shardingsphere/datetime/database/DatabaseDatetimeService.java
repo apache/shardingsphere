@@ -58,4 +58,9 @@ public final class DatabaseDatetimeService implements DatetimeService {
             }
         }
     }
+    
+    @Override
+    public String getType() {
+        return "Database";
+    }
 }

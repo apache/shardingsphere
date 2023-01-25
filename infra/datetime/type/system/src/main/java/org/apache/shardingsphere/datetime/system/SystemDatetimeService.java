@@ -32,6 +32,11 @@ public final class SystemDatetimeService implements DatetimeService {
     }
     
     @Override
+    public String getType() {
+        return "System";
+    }
+    
+    @Override
     public boolean isDefault() {
         return true;
     }

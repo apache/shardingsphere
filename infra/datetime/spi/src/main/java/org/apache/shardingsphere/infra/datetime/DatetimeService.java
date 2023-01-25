@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.infra.datetime;
 
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Date;
 
 /**
  * Datetime service.
  */
-public interface DatetimeService extends RequiredSPI {
+public interface DatetimeService extends TypedSPI, RequiredSPI {
     
     /**
      * Get datetime.
