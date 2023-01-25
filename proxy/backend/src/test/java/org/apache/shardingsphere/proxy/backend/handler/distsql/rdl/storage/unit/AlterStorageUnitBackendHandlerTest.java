@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -43,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -55,13 +57,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
+public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private DataSourcePropertiesValidateHandler validateHandler;
     
     @Mock
-    private RegisterStorageUnitStatement registerStorageUnitStatement;
+    private AlterStorageUnitStatement alterStorageUnitStatement;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -73,18 +75,20 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereRuleMetaData ruleMetaData;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
-    private RegisterStorageUnitBackendHandler registerStorageUnitBackendHandler;
+    @Mock
+    private DataSource dataSource;
+    
+    private AlterStorageUnitBackendHandler alterStorageUnitBackendHandler;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
         when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        registerStorageUnitBackendHandler = new RegisterStorageUnitBackendHandler(registerStorageUnitStatement, connectionSession);
-        Plugins.getMemberAccessor().set(registerStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler"), registerStorageUnitBackendHandler, validateHandler);
+        alterStorageUnitBackendHandler = new AlterStorageUnitBackendHandler(alterStorageUnitStatement, connectionSession);
+        Plugins.getMemberAccessor().set(alterStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler"), alterStorageUnitBackendHandler, validateHandler);
     }
     
     @Test
@@ -92,52 +96,52 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        ResponseHeader responseHeader = registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
-        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
+        assertThat(alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test(expected = DuplicateStorageUnitException.class)
-    public void assertExecuteWithDuplicateStorageUnitNamesInStatement() {
+    public void assertExecuteWithDuplicateStorageUnitNames() {
+        alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatementWithDuplicateStorageUnitNames());
+    }
+    
+    @Test(expected = MissingRequiredStorageUnitsException.class)
+    public void assertExecuteWithNotExistedStorageUnitNames() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatementWithDuplicateStorageUnitNames());
-    }
-    
-    @Test(expected = DuplicateStorageUnitException.class)
-    public void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ProxyContext.init(contextManager);
-        when(contextManager.getDataSourceMap("test_db").keySet()).thenReturn(Collections.singleton("ds_0"));
-        registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
+        alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("not_existed"));
     }
     
     @Test(expected = InvalidStorageUnitsException.class)
-    public void assertExecuteWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
+    public void assertExecuteWithAlterDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        DataSourceContainedRule rule = mock(DataSourceContainedRule.class);
-        when(rule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
-        registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
+        ResponseHeader responseHeader = alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("ds_0"));
+        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test
-    public void assertCheckStatementWithIfNotExists() {
-        RegisterStorageUnitStatement registerStorageUnitStatementWithIfNotExists = new RegisterStorageUnitStatement(true, Collections.singleton(
-                new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "db_1", "root", "", new Properties())));
-        registerStorageUnitBackendHandler.checkSQLStatement("test_db", registerStorageUnitStatementWithIfNotExists);
+    private AlterStorageUnitStatement createAlterStorageUnitStatement(final String resourceName) {
+        return new AlterStorageUnitStatement(Collections.singleton(new URLBasedDataSourceSegment(resourceName, "jdbc:mysql://127.0.0.1:3306/ds_0", "root", "", new Properties())));
     }
     
-    private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
-        return new RegisterStorageUnitStatement(false, Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())));
-    }
-    
-    private RegisterStorageUnitStatement createRegisterStorageUnitStatementWithDuplicateStorageUnitNames() {
+    private AlterStorageUnitStatement createAlterStorageUnitStatementWithDuplicateStorageUnitNames() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         result.add(new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()));
         result.add(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties()));
-        return new RegisterStorageUnitStatement(false, result);
+        return new AlterStorageUnitStatement(result);
+    }
+    
+    private HikariDataSource mockHikariDataSource(final String database) {
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl(String.format("jdbc:mysql://127.0.0.1:3306/%s?serverTimezone=UTC&useSSL=false", database));
+        return result;
     }
 }

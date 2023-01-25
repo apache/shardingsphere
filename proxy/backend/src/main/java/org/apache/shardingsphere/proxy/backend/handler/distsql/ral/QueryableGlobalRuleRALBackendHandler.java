@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Queryable RAL backend handler for global rule.
  */
-public final class QueryableGlobalRuleRALBackendHandler implements ProxyBackendHandler {
+public final class QueryableGlobalRuleRALBackendHandler implements DistSQLBackendHandler {
     
     private final RALStatement sqlStatement;
     

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement;
+package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
 /**
- * DistSQL statement.
+ * DistSQL backend handler.
  */
-public abstract class DistSQLStatement extends AbstractSQLStatement {
+public interface DistSQLBackendHandler extends ProxyBackendHandler {
 }

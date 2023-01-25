@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
  * Register storage unit backend handler.
  */
 @Slf4j
-public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<RegisterStorageUnitStatement> implements StorageUnitBackendHandler<RegisterStorageUnitStatement> {
+public final class RegisterStorageUnitBackendHandler extends StorageUnitDefinitionBackendHandler<RegisterStorageUnitStatement> {
     
     private final DatabaseType databaseType;
     
