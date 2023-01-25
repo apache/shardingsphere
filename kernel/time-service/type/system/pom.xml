@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-time-service-spi</artifactId>
+            <artifactId>shardingsphere-time-service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
