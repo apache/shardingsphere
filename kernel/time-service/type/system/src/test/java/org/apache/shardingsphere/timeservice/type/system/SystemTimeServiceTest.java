@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.system;
+package org.apache.shardingsphere.timeservice.type.system;
 
-import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
+import org.junit.Test;
 
-import java.util.Date;
+import static org.junit.Assert.assertTrue;
 
-/**
- * System datetime service.
- */
-public final class SystemDatetimeService implements ShardingSphereTimeService {
+public final class SystemTimeServiceTest {
     
-    @Override
-    public Date getDatetime() {
-        return new Date();
+    @Test
+    public void assertGetDatetime() {
+        assertTrue(new SystemTimeService().getDatetime().getTime() <= System.currentTimeMillis());
     }
     
-    @Override
-    public String getType() {
-        return "System";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+    @Test
+    public void assertIsDefault() {
+        assertTrue(new SystemTimeService().isDefault());
     }
 }
