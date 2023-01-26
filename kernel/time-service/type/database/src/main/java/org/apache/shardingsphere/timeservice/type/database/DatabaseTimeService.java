@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database;
+package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.timeservice.database.config.DatabaseDatetimeServiceConfiguration;
-import org.apache.shardingsphere.timeservice.database.exception.DatetimeLoadingException;
-import org.apache.shardingsphere.timeservice.database.provider.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.timeservice.type.database.config.DatabaseDatetimeServiceConfiguration;
+import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeLoadingException;
+import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
@@ -32,9 +32,9 @@ import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * Database datetime service.
+ * Database time service.
  */
-public final class DatabaseDatetimeService implements ShardingSphereTimeService {
+public final class DatabaseTimeService implements ShardingSphereTimeService {
     
     private final DatabaseDatetimeServiceConfiguration timeServiceConfig = DatabaseDatetimeServiceConfiguration.getInstance();
     

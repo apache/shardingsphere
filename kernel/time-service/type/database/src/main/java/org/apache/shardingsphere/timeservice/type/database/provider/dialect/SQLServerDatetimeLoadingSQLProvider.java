@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database.provider.dialect;
+package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import org.apache.shardingsphere.timeservice.database.provider.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
 
 /**
  * Datetime loading SQL provider for SQLServer.

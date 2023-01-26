@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database.exception;
+package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import org.apache.shardingsphere.infra.exception.DataSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
 
 /**
- * Datetime configuration file not found exception.
+ * Datetime loading SQL provider for MySQL.
  */
-public final class DatetimeConfigurationFileNotFoundException extends DataSQLException {
+public final class MySQLDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
     
-    private static final long serialVersionUID = 4820838154441059833L;
+    @Override
+    public String getDatetimeLoadingSQL() {
+        return "SELECT NOW()";
+    }
     
-    public DatetimeConfigurationFileNotFoundException(final String configurationFile) {
-        super(XOpenSQLState.GENERAL_ERROR, 2, "Can not find `%s` file for datetime initialize.", configurationFile);
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

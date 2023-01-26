@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database.config;
+package org.apache.shardingsphere.timeservice.type.database.exception;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.exception.DataSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class DatabaseDatetimeServiceConfigurationTest {
+/**
+ * Datetime configuration file not found exception.
+ */
+public final class DatetimeConfigurationFileNotFoundException extends DataSQLException {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getStorageType().getType(), is("H2"));
-        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
+    private static final long serialVersionUID = 4820838154441059833L;
+    
+    public DatetimeConfigurationFileNotFoundException(final String configurationFile) {
+        super(XOpenSQLState.GENERAL_ERROR, 2, "Can not find `%s` file for datetime initialize.", configurationFile);
     }
 }

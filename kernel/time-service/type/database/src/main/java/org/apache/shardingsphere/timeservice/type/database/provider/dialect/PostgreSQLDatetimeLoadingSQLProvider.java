@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database;
+package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
-import org.junit.Test;
+import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
 
-import java.util.Date;
-
-import static org.junit.Assert.assertTrue;
-
-public final class DatabaseDatetimeServiceTest {
+/**
+ * Datetime loading SQL provider for PostgreSQL.
+ */
+public final class PostgreSQLDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
     
-    @Test
-    public void assertGetDatetime() {
-        Date currentDate = new Date();
-        ShardingSphereTimeService datetimeService = new DatabaseDatetimeService();
-        assertTrue(datetimeService.getDatetime().getTime() >= currentDate.getTime());
+    @Override
+    public String getDatetimeLoadingSQL() {
+        return "SELECT NOW()";
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }
