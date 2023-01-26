@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Database required backend handler.
+ * RDL backend handler.
  *
- * @param <T> type of SQL statement
+ * @param <T> type of RDL statement
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> implements DistSQLBackendHandler {
+public abstract class RDLBackendHandler<T extends RDLStatement> implements DistSQLBackendHandler {
     
     private final T sqlStatement;
     
