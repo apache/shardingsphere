@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -80,7 +81,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private Map<String, ReadwriteSplittingDataSourceRule> createReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                                   final Collection<ShardingSphereRule> builtRules) {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(
-                config.getName() + "." + config.getLoadBalancerName(), RequiredSPIRegistry.getService(ReadQueryLoadBalanceAlgorithm.class));
+                config.getName() + "." + config.getLoadBalancerName(), TypedSPIRegistry.getService(ReadQueryLoadBalanceAlgorithm.class, null, new Properties()));
         return null == config.getStaticStrategy()
                 ? createDynamicReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm)
                 : createStaticReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);
