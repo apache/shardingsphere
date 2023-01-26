@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,6 +64,8 @@ public final class WhereClauseShardingConditionEngine {
     private final ShardingSphereDatabase database;
     
     private final ShardingRule shardingRule;
+    
+    private final TimeServiceRule timeServiceRule;
     
     /**
      * Create sharding conditions.
@@ -114,7 +117,7 @@ public final class WhereClauseShardingConditionEngine {
                     continue;
                 }
                 Column column = new Column(shardingColumn.get(), tableName.get());
-                Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params);
+                Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params, timeServiceRule);
                 if (!shardingConditionValue.isPresent()) {
                     continue;
                 }

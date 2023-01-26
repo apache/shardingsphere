@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
@@ -62,16 +63,17 @@ public final class SQLCheckEngine {
      *
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters
+     * @param globalRuleMetaData global rule meta data
      * @param rules rules
      * @param currentDatabase current database
      * @param databases databases
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Collection<ShardingSphereRule> rules,
-                             final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
+    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final ShardingSphereRuleMetaData globalRuleMetaData,
+                             final Collection<ShardingSphereRule> rules, final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getServices(SQLChecker.class, rules).entrySet()) {
-            entry.getValue().check(sqlStatementContext, params, grantee, currentDatabase, databases, entry.getKey());
+            entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, currentDatabase, databases, entry.getKey());
         }
     }
     

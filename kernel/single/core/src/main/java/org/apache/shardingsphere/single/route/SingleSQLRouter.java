@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.SQLRouter;
@@ -54,7 +55,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final SingleRule rule,
+    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
         if (1 == database.getResourceMetaData().getDataSources().size()) {
             return createSingleDataSourceRouteContext(rule, database);

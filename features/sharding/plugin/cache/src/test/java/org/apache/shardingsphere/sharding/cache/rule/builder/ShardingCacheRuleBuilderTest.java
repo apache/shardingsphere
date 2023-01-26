@@ -22,9 +22,11 @@ import org.apache.shardingsphere.sharding.cache.api.ShardingCacheOptions;
 import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfiguration;
 import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -37,8 +39,9 @@ public final class ShardingCacheRuleBuilderTest {
     @Test
     public void assertBuildShardingCacheRule() {
         ShardingRule expectedShardingRule = mock(ShardingRule.class);
+        TimeServiceRule expectedTimeServiceRule = mock(TimeServiceRule.class);
         ShardingCacheRuleConfiguration expectedConfig = new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 1, 1));
-        DatabaseRule actual = new ShardingCacheRuleBuilder().build(expectedConfig, "", Collections.emptyMap(), Collections.singletonList(expectedShardingRule), null);
+        DatabaseRule actual = new ShardingCacheRuleBuilder().build(expectedConfig, "", Collections.emptyMap(), Arrays.asList(expectedShardingRule, expectedTimeServiceRule), null);
         assertThat(actual, instanceOf(ShardingCacheRule.class));
         ShardingCacheRule actualShardingCacheRule = (ShardingCacheRule) actual;
         assertThat(actualShardingCacheRule.getConfiguration(), is(expectedConfig));

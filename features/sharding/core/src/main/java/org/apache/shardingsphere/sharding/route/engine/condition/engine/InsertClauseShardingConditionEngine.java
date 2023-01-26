@@ -23,10 +23,8 @@ import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKey
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
@@ -38,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +57,8 @@ public final class InsertClauseShardingConditionEngine {
     private final ShardingSphereDatabase database;
     
     private final ShardingRule shardingRule;
+    
+    private final TimeServiceRule timeServiceRule;
     
     /**
      * Create sharding conditions.
@@ -99,7 +100,6 @@ public final class InsertClauseShardingConditionEngine {
     private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames,
                                                       final InsertValueContext insertValueContext, final List<Object> params, final int rowNumber) {
         ShardingCondition result = new ShardingCondition();
-        DatetimeService datetimeService = null;
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             if (!columnNames.hasNext()) {
                 throw new InsertColumnsAndValuesMismatchedException(rowNumber);
@@ -117,10 +117,7 @@ public final class InsertClauseShardingConditionEngine {
             } else if (each instanceof CommonExpressionSegment) {
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
-                if (null == datetimeService) {
-                    datetimeService = RequiredSPIRegistry.getService(DatetimeService.class);
-                }
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(datetimeService.getDatetime())));
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(timeServiceRule.getDatetime())));
             } else if (ExpressionConditionUtils.isNullExpression(each)) {
                 throw new NullShardingValueException();
             }
@@ -148,7 +145,7 @@ public final class InsertClauseShardingConditionEngine {
     
     private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> params) {
         SelectStatementContext selectStatementContext = sqlStatementContext.getInsertSelectContext().getSelectStatementContext();
-        return new LinkedList<>(new WhereClauseShardingConditionEngine(database, shardingRule).createShardingConditions(selectStatementContext, params));
+        return new LinkedList<>(new WhereClauseShardingConditionEngine(database, shardingRule, timeServiceRule).createShardingConditions(selectStatementContext, params));
     }
     
     private void appendGeneratedKeyConditions(final InsertStatementContext sqlStatementContext, final List<ShardingCondition> shardingConditions) {

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -62,7 +63,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     }
     
     @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
+    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
                       final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule rule) {
         if (null == grantee) {
             return;

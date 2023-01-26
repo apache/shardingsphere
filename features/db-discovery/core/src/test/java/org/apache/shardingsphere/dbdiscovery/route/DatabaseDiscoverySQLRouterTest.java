@@ -94,7 +94,8 @@ public final class DatabaseDiscoverySQLRouterTest {
         QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
-        RouteContext actual = sqlRouter.createRouteContext(queryContext, database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+        RouteContext actual = sqlRouter.createRouteContext(queryContext,
+                mock(ShardingSphereRuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }
@@ -116,7 +117,8 @@ public final class DatabaseDiscoverySQLRouterTest {
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
-        RouteContext actual = sqlRouter.createRouteContext(queryContext, database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+        RouteContext actual = sqlRouter.createRouteContext(queryContext,
+                mock(ShardingSphereRuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }
@@ -138,7 +140,8 @@ public final class DatabaseDiscoverySQLRouterTest {
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
-        RouteContext actual = sqlRouter.createRouteContext(queryContext, database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+        RouteContext actual = sqlRouter.createRouteContext(queryContext,
+                mock(ShardingSphereRuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(PRIMARY_DATA_SOURCE));
     }

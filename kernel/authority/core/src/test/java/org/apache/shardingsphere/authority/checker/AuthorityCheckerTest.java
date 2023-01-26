@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
@@ -78,8 +79,8 @@ public final class AuthorityCheckerTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
-        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
-        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
     }
 }

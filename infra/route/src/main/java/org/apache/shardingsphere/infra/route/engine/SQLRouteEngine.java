@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
@@ -47,15 +48,16 @@ public final class SQLRouteEngine {
      *
      * @param connectionContext connection context
      * @param queryContext query context
+     * @param globalRuleMetaData global rule meta data
      * @param database database
      * @return route context
      */
-    public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final ShardingSphereDatabase database) {
+    public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLRouteExecutor executor = isNeedAllSchemas(queryContext.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
-        return executor.route(connectionContext, queryContext, database);
+        return executor.route(connectionContext, queryContext, globalRuleMetaData, database);
     }
     
-    // TODO use dynamic config to judge UnconfiguredSchema
+    // TODO use dynamic config to judge unconfigured schema
     private boolean isNeedAllSchemas(final SQLStatement sqlStatement) {
         return sqlStatement instanceof MySQLShowTablesStatement || sqlStatement instanceof MySQLShowTableStatusStatement;
     }

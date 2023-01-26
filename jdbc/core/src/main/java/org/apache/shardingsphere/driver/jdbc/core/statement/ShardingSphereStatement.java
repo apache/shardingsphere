@@ -72,6 +72,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
@@ -171,7 +172,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, Statement::executeQuery);
             }
-            deciderContext = decide(queryContext, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
+            deciderContext = decide(queryContext,
+                    metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
             if (deciderContext.isUseSQLFederation()) {
                 return executeFederationQuery(queryContext);
             }
@@ -191,9 +193,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+    private static SQLFederationDeciderContext decide(final QueryContext queryContext,
+                                                      final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ShardingSphereDatabase database) {
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(queryContext, database);
+        return deciderEngine.decide(queryContext, globalRuleMetaData, database);
     }
     
     private Optional<String> getInstanceIdAndSet(final QueryContext queryContext) {
@@ -462,7 +465,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, actualSQL) -> callback.execute(actualSQL, statement));
             }
-            deciderContext = decide(queryContext, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
+            deciderContext = decide(queryContext,
+                    metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
             if (deciderContext.isUseSQLFederation()) {
                 ResultSet resultSet = executeFederationQuery(queryContext);
                 return null != resultSet;
@@ -518,7 +522,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) throws SQLException {
         clearStatements();
-        SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(),
+        SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
                 connection.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
         return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData(),

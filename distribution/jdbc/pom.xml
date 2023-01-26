@@ -37,7 +37,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-datetime</artifactId>
+            <artifactId>shardingsphere-database-time-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         

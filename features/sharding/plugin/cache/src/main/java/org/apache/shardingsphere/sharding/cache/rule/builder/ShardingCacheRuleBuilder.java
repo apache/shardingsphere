@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfigurati
 import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -40,7 +41,9 @@ public final class ShardingCacheRuleBuilder implements DatabaseRuleBuilder<Shard
                               final InstanceContext instanceContext) {
         ShardingRule shardingRule = (ShardingRule) builtRules.stream().filter(ShardingRule.class::isInstance).findFirst()
                 .orElseThrow(() -> new IllegalStateException("ShardingCacheRule requires ShardingRule"));
-        return new ShardingCacheRule(config, shardingRule);
+        TimeServiceRule timeServiceRule = (TimeServiceRule) builtRules.stream().filter(TimeServiceRule.class::isInstance).findFirst()
+                .orElseThrow(() -> new IllegalStateException("ShardingCacheRule requires TimeServiceRule"));
+        return new ShardingCacheRule(config, shardingRule, timeServiceRule);
     }
     
     @Override

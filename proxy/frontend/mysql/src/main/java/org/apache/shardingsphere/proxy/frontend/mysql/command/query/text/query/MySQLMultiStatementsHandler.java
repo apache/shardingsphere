@@ -125,7 +125,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {
-        SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(),
+        SQLCheckEngine.check(queryContext.getSqlStatementContext(), queryContext.getParameters(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
                 connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
         return kernelProcessor.generateExecutionContext(queryContext, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
