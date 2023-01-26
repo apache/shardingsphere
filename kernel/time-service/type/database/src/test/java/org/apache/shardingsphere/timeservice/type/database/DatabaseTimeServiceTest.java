@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
@@ -38,7 +37,7 @@ public final class DatabaseTimeServiceTest {
                 new Property("username", "sa"),
                 new Property("password", ""),
                 new Property("maximumPoolSize", "1"));
-        Date currentDate = new Date();
-        assertTrue(TypedSPIRegistry.getService(ShardingSphereTimeService.class, "Database", props).getDatetime().getTime() >= currentDate.getTime());
+        long currentTime = System.currentTimeMillis();
+        assertTrue(TypedSPIRegistry.getService(ShardingSphereTimeService.class, "Database", props).getDatetime().getTime() >= currentTime);
     }
 }

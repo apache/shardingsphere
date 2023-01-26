@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.timeservice.type.system;
 
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -25,11 +27,7 @@ public final class SystemTimeServiceTest {
     
     @Test
     public void assertGetDatetime() {
-        assertTrue(new SystemTimeService().getDatetime().getTime() <= System.currentTimeMillis());
-    }
-    
-    @Test
-    public void assertIsDefault() {
-        assertTrue(new SystemTimeService().isDefault());
+        long currentTime = System.currentTimeMillis();
+        assertTrue(TypedSPIRegistry.getService(ShardingSphereTimeService.class, null).getDatetime().getTime() >= currentTime);
     }
 }
