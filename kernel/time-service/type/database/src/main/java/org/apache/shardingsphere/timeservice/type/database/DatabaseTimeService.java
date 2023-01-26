@@ -17,32 +17,46 @@
 
 package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.timeservice.type.database.config.DatabaseDatetimeServiceConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeLoadingException;
 import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Database time service.
  */
 public final class DatabaseTimeService implements ShardingSphereTimeService {
     
-    private final DatabaseDatetimeServiceConfiguration timeServiceConfig = DatabaseDatetimeServiceConfiguration.getInstance();
+    private DataSource dataSource;
+    
+    private DatabaseType storageType;
+    
+    @Override
+    public void init(final Properties props) {
+        dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(
+                props.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue, (key, value) -> value))));
+        storageType = DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource));
+    }
     
     @Override
     public Date getDatetime() {
         try {
-            return loadDatetime(timeServiceConfig.getDataSource(),
-                    TypedSPIRegistry.getService(DatetimeLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(timeServiceConfig.getStorageType())).getDatetimeLoadingSQL());
+            return loadDatetime(dataSource, TypedSPIRegistry.getService(DatetimeLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(storageType)).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
             throw new DatetimeLoadingException(ex);
         }

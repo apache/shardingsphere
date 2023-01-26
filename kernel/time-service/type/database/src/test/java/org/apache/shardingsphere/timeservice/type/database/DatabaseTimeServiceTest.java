@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.timeservice.type.database;
 
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
@@ -28,8 +32,13 @@ public final class DatabaseTimeServiceTest {
     
     @Test
     public void assertGetDatetime() {
+        Properties props = PropertiesBuilder.build(
+                new Property("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource"),
+                new Property("jdbcUrl", "jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
+                new Property("username", "sa"),
+                new Property("password", ""),
+                new Property("maximumPoolSize", "1"));
         Date currentDate = new Date();
-        ShardingSphereTimeService datetimeService = new DatabaseTimeService();
-        assertTrue(datetimeService.getDatetime().getTime() >= currentDate.getTime());
+        assertTrue(TypedSPIRegistry.getService(ShardingSphereTimeService.class, "Database", props).getDatetime().getTime() >= currentDate.getTime());
     }
 }
