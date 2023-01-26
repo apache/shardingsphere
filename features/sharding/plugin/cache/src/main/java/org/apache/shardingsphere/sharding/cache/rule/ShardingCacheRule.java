@@ -20,9 +20,10 @@ package org.apache.shardingsphere.sharding.cache.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfiguration;
-import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCache;
 import org.apache.shardingsphere.sharding.cache.checker.ShardingRouteCacheableChecker;
+import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCache;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 /**
  * Sharding cache rule.
@@ -34,13 +35,16 @@ public final class ShardingCacheRule implements DatabaseRule {
     
     private final ShardingRule shardingRule;
     
+    private final TimeServiceRule timeServiceRule;
+    
     private final ShardingRouteCacheableChecker routeCacheableChecker;
     
     private final ShardingRouteCache routeCache;
     
-    public ShardingCacheRule(final ShardingCacheRuleConfiguration configuration, final ShardingRule shardingRule) {
+    public ShardingCacheRule(final ShardingCacheRuleConfiguration configuration, final ShardingRule shardingRule, final TimeServiceRule timeServiceRule) {
         this.configuration = configuration;
         this.shardingRule = shardingRule;
+        this.timeServiceRule = timeServiceRule;
         routeCacheableChecker = new ShardingRouteCacheableChecker(this);
         routeCache = new ShardingRouteCache(configuration.getRouteCache());
     }

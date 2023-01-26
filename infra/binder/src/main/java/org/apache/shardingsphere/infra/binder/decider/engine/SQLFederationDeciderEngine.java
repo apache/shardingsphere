@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
@@ -52,11 +53,12 @@ public final class SQLFederationDeciderEngine {
      * Decide.
      * 
      * @param queryContext query context
+     * @param globalRuleMetaData global rule meta data
      * @param database ShardingSphere database
      * @return SQL federation decider context
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public SQLFederationDeciderContext decide(final QueryContext queryContext, final ShardingSphereDatabase database) {
+    public SQLFederationDeciderContext decide(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         // TODO move this logic to SQLFederationDecider implement class when we remove sqlFederationEnabled
@@ -70,7 +72,7 @@ public final class SQLFederationDeciderEngine {
         }
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
             if (!result.isUseSQLFederation()) {
-                entry.getValue().decide(result, queryContext, database, entry.getKey(), props);
+                entry.getValue().decide(result, queryContext, globalRuleMetaData, database, entry.getKey(), props);
             }
         }
         return result;

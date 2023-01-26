@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -44,7 +45,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     }
     
     @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
+    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
                       final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {
@@ -56,7 +57,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
                 if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {
-                    rule.getAuditors().get(auditorName).check(sqlStatementContext, params, grantee, databases.get(currentDatabase.toLowerCase()));
+                    rule.getAuditors().get(auditorName).check(sqlStatementContext, params, grantee, globalRuleMetaData, databases.get(currentDatabase.toLowerCase()));
                 }
             }
         }

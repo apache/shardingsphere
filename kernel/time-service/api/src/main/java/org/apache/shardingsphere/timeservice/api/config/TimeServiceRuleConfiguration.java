@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 import java.util.Properties;
 
 /**
- * Time service configuration.
+ * Time service rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
