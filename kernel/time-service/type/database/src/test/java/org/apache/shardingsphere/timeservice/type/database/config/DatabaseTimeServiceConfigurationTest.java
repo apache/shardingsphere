@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database.provider;
+package org.apache.shardingsphere.timeservice.type.database.config;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import com.zaxxer.hikari.HikariDataSource;
+import org.junit.Test;
 
-/**
- * Datetime loading SQL provider.
- */
-@SingletonSPI
-public interface DatetimeLoadingSQLProvider extends TypedSPI {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class DatabaseTimeServiceConfigurationTest {
     
-    /**
-     * Get SQL for datetime loading.
-     *
-     * @return SQL for datetime loading
-     */
-    String getDatetimeLoadingSQL();
+    @Test
+    public void assertGetInstance() {
+        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getStorageType().getType(), is("H2"));
+        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
+    }
 }

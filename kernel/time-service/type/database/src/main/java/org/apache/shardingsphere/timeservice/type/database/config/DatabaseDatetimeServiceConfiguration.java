@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database.config;
+package org.apache.shardingsphere.timeservice.type.database.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.timeservice.database.exception.DatetimeConfigurationFileNotFoundException;
+import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeConfigurationFileNotFoundException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;

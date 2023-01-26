@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database.exception;
+package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
+import org.junit.Test;
 
-import java.sql.SQLException;
+import java.util.Date;
 
-/**
- * Datetime loading exception.
- */
-public final class DatetimeLoadingException extends ConnectionSQLException {
+import static org.junit.Assert.assertTrue;
+
+public final class DatabaseTimeServiceTest {
     
-    private static final long serialVersionUID = 7844267165522132993L;
-    
-    public DatetimeLoadingException(final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 90, "Load datetime from database failed, reason: %s", cause.getMessage());
+    @Test
+    public void assertGetDatetime() {
+        Date currentDate = new Date();
+        ShardingSphereTimeService datetimeService = new DatabaseTimeService();
+        assertTrue(datetimeService.getDatetime().getTime() >= currentDate.getTime());
     }
 }

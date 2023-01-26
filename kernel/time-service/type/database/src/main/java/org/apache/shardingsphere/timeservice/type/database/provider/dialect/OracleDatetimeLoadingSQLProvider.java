@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.database.provider.dialect;
+package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import org.apache.shardingsphere.timeservice.database.provider.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
 
 /**
- * Datetime loading SQL provider for PostgreSQL.
+ * Datetime loading SQL provider for Oracle.
  */
-public final class PostgreSQLDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
+public final class OracleDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
     
     @Override
     public String getDatetimeLoadingSQL() {
-        return "SELECT NOW()";
+        return "SELECT sysdate FROM DUAL";
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "Oracle";
     }
 }
