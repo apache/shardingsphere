@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.required.DefaultSPILoader;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -125,6 +125,6 @@ public final class TypedSPIRegistry {
     
     @SuppressWarnings("unchecked")
     private static <T extends TypedSPI> Optional<T> getRequiredSPI(final Class<T> spiClass) {
-        return RequiredSPI.class.isAssignableFrom(spiClass) ? Optional.of((T) RequiredSPIRegistry.getService((Class<? extends RequiredSPI>) spiClass)) : Optional.empty();
+        return RequiredSPI.class.isAssignableFrom(spiClass) ? Optional.of((T) DefaultSPILoader.getService((Class<? extends RequiredSPI>) spiClass)) : Optional.empty();
     }
 }

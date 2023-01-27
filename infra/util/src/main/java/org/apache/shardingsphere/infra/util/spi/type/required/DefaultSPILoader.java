@@ -27,27 +27,27 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Required SPI registry.
+ * Default SPI loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RequiredSPIRegistry {
+public final class DefaultSPILoader {
     
     /**
      * Get service.
      *
-     * @param spiClass required SPI class
+     * @param spiClass SPI class
      * @param <T> SPI class type
      * @return service
      */
     public static <T extends RequiredSPI> T getService(final Class<T> spiClass) {
-        T result = getRequiredService(spiClass);
+        T result = getDefaultService(spiClass);
         if (result instanceof SPIPostProcessor) {
             ((SPIPostProcessor) result).init(new Properties());
         }
         return result;
     }
     
-    private static <T extends RequiredSPI> T getRequiredService(final Class<T> spiClass) {
+    private static <T extends RequiredSPI> T getDefaultService(final Class<T> spiClass) {
         Collection<T> services = ShardingSphereServiceLoader.getServiceInstances(spiClass);
         if (services.isEmpty()) {
             throw new ServiceProviderNotFoundServerException(spiClass);

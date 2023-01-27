@@ -32,28 +32,28 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class RequiredSPIRegistryTest {
+public final class DefaultSPILoaderTest {
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
     public void assertRegisteredServiceWithEmptyImplementation() {
-        RequiredSPIRegistry.getService(EmptyRequiredSPIFixture.class);
+        DefaultSPILoader.getService(EmptyRequiredSPIFixture.class);
     }
     
     @Test
     public void assertRegisteredServiceWithOneImplementation() {
-        SingleRequiredSPIFixture actual = RequiredSPIRegistry.getService(SingleRequiredSPIFixture.class);
+        SingleRequiredSPIFixture actual = DefaultSPILoader.getService(SingleRequiredSPIFixture.class);
         assertThat(actual, instanceOf(SingleRequiredSPIFixtureImpl.class));
         assertTrue(((SingleRequiredSPIFixtureImpl) actual).isInitialized());
     }
     
     @Test
     public void assertRegisteredServiceWithMoreImplementationsAndWithDefaultImplementation() {
-        assertThat(RequiredSPIRegistry.getService(MultipleWithDefaultRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
+        assertThat(DefaultSPILoader.getService(MultipleWithDefaultRequiredSPIFixture.class), instanceOf(DefaultMultipleRequiredSPIFixtureImpl.class));
     }
     
     @Test
     public void assertRegisteredServiceWithMoreImplementationsAndWithoutDefaultImplementation() {
-        MultipleWithoutDefaultRequiredSPIFixture actual = RequiredSPIRegistry.getService(MultipleWithoutDefaultRequiredSPIFixture.class);
+        MultipleWithoutDefaultRequiredSPIFixture actual = DefaultSPILoader.getService(MultipleWithoutDefaultRequiredSPIFixture.class);
         assertTrue(actual instanceof FooNotDefaultMultipleRequiredSPIFixtureImpl || actual instanceof BarNotDefaultMultipleRequiredSPIFixtureImpl);
     }
 }
