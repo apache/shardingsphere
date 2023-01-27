@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
-import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -73,10 +72,7 @@ public final class TypedSPIRegistry {
     public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
-                Properties stringTypeProps = convertToStringTypedProperties(props);
-                if (each instanceof SPIPostProcessor) {
-                    ((SPIPostProcessor) each).init(stringTypeProps);
-                }
+                each.init(convertToStringTypedProperties(props));
                 return Optional.of(each);
             }
         }
@@ -126,9 +122,7 @@ public final class TypedSPIRegistry {
             if (!each.isDefault()) {
                 continue;
             }
-            if (each instanceof SPIPostProcessor) {
-                ((SPIPostProcessor) each).init(new Properties());
-            }
+            each.init(new Properties());
             return Optional.of(each);
         }
         return Optional.empty();

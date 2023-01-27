@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.mode.repository.standalone;
 
-import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 /**
  * Standalone persist repository.
  */
-public interface StandalonePersistRepository extends PersistRepository, SPIPostProcessor {
+public interface StandalonePersistRepository extends PersistRepository {
 }
