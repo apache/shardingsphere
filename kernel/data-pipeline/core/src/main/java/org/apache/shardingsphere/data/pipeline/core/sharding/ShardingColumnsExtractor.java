@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.data.pipeline;
+package org.apache.shardingsphere.data.pipeline.core.sharding;
 
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -37,11 +36,17 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Sharding columns extractor implementation.
+ * Sharding columns extractor.
  */
-public final class ShardingColumnsExtractorImpl implements ShardingColumnsExtractor {
+public final class ShardingColumnsExtractor {
     
-    @Override
+    /**
+     * Get sharding columns map.
+     *
+     * @param yamlRuleConfigs YAML rule configurations
+     * @param logicTableNames logic table names
+     * @return sharding columns map
+     */
     public Map<LogicTableName, Set<String>> getShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Set<LogicTableName> logicTableNames) {
         ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
         Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultDatabaseShardingStrategy());
@@ -77,10 +82,5 @@ public final class ShardingColumnsExtractorImpl implements ShardingColumnsExtrac
             return new HashSet<>(Arrays.asList(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(",")));
         }
         return Collections.emptySet();
-    }
-    
-    @Override
-    public String getType() {
-        return "Sharding";
     }
 }
