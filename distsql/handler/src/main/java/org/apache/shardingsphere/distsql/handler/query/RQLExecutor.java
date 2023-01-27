@@ -43,7 +43,7 @@ public interface RQLExecutor<T extends RQLStatement> extends TypedSPI {
      * 
      * @param shardingSphereDatabase ShardingSphere database
      * @param sqlStatement SQL statement
-     * @return  query result rows
+     * @return query result rows
      */
     Collection<LocalDataQueryResultRow> getRows(ShardingSphereDatabase shardingSphereDatabase, T sqlStatement);
 }
