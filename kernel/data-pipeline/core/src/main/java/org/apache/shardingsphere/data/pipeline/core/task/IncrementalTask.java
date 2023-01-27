@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -78,7 +78,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         IngestPosition<?> position = dumperConfig.getPosition();
         taskProgress = createIncrementalTaskProgress(position, jobItemContext.getInitProgress());
         channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
-        dumper = TypedSPIRegistry.getService(
+        dumper = TypedSPILoader.getService(
                 IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType()).createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, importerConnector, channel, jobItemContext);
     }
@@ -97,7 +97,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
                                                  final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < concurrency; i++) {
-            result.add(TypedSPIRegistry.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
+            result.add(TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
                     ImporterType.INCREMENTAL));
         }
         return result;

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.enums.SQLFederationTypeEnum;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
@@ -42,7 +42,7 @@ public final class SQLFederationRule implements GlobalRule {
     
     public SQLFederationRule(final SQLFederationRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        sqlFederationExecutor = TypedSPIRegistry.getService(SQLFederationExecutor.class, configuration.getSqlFederationType());
+        sqlFederationExecutor = TypedSPILoader.getService(SQLFederationExecutor.class, configuration.getSqlFederationType());
     }
     
     /**
@@ -62,7 +62,7 @@ public final class SQLFederationRule implements GlobalRule {
         Preconditions.checkArgument(SQLFederationTypeEnum.isValidSQLFederationType(sqlFederationType), "%s is not a valid sqlFederationType.", sqlFederationType);
         if (!configuration.getSqlFederationType().equals(sqlFederationType)) {
             configuration.setSqlFederationType(sqlFederationType);
-            sqlFederationExecutor = TypedSPIRegistry.getService(SQLFederationExecutor.class, configuration.getSqlFederationType());
+            sqlFederationExecutor = TypedSPILoader.getService(SQLFederationExecutor.class, configuration.getSqlFederationType());
         }
         sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor, eventBusContext);
         return sqlFederationExecutor;

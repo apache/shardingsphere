@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -142,15 +142,15 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
         when(backendConnection.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
         SQLFederationExecutor federationExecutor = mock(SQLFederationExecutor.class);
         try (
-                MockedStatic<TypedSPIRegistry> typedSPIRegistry = mockStatic(TypedSPIRegistry.class);
+                MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class);
                 MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
             when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationExecutorContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
-            typedSPIRegistry.when(() -> TypedSPIRegistry.getService(SQLFederationExecutor.class, "NONE")).thenReturn(federationExecutor);
-            typedSPIRegistry.when(() -> TypedSPIRegistry.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new MySQLQueryHeaderBuilder());
+            typedSPILoader.when(() -> TypedSPILoader.getService(SQLFederationExecutor.class, "NONE")).thenReturn(federationExecutor);
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new MySQLQueryHeaderBuilder());
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
             SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration("ORIGINAL"));
             when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);

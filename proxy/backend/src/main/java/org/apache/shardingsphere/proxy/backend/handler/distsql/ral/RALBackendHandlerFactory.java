@@ -49,7 +49,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInsta
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableScalingRALBackendHandler;
@@ -125,17 +125,17 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
             return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement,
-                    (DatabaseDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
+                    (DatabaseDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
             return new QueryableGlobalRuleRALBackendHandler(sqlStatement,
-                    (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
+                    (GlobalRuleDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
-            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPIRegistry.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName()));
+            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName()));
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }

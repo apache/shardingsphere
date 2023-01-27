@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -63,7 +63,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPIRegistry.getService(DatabaseType.class, "openGauss"));
+            Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPILoader.getService(DatabaseType.class, "openGauss"));
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
             Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, tables, schemaNames);
             Collection<SchemaMetaData> result = new LinkedList<>();
@@ -98,7 +98,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
                                                                                 final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPIRegistry.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
             Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             while (resultSet.next()) {
                 String tableName = resultSet.getString("table_name");

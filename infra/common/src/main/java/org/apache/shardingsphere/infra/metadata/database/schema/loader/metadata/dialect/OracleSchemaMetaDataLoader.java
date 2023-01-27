@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -76,7 +76,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1);
-        try (Connection connection = new MetaDataLoaderConnectionAdapter(TypedSPIRegistry.getService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {
+        try (Connection connection = new MetaDataLoaderConnectionAdapter(TypedSPILoader.getService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {
             for (List<String> each : Lists.partition(new ArrayList<>(tables), MAX_EXPRESSION_SIZE)) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
                 indexMetaDataMap.putAll(loadIndexMetaData(connection, each));
@@ -93,7 +93,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
-            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPIRegistry.getService(DatabaseType.class, getType()));
+            Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

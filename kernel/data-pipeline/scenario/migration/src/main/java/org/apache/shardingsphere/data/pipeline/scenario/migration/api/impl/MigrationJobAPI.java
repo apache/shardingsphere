@@ -86,7 +86,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -195,7 +195,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
         CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig);
         DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceResourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
-        Map<LogicTableName, Set<String>> shardingColumnsMap = TypedSPIRegistry.getService(ShardingColumnsExtractor.class, "Sharding").getShardingColumnsMap(
+        Map<LogicTableName, Set<String>> shardingColumnsMap = TypedSPILoader.getService(ShardingColumnsExtractor.class, "Sharding").getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), Collections.singleton(new LogicTableName(jobConfig.getTargetTableName())));
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, tableNameSchemaNameMapping);
         return new MigrationTaskConfiguration(jobConfig.getSourceResourceName(), createTableConfig, dumperConfig, importerConfig);
@@ -203,7 +203,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig) {
         String sourceSchemaName = jobConfig.getSourceSchemaName();
-        String targetSchemaName = TypedSPIRegistry.getService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
+        String targetSchemaName = TypedSPILoader.getService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
         CreateTableEntry createTableEntry = new CreateTableEntry(
                 jobConfig.getSource(), new SchemaTableName(new SchemaName(sourceSchemaName), new TableName(jobConfig.getSourceTableName())),
                 jobConfig.getTarget(), new SchemaTableName(new SchemaName(targetSchemaName), new TableName(jobConfig.getTargetTableName())));
@@ -257,7 +257,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         super.startDisabledJob(jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                TypedSPIRegistry.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").startDisabledJob(optional);
+                TypedSPILoader.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").startDisabledJob(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -270,7 +270,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     public void stop(final String jobId) {
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                TypedSPIRegistry.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").stop(optional);
+                TypedSPILoader.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").stop(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -311,7 +311,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         String targetTableName = jobConfig.getTargetTableName();
         // TODO use jobConfig.targetSchemaName
         String targetSchemaName = jobConfig.getSourceSchemaName();
-        PipelineSQLBuilder pipelineSQLBuilder = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType());
+        PipelineSQLBuilder pipelineSQLBuilder = TypedSPILoader.getService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType());
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {

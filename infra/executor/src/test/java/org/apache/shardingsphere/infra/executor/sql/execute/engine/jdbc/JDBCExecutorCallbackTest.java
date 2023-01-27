@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Before;
@@ -78,7 +78,7 @@ public final class JDBCExecutorCallbackTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        DatabaseType databaseType = TypedSPIRegistry.getService(DatabaseType.class, "MySQL");
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(databaseType, Collections.singletonMap("ds", databaseType), mock(SelectStatement.class), true,
                 new EventBusContext()) {
             
@@ -104,8 +104,8 @@ public final class JDBCExecutorCallbackTest {
     public void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
         JDBCExecutorCallback<Object> callback =
-                new JDBCExecutorCallback<Object>(TypedSPIRegistry.getService(DatabaseType.class, "MySQL"),
-                        Collections.singletonMap("ds", TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL")), mock(SelectStatement.class), true, new EventBusContext()) {
+                new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
+                        Collections.singletonMap("ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), mock(SelectStatement.class), true, new EventBusContext()) {
                     
                     @Override
                     protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
@@ -124,8 +124,8 @@ public final class JDBCExecutorCallbackTest {
     @Test(expected = SQLException.class)
     public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() throws SQLException {
         JDBCExecutorCallback<Object> callback =
-                new JDBCExecutorCallback<Object>(TypedSPIRegistry.getService(DatabaseType.class, "MySQL"),
-                        Collections.singletonMap("ds", TypedSPIRegistry.getService(DatabaseType.class, "PostgreSQL")), mock(SelectStatement.class), true, new EventBusContext()) {
+                new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
+                        Collections.singletonMap("ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), mock(SelectStatement.class), true, new EventBusContext()) {
                     
                     @Override
                     protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {

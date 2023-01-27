@@ -26,10 +26,10 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Typed SPI registry.
+ * Typed SPI loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TypedSPIRegistry {
+public final class TypedSPILoader {
     
     /**
      * Judge whether contains service.

@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ public final class PipelineDataSourceFactory {
      */
     @SneakyThrows(SQLException.class)
     public static PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration dataSourceConfig) {
-        DataSource pipelineDataSource = TypedSPIRegistry.getService(
+        DataSource pipelineDataSource = TypedSPILoader.getService(
                 PipelineDataSourceCreator.class, dataSourceConfig.getType()).createPipelineDataSource(dataSourceConfig.getDataSourceConfiguration());
         return new PipelineDataSourceWrapper(pipelineDataSource, dataSourceConfig.getDatabaseType());
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
@@ -38,6 +38,6 @@ public final class DatabaseTimeServiceTest {
                 new Property("password", ""),
                 new Property("maximumPoolSize", "1"));
         long currentTime = System.currentTimeMillis();
-        assertTrue(TypedSPIRegistry.getService(ShardingSphereTimeService.class, "Database", props).getDatetime().getTime() >= currentTime);
+        assertTrue(TypedSPILoader.getService(ShardingSphereTimeService.class, "Database", props).getDatetime().getTime() >= currentTime);
     }
 }

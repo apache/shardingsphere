@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -62,7 +62,7 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
     
     private void checkDiscoverTypeAndHeartbeat(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         Collection<String> invalidInput = currentRuleConfig.getDiscoveryTypes().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.contains(DatabaseDiscoveryProviderAlgorithm.class, each)).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(DatabaseDiscoveryProviderAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(DB_DISCOVERY.toLowerCase(), invalidInput));
         currentRuleConfig.getDataSources().forEach(each -> {
             if (!currentRuleConfig.getDiscoveryTypes().containsKey(each.getDiscoveryTypeName())) {

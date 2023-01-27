@@ -19,7 +19,7 @@ package org.apache.shardingsphere.timeservice.core.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 
@@ -38,7 +38,7 @@ public final class TimeServiceRule implements GlobalRule {
     
     public TimeServiceRule(final TimeServiceRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        timeService = TypedSPIRegistry.getService(ShardingSphereTimeService.class, ruleConfig.getType(), null == ruleConfig.getProps() ? new Properties() : ruleConfig.getProps());
+        timeService = TypedSPILoader.getService(ShardingSphereTimeService.class, ruleConfig.getType(), null == ruleConfig.getProps() ? new Properties() : ruleConfig.getProps());
     }
     
     /**

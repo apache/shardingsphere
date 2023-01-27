@@ -32,35 +32,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public final class TypedSPIRegistryTest {
+public final class TypedSPILoaderTest {
     
     @Test
     public void assertFindServiceWithoutProperties() {
-        assertTrue(TypedSPIRegistry.findService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
+        assertTrue(TypedSPILoader.findService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
     }
     
     @Test
     public void assertFindServiceWithProperties() {
-        assertTrue(TypedSPIRegistry.findService(TypedSPIFixture.class, "TYPED.FIXTURE", new Properties()).isPresent());
+        assertTrue(TypedSPILoader.findService(TypedSPIFixture.class, "TYPED.FIXTURE", new Properties()).isPresent());
     }
     
     @Test
     public void assertGetServiceWithoutProperties() {
-        assertThat(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
+        assertThat(TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
     }
     
     @Test
     public void assertGetServiceWithProperties() {
-        assertThat(((TypedSPIFixtureImpl) TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
+        assertThat(((TypedSPIFixtureImpl) TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
     }
     
     @Test
     public void assertGetServiceWithAlias() {
-        assertNotNull(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.ALIAS"));
+        assertNotNull(TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.ALIAS"));
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
     public void assertGetServiceWhenTypeIsNotExist() {
-        TypedSPIRegistry.getService(TypedSPIFixture.class, "NOT_EXISTED");
+        TypedSPILoader.getService(TypedSPIFixture.class, "NOT_EXISTED");
     }
 }

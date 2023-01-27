@@ -49,7 +49,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collection;
@@ -193,8 +193,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("Algorithm type and job configuration are null."));
         return null == algorithmType
                 ? DataConsistencyCalculateAlgorithmChooser.choose(
-                        TypedSPIRegistry.getService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
-                        TypedSPIRegistry.getService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
+                        TypedSPILoader.getService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
+                        TypedSPILoader.getService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
                 : ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(algorithmType, algorithmProps), DataConsistencyCalculateAlgorithm.class);
     }
     

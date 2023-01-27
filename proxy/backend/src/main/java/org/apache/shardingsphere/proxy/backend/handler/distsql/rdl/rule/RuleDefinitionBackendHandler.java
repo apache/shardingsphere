@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStat
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -51,7 +51,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected ResponseHeader execute(final String databaseName, final T sqlStatement) {
-        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPIRegistry.getService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName());
+        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPILoader.getService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName());
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);

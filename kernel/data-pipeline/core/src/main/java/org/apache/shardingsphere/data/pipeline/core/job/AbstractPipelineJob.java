@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.Pipelin
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +60,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected void setJobId(final String jobId) {
         this.jobId = jobId;
-        jobAPI = TypedSPIRegistry.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
+        jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
     }
     
     protected void prepare(final PipelineJobItemContext jobItemContext) {

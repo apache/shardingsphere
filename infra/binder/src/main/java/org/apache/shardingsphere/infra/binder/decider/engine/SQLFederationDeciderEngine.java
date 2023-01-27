@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -46,7 +46,7 @@ public final class SQLFederationDeciderEngine {
     
     public SQLFederationDeciderEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
-        deciders = OrderedSPIRegistry.getServices(SQLFederationDecider.class, rules);
+        deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, rules);
     }
     
     /**

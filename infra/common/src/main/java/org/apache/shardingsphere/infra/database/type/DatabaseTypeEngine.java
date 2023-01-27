@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -101,7 +101,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getDatabaseType(final String url) {
         return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each))
-                .max(Comparator.comparing(each -> getMatchedUrlPrefixLength(each, url))).orElseGet(() -> TypedSPIRegistry.getService(DatabaseType.class, "SQL92"));
+                .max(Comparator.comparing(each -> getMatchedUrlPrefixLength(each, url))).orElseGet(() -> TypedSPILoader.getService(DatabaseType.class, "SQL92"));
     }
     
     /**
@@ -111,7 +111,7 @@ public final class DatabaseTypeEngine {
      * @return storage type
      */
     public static DatabaseType getStorageType(final Collection<DataSource> dataSources) {
-        return dataSources.isEmpty() ? TypedSPIRegistry.getService(DatabaseType.class, DEFAULT_DATABASE_TYPE) : getStorageType(dataSources.iterator().next());
+        return dataSources.isEmpty() ? TypedSPILoader.getService(DatabaseType.class, DEFAULT_DATABASE_TYPE) : getStorageType(dataSources.iterator().next());
     }
     
     private static DatabaseType getStorageType(final DataSource dataSource) {
@@ -142,7 +142,7 @@ public final class DatabaseTypeEngine {
      * @return trunk database type
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
-        DatabaseType databaseType = TypedSPIRegistry.getService(DatabaseType.class, name);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, name);
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : databaseType;
     }
     

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -118,7 +118,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
             return;
         }
         stringBuilder.append("rules:").append(System.lineSeparator());
-        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet()) {
+        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet()) {
             if (checkRuleConfigIsEmpty(entry.getKey())) {
                 continue;
             }

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpda
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -108,7 +108,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
         Map<String, List<DatabaseDiscoveryRuleSegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
         Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryRuleSegment.class.getSimpleName(), Collections.emptyList()).stream()
                 .map(each -> each.getDiscoveryType().getName()).distinct()
-                .filter(each -> !TypedSPIRegistry.contains(DatabaseDiscoveryProviderAlgorithm.class, each)).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(DatabaseDiscoveryProviderAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
     }
     
