@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
@@ -28,7 +27,7 @@ import java.util.Map;
  * Dialect data type loader.
  */
 @SingletonSPI
-public interface DialectDataTypeLoader extends TypedSPI, RequiredSPI {
+public interface DialectDataTypeLoader extends TypedSPI {
     
     /**
      * Load data type.

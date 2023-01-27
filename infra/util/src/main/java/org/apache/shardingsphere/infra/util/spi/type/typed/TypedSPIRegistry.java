@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -60,7 +58,7 @@ public final class TypedSPIRegistry {
                 return Optional.of(each);
             }
         }
-        return getRequiredSPI(spiClass);
+        return getService(spiClass);
     }
     
     /**
@@ -82,7 +80,7 @@ public final class TypedSPIRegistry {
                 return Optional.of(each);
             }
         }
-        return getRequiredSPI(spiClass);
+        return getService(spiClass);
     }
     
     private static boolean matchesType(final String type, final TypedSPI instance) {
@@ -107,7 +105,7 @@ public final class TypedSPIRegistry {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type) {
-        return findService(spiClass, type).orElseGet(() -> getRequiredSPI(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
+        return findService(spiClass, type).orElseGet(() -> getService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
     }
     
     /**
@@ -120,11 +118,19 @@ public final class TypedSPIRegistry {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
-        return findService(spiClass, type, props).orElseGet(() -> getRequiredSPI(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
+        return findService(spiClass, type, props).orElseGet(() -> getService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
     }
     
-    @SuppressWarnings("unchecked")
-    private static <T extends TypedSPI> Optional<T> getRequiredSPI(final Class<T> spiClass) {
-        return RequiredSPI.class.isAssignableFrom(spiClass) ? Optional.of((T) RequiredSPIRegistry.getService((Class<? extends RequiredSPI>) spiClass)) : Optional.empty();
+    private static <T extends TypedSPI> Optional<T> getService(final Class<T> spiClass) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
+            if (!each.isDefault()) {
+                continue;
+            }
+            if (each instanceof SPIPostProcessor) {
+                ((SPIPostProcessor) each).init(new Properties());
+            }
+            return Optional.of(each);
+        }
+        return Optional.empty();
     }
 }

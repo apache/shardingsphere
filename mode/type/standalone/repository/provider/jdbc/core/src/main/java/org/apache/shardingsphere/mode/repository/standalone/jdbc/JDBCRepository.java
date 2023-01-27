@@ -195,4 +195,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public String getType() {
         return "JDBC";
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
