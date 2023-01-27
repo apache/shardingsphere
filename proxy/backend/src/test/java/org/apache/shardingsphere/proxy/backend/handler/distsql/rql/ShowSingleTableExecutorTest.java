@@ -67,9 +67,9 @@ public final class ShowSingleTableExecutorTest {
     
     @Test
     public void assertGetRowData() {
-        RQLExecutor<ShowSingleTableStatement> resultSet = new ShowSingleTableExecutor();
-        resultSet.getRows(database, mock(ShowSingleTableStatement.class));
-        Collection<LocalDataQueryResultRow> actual = resultSet.getRows(database, mock(ShowSingleTableStatement.class));
+        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
+        executor.getRows(database, mock(ShowSingleTableStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow firstRow = rowData.next();
@@ -86,8 +86,8 @@ public final class ShowSingleTableExecutorTest {
         singleTableDataNodeMap.put("t_order_multiple", Collections.singletonList(new DataNode("ds_1_multiple", "t_order_multiple")));
         singleTableDataNodeMap.put("t_order_item_multiple", Collections.singletonList(new DataNode("ds_2_multiple", "t_order_item_multiple")));
         addShardingSphereRule(mockSingleTableRule(singleTableDataNodeMap));
-        RQLExecutor<ShowSingleTableStatement> resultSet = new ShowSingleTableExecutor();
-        Collection<LocalDataQueryResultRow> actual = resultSet.getRows(database, mock(ShowSingleTableStatement.class));
+        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(4));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow firstRow = rowData.next();
@@ -107,8 +107,8 @@ public final class ShowSingleTableExecutorTest {
     @Test
     public void assertGetRowDataWithOtherRules() {
         addShardingSphereRule(new ShadowRule(mock(ShadowRuleConfiguration.class)));
-        RQLExecutor<ShowSingleTableStatement> resultSet = new ShowSingleTableExecutor();
-        Collection<LocalDataQueryResultRow> actual = resultSet.getRows(database, mock(ShowSingleTableStatement.class));
+        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow firstRow = rowData.next();
@@ -121,14 +121,23 @@ public final class ShowSingleTableExecutorTest {
     
     @Test
     public void assertGetSingleTableWithLikeLiteral() {
-        RQLExecutor<ShowSingleTableStatement> resultSet = new ShowSingleTableExecutor();
+        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
-        Collection<LocalDataQueryResultRow> actual = resultSet.getRows(database, statement);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, statement);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
         LocalDataQueryResultRow firstRow = rowData.next();
         assertThat(firstRow.getCell(1), is("t_order_item"));
         assertThat(firstRow.getCell(2), is("ds_2"));
+    }
+    
+    @Test
+    public void assertGetColumns() {
+        RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("table_name"));
+        assertThat(iterator.next(), is("storage_unit_name"));
     }
     
     private SingleRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
