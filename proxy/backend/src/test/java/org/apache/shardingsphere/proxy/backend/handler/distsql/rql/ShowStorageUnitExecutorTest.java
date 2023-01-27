@@ -159,6 +159,7 @@ public final class ShowStorageUnitExecutorTest {
     public void assertGetColumns() {
         RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
         Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(12));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("name"));
         assertThat(iterator.next(), is("type"));
