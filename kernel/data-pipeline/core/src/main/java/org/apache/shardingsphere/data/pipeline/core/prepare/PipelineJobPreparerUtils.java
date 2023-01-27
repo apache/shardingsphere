@@ -63,7 +63,7 @@ public final class PipelineJobPreparerUtils {
      * @return true if supported, otherwise false
      */
     public static boolean isIncrementalSupported(final String databaseType) {
-        return TypedSPIRegistry.findService(IncrementalDumperCreator.class, databaseType).isPresent();
+        return TypedSPIRegistry.contains(IncrementalDumperCreator.class, databaseType);
     }
     
     /**

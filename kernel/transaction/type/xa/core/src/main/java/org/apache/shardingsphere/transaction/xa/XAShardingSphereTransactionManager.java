@@ -138,6 +138,6 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public boolean containsProviderType(final String providerType) {
-        return TypedSPIRegistry.findService(XATransactionManagerProvider.class, providerType).isPresent();
+        return TypedSPIRegistry.contains(XATransactionManagerProvider.class, providerType);
     }
 }
