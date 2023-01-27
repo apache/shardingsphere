@@ -42,4 +42,13 @@ public interface TypedSPI {
     default Collection<String> getTypeAliases() {
         return Collections.emptyList();
     }
+    
+    /**
+     * Judge whether default service provider.
+     *
+     * @return is default service provider or not
+     */
+    default boolean isDefault() {
+        return false;
+    }
 }

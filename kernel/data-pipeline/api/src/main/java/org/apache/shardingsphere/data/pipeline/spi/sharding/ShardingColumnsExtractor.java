@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.spi.sharding;
 
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
@@ -29,7 +28,7 @@ import java.util.Set;
 /**
  * Sharding columns extractor.
  */
-public interface ShardingColumnsExtractor extends TypedSPI, RequiredSPI {
+public interface ShardingColumnsExtractor extends TypedSPI {
     
     /**
      * Get sharding columns map.

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.timeservice.spi;
 
 import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Date;
@@ -26,7 +25,7 @@ import java.util.Date;
 /**
  * ShardingSphere time service.
  */
-public interface ShardingSphereTimeService extends TypedSPI, RequiredSPI, SPIPostProcessor {
+public interface ShardingSphereTimeService extends TypedSPI, SPIPostProcessor {
     
     /**
      * Get datetime.
