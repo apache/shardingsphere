@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +80,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private Map<String, ReadwriteSplittingDataSourceRule> createReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                                   final Collection<ShardingSphereRule> builtRules) {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(
-                config.getName() + "." + config.getLoadBalancerName(), TypedSPIRegistry.getService(ReadQueryLoadBalanceAlgorithm.class, null, new Properties()));
+                config.getName() + "." + config.getLoadBalancerName(), TypedSPIRegistry.getService(ReadQueryLoadBalanceAlgorithm.class, null));
         return null == config.getStaticStrategy()
                 ? createDynamicReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm)
                 : createStaticReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);

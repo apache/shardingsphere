@@ -159,7 +159,7 @@ public final class InventoryTaskSplitter {
                                                                               final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new LinkedList<>();
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
-        String sql = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType(), null)
+        String sql = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getUniqueKey());
         int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getRead().getShardingSize();
         try (
@@ -200,7 +200,7 @@ public final class InventoryTaskSplitter {
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
-        String sql = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType(), null).buildCountSQL(schemaName, actualTableName);
+        String sql = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType()).buildCountSQL(schemaName, actualTableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

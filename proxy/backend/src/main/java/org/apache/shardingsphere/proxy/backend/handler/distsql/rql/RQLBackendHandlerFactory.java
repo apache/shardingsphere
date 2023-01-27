@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.util.Properties;
-
 /**
  * RQL backend handler factory.
  */
@@ -50,7 +48,7 @@ public final class RQLBackendHandlerFactory {
     }
     
     private static ProxyBackendHandler newInstanceByDistSQLResultSet(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLResultSet resultSet = TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        DistSQLResultSet resultSet = TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName());
         return new RQLResultSetBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
     }
 }

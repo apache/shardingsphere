@@ -30,7 +30,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedSPIRegistryTest {
@@ -56,22 +55,12 @@ public final class TypedSPIRegistryTest {
     }
     
     @Test
-    public void assertGetServiceWithNullProperties() {
-        assertNull(((TypedSPIFixtureImpl) TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.FIXTURE", null)).getValue());
-    }
-    
-    @Test
     public void assertGetServiceWithAlias() {
-        assertNotNull(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.ALIAS", new Properties()));
+        assertNotNull(TypedSPIRegistry.getService(TypedSPIFixture.class, "TYPED.ALIAS"));
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
-    public void assertGetServiceWithoutPropertiesWhenTypeIsNotExist() {
+    public void assertGetServiceWhenTypeIsNotExist() {
         TypedSPIRegistry.getService(TypedSPIFixture.class, "NOT_EXISTED");
-    }
-    
-    @Test(expected = ServiceProviderNotFoundServerException.class)
-    public void assertGetServiceWithPropertiesWhenTypeIsNotExist() {
-        TypedSPIRegistry.getService(TypedSPIFixture.class, "NOT_EXISTED", new Properties());
     }
 }

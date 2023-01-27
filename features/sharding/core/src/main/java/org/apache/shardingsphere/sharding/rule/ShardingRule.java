@@ -75,7 +75,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -130,7 +129,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         defaultTableShardingStrategyConfig = null == ruleConfig.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : ruleConfig.getDefaultTableShardingStrategy();
         defaultAuditStrategy = null == ruleConfig.getDefaultAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : ruleConfig.getDefaultAuditStrategy();
         defaultKeyGenerateAlgorithm = null == ruleConfig.getDefaultKeyGenerateStrategy()
-                ? TypedSPIRegistry.getService(KeyGenerateAlgorithm.class, null, new Properties())
+                ? TypedSPIRegistry.getService(KeyGenerateAlgorithm.class, null)
                 : keyGenerators.get(ruleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = ruleConfig.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);

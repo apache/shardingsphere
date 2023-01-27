@@ -108,7 +108,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -196,7 +195,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
         CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig);
         DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceResourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
-        Map<LogicTableName, Set<String>> shardingColumnsMap = TypedSPIRegistry.getService(ShardingColumnsExtractor.class, "Sharding", new Properties()).getShardingColumnsMap(
+        Map<LogicTableName, Set<String>> shardingColumnsMap = TypedSPIRegistry.getService(ShardingColumnsExtractor.class, "Sharding").getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), Collections.singleton(new LogicTableName(jobConfig.getTargetTableName())));
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, tableNameSchemaNameMapping);
         return new MigrationTaskConfiguration(jobConfig.getSourceResourceName(), createTableConfig, dumperConfig, importerConfig);
@@ -312,7 +311,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         String targetTableName = jobConfig.getTargetTableName();
         // TODO use jobConfig.targetSchemaName
         String targetSchemaName = jobConfig.getSourceSchemaName();
-        PipelineSQLBuilder pipelineSQLBuilder = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType(), null);
+        PipelineSQLBuilder pipelineSQLBuilder = TypedSPIRegistry.getService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType());
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {
