@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -103,7 +105,6 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     
     @Test
     public void assertExecute() throws SQLException {
-        when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
@@ -119,7 +120,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     
     @Test(expected = StorageUnitInUsedException.class)
     public void assertStorageUnitNameInUseExecute() {
-        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
+        when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
@@ -130,7 +131,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     
     @Test(expected = StorageUnitInUsedException.class)
     public void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
-        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
+        when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
@@ -143,7 +144,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     
     @Test
     public void assertStorageUnitNameInUseIgnoreSingleTables() throws SQLException {
-        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
+        when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleRule");
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
@@ -165,7 +166,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     
     @Test(expected = DistSQLException.class)
     public void assertStorageUnitNameInUseWithIfExists() {
-        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
+        when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);

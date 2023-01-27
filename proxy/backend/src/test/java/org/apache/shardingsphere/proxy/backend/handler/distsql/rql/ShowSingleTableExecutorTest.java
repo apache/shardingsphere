@@ -58,10 +58,7 @@ public final class ShowSingleTableExecutorTest {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
         singleTableDataNodeMap.put("t_order", Collections.singletonList(new DataNode("ds_1", "t_order")));
         singleTableDataNodeMap.put("t_order_item", Collections.singletonList(new DataNode("ds_2", "t_order_item")));
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        rules.add(mockSingleTableRule(singleTableDataNodeMap));
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getRules()).thenReturn(rules);
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(mockSingleTableRule(singleTableDataNodeMap))));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     

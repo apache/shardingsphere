@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
@@ -109,15 +108,11 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     
     private Multimap<String, String> getInUsedResources(final ShardingSphereRuleMetaData ruleMetaData) {
         Multimap<String, String> result = LinkedListMultimap.create();
-        for (ShardingSphereRule each : ruleMetaData.getRules()) {
-            if (each instanceof DataSourceContainedRule) {
-                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
-                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
-            }
-            if (each instanceof DataNodeContainedRule) {
-                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
-                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
-            }
+        for (DataSourceContainedRule each : ruleMetaData.findRules(DataSourceContainedRule.class)) {
+            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
+        }
+        for (DataNodeContainedRule each : ruleMetaData.findRules(DataNodeContainedRule.class)) {
+            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
         }
         return result;
     }

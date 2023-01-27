@@ -88,7 +88,7 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Queryabl
     
     private Collection<String> getAllReadResources(final ShardingSphereDatabase database, final String groupName) {
         Collection<String> exportKeys = Arrays.asList(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE);
-        Map<String, Object> exportMap = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof ExportableRule).map(each -> (ExportableRule) each)
+        Map<String, Object> exportMap = database.getRuleMetaData().findRules(ExportableRule.class).stream()
                 .filter(each -> new RuleExportEngine(each).containExportableKey(exportKeys)).findFirst().map(each -> new RuleExportEngine(each).export(exportKeys)).orElse(Collections.emptyMap());
         Map<String, Map<String, String>> allReadwriteRuleMap = exportMap.values().stream().map(each -> ((Map<String, Map<String, String>>) each).entrySet())
                 .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
