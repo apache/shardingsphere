@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -47,18 +48,18 @@ public final class ShardingTableNodesResultSet implements DatabaseDistSQLResultS
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        ShardingRule shardingRule = (ShardingRule) database.getRuleMetaData().getRules().stream().filter(each -> each instanceof ShardingRule).findFirst().orElse(null);
-        if (null == shardingRule) {
+        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (!shardingRule.isPresent()) {
             return;
         }
         Map<String, String> result = new LinkedHashMap<>();
         String tableName = ((ShowShardingTableNodesStatement) sqlStatement).getTableName();
         if (null == tableName) {
-            for (Entry<String, TableRule> entry : shardingRule.getTableRules().entrySet()) {
+            for (Entry<String, TableRule> entry : shardingRule.get().getTableRules().entrySet()) {
                 result.put(entry.getKey(), getTableNodes(entry.getValue()));
             }
         } else {
-            result.put(tableName, getTableNodes(shardingRule.getTableRule(tableName)));
+            result.put(tableName, getTableNodes(shardingRule.get().getTableRule(tableName)));
         }
         data = result.entrySet().iterator();
     }
