@@ -286,7 +286,8 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkAutoTableShardingAlgorithms(final Collection<AutoTableRuleSegment> rules) {
         rules.forEach(each -> {
-            ShardingSpherePreconditions.checkState(TypedSPIRegistry.findService(ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName()).isPresent(),
+            ShardingSpherePreconditions.checkState(TypedSPIRegistry.findService(
+                    ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps()).isPresent(),
                     () -> new InvalidAlgorithmConfigurationException("sharding", each.getShardingAlgorithmSegment().getName()));
             ShardingAlgorithm shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
                     new AlgorithmConfiguration(each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps()), ShardingAlgorithm.class);
