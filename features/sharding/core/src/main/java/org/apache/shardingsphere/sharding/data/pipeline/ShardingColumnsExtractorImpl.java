@@ -78,4 +78,9 @@ public final class ShardingColumnsExtractorImpl implements ShardingColumnsExtrac
         }
         return Collections.emptySet();
     }
+    
+    @Override
+    public String getType() {
+        return "Sharding";
+    }
 }
