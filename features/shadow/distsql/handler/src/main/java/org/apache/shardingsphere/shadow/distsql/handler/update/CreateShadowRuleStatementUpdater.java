@@ -94,7 +94,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     private void checkAlgorithmType(final Collection<ShadowRuleSegment> segments) {
         Collection<String> invalidAlgorithmTypes = segments.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
                 .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet())
-                .stream().filter(each -> !TypedSPIRegistry.findService(ShadowAlgorithm.class, each).isPresent()).collect(Collectors.toSet());
+                .stream().filter(each -> !TypedSPIRegistry.contains(ShadowAlgorithm.class, each)).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidAlgorithmTypes.isEmpty(), () -> new InvalidAlgorithmConfigurationException("shadow", invalidAlgorithmTypes));
     }
     

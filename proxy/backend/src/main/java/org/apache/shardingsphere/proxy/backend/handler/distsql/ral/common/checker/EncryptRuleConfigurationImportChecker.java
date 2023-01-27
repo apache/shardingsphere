@@ -63,7 +63,7 @@ public final class EncryptRuleConfigurationImportChecker {
     
     private void checkEncryptors(final EncryptRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedAlgorithms = currentRuleConfig.getEncryptors().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.contains(EncryptAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Encryptors", notExistedAlgorithms));
     }
     

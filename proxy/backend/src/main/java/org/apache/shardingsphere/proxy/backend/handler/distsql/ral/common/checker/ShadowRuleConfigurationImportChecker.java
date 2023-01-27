@@ -89,7 +89,7 @@ public final class ShadowRuleConfigurationImportChecker {
     
     private void checkShadowAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedAlgorithms = currentRuleConfig.getShadowAlgorithms().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findService(ShadowAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.contains(ShadowAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Shadow algorithms", notExistedAlgorithms));
     }
 }

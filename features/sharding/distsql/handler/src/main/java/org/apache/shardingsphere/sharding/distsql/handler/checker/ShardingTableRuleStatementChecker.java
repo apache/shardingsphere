@@ -272,7 +272,7 @@ public final class ShardingTableRuleStatementChecker {
                     .map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList()).stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
         }
         Collection<String> invalidAuditors = requiredAuditors.stream()
-                .distinct().filter(each -> !TypedSPIRegistry.findService(ShardingAuditAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .distinct().filter(each -> !TypedSPIRegistry.contains(ShardingAuditAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidAuditors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("auditor", invalidAuditors));
     }
     
