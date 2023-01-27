@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.timeservice.type.system;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 import org.junit.Test;
 
@@ -28,6 +28,6 @@ public final class SystemTimeServiceTest {
     @Test
     public void assertGetDatetime() {
         long currentTime = System.currentTimeMillis();
-        assertTrue(TypedSPIRegistry.getService(ShardingSphereTimeService.class, null).getDatetime().getTime() >= currentTime);
+        assertTrue(TypedSPILoader.getService(ShardingSphereTimeService.class, null).getDatetime().getTime() >= currentTime);
     }
 }

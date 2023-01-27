@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.distsql.handler.resultset.DistSQLResultSet;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -41,14 +41,14 @@ public final class RQLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
         // TODO remove this judgment after the refactoring of DistSQLResultSet is completed
-        if (TypedSPIRegistry.contains(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName())) {
+        if (TypedSPILoader.contains(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName())) {
             return newInstanceByDistSQLResultSet(sqlStatement, connectionSession);
         }
         return new RQLBackendHandler<>(sqlStatement, connectionSession);
     }
     
     private static ProxyBackendHandler newInstanceByDistSQLResultSet(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLResultSet resultSet = TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName());
+        DistSQLResultSet resultSet = TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName());
         return new RQLResultSetBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
     }
 }

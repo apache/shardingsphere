@@ -35,7 +35,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OrderedSPIRegistryTest {
+public final class OrderedSPILoaderTest {
     
     @After
     public void cleanCache() throws ReflectiveOperationException {
@@ -45,7 +45,7 @@ public final class OrderedSPIRegistryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetServicesByClass() {
-        Map<Class<?>, OrderedSPIFixture> actual = OrderedSPIRegistry.getServicesByClass(OrderedSPIFixture.class, Collections.singleton(OrderedInterfaceFixtureImpl.class));
+        Map<Class<?>, OrderedSPIFixture> actual = OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class, Collections.singleton(OrderedInterfaceFixtureImpl.class));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(OrderedInterfaceFixtureImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
     }
@@ -54,7 +54,7 @@ public final class OrderedSPIRegistryTest {
     @Test
     public void assertGetServices() {
         OrderedInterfaceFixtureImpl key = new OrderedInterfaceFixtureImpl();
-        Map<OrderedInterfaceFixtureImpl, OrderedSPIFixture> actual = OrderedSPIRegistry.getServices(OrderedSPIFixture.class, Collections.singleton(key));
+        Map<OrderedInterfaceFixtureImpl, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.singleton(key));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(key), instanceOf(OrderedSPIFixtureImpl.class));
     }
@@ -62,7 +62,7 @@ public final class OrderedSPIRegistryTest {
     @Test
     public void assertGetServicesFromCache() {
         OrderedInterfaceFixture key = new OrderedInterfaceFixtureImpl();
-        assertThat(OrderedSPIRegistry.getServices(OrderedSPIFixture.class, Collections.singleton(key)),
-                is(OrderedSPIRegistry.getServices(OrderedSPIFixture.class, Collections.singleton(key))));
+        assertThat(OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.singleton(key)),
+                is(OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.singleton(key))));
     }
 }

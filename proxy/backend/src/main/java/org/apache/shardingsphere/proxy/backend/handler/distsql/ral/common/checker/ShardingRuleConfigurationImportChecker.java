@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -98,7 +98,7 @@ public final class ShardingRuleConfigurationImportChecker {
     private void checkInvalidAlgorithms(final String algorithmType, final Collection<AlgorithmConfiguration> algorithmConfigs) {
         Collection<String> invalidAlgorithms = algorithmConfigs.stream()
                 .map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.contains(ALGORITHM_TYPE_MAP.get(algorithmType), each)).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(ALGORITHM_TYPE_MAP.get(algorithmType), each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(algorithmType, invalidAlgorithms));
     }
     

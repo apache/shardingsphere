@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -74,7 +74,7 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                ClusterPersistRepository result = TypedSPIRegistry.getService(ClusterPersistRepository.class, PERSIST_REPOSITORY_CONFIG.getType(), PERSIST_REPOSITORY_CONFIG.getProps());
+                ClusterPersistRepository result = TypedSPILoader.getService(ClusterPersistRepository.class, PERSIST_REPOSITORY_CONFIG.getType(), PERSIST_REPOSITORY_CONFIG.getProps());
                 result.init(PERSIST_REPOSITORY_CONFIG);
                 return result;
             }

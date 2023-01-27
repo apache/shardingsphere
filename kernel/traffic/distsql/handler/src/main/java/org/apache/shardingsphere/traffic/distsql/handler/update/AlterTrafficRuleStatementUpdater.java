@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -79,10 +79,10 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     private Collection<String> getInvalidAlgorithmNames(final AlterTrafficRuleStatement sqlStatement) {
         Collection<String> result = new LinkedList<>();
         for (TrafficRuleSegment each : sqlStatement.getSegments()) {
-            if (!TypedSPIRegistry.contains(TrafficAlgorithm.class, each.getAlgorithm().getName())) {
+            if (!TypedSPILoader.contains(TrafficAlgorithm.class, each.getAlgorithm().getName())) {
                 result.add(each.getAlgorithm().getName());
             }
-            if (null != each.getLoadBalancer() && !TypedSPIRegistry.contains(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName())) {
+            if (null != each.getLoadBalancer() && !TypedSPILoader.contains(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName())) {
                 result.add(each.getLoadBalancer().getName());
             }
         }

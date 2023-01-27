@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Ind
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -190,8 +190,8 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     }
     
     private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = TypedSPIRegistry.findService(
-                DialectSchemaMetaDataLoader.class, TypedSPIRegistry.getService(DatabaseType.class, "SQLServer").getType());
+        Optional<DialectSchemaMetaDataLoader> result = TypedSPILoader.findService(
+                DialectSchemaMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "SQLServer").getType());
         assertTrue(result.isPresent());
         return result.get();
     }

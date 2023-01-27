@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -37,7 +37,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
-        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPIRegistry.getService(DatabaseProtocolFrontendEngine.class, databaseType.getType());
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType.getType());
         databaseProtocolFrontendEngine.initChannel(socketChannel);
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new ChannelAttrInitializer());

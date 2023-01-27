@@ -31,10 +31,10 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 /**
- * Ordered SPI registry.
+ * Ordered SPI loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrderedSPIRegistry {
+public final class OrderedSPILoader {
     
     /**
      * Get services by class type.

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -69,7 +69,7 @@ public final class RQLBackendHandler<T extends RQLStatement> implements DistSQLB
     public ResponseHeader execute() throws SQLException {
         String databaseName = getDatabaseName(connectionSession, sqlStatement);
         checkDatabaseName(databaseName);
-        RQLExecutor executor = TypedSPIRegistry.getService(RQLExecutor.class, sqlStatement.getClass().getName());
+        RQLExecutor executor = TypedSPILoader.getService(RQLExecutor.class, sqlStatement.getClass().getName());
         queryHeaders = createQueryHeader(executor.getColumnNames());
         mergedResult = createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(databaseName), sqlStatement));
         return new QueryResponseHeader(queryHeaders);

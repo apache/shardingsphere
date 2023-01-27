@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder
 import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -113,7 +113,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ColumnValueReader columnValueReader = TypedSPIRegistry.getService(ColumnValueReader.class, param.getDatabaseType());
+                ColumnValueReader columnValueReader = TypedSPILoader.getService(ColumnValueReader.class, param.getDatabaseType());
                 while (resultSet.next()) {
                     if (isCanceling()) {
                         throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName());
@@ -135,11 +135,11 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     private String getQuerySQL(final DataConsistencyCalculateParameter param) {
-        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.getService(PipelineSQLBuilder.class, param.getDatabaseType());
+        PipelineSQLBuilder sqlBuilder = TypedSPILoader.getService(PipelineSQLBuilder.class, param.getDatabaseType());
         String logicTableName = param.getLogicTableName();
         String schemaName = param.getSchemaName();
         String uniqueKey = param.getUniqueKey().getName();
-        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && TypedSPIRegistry.getService(DatabaseType.class, param.getDatabaseType()).isSchemaAvailable()
+        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
         if (null == param.getPreviousCalculatedResult() && null == param.getTableCheckPosition()) {
