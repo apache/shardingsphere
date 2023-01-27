@@ -63,7 +63,7 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     private void checkAlgorithms(final CreateMaskRuleStatement sqlStatement) {
         Collection<MaskColumnSegment> columns = new LinkedList<>();
         sqlStatement.getRules().forEach(each -> columns.addAll(each.getColumns()));
-        columns.forEach(each -> ShardingSpherePreconditions.checkState(TypedSPIRegistry.findService(MaskAlgorithm.class, each.getAlgorithm().getName()).isPresent(),
+        columns.forEach(each -> ShardingSpherePreconditions.checkState(TypedSPIRegistry.contains(MaskAlgorithm.class, each.getAlgorithm().getName()),
                 () -> new InvalidAlgorithmConfigurationException("mask", each.getAlgorithm().getName())));
     }
     

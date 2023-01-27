@@ -63,7 +63,7 @@ public final class MaskRuleConfigurationImportChecker {
     
     private void checkMaskAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedAlgorithms = currentRuleConfig.getMaskAlgorithms().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findService(MaskAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.contains(MaskAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Mask algorithms", notExistedAlgorithms));
     }
     

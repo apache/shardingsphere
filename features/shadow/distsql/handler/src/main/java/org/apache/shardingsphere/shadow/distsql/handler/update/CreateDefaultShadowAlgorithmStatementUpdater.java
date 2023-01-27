@@ -87,8 +87,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     
     private void checkAlgorithmType(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         String shadowAlgorithmType = sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName();
-        ShardingSpherePreconditions.checkState(
-                TypedSPIRegistry.findService(ShadowAlgorithm.class, shadowAlgorithmType).isPresent(), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
+        ShardingSpherePreconditions.checkState(TypedSPIRegistry.contains(ShadowAlgorithm.class, shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
     }
     
     private void checkAlgorithmCompleteness(final Collection<AlgorithmSegment> algorithmSegments) {

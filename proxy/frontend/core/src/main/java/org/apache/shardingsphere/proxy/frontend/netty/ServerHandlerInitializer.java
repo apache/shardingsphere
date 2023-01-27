@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
-import java.util.Properties;
-
 /**
  * Server handler initializer.
  */
@@ -39,7 +37,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
-        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPIRegistry.getService(DatabaseProtocolFrontendEngine.class, databaseType.getType(), new Properties());
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPIRegistry.getService(DatabaseProtocolFrontendEngine.class, databaseType.getType());
         databaseProtocolFrontendEngine.initChannel(socketChannel);
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new ChannelAttrInitializer());

@@ -83,8 +83,7 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
     
     private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {
         String shadowAlgorithmType = algorithmSegment.getName();
-        ShardingSpherePreconditions.checkState(
-                TypedSPIRegistry.findService(ShadowAlgorithm.class, shadowAlgorithmType).isPresent(), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
+        ShardingSpherePreconditions.checkState(TypedSPIRegistry.contains(ShadowAlgorithm.class, shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
     }
     
     @Override

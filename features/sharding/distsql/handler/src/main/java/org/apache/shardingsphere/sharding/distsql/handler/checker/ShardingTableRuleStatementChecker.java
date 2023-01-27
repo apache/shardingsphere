@@ -272,7 +272,7 @@ public final class ShardingTableRuleStatementChecker {
                     .map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList()).stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
         }
         Collection<String> invalidAuditors = requiredAuditors.stream()
-                .distinct().filter(each -> !TypedSPIRegistry.findService(ShardingAuditAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .distinct().filter(each -> !TypedSPIRegistry.contains(ShardingAuditAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidAuditors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("auditor", invalidAuditors));
     }
     
@@ -286,7 +286,8 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkAutoTableShardingAlgorithms(final Collection<AutoTableRuleSegment> rules) {
         rules.forEach(each -> {
-            ShardingSpherePreconditions.checkState(TypedSPIRegistry.findService(ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName()).isPresent(),
+            ShardingSpherePreconditions.checkState(TypedSPIRegistry.findService(
+                    ShardingAlgorithm.class, each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps()).isPresent(),
                     () -> new InvalidAlgorithmConfigurationException("sharding", each.getShardingAlgorithmSegment().getName()));
             ShardingAlgorithm shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
                     new AlgorithmConfiguration(each.getShardingAlgorithmSegment().getName(), each.getShardingAlgorithmSegment().getProps()), ShardingAlgorithm.class);

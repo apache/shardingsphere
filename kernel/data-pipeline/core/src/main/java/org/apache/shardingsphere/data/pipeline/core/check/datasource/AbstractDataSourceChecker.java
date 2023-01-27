@@ -65,7 +65,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     }
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        String sql = TypedSPIRegistry.getService(PipelineSQLBuilder.class, getDatabaseType(), null).buildCheckEmptySQL(schemaName, tableName);
+        String sql = TypedSPIRegistry.getService(PipelineSQLBuilder.class, getDatabaseType()).buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);

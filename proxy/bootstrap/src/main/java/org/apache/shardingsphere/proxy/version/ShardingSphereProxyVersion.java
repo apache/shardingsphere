@@ -34,7 +34,6 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import javax.sql.DataSource;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * ShardingSphere-Proxy version.
@@ -69,7 +68,7 @@ public final class ShardingSphereProxyVersion {
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
         log.info("{}, database name is `{}`", databaseServerInfo, database.getName());
-        TypedSPIRegistry.getService(DatabaseProtocolFrontendEngine.class, DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()).getType(), new Properties())
+        TypedSPIRegistry.getService(DatabaseProtocolFrontendEngine.class, DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()).getType())
                 .setDatabaseVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
     }
     

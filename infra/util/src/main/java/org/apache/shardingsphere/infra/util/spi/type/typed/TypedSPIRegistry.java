@@ -52,12 +52,7 @@ public final class TypedSPIRegistry {
      * @return service
      */
     public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type) {
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
-            if (matchesType(type, each)) {
-                return Optional.of(each);
-            }
-        }
-        return getService(spiClass);
+        return findService(spiClass, type, new Properties());
     }
     
     /**
@@ -72,11 +67,22 @@ public final class TypedSPIRegistry {
     public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
-                each.init(convertToStringTypedProperties(props));
+                each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
                 return Optional.of(each);
             }
         }
-        return getService(spiClass);
+        return findService(spiClass);
+    }
+    
+    private static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
+            if (!each.isDefault()) {
+                continue;
+            }
+            each.init(new Properties());
+            return Optional.of(each);
+        }
+        return Optional.empty();
     }
     
     private static boolean matchesType(final String type, final TypedSPI instance) {
@@ -84,8 +90,8 @@ public final class TypedSPIRegistry {
     }
     
     private static Properties convertToStringTypedProperties(final Properties props) {
-        if (null == props) {
-            return new Properties();
+        if (props.isEmpty()) {
+            return props;
         }
         Properties result = new Properties();
         props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
@@ -101,7 +107,7 @@ public final class TypedSPIRegistry {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type) {
-        return findService(spiClass, type).orElseGet(() -> getService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
+        return getService(spiClass, type, new Properties());
     }
     
     /**
@@ -114,17 +120,6 @@ public final class TypedSPIRegistry {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
-        return findService(spiClass, type, props).orElseGet(() -> getService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
-    }
-    
-    private static <T extends TypedSPI> Optional<T> getService(final Class<T> spiClass) {
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
-            if (!each.isDefault()) {
-                continue;
-            }
-            each.init(new Properties());
-            return Optional.of(each);
-        }
-        return Optional.empty();
+        return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
     }
 }

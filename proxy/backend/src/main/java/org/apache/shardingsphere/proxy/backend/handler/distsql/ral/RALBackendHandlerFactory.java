@@ -80,7 +80,6 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.sta
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * RAL backend handler factory.
@@ -126,18 +125,17 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
             return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement,
-                    (DatabaseDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+                    (DatabaseDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
             return new QueryableGlobalRuleRALBackendHandler(sqlStatement,
-                    (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+                    (GlobalRuleDistSQLResultSet) TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
-            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement,
-                    TypedSPIRegistry.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties()));
+            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPIRegistry.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName()));
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }
