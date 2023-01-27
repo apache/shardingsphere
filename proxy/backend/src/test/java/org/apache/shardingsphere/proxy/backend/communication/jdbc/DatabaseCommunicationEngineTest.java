@@ -108,12 +108,10 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ResultSet resultSet;
     
-    @Mock
-    private ShardingSphereRuleMetaData globalRuleMetaData;
-    
     @Before
     public void setUp() {
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new SQLFederationRule(new SQLFederationRuleConfiguration("ORIGINAL"))));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(mockDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -152,8 +150,6 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
             typedSPILoader.when(() -> TypedSPILoader.getService(SQLFederationExecutor.class, "NONE")).thenReturn(federationExecutor);
             typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new MySQLQueryHeaderBuilder());
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
-            SQLFederationRule sqlFederationRule = new SQLFederationRule(new SQLFederationRuleConfiguration("ORIGINAL"));
-            when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
             engine.execute();
         }
         assertTrue(engine.next());

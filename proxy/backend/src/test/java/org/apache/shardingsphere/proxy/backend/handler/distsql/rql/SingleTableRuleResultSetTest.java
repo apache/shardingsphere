@@ -27,6 +27,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,11 +49,9 @@ public final class SingleTableRuleResultSetTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        SingleRule rule = mock(SingleRule.class);
-        when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration("foo_ds"));
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getSingleRule(SingleRule.class)).thenReturn(rule);
-        when(result.getRuleMetaData()).thenReturn(ruleMetaData);
+        SingleRule singleRule = mock(SingleRule.class);
+        when(singleRule.getConfiguration()).thenReturn(new SingleRuleConfiguration("foo_ds"));
+        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(singleRule)));
         return result;
     }
 }
