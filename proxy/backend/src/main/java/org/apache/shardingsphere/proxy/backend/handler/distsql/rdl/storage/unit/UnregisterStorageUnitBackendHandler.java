@@ -25,7 +25,6 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -96,13 +95,11 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     
     private Multimap<String, String> getInUsedResources(final String databaseName) {
         Multimap<String, String> result = LinkedListMultimap.create();
-        for (ShardingSphereRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().getRules()) {
-            if (each instanceof DataSourceContainedRule) {
-                getInUsedResourceNames((DataSourceContainedRule) each).forEach(eachResource -> result.put(eachResource, each.getType()));
-            }
-            if (each instanceof DataNodeContainedRule) {
-                getInUsedResourceNames((DataNodeContainedRule) each).forEach(eachResource -> result.put(eachResource, each.getType()));
-            }
+        for (DataSourceContainedRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findRules(DataSourceContainedRule.class)) {
+            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
+        }
+        for (DataNodeContainedRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findRules(DataNodeContainedRule.class)) {
+            getInUsedResourceNames(each).forEach(eachResource -> result.put(eachResource, each.getType()));
         }
         return result;
     }

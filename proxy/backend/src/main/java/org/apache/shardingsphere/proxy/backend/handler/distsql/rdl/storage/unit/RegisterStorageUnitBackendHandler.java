@@ -116,7 +116,7 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     }
     
     private Collection<String> getLogicalDataSourceNames(final String databaseName) {
-        return ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
-                .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toList());
+        return ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
+                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }

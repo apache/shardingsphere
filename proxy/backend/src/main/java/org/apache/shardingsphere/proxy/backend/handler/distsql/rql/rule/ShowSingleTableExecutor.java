@@ -53,8 +53,8 @@ public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTabl
     }
     
     private Collection<DataNode> getDataNodes(final ShardingSphereDatabase database, final ShowSingleTableStatement sqlStatement) {
-        Stream<DataNode> singleTableNodes = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof SingleRule)
-                .map(each -> (SingleRule) each).map(each -> each.getSingleTableDataNodes().values()).flatMap(Collection::stream).filter(Objects::nonNull).map(each -> each.iterator().next());
+        Stream<DataNode> singleTableNodes = database.getRuleMetaData().findRules(SingleRule.class).stream()
+                .map(each -> each.getSingleTableDataNodes().values()).flatMap(Collection::stream).filter(Objects::nonNull).map(each -> each.iterator().next());
         if (sqlStatement.getTableName().isPresent()) {
             singleTableNodes = singleTableNodes.filter(each -> sqlStatement.getTableName().get().equals(each.getTableName()));
         }
