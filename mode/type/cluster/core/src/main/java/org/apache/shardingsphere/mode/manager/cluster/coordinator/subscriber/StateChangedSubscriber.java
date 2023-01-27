@@ -89,11 +89,10 @@ public final class StateChangedSubscriber {
             return;
         }
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
-                .stream()
-                .filter(each -> each instanceof DynamicDataSourceContainedRule)
-                .forEach(each -> ((DynamicDataSourceContainedRule) each)
-                        .restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase)));
+        for (DynamicDataSourceContainedRule each : contextManager.getMetaDataContexts()
+                .getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().findRules(DynamicDataSourceContainedRule.class)) {
+            each.restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase));
+        }
     }
     
     /**
