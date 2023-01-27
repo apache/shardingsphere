@@ -119,7 +119,7 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
         ProxyContext.init(contextManager);
         DataSourceContainedRule rule = mock(DataSourceContainedRule.class);
         when(rule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ds_0", Collections.emptyList()));
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(rule));
         registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
     }
     

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -40,10 +39,8 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,11 +68,8 @@ public final class CDCBackendHandlerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("sharding_db");
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        Set<ShardingSphereRule> shardingRule = Collections.singleton(mock(ShardingRule.class));
-        when(database.getRuleMetaData().getRules()).thenReturn(shardingRule);
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("sharding_db", database);
-        return result;
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(mock(ShardingRule.class)));
+        return Collections.singletonMap("sharding_db", database);
     }
     
     @AfterClass

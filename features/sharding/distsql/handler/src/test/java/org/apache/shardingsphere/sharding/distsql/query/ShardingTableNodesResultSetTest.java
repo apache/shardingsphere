@@ -49,8 +49,7 @@ public final class ShardingTableNodesResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingRule shardingRule = createShardingRule();
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(createShardingRule()));
         assertOrder(database);
         assertOrderItem(database);
     }

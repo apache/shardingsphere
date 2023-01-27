@@ -23,13 +23,11 @@ import io.netty.handler.logging.LoggingHandler;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -67,17 +65,14 @@ public final class CDCChannelInboundHandlerTest {
         ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
         proxyContext.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        List<ShardingSphereRule> rules = Collections.singletonList(mockAuthRule());
+        List<ShardingSphereRule> rules = Collections.singletonList(mockAuthorityRule());
         when(globalRuleMetaData.getRules()).thenReturn(rules);
+        when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     
-    private static AuthorityRule mockAuthRule() {
+    private static AuthorityRule mockAuthorityRule() {
         AuthorityRule result = mock(AuthorityRule.class);
-        ShardingSphereUser mockUser = mock(ShardingSphereUser.class);
-        when(mockUser.getGrantee()).thenReturn(new Grantee("root", "%"));
-        when(mockUser.getPassword()).thenReturn("root");
-        when(result.findUser(any())).thenReturn(Optional.of(mockUser));
+        when(result.findUser(any())).thenReturn(Optional.of(new ShardingSphereUser("root", "root", "%")));
         return result;
     }
     
@@ -118,9 +113,8 @@ public final class CDCChannelInboundHandlerTest {
     @Test
     public void assertLoginRequestSucceed() {
         String encryptPassword = Hashing.sha256().hashBytes("root".getBytes()).toString().toUpperCase();
-        Builder builder = CDCRequest.newBuilder().setLogin(LoginRequest.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root").setPassword(encryptPassword).build()).build());
-        CDCRequest actualRequest = builder.build();
-        channel.writeInbound(actualRequest);
+        channel.writeInbound(
+                CDCRequest.newBuilder().setLogin(LoginRequest.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root").setPassword(encryptPassword).build()).build()).build());
         CDCResponse expectedGreetingResult = channel.readOutbound();
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
