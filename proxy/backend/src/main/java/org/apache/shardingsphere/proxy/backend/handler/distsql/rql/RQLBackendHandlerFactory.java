@@ -35,14 +35,22 @@ import java.util.Properties;
 public final class RQLBackendHandlerFactory {
     
     /**
-     * Create new instance of RDL backend handler.
+     * Create new instance of RQL backend handler.
      * 
      * @param sqlStatement RQL statement
      * @param connectionSession connection session
      * @return RDL backend handler
      */
     public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        // TODO remove this judgment after the refactoring of DistSQLResultSet is completed
+        if (TypedSPIRegistry.contains(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName())) {
+            return newInstanceByDistSQLResultSet(sqlStatement, connectionSession);
+        }
+        return new RQLBackendHandler<>(sqlStatement, connectionSession);
+    }
+    
+    private static ProxyBackendHandler newInstanceByDistSQLResultSet(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
         DistSQLResultSet resultSet = TypedSPIRegistry.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        return new RQLBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
+        return new RQLResultSetBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
     }
 }

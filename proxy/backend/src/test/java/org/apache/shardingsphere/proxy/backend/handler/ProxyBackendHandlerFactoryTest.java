@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableGlob
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLResultSetBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
@@ -261,7 +261,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(RQLBackendHandler.class));
+        assertThat(actual, instanceOf(RQLResultSetBackendHandler.class));
     }
     
     @Test
