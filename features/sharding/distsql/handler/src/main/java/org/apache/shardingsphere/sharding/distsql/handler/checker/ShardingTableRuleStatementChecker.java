@@ -166,8 +166,8 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
-                .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
+                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private static Collection<String> getRequiredDataSources(final Collection<AbstractTableRuleSegment> rules) {
