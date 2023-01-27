@@ -75,7 +75,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     @Test
     public void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
-        CreateEncryptRuleStatement sqlStatement = createSQLStatement(true, "AES");
+        CreateEncryptRuleStatement sqlStatement = createSQLStatement(true, "MD5");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         EncryptRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
