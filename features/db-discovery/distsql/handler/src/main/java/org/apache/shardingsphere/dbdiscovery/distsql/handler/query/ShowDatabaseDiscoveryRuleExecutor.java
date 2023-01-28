@@ -23,25 +23,26 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show database discovery rule.
+ * Show database discovery rule executor.
  */
-public final class DatabaseDiscoveryRuleResultSet implements DatabaseDistSQLResultSet {
+public final class ShowDatabaseDiscoveryRuleExecutor implements RQLExecutor<ShowDatabaseDiscoveryRulesStatement> {
     
     private static final String GROUP_NAME = "group_name";
     
@@ -64,17 +65,18 @@ public final class DatabaseDiscoveryRuleResultSet implements DatabaseDistSQLResu
     private Map<String, String> primaryDataSources;
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDatabaseDiscoveryRulesStatement sqlStatement) {
         Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
         if (!rule.isPresent()) {
             dataSourceRules = Collections.emptyIterator();
-            return;
+            return Collections.emptyList();
         }
         DatabaseDiscoveryRuleConfiguration ruleConfig = (DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration();
         dataSourceRules = ruleConfig.getDataSources().iterator();
         discoveryTypes = ruleConfig.getDiscoveryTypes();
         discoveryHeartbeats = ruleConfig.getDiscoveryHeartbeats();
         primaryDataSources = rule.get().getDataSourceRules().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
+        return getRowData();
     }
     
     @Override
@@ -82,23 +84,21 @@ public final class DatabaseDiscoveryRuleResultSet implements DatabaseDistSQLResu
         return Arrays.asList(GROUP_NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
     }
     
-    @Override
-    public boolean next() {
-        return dataSourceRules.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = dataSourceRules.next();
-        Map<String, String> typeMap = new LinkedHashMap<>();
-        typeMap.put(NAME, dataSourceRuleConfig.getDiscoveryTypeName());
-        typeMap.putAll(convertToMap(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName())));
-        Map<String, String> heartbeatMap = new LinkedHashMap<>();
-        heartbeatMap.put(NAME, dataSourceRuleConfig.getDiscoveryHeartbeatName());
-        heartbeatMap.putAll(convertToMap(discoveryHeartbeats.get(dataSourceRuleConfig.getDiscoveryHeartbeatName())));
-        String groupName = dataSourceRuleConfig.getGroupName();
-        String primaryDataSourceName = null == primaryDataSources.get(groupName) ? "" : primaryDataSources.get(groupName);
-        return Arrays.asList(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap);
+    private Collection<LocalDataQueryResultRow> getRowData() {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (dataSourceRules.hasNext()) {
+            DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = dataSourceRules.next();
+            Map<String, String> typeMap = new LinkedHashMap<>();
+            typeMap.put(NAME, dataSourceRuleConfig.getDiscoveryTypeName());
+            typeMap.putAll(convertToMap(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName())));
+            Map<String, String> heartbeatMap = new LinkedHashMap<>();
+            heartbeatMap.put(NAME, dataSourceRuleConfig.getDiscoveryHeartbeatName());
+            heartbeatMap.putAll(convertToMap(discoveryHeartbeats.get(dataSourceRuleConfig.getDiscoveryHeartbeatName())));
+            String groupName = dataSourceRuleConfig.getGroupName();
+            String primaryDataSourceName = null == primaryDataSources.get(groupName) ? "" : primaryDataSources.get(groupName);
+            result.add(new LocalDataQueryResultRow(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap));
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
