@@ -78,7 +78,7 @@ public final class ProxyJDBCExecutor {
                             true),
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, storageTypes, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
                             false));
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            executeProcessEngine.finishExecution(executionGroupContext.getReportContext().getExecutionID(), eventBusContext);
             return result;
         } finally {
             executeProcessEngine.cleanExecution();

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
@@ -59,13 +60,15 @@ public class ExecuteProcessReporterTest {
         QueryContext queryContext = new QueryContext(null, null, null);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         reporter.report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID);
-        verify(showProcessListManager, times(1)).putProcessContext(eq(executionGroupContext.getExecutionID()), any());
+        verify(showProcessListManager, times(1)).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionGroupContext<? extends SQLExecutionUnit> mockExecutionGroupContext() {
         ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
-        when(result.getExecutionID()).thenReturn(UUID.randomUUID().toString());
+        ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
+        when(reportContext.getExecutionID()).thenReturn(UUID.randomUUID().toString());
+        when(result.getReportContext()).thenReturn(reportContext);
         return result;
     }
     

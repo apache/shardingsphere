@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
@@ -31,8 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 import java.util.Collections;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Execute process engine.
@@ -51,15 +49,11 @@ public final class ExecuteProcessEngine {
     public String initializeConnection(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = createExecutionGroupContext(grantee, databaseName);
         reporter.report(executionGroupContext);
-        return executionGroupContext.getExecutionID();
+        return executionGroupContext.getReportContext().getExecutionID();
     }
     
     private ExecutionGroupContext<SQLExecutionUnit> createExecutionGroupContext(final Grantee grantee, final String databaseName) {
-        ExecutionGroupContext<SQLExecutionUnit> result = new ExecutionGroupContext<>(Collections.emptyList());
-        result.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
-        result.setGrantee(grantee);
-        result.setDatabaseName(databaseName);
-        return result;
+        return new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
     }
     
     /**
@@ -78,11 +72,8 @@ public final class ExecuteProcessEngine {
      * @param queryContext query context
      */
     public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
-        if (Strings.isNullOrEmpty(executionGroupContext.getExecutionID())) {
-            executionGroupContext.setExecutionID(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
-        }
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
+            ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getReportContext().getExecutionID());
             reporter.report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
     }
