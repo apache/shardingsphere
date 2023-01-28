@@ -21,6 +21,17 @@
        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
+<!--    TODO Fix https://github.com/apache/shardingsphere/issues/23764 -->
+<!--    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?::int4, ?, ?, 1, 'test', '2017-08-08')" db-types="PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">-->
+<!--        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
+<!--        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
+<!--    </test-case>-->
+    
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?::char(10), 1, 'test', '2017-08-08')" db-types="PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
+        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
+    </test-case>
+    
     <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, ?, 1, 1, now())" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
     </test-case>
