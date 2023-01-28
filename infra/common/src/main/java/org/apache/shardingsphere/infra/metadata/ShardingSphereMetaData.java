@@ -78,7 +78,7 @@ public final class ShardingSphereMetaData {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return databases.containsKey(databaseName.toLowerCase());
+        return null != databaseName && databases.containsKey(databaseName.toLowerCase());
     }
     
     /**

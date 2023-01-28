@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiPredicate;
 
@@ -38,6 +37,38 @@ import java.util.function.BiPredicate;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLCheckEngine {
+    
+    /**
+     * Check SQL with database rules.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param params SQL parameters
+     * @param globalRuleMetaData global rule meta data
+     * @param database database
+     * @param grantee grantee
+     */
+    public static void checkWithDatabaseRules(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
+                                              final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
+        checkWithRules(sqlStatementContext, params, globalRuleMetaData, database.getRuleMetaData().getRules(), database, grantee);
+    }
+    
+    /**
+     * Check SQL with rules.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param params SQL parameters
+     * @param globalRuleMetaData global rule meta data
+     * @param rules rules
+     * @param database database
+     * @param grantee grantee
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void checkWithRules(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final ShardingSphereRuleMetaData globalRuleMetaData,
+                                      final Collection<ShardingSphereRule> rules, final ShardingSphereDatabase database, final Grantee grantee) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
+            entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey());
+        }
+    }
     
     /**
      * Check database.
@@ -56,25 +87,6 @@ public final class SQLCheckEngine {
             }
         }
         return true;
-    }
-    
-    /**
-     * Check SQL.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @param params SQL parameters
-     * @param globalRuleMetaData global rule meta data
-     * @param rules rules
-     * @param currentDatabase current database
-     * @param databases databases
-     * @param grantee grantee
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final ShardingSphereRuleMetaData globalRuleMetaData,
-                             final Collection<ShardingSphereRule> rules, final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
-            entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, currentDatabase, databases, entry.getKey());
-        }
     }
     
     /**
