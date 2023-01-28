@@ -56,35 +56,18 @@ public final class ShowDatabaseDiscoveryRuleExecutor implements RQLExecutor<Show
     
     private static final String HEARTBEAT = "discovery_heartbeat";
     
-    private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRules;
-    
-    private Map<String, AlgorithmConfiguration> discoveryTypes;
-    
-    private Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats;
-    
-    private Map<String, String> primaryDataSources;
-    
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDatabaseDiscoveryRulesStatement sqlStatement) {
         Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
+        Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRules;
         if (!rule.isPresent()) {
-            dataSourceRules = Collections.emptyIterator();
             return Collections.emptyList();
         }
         DatabaseDiscoveryRuleConfiguration ruleConfig = (DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration();
         dataSourceRules = ruleConfig.getDataSources().iterator();
-        discoveryTypes = ruleConfig.getDiscoveryTypes();
-        discoveryHeartbeats = ruleConfig.getDiscoveryHeartbeats();
-        primaryDataSources = rule.get().getDataSourceRules().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
-        return getRowData();
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList(GROUP_NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
-    }
-    
-    private Collection<LocalDataQueryResultRow> getRowData() {
+        Map<String, AlgorithmConfiguration> discoveryTypes = ruleConfig.getDiscoveryTypes();
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = ruleConfig.getDiscoveryHeartbeats();
+        Map<String, String> primaryDataSources = rule.get().getDataSourceRules().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (dataSourceRules.hasNext()) {
             DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = dataSourceRules.next();
@@ -99,6 +82,11 @@ public final class ShowDatabaseDiscoveryRuleExecutor implements RQLExecutor<Show
             result.add(new LocalDataQueryResultRow(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap));
         }
         return result;
+    }
+    
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList(GROUP_NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
     }
     
     @SuppressWarnings("unchecked")
