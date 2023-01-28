@@ -56,8 +56,8 @@ public final class DriverExecutor implements AutoCloseable {
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, connection.getDatabaseName());
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        federationExecutor = sqlFederationRule.getSQLFederationExecutor(connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(),
-                metaDataContexts.getShardingSphereData(), jdbcExecutor, eventBusContext);
+        federationExecutor = sqlFederationRule.getSQLFederationExecutor(
+                connection.getDatabaseName(), schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(), jdbcExecutor, eventBusContext);
         trafficExecutor = new TrafficExecutor();
     }
     

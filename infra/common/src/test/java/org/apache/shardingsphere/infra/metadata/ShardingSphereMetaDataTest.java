@@ -60,8 +60,8 @@ public final class ShardingSphereMetaDataTest {
             DatabaseType databaseType = mock(DatabaseType.class);
             mockedStatic.when(() -> ShardingSphereDatabase.create("foo_db", databaseType)).thenReturn(database);
             Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
-            ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases,
-                    new ShardingSphereRuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
+            ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                    databases, new ShardingSphereRuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
             metaData.addDatabase("foo_db", databaseType);
             assertThat(metaData.getDatabases(), is(databases));
             verify(globalResourceHeldRule).addResource(database);
