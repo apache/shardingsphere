@@ -42,9 +42,9 @@ public final class CountSingleTableExecutorTest {
     @Test
     public void assertGetRowData() {
         RQLExecutor<CountSingleTableStatement> executor = new CountSingleTableExecutor();
-        Collection<LocalDataQueryResultRow> rowData = executor.getRows(mockDatabase(), mock(CountSingleTableStatement.class));
-        assertThat(rowData.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = rowData.iterator();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountSingleTableStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("db_1"));
         assertThat(row.getCell(2), is(2));
