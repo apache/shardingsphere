@@ -68,23 +68,4 @@ public final class SQLCheckEngine {
             entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey());
         }
     }
-    
-    /**
-     * Check database.
-     *
-     * @param databaseName database name
-     * @param rules rules
-     * @param grantee grantee
-     * @return check result
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static boolean check(final String databaseName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
-            boolean checkResult = entry.getValue().check(databaseName, grantee, entry.getKey());
-            if (!checkResult) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
