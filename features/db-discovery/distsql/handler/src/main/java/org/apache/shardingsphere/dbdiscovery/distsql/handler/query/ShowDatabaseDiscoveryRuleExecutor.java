@@ -67,7 +67,8 @@ public final class ShowDatabaseDiscoveryRuleExecutor implements RQLExecutor<Show
         dataSourceRules = ruleConfig.getDataSources().iterator();
         Map<String, AlgorithmConfiguration> discoveryTypes = ruleConfig.getDiscoveryTypes();
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = ruleConfig.getDiscoveryHeartbeats();
-        Map<String, String> primaryDataSources = rule.get().getDataSourceRules().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
+        Map<String, String> primaryDataSources = rule.get().getDataSourceRules().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (dataSourceRules.hasNext()) {
             DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = dataSourceRules.next();
