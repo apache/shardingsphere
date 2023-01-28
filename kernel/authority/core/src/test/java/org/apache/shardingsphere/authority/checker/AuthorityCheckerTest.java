@@ -79,8 +79,8 @@ public final class AuthorityCheckerTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
-        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
-        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), null, rule);
+        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), null, rule);
+        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), null, rule);
     }
 }
