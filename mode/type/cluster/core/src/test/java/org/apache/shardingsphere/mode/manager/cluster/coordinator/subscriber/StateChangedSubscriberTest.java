@@ -93,8 +93,7 @@ public final class StateChangedSubscriberTest {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        subscriber = new StateChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class),
-                new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
+        subscriber = new StateChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -112,9 +111,7 @@ public final class StateChangedSubscriberTest {
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
+        return Collections.singletonMap("db", database);
     }
     
     @Test

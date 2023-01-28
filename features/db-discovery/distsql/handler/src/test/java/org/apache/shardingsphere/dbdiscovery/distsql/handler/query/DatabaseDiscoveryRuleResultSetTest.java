@@ -23,9 +23,10 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,12 +35,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -55,7 +55,7 @@ public final class DatabaseDiscoveryRuleResultSetTest {
         DatabaseDiscoveryDataSourceRule dataSourceRule = mock(DatabaseDiscoveryDataSourceRule.class);
         when(dataSourceRule.getPrimaryDataSourceName()).thenReturn("ds_0");
         when(rule.getDataSourceRules()).thenReturn(Collections.singletonMap("ms_group", dataSourceRule));
-        when(database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class)).thenReturn(Optional.of(rule));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
         DatabaseDistSQLResultSet resultSet = new DatabaseDiscoveryRuleResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         assertColumns(resultSet.getColumnNames());
