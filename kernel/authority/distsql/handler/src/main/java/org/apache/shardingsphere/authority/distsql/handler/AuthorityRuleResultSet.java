@@ -41,11 +41,12 @@ public final class AuthorityRuleResultSet implements GlobalRuleDistSQLResultSet 
     
     private static final String PROPS = "props";
     
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+    private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        ruleMetaData.findSingleRule(AuthorityRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
+    public void init(final ShardingSphereRuleMetaData globalRuleMetaData, final SQLStatement sqlStatement) {
+        AuthorityRule rule = globalRuleMetaData.getSingleRule(AuthorityRule.class);
+        data = buildData(rule.getConfiguration()).iterator();
     }
     
     private Collection<Collection<Object>> buildData(final AuthorityRuleConfiguration ruleConfig) {

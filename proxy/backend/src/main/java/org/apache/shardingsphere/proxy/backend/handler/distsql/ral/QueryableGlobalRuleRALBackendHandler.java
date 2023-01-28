@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -31,29 +32,23 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Queryable RAL backend handler for global rule.
  */
+@RequiredArgsConstructor
 public final class QueryableGlobalRuleRALBackendHandler implements DistSQLBackendHandler {
     
     private final RALStatement sqlStatement;
     
     private final GlobalRuleDistSQLResultSet resultSet;
     
-    public QueryableGlobalRuleRALBackendHandler(final RALStatement sqlStatement, final GlobalRuleDistSQLResultSet resultSet) {
-        this.sqlStatement = sqlStatement;
-        this.resultSet = resultSet;
-    }
-    
     @Override
     public ResponseHeader execute() {
         resultSet.init(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), sqlStatement);
-        List<QueryHeader> queryHeaders = new ArrayList<>();
-        for (String each : resultSet.getColumnNames()) {
-            queryHeaders.add(new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        }
-        return new QueryResponseHeader(queryHeaders);
+        return new QueryResponseHeader(resultSet.getColumnNames().stream()
+                .map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList()));
     }
     
     @Override
