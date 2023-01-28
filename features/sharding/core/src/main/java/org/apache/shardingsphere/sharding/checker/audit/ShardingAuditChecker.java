@@ -63,11 +63,6 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     }
     
     @Override
-    public boolean check(final Grantee grantee, final ShardingRule rule) {
-        return true;
-    }
-    
-    @Override
     public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final ShardingRule rule) {
         return true;
     }

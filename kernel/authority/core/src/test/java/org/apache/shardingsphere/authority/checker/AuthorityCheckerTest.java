@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -51,20 +50,6 @@ public final class AuthorityCheckerTest {
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPILoader.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertCheckUser() {
-        Collection<ShardingSphereUser> users = new LinkedList<>();
-        ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        users.add(root);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPILoader.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
-        assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
-        assertFalse(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule));
-        assertFalse(sqlChecker.check(new Grantee("admin", "localhost"), rule));
     }
     
     @SuppressWarnings("unchecked")

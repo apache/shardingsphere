@@ -48,15 +48,6 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
     
     /**
      * Check authority.
-     * 
-     * @param grantee grantee
-     * @param rule rule
-     * @return check result
-     */
-    boolean check(Grantee grantee, T rule);
-    
-    /**
-     * Check authority.
      *
      * @param databaseName database name
      * @param grantee grantee
