@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDefaultSingleTableStorageUnitStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableRuleResultSet;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.ShowDefaultSingleTableStorageUnitExecutor;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Test;
@@ -35,16 +36,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleTableRuleResultSetTest {
+public final class ShowDefaultSingleTableStorageUnitExecutorTest {
     
     @Test
     public void assertGetRowData() {
-        DatabaseDistSQLResultSet resultSet = new SingleTableRuleResultSet();
-        resultSet.init(mockDatabase(), mock(ShowSingleTableStatement.class));
-        Collection<Object> actual = resultSet.getRowData();
+        RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> executor = new ShowDefaultSingleTableStorageUnitExecutor();
+        executor.getRows(mockDatabase(), mock(ShowDefaultSingleTableStorageUnitStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowDefaultSingleTableStorageUnitStatement.class));
         assertThat(actual.size(), is(1));
-        Iterator<Object> rowData = actual.iterator();
-        assertThat(rowData.next(), is("foo_ds"));
+        Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
+        String defaultSingleTableStorageUnit = (String) rowData.next().getCell(1);
+        assertThat(defaultSingleTableStorageUnit, is("foo_ds"));
+    }
+    
+    @Test
+    public void assertGetColumns() {
+        RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> executor = new ShowDefaultSingleTableStorageUnitExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(1));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("storage_unit_name"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

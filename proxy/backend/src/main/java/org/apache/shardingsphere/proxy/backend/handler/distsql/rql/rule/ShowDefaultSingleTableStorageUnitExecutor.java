@@ -17,28 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDefaultSingleTableStorageUnitStatement;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
- * Result set for show default single table storage unit.
+ * Show default single table storage unit executor.
  */
-public final class SingleTableRuleResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<String> data = Collections.emptyIterator();
-    
-    @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
-        data = Collections.singleton(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")).iterator();
-    }
+public final class ShowDefaultSingleTableStorageUnitExecutor implements RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -46,13 +38,11 @@ public final class SingleTableRuleResultSet implements DatabaseDistSQLResultSet 
     }
     
     @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return Collections.singletonList(data.next());
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase shardingSphereDatabase, final ShowDefaultSingleTableStorageUnitStatement sqlStatement) {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        SingleRule rule = shardingSphereDatabase.getRuleMetaData().getSingleRule(SingleRule.class);
+        result.add(new LocalDataQueryResultRow(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")));
+        return result;
     }
     
     @Override

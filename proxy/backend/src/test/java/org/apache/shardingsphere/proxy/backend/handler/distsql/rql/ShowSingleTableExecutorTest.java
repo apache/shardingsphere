@@ -132,6 +132,7 @@ public final class ShowSingleTableExecutorTest {
     public void assertGetColumns() {
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(2));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("table_name"));
         assertThat(iterator.next(), is("storage_unit_name"));
