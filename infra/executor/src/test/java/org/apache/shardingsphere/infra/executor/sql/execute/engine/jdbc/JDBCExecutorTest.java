@@ -58,10 +58,11 @@ public final class JDBCExecutorTest {
     public void assertExecuteSQLException() {
         try {
             ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-            when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), mock(ExecutionGroupReportContext.class)), any(), any(), anyBoolean()))
+            ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
+            when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), reportContext), any(), any(), anyBoolean()))
                     .thenThrow(new SQLException("TestSQLException"));
             JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
-            jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), mock(ExecutionGroupReportContext.class)), null);
+            jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), reportContext), null);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("TestSQLException"));
         }
@@ -70,10 +71,11 @@ public final class JDBCExecutorTest {
     @Test
     public void assertExecuteNotThrownSQLException() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), mock(ExecutionGroupReportContext.class)), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
+        ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
+        when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), reportContext), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
         SQLExecutorExceptionHandler.setExceptionThrown(false);
-        List<?> actual = jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), mock(ExecutionGroupReportContext.class)), null);
+        List<?> actual = jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), reportContext), null);
         assertThat(actual, is(Collections.emptyList()));
     }
 }
