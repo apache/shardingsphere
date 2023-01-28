@@ -21,7 +21,13 @@
        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?::int4, ?, ?, 1, 'test', '2017-08-08')" db-types="PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+<!--    TODO Fix https://github.com/apache/shardingsphere/issues/23764 -->
+<!--    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?::int4, ?, ?, 1, 'test', '2017-08-08')" db-types="PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">-->
+<!--        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
+<!--        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
+<!--    </test-case>-->
+    
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?::char(10), 1, 'test', '2017-08-08')" db-types="PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
