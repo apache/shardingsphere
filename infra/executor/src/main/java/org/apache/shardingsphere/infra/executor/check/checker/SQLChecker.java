@@ -35,16 +35,6 @@ import java.util.function.BiPredicate;
 public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Check database.
-     *
-     * @param databaseName database name
-     * @param grantee grantee
-     * @param rule rule
-     * @return check result
-     */
-    boolean check(String databaseName, Grantee grantee, T rule);
-    
-    /**
      * Check SQL.
      * 
      * @param sqlStatementContext SQL statement context
@@ -57,7 +47,8 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
     void check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
     
     /**
-     * Check User.
+     * Check authority.
+     * 
      * @param grantee grantee
      * @param rule rule
      * @return check result
@@ -65,7 +56,17 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
     boolean check(Grantee grantee, T rule);
     
     /**
-     * Check user.
+     * Check authority.
+     *
+     * @param databaseName database name
+     * @param grantee grantee
+     * @param rule rule
+     * @return check result
+     */
+    boolean check(String databaseName, Grantee grantee, T rule);
+    
+    /**
+     * Check authority.
      * 
      * @param grantee grantee
      * @param validator password validator

@@ -112,6 +112,7 @@ public final class SQLCheckEngine {
     
     /**
      * Check authentication.
+     * 
      * @param user user
      * @param validate validate
      * @param cipher cipher
