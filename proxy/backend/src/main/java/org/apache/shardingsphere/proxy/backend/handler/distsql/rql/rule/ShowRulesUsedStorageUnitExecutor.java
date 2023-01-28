@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show rules used storage unit.
+ * Show rules used storage unit executor.
  */
 public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowRulesUsedStorageUnitStatement> {
     
