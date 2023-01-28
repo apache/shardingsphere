@@ -101,43 +101,14 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         }
     }
     
-    /**
-     * Initialize the database data.
-     *
-     * @param databaseName database name
-     */
     protected abstract void initDatabaseData(String databaseName);
     
-    /**
-     * Get the database names as a condition for SQL execution.
-     *
-     * @param connectionSession connection session
-     * @return database names
-     */
     protected abstract List<String> getDatabaseNames(ConnectionSession connectionSession);
     
-    /**
-     * Add default row data.
-     *
-     */
     protected abstract void createPreProcessing();
     
-    /**
-     * Get the source object of the row data.
-     *
-     * @param databaseName database name
-     * @param callback callback for processing source data of information_schema
-     * @throws SQLException SQLException
-     */
     protected abstract void getSourceData(String databaseName, FunctionWithException<ResultSet, SQLException> callback) throws SQLException;
     
-    /**
-     * Get the source object of the row data.
-     *
-     * @param databaseName database name
-     * @param rowMap row
-     * @param aliasMap alias
-     */
     protected abstract void rowPostProcessing(String databaseName, Map<String, Object> rowMap, Map<String, String> aliasMap);
     
     private MergedResult createMergedResult() {
@@ -155,26 +126,13 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         return new RawQueryResultMetaData(columns);
     }
     
-    /**
-     * Determine whether the current database has a data source.
-     *
-     * @param databaseName database name
-     * @return has data source or not
-     */
     protected static Boolean hasDataSource(final String databaseName) {
         return ProxyContext.getInstance().getDatabase(databaseName).containsDataSource();
     }
     
-    /**
-     * Determine whether there is authority.
-     *
-     * @param databaseName database name
-     * @param grantee grantee
-     * @return has authority or not
-     */
-    protected static boolean hasAuthority(final String databaseName, final Grantee grantee) {
+    protected static boolean isAuthorized(final String databaseName, final Grantee grantee) {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        return new UserAuthorityChecker(authorityRule, grantee).check(databaseName);
+        return new UserAuthorityChecker(authorityRule, grantee).isAuthorized(databaseName);
     }
     
     /**
@@ -190,24 +148,13 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         protected void initDatabaseData(final String databaseName) {
         }
         
-        /**
-         * Get the database names as a condition for SQL execution.
-         *
-         * @return database names
-         */
         @Override
         protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
-            Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
+            Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee()))
                     .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).findFirst();
             return database.map(Collections::singletonList).orElse(Collections.emptyList());
         }
         
-        /**
-         * Get the source data of the row data.
-         *
-         * @param databaseName database name
-         * @throws SQLException SQLException
-         */
         @Override
         protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
             ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
@@ -221,21 +168,10 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
             }
         }
         
-        /**
-         * Custom processing.
-         *
-         * @param databaseName database name
-         * @param rowMap row
-         * @param aliasMap alias
-         */
         @Override
         protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         }
         
-        /**
-         * Add default row data.
-         *
-         */
         @Override
         protected void createPreProcessing() {
         }

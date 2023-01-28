@@ -17,40 +17,25 @@
 
 package org.apache.shardingsphere.authority.checker;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.junit.Test;
 
-import java.util.function.BiPredicate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
 
-/**
- * User authority checker.
- */
-@RequiredArgsConstructor
-public final class UserAuthorityChecker {
+import static org.junit.Assert.assertTrue;
+
+public final class UserAuthorityCheckerTest {
     
-    private final AuthorityRule rule;
-    
-    private final Grantee grantee;
-    
-    /**
-     * Check authority for database.
-     * 
-     * @param databaseName database name
-     * @return authorized or not
-     */
-    public boolean isAuthorized(final String databaseName) {
-        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
-    }
-    
-    /**
-     * Check authority for cipher.
-     * 
-     * @param validator validator
-     * @param cipher cipher
-     * @return authorized or not
-     */
-    public boolean isAuthorized(final BiPredicate<Object, Object> validator, final Object cipher) {
-        return rule.findUser(grantee).filter(optional -> validator.test(optional, cipher)).isPresent();
+    @Test
+    public void assertCheckIsAuthorizedDatabase() {
+        Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        assertTrue(new UserAuthorityChecker(new AuthorityRule(ruleConfig, Collections.emptyMap()), new Grantee("root", "localhost")).isAuthorized("db0"));
     }
 }

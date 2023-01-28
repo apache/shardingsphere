@@ -52,10 +52,10 @@ public final class PostgreSQLAuthenticationHandler {
         ShardingSpherePreconditions.checkState(authorityRule.findUser(grantee).isPresent(), () -> new UnknownUsernameException(username));
         UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, grantee);
         PostgreSQLAuthenticator authenticator = getAuthenticator(username, grantee.getHostname());
-        if (!userAuthorityChecker.check((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), md5Salt})) {
+        if (!userAuthorityChecker.isAuthorized((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), md5Salt})) {
             throw new InvalidPasswordException(username);
         }
-        ShardingSpherePreconditions.checkState(null == databaseName || userAuthorityChecker.check(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
+        ShardingSpherePreconditions.checkState(null == databaseName || userAuthorityChecker.isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
     /**

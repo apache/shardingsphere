@@ -109,10 +109,10 @@ public final class OpenGaussAuthenticationHandler {
         Grantee grantee = new Grantee(username, "%");
         ShardingSpherePreconditions.checkState(authorityRule.findUser(grantee).isPresent(), () -> new UnknownUsernameException(username));
         UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, grantee);
-        if (!userAuthorityChecker.check((a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration})) {
+        if (!userAuthorityChecker.isAuthorized((a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration})) {
             throw new InvalidPasswordException(username);
         }
-        ShardingSpherePreconditions.checkState(null == databaseName || userAuthorityChecker.check(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
+        ShardingSpherePreconditions.checkState(null == databaseName || userAuthorityChecker.isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
     private static boolean isPasswordRight(final ShardingSphereUser user, final Object[] args) {

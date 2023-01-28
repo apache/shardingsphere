@@ -75,14 +75,14 @@ public final class ShardingAuditCheckerTest {
     }
     
     @Test
-    public void assertCheckSQLStatementPass() {
+    public void assertCheckSuccess() {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
     }
     
     @Test
-    public void assertSQCheckPassByDisableAuditNames() {
+    public void assertCheckSuccessByDisableAuditNames() {
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
@@ -90,7 +90,7 @@ public final class ShardingAuditCheckerTest {
     }
     
     @Test
-    public void assertSQLCheckNotPass() {
+    public void assertCheckFailed() {
         ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("auditor_1");
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         doThrow(new SQLCheckException("Not allow DML operation without sharding conditions"))
