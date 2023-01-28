@@ -58,6 +58,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
@@ -86,14 +87,17 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         CacheOption cacheOption = new CacheOption(1024, 1024);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(
+                Arrays.asList(transactionRule, new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ProxyContext.init(contextManager);
     }
     
@@ -102,14 +106,6 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(result.getSchema(DefaultDatabase.LOGIC_NAME).getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
         return result;
-    }
-    
-    private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        TransactionRule transactionRule = mock(TransactionRule.class);
-        when(transactionRule.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
-        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     
     @Test

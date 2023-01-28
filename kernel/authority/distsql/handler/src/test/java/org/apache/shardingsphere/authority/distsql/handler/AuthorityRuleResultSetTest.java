@@ -20,15 +20,14 @@ package org.apache.shardingsphere.authority.distsql.handler;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -54,9 +53,7 @@ public final class AuthorityRuleResultSetTest {
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         when(authorityRule.getConfiguration()).thenReturn(createAuthorityRuleConfiguration());
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        when(result.findSingleRule(AuthorityRule.class)).thenReturn(Optional.of(authorityRule));
-        return result;
+        return new ShardingSphereRuleMetaData(Collections.singleton(authorityRule));
     }
     
     private AuthorityRuleConfiguration createAuthorityRuleConfiguration() {
