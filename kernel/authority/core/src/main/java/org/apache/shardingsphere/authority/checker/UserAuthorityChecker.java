@@ -34,7 +34,7 @@ public final class UserAuthorityChecker {
     private final Grantee grantee;
     
     /**
-     * Check authority for database.
+     * Check database authority.
      * 
      * @param databaseName database name
      * @return authorized or not
@@ -44,7 +44,7 @@ public final class UserAuthorityChecker {
     }
     
     /**
-     * Check authority for cipher.
+     * Check authority with cipher.
      * 
      * @param validator validator
      * @param cipher cipher
