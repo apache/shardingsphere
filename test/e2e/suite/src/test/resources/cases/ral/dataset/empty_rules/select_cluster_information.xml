@@ -19,4 +19,5 @@
     <metadata>
         <column name="version" assertion="false" />
     </metadata>
+    <row values="" />
 </dataset>
