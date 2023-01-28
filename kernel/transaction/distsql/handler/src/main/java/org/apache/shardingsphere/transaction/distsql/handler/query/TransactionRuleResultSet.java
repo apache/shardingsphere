@@ -40,11 +40,12 @@ public final class TransactionRuleResultSet implements GlobalRuleDistSQLResultSe
     
     private static final String PROPS = "props";
     
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+    private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        ruleMetaData.findSingleRule(TransactionRule.class).ifPresent(optional -> data = buildData(optional).iterator());
+    public void init(final ShardingSphereRuleMetaData globalRuleMetaData, final SQLStatement sqlStatement) {
+        TransactionRule rule = globalRuleMetaData.getSingleRule(TransactionRule.class);
+        data = buildData(rule).iterator();
     }
     
     private Collection<Collection<Object>> buildData(final TransactionRule rule) {
