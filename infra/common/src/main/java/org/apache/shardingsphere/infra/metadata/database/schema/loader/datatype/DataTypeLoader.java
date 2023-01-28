@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype
 
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -41,7 +41,7 @@ public final class DataTypeLoader {
      */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData, final DatabaseType databaseType) throws SQLException {
         Map<String, Integer> result = new StandardDataTypeLoader().load(databaseMetaData);
-        Optional<DialectDataTypeLoader> loader = TypedSPIRegistry.findService(DialectDataTypeLoader.class,
+        Optional<DialectDataTypeLoader> loader = TypedSPILoader.findService(DialectDataTypeLoader.class,
                 (databaseType instanceof BranchDatabaseType) ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType());
         if (loader.isPresent()) {
             result.putAll(loader.get().load());

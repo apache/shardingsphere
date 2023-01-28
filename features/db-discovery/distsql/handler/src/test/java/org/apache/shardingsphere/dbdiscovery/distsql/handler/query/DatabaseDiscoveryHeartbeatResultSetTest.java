@@ -50,9 +50,7 @@ public final class DatabaseDiscoveryHeartbeatResultSetTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         DatabaseDiscoveryRule rule = mock(DatabaseDiscoveryRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        ShardingSphereRuleMetaData databaseRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(database.getRuleMetaData()).thenReturn(databaseRuleMetaData);
-        when(databaseRuleMetaData.getSingleRule(DatabaseDiscoveryRule.class)).thenReturn(rule);
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
         DatabaseDistSQLResultSet resultSet = new DatabaseDiscoveryHeartbeatResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<String> columnNames = resultSet.getColumnNames();

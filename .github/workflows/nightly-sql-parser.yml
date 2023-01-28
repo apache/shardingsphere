@@ -31,7 +31,7 @@ env:
 jobs:
   database-parse:
     if: github.repository == 'apache/shardingsphere'
-    name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }} for ${{ matrix.database }}
+    name: CI - JDK ${{ matrix.java-version }} for ${{ matrix.database }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:

@@ -23,17 +23,15 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -51,10 +49,8 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
-        Optional<Grantee> grantee = rules.stream().filter(each -> each instanceof AuthorityRule)
-                .map(each -> ((AuthorityRule) each).findUser(connectionSession.getGrantee())).filter(Optional::isPresent)
-                .map(Optional::get).map(ShardingSphereUser::getGrantee).findFirst();
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        Optional<Grantee> grantee = authorityRule.findUser(connectionSession.getGrantee()).map(ShardingSphereUser::getGrantee);
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(grantee.isPresent() ? grantee.get().toString() : "")));
     }
     

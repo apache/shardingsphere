@@ -22,9 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +49,7 @@ public final class SQLCheckEngine {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static boolean check(final String databaseName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getServices(SQLChecker.class, rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(databaseName, grantee, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -62,16 +63,17 @@ public final class SQLCheckEngine {
      *
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters
+     * @param globalRuleMetaData global rule meta data
      * @param rules rules
      * @param currentDatabase current database
      * @param databases databases
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Collection<ShardingSphereRule> rules,
-                             final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getServices(SQLChecker.class, rules).entrySet()) {
-            entry.getValue().check(sqlStatementContext, params, grantee, currentDatabase, databases, entry.getKey());
+    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final ShardingSphereRuleMetaData globalRuleMetaData,
+                             final Collection<ShardingSphereRule> rules, final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
+            entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, currentDatabase, databases, entry.getKey());
         }
     }
     
@@ -87,7 +89,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getServices(SQLChecker.class, rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, entry.getKey());
             if (!checkResult) {
                 return false;
@@ -109,7 +111,7 @@ public final class SQLCheckEngine {
         if (rules.isEmpty()) {
             return false;
         }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getServices(SQLChecker.class, rules).entrySet()) {
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
             boolean checkResult = entry.getValue().check(user, validate, cipher, entry.getKey());
             if (!checkResult) {
                 return false;

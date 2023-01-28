@@ -31,7 +31,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -60,9 +59,7 @@ public final class TrafficRuleResultSetTest {
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         TrafficRule trafficRule = mock(TrafficRule.class);
         when(trafficRule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        when(result.findSingleRule(TrafficRule.class)).thenReturn(Optional.of(trafficRule));
-        return result;
+        return new ShardingSphereRuleMetaData(Collections.singleton(trafficRule));
     }
     
     private TrafficRuleConfiguration createTrafficRuleConfiguration() {

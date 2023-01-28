@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sqltranslator.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException
  * SQL translator.
  */
 @SingletonSPI
-public interface SQLTranslator extends TypedSPI, RequiredSPI {
+public interface SQLTranslator extends TypedSPI {
     
     /**
      * Translate SQL.

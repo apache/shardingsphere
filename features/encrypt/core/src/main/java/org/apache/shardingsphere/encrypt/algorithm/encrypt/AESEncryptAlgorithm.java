@@ -55,7 +55,7 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     }
     
     private byte[] createSecretKey(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(AES_KEY), () -> new EncryptAlgorithmInitializationException("AES", String.format("%s can not be null.", AES_KEY)));
+        ShardingSpherePreconditions.checkState(props.containsKey(AES_KEY), () -> new EncryptAlgorithmInitializationException("AES", String.format("%s can not be null", AES_KEY)));
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     

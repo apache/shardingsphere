@@ -31,7 +31,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | --------- |-------------| ------ |
 | HY004     | 11000       | Invalid value \`%s\`. |
 | HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
-| HY000     | 11002       | Can not find \`%s\` file for datetime initialize. |
 | HY004     | 11010       | Unsupported conversion stream charset \`%s\`. |
 
 ### 语法

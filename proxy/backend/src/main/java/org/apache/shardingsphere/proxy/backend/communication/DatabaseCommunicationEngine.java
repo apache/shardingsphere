@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
@@ -49,7 +48,6 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -158,12 +156,14 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
      * Execute to database.
      *
      * @return backend response
+     * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLFederationDeciderContext deciderContext = decide(queryContext, metaDataContexts.getMetaData().getProps(), database);
+        SQLFederationDeciderContext deciderContext = new SQLFederationDeciderEngine(
+                database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps()).decide(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), database);
         if (deciderContext.isUseSQLFederation()) {
             prepareFederationExecutor();
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
@@ -178,14 +178,7 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
         List result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
         Object executeResultSample = result.iterator().next();
-        return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
-                : processExecuteUpdate(executionContext, result);
-    }
-    
-    private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(queryContext, database);
+        return executeResultSample instanceof QueryResult ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, result);
     }
     
     private void prepareFederationExecutor() {
@@ -318,17 +311,8 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
+        Optional<DataNodeContainedRule> dataNodeContainedRule = database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class);
         return dataNodeContainedRule.isPresent() && dataNodeContainedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
-    }
-    
-    private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            if (each instanceof DataNodeContainedRule) {
-                return Optional.of((DataNodeContainedRule) each);
-            }
-        }
-        return Optional.empty();
     }
     
     /**

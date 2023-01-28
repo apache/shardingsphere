@@ -24,9 +24,10 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -48,7 +49,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPILoader.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
     }
     
@@ -60,7 +61,7 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPILoader.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule));
         assertFalse(sqlChecker.check(new Grantee("admin", "localhost"), rule));
@@ -74,12 +75,12 @@ public final class AuthorityCheckerTest {
         users.add(root);
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
+        SQLChecker<AuthorityRule> sqlChecker = OrderedSPILoader.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
-        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
-        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), "db0", Collections.emptyMap(), rule);
     }
 }

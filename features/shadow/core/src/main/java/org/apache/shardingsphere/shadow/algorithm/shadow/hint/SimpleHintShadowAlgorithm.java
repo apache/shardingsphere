@@ -19,17 +19,12 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
-import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * Simple hint shadow algorithm.
@@ -37,37 +32,14 @@ import java.util.Set;
 public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
     @Getter
-    private Properties props;
-    
-    private Map<String, String> simpleHint;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-        checkPropsSize(props);
-        simpleHint = initSimpleHint(props);
-    }
-    
-    private Map<String, String> initSimpleHint(final Properties props) {
-        Map<String, String> result = new HashMap<>(props.size(), 1.0f);
-        Set<String> strings = props.stringPropertyNames();
-        for (String each : strings) {
-            result.put(each, props.getProperty(each));
-        }
-        return result;
-    }
-    
-    private void checkPropsSize(final Properties props) {
-        ShardingSpherePreconditions.checkState(!props.isEmpty(), () -> new ShadowAlgorithmInitializationException(getType(), "Simple hint shadow algorithm props cannot be empty."));
-    }
+    private final Properties props = new Properties();
     
     @Override
     public boolean isShadow(final Collection<String> shadowTableNames, final PreciseHintShadowValue<String> noteShadowValue) {
-        if (ShadowOperationType.HINT_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
-            return false;
+        if (ShadowOperationType.HINT_MATCH == noteShadowValue.getShadowOperationType() || shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
+            return new SQLHintExtractor(noteShadowValue.getValue()).isShadow();
         }
-        SQLHintExtractor sqlHintExtractor = new SQLHintExtractor(noteShadowValue.getValue());
-        return sqlHintExtractor.isShadow();
+        return false;
     }
     
     @Override

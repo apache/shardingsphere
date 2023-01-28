@@ -42,6 +42,7 @@ import static org.mockito.Mockito.when;
 
 public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     
+    @SuppressWarnings("rawtypes")
     private SQLStatementContext sqlStatementContext;
     
     private ShardingSphereDatabase database;
@@ -62,7 +63,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     @Test
     public void assertNotDMLStatementCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
-        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database);
         verify(database, times(0)).getRuleMetaData();
     }
     
@@ -71,7 +72,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(true);
-        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database);
     }
     
     @Test
@@ -79,7 +80,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
-        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database);
     }
     
     @Test(expected = SQLCheckException.class)
@@ -88,6 +89,6 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
         when(rule.isShardingTable("t_order")).thenReturn(true);
-        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database);
     }
 }
