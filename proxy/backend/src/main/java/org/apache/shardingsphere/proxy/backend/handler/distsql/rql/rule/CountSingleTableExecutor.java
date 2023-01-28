@@ -25,32 +25,22 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.Collections;
 
 /**
  * Count single table executor.
  */
 public final class CountSingleTableExecutor implements RQLExecutor<CountSingleTableStatement> {
     
-    private String databaseName;
-    
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountSingleTableStatement sqlStatement) {
-        Optional<SingleRule> rule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        databaseName = database.getName();
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> addSingleTableData(result, databaseName, rule.get()));
-        return result;
+        SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
+        return Collections.singleton(new LocalDataQueryResultRow(database.getName(), rule.getAllTables().size()));
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("database", "count");
-    }
-    
-    private void addSingleTableData(final Collection<LocalDataQueryResultRow> row, final String databaseName, final SingleRule rule) {
-        row.add(new LocalDataQueryResultRow(databaseName, rule.getAllTables().size()));
     }
     
     @Override
