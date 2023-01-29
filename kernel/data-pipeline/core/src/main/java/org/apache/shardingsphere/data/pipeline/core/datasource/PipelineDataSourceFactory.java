@@ -37,13 +37,13 @@ public final class PipelineDataSourceFactory {
     /**
      * New instance data source wrapper.
      *
-     * @param dataSourceConfig data source configuration
+     * @param pipelineDataSourceConfig pipeline data source configuration
      * @return new data source wrapper
      */
     @SneakyThrows(SQLException.class)
-    public static PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration dataSourceConfig) {
-        DataSource pipelineDataSource = TypedSPILoader.getService(
-                PipelineDataSourceCreator.class, dataSourceConfig.getType()).createPipelineDataSource(dataSourceConfig.getDataSourceConfiguration());
-        return new PipelineDataSourceWrapper(pipelineDataSource, dataSourceConfig.getDatabaseType());
+    public static PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
+        DataSource dataSource = TypedSPILoader.getService(
+                PipelineDataSourceCreator.class, pipelineDataSourceConfig.getType()).createPipelineDataSource(pipelineDataSourceConfig.getDataSourceConfiguration());
+        return new PipelineDataSourceWrapper(dataSource, pipelineDataSourceConfig.getDatabaseType());
     }
 }

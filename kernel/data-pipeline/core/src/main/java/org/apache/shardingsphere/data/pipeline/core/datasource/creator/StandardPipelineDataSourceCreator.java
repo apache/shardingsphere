@@ -30,8 +30,8 @@ import javax.sql.DataSource;
 public final class StandardPipelineDataSourceCreator implements PipelineDataSourceCreator {
     
     @Override
-    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) {
-        return DataSourcePoolCreator.create((DataSourceProperties) pipelineDataSourceConfig);
+    public DataSource createPipelineDataSource(final Object dataSourceConfig) {
+        return DataSourcePoolCreator.create((DataSourceProperties) dataSourceConfig);
     }
     
     @Override
