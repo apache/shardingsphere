@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiPredicate;
 
 /**
@@ -52,12 +51,10 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @param params SQL parameters
      * @param grantee grantee
      * @param globalRuleMetaData global rule meta data
-     * @param currentDatabase current database
-     * @param databases databases
+     * @param database current database
      * @param rule rule
      */
-    void check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee,
-               ShardingSphereRuleMetaData globalRuleMetaData, String currentDatabase, Map<String, ShardingSphereDatabase> databases, T rule);
+    void check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
     
     /**
      * Check User.

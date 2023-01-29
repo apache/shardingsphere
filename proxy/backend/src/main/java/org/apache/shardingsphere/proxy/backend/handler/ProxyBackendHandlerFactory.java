@@ -157,8 +157,8 @@ public final class ProxyBackendHandlerFactory {
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
-        SQLCheckEngine.check(sqlStatementContext, queryContext.getParameters(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
-                getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
+        SQLCheckEngine.checkWithRules(sqlStatementContext, queryContext.getParameters(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
+                getRules(databaseName), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName), connectionSession.getGrantee());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));
     }
@@ -202,13 +202,11 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
-        MetaDataContexts contexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        if (Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)) {
-            return contexts.getMetaData().getGlobalRuleMetaData().getRules();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        Collection<ShardingSphereRule> result = new LinkedList<>(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules());
+        if (ProxyContext.getInstance().databaseExists(databaseName)) {
+            result.addAll(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
-        Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
-        result.addAll(contexts.getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
     

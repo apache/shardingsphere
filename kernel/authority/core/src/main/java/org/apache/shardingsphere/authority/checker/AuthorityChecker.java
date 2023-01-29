@@ -48,7 +48,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
@@ -64,14 +63,14 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     
     @Override
     public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
-                      final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule rule) {
+                      final ShardingSphereDatabase database, final AuthorityRule rule) {
         if (null == grantee) {
             return;
         }
         Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
         ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new SQLCheckException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
-        ShardingSpherePreconditions.checkState(null == currentDatabase || privileges.filter(optional -> optional.hasPrivileges(currentDatabase)).isPresent(),
-                () -> new SQLCheckException(String.format("Unknown database '%s'", currentDatabase)));
+        ShardingSpherePreconditions.checkState(null == database || privileges.filter(optional -> optional.hasPrivileges(database.getName())).isPresent(),
+                () -> new SQLCheckException(String.format("Unknown database '%s'", null == database ? null : database.getName())));
         PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
         boolean hasPrivileges = privileges.get().hasPrivileges(Collections.singletonList(privilegeType));
         ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLCheckException(String.format("Access denied for operation %s.", null == privilegeType ? "" : privilegeType.name())));
