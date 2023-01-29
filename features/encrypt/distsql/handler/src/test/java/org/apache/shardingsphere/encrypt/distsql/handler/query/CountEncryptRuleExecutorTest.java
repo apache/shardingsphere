@@ -17,37 +17,47 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountEncryptRuleResultSetTest {
+public final class CountEncryptRuleExecutorTest {
     
     @Test
     public void assertGetRowData() {
-        CountEncryptRuleResultSet resultSet = new CountEncryptRuleResultSet();
-        resultSet.init(mockDatabase(), mock(CountEncryptRuleStatement.class));
-        assertTrue(resultSet.next());
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("encrypt"));
-        assertThat(actual.get(1), is("db_1"));
-        assertThat(actual.get(2), is(1));
-        assertFalse(resultSet.next());
+        RQLExecutor<CountEncryptRuleStatement> executor = new CountEncryptRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountEncryptRuleStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("encrypt"));
+        assertThat(row.getCell(2), is("db_1"));
+        assertThat(row.getCell(3), is(1));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<CountEncryptRuleStatement> executor = new CountEncryptRuleExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(3));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("rule_name"));
+        assertThat(iterator.next(), is("database"));
+        assertThat(iterator.next(), is("count"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
