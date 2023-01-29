@@ -24,7 +24,6 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -83,15 +82,15 @@ public final class AuthorityChecker {
      * Check SQL authority.
      *
      * @param sqlStatementContext SQL statement context
-     * @param database current database
+     * @param databaseName database name
      */
-    public void isAuthorized(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
+    public void isAuthorized(final SQLStatementContext<?> sqlStatementContext, final String databaseName) {
         if (null == grantee) {
             return;
         }
         Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
-        ShardingSpherePreconditions.checkState(null == database || privileges.filter(optional -> optional.hasPrivileges(database.getName())).isPresent(),
-                () -> new UnknownDatabaseException(null == database ? null : database.getName()));
+        ShardingSpherePreconditions.checkState(null == databaseName || privileges.filter(optional -> optional.hasPrivileges(databaseName)).isPresent(),
+                () -> new UnknownDatabaseException(databaseName));
         PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
         ShardingSpherePreconditions.checkState(privileges.isPresent() && privileges.get().hasPrivileges(Collections.singleton(privilegeType)),
                 () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
