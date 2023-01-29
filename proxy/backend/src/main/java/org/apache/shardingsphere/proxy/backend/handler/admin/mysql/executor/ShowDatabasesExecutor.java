@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.checker.UserAuthorityChecker;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -57,9 +57,9 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<LocalDataQueryResultRow> getDatabaseNames(final ConnectionSession connectionSession) {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, connectionSession.getGrantee());
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());
         return ProxyContext.getInstance().getAllDatabaseNames().stream().sorted()
-                .filter(each -> checkLikePattern(each) && userAuthorityChecker.isAuthorized(each)).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
+                .filter(each -> checkLikePattern(each) && authorityChecker.isAuthorized(each)).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     private boolean checkLikePattern(final String databaseName) {

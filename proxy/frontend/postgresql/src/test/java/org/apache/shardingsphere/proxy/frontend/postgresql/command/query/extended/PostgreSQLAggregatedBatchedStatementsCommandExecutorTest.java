@@ -101,6 +101,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
         when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);

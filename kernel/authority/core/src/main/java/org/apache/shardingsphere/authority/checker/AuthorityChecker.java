@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.authority.checker;
 
-import org.apache.shardingsphere.authority.constant.AuthorityOrder;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -46,17 +44,47 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 
 /**
  * Authority checker.
  */
-public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
+@RequiredArgsConstructor
+public final class AuthorityChecker {
     
-    @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
-                      final ShardingSphereDatabase database, final AuthorityRule rule) {
+    private final AuthorityRule rule;
+    
+    private final Grantee grantee;
+    
+    /**
+     * Check database authority.
+     * 
+     * @param databaseName database name
+     * @return authorized or not
+     */
+    public boolean isAuthorized(final String databaseName) {
+        return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
+    }
+    
+    /**
+     * Check authority with cipher.
+     * 
+     * @param validator validator
+     * @param cipher cipher
+     * @return authorized or not
+     */
+    public boolean isAuthorized(final BiPredicate<Object, Object> validator, final Object cipher) {
+        return rule.findUser(grantee).filter(optional -> validator.test(optional, cipher)).isPresent();
+    }
+    
+    /**
+     * Check SQL authority.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @param database current database
+     */
+    public void isAuthorized(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
         if (null == grantee) {
             return;
         }
@@ -65,8 +93,8 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         ShardingSpherePreconditions.checkState(null == database || privileges.filter(optional -> optional.hasPrivileges(database.getName())).isPresent(),
                 () -> new SQLCheckException(String.format("Unknown database '%s'", null == database ? null : database.getName())));
         PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
-        boolean hasPrivileges = privileges.get().hasPrivileges(Collections.singletonList(privilegeType));
-        ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLCheckException(String.format("Access denied for operation %s.", null == privilegeType ? "" : privilegeType.name())));
+        boolean hasPrivileges = privileges.get().hasPrivileges(Collections.singleton(privilegeType));
+        ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLCheckException(String.format("Access denied for operation %s", null == privilegeType ? "" : privilegeType.name())));
     }
     
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {
@@ -122,15 +150,5 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
             return PrivilegeType.TRUNCATE;
         }
         return null;
-    }
-    
-    @Override
-    public int getOrder() {
-        return AuthorityOrder.ORDER;
-    }
-    
-    @Override
-    public Class<AuthorityRule> getTypeClass() {
-        return AuthorityRule.class;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.checker.UserAuthorityChecker;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -55,8 +55,8 @@ public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     private void check(final DropDatabaseStatement sqlStatement, final Grantee grantee) {
         String databaseName = sqlStatement.getDatabaseName().toLowerCase();
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, grantee);
-        ShardingSpherePreconditions.checkState(userAuthorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
+        ShardingSpherePreconditions.checkState(authorityChecker.isAuthorized(databaseName), () -> new UnknownDatabaseException(databaseName));
         ShardingSpherePreconditions.checkState(sqlStatement.isIfExists() || ProxyContext.getInstance().databaseExists(databaseName), () -> new DatabaseDropNotExistsException(databaseName));
     }
     

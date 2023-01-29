@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.checker.UserAuthorityChecker;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -40,8 +40,8 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     public void execute(final ConnectionSession connectionSession) {
         String databaseName = SQLUtil.getExactlyValue(useStatement.getSchema());
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, connectionSession.getGrantee());
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName) && userAuthorityChecker.isAuthorized(databaseName),
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName) && authorityChecker.isAuthorized(databaseName),
                 () -> new UnknownDatabaseException(databaseName));
         connectionSession.setCurrentDatabase(databaseName);
     }

@@ -23,36 +23,33 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatement
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class AuthorityCheckerTest {
     
-    @SuppressWarnings("unchecked")
+    @Test
+    public void assertCheckIsAuthorizedDatabase() {
+        Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        assertTrue(new AuthorityChecker(new AuthorityRule(ruleConfig, Collections.emptyMap()), new Grantee("root", "localhost")).isAuthorized("db0"));
+    }
+    
     @Test
     public void assertCheck() {
-        Collection<ShardingSphereUser> users = new LinkedList<>();
-        ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        users.add(root);
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap());
-        SQLChecker<AuthorityRule> sqlChecker = OrderedSPILoader.getServices(SQLChecker.class, Collections.singleton(rule)).get(rule);
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), null, rule);
-        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), null, rule);
-        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), mock(ShardingSphereRuleMetaData.class), null, rule);
+        Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
+        AuthorityRule rule = new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties())), Collections.emptyMap());
+        AuthorityChecker authorityChecker = new AuthorityChecker(rule, new Grantee("root", "localhost"));
+        authorityChecker.isAuthorized(mock(SelectStatementContext.class), null);
+        authorityChecker.isAuthorized(mock(InsertStatementContext.class), null);
+        authorityChecker.isAuthorized(mock(CreateTableStatementContext.class), null);
     }
 }
