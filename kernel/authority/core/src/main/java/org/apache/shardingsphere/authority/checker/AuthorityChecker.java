@@ -57,6 +57,17 @@ public final class AuthorityChecker {
     private final Grantee grantee;
     
     /**
+     * Check Authentication with cipher.
+     *
+     * @param validator validator
+     * @param cipher cipher
+     * @return authenticated or not
+     */
+    public boolean isAuthenticated(final BiPredicate<Object, Object> validator, final Object cipher) {
+        return rule.findUser(grantee).filter(optional -> validator.test(optional, cipher)).isPresent();
+    }
+    
+    /**
      * Check database authority.
      * 
      * @param databaseName database name
@@ -64,17 +75,6 @@ public final class AuthorityChecker {
      */
     public boolean isAuthorized(final String databaseName) {
         return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
-    }
-    
-    /**
-     * Check authority with cipher.
-     * 
-     * @param validator validator
-     * @param cipher cipher
-     * @return authorized or not
-     */
-    public boolean isAuthorized(final BiPredicate<Object, Object> validator, final Object cipher) {
-        return rule.findUser(grantee).filter(optional -> validator.test(optional, cipher)).isPresent();
     }
     
     /**
