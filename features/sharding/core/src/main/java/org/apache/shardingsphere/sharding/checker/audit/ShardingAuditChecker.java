@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiPredicate;
 
 /**
@@ -46,7 +45,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     
     @Override
     public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
-                      final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
+                      final ShardingSphereDatabase database, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {
             return;
@@ -57,7 +56,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
         for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
             for (String auditorName : auditStrategy.getAuditorNames()) {
                 if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(auditorName.toLowerCase())) {
-                    rule.getAuditors().get(auditorName).check(sqlStatementContext, params, grantee, globalRuleMetaData, databases.get(currentDatabase.toLowerCase()));
+                    rule.getAuditors().get(auditorName).check(sqlStatementContext, params, grantee, globalRuleMetaData, database);
                 }
             }
         }

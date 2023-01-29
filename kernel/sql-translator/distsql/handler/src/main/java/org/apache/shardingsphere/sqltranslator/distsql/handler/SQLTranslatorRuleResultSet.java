@@ -38,11 +38,12 @@ public final class SQLTranslatorRuleResultSet implements GlobalRuleDistSQLResult
     
     private static final String USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED = "use_original_sql_when_translating_failed";
     
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+    private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        ruleMetaData.findSingleRule(SQLTranslatorRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
+    public void init(final ShardingSphereRuleMetaData globalRuleMetaData, final SQLStatement sqlStatement) {
+        SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
+        data = buildData(rule.getConfiguration()).iterator();
     }
     
     private Collection<Collection<Object>> buildData(final SQLTranslatorRuleConfiguration ruleConfig) {

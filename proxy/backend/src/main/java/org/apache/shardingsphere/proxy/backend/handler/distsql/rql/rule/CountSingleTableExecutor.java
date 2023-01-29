@@ -17,46 +17,34 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDefaultSingleTableStorageUnitStatement;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 /**
- * Result set for show default single table storage unit.
+ * Count single table executor.
  */
-public final class SingleTableRuleResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<String> data = Collections.emptyIterator();
+public final class CountSingleTableExecutor implements RQLExecutor<CountSingleTableStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountSingleTableStatement sqlStatement) {
         SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
-        data = Collections.singleton(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")).iterator();
+        return Collections.singleton(new LocalDataQueryResultRow(database.getName(), rule.getAllTables().size()));
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singletonList("storage_unit_name");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return Collections.singletonList(data.next());
+        return Arrays.asList("database", "count");
     }
     
     @Override
     public String getType() {
-        return ShowDefaultSingleTableStorageUnitStatement.class.getName();
+        return CountSingleTableStatement.class.getName();
     }
 }

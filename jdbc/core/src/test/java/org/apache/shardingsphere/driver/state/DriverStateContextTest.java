@@ -44,6 +44,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,7 +62,8 @@ public final class DriverStateContextTest {
     public void setUp() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class)));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class)));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(
+                mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, globalRuleMetaData, new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }

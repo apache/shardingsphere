@@ -19,11 +19,14 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -33,21 +36,18 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show rules used storage unit.
+ * Show rules used storage unit executor.
  */
-public final class RulesUsedStorageUnitResultSet implements DatabaseDistSQLResultSet {
+public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowRulesUsedStorageUnitStatement> {
     
     private static final String SHARDING = "sharding";
     
@@ -59,29 +59,29 @@ public final class RulesUsedStorageUnitResultSet implements DatabaseDistSQLResul
     
     private static final String SHADOW = "shadow";
     
-    private Iterator<Collection<Object>> data;
+    private static final String MASK = "mask";
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        List<Collection<Object>> data = new LinkedList<>();
-        ShowRulesUsedStorageUnitStatement statement = (ShowRulesUsedStorageUnitStatement) sqlStatement;
-        String resourceName = statement.getStorageUnitName().orElse(null);
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowRulesUsedStorageUnitStatement sqlStatement) {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        String resourceName = sqlStatement.getStorageUnitName().orElse(null);
         if (database.getResourceMetaData().getDataSources().containsKey(resourceName)) {
-            data.addAll(getShardingData(database));
-            data.addAll(getReadwriteSplittingData(database, resourceName));
-            data.addAll(getDatabaseDiscoveryData(database, resourceName));
-            data.addAll(getEncryptData(database));
-            data.addAll(getShadowData(database, resourceName));
+            result.addAll(getShardingData(database));
+            result.addAll(getReadwriteSplittingData(database, resourceName));
+            result.addAll(getDatabaseDiscoveryData(database, resourceName));
+            result.addAll(getEncryptData(database));
+            result.addAll(getShadowData(database, resourceName));
+            result.addAll(getMaskData(database));
         }
-        this.data = data.iterator();
+        return result;
     }
     
-    private Collection<Collection<Object>> getShardingData(final ShardingSphereDatabase database) {
+    private Collection<LocalDataQueryResultRow> getShardingData(final ShardingSphereDatabase database) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!rule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<Collection<Object>> result = new LinkedList<>();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
         for (ShardingAutoTableRuleConfiguration each : config.getAutoTables()) {
             result.add(buildRow(SHARDING, each.getLogicTable()));
@@ -92,12 +92,12 @@ public final class RulesUsedStorageUnitResultSet implements DatabaseDistSQLResul
         return result;
     }
     
-    private Collection<Collection<Object>> getReadwriteSplittingData(final ShardingSphereDatabase database, final String resourceName) {
+    private Collection<LocalDataQueryResultRow> getReadwriteSplittingData(final ShardingSphereDatabase database, final String resourceName) {
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
         if (!rule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<Collection<Object>> result = new LinkedList<>();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : config.getDataSources()) {
             if (null != each.getStaticStrategy()) {
@@ -112,7 +112,7 @@ public final class RulesUsedStorageUnitResultSet implements DatabaseDistSQLResul
         return result;
     }
     
-    private Collection<Collection<Object>> getDatabaseDiscoveryData(final ShardingSphereDatabase database, final String resourceName) {
+    private Collection<LocalDataQueryResultRow> getDatabaseDiscoveryData(final ShardingSphereDatabase database, final String resourceName) {
         Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
         if (!rule.isPresent()) {
             return Collections.emptyList();
@@ -121,7 +121,7 @@ public final class RulesUsedStorageUnitResultSet implements DatabaseDistSQLResul
         return config.getDataSources().stream().filter(each -> each.getDataSourceNames().contains(resourceName)).map(each -> buildRow(DB_DISCOVERY, each.getGroupName())).collect(Collectors.toList());
     }
     
-    private Collection<Collection<Object>> getEncryptData(final ShardingSphereDatabase database) {
+    private Collection<LocalDataQueryResultRow> getEncryptData(final ShardingSphereDatabase database) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         if (!rule.isPresent()) {
             return Collections.emptyList();
@@ -130,7 +130,7 @@ public final class RulesUsedStorageUnitResultSet implements DatabaseDistSQLResul
         return config.getTables().stream().map(each -> buildRow(ENCRYPT, each.getName())).collect(Collectors.toList());
     }
     
-    private Collection<Collection<Object>> getShadowData(final ShardingSphereDatabase database, final String resourceName) {
+    private Collection<LocalDataQueryResultRow> getShadowData(final ShardingSphereDatabase database, final String resourceName) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
         if (!rule.isPresent()) {
             return Collections.emptyList();
@@ -141,23 +141,22 @@ public final class RulesUsedStorageUnitResultSet implements DatabaseDistSQLResul
                 .map(each -> buildRow(SHADOW, each.getName())).collect(Collectors.toList());
     }
     
-    private Collection<Object> buildRow(final String type, final String name) {
-        return Arrays.asList(type, name);
+    private Collection<LocalDataQueryResultRow> getMaskData(final ShardingSphereDatabase database) {
+        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
+        if (!rule.isPresent()) {
+            return Collections.emptyList();
+        }
+        MaskRuleConfiguration config = (MaskRuleConfiguration) rule.get().getConfiguration();
+        return config.getTables().stream().map(each -> buildRow(MASK, each.getName())).collect(Collectors.toList());
+    }
+    
+    private LocalDataQueryResultRow buildRow(final String type, final String name) {
+        return new LocalDataQueryResultRow(type, name);
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("type", "name");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override

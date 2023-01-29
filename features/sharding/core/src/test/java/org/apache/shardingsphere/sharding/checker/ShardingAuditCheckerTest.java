@@ -77,7 +77,7 @@ public final class ShardingAuditCheckerTest {
     @Test
     public void assertCheckSQLStatementPass() {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, "foo_db", databases, rule);
+        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
     }
     
@@ -85,7 +85,7 @@ public final class ShardingAuditCheckerTest {
     public void assertSQCheckPassByDisableAuditNames() {
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, "foo_db", databases, rule);
+        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
     }
     
@@ -96,7 +96,7 @@ public final class ShardingAuditCheckerTest {
         doThrow(new SQLCheckException("Not allow DML operation without sharding conditions"))
                 .when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
         try {
-            new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, "foo_db", databases, rule);
+            new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
         } catch (final SQLCheckException ex) {
             assertThat(ex.getMessage(), is("SQL check failed, error message: Not allow DML operation without sharding conditions."));
         }

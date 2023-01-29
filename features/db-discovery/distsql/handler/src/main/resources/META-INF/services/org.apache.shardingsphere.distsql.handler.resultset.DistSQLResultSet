@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.distsql.handler.query.DatabaseDiscoveryRuleResultSet
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.DatabaseDiscoveryTypeResultSet
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.DatabaseDiscoveryHeartbeatResultSet
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.CountDatabaseDiscoveryRuleResultSet
