@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -36,7 +36,7 @@ import java.util.List;
  * Queryable scaling RAL backend handler.
  */
 @RequiredArgsConstructor
-public final class QueryableScalingRALBackendHandler implements ProxyBackendHandler {
+public final class QueryableScalingRALBackendHandler implements DistSQLBackendHandler {
     
     private final QueryableScalingRALStatement sqlStatement;
     

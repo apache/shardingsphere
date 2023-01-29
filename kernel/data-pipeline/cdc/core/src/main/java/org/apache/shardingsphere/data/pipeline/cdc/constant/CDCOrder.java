@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.cdc.constant;
 
 /**
- * CDC rule order of load.
+ * CDC rule order.
  */
 public final class CDCOrder {
     
+    /**
+     * CDC order.
+     */
     public static final int ORDER = 10000;
 }

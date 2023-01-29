@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.initdb;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * COM_INIT_DB command executor for MySQL.
@@ -47,17 +47,11 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         String databaseName = SQLUtil.getExactlyValue(packet.getSchema());
-        if (ProxyContext.getInstance().databaseExists(databaseName) && SQLCheckEngine.check(databaseName, getRules(databaseName), connectionSession.getGrantee())) {
-            connectionSession.setCurrentDatabase(packet.getSchema());
-            return Collections.singletonList(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
-        }
-        throw new UnknownDatabaseException(packet.getSchema());
-    }
-    
-    private Collection<ShardingSphereRule> getRules(final String databaseName) {
-        Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
-        return result;
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(databaseName) && authorityChecker.isAuthorized(databaseName),
+                () -> new UnknownDatabaseException(packet.getSchema()));
+        connectionSession.setCurrentDatabase(packet.getSchema());
+        return Collections.singletonList(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.imp
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -81,7 +81,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         if (jobItemContext.isStopping()) {
             return;
         }
-        TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
+        TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
         ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(1, checkJobId + "-check");
         executeEngine.submit(checkExecutor, checkExecuteCallback);
     }
@@ -98,7 +98,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         protected void runBlocking() {
             checkJobAPI.persistJobItemProgress(jobItemContext);
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
-            InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, jobType.getTypeName());
+            InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getTypeName());
             PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(parentJobId);
             DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(
                     parentJobConfig, checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());

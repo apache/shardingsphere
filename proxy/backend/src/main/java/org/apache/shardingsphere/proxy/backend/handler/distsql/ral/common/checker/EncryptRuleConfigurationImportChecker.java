@@ -27,7 +27,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -63,7 +63,7 @@ public final class EncryptRuleConfigurationImportChecker {
     
     private void checkEncryptors(final EncryptRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedAlgorithms = currentRuleConfig.getEncryptors().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(EncryptAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Encryptors", notExistedAlgorithms));
     }
     

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Ind
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ public final class SingleSchemaMetaDataDecoratorTest {
     public void assertDecorate() {
         SingleRule singleRule = mock(SingleRule.class);
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleRule);
-        SingleSchemaMetaDataDecorator builder = (SingleSchemaMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(singleRule);
+        SingleSchemaMetaDataDecorator builder = (SingleSchemaMetaDataDecorator) OrderedSPILoader.getServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(singleRule);
         Map<String, SchemaMetaData> schemaMetaDataMap = mockSchemaMetaDataMap();
         TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleRule, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = tableMetaData.getColumns().iterator();

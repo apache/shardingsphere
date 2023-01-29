@@ -28,14 +28,12 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class TransactionRuleResultSetTest {
     
@@ -66,10 +64,8 @@ public final class TransactionRuleResultSetTest {
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        TransactionRule rule = new TransactionRule(createAuthorityRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(rule));
-        return result;
+        TransactionRule transactionRule = new TransactionRule(createAuthorityRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
+        return new ShardingSphereRuleMetaData(Collections.singleton(transactionRule));
     }
     
     private TransactionRuleConfiguration createAuthorityRuleConfiguration(final String defaultType, final String providerType, final Properties props) {

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.data.event.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -102,7 +102,7 @@ public final class ShardingSphereDataScheduleCollector {
         
         private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
-            Optional<ShardingSphereDataCollector> dataCollector = TypedSPIRegistry.findRegisteredService(ShardingSphereDataCollector.class, table.getName());
+            Optional<ShardingSphereDataCollector> dataCollector = TypedSPILoader.findService(ShardingSphereDataCollector.class, table.getName());
             if (!dataCollector.isPresent()) {
                 return;
             }
@@ -112,8 +112,8 @@ public final class ShardingSphereDataScheduleCollector {
             } catch (final SQLException ex) {
                 log.error("Collect data failed!", ex);
             }
-            tableData.ifPresent(shardingSphereTableData -> changedShardingSphereData.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
-                    .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), shardingSphereTableData));
+            tableData.ifPresent(optional -> changedShardingSphereData.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
+                    .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), optional));
         }
         
         private void compareUpdateAndSendEvent(final ShardingSphereData shardingSphereData, final ShardingSphereData changedShardingSphereData, final Map<String, ShardingSphereDatabase> databases) {

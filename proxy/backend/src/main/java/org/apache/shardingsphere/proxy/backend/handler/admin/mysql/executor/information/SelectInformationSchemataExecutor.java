@@ -83,7 +83,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee())).collect(Collectors.toList());
         SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetaDataExecutor.hasDataSource(each)).collect(Collectors.toSet()));
         List<String> result = databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {

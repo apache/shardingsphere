@@ -23,7 +23,7 @@ import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.io.File;
@@ -64,7 +64,7 @@ public final class ExampleGeneratorFactory {
         YamlExampleConfiguration exampleConfig = buildExampleConfiguration();
         YamlExampleConfigurationValidator.validate(exampleConfig);
         for (String each : exampleConfig.getProducts()) {
-            TypedSPIRegistry.getRegisteredService(ExampleGenerator.class, each).generate(templateConfig, exampleConfig);
+            TypedSPILoader.getService(ExampleGenerator.class, each).generate(templateConfig, exampleConfig);
         }
     }
     

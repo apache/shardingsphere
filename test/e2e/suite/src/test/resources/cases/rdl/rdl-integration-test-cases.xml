@@ -157,5 +157,24 @@
             <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
         </assertion>
     </test-case>
+    <test-case sql="CREATE MASK RULE t_mask (COLUMNS((NAME=order_id,TYPE(NAME='MD5'))));">
+        <assertion expected-data-file="create_mask_rule.xml">
+            <assertion-sql sql="SHOW MASK RULES;" />
+            <destroy-sql sql="DROP MASK RULE t_mask;" />
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER MASK RULE t_mask (COLUMNS((NAME=order_id, TYPE(NAME='MASK_FROM_X_TO_Y', PROPERTIES('from-x'=1, 'to-y'=2, 'replace-char'='*'))))));">
+        <assertion expected-data-file="alter_mask_rule.xml">
+            <initial-sql sql="CREATE MASK RULE t_mask (COLUMNS((NAME=order_id,TYPE(NAME='MD5'))));" />
+            <assertion-sql sql="SHOW MASK RULES;" />
+            <destroy-sql sql="DROP MASK RULE t_mask;" />
+        </assertion>
+    </test-case>
+    <test-case sql="DROP MASK RULE t_mask;">
+        <assertion expected-data-file="drop_mask_rule.xml">
+            <initial-sql sql="CREATE MASK RULE t_mask (COLUMNS((NAME=order_id,TYPE(NAME='MD5'))));" />
+            <assertion-sql sql="SHOW MASK RULES;" />
+        </assertion>
+    </test-case>
 </integration-test-cases>
 

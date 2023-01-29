@@ -31,7 +31,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | HY004     | 11000       | Invalid value \`%s\`. |
 | HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
-| HY000     | 11002       | Can not find \`%s\` file for datetime initialize. |
 | HY004     | 11010       | Unsupported conversion stream charset \`%s\`. |
 
 ### Syntax
@@ -82,7 +81,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 44000     | 16000       | SQL check failed, error message: %s |
+| 44000     | 16000       | SQL audit failed, error message: %s. |
 | 44000     | 16001       | Hint datasource: %s is not exist. |
 
 ### Cluster

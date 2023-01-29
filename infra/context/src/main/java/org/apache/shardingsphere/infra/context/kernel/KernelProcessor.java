@@ -48,15 +48,16 @@ public final class KernelProcessor {
      */
     public ExecutionContext generateExecutionContext(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData,
                                                      final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        RouteContext routeContext = route(queryContext, database, props, connectionContext);
+        RouteContext routeContext = route(queryContext, database, globalRuleMetaData, props, connectionContext);
         SQLRewriteResult rewriteResult = rewrite(queryContext, database, globalRuleMetaData, props, routeContext, connectionContext);
         ExecutionContext result = createExecutionContext(queryContext, database, routeContext, rewriteResult);
         logSQL(queryContext, props, result);
         return result;
     }
     
-    private RouteContext route(final QueryContext queryContext, final ShardingSphereDatabase database, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(connectionContext, queryContext, database);
+    private RouteContext route(final QueryContext queryContext, final ShardingSphereDatabase database,
+                               final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+        return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(connectionContext, queryContext, globalRuleMetaData, database);
     }
     
     private SQLRewriteResult rewrite(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData,

@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -30,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +56,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     private static final Collection<String> OPERATORS = new HashSet<>(Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST));
     
     @Override
-    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> params) {
+    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final Column column, final List<Object> params, final TimeServiceRule timeServiceRule) {
         String operator = predicate.getOperator();
         if (!isSupportedOperator(operator)) {
             return Optional.empty();
@@ -69,7 +68,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return generate(value.get(), column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
         }
         if (ExpressionConditionUtils.isNowExpression(valueExpression)) {
-            return generate(RequiredSPIRegistry.getRegisteredService(DatetimeService.class).getDatetime(), column, operator, -1);
+            return generate(timeServiceRule.getDatetime(), column, operator, -1);
         }
         return Optional.empty();
     }

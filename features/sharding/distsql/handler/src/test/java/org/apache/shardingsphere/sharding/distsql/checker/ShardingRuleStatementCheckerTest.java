@@ -69,9 +69,6 @@ public final class ShardingRuleStatementCheckerTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Mock
-    private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
-    
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
     private final ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
@@ -80,8 +77,7 @@ public final class ShardingRuleStatementCheckerTest {
     public void before() {
         when(database.getName()).thenReturn("schema");
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
-        when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
     }
     
     @Test

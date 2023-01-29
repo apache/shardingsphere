@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -55,7 +55,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         this.jobItemContext = jobItemContext;
         this.inventoryTasks = inventoryTasks;
         this.incrementalTasks = incrementalTasks;
-        jobAPI = TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName());
+        jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName());
     }
     
     @Override
@@ -76,7 +76,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         if (jobItemContext.isStopping()) {
             return;
         }
-        TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
+        TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
         if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");
             executeIncrementalTask();
