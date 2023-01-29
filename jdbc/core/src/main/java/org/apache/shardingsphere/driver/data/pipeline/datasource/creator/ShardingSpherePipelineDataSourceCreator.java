@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.data.pipeline.datasource.creator;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -34,8 +35,8 @@ import java.sql.SQLException;
 public final class ShardingSpherePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
     @Override
-    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) throws SQLException {
-        YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig;
+    public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
         YamlShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
         enableRangeQueryForInline(shardingRuleConfig);
         rootConfig.setDatabaseName(null);
