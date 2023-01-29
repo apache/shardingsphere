@@ -45,7 +45,6 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowEncryptRulesStatement sqlStatement) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        
         if (rule.isPresent()) {
             result = buildData((EncryptRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
         }
