@@ -51,7 +51,9 @@ public final class SQLCheckEngine {
     public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
                              final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
         Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
-        rules.addAll(database.getRuleMetaData().getRules());
+        if (null != database) {
+            rules.addAll(database.getRuleMetaData().getRules());
+        }
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
             entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey());
         }
