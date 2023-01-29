@@ -81,7 +81,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 44000     | 16000       | SQL check failed, error message: %s |
+| 44000     | 16000       | SQL audit failed, error message: %s. |
 | 44000     | 16001       | Hint datasource: %s is not exist. |
 
 ### 集群

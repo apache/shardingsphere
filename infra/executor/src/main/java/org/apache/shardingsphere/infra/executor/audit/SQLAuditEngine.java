@@ -15,33 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.check.checker;
+package org.apache.shardingsphere.infra.executor.audit;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
- * SQL checker.
+ * SQL audit engine.
  */
-@SingletonSPI
-public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLAuditEngine {
     
     /**
-     * Check SQL.
-     * 
+     * Audit SQL.
+     *
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters
-     * @param grantee grantee
      * @param globalRuleMetaData global rule meta data
-     * @param database current database
-     * @param rule rule
+     * @param database database
+     * @param grantee grantee
      */
-    void check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void audit(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
+                             final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
+        Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
+        if (null != database) {
+            rules.addAll(database.getRuleMetaData().getRules());
+        }
+        for (Entry<ShardingSphereRule, SQLAuditor> entry : OrderedSPILoader.getServices(SQLAuditor.class, rules).entrySet()) {
+            entry.getValue().audit(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey());
+        }
+    }
 }

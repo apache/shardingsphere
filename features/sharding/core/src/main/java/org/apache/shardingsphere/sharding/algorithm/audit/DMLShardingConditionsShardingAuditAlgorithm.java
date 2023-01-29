@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
+import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -52,7 +52,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
             if (!rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames()) && sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {
                 ShardingSpherePreconditions.checkState(!new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params).isEmpty(),
-                        () -> new SQLCheckException("Not allow DML operation without sharding conditions"));
+                        () -> new SQLAuditException("Not allow DML operation without sharding conditions"));
             }
         }
     }
