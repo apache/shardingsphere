@@ -78,12 +78,12 @@ public final class AuthorityChecker {
     }
     
     /**
-     * Check SQL authority.
+     * Check privileges.
      *
-     * @param sqlStatement SQL statement
      * @param databaseName database name
+     * @param sqlStatement SQL statement
      */
-    public void isAuthorized(final SQLStatement sqlStatement, final String databaseName) {
+    public void checkPrivileges(final String databaseName, final SQLStatement sqlStatement) {
         if (null == grantee) {
             return;
         }
