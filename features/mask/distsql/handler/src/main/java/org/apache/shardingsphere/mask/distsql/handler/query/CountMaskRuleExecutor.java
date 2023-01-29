@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Result set for count mask rule.
+ * Count mask rule executor.
  */
 public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleStatement> {
     
