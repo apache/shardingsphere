@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.audit;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
+import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -83,7 +83,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
         shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database);
     }
     
-    @Test(expected = SQLCheckException.class)
+    @Test(expected = SQLAuditException.class)
     public void assertEmptyShardingConditionsCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));

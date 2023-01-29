@@ -22,7 +22,7 @@ import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
+import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -89,12 +89,12 @@ public final class AuthorityChecker {
             return;
         }
         Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
-        ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new SQLCheckException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
+        ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new SQLAuditException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
         ShardingSpherePreconditions.checkState(null == database || privileges.filter(optional -> optional.hasPrivileges(database.getName())).isPresent(),
-                () -> new SQLCheckException(String.format("Unknown database '%s'", null == database ? null : database.getName())));
+                () -> new SQLAuditException(String.format("Unknown database '%s'", null == database ? null : database.getName())));
         PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
         boolean hasPrivileges = privileges.get().hasPrivileges(Collections.singleton(privilegeType));
-        ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLCheckException(String.format("Access denied for operation %s", null == privilegeType ? "" : privilegeType.name())));
+        ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLAuditException(String.format("Access denied for operation %s", null == privilegeType ? "" : privilegeType.name())));
     }
     
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {

@@ -42,7 +42,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
+import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -155,8 +155,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
                 .orElseThrow(() -> new MissingRequiredRuleException("authority"));
         ShardingSpherePrivileges privileges = authorityRule.findPrivileges(grantee)
-                .orElseThrow(() -> new SQLCheckException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
-        ShardingSpherePreconditions.checkState(privileges.hasPrivileges(currentDatabase), () -> new SQLCheckException(String.format("Unknown database '%s'", currentDatabase)));
+                .orElseThrow(() -> new SQLAuditException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
+        ShardingSpherePreconditions.checkState(privileges.hasPrivileges(currentDatabase), () -> new SQLAuditException(String.format("Unknown database '%s'", currentDatabase)));
     }
     
     private String getHostAddress(final ChannelHandlerContext context) {
