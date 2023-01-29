@@ -17,20 +17,18 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.parser.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
@@ -38,29 +36,31 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show mask rule.
+ * Show mask rule executor.
  */
-public final class MaskRuleResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowMaskRulesStatement sqlStatement) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        rule.ifPresent(optional -> data = buildData((MaskRuleConfiguration) optional.getConfiguration(), (ShowMaskRulesStatement) sqlStatement).iterator());
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        if (rule.isPresent()) {
+            result = buildData((MaskRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
+        }
+        return result;
     }
     
-    private Collection<Collection<Object>> buildData(final MaskRuleConfiguration ruleConfig, final ShowMaskRulesStatement sqlStatement) {
+    private Collection<LocalDataQueryResultRow> buildData(final MaskRuleConfiguration ruleConfig, final ShowMaskRulesStatement sqlStatement) {
         return ruleConfig.getTables().stream().filter(each -> Objects.isNull(sqlStatement.getTableName()) || each.getName().equals(sqlStatement.getTableName()))
                 .map(each -> buildColumnData(each, ruleConfig.getMaskAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
-    private Collection<Collection<Object>> buildColumnData(final MaskTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> algorithmMap) {
-        Collection<Collection<Object>> result = new LinkedList<>();
+    private Collection<LocalDataQueryResultRow> buildColumnData(final MaskTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> algorithmMap) {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         tableRuleConfig.getColumns().forEach(each -> {
             AlgorithmConfiguration maskAlgorithmConfig = algorithmMap.get(each.getMaskAlgorithm());
-            result.add(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(),
-                    maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps())));
+            result.add(new LocalDataQueryResultRow(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(),
+                    maskAlgorithmConfig.getType(), PropertiesConverter.convert(maskAlgorithmConfig.getProps()))));
         });
         return result;
     }
@@ -68,16 +68,6 @@ public final class MaskRuleResultSet implements DatabaseDistSQLResultSet {
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("table", "column", "algorithm_type", "algorithm_props");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override
