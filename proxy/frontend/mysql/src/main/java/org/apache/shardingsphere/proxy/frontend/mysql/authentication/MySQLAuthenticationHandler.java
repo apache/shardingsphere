@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import lombok.Getter;
-import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
+import org.apache.shardingsphere.authority.checker.UserAuthorityChecker;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -49,13 +48,14 @@ public final class MySQLAuthenticationHandler {
      * @return login success or failure
      */
     public Optional<MySQLVendorError> login(final String username, final String hostname, final byte[] authenticationResponse, final String databaseName) {
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, hostname);
-        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getRules(databaseName);
+        UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, grantee);
         MySQLAuthenticator authenticator = getAuthenticator(username, hostname);
-        if (!SQLCheckEngine.check(grantee, (a, b) -> authenticator.authenticate((ShardingSphereUser) a, (byte[]) b), authenticationResponse, rules)) {
+        if (!userAuthorityChecker.isAuthorized((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (byte[]) b), authenticationResponse)) {
             return Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR);
         }
-        return null == databaseName || SQLCheckEngine.check(databaseName, rules, grantee) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
+        return null == databaseName || userAuthorityChecker.isAuthorized(databaseName) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
     }
     
     /**

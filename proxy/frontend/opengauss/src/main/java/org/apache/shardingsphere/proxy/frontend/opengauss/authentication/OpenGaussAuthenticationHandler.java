@@ -22,15 +22,16 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.authority.checker.UserAuthorityChecker;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import javax.crypto.Mac;
@@ -43,8 +44,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Locale;
 
 /**
@@ -105,29 +104,15 @@ public final class OpenGaussAuthenticationHandler {
      */
     public static void loginWithSCRAMSha256Password(final String username, final String databaseName, final String salt, final String nonce, final int serverIteration,
                                                     final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        String clientDigest = passwordMessagePacket.getDigest();
+        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, "%");
-        if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().databaseExists(databaseName)) {
-            throw new UnknownDatabaseException(databaseName);
-        }
-        if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
-            throw new UnknownUsernameException(username);
-        }
-        if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{clientDigest, salt, nonce, serverIteration}, getRules(databaseName))) {
+        ShardingSpherePreconditions.checkState(authorityRule.findUser(grantee).isPresent(), () -> new UnknownUsernameException(username));
+        UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, grantee);
+        if (!userAuthorityChecker.isAuthorized((a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration})) {
             throw new InvalidPasswordException(username);
         }
-        if (null != databaseName && !SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
-            throw new PrivilegeNotGrantedException(username, databaseName);
-        }
-    }
-    
-    private static Collection<ShardingSphereRule> getRules(final String databaseName) {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().databaseExists(databaseName)) {
-            result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
-        }
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
-        return result;
+        ShardingSpherePreconditions.checkState(null == databaseName || userAuthorityChecker.isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
     private static boolean isPasswordRight(final ShardingSphereUser user, final Object[] args) {

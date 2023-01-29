@@ -31,17 +31,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiPredicate;
 
 /**
  * Sharding audit checker.
  */
 public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
-    
-    @Override
-    public boolean check(final String databaseName, final Grantee grantee, final ShardingRule rule) {
-        return true;
-    }
     
     @Override
     public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
@@ -60,16 +54,6 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
                 }
             }
         }
-    }
-    
-    @Override
-    public boolean check(final Grantee grantee, final ShardingRule rule) {
-        return true;
-    }
-    
-    @Override
-    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final ShardingRule rule) {
-        return true;
     }
     
     private Collection<ShardingAuditStrategyConfiguration> getShardingAuditStrategies(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {

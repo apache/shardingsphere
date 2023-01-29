@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.function.BiPredicate;
 
 /**
  * SQL check engine.
@@ -68,67 +67,5 @@ public final class SQLCheckEngine {
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
             entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey());
         }
-    }
-    
-    /**
-     * Check database.
-     *
-     * @param databaseName database name
-     * @param rules rules
-     * @param grantee grantee
-     * @return check result
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static boolean check(final String databaseName, final Collection<ShardingSphereRule> rules, final Grantee grantee) {
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
-            boolean checkResult = entry.getValue().check(databaseName, grantee, entry.getKey());
-            if (!checkResult) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    /**
-     * Check user exists.
-     * 
-     * @param user user
-     * @param rules rules
-     * @return check result
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static boolean check(final Grantee user, final Collection<ShardingSphereRule> rules) {
-        if (rules.isEmpty()) {
-            return false;
-        }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
-            boolean checkResult = entry.getValue().check(user, entry.getKey());
-            if (!checkResult) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    /**
-     * Check authentication.
-     * @param user user
-     * @param validate validate
-     * @param cipher cipher
-     * @param rules rules
-     * @return check result
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static boolean check(final Grantee user, final BiPredicate<Object, Object> validate, final Object cipher, final Collection<ShardingSphereRule> rules) {
-        if (rules.isEmpty()) {
-            return false;
-        }
-        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
-            boolean checkResult = entry.getValue().check(user, validate, cipher, entry.getKey());
-            if (!checkResult) {
-                return false;
-            }
-        }
-        return true;
     }
 }
