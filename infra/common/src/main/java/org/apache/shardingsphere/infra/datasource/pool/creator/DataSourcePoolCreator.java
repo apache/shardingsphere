@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.creator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -32,15 +33,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Data source pool creator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolCreator {
-    
-    // TODO when all data source configurations of instance are dropped by DistSQL, cached data source should be closed
     
     /**
      * Create data sources.
@@ -60,8 +58,22 @@ public final class DataSourcePoolCreator {
      * @return created data sources
      */
     public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean cacheEnabled) {
-        return dataSourcePropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue(), cacheEnabled), (oldValue, currentValue) -> oldValue,
-                LinkedHashMap::new));
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+            DataSource dataSource;
+            try {
+                dataSource = create(entry.getKey(), entry.getValue(), cacheEnabled);
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                if (!cacheEnabled) {
+                    result.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
+                }
+                throw ex;
+            }
+            result.put(entry.getKey(), dataSource);
+        }
+        return result;
     }
     
     /**
