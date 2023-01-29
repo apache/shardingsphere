@@ -19,13 +19,12 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.query;
 
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CountDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -35,13 +34,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Result set for count database discovery rule.
+ * Count database discovery rule executor.
  */
-public final class CountDatabaseDiscoveryRuleResultSet implements DatabaseDistSQLResultSet {
+public final class CountDatabaseDiscoveryRuleExecutor implements RQLExecutor<CountDatabaseDiscoveryRuleStatement> {
     
     private static final String DB_DISCOVERY = "db_discovery";
-    
-    private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     
     @Override
     public Collection<String> getColumnNames() {
@@ -49,11 +46,18 @@ public final class CountDatabaseDiscoveryRuleResultSet implements DatabaseDistSQ
     }
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
-        Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
-        rule.ifPresent(optional -> addDBDiscoveryData(result, database.getName(), rule.get()));
-        data = result.entrySet().iterator();
+        Map<String, LinkedList<Object>> rowMap = new LinkedHashMap<>();
+        rule.ifPresent(optional -> addDBDiscoveryData(rowMap, database.getName(), rule.get()));
+        Iterator<Entry<String, LinkedList<Object>>> data = rowMap.entrySet().iterator();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            Entry<String, LinkedList<Object>> entry = data.next();
+            entry.getValue().addFirst(entry.getKey());
+            result.add(new LocalDataQueryResultRow(entry.getValue()));
+        }
+        return result;
     }
     
     private void addDBDiscoveryData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final DatabaseDiscoveryRule rule) {
@@ -70,18 +74,6 @@ public final class CountDatabaseDiscoveryRuleResultSet implements DatabaseDistSQ
         }
         value.set(1, (Integer) value.get(1) + count);
         return value;
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        Entry<String, LinkedList<Object>> entry = data.next();
-        entry.getValue().addFirst(entry.getKey());
-        return entry.getValue();
     }
     
     @Override

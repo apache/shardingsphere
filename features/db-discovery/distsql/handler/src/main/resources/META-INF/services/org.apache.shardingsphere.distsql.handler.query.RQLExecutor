@@ -18,3 +18,4 @@
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.ShowDatabaseDiscoveryRuleExecutor
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.ShowDatabaseDiscoveryTypeExecutor
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.ShowDatabaseDiscoveryHeartbeatExecutor
+org.apache.shardingsphere.dbdiscovery.distsql.handler.query.CountDatabaseDiscoveryRuleExecutor
