@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -35,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 public final class PipelineCaseHelper {
     
     private static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
@@ -106,5 +112,29 @@ public final class PipelineCaseHelper {
     
     private static double generateDouble(final double min, final double max) {
         return ThreadLocalRandom.current().nextDouble(min, max);
+    }
+    
+    /**
+     * Batch insert order records with general columns.
+     *
+     * @param tableName table name
+     * @param connection connection
+     * @param keyGenerateAlgorithm key generate algorithm
+     * @param recordCount record count
+     * @throws SQLException sql exception
+     */
+    public static void batchInsertOrderRecordsWithGeneralColumns(final Connection connection, final KeyGenerateAlgorithm keyGenerateAlgorithm, final String tableName, final int recordCount)
+            throws SQLException {
+        log.info("init data begin: {}", LocalDateTime.now());
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", tableName))) {
+            for (int i = 0; i < recordCount; i++) {
+                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
+                preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
+                preparedStatement.setObject(3, "OK");
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }
+        log.info("init data end: {}", LocalDateTime.now());
     }
 }

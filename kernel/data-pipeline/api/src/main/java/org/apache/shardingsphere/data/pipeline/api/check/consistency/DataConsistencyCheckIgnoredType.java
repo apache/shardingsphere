@@ -15,39 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.progress;
+package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-
-import java.util.Map;
 
 /**
- * Data consistency check job item progress.
+ * Data consistency ignore type.
  */
-// TODO move package
-@Getter
 @RequiredArgsConstructor
-@ToString
-public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
+@Getter
+public enum DataConsistencyCheckIgnoredType {
     
-    @Setter
-    private JobStatus status = JobStatus.RUNNING;
+    UNKNOWN("Unknown ignored type"),
     
-    private final String tableNames;
+    NONE_PRIMARY_KEY("Data consistency checks are not supported for tables without primary keys");
     
-    private final String ignoredTableNames;
-    
-    private final Long checkedRecordsCount;
-    
-    private final Long recordsCount;
-    
-    private final Long checkBeginTimeMillis;
-    
-    private final Long checkEndTimeMillis;
-    
-    private final Map<String, Object> tableCheckPositions;
+    private final String message;
 }

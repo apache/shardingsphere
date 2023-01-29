@@ -74,7 +74,6 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaDataSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -446,9 +445,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         result.setTargetTableName(param.getTargetTableName());
         try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig)) {
             StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
-            YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(
-                    PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName, param.getSourceTableName(), metaDataLoader));
-            result.setUniqueKeyColumn(uniqueKeyColumn);
+            PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName, param.getSourceTableName(), metaDataLoader)
+                    .ifPresent(optional -> result.setUniqueKeyColumn(new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(optional)));
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }

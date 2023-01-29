@@ -15,39 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.progress;
+package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-
-import java.util.Map;
 
 /**
- * Data consistency check job item progress.
+ * None primary key position.
  */
-// TODO move package
-@Getter
 @RequiredArgsConstructor
-@ToString
-public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
+public final class NonePrimaryKeyPosition extends PrimaryKeyPosition<Integer> implements IngestPosition<NonePrimaryKeyPosition> {
     
-    @Setter
-    private JobStatus status = JobStatus.RUNNING;
+    private final int offset;
     
-    private final String tableNames;
+    @Override
+    public Integer getBeginValue() {
+        return offset;
+    }
     
-    private final String ignoredTableNames;
+    @Override
+    public Integer getEndValue() {
+        return Integer.MAX_VALUE;
+    }
     
-    private final Long checkedRecordsCount;
+    @Override
+    protected Integer convert(final String value) {
+        return null;
+    }
     
-    private final Long recordsCount;
+    @Override
+    protected char getType() {
+        return 'n';
+    }
     
-    private final Long checkBeginTimeMillis;
-    
-    private final Long checkEndTimeMillis;
-    
-    private final Map<String, Object> tableCheckPositions;
+    @Override
+    public int compareTo(final NonePrimaryKeyPosition position) {
+        return 0;
+    }
 }

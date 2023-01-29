@@ -151,6 +151,14 @@ public interface PipelineSQLBuilder extends TypedSPI {
     String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String primaryKey);
     
     /**
+     * Build select offset SQL.
+     * @param schemaName schema name
+     * @param tableName tableName
+     * @return select offset SQL
+     */
+    String buildSelectOffsetSQL(String schemaName, String tableName);
+    
+    /**
      * Build CRC32 SQL.
      *
      * @param schemaName schema name
