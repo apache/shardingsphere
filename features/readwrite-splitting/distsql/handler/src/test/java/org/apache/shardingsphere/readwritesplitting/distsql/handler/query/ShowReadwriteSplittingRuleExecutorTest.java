@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
@@ -37,26 +39,26 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ReadwriteSplittingRuleResultSetTest {
+public final class ShowReadwriteSplittingRuleExecutorTest {
     
     @Test
     public void assertGetEmptyRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        ReadwriteSplittingRuleResultSet resultSet = new ReadwriteSplittingRuleResultSet();
-        resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
-        assertFalse(resultSet.next());
+        RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowReadwriteSplittingRulesStatement.class));
+        assertTrue(actual.isEmpty());
     }
     
     @Test
@@ -66,15 +68,18 @@ public final class ReadwriteSplittingRuleResultSetTest {
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         when(rule.getExportData()).thenReturn(createExportedData());
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
-        ReadwriteSplittingRuleResultSet resultSet = new ReadwriteSplittingRuleResultSet();
-        resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
-        Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(7));
-        assertTrue(actual.contains("readwrite_ds"));
-        assertTrue(actual.contains("ds_primary"));
-        assertTrue(actual.contains("ds_slave_0,ds_slave_1"));
-        assertTrue(actual.contains("random"));
-        assertTrue(actual.contains("read_weight=2:1"));
+        RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowReadwriteSplittingRulesStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("readwrite_ds"));
+        assertThat(row.getCell(2), is(""));
+        assertThat(row.getCell(3), is(""));
+        assertThat(row.getCell(4), is("ds_primary"));
+        assertThat(row.getCell(5), is("ds_slave_0,ds_slave_1"));
+        assertThat(row.getCell(6), is("random"));
+        assertThat(row.getCell(7), is("read_weight=2:1"));
     }
     
     private Map<String, Object> createExportedData() {
@@ -99,13 +104,18 @@ public final class ReadwriteSplittingRuleResultSetTest {
         when(rule.getConfiguration()).thenReturn(createRuleConfigurationWithoutLoadBalancer());
         when(rule.getExportData()).thenReturn(createExportedData());
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
-        ReadwriteSplittingRuleResultSet resultSet = new ReadwriteSplittingRuleResultSet();
-        resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
-        Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(7));
-        assertTrue(actual.contains("readwrite_ds"));
-        assertTrue(actual.contains("write_ds"));
-        assertTrue(actual.contains("read_ds_0,read_ds_1"));
+        RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowReadwriteSplittingRulesStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("readwrite_ds"));
+        assertThat(row.getCell(2), is(""));
+        assertThat(row.getCell(3), is(""));
+        assertThat(row.getCell(4), is("write_ds"));
+        assertThat(row.getCell(5), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(6), is(""));
+        assertThat(row.getCell(7), is(""));
     }
     
     private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
@@ -122,15 +132,33 @@ public final class ReadwriteSplittingRuleResultSetTest {
         when(rule.getConfiguration()).thenReturn(createRuleConfigurationWithAutoAwareDataSource());
         when(rule.getExportData()).thenReturn(getExportData());
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
-        ReadwriteSplittingRuleResultSet resultSet = new ReadwriteSplittingRuleResultSet();
-        resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
-        Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(7));
-        assertTrue(actual.contains("readwrite_ds"));
-        assertTrue(actual.contains("rd_rs"));
-        assertTrue(actual.contains("false"));
-        assertTrue(actual.contains("write_ds"));
-        assertTrue(actual.contains("read_ds_0,read_ds_1"));
+        RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowReadwriteSplittingRulesStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("readwrite_ds"));
+        assertThat(row.getCell(2), is("rd_rs"));
+        assertThat(row.getCell(3), is("false"));
+        assertThat(row.getCell(4), is("write_ds"));
+        assertThat(row.getCell(5), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(6), is(""));
+        assertThat(row.getCell(7), is(""));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(7));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("name"));
+        assertThat(iterator.next(), is("auto_aware_data_source_name"));
+        assertThat(iterator.next(), is("write_data_source_query_enabled"));
+        assertThat(iterator.next(), is("write_storage_unit_name"));
+        assertThat(iterator.next(), is("read_storage_unit_names"));
+        assertThat(iterator.next(), is("load_balancer_type"));
+        assertThat(iterator.next(), is("load_balancer_props"));
     }
     
     private Map<String, Object> getExportData() {

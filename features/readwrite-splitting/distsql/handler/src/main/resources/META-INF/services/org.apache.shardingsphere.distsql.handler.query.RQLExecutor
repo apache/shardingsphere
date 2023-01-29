@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.distsql.handler.query.CountReadwriteSplittingRuleResultSet
+org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ShowReadwriteSplittingRuleExecutor
