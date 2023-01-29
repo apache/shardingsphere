@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.kernel.model;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.UUID;
@@ -26,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Execution group report context.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ExecutionGroupReportContext {
     
@@ -41,11 +43,5 @@ public final class ExecutionGroupReportContext {
     
     public ExecutionGroupReportContext(final String databaseName, final Grantee grantee) {
         this(databaseName, grantee, new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
-    }
-    
-    public ExecutionGroupReportContext(final String databaseName, final Grantee grantee, final String executionID) {
-        this.databaseName = databaseName;
-        this.grantee = grantee;
-        this.executionID = executionID;
     }
 }
