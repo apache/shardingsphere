@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -81,17 +80,17 @@ public final class AuthorityChecker {
     /**
      * Check SQL authority.
      *
-     * @param sqlStatementContext SQL statement context
+     * @param sqlStatement SQL statement
      * @param databaseName database name
      */
-    public void isAuthorized(final SQLStatementContext<?> sqlStatementContext, final String databaseName) {
+    public void isAuthorized(final SQLStatement sqlStatement, final String databaseName) {
         if (null == grantee) {
             return;
         }
         Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
         ShardingSpherePreconditions.checkState(null == databaseName || privileges.filter(optional -> optional.hasPrivileges(databaseName)).isPresent(),
                 () -> new UnknownDatabaseException(databaseName));
-        PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
+        PrivilegeType privilegeType = getPrivilege(sqlStatement);
         ShardingSpherePreconditions.checkState(privileges.isPresent() && privileges.get().hasPrivileges(Collections.singleton(privilegeType)),
                 () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
     }
