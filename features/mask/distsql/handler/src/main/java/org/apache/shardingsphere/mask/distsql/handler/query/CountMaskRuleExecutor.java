@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.distsql.parser.statement.CountMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -35,13 +33,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Result set for count mask rule.
+ * Count mask rule executor.
  */
-public final class CountMaskRuleResultSet implements DatabaseDistSQLResultSet {
+public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleStatement> {
     
     private static final String MASK = "mask";
-    
-    private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     
     @Override
     public Collection<String> getColumnNames() {
@@ -49,11 +45,16 @@ public final class CountMaskRuleResultSet implements DatabaseDistSQLResultSet {
     }
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountMaskRuleStatement sqlStatement) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
-        rule.ifPresent(optional -> addMaskData(result, database.getName(), rule.get()));
-        data = result.entrySet().iterator();
+        Map<String, LinkedList<Object>> rowMap = new LinkedHashMap<>();
+        rule.ifPresent(optional -> addMaskData(rowMap, database.getName(), rule.get()));
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        for (final Entry<String, LinkedList<Object>> entry : rowMap.entrySet()) {
+            entry.getValue().addFirst(entry.getKey());
+            result.add(new LocalDataQueryResultRow(entry.getValue()));
+        }
+        return result;
     }
     
     private void addMaskData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final MaskRule rule) {
@@ -70,18 +71,6 @@ public final class CountMaskRuleResultSet implements DatabaseDistSQLResultSet {
         }
         value.set(1, (Integer) value.get(1) + count);
         return value;
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        Entry<String, LinkedList<Object>> entry = data.next();
-        entry.getValue().addFirst(entry.getKey());
-        return entry.getValue();
     }
     
     @Override

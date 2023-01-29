@@ -17,39 +17,47 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mask.distsql.parser.statement.CountMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountMaskRuleResultSetTest {
+public final class CountMaskRuleExecutorTest {
     
     @Test
     public void assertGetRowData() {
-        CountMaskRuleResultSet resultSet = new CountMaskRuleResultSet();
-        resultSet.init(mockDatabase(), mock(CountMaskRuleStatement.class));
-        assertTrue(resultSet.next());
-        assertTrue(resultSet.getColumnNames().containsAll(Arrays.asList("rule_name", "database", "count")));
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("mask"));
-        assertThat(actual.get(1), is("mask_db"));
-        assertThat(actual.get(2), is(1));
-        assertFalse(resultSet.next());
+        RQLExecutor<CountMaskRuleStatement> executor = new CountMaskRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountMaskRuleStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("mask"));
+        assertThat(row.getCell(2), is("mask_db"));
+        assertThat(row.getCell(3), is(1));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<CountMaskRuleStatement> executor = new CountMaskRuleExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(3));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("rule_name"));
+        assertThat(iterator.next(), is("database"));
+        assertThat(iterator.next(), is("count"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
