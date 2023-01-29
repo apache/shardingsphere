@@ -77,7 +77,7 @@ public final class DriverJDBCExecutor {
         try {
             executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            executeProcessEngine.finishExecution(executionGroupContext.getReportContext().getExecutionID(), eventBusContext);
             return result;
         } finally {
             executeProcessEngine.cleanExecution();
@@ -102,7 +102,7 @@ public final class DriverJDBCExecutor {
             SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            executeProcessEngine.finishExecution(executionGroupContext.getReportContext().getExecutionID(), eventBusContext);
             return result;
         } finally {
             executeProcessEngine.cleanExecution();
@@ -143,7 +143,7 @@ public final class DriverJDBCExecutor {
             executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
+            executeProcessEngine.finishExecution(executionGroupContext.getReportContext().getExecutionID(), eventBusContext);
             return result;
         } finally {
             executeProcessEngine.cleanExecution();
