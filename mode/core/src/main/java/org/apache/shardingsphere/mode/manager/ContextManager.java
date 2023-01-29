@@ -274,6 +274,8 @@ public final class ContextManager implements AutoCloseable {
             MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
             reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
                     .persist(reloadMetaDataContexts.getMetaData().getActualDatabaseName(databaseName), schemaName, schema));
+            Optional.ofNullable(reloadMetaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName)).ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) ->
+                    reloadMetaDataContexts.getPersistService().getShardingSphereDataPersistService().persist(databaseName, schemaName, schemaData, metaDataContexts.getMetaData().getDatabases())));
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
             metaDataContexts = reloadMetaDataContexts;
             metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
