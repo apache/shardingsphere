@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.authority.checker.UserAuthorityChecker;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -132,7 +132,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     protected static boolean isAuthorized(final String databaseName, final Grantee grantee) {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        return new UserAuthorityChecker(authorityRule, grantee).isAuthorized(databaseName);
+        return new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName);
     }
     
     /**

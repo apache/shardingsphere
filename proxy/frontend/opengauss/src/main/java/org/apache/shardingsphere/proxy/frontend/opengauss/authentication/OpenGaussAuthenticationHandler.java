@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.checker.UserAuthorityChecker;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -108,11 +108,11 @@ public final class OpenGaussAuthenticationHandler {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, "%");
         ShardingSpherePreconditions.checkState(authorityRule.findUser(grantee).isPresent(), () -> new UnknownUsernameException(username));
-        UserAuthorityChecker userAuthorityChecker = new UserAuthorityChecker(authorityRule, grantee);
-        if (!userAuthorityChecker.isAuthorized((a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration})) {
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
+        if (!authorityChecker.isAuthorized((a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration})) {
             throw new InvalidPasswordException(username);
         }
-        ShardingSpherePreconditions.checkState(null == databaseName || userAuthorityChecker.isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
+        ShardingSpherePreconditions.checkState(null == databaseName || authorityChecker.isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
     private static boolean isPasswordRight(final ShardingSphereUser user, final Object[] args) {

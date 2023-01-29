@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -38,32 +39,19 @@ import java.util.Map.Entry;
 public final class SQLCheckEngine {
     
     /**
-     * Check SQL with database rules.
+     * Check SQL.
      *
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters
      * @param globalRuleMetaData global rule meta data
-     * @param database database
-     * @param grantee grantee
-     */
-    public static void checkWithDatabaseRules(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
-                                              final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
-        checkWithRules(sqlStatementContext, params, globalRuleMetaData, database.getRuleMetaData().getRules(), database, grantee);
-    }
-    
-    /**
-     * Check SQL with rules.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @param params SQL parameters
-     * @param globalRuleMetaData global rule meta data
-     * @param rules rules
      * @param database database
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void checkWithRules(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final ShardingSphereRuleMetaData globalRuleMetaData,
-                                      final Collection<ShardingSphereRule> rules, final ShardingSphereDatabase database, final Grantee grantee) {
+    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
+                             final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
+        Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
+        rules.addAll(database.getRuleMetaData().getRules());
         for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPILoader.getServices(SQLChecker.class, rules).entrySet()) {
             entry.getValue().check(sqlStatementContext, params, grantee, globalRuleMetaData, database, entry.getKey());
         }
