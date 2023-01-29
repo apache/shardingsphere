@@ -333,4 +333,8 @@
     <test-case sql="UPDATE t_data_type_money SET val = val + ?::money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
         <assertion parameters="-12345.6789:String, 1002:int" expected-data-file="update_money_subtract_value.xml"/>
     </test-case>
+    
+    <test-case sql="INSERT INTO t_data_type_bytea (id, val) VALUES (?, ?)" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
+        <assertion parameters="1:int, some values:bytes" expected-data-file="insert_bytea_values.xml"/>
+    </test-case>
 </integration-test-cases>
