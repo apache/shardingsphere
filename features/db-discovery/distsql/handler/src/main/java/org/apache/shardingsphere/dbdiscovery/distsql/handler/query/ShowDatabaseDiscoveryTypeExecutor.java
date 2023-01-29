@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 /**
- * Result set for show database discovery type.
+ * Show database discovery type executor.
  */
 public final class ShowDatabaseDiscoveryTypeExecutor implements RQLExecutor<ShowDatabaseDiscoveryTypesStatement> {
     
