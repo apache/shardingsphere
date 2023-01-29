@@ -82,7 +82,13 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
 | 44000     | 16000       | SQL audit failed, error message: %s. |
-| 44000     | 16001       | Hint datasource: %s is not exist. |
+| 44000     | 16001       | Hint data source: %s is not exist. |
+
+### 权限
+
+| SQL State | Vendor Code | 错误信息 |
+| --------- | ----------- | ------ |
+| 44000     | 16500       | Access denied for operation `%s`. |
 
 ### 集群
 
@@ -228,7 +234,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`. |
 | 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\`. |
 | 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`. |
-
 
 ### SQL 方言转换
 

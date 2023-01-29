@@ -44,7 +44,7 @@ public final class AuthorityCheckerTest {
     }
     
     @Test
-    public void assertCheck() {
+    public void assertCheckIsAuthorizedOperation() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
         AuthorityRule rule = new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties())), Collections.emptyMap());
         AuthorityChecker authorityChecker = new AuthorityChecker(rule, new Grantee("root", "localhost"));

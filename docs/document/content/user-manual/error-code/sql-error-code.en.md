@@ -84,6 +84,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 16000       | SQL audit failed, error message: %s. |
 | 44000     | 16001       | Hint datasource: %s is not exist. |
 
+### Authority
+
+| SQL State | Vendor Code | Reason |
+| --------- | ----------- | ------ |
+| 44000     | 16500       | Access denied for operation `%s`. |
+
 ### Cluster
 
 | SQL State | Vendor Code | Reason |
