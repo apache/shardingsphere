@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java-version: [ 8 ]
+        java-version: [ 11 ]
         database: [ mysql, postgresql ]
     steps:
       - uses: actions/checkout@v3
