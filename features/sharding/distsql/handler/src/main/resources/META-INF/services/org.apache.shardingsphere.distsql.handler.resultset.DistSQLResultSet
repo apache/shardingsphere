@@ -17,7 +17,6 @@
 
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableReferenceRuleResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.BroadcastTableRuleResultSet
-org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAuditorsResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingKeyGeneratorResultSet
