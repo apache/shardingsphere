@@ -30,6 +30,8 @@ import java.util.ServiceLoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AgentLoggerFactory {
     
+    private static AgentLoggerClassLoader agentLoggerClassLoader;
+    
     /**
      * Get agent logger.
      *
@@ -47,7 +49,19 @@ public final class AgentLoggerFactory {
      * @return agent logger
      */
     public static AgentLogger getAgentLogger(final String name) {
-        IAgentLoggerFactory loggerFactory = ServiceLoader.load(IAgentLoggerFactory.class, AgentLoggerClassLoaderHolder.getAgentLoggerClassLoader()).iterator().next();
+        IAgentLoggerFactory loggerFactory = ServiceLoader.load(IAgentLoggerFactory.class, getAgentLoggerClassLoader()).iterator().next();
         return loggerFactory.getAgentLogger(name);
+    }
+    
+    private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
+        if (null != agentLoggerClassLoader) {
+            return agentLoggerClassLoader;
+        }
+        synchronized (AgentLoggerFactory.class) {
+            if (null == agentLoggerClassLoader) {
+                agentLoggerClassLoader = AgentLoggerClassLoaderFactory.create();
+            }
+        }
+        return agentLoggerClassLoader;
     }
 }

@@ -35,10 +35,10 @@ import java.util.LinkedList;
 import java.util.jar.JarFile;
 
 /**
- * Agent logger class loader builder.
+ * Agent logger class loader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentLoggerClassLoaderBuilder {
+public final class AgentLoggerClassLoaderFactory {
     
     /**
      * Create agent logger class loader.
