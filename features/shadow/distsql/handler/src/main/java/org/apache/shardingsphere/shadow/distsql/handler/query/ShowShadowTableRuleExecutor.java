@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,25 +30,33 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Result set for show shadow table rule.
+ * Show shadow table rule executor.
  */
-public final class ShadowTableRuleResultSet implements DatabaseDistSQLResultSet {
+public final class ShowShadowTableRuleExecutor implements RQLExecutor<ShowShadowTableRulesStatement> {
     
     private static final String SHADOW_TABLE = "shadow_table";
     
     private static final String SHADOW_ALGORITHM_NAME = "shadow_algorithm_name";
     
-    private Iterator<Map<String, String>> data = Collections.emptyIterator();
-    
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowTableRulesStatement sqlStatement) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        rule.ifPresent(optional -> data = buildData((ShadowRuleConfiguration) optional.getConfiguration()).iterator());
+        Iterator<Map<String, String>> data = Collections.emptyIterator();
+        if (rule.isPresent()) {
+            data = buildData((ShadowRuleConfiguration) rule.get().getConfiguration()).iterator();
+        }
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            Map<String, String> row = data.next();
+            result.add(new LocalDataQueryResultRow(row.get(SHADOW_TABLE), row.get(SHADOW_ALGORITHM_NAME)));
+        }
+        return result;
     }
     
     private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfiguration) {
@@ -65,20 +73,6 @@ public final class ShadowTableRuleResultSet implements DatabaseDistSQLResultSet 
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList(SHADOW_TABLE, SHADOW_ALGORITHM_NAME);
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final Map<String, String> data) {
-        return Arrays.asList(data.get(SHADOW_TABLE), data.get(SHADOW_ALGORITHM_NAME));
     }
     
     private String convertToString(final Collection<String> shadowTables) {
