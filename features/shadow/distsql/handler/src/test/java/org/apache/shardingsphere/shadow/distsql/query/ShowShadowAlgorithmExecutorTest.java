@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.distsql.handler.query.ShadowAlgorithmResultSet;
+import org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowAlgorithmExecutor;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,18 +42,31 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShadowAlgorithmResultSetTest {
+public final class ShowShadowAlgorithmExecutorTest {
     
     @Test
     public void assertGetRowData() {
-        DatabaseDistSQLResultSet resultSet = new ShadowAlgorithmResultSet();
-        resultSet.init(mockDatabase(), mock(ShowShadowAlgorithmsStatement.class));
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(4));
-        assertThat(actual.get(0), is("shadowAlgorithmName"));
-        assertThat(actual.get(1), is("simple_hint"));
-        assertThat(actual.get(2), is("foo=bar"));
-        assertThat(actual.get(3), is("false"));
+        RQLExecutor<ShowShadowAlgorithmsStatement> executor = new ShowShadowAlgorithmExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShadowAlgorithmsStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("shadowAlgorithmName"));
+        assertThat(row.getCell(2), is("simple_hint"));
+        assertThat(row.getCell(3), is("foo=bar"));
+        assertThat(row.getCell(4), is("false"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<ShowShadowAlgorithmsStatement> executor = new ShowShadowAlgorithmExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(4));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("shadow_algorithm_name"));
+        assertThat(iterator.next(), is("type"));
+        assertThat(iterator.next(), is("props"));
+        assertThat(iterator.next(), is("is_default"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

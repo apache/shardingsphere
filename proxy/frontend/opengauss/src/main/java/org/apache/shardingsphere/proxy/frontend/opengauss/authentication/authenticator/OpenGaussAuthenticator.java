@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
+package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator;
 
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 
 /**
- * PostgreSQL authenticator.
- * 
- * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
+ * OpenGauss authenticator.
  */
-public interface PostgreSQLAuthenticator extends Authenticator<Object[]> {
+public interface OpenGaussAuthenticator extends Authenticator<Object[]> {
 }

@@ -55,6 +55,7 @@ public final class AuthorityRule implements GlobalRule {
     
     /**
      * Find user.
+     * 
      * @param grantee grantee user
      * @return user
      */
