@@ -245,6 +245,24 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         return result;
     }
     
+    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, DataConsistencyCheckResult> checkJobResult) {
+        if (null == ignoredTables) {
+            return Collections.emptyList();
+        }
+        List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
+        for (String each : ignoredTables) {
+            ConsistencyCheckJobItemInfo info = new ConsistencyCheckJobItemInfo();
+            info.setTableNames(each);
+            info.setCheckSuccess(false);
+            DataConsistencyCheckResult checkResult = checkJobResult.get(each);
+            if (null != checkResult && checkResult.isIgnored()) {
+                info.setErrorMessage(checkResult.getCheckIgnoredType().getMessage());
+            }
+            result.add(info);
+        }
+        return result;
+    }
+    
     private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
         Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
@@ -290,24 +308,6 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
                 PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
         result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
-        return result;
-    }
-    
-    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, DataConsistencyCheckResult> checkJobResult) {
-        if (null == ignoredTables) {
-            return Collections.emptyList();
-        }
-        List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
-        for (String each : ignoredTables) {
-            ConsistencyCheckJobItemInfo info = new ConsistencyCheckJobItemInfo();
-            info.setTableNames(each);
-            info.setCheckSuccess(false);
-            DataConsistencyCheckResult checkResult = checkJobResult.get(each);
-            if (null != checkResult && checkResult.isIgnored()) {
-                info.setErrorMessage(checkResult.getCheckIgnoredType().getMessage());
-            }
-            result.add(info);
-        }
         return result;
     }
     
